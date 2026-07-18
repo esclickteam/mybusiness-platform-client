@@ -112,6 +112,12 @@ export default function FacebookStyleNotifications() {
     {}
   );
 
+  const notificationsRef = useRef<UnifiedNotification[]>([]);
+
+  useEffect(() => {
+    notificationsRef.current = notifications;
+  }, [notifications]);
+
   const businessId = user?.businessId || "";
 
   const seenLeadsKey = businessId
@@ -142,22 +148,45 @@ export default function FacebookStyleNotifications() {
 
     if (!unified.id) return;
 
-    let isNew = false;
+    /*
+      Decide whether to pop a toast BEFORE calling setState.
+      Using a ref keeps this synchronous and reliable (functional
+      setState updaters are not guaranteed to run synchronously).
+
+      Some notifications are upserted server-side (e.g. business-to-business
+      chat reuses the same notification id per conversation), so a repeated
+      unread message must still toast even though the id already exists.
+    */
+    const existing = notificationsRef.current.find(
+      (item) => item.id === unified.id
+    );
+
+    const isNewer = existing
+      ? new Date(unified.timestamp).getTime() >
+        new Date(existing.timestamp).getTime()
+      : false;
+
+    const becameUnread = existing ? existing.read && !unified.read : false;
+
+    const shouldToast =
+      !unified.read && (!existing || isNewer || becameUnread);
 
     setNotifications((prev) => {
-      if (prev.some((item) => item.id === unified.id)) {
-        return prev;
-      }
+      const found = prev.find((item) => item.id === unified.id);
 
-      isNew = true;
+      const next = found
+        ? prev.map((item) =>
+            item.id === unified.id ? { ...item, ...unified } : item
+          )
+        : [unified, ...prev];
 
-      return [unified, ...prev].sort(
+      return next.sort(
         (a, b) =>
           new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
       );
     });
 
-    if (isNew && !unified.read) {
+    if (shouldToast) {
       showToast(unified);
     }
   }
@@ -222,12 +251,16 @@ export default function FacebookStyleNotifications() {
   }, []);
 
   function showToast(notification: UnifiedNotification) {
-    setToasts((prev) => {
-      if (prev.some((item) => item.id === notification.id)) {
-        return prev;
-      }
+    // Short haptic buzz on phones when a notification pops (no-op on desktop).
+    try {
+      navigator.vibrate?.([120, 60, 120]);
+    } catch {
+      /* ignore */
+    }
 
-      return [notification, ...prev].slice(0, 4);
+    setToasts((prev) => {
+      const others = prev.filter((item) => item.id !== notification.id);
+      return [notification, ...others].slice(0, 4);
     });
 
     if (toastTimersRef.current[notification.id]) {
