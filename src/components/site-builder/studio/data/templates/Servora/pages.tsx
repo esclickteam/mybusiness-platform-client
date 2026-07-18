@@ -479,6 +479,8 @@ function Header({
   return (
     <header
       className="servora-header"
+      data-visual-flow-lock="true"
+      data-template-section-type="header"
       {...sectionProps("global.header", "כותרת עליונה", "header")}
     >
       <div className="servora-shell">

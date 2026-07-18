@@ -92,6 +92,34 @@ export const servoraEditorCss = `
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: 18px;
+  position: relative;
+}
+
+/*
+  Keep header brand/nav/actions in normal flow. Visual-editor absolute/translate
+  patches were stacking brand name + label on top of each other.
+*/
+[data-template-id="servora"] .servora-header [data-visual-edit-id],
+[data-template-id="servora"] .servora-header .servora-brand,
+[data-template-id="servora"] .servora-header .servora-brand-name,
+[data-template-id="servora"] .servora-header .servora-brand-label,
+[data-template-id="servora"] .servora-header .servora-nav,
+[data-template-id="servora"] .servora-header .servora-nav-link,
+[data-template-id="servora"] .servora-header .servora-header-actions,
+[data-template-id="servora"] .servora-header .servora-phone-pill,
+[data-template-id="servora"] .servora-header .servora-header-cta {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  bottom: auto !important;
+  translate: none !important;
+  max-width: none;
+}
+
+[data-template-id="servora"] .servora-header .servora-nav-link:hover,
+[data-template-id="servora"] .servora-header .servora-nav-link.is-active {
+  transform: translateY(-1px);
 }
 
 [data-template-id="servora"] .servora-brand {

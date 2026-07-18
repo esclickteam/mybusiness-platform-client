@@ -300,24 +300,70 @@ function isInlineTextEditableNode(node: HTMLElement | null) {
   );
 }
 
-function resolveInlineTextEditTarget(node: HTMLElement) {
-  if (isInlineTextEditableNode(node) && isTextNode(node)) {
-    return node;
+function resolveInlineTextEditTarget(
+  node: HTMLElement,
+  clickTarget?: HTMLElement | null,
+) {
+  if (
+    clickTarget &&
+    node.contains(clickTarget) &&
+    isInlineTextEditableNode(clickTarget) &&
+    !clickTarget.querySelector(
+      "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-editable='text']",
+    )
+  ) {
+    return clickTarget;
   }
 
-  const nestedText = node.querySelector(
-    "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text'], [data-visual-edit-type='text']",
-  ) as HTMLElement | null;
+  const nestedTexts = Array.from(
+    node.querySelectorAll<HTMLElement>(
+      "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text'], [data-visual-edit-type='text']",
+    ),
+  ).filter(
+    (child) =>
+      child !== node &&
+      isInlineTextEditableNode(child) &&
+      !child.querySelector(
+        "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-editable='text']",
+      ),
+  );
 
-  if (nestedText && isInlineTextEditableNode(nestedText)) {
-    return nestedText;
+  if (nestedTexts.length) {
+    if (clickTarget) {
+      const hit = nestedTexts.find(
+        (child) => child === clickTarget || child.contains(clickTarget),
+      );
+      if (hit) return hit;
+    }
+
+    return nestedTexts[0];
   }
 
-  if (isInlineTextEditableNode(node)) {
+  if (
+    isInlineTextEditableNode(node) &&
+    !node.querySelector(
+      "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-editable='text']",
+    )
+  ) {
     return node;
   }
 
   return null;
+}
+
+function isFlowLockedEditorNode(node: HTMLElement | null) {
+  if (!node) return false;
+
+  return Boolean(
+    node.closest(
+      [
+        '[data-visual-flow-lock="true"]',
+        '[data-template-section-type="header"]',
+        '[data-section-kind="header"]',
+        ".servora-header",
+      ].join(", "),
+    ),
+  );
 }
 
 function getSelectionRect(node: HTMLElement) {
@@ -1208,7 +1254,7 @@ export default function VisualEditorCanvas({
         Prefer the nested text target; never open link settings on dblclick
         when the control itself has editable text.
       */
-      const textTarget = resolveInlineTextEditTarget(selectedNode);
+      const textTarget = resolveInlineTextEditTarget(selectedNode, target);
 
       if (textTarget) {
         const textId =
@@ -1339,6 +1385,8 @@ export default function VisualEditorCanvas({
 
       if (!node || !elementId) return;
       if (Boolean(editorAny.locked?.[elementId])) return;
+      // Header/nav stay in flex/grid flow — dragging them stacked overlapping text.
+      if (isFlowLockedEditorNode(node)) return;
 
       const translate = getComputedTranslate(node);
 
@@ -1898,7 +1946,19 @@ export default function VisualEditorCanvas({
             caret-color: #7c3aed !important;
             outline: 2px solid #7c3aed !important;
             outline-offset: 4px !important;
+          }
+
+          /* Keep single-line header/nav labels from reflowing siblings while typing */
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]:not(.servora-nav-link):not(.servora-brand-name):not(.servora-brand-label):not(.servora-phone-pill),
+          [data-visual-template-canvas="true"] [contenteditable="true"]:not(.servora-nav-link):not(.servora-brand-name):not(.servora-brand-label):not(.servora-phone-pill) {
             white-space: pre-wrap !important;
+          }
+
+          [data-visual-template-canvas="true"] .servora-nav-link[data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] .servora-nav-link[contenteditable="true"],
+          [data-visual-template-canvas="true"] .servora-brand-name[data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] .servora-brand-label[data-visual-inline-editing="true"] {
+            white-space: nowrap !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,
