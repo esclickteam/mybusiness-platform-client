@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { novastraDefaultData } from "./defaultData";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 
 type TemplateMode = "preview" | "editor" | "public";
 
@@ -1817,6 +1818,15 @@ export function NovastraPages({
 
   const fallbackProduct = mergedData.products?.[0] || null;
   const productForPage = selectedProduct || fallbackProduct;
+  const stackPageId = [
+    "collection",
+    "product",
+    "cart",
+    "journal",
+    "contact",
+  ].includes(currentPage)
+    ? currentPage
+    : "home";
 
   return (
     <div
@@ -1833,48 +1843,64 @@ export function NovastraPages({
       />
 
       <main>
-        {currentPage === "collection" ? (
-          <CollectionPage
-            data={mergedData}
-            onProductClick={handleProductClick}
-            onAddToCart={handleAddToCart}
-          />
-        ) : null}
-
-        {currentPage === "product" && productForPage ? (
-          <ProductPage
-            product={productForPage}
-            products={mergedData.products}
-            onBack={() => handleNavigate("collection")}
-            onProductClick={handleProductClick}
-            onAddToCart={handleAddToCart}
-          />
-        ) : null}
-
-        {currentPage === "cart" ? (
-          <CartPage
-            cartItems={cartItems}
-            onNavigate={handleNavigate}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
-          />
-        ) : null}
-
-        {currentPage === "journal" ? <JournalPage data={mergedData} /> : null}
-
-        {currentPage === "contact" ? <ContactPage data={mergedData} /> : null}
-
-        {currentPage === "home" ||
-        !["collection", "product", "cart", "journal", "contact"].includes(
-          currentPage,
-        ) ? (
-          <HomePage
-            data={mergedData}
-            onNavigate={handleNavigate}
-            onProductClick={handleProductClick}
-            onAddToCart={handleAddToCart}
-          />
-        ) : null}
+        <VisualPageStack
+          activePageId={stackPageId}
+          pages={[
+            {
+              id: "home",
+              content: (
+                <HomePage
+                  data={mergedData}
+                  onNavigate={handleNavigate}
+                  onProductClick={handleProductClick}
+                  onAddToCart={handleAddToCart}
+                />
+              ),
+            },
+            {
+              id: "collection",
+              content: (
+                <CollectionPage
+                  data={mergedData}
+                  onProductClick={handleProductClick}
+                  onAddToCart={handleAddToCart}
+                />
+              ),
+            },
+            {
+              id: "product",
+              visible: stackPageId === "product" && Boolean(productForPage),
+              content: productForPage ? (
+                <ProductPage
+                  product={productForPage}
+                  products={mergedData.products}
+                  onBack={() => handleNavigate("collection")}
+                  onProductClick={handleProductClick}
+                  onAddToCart={handleAddToCart}
+                />
+              ) : null,
+            },
+            {
+              id: "cart",
+              content: (
+                <CartPage
+                  cartItems={cartItems}
+                  onNavigate={handleNavigate}
+                  onUpdateQuantity={handleUpdateQuantity}
+                  onRemoveItem={handleRemoveItem}
+                />
+              ),
+            },
+            {
+              id: "journal",
+              content: <JournalPage data={mergedData} />,
+            },
+            {
+              id: "contact",
+              content: <ContactPage data={mergedData} />,
+            },
+          ]}
+        />
       </main>
 
       <Footer data={mergedData} onNavigate={handleNavigate} />

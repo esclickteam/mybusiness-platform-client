@@ -1,5 +1,6 @@
 import React from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   chanelDefaultData,
   chanelPages as chanelPagesData,
@@ -776,6 +777,9 @@ export default function ChanelPages({
   const rootRef = React.useRef<HTMLElement | null>(null);
   const templateData = React.useMemo(() => mergeData(data), [data]);
   const pageId = String(activePageId || initialPage || "home");
+  const stackPageId = ["products", "product", "cart"].includes(pageId)
+    ? pageId
+    : "home";
 
   useRevealRuntime(rootRef);
   useSmoothLinks(rootRef, mode);
@@ -795,25 +799,41 @@ export default function ChanelPages({
       <PromoBar data={templateData} mode={mode} />
       <Header data={templateData} mode={mode} pageId={pageId} />
 
-      {pageId === "products" ? (
-        <ProductsCatalogPage data={templateData} mode={mode} />
-      ) : pageId === "product" ? (
-        <ProductDetailPage data={templateData} mode={mode} />
-      ) : pageId === "cart" ? (
-        <CartPage data={templateData} mode={mode} />
-      ) : (
-        <>
-          <HeroSection data={templateData} mode={mode} />
-          <CategoriesSection data={templateData} mode={mode} />
-          <ProductsSection data={templateData} mode={mode} />
-          <ValuesSection data={templateData} mode={mode} />
-          <CommunitySection data={templateData} mode={mode} />
-          <TestimonialsSection data={templateData} mode={mode} />
-          <CraftSection data={templateData} mode={mode} />
-          <JournalSection data={templateData} mode={mode} />
-          <NewsletterSection data={templateData} mode={mode} />
-        </>
-      )}
+      <VisualPageStack
+        activePageId={stackPageId}
+        pages={[
+          {
+            id: "home",
+            content: (
+              <>
+                <HeroSection data={templateData} mode={mode} />
+                <CategoriesSection data={templateData} mode={mode} />
+                <ProductsSection data={templateData} mode={mode} />
+                <ValuesSection data={templateData} mode={mode} />
+                <CommunitySection data={templateData} mode={mode} />
+                <TestimonialsSection data={templateData} mode={mode} />
+                <CraftSection data={templateData} mode={mode} />
+                <JournalSection data={templateData} mode={mode} />
+                <NewsletterSection data={templateData} mode={mode} />
+              </>
+            ),
+          },
+          {
+            id: "products",
+            content: (
+              <ProductsCatalogPage data={templateData} mode={mode} />
+            ),
+          },
+          {
+            id: "product",
+            content: <ProductDetailPage data={templateData} mode={mode} />,
+          },
+          {
+            id: "cart",
+            content: <CartPage data={templateData} mode={mode} />,
+          },
+        ]}
+      />
 
       <Footer data={templateData} mode={mode} />
     </main>
