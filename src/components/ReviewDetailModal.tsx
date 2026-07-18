@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useEffect, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import Icon from "@/components/UI/Icon";
+import { lockPageScroll } from "@/utils/pageScrollLock";
 import {
   getReviewAverage,
   getReviewClientName,
@@ -62,17 +64,19 @@ export default function ReviewDetailModal({
 
   useEffect(() => {
     if (!open) return;
+    return lockPageScroll();
+  }, [open]);
+
+  useEffect(() => {
+    if (!open) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     window.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [open, onClose]);
@@ -85,11 +89,11 @@ export default function ReviewDetailModal({
   const reviewDate = getReviewDateLabel(review.createdAt || review.date);
   const ratingText = getReviewRatingLabel(average);
 
-  return (
+  return createPortal(
     <AnimatePresence>
       {open && (
         <div
-          className="fixed inset-0 z-[10050] flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/45 p-4 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden bg-slate-950/45 p-4 backdrop-blur-sm sm:p-6"
           onClick={onClose}
           role="presentation"
         >
@@ -99,7 +103,7 @@ export default function ReviewDetailModal({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.97 }}
             transition={{ duration: 0.18 }}
-            className="relative my-auto w-full max-w-xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
+            className="relative w-full max-w-xl rounded-[2rem] bg-white text-right shadow-2xl"
             onClick={(event) => event.stopPropagation()}
             role="dialog"
             aria-modal="true"
@@ -153,7 +157,7 @@ export default function ReviewDetailModal({
               </div>
             </div>
 
-            <div className="relative max-h-[min(70dvh,640px)] space-y-5 overflow-y-auto px-6 py-5 sm:px-7">
+            <div className="relative space-y-5 px-6 py-5 sm:px-7">
               <section>
                 <h3 className="text-sm font-black text-slate-900">
                   תגובת הלקוח
@@ -225,6 +229,7 @@ export default function ReviewDetailModal({
           </motion.div>
         </div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

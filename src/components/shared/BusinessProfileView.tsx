@@ -8,6 +8,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { createPortal } from "react-dom";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -16,6 +17,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
+import { lockPageScroll } from "@/utils/pageScrollLock";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -244,6 +246,11 @@ export default function BusinessProfileView() {
   const [faqs, setFaqs] = useState<FaqItem[]>([]);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!showReviewModal) return;
+    return lockPageScroll();
+  }, [showReviewModal]);
 
   const galleryRef = useRef<HTMLDivElement | null>(null);
   const reviewsRef = useRef<HTMLDivElement | null>(null);
@@ -581,7 +588,14 @@ export default function BusinessProfileView() {
   const renderTabContent = () => {
     if (currentTab === "Main") {
       return (
-        <div className="mx-auto max-w-5xl space-y-8">
+        <div className="mx-auto w-full max-w-5xl space-y-8 text-right">
+          {description && (
+            <div className="rounded-2xl border border-violet-100/80 bg-white/80 px-4 py-4 text-right sm:px-5">
+              <h2 className="text-base font-black text-slate-950">אודות העסק</h2>
+              <p className="mt-2 text-sm leading-7 text-slate-600">{description}</p>
+            </div>
+          )}
+
           {mainImages.length ? (
             <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {mainImages.slice(0, 6).map((url, index) => (
@@ -694,45 +708,47 @@ export default function BusinessProfileView() {
                 )}
               </div>
 
-              {showReviewModal && (
-                <div
-                  className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto overscroll-contain bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
-                  onClick={() => setShowReviewModal(false)}
-                >
+              {showReviewModal &&
+                createPortal(
                   <div
-                    className="relative my-auto flex max-h-[calc(100dvh-2rem)] w-full max-w-2xl flex-col overflow-hidden rounded-[2rem] bg-white shadow-2xl sm:max-h-[calc(100dvh-3rem)]"
-                    onClick={(event) => event.stopPropagation()}
+                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
+                    onClick={() => setShowReviewModal(false)}
                   >
-                    <button
-                      type="button"
-                      aria-label="סגירת טופס ביקורת"
-                      className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
-                      onClick={() => setShowReviewModal(false)}
+                    <div
+                      className="relative w-full max-w-2xl rounded-[2rem] bg-white shadow-2xl"
+                      onClick={(event) => event.stopPropagation()}
                     >
-                      ×
-                    </button>
+                      <button
+                        type="button"
+                        aria-label="סגירת טופס ביקורת"
+                        className="absolute left-5 top-5 z-10 flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-100 text-xl font-black text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
+                        onClick={() => setShowReviewModal(false)}
+                      >
+                        ×
+                      </button>
 
-                    <div className="min-h-0 flex-1 overflow-y-auto p-6">
-                    <Suspense
-                      fallback={
-                        <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
-                          טוען טופס ביקורת...
-                        </div>
-                      }
-                    >
-                      <ReviewForm
-                        businessId={bizId}
-                        socket={socket as any}
-                        onSuccess={async () => {
-                          setShowReviewModal(false);
-                          await Promise.all([refetch(), refetchReviews()]);
-                        }}
-                      />
-                    </Suspense>
+                      <div className="p-6">
+                        <Suspense
+                          fallback={
+                            <div className="rounded-2xl bg-slate-50 p-6 text-sm font-black text-slate-500">
+                              טוען טופס ביקורת...
+                            </div>
+                          }
+                        >
+                          <ReviewForm
+                            businessId={bizId}
+                            socket={socket as any}
+                            onSuccess={async () => {
+                              setShowReviewModal(false);
+                              await Promise.all([refetch(), refetchReviews()]);
+                            }}
+                          />
+                        </Suspense>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              )}
+                  </div>,
+                  document.body
+                )}
 
               {sortedReviews.length ? (
                 <div className="grid justify-center gap-4 lg:grid-cols-2">
@@ -879,134 +895,98 @@ export default function BusinessProfileView() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.14),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.18),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-3 py-2 pb-8 text-right text-slate-950 sm:px-5 sm:py-3 sm:pb-10"
     >
-      <section className="mx-auto max-w-7xl">
-        <div className="relative overflow-hidden rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
-          <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
-          <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
-          <div className="pointer-events-none absolute bottom-0 right-1/3 h-64 w-64 rounded-full bg-cyan-400/20 blur-3xl" />
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-2 sm:gap-3">
+        <div className="relative shrink-0 overflow-hidden rounded-2xl border border-white/90 bg-white/95 p-3 shadow-[0_10px_36px_rgba(79,70,229,0.10)] sm:p-4">
+          {coverImage && (
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 top-0 h-16 bg-cover bg-center opacity-20 sm:h-20"
+              style={{ backgroundImage: `url(${coverImage})` }}
+            />
+          )}
+          <div className="pointer-events-none absolute -left-10 -top-10 h-28 w-28 rounded-full bg-violet-400/10 blur-2xl" />
 
           {isOwner && (
             <Link
               to={`/business/${bizId}/dashboard/edit`}
-              className="absolute left-5 top-5 z-20 inline-flex h-10 items-center justify-center rounded-full border border-white/80 bg-white/85 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
+              className="absolute left-3 top-3 z-10 inline-flex h-8 items-center justify-center rounded-full border border-violet-100 bg-white px-3 text-[11px] font-black text-violet-700 shadow-sm transition hover:bg-violet-50"
             >
               ✏️ עריכה
             </Link>
           )}
 
-          <div className="relative p-4 sm:p-6 lg:p-8">
-            {coverImage ? (
-              <div className="overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
+          <div className="relative flex items-start gap-3 sm:gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-sm sm:h-14 sm:w-14 sm:rounded-2xl">
+              {logoUrl ? (
                 <img
-                  src={coverImage}
-                  alt={`תמונת קאבר של ${businessName}`}
+                  src={logoUrl}
+                  alt={`לוגו ${businessName}`}
                   loading="lazy"
-                  className="h-72 w-full object-cover sm:h-96 lg:h-[430px]"
+                  className="h-full w-full object-cover"
                 />
-              </div>
-            ) : (
-              <div className="flex h-72 w-full items-center justify-center rounded-[2rem] border border-white/80 bg-gradient-to-br from-violet-100 via-white to-blue-100 text-center shadow-[0_24px_70px_rgba(30,41,59,0.10)] sm:h-96 lg:h-[430px]">
-                <div>
-                  <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-3xl shadow-lg">
-                    ✨
-                  </div>
+              ) : (
+                <span className="text-xl font-black text-violet-600 sm:text-2xl">
+                  {businessName?.charAt(0)?.toUpperCase() || "B"}
+                </span>
+              )}
+            </div>
 
-                  <p className="mt-4 text-lg font-black text-slate-950">
-                    ברוכים הבאים
-                  </p>
-                </div>
-              </div>
-            )}
-
-            <div className="mx-auto -mt-20 max-w-5xl rounded-[2.2rem] border border-white/90 bg-white/92 p-5 text-center shadow-[0_30px_90px_rgba(30,41,59,0.14)] backdrop-blur-xl sm:p-7">
-              <div className="mx-auto flex h-28 w-28 items-center justify-center overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-white to-blue-100 shadow-[0_22px_55px_rgba(124,58,237,0.22)]">
-                {logoUrl ? (
-                  <img
-                    src={logoUrl}
-                    alt={`לוגו ${businessName}`}
-                    loading="lazy"
-                    className="h-full w-full object-cover"
-                  />
-                ) : (
-                  <span className="text-4xl font-black text-violet-600">
-                    {businessName?.charAt(0)?.toUpperCase() || "B"}
-                  </span>
-                )}
-              </div>
-
-              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+            <div className="min-w-0 flex-1 pe-1 pt-0.5 sm:pe-0">
+              <h1 className="text-lg font-black leading-tight text-slate-950 sm:text-2xl">
                 {businessName || "שם העסק"}
               </h1>
 
-              <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
                 {isMeaningfulCategory(category) && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-violet-100 bg-violet-50 px-2.5 py-0.5 text-[11px] font-black text-violet-800 sm:text-xs">
                     <Icon name="category" />
                     {category}
                   </span>
                 )}
 
                 {city && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-slate-100 bg-slate-50 px-4 py-2 text-sm font-black text-slate-700">
+                  <span className="inline-flex items-center gap-1 rounded-full border border-slate-100 bg-slate-50 px-2.5 py-0.5 text-[11px] font-black text-slate-700 sm:text-xs">
                     <Icon name="city" />
                     {city}
                   </span>
                 )}
 
                 {hasRating && (
-                  <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                    ⭐ {roundedAvg.toFixed(1)}
-                    <span className="text-amber-600/80">
-                      ({reviewsCount} ביקורות)
-                    </span>
+                  <span className="inline-flex items-center gap-1 rounded-full border border-amber-100 bg-amber-50 px-2.5 py-0.5 text-[11px] font-black text-amber-700 sm:text-xs">
+                    ⭐ {roundedAvg.toFixed(1)} ({reviewsCount})
                   </span>
                 )}
               </div>
 
-              {description && (
-                <p className="mx-auto mt-5 max-w-3xl text-center text-base leading-8 text-slate-600">
-                  {description}
-                </p>
-              )}
-
-              <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {phone && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">טלפון</p>
-
-                    <p
-                      dir="ltr"
-                      className="mt-1 text-center text-lg font-black text-slate-950"
-                    >
+              {(phone || email) && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] font-bold text-slate-600 sm:text-xs">
+                  {phone && (
+                    <span dir="ltr" className="rounded-lg bg-slate-50 px-2 py-1">
                       {formattedPhone}
-                    </p>
-                  </div>
-                )}
-
-                {email && (
-                  <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)]">
-                    <p className="text-xs font-black text-slate-400">אימייל</p>
-
-                    <p
-                      dir="ltr"
-                      className="mt-1 truncate text-center text-lg font-black text-slate-950"
-                    >
+                    </span>
+                  )}
+                  {email && (
+                    <span dir="ltr" className="max-w-[220px] truncate rounded-lg bg-slate-50 px-2 py-1 sm:max-w-none">
                       {email}
-                    </p>
-                  </div>
-                )}
-              </div>
+                    </span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
 
+          {(businessWebsiteUrl || businessWhatsappUrl) && (
+            <div className="relative mt-2.5 flex flex-wrap gap-2 border-t border-violet-100/80 pt-2.5">
               {businessWebsiteUrl && (
                 <a
                   href={normalizedWebsiteUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                  className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-blue-600 px-3 text-xs font-black !text-white shadow-md shadow-violet-500/15 transition hover:-translate-y-0.5 sm:flex-none sm:px-4"
                 >
-                  כניסה לאתר העסק
+                  כניסה לאתר
                 </a>
               )}
 
@@ -1015,47 +995,49 @@ export default function BusinessProfileView() {
                   href={normalizedWhatsappUrl}
                   target="_blank"
                   rel="noreferrer"
-                  className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
+                  className="inline-flex h-9 flex-1 items-center justify-center rounded-xl bg-gradient-to-l from-emerald-500 to-teal-500 px-3 text-xs font-black !text-white shadow-md shadow-emerald-500/10 transition hover:-translate-y-0.5 sm:flex-none sm:px-4"
                 >
-                  שליחת הודעה בוואטסאפ
+                  וואטסאפ
                 </a>
               )}
+            </div>
+          )}
+        </div>
 
-              <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
-                <div
-                  className="flex flex-wrap items-center justify-center gap-3 text-center"
-                  role="tablist"
-                  aria-label="טאבים של עמוד העסק"
-                >
-                  {TABS.map((tab) => {
-                    const isActive = tab === currentTab;
+        <div className="sticky top-0 z-30 shrink-0 rounded-2xl border border-white/90 bg-white/95 py-2 shadow-[0_8px_28px_rgba(79,70,229,0.08)] backdrop-blur-md">
+          <div className="overflow-x-auto px-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            <div
+              className="flex w-max min-w-full gap-2"
+              role="tablist"
+              aria-label="טאבים של עמוד העסק"
+            >
+              {TABS.map((tab) => {
+                const isActive = tab === currentTab;
 
-                    return (
-                      <button
-                        key={tab}
-                        type="button"
-                        className={[
-                          "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
-                          isActive
-                            ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
-                            : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
-                        ].join(" ")}
-                        onClick={() => handleTabChange(tab)}
-                        role="tab"
-                        aria-selected={isActive}
-                      >
-                        {TAB_LABELS[tab]}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="mx-auto mt-8 max-w-6xl rounded-[2rem] border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.92)_0%,rgba(245,243,255,0.78)_48%,rgba(239,246,255,0.82)_100%)] p-5 text-center shadow-[0_20px_70px_rgba(79,70,229,0.12)] backdrop-blur-xl sm:p-8">
-                {renderTabContent()}
-              </div>
+                return (
+                  <button
+                    key={tab}
+                    type="button"
+                    className={[
+                      "shrink-0 rounded-xl px-4 py-2.5 text-sm font-black transition sm:px-5 sm:py-3",
+                      isActive
+                        ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_8px_20px_rgba(124,58,237,0.28)]"
+                        : "border border-violet-100 bg-white text-slate-600 shadow-sm hover:bg-violet-50 hover:text-violet-700",
+                    ].join(" ")}
+                    onClick={() => handleTabChange(tab)}
+                    role="tab"
+                    aria-selected={isActive}
+                  >
+                    {TAB_LABELS[tab]}
+                  </button>
+                );
+              })}
             </div>
           </div>
+        </div>
+
+        <div className="overflow-visible rounded-2xl border border-violet-100/70 bg-white/95 p-4 text-right shadow-[0_10px_40px_rgba(79,70,229,0.08)] sm:p-6 lg:p-7">
+          {renderTabContent()}
         </div>
       </section>
     </main>
