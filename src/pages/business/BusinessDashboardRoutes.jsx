@@ -1,8 +1,9 @@
 import React, { useEffect, lazy, Suspense } from "react";
-import { Routes, Route, Navigate, useLocation, useParams } from "react-router-dom";
+import { Routes, Route, Navigate, useLocation, useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getLastDashboardRoute } from "../../utils/dashboardRoutePersistence";
+import { normalizeBusinessId } from "../../utils/notificationNavigation";
 
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
@@ -171,7 +172,36 @@ function DashboardIndexRedirect({ businessId }) {
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const businessId = user?.businessId;
+  const { businessId: urlBusinessId } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const currentBusinessId = normalizeBusinessId(businessId);
+    const routeBusinessId = normalizeBusinessId(urlBusinessId);
+
+    if (!currentBusinessId || !routeBusinessId) return;
+    if (currentBusinessId === routeBusinessId) return;
+
+    navigate(
+      `${location.pathname.replace(
+        `/business/${routeBusinessId}`,
+        `/business/${currentBusinessId}`
+      )}${location.search}`,
+      {
+        replace: true,
+        state: location.state,
+      }
+    );
+  }, [
+    businessId,
+    urlBusinessId,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
 
   useEffect(() => {
     if (!businessId) return;

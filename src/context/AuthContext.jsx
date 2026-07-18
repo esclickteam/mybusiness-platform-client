@@ -10,6 +10,7 @@ import {
   clearLastDashboardRoute,
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
+import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
 
 /* ===========================
    🧩 Normalize User
@@ -557,6 +558,13 @@ export function AuthProvider({ children }) {
           }
 
           sessionStorage.removeItem("postLoginRedirect");
+          return;
+        }
+
+        const pendingNotificationUrl = consumePendingNotificationUrl();
+
+        if (pendingNotificationUrl) {
+          navigate(pendingNotificationUrl, { replace: true });
           return;
         }
 

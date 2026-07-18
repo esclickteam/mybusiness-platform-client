@@ -4,6 +4,12 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
+  normalizeBusinessId,
+  pickNotificationText,
+  rewriteDashboardTargetForBusiness,
+  stashPendingNotificationUrl,
+} from "../utils/notificationNavigation";
+import {
   Bell,
   CheckCheck,
   Clock3,
@@ -121,7 +127,7 @@ export default function FacebookStyleNotifications() {
     notificationsRef.current = notifications;
   }, [notifications]);
 
-  const businessId = user?.businessId || "";
+  const businessId = normalizeBusinessId(user?.businessId);
 
   const seenLeadsKey = businessId
     ? `bizuply_seen_lead_ids_${businessId}`
@@ -326,7 +332,13 @@ export default function FacebookStyleNotifications() {
     const nestedRaw = (item as SystemNotification & { notification?: unknown })
       .notification;
 
-    if (!nestedRaw || typeof nestedRaw !== "object") return item;
+    if (!nestedRaw || typeof nestedRaw !== "object") {
+      return {
+        ...item,
+        text: pickNotificationText(item.text, item.message),
+        message: pickNotificationText(item.message, item.text),
+      };
+    }
 
     const nested =
       typeof (nestedRaw as { toObject?: () => SystemNotification }).toObject ===
@@ -346,8 +358,8 @@ export default function FacebookStyleNotifications() {
         nested.notificationId,
       _id: item._id || nested._id,
       title: item.title || nested.title,
-      text: item.text || item.message || nested.text || nested.message,
-      message: item.message || nested.message,
+      text: pickNotificationText(item.text, nested.text, nested.message, item.message),
+      message: pickNotificationText(nested.message, item.message, nested.text, item.text),
       read: item.read ?? nested.read,
       timestamp:
         item.timestamp ||
@@ -529,19 +541,29 @@ export default function FacebookStyleNotifications() {
     );
   }
 
+  function resolveNotificationPath(targetUrl?: string, conversationId?: string) {
+    if (conversationId) {
+      return getCollabMessagesPath(conversationId);
+    }
+
+    if (!targetUrl) return "";
+
+    return rewriteDashboardTargetForBusiness(targetUrl, businessId);
+  }
+
   function openB2bChatFromNotification(notification: UnifiedNotification) {
     const conversationId = getConversationIdFromNotification(notification);
-    const targetPath = getCollabMessagesPath(conversationId);
+    const targetPath = resolveNotificationPath(notification.targetUrl, conversationId);
+
+    if (!targetPath) return;
 
     const detail = {
       conversationId,
       targetPath,
     };
 
-    sessionStorage.setItem(
-      "bizuply_open_b2b_chat",
-      JSON.stringify(detail)
-    );
+    stashPendingNotificationUrl(targetPath);
+    sessionStorage.setItem("bizuply_open_b2b_chat", JSON.stringify(detail));
 
     window.dispatchEvent(
       new CustomEvent("bizuply:open-b2b-chat", {
@@ -597,7 +619,7 @@ export default function FacebookStyleNotifications() {
       id: getNotificationId(source),
       kind,
       title: source.title || "התראה",
-      text: source.text || source.message || "התראה חדשה",
+      text: pickNotificationText(source.text, source.message),
       timestamp: normalizeDate(source.timestamp || source.createdAt),
       read: Boolean(source.read),
 
@@ -845,7 +867,13 @@ export default function FacebookStyleNotifications() {
     }
 
     if (notification.targetUrl) {
-      navigate(notification.targetUrl);
+      const targetPath = rewriteDashboardTargetForBusiness(
+        notification.targetUrl,
+        businessId
+      );
+
+      stashPendingNotificationUrl(targetPath);
+      navigate(targetPath);
       void markAsRead(notification);
       return;
     }

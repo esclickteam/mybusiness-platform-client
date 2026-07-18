@@ -15,6 +15,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 
 /* Styles */
 import "./styles/index.css";
+import { registerServiceWorkerNotificationBridge } from "./utils/notificationNavigation";
 
 /* ==========================================================
    Types
@@ -127,3 +128,5 @@ if ("serviceWorker" in navigator) {
       .catch((err) => console.error("Service worker registration failed:", err));
   });
 }
+
+registerServiceWorkerNotificationBridge();

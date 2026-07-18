@@ -44,26 +44,31 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = (event.notification.data && event.notification.data.url) || "/";
+  const rawUrl = (event.notification.data && event.notification.data.url) || "/";
+  const absoluteUrl = new URL(rawUrl, self.location.origin).href;
+  const pathUrl = `${new URL(absoluteUrl).pathname}${new URL(absoluteUrl).search}${new URL(absoluteUrl).hash}`;
 
   event.waitUntil(
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then((clientList) => {
-        for (const client of clientList) {
-          if ("focus" in client) {
-            client.focus();
+        if (clientList.length > 0) {
+          for (const client of clientList) {
+            client.postMessage({
+              type: "NOTIFICATION_NAVIGATE",
+              url: pathUrl,
+            });
 
-            if ("navigate" in client && targetUrl) {
-              return client.navigate(targetUrl).catch(() => client);
+            if ("focus" in client) {
+              return client.focus();
             }
-
-            return client;
           }
+
+          return undefined;
         }
 
         if (self.clients.openWindow) {
-          return self.clients.openWindow(targetUrl);
+          return self.clients.openWindow(absoluteUrl);
         }
 
         return undefined;
