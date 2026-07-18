@@ -4040,6 +4040,9 @@ export function useVisualEditorState({
       renderer,
       canvasRef,
 
+      /** Current studio site page — required by VisualEditorCanvas page switching */
+      activePageId,
+
       data,
       setData,
       replaceData,
@@ -4199,6 +4202,7 @@ export function useVisualEditorState({
     [
       businessId,
       renderer,
+      activePageId,
       data,
       setData,
       replaceData,
