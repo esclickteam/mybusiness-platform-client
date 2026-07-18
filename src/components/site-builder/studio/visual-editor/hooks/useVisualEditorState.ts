@@ -243,6 +243,7 @@ function collectMediaTargetIds(
   primaryId: string,
   selectedElement: any,
   node?: HTMLElement | null,
+  visualData?: Record<string, any>,
 ) {
   const ids = new Set<string>();
 
@@ -251,12 +252,28 @@ function collectMediaTargetIds(
     if (clean) ids.add(clean);
   };
 
-  add(primaryId);
+  const directIds = [
+    String(primaryId || "").trim(),
+    String(selectedElement?.id || "").trim(),
+    node instanceof HTMLElement
+      ? String(node.getAttribute("data-visual-edit-id") || "").trim()
+      : "",
+  ].filter(Boolean);
+  const insertedElements = readVisualInsertedElements(visualData || {});
+  const insertedElementId = directIds.find((id) => insertedElements[id]);
 
-  add(String(selectedElement?.id || "").trim());
+  /*
+    אלמנטים שנוספו מספריית הסקשנים מקבלים ID ייחודי. במקרה כזה אסור
+    להוסיף target aliases כלליים כמו data-image-field="image": אותו alias
+    יכול להופיע בכמה סקשנים, ועדכון שלו מחליף תמונות מחוץ לסקשן הנבחר.
+  */
+  if (insertedElementId) {
+    return [insertedElementId];
+  }
+
+  directIds.forEach(add);
 
   if (node instanceof HTMLElement) {
-    add(node.getAttribute("data-visual-edit-id") || "");
     add(
       node.getAttribute("data-image-field") ||
         node.getAttribute("data-field") ||
@@ -1398,15 +1415,15 @@ export function useVisualEditorState({
       };
 
       /*
-        חשוב:
-        לפעמים הכפתור מקבל ID של wrapper ולפעמים ID של האלמנט הפנימי.
-        לכן כותבים גם ל-elementId שנשלח וגם ל-selectedElement.id אם הוא שונה.
-        כך התמונה החדשה לא נשמרת תחת ID לא נכון.
+        בתבניות legacy ייתכן שהכפתור מקבל ID של wrapper או alias של שדה,
+        ולכן אוספים את היעדים האפשריים. באלמנט ספרייה חדש האוסף מחזיר רק
+        את ה-ID הייחודי כדי שהעדכון לא יזלוג לסקשנים אחרים.
       */
       const targetIds = collectMediaTargetIds(
         primaryId,
         selection.selectedElement,
         getSelectedDomNode(selection.selectedElement),
+        dataRef.current || {},
       );
 
       console.log("[BizUply Visual Media] updateImage start", {
