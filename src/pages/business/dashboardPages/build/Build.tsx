@@ -13,6 +13,7 @@ import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "../../../../components/CategoryAutocomplete";
 import ReviewCard from "@/components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
+import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -1041,6 +1042,7 @@ export default function Build() {
                 />
               </div>
 
+              <div className="md:col-span-2 grid grid-cols-2 gap-5">
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
                   טלפון
@@ -1090,6 +1092,7 @@ export default function Build() {
                   dir="ltr"
                   className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
+              </div>
               </div>
 
               <div>
@@ -1356,42 +1359,75 @@ export default function Build() {
     }
 
     if (currentTab === "Reviews") {
-      return (
-        <div dir="rtl" className="mx-auto max-w-4xl space-y-5 text-right">
-          <div>
-            <h2 className="text-2xl font-black text-slate-950">
-              ביקורות לקוחות
-            </h2>
+      const publicReviewsUrl = businessDetails._id
+        ? `/business/${businessDetails._id}?tab=reviews`
+        : "";
 
-            <p className="mt-1 text-sm text-slate-500">
-              כאן מוצגות הביקורות שהלקוחות השאירו לעסק · {reviewsCount} ביקורות
+      return (
+        <div dir="rtl" className="mx-auto max-w-3xl space-y-6 text-right">
+          <div>
+            <h2 className="text-2xl font-black text-slate-950">ביקורות לקוחות</h2>
+
+            <p className="mt-2 text-sm leading-7 text-slate-600">
+              הביקורות נכתבות על ידי לקוחות העסק ואינן נערכות מכאן. כל ביקורת
+              מדורגת לפי פרמטרים מוגדרים, וניתן לצפות בהן עם פירוט מלא בעמוד
+              הציבורי.
+              {reviewsCount > 0 ? ` (${reviewsCount} ביקורות)` : ""}
             </p>
           </div>
 
-          {sortedReviews.length ? (
-            <div className="grid justify-center gap-4 lg:grid-cols-2">
-              {sortedReviews.map((review, index) => {
-                const reviewId = String(review._id || review.id || "");
+          <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)] sm:p-6">
+            <h3 className="text-lg font-black text-slate-950">פרמטרי דירוג</h3>
 
-                return (
-                  <ReviewCard
-                    key={review._id || review.id || index}
-                    review={review}
-                    reviewDomId={reviewId ? `review-${reviewId}` : undefined}
-                    highlighted={
-                      Boolean(reviewId) && reviewId === highlightedReviewId
-                    }
-                  />
-                );
-              })}
-            </div>
-          ) : (
-            <EditorEmptyState
-              icon="⭐"
-              title="עדיין אין ביקורות"
-              text="ביקורות חדשות יופיעו כאן."
-            />
-          )}
+            <p className="mt-2 text-sm leading-7 text-slate-600">
+              לקוחות מדרגים את העסק לפי הפרמטרים הבאים. פרמטרים מסומנים כחובה
+              נדרשים בכל ביקורת:
+            </p>
+
+            <ul className="mt-4 space-y-2">
+              {REVIEW_RATING_PARAMETER_DEFINITIONS.map((parameter) => (
+                <li
+                  key={parameter.label}
+                  className="flex items-center justify-between gap-3 rounded-xl border border-violet-100/80 bg-white/90 px-4 py-3 text-sm"
+                >
+                  <span className="font-black text-slate-800">
+                    {parameter.label}
+                  </span>
+
+                  <span
+                    className={[
+                      "shrink-0 rounded-full px-2.5 py-1 text-[11px] font-black",
+                      parameter.required
+                        ? "bg-violet-100 text-violet-700"
+                        : "bg-slate-100 text-slate-500",
+                    ].join(" ")}
+                  >
+                    {parameter.required ? "חובה" : "אופציונלי"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+
+            <p className="mt-5 text-sm leading-7 text-slate-500">
+              לצפייה בביקורות ובפירוט הדירוגים של כל לקוח, עברו לעמוד הציבורי
+              בטאב ביקורות.
+            </p>
+
+            {publicReviewsUrl ? (
+              <a
+                href={publicReviewsUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 sm:w-auto"
+              >
+                צפייה בביקורות בעמוד הציבורי
+              </a>
+            ) : (
+              <p className="mt-4 text-sm font-bold text-slate-400">
+                שמרו את העסק כדי לקבל קישור לעמוד הציבורי.
+              </p>
+            )}
+          </div>
         </div>
       );
     }

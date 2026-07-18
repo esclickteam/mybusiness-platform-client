@@ -189,3 +189,13 @@ export function getReviewRatingLabel(average: number) {
   if (average >= 3) return "טוב";
   return "דורש שיפור";
 }
+
+export const REVIEW_RATING_PARAMETER_DEFINITIONS = [
+  { label: "חוויה כללית", required: true },
+  { label: "איכות השירות", required: true },
+  { label: "מקצועיות", required: true },
+  { label: "עמידה בזמנים", required: false },
+  { label: "זמינות", required: false },
+  { label: "תמורה למחיר", required: false },
+  { label: "השגת מטרה", required: false },
+] as const;

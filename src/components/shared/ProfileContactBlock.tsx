@@ -40,55 +40,61 @@ export default function ProfileContactBlock({
   return (
     <>
       {(showPhone || showEmail) && (
-        <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-stretch justify-center gap-3">
+        <div className="mx-auto mt-6 grid w-full max-w-3xl grid-cols-2 gap-3">
           {showPhone && (
-            <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
-              <div className="flex items-center justify-center gap-3">
-                <span
-                  className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                  style={{ animationDelay: "0s" }}
-                  aria-hidden
-                >
-                  <FaPhoneAlt size={18} />
-                </span>
+            <div className="profile-contact-card group w-full min-w-0 rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-3 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:p-4">
+                    <div className="flex items-center justify-center gap-2 sm:gap-3">
+                      <span
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
+                        style={{ animationDelay: "0s" }}
+                        aria-hidden
+                      >
+                        <FaPhoneAlt size={16} className="sm:hidden" />
+                        <FaPhoneAlt size={18} className="hidden sm:block" />
+                      </span>
 
-                <div className="min-w-0 text-right">
-                  <p className="text-xs font-black text-slate-400">טלפון</p>
+                      <div className="min-w-0 flex-1 text-right">
+                        <p className="text-[11px] font-black text-slate-400 sm:text-xs">
+                          טלפון
+                        </p>
 
-                  <p
-                    dir="ltr"
-                    className="mt-1 text-lg font-black text-slate-950"
-                  >
-                    {phoneValue}
-                  </p>
-                </div>
-              </div>
-            </div>
+                        <p
+                          dir="ltr"
+                          className="mt-0.5 text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                        >
+                          {phoneValue}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
           )}
 
           {showEmail && (
-            <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
-              <div className="flex items-center justify-center gap-3">
-                <span
-                  className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                  style={{ animationDelay: "0.35s" }}
-                  aria-hidden
-                >
-                  <FaEnvelope size={18} />
-                </span>
+            <div className="profile-contact-card group w-full min-w-0 rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-3 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:p-4">
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
+                      <span
+                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
+                        style={{ animationDelay: "0.35s" }}
+                        aria-hidden
+                      >
+                        <FaEnvelope size={16} className="sm:hidden" />
+                        <FaEnvelope size={18} className="hidden sm:block" />
+                      </span>
 
-                <div className="min-w-0 text-right">
-                  <p className="text-xs font-black text-slate-400">אימייל</p>
+                      <div className="min-w-0 flex-1 text-right">
+                        <p className="text-[11px] font-black text-slate-400 sm:text-xs">
+                          אימייל
+                        </p>
 
-                  <p
-                    dir="ltr"
-                    className="mt-1 truncate text-lg font-black text-slate-950"
-                  >
-                    {emailValue}
-                  </p>
-                </div>
-              </div>
-            </div>
+                        <p
+                          dir="ltr"
+                          className="mt-0.5 truncate text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                        >
+                          {emailValue}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
           )}
         </div>
       )}
