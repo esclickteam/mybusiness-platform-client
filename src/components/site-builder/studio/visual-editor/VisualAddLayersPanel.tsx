@@ -12,10 +12,12 @@ import {
   useSensor,
   useSensors,
   type DragEndEvent,
+  type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
 import {
   SortableContext,
+  arrayMove,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -156,6 +158,7 @@ function SortableSectionRow({
   } = useSortable({
     id: item.key,
     disabled: item.pinned,
+    animateLayoutChanges: () => false,
   });
 
   return (
@@ -163,11 +166,10 @@ function SortableSectionRow({
       ref={setNodeRef}
       style={{
         transform: CSS.Transform.toString(transform),
-        transition:
-          transition ||
-          "transform 180ms cubic-bezier(0.2, 0, 0, 1)",
-        opacity: isDragging ? 0.35 : 1,
+        transition: isDragging ? undefined : transition,
+        opacity: isDragging ? 0.25 : 1,
         zIndex: isDragging ? 20 : 1,
+        willChange: isDragging ? "transform" : undefined,
       }}
       className={[
         "flex items-center gap-2 rounded-2xl border px-2 py-2",
@@ -175,12 +177,13 @@ function SortableSectionRow({
           ? "border-violet-400 bg-violet-50 shadow-sm"
           : "border-slate-200 bg-white",
         item.pinned ? "opacity-80" : "",
+        isDragging ? "shadow-lg ring-2 ring-violet-300" : "",
       ].join(" ")}
     >
       <button
         type="button"
         className={[
-          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl touch-none",
           item.pinned
             ? "cursor-default text-slate-300"
             : "cursor-grab text-slate-400 hover:bg-slate-100 hover:text-violet-600 active:cursor-grabbing",
@@ -412,9 +415,12 @@ export default function VisualAddLayersPanel({
   const [addTab, setAddTab] = useState<AddPanelTab>("sections");
   const sectionSensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 },
+      activationConstraint: { distance: 3 },
     }),
   );
+  const isSectionDraggingRef = useRef(false);
+  const sectionsRef = useRef<SectionItem[]>([]);
+  sectionsRef.current = sections;
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
   const [sectionCategory, setSectionCategory] =
@@ -494,8 +500,10 @@ export default function VisualAddLayersPanel({
 
     refreshLayers();
 
-    const timer =
-      window.setInterval(refreshLayers, 700);
+    const timer = window.setInterval(() => {
+      if (isSectionDraggingRef.current) return;
+      refreshLayers();
+    }, 1200);
 
     return () => window.clearInterval(timer);
   }, [
@@ -518,24 +526,48 @@ export default function VisualAddLayersPanel({
   );
 
   const handleSectionDragStart = (event: DragStartEvent) => {
+    isSectionDraggingRef.current = true;
     setActiveSectionId(String(event.active.id || ""));
   };
 
-  const handleSectionDragEnd = (event: DragEndEvent) => {
+  const handleSectionDragOver = (event: DragOverEvent) => {
     const activeId = String(event.active.id || "");
     const overId = String(event.over?.id || "");
-    setActiveSectionId(null);
-
     if (!activeId || !overId || activeId === overId) return;
 
-    const activeItem = sections.find((item) => item.key === activeId);
-    const overItem = sections.find((item) => item.key === overId);
+    setSections((current) => {
+      const from = current.findIndex((item) => item.key === activeId);
+      const to = current.findIndex((item) => item.key === overId);
 
-    if (activeItem?.pinned || overItem?.pinned) return;
+      if (
+        from < 0 ||
+        to < 0 ||
+        current[from]?.pinned ||
+        current[to]?.pinned
+      ) {
+        return current;
+      }
 
-    editor?.reorderSections?.(activeId, overId);
+      if (from === to) return current;
+      return arrayMove(current, from, to);
+    });
+  };
 
-    window.setTimeout(refreshLayers, 40);
+  const handleSectionDragEnd = (_event: DragEndEvent) => {
+    isSectionDraggingRef.current = false;
+    setActiveSectionId(null);
+
+    const orderedKeys = sectionsRef.current
+      .filter((item) => !item.pinned)
+      .map((item) => item.key);
+
+    if (orderedKeys.length) {
+      editor?.applySectionOrder?.(orderedKeys);
+    }
+
+    window.setTimeout(() => {
+      if (!isSectionDraggingRef.current) refreshLayers();
+    }, 80);
   };
 
   useEffect(() => {
@@ -1579,14 +1611,19 @@ export default function VisualAddLayersPanel({
                       sensors={sectionSensors}
                       collisionDetection={closestCenter}
                       onDragStart={handleSectionDragStart}
+                      onDragOver={handleSectionDragOver}
                       onDragEnd={handleSectionDragEnd}
-                      onDragCancel={() => setActiveSectionId(null)}
+                      onDragCancel={() => {
+                        isSectionDraggingRef.current = false;
+                        setActiveSectionId(null);
+                        refreshLayers();
+                      }}
                     >
                       <SortableContext
                         items={sortableSectionIds}
                         strategy={verticalListSortingStrategy}
                       >
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                           {sections.map((item) => {
                             const active =
                               item.elementId ===
@@ -1609,12 +1646,14 @@ export default function VisualAddLayersPanel({
                         </div>
                       </SortableContext>
 
-                      <DragOverlay dropAnimation={{
-                        duration: 180,
-                        easing: "cubic-bezier(0.2, 0, 0, 1)",
-                      }}>
+                      <DragOverlay
+                        dropAnimation={{
+                          duration: 120,
+                          easing: "cubic-bezier(0.2, 0, 0, 1)",
+                        }}
+                      >
                         {activeSection ? (
-                          <div className="flex items-center gap-2 rounded-2xl border border-violet-400 bg-white px-3 py-2.5 shadow-xl">
+                          <div className="flex items-center gap-2 rounded-2xl border border-violet-400 bg-white px-3 py-2.5 shadow-2xl scale-[1.03]">
                             <GripVertical className="h-4 w-4 text-violet-600" />
                             <span className="text-sm font-black text-slate-900">
                               {activeSection.label}

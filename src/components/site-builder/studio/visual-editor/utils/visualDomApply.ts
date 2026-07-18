@@ -930,14 +930,24 @@ function createEditorMediaPreview(
   preview.setAttribute("data-visual-media-type", type);
   preview.setAttribute("data-resource-type", type);
   preview.setAttribute("aria-label", alt || "מדיה");
+  preview.setAttribute("draggable", "false");
   preview.removeAttribute("aria-hidden");
+
+  if (
+    preview instanceof HTMLImageElement ||
+    preview instanceof HTMLVideoElement
+  ) {
+    preview.draggable = false;
+  }
 
   preview.style.position = "absolute";
   preview.style.inset = "auto";
   preview.style.margin = "0";
   preview.style.padding = "0";
   preview.style.pointerEvents = "auto";
-  preview.style.cursor = "pointer";
+  preview.style.cursor = "grab";
+  preview.style.setProperty("-webkit-user-drag", "none");
+  preview.style.userSelect = "none";
   preview.style.display = "block";
   preview.style.maxWidth = "none";
   preview.style.maxHeight = "none";

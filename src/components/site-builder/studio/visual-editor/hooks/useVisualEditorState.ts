@@ -79,6 +79,7 @@ import {
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom } from "../utils/visualDomApply";
 import {
+  applyVisualSectionOrderToDom,
   buildNextSectionOrder,
   collectVisualSectionItems,
   moveSectionKey,
@@ -3137,6 +3138,12 @@ export function useVisualEditorState({
 
       if (!order.length) return false;
 
+      /*
+        קודם מזיזים ב-DOM (תחושה מיידית כמו Wix),
+        ורק אחר כך שומרים ל-state — בלי applyAllVisualDataToDom הכבד.
+      */
+      applyVisualSectionOrderToDom(root, { [pageId]: order }, pageId);
+
       setData((current) => {
         const next = writeVisualSectionOrder(
           current || {},
@@ -3145,13 +3152,6 @@ export function useVisualEditorState({
         );
         dataRef.current = next;
         return next;
-      });
-
-      window.requestAnimationFrame(() => {
-        applyAllVisualDataToDom(
-          canvasRef.current,
-          dataRef.current || {},
-        );
       });
 
       return true;

@@ -383,3 +383,89 @@ export function moveSectionKey(
   next.splice(target, 0, moved);
   return next;
 }
+
+export function reorderVisualSectionItems(
+  items: VisualSectionItem[],
+  activeId: string,
+  overId: string,
+) {
+  const activeKey = normalizeKey(activeId);
+  const overKey = normalizeKey(overId);
+  if (!activeKey || !overKey || activeKey === overKey) return items;
+
+  const from = items.findIndex((item) => item.key === activeKey);
+  const to = items.findIndex((item) => item.key === overKey);
+
+  if (from < 0 || to < 0 || items[from]?.pinned || items[to]?.pinned) {
+    return items;
+  }
+
+  const next = [...items];
+  const [moved] = next.splice(from, 1);
+  next.splice(to, 0, moved);
+  return next;
+}
+
+const DOM_APPLIED_VISUAL_KEYS = new Set([
+  "__sectionOrder",
+  "__layout",
+  "__styles",
+  "__attributes",
+  "__responsive",
+  "__lockedElements",
+  "__hiddenElements",
+  "__animations",
+]);
+
+function collectChangedDomAppliedKeys(
+  previous: Record<string, any>,
+  next: Record<string, any>,
+) {
+  const allKeys = new Set([
+    ...Object.keys(previous),
+    ...Object.keys(next),
+  ]);
+  const changedDomKeys: string[] = [];
+
+  for (const key of allKeys) {
+    if (previous[key] === next[key]) continue;
+
+    if (DOM_APPLIED_VISUAL_KEYS.has(key)) {
+      changedDomKeys.push(key);
+      continue;
+    }
+
+    return null;
+  }
+
+  return changedDomKeys;
+}
+
+/** True when the only data diff is `__sectionOrder` (same object refs elsewhere). */
+export function didOnlyVisualSectionOrderChange(
+  previous: Record<string, any> | null | undefined,
+  next: Record<string, any> | null | undefined,
+) {
+  if (!previous || !next || previous === next) return false;
+
+  const changed = collectChangedDomAppliedKeys(previous, next);
+  return Boolean(
+    changed &&
+      changed.length === 1 &&
+      changed[0] === "__sectionOrder",
+  );
+}
+
+/**
+ * True when only DOM-applied visual maps changed (layout/styles/order/...).
+ * In that case we can patch the live DOM without remounting the React template.
+ */
+export function didOnlyDomAppliedVisualKeysChange(
+  previous: Record<string, any> | null | undefined,
+  next: Record<string, any> | null | undefined,
+) {
+  if (!previous || !next || previous === next) return false;
+
+  const changed = collectChangedDomAppliedKeys(previous, next);
+  return Boolean(changed && changed.length > 0);
+}
