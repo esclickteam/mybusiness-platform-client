@@ -85,7 +85,15 @@ function getClientName(review: Review) {
     return review.client.name || review.client.fullName || "לקוח אנונימי";
   }
 
-  return review.userName || review.user || review.name || "לקוח אנונימי";
+  const record = review as Review & { clientName?: string };
+
+  return (
+    record.clientName ||
+    review.userName ||
+    review.user ||
+    review.name ||
+    "לקוח אנונימי"
+  );
 }
 
 function getReviewText(review: Review) {
