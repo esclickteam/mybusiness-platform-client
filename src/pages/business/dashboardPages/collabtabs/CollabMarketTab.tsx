@@ -15,9 +15,11 @@ import {
   Handshake,
   Loader2,
   Megaphone,
+  MessageCircle,
   Phone,
   Plus,
   Search,
+  Send,
   Sparkles,
   Tags,
   Target,
@@ -345,6 +347,8 @@ export default function CollabMarketTab() {
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [search, setSearch] = useState("");
+  const [myBusinessId, setMyBusinessId] = useState<string | null>(null);
+  const [chatLoadingId, setChatLoadingId] = useState<string | null>(null);
 
   const navigate = useNavigate();
 
@@ -352,8 +356,13 @@ export default function CollabMarketTab() {
     try {
       setLoading(true);
 
-      const res = await API.get("/collaboration-market");
-      setCollabMarket(res.data.collabs || []);
+      const [marketRes, myRes] = await Promise.all([
+        API.get("/collaboration-market"),
+        API.get("/business/my").catch(() => ({ data: {} })),
+      ]);
+
+      setCollabMarket(marketRes.data.collabs || []);
+      setMyBusinessId(myRes.data?.business?._id || null);
     } catch (error) {
       console.error("Failed loading collaboration market:", error);
       setCollabMarket([]);
@@ -399,6 +408,46 @@ export default function CollabMarketTab() {
       return sum + (item.needs?.length || 0) + (item.offers?.length || 0);
     }, 0);
   }, [collabMarket]);
+
+  const handleSendProposal = useCallback(
+    (item: CollabMarketItem) => {
+      if (!item.fromBusinessId) return;
+
+      navigate(`/business-profile/${item.fromBusinessId}`, {
+        state: { openProposal: true },
+      });
+    },
+    [navigate]
+  );
+
+  const handleStartChat = useCallback(
+    async (item: CollabMarketItem) => {
+      if (!item.fromBusinessId || !myBusinessId) return;
+
+      setChatLoadingId(item._id);
+
+      try {
+        const res = await API.post("/business-chat/start", {
+          otherBusinessId: item.fromBusinessId,
+          text: `שלום, ראיתי את הפרסום "${item.title || "שיתוף פעולה"}" ואשמח לדבר.`,
+        });
+
+        const conversationId = res.data?.conversationId;
+
+        if (conversationId) {
+          navigate(
+            `/business/${myBusinessId}/dashboard/collab/messages?tab=chat&conversationId=${conversationId}`
+          );
+        }
+      } catch (chatError) {
+        console.error("Failed to start chat:", chatError);
+        alert("לא הצלחנו להתחיל שיחה. נסו שוב.");
+      } finally {
+        setChatLoadingId(null);
+      }
+    },
+    [myBusinessId, navigate]
+  );
 
   return (
     <div dir="rtl" className="space-y-6 text-right">
@@ -514,11 +563,14 @@ export default function CollabMarketTab() {
               <CollabCard
                 key={item._id}
                 item={item}
+                chatLoading={chatLoadingId === item._id}
                 onViewProfile={() => {
                   if (item.fromBusinessId) {
                     navigate(`/business-profile/${item.fromBusinessId}`);
                   }
                 }}
+                onSendProposal={() => handleSendProposal(item)}
+                onStartChat={() => handleStartChat(item)}
               />
             ))}
           </div>
@@ -548,9 +600,15 @@ export default function CollabMarketTab() {
 function CollabCard({
   item,
   onViewProfile,
+  onSendProposal,
+  onStartChat,
+  chatLoading,
 }: {
   item: CollabMarketItem;
   onViewProfile: () => void;
+  onSendProposal: () => void;
+  onStartChat: () => void;
+  chatLoading?: boolean;
 }) {
   const needs = item.needs || [];
   const offers = item.offers || [];
@@ -620,15 +678,43 @@ function CollabCard({
           />
         </div>
 
-        <button
-          type="button"
-          onClick={onViewProfile}
-          disabled={!item.fromBusinessId}
-          className="mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Eye className="h-5 w-5" />
-          צפייה בפרופיל
-        </button>
+        <div className="mt-5 space-y-2">
+          <button
+            type="button"
+            onClick={onSendProposal}
+            disabled={!item.fromBusinessId}
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Send className="h-5 w-5" />
+            הגש הצעה
+          </button>
+
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              type="button"
+              onClick={onStartChat}
+              disabled={!item.fromBusinessId || chatLoading}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-3 text-sm font-black text-sky-800 transition hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {chatLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MessageCircle className="h-4 w-4" />
+              )}
+              צ׳אט
+            </button>
+
+            <button
+              type="button"
+              onClick={onViewProfile}
+              disabled={!item.fromBusinessId}
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <Eye className="h-5 w-5" />
+              פרופיל
+            </button>
+          </div>
+        </div>
       </div>
     </article>
   );

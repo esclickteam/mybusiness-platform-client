@@ -62,7 +62,7 @@ export default function Collab() {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [socket, setSocket] = useState<Socket | null>(null);
 
-  const devMode = true;
+  const devMode = false;
   const isDevUser = user?.email === "newuser@example.com";
   const hasCollabAccess =
     isDevUser || Boolean(user?.subscriptionPlan?.includes("collaboration"));
