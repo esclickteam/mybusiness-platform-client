@@ -68,8 +68,8 @@ export type ServoraData = {
 export const servoraPages = [
   { id: "home", title: "ראשי", slug: "/" },
   { id: "services", title: "שירותים", slug: "/services" },
-  { id: "pricing", title: "מחירים", slug: "/pricing" },
   { id: "gallery", title: "עבודות", slug: "/gallery" },
+  { id: "pricing", title: "מחירים", slug: "/pricing" },
   { id: "contact", title: "צור קשר", slug: "/contact" },
 ] as const;
 
@@ -1445,8 +1445,8 @@ export const servoraSeed = {
     pages: [
       { id: "home", title: "ראשי", slug: "", type: "home", isHome: true, html: createServoraEditorHtml("home"), css: servoraEditorCss },
       { id: "services", title: "שירותים", slug: "services", type: "service", html: createServoraEditorHtml("services"), css: servoraEditorCss },
-      { id: "pricing", title: "מחירים", slug: "pricing", type: "pricing", html: createServoraEditorHtml("pricing"), css: servoraEditorCss },
       { id: "gallery", title: "עבודות", slug: "gallery", type: "gallery", html: createServoraEditorHtml("gallery"), css: servoraEditorCss },
+      { id: "pricing", title: "מחירים", slug: "pricing", type: "pricing", html: createServoraEditorHtml("pricing"), css: servoraEditorCss },
       { id: "contact", title: "צור קשר", slug: "contact", type: "contact", html: createServoraEditorHtml("contact"), css: servoraEditorCss },
     ],
   },

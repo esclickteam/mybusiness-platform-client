@@ -27,6 +27,7 @@ import {
 import SitePageCardPreview, {
   type VisualSitePageItem,
 } from "./SitePageCardPreview";
+import { sortSitePagesByHeaderNavOrder } from "./utils/syncNavWithSitePages";
 
 export type { VisualSitePageItem };
 
@@ -57,6 +58,7 @@ type VisualSitePagesPanelProps = {
   ) => void;
   PageComponent?: ComponentType<any> | null;
   pageData?: Record<string, any> | null;
+  templatePages?: Array<{ id?: string; slug?: string }> | null;
   editorCss?: string;
 };
 
@@ -208,6 +210,7 @@ export default function VisualSitePagesPanel({
   onPageAction,
   PageComponent = null,
   pageData = null,
+  templatePages = null,
   editorCss = "",
 }: VisualSitePagesPanelProps) {
   const [menuPageId, setMenuPageId] = useState("");
@@ -216,12 +219,17 @@ export default function VisualSitePagesPanel({
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const sortedPages = useMemo(() => {
-    return [...pages].sort((a, b) => {
-      if (a.isHome && !b.isHome) return -1;
-      if (!a.isHome && b.isHome) return 1;
-      return String(a.title || "").localeCompare(String(b.title || ""), "he");
+    const data = pageData && typeof pageData === "object" ? pageData : {};
+    return sortSitePagesByHeaderNavOrder(pages, {
+      nav: Array.isArray(data.nav) ? data.nav : null,
+      navigation: Array.isArray(data.navigation) ? data.navigation : null,
+      templatePages: Array.isArray(templatePages)
+        ? templatePages
+        : Array.isArray((data as any).__templatePages)
+          ? (data as any).__templatePages
+          : null,
     });
-  }, [pages]);
+  }, [pages, pageData, templatePages]);
 
   const menuPage = sortedPages.find((page) => page.id === menuPageId) || null;
 

@@ -634,6 +634,13 @@ export default function VisualEditorShell({
               (editor as any).renderer?.defaultData ||
               null
             }
+            templatePages={
+              Array.isArray((editor as any).renderer?.pages)
+                ? (editor as any).renderer.pages
+                : Array.isArray((editor as any).renderer?.defaultData?.pages)
+                  ? (editor as any).renderer.defaultData.pages
+                  : null
+            }
             editorCss={String((editor as any).renderer?.editorCss || "")}
             onClose={() => setSidePanelMode(null)}
             onSelectPage={(pageId) => {

@@ -709,6 +709,78 @@ function pruneNavContentBeyondLength(
   return next;
 }
 
+/**
+ * Site Pages panel order follows the header menu order (home first, then nav).
+ */
+export function sortSitePagesByHeaderNavOrder<
+  T extends {
+    id?: string;
+    slug?: string;
+    title?: string;
+    name?: string;
+    isHome?: boolean;
+  },
+>(
+  pages: T[] | null | undefined,
+  options?: {
+    nav?: TemplateNavItem[] | null;
+    navigation?: TemplateNavItem[] | null;
+    templatePages?: Array<{ id?: string; slug?: string }> | null;
+  },
+): T[] {
+  const list = Array.isArray(pages) ? [...pages] : [];
+  if (list.length < 2) return list;
+
+  const orderKeys: string[] = [];
+  const seen = new Set<string>();
+
+  const pushKey = (value: unknown) => {
+    const key = normalizeKey(value);
+    if (!key || isHomeKey(key) || seen.has(key)) return;
+    seen.add(key);
+    orderKeys.push(key);
+  };
+
+  const navItems = [
+    ...(Array.isArray(options?.nav) ? options!.nav! : []),
+    ...(Array.isArray(options?.navigation) ? options!.navigation! : []),
+  ];
+
+  navItems.forEach((item) => {
+    pushKey(
+      item?.__sitePageId || item?.page || item?.pageId || item?.id || item?.href,
+    );
+  });
+
+  (Array.isArray(options?.templatePages) ? options!.templatePages! : []).forEach(
+    (page) => {
+      pushKey(page?.id || page?.slug);
+    },
+  );
+
+  const rankOf = (page: T) => {
+    if (page.isHome || isHomeKey(normalizeKey(page.id))) return -1000;
+
+    const id = normalizeKey(page.id);
+    const slug = normalizeKey(page.slug);
+    const index = orderKeys.findIndex((key) => key === id || key === slug);
+    if (index >= 0) return index;
+
+    return 10_000;
+  };
+
+  return list.sort((a, b) => {
+    const rankA = rankOf(a);
+    const rankB = rankOf(b);
+    if (rankA !== rankB) return rankA - rankB;
+
+    return String(a.title || a.name || "").localeCompare(
+      String(b.title || b.name || ""),
+      "he",
+    );
+  });
+}
+
 export function didSitePageNavSyncChange(
   previous: Record<string, any> | null | undefined,
   next: Record<string, any> | null | undefined,
