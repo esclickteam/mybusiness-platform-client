@@ -1431,10 +1431,61 @@ export default function PublicVisualSiteRenderer({
 
   useLayoutEffect(() => {
     const root = rootRef.current;
-
-    applyPublicVisualData(root, visualData);
-
     if (!root) return undefined;
+
+    root.setAttribute("data-visual-page-id", pageId || "home");
+
+    let applyScheduled = false;
+    let applying = false;
+
+    const applyVisual = () => {
+      if (applying) return;
+      applying = true;
+      try {
+        applyPublicVisualData(root, visualData);
+      } finally {
+        applying = false;
+      }
+    };
+
+    applyVisual();
+
+    /*
+      תבניות כמו Justora מחליפות את עץ ה-DOM בניווט פנימי (בית/אודות...).
+      בלי re-apply, סקשנים שהוכנסו מהעורך נמחקים אחרי לחיצה על כפתור/לינק.
+    */
+    const templateRoot =
+      root.querySelector("[data-template-id]") ||
+      root.querySelector('[data-bizuply-template-fallback="true"]');
+
+    const scheduleApply = () => {
+      if (applyScheduled) return;
+      applyScheduled = true;
+      window.requestAnimationFrame(() => {
+        applyScheduled = false;
+        applyVisual();
+      });
+    };
+
+    const mutationObserver =
+      templateRoot && typeof MutationObserver !== "undefined"
+        ? new MutationObserver((mutations) => {
+            if (applying) return;
+
+            const pageChanged = mutations.some(
+              (mutation) =>
+                mutation.type === "attributes" &&
+                mutation.attributeName === "data-template-page-id",
+            );
+
+            if (pageChanged) scheduleApply();
+          })
+        : null;
+
+    mutationObserver?.observe(templateRoot, {
+      attributes: true,
+      attributeFilter: ["data-template-page-id"],
+    });
 
     const handleClick = (event) => {
       if (
@@ -1500,10 +1551,14 @@ export default function PublicVisualSiteRenderer({
       selectedHtmlLength: htmlResult.html.length,
       selectedHtmlScore: htmlResult.score,
       visualDataKeys: Object.keys(visualData || {}),
+      insertedSections: Object.keys(
+        asPlainObject(visualData?.__insertedSections),
+      ).length,
       candidates: htmlResult.candidates,
     });
 
     return () => {
+      mutationObserver?.disconnect();
       root.removeEventListener("click", handleClick);
       root.removeEventListener("keydown", handleKeyDown);
     };
@@ -1515,6 +1570,7 @@ export default function PublicVisualSiteRenderer({
     visualData,
     TemplateComponent,
     preferTemplateRender,
+    pageId,
   ]);
 
   if (hasSavedHtml && !preferTemplateRender) {

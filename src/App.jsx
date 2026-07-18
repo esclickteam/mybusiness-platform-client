@@ -287,6 +287,9 @@ function PublicMiniSitePage() {
 
   useEffect(() => {
     const handlePublicSiteClick = (event) => {
+      // Template SPA handlers (Justora etc.) already handled this click.
+      if (event.defaultPrevented) return;
+
       const target = event.target;
 
       if (!target) return;

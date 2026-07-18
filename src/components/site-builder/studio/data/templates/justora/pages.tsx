@@ -106,19 +106,12 @@ function getCaseFromUrl(data: Record<string, any>) {
 }
 
 function shouldUseNativeJustoraNavigation() {
-  if (typeof window === "undefined") return false;
-
-  const { hostname, pathname } = window.location;
-
-  const isDashboardEditor =
-    pathname.includes("/dashboard/website") || pathname.includes("/business/");
-
-  const isPublishedDomain =
-    hostname.includes(".sites.bizuply.com") ||
-    hostname.endsWith("sites.bizuply.com") ||
-    (!hostname.includes("localhost") && !hostname.includes("bizuply.com"));
-
-  return isPublishedDomain && !isDashboardEditor;
+  /*
+    תמיד ניווט SPA פנימי של התבנית (preventDefault + goTo).
+    ניווט native באתר הציבורי גרם ל-App לטעון מחדש את האתר, React מחק
+    סקשנים שהוכנסו מהעורך, והדף "קפץ" לתוכן אחר (למשל אודות/קביעת פגישה).
+  */
+  return false;
 }
 
 

@@ -2202,14 +2202,34 @@ export function getBestVisualNodeForSelectionById(
 }
 
 
+function getFirstContentElement(root: HTMLElement) {
+  for (const child of Array.from(root.children)) {
+    if (!(child instanceof HTMLElement)) continue;
+
+    const tag = child.tagName.toLowerCase();
+    if (tag === "style" || tag === "script" || tag === "link" || tag === "noscript") {
+      continue;
+    }
+
+    return child;
+  }
+
+  return root;
+}
+
 function getVisualRuntimeRoot(root: HTMLElement) {
+  /*
+    באתר הציבורי השורש עוטף <style> + template.
+    אסור לשייך סקשנים שהוכנסו ל-<style> או לעטיפה החיצונית —
+    רק לעץ התבנית עצמו (כמו בעורך).
+  */
   return (
     root.querySelector<HTMLElement>('[data-bizuply-site="true"]') ||
     root.querySelector<HTMLElement>('[data-studio-page="true"]') ||
+    root.querySelector<HTMLElement>("[data-template-id]") ||
+    root.querySelector<HTMLElement>('[data-bizuply-template-fallback="true"]') ||
     root.querySelector<HTMLElement>("main") ||
-    (root.firstElementChild instanceof HTMLElement
-      ? root.firstElementChild
-      : root)
+    getFirstContentElement(root)
   );
 }
 
