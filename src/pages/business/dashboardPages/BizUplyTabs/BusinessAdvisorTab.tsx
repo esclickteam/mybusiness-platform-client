@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
 import {
@@ -22,10 +23,23 @@ import {
   Plus,
   RefreshCw,
   Search,
+  Sparkles,
   Target,
   TrendingUp,
   Users,
 } from "lucide-react";
+import {
+  AdvisorActionsPanel,
+  AdvisorExecutedStrip,
+  AdvisorThinkingLoader,
+  CAPABILITY_PILLS,
+  getActionMeta,
+  stripExecutedSummaryFromAnswer,
+  WhatsAppPreparedCard,
+  type AdvisorAction,
+  type ExecutedAction,
+  type WhatsAppPrepared,
+} from "./AdvisorUxParts";
 
 type ChatRole = "assistant" | "user";
 
@@ -43,6 +57,23 @@ type AdvisorMode =
 type ChatMessage = {
   role: ChatRole;
   content: string;
+  actions?: AdvisorAction[];
+  executedActions?: ExecutedAction[];
+  whatsappPrepared?: WhatsAppPrepared;
+};
+
+type ActionResponse = {
+  success?: boolean;
+  message?: string;
+  navigateTo?: string | null;
+  whatsappUrl?: string | null;
+  result?: {
+    content?: string;
+    phone?: string;
+    whatsappUrl?: string;
+    ownerSendsManually?: boolean;
+  };
+  error?: string;
 };
 
 type BusinessAdvisorTabProps = {
@@ -65,6 +96,9 @@ type AdvisorResponse = {
   charged?: boolean;
   answer?: string;
   answerStyle?: "short" | "medium" | "full";
+  actions?: AdvisorAction[];
+  executedActions?: ExecutedAction[];
+  agentMode?: boolean;
   conversation?: {
     id: string;
     dateKey: string;
@@ -250,8 +284,14 @@ export default function BusinessAdvisorTab({
   userId,
   businessDetails,
 }: BusinessAdvisorTabProps) {
+  const navigate = useNavigate();
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const [pendingAction, setPendingAction] = useState<AdvisorAction | null>(
+    null
+  );
+  const [lastAnswer, setLastAnswer] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeMode, setActiveMode] = useState<AdvisorMode>("general");
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -397,7 +437,7 @@ export default function BusinessAdvisorTab({
       {
         role: "assistant",
         content:
-          "היי 👋 אני **יועץ BizUply** שלך.\n\nשאל אותי שאלה קצרה ואענה ענייני, או לחץ על **מציאת שותף עסקי** כדי שאסרוק עסקים במערכת ואציע התאמות.",
+          "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ולהכין הודעות WhatsApp מוכנות לשליחה שלך.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
       },
     ]);
     setActiveConversationId(null);
@@ -419,6 +459,122 @@ export default function BusinessAdvisorTab({
 
     startNewConversation();
   }, [validInitialConversationId, loadConversation, startNewConversation]);
+
+  const renderWhatsAppPrepared = useCallback(
+    (prepared: WhatsAppPrepared) => <WhatsAppPreparedCard prepared={prepared} />,
+    []
+  );
+
+  const handleActionResult = useCallback(
+    (action: AdvisorAction, response: ActionResponse) => {
+      if (response.navigateTo) {
+        navigate(response.navigateTo);
+        return;
+      }
+
+      const whatsappUrl =
+        response.whatsappUrl || response.result?.whatsappUrl || null;
+      const content = response.result?.content || "";
+      const phone = response.result?.phone;
+
+      if (whatsappUrl && content) {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: `✅ ${response.message || "הודעת WhatsApp מוכנה"}`,
+            whatsappPrepared: {
+              content,
+              phone,
+              whatsappUrl,
+            },
+          },
+        ]);
+        scrollChatToBottom();
+        return;
+      }
+
+      const successMessage = response.message || `בוצע: ${action.label}`;
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: `✅ ${successMessage}`,
+        },
+      ]);
+      scrollChatToBottom();
+    },
+    [navigate, scrollChatToBottom]
+  );
+
+  const executeAction = useCallback(
+    async (action: AdvisorAction) => {
+      if (!businessId || actionLoading) return;
+
+      const isNavigation = action.type.startsWith("OPEN_");
+
+      if (action.requiresConfirmation !== false && !isNavigation) {
+        setPendingAction(action);
+        return;
+      }
+
+      setActionLoading(action.type);
+
+      try {
+        const response = await API.post<ActionResponse>(
+          "/chat/business-advisor/action",
+          {
+            businessId,
+            action,
+            advisorMode: activeMode,
+            lastAnswer,
+          }
+        );
+
+        if (response.data.success) {
+          handleActionResult(action, response.data);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: `⚠️ ${response.data.error || "הפעולה נכשלה"}`,
+            },
+          ]);
+          scrollChatToBottom();
+        }
+      } catch {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "⚠️ לא הצלחתי לבצע את הפעולה. נסה שוב.",
+          },
+        ]);
+        scrollChatToBottom();
+      } finally {
+        setActionLoading(null);
+        setPendingAction(null);
+      }
+    },
+    [
+      businessId,
+      actionLoading,
+      activeMode,
+      lastAnswer,
+      handleActionResult,
+      scrollChatToBottom,
+    ]
+  );
+
+  const confirmPendingAction = useCallback(() => {
+    if (pendingAction) {
+      const action = { ...pendingAction, requiresConfirmation: false };
+      setPendingAction(null);
+      void executeAction(action);
+    }
+  }, [pendingAction, executeAction]);
 
   const sendMessage = useCallback(
     async (
@@ -483,11 +639,15 @@ export default function BusinessAdvisorTab({
 
         const answer = response.data.answer || "❌ לא התקבלה תשובה מהשרת.";
 
+        setLastAnswer(answer);
+
         setMessages((prev) => [
           ...prev,
           {
             role: "assistant",
             content: answer,
+            actions: response.data.actions || [],
+            executedActions: response.data.executedActions || [],
           },
         ]);
 
@@ -608,14 +768,25 @@ export default function BusinessAdvisorTab({
                     יועץ BizUply
                   </h1>
 
-                  <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
-                    זוכר שיחות לפי יום
+                  <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
+                    Agent פעיל
                   </span>
                 </div>
 
-                <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                  צ׳אט עסקי חכם: שאלה קצרה מקבלת תשובה קצרה, ותכנית מלאה
-                  נבנית רק כשמבקשים.
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  {CAPABILITY_PILLS.map((pill) => (
+                    <span
+                      key={pill}
+                      className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600"
+                    >
+                      {pill}
+                    </span>
+                  ))}
+                </div>
+
+                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
+                  יועץ שמבצע פעולות אמיתיות — פגישות, משימות, לידים והודעות
+                  WhatsApp מוכנות לשליחה שלך.
                 </p>
               </div>
             </div>
@@ -753,24 +924,60 @@ export default function BusinessAdvisorTab({
               <div className="flex min-w-0 flex-col gap-4">
                 {messages.map((msg, index) => {
                   const isAssistant = msg.role === "assistant";
+                  const displayContent = isAssistant
+                    ? stripExecutedSummaryFromAnswer(msg.content)
+                    : msg.content;
 
                   return (
                     <div
                       key={`${msg.role}-${index}`}
-                      className={`flex min-w-0 ${
+                      className={`flex min-w-0 gap-3 ${
                         isAssistant ? "justify-start" : "justify-end"
                       }`}
                     >
+                      {isAssistant && (
+                        <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-md shadow-violet-200">
+                          <BrainCircuit className="h-4 w-4" />
+                        </span>
+                      )}
+
                       <div
-                        className={`${isAssistant ? "w-full max-w-full" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
+                        className={`${isAssistant ? "min-w-0 flex-1" : "max-w-[92%]"} break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
                             : "bg-violet-600 text-white"
                         }`}
                       >
                         {isAssistant ? (
-                          <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
-                            <Markdown>{msg.content}</Markdown>
+                          <div>
+                            <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
+                              <Markdown>{displayContent}</Markdown>
+                            </div>
+
+                            {msg.executedActions &&
+                              msg.executedActions.length > 0 && (
+                                <AdvisorExecutedStrip
+                                  items={msg.executedActions}
+                                  renderWhatsApp={renderWhatsAppPrepared}
+                                />
+                              )}
+
+                            {msg.whatsappPrepared && (
+                              <div className="mt-4">
+                                <WhatsAppPreparedCard
+                                  prepared={msg.whatsappPrepared}
+                                />
+                              </div>
+                            )}
+
+                            {msg.actions && msg.actions.length > 0 && (
+                              <AdvisorActionsPanel
+                                actions={msg.actions}
+                                actionLoading={actionLoading}
+                                disabled={loading || isLimitReached}
+                                onAction={(action) => void executeAction(action)}
+                              />
+                            )}
                           </div>
                         ) : (
                           <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -780,16 +987,7 @@ export default function BusinessAdvisorTab({
                   );
                 })}
 
-                {loading && (
-                  <div className="flex justify-start">
-                    <div className="max-w-[86%] rounded-[22px] border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-700 shadow-sm">
-                      <div className="flex items-center gap-3">
-                        <Loader2 className="h-4 w-4 animate-spin text-violet-600" />
-                        היועץ חושב...
-                      </div>
-                    </div>
-                  </div>
-                )}
+                {loading && <AdvisorThinkingLoader />}
               </div>
             </div>
 
@@ -822,7 +1020,7 @@ export default function BusinessAdvisorTab({
                   value={userInput}
                   disabled={loading || isLimitReached}
                   rows={1}
-                  placeholder="כתוב שאלה קצרה או בקש תכנית מלאה..."
+                  placeholder="לדוגמה: קבע פגישה ליום שלישי, הכן הודעת WhatsApp ללידים..."
                   onChange={(e) => {
                     setUserInput(e.target.value);
                     e.currentTarget.style.height = "44px";
@@ -915,13 +1113,76 @@ export default function BusinessAdvisorTab({
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                “מציאת שותף עסקי” סורק עסקים במערכת ומחזיר התאמות לפי תחום,
-                שירותים, אזור ופוטנציאל עסקי.
+                היועץ מבצע פעולות אמיתיות: תיאום פגישות, יצירת משימות, עדכון לידים,
+                מציאת שותפים והכנת הודעות WhatsApp מוכנות לשליחה שלך.
               </p>
             </div>
           </aside>
         </main>
       </div>
+
+      {pendingAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+          <div
+            dir="rtl"
+            className="w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl"
+          >
+            <div className="border-b border-slate-100 bg-violet-50 px-6 py-4">
+              <div className="flex items-center gap-3">
+                {(() => {
+                  const MetaIcon = getActionMeta(pendingAction.type).icon;
+                  return (
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white">
+                      <MetaIcon className="h-5 w-5" />
+                    </span>
+                  );
+                })()}
+                <div>
+                  <h3 className="text-lg font-black text-slate-950">
+                    לאשר פעולה?
+                  </h3>
+                  <p className="text-xs font-bold text-slate-500">
+                    הפעולה תבוצע במערכת BizUply
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6">
+              <p className="text-base font-black text-violet-700">
+                {pendingAction.label}
+              </p>
+              <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
+                {pendingAction.description ||
+                  getActionMeta(pendingAction.type).hint}
+              </p>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setPendingAction(null)}
+                  className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
+                >
+                  ביטול
+                </button>
+                <button
+                  type="button"
+                  onClick={confirmPendingAction}
+                  disabled={!!actionLoading}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:opacity-60"
+                >
+                  {actionLoading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Sparkles className="h-4 w-4" />
+                  )}
+                  אשר ובצע
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
 }
