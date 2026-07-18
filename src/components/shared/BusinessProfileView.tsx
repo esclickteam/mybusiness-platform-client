@@ -270,9 +270,20 @@ export default function BusinessProfileView() {
     queryKey: ["reviews", bizId],
     queryFn: async () => {
       const res = await API.get(`/business/${bizId}/profile`);
-      return res.data.reviews || res.data.business?.reviews || [];
+      const list = res.data.reviews || res.data.business?.reviews || [];
+
+      if (Array.isArray(list) && list.length > 0) {
+        queryClient.setQueryData<BusinessData>(["business", bizId], (old) => ({
+          ...(old || {}),
+          rating: res.data.rating ?? res.data.averageRating ?? old?.rating,
+          reviewsCount: list.length,
+        }));
+      }
+
+      return list;
     },
     enabled: Boolean(bizId),
+    staleTime: 0,
   });
 
   useEffect(() => {
@@ -460,17 +471,42 @@ export default function BusinessProfileView() {
     });
   }, [reviews]);
 
-  const roundedAvg =
-    data?.rating != null ? Math.round(Number(data.rating) * 10) / 10 : 0;
+  const roundedAvg = useMemo(() => {
+    if (reviews.length > 0) {
+      const values = reviews
+        .map((review) => Number(review.rating || review.averageScore || 0))
+        .filter((value) => Number.isFinite(value) && value > 0);
+
+      if (values.length) {
+        return (
+          Math.round(
+            (values.reduce((sum, value) => sum + value, 0) / values.length) * 10
+          ) / 10
+        );
+      }
+    }
+
+    return data?.rating != null ? Math.round(Number(data.rating) * 10) / 10 : 0;
+  }, [reviews, data?.rating]);
 
   const reviewsCount =
-    data?.reviewsCount != null ? Number(data.reviewsCount) : reviews.length;
+    reviews.length > 0
+      ? reviews.length
+      : data?.reviewsCount != null
+        ? Number(data.reviewsCount)
+        : 0;
 
   const hasRating = reviewsCount > 0;
   const isOwner = user?.role === "business" && user.businessId === bizId;
 
   const handleTabChange = (tab: ProfileTab) => {
     setCurrentTab(tab);
+
+    if (tab === "Reviews") {
+      setReviewsLoaded(true);
+      void refetchReviews();
+    }
+
     window.history.replaceState(null, "", `?tab=${tab.toLowerCase()}`);
   };
 
