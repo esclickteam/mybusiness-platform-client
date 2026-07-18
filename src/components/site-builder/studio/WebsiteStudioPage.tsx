@@ -7433,6 +7433,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     title: page.title,
     slug: page.slug,
     isHome: Boolean(page.isHome),
+    html: String(page.html || ""),
+    css: String(page.css || selectedTemplateRenderer?.editorCss || ""),
     libraryPageTemplateId: String(
       (page as any)?.data?.__libraryPageTemplateId ||
         (page as any)?.visualEditorPayload?.data?.__libraryPageTemplateId ||

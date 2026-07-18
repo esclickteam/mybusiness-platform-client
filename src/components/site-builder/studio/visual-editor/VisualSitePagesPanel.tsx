@@ -1,18 +1,11 @@
-import React, { useMemo } from "react";
-import { FileText, Home, Plus, X } from "lucide-react";
+import React, { useMemo, type ComponentType } from "react";
+import { Home, Plus, X } from "lucide-react";
 
-import PageLibraryCardPreview from "./library/PageLibraryCardPreview";
-import { getPageTemplateById } from "./library/pageLibrary";
-import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+import SitePageCardPreview, {
+  type VisualSitePageItem,
+} from "./SitePageCardPreview";
 
-export type VisualSitePageItem = {
-  id: string;
-  title: string;
-  slug?: string;
-  isHome?: boolean;
-  libraryPageTemplateId?: string;
-  thumbnail?: string;
-};
+export type { VisualSitePageItem };
 
 type VisualSitePagesPanelProps = {
   open: boolean;
@@ -21,15 +14,10 @@ type VisualSitePagesPanelProps = {
   onClose: () => void;
   onSelectPage: (pageId: string) => void;
   onAddPage?: () => void;
+  PageComponent?: ComponentType<any> | null;
+  pageData?: Record<string, any> | null;
+  editorCss?: string;
 };
-
-function resolveLibraryTemplate(
-  page: VisualSitePageItem,
-): VisualLibraryPageTemplate | null {
-  const templateId = String(page.libraryPageTemplateId || "").trim();
-  if (!templateId) return null;
-  return getPageTemplateById(templateId);
-}
 
 export default function VisualSitePagesPanel({
   open,
@@ -38,6 +26,9 @@ export default function VisualSitePagesPanel({
   onClose,
   onSelectPage,
   onAddPage,
+  PageComponent = null,
+  pageData = null,
+  editorCss = "",
 }: VisualSitePagesPanelProps) {
   const sortedPages = useMemo(() => {
     return [...pages].sort((a, b) => {
@@ -80,7 +71,6 @@ export default function VisualSitePagesPanel({
 
         {sortedPages.map((page) => {
           const isActive = page.id === activePageId;
-          const libraryTemplate = resolveLibraryTemplate(page);
           const slugLabel = page.isHome
             ? "/"
             : `/${String(page.slug || page.id || "").replace(/^\//, "")}`;
@@ -97,32 +87,19 @@ export default function VisualSitePagesPanel({
                   : "border-slate-200 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-md",
               ].join(" ")}
             >
-              <div className="relative h-[148px] overflow-hidden bg-[#e8eaee]">
-                {libraryTemplate ? (
-                  <PageLibraryCardPreview page={libraryTemplate} />
-                ) : page.thumbnail ? (
-                  <img
-                    src={page.thumbnail}
-                    alt=""
-                    className="h-full w-full object-cover object-top"
-                  />
-                ) : (
-                  <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
-                    <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
-                      {page.isHome ? (
-                        <Home className="h-5 w-5" />
-                      ) : (
-                        <FileText className="h-5 w-5" />
-                      )}
-                    </span>
-                    <span className="line-clamp-2 text-center text-sm font-black text-slate-800">
-                      {page.title}
-                    </span>
-                  </div>
-                )}
+              <div className="relative h-[168px] overflow-hidden border-b border-slate-100 bg-[#e8eaee]">
+                <SitePageCardPreview
+                  page={page}
+                  PageComponent={
+                    page.libraryPageTemplateId ? null : PageComponent
+                  }
+                  pageData={pageData}
+                  editorCss={editorCss}
+                />
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-white/80 to-transparent" />
               </div>
 
-              <div className="flex items-center justify-between gap-2 border-t border-slate-100 px-3 py-2.5">
+              <div className="flex items-center justify-between gap-2 px-3 py-2.5">
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     {page.isHome ? (
