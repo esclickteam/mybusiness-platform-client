@@ -889,9 +889,9 @@ export default function BusinessProfileView() {
   return (
     <main
       dir="rtl"
-      className="flex min-h-[calc(100dvh-72px)] flex-col bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.14),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.18),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-3 py-2 text-right text-slate-950 sm:px-5 sm:py-3"
+      className="bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.14),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.18),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-3 py-2 pb-8 text-right text-slate-950 sm:px-5 sm:py-3 sm:pb-10"
     >
-      <section className="mx-auto flex w-full max-w-7xl flex-1 flex-col gap-2 sm:gap-3">
+      <section className="mx-auto flex w-full max-w-7xl flex-col gap-2 sm:gap-3">
         <div className="relative shrink-0 overflow-hidden rounded-2xl border border-white/90 bg-white/95 p-3 shadow-[0_10px_36px_rgba(79,70,229,0.10)] sm:p-4">
           {coverImage && (
             <div
@@ -1030,7 +1030,7 @@ export default function BusinessProfileView() {
           </div>
         </div>
 
-        <div className="flex min-h-[calc(100dvh-72px-11rem)] flex-1 flex-col rounded-2xl border border-violet-100/70 bg-white/95 p-4 text-right shadow-[0_10px_40px_rgba(79,70,229,0.08)] sm:min-h-[calc(100dvh-72px-10rem)] sm:p-6 lg:p-7">
+        <div className="overflow-visible rounded-2xl border border-violet-100/70 bg-white/95 p-4 text-right shadow-[0_10px_40px_rgba(79,70,229,0.08)] sm:p-6 lg:p-7">
           {renderTabContent()}
         </div>
       </section>

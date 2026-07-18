@@ -154,7 +154,7 @@ export default function ReviewDetailModal({
               </div>
             </div>
 
-            <div className="relative max-h-[min(70dvh,640px)] space-y-5 overflow-y-auto px-6 py-5 sm:px-7">
+            <div className="relative space-y-5 px-6 py-5 sm:px-7">
               <section>
                 <h3 className="text-sm font-black text-slate-900">
                   תגובת הלקוח
