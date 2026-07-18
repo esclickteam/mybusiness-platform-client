@@ -11,6 +11,8 @@ import "react-phone-input-2/lib/style.css";
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "../../../../components/CategoryAutocomplete";
+import ReviewCard from "@/components/ReviewCard";
+import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
@@ -212,19 +214,6 @@ function isMeaningfulCategory(category?: string) {
 
 function getFaqId(faq: FaqItem, index: number) {
   return faq.faqId || faq._id || faq.id || `faq-${index}`;
-}
-
-function getReviewName(review: Review) {
-  return review.userName || review.client?.name || "לקוח אנונימי";
-}
-
-function getReviewText(review: Review) {
-  return review.comment || review.text || "";
-}
-
-function getReviewRating(review: Review) {
-  const value = Number(review.averageScore ?? review.rating ?? 0);
-  return Number.isFinite(value) ? value : 0;
 }
 
 function normalizeCategoryInput(value: unknown): string {
@@ -1375,47 +1364,24 @@ export default function Build() {
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              כאן מוצגות הביקורות שהלקוחות השאירו לעסק.
+              כאן מוצגות הביקורות שהלקוחות השאירו לעסק · {reviewsCount} ביקורות
             </p>
           </div>
 
           {sortedReviews.length ? (
-            <div className="grid place-items-center gap-4 md:grid-cols-2">
+            <div className="grid justify-center gap-4 lg:grid-cols-2">
               {sortedReviews.map((review, index) => {
-                const rating = getReviewRating(review);
                 const reviewId = String(review._id || review.id || "");
-                const isHighlighted =
-                  Boolean(reviewId) && reviewId === highlightedReviewId;
 
                 return (
-                  <div
+                  <ReviewCard
                     key={review._id || review.id || index}
-                    id={reviewId ? `review-${reviewId}` : undefined}
-                    className={[
-                      "w-full max-w-sm rounded-[1.5rem] border bg-white/95 p-5 text-center shadow-[0_14px_36px_rgba(79,70,229,0.10)] transition",
-                      isHighlighted
-                        ? "border-violet-400 ring-4 ring-violet-200"
-                        : "border-violet-100",
-                    ].join(" ")}
-                  >
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-xl">
-                      ⭐
-                    </div>
-
-                    <h4 className="mt-3 text-base font-black text-slate-950">
-                      {getReviewName(review)}
-                    </h4>
-
-                    <p className="mt-1 text-sm font-black text-amber-500">
-                      {rating ? `${rating.toFixed(1)} / 5` : "ביקורת"}
-                    </p>
-
-                    {getReviewText(review) && (
-                      <p className="mt-3 text-sm leading-7 text-slate-500">
-                        ״{getReviewText(review)}״
-                      </p>
-                    )}
-                  </div>
+                    review={review}
+                    reviewDomId={reviewId ? `review-${reviewId}` : undefined}
+                    highlighted={
+                      Boolean(reviewId) && reviewId === highlightedReviewId
+                    }
+                  />
                 );
               })}
             </div>
@@ -1657,7 +1623,7 @@ export default function Build() {
   const renderPreviewContent = () => {
     if (currentTab === "Main") {
       return (
-        <div className="mx-auto max-w-4xl space-y-6 text-center">
+        <div className="mx-auto max-w-4xl space-y-8 text-center">
           {businessDetails.mainImages.length ? (
             <div className="grid place-items-center gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {businessDetails.mainImages.slice(0, 6).map((url, index) => (
@@ -1665,7 +1631,7 @@ export default function Build() {
                   key={`${url}-${index}`}
                   src={url}
                   alt={`תמונה ראשית ${index + 1}`}
-                  className="h-52 w-full max-w-xs rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
+                  className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
               ))}
             </div>
@@ -1676,6 +1642,28 @@ export default function Build() {
               text="התמונות הראשיות שהעסק יעלה יופיעו כאן."
             />
           )}
+
+          <div className="mx-auto max-w-4xl text-right">
+            <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
+              <h2 className="text-xl font-black text-slate-950">
+                ביקורות אחרונות
+              </h2>
+            </div>
+
+            {sortedReviews.length ? (
+              <div className="grid justify-center gap-4 lg:grid-cols-2">
+                {sortedReviews.slice(0, 2).map((review, index) => (
+                  <ReviewCard key={review._id || review.id || index} review={review} />
+                ))}
+              </div>
+            ) : (
+              <PreviewEmptyState
+                icon="⭐"
+                title="אין ביקורות עדיין"
+                text="ביקורות של לקוחות יופיעו כאן."
+              />
+            )}
+          </div>
         </div>
       );
     }
@@ -1707,35 +1695,26 @@ export default function Build() {
 
     if (currentTab === "Reviews") {
       return (
-        <div className="mx-auto max-w-4xl text-center">
+        <div className="mx-auto max-w-5xl text-right">
+          <div className="mb-5 text-center sm:text-right">
+            <h2 className="text-2xl font-black text-slate-950">ביקורות לקוחות</h2>
+            <p className="mt-1 text-sm text-slate-500">{reviewsCount} ביקורות</p>
+          </div>
+
           {sortedReviews.length ? (
-            <div className="grid place-items-center gap-4 md:grid-cols-2">
-              {sortedReviews.slice(0, 4).map((review, index) => {
-                const rating = getReviewRating(review);
+            <div className="grid justify-center gap-4 lg:grid-cols-2">
+              {sortedReviews.map((review, index) => {
+                const reviewId = String(review._id || review.id || "");
 
                 return (
-                  <div
+                  <ReviewCard
                     key={review._id || review.id || index}
-                    className="w-full max-w-sm rounded-[1.5rem] border border-violet-100 bg-white/90 p-5 text-center shadow-[0_14px_36px_rgba(79,70,229,0.10)]"
-                  >
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-xl">
-                      ⭐
-                    </div>
-
-                    <h4 className="mt-3 text-base font-black text-slate-950">
-                      {getReviewName(review)}
-                    </h4>
-
-                    <p className="mt-1 text-sm font-black text-amber-500">
-                      {rating ? `${rating.toFixed(1)} / 5` : "ביקורת"}
-                    </p>
-
-                    {getReviewText(review) && (
-                      <p className="mt-3 text-sm leading-7 text-slate-500">
-                        ״{getReviewText(review)}״
-                      </p>
-                    )}
-                  </div>
+                    review={review}
+                    reviewDomId={reviewId ? `review-${reviewId}` : undefined}
+                    highlighted={
+                      Boolean(reviewId) && reviewId === highlightedReviewId
+                    }
+                  />
                 );
               })}
             </div>
@@ -2012,37 +1991,21 @@ export default function Build() {
                   </p>
                 )}
 
-                <div className="mx-auto mt-6 grid max-w-4xl place-items-center gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  <PreviewInfoCard title="טלפון" value={previewPhone || "לא נוסף"} />
-                  <PreviewInfoCard title="אימייל" value={businessDetails.email || "לא נוסף"} />
-                </div>
+                <ProfileContactBlock
+                  phone={businessDetails.phone}
+                  email={businessDetails.email}
+                  formattedPhone={previewPhone}
+                  websiteUrl={businessWebsiteUrl}
+                  whatsappUrl={businessWhatsappUrl}
+                  normalizedWebsiteUrl={normalizedWebsiteUrl}
+                  normalizedWhatsappUrl={normalizedWhatsappUrl}
+                  showEmptyPlaceholders
+                />
 
-                {!businessWebsiteUrl && (
+                {!businessWebsiteUrl && !businessWhatsappUrl && (
                   <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
-                    עדיין לא נוסף קישור לאתר העסק.
+                    עדיין לא נוספו קישור לאתר או לוואטסאפ.
                   </div>
-                )}
-
-                {businessWebsiteUrl && (
-                  <a
-                    href={normalizedWebsiteUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
-                  >
-                    כניסה לאתר העסק
-                  </a>
-                )}
-
-                {businessWhatsappUrl && (
-                  <a
-                    href={normalizedWhatsappUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
-                  >
-                    שליחת הודעה בוואטסאפ
-                  </a>
                 )}
 
                 <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
@@ -2084,18 +2047,6 @@ export default function Build() {
         </aside>
       </div>
     </main>
-  );
-}
-
-function PreviewInfoCard({ title, value }: { title: string; value: string }) {
-  return (
-    <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
-      <p className="text-xs font-black text-slate-400">{title}</p>
-
-      <p dir="ltr" className="mt-1 truncate text-center text-lg font-black text-slate-950">
-        {value}
-      </p>
-    </div>
   );
 }
 

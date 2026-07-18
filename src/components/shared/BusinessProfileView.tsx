@@ -15,9 +15,9 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
-import { FaEnvelope, FaGlobe, FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
+import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { lockPageScroll } from "@/utils/pageScrollLock";
 
 const ReviewForm = lazy(
@@ -981,97 +981,15 @@ export default function BusinessProfileView() {
                 </p>
               )}
 
-              <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-stretch justify-center gap-3">
-                {phone && (
-                  <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
-                    <div className="flex items-center justify-center gap-3">
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                        style={{ animationDelay: "0s" }}
-                        aria-hidden
-                      >
-                        <FaPhoneAlt size={18} />
-                      </span>
-
-                      <div className="min-w-0 text-right">
-                        <p className="text-xs font-black text-slate-400">טלפון</p>
-
-                        <p
-                          dir="ltr"
-                          className="mt-1 text-lg font-black text-slate-950"
-                        >
-                          {formattedPhone}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {email && (
-                  <div className="profile-contact-card group w-full max-w-xs rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:w-auto sm:min-w-[240px]">
-                    <div className="flex items-center justify-center gap-3">
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                        style={{ animationDelay: "0.35s" }}
-                        aria-hidden
-                      >
-                        <FaEnvelope size={18} />
-                      </span>
-
-                      <div className="min-w-0 text-right">
-                        <p className="text-xs font-black text-slate-400">אימייל</p>
-
-                        <p
-                          dir="ltr"
-                          className="mt-1 truncate text-lg font-black text-slate-950"
-                        >
-                          {email}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {(businessWebsiteUrl || businessWhatsappUrl) && (
-                <div className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-3">
-                  {businessWebsiteUrl && (
-                    <a
-                      href={normalizedWebsiteUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
-                    >
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-white"
-                        style={{ animationDelay: "0.15s" }}
-                        aria-hidden
-                      >
-                        <FaGlobe size={17} />
-                      </span>
-                      כניסה לאתר העסק
-                    </a>
-                  )}
-
-                  {businessWhatsappUrl && (
-                    <a
-                      href={normalizedWhatsappUrl}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-5 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
-                    >
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-white"
-                        style={{ animationDelay: "0.55s" }}
-                        aria-hidden
-                      >
-                        <FaWhatsapp size={19} />
-                      </span>
-                      שליחת הודעה בוואטסאפ
-                    </a>
-                  )}
-                </div>
-              )}
+              <ProfileContactBlock
+                phone={phone}
+                email={email}
+                formattedPhone={formattedPhone}
+                websiteUrl={businessWebsiteUrl}
+                whatsappUrl={businessWhatsappUrl}
+                normalizedWebsiteUrl={normalizedWebsiteUrl}
+                normalizedWhatsappUrl={normalizedWhatsappUrl}
+              />
 
               <div className="mx-auto mt-7 max-w-5xl border-t border-violet-100/80 pt-6">
                 <div
