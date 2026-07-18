@@ -10,9 +10,11 @@ import {
   Flame,
   ListChecks,
   RefreshCw,
+  Settings,
   Sparkles,
   X,
 } from "lucide-react";
+import { NotificationSettingsPanel } from "./NotificationSettings";
 
 type NotificationTab = "all" | "unread";
 
@@ -105,6 +107,7 @@ export default function FacebookStyleNotifications() {
   const [tab, setTab] = useState<NotificationTab>("all");
   const [notifications, setNotifications] = useState<UnifiedNotification[]>([]);
   const [open, setOpen] = useState(false);
+  const [panelView, setPanelView] = useState<"list" | "settings">("list");
   const [loading, setLoading] = useState(false);
   const [toasts, setToasts] = useState<UnifiedNotification[]>([]);
 
@@ -679,7 +682,7 @@ export default function FacebookStyleNotifications() {
   async function openNotificationTarget(notification: UnifiedNotification) {
     await markAsRead(notification);
 
-    setOpen(false);
+    closePanel();
 
     if (isCollaborationAgreementNotification(notification)) {
       const agreementId = getAgreementIdFromNotification(notification);
@@ -806,8 +809,16 @@ export default function FacebookStyleNotifications() {
     return "התראה";
   }
 
+  function closePanel() {
+    setOpen(false);
+    setPanelView("list");
+  }
+
   function toggleOpen() {
-    setOpen((value) => !value);
+    setOpen((value) => {
+      if (value) setPanelView("list");
+      return !value;
+    });
   }
 
   if (!businessId) return null;
@@ -948,56 +959,74 @@ export default function FacebookStyleNotifications() {
             <motion.button
               type="button"
               className="fixed inset-0 z-[9998] cursor-default bg-transparent"
-              onClick={() => setOpen(false)}
+              onClick={closePanel}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             />
 
             <motion.div
-  dir="rtl"
-  initial={{ opacity: 0, y: -10, scale: 0.98 }}
-  animate={{ opacity: 1, y: 0, scale: 1 }}
-  exit={{ opacity: 0, y: -10, scale: 0.98 }}
-  transition={{ duration: 0.16 }}
-  className="
-    fixed right-4 top-20 z-[9999]
-    w-[440px] max-w-[calc(100vw-24px)]
-    overflow-hidden rounded-[1.7rem] border border-slate-200
-    bg-white/95 shadow-[0_26px_90px_rgba(15,23,42,0.14)]
-    backdrop-blur-2xl
-    sm:right-6
-  "
->
+              dir="rtl"
+              initial={{ opacity: 0, y: -10, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -10, scale: 0.98 }}
+              transition={{ duration: 0.16 }}
+              className="
+                fixed right-4 top-20 z-[9999]
+                flex max-h-[min(680px,calc(100dvh-5.5rem))] w-[440px] max-w-[calc(100vw-24px)]
+                flex-col overflow-hidden rounded-[1.7rem] border border-slate-200
+                bg-white shadow-[0_26px_90px_rgba(15,23,42,0.14)]
+                sm:right-6
+              "
+            >
+              {panelView === "settings" ? (
+                <NotificationSettingsPanel
+                  active={open && panelView === "settings"}
+                  onBack={() => setPanelView("list")}
+                />
+              ) : (
+                <>
+                  <div className="relative shrink-0 border-b border-slate-100 bg-white p-5 text-slate-900">
+                    <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
 
-              <div className="relative border-b border-slate-100 bg-white p-5 text-slate-900">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-sky-500 via-blue-400 to-cyan-300" />
+                    <div className="flex items-start justify-between gap-3 pt-1">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                          <Sparkles className="h-3.5 w-3.5" />
+                          מרכז התראות
+                        </div>
 
-                <div className="flex items-start justify-between gap-3 pt-1">
-                  <div>
-                    <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                      <Sparkles className="h-3.5 w-3.5" />
-                      מרכז התראות
+                        <h3 className="text-xl font-black">התראות</h3>
+
+                        <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
+                          לידים חדשים, משימות לטיפול ועדכונים מהמערכת
+                        </p>
+                      </div>
+
+                      <div className="flex shrink-0 items-center gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setPanelView("settings")}
+                          aria-label="הגדרות התראות"
+                          title="הגדרות התראות"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
+                        >
+                          <Settings className="h-4 w-4" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={closePanel}
+                          aria-label="סגירה"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
                     </div>
-
-                    <h3 className="text-xl font-black">התראות</h3>
-
-                    <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                      לידים חדשים, משימות לטיפול ועדכונים מהמערכת
-                    </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setOpen(false)}
-                    className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
+                  <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
                 <button
                   type="button"
                   onClick={() => setTab("all")}
@@ -1025,7 +1054,7 @@ export default function FacebookStyleNotifications() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+              <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
                 <div>
                   <p className="text-sm font-black text-slate-800">
                     התראות אחרונות
@@ -1064,7 +1093,7 @@ export default function FacebookStyleNotifications() {
                 </div>
               </div>
 
-              <div className="max-h-[500px] overflow-y-auto p-3">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
                 {filtered.length === 0 ? (
                   <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
@@ -1166,6 +1195,8 @@ export default function FacebookStyleNotifications() {
                   </div>
                 )}
               </div>
+                </>
+              )}
             </motion.div>
           </>
         )}

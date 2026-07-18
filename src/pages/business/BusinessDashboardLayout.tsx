@@ -13,7 +13,6 @@ import {
 } from "../../utils/dashboardRoutePersistence";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
-import NotificationSettings from "../../components/NotificationSettings";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
 
 /* ============================
@@ -578,10 +577,6 @@ export default function BusinessDashboardLayout() {
               <div className="flex shrink-0 items-center gap-3">
                 <div className="relative">
                   <FacebookStyleNotifications />
-                </div>
-
-                <div className="relative">
-                  <NotificationSettings />
                 </div>
 
                 {!isMobile && (
