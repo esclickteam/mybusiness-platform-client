@@ -152,19 +152,26 @@ const VISUAL_EDITOR_COLLECTION_KEYS = [
   "__sectionOrder",
 ];
 
-function hasMeaningfulVisualData(value) {
+function countMeaningfulVisualEntries(value) {
   const data = asPlainObject(value);
 
-  return VISUAL_EDITOR_COLLECTION_KEYS.some((key) => {
+  return VISUAL_EDITOR_COLLECTION_KEYS.reduce((total, key) => {
     const collection = data[key];
 
-    return (
-      collection &&
-      typeof collection === "object" &&
-      !Array.isArray(collection) &&
-      Object.keys(collection).length > 0
-    );
-  });
+    if (
+      !collection ||
+      typeof collection !== "object" ||
+      Array.isArray(collection)
+    ) {
+      return total;
+    }
+
+    return total + Object.keys(collection).length;
+  }, 0);
+}
+
+function hasMeaningfulVisualData(value) {
+  return countMeaningfulVisualEntries(value) > 0;
 }
 
 function safeString(value) {
@@ -296,12 +303,9 @@ function readTemplateKey(site, activePage) {
 }
 
 function readTemplateData(site, activePage, explicitData) {
-  if (
-    explicitData &&
-    typeof explicitData === "object" &&
-    !Array.isArray(explicitData)
-  ) {
-    return explicitData;
+  const explicit = asPlainObject(explicitData);
+  if (hasMeaningfulVisualData(explicit)) {
+    return explicit;
   }
 
   const source = asPlainObject(site);
@@ -313,7 +317,7 @@ function readTemplateData(site, activePage, explicitData) {
 
   /*
     /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
-    לכן הם מקבלים עדיפות על פני עותקים ישנים בתוך activePage.
+    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
   */
   const candidates = [
     {
@@ -382,23 +386,19 @@ function readTemplateData(site, activePage, explicitData) {
   ];
 
   const validCandidates = candidates
-    .filter(
-      (candidate) =>
-        candidate.value &&
-        typeof candidate.value === "object" &&
-        !Array.isArray(candidate.value) &&
-        Object.keys(candidate.value).length > 0,
-    )
+    .filter((candidate) => hasMeaningfulVisualData(candidate.value))
     .map((candidate) => {
       const timestamp = Date.parse(safeString(candidate.updatedAt));
 
       return {
         ...candidate,
+        richness: countMeaningfulVisualEntries(candidate.value),
         timestamp: Number.isFinite(timestamp) ? timestamp : 0,
       };
     })
     .sort(
       (left, right) =>
+        right.richness - left.richness ||
         right.timestamp - left.timestamp ||
         right.priority - left.priority,
     );
@@ -848,6 +848,43 @@ function createPublicImage(documentValue, sourceNode, src, item) {
   return image;
 }
 
+function clearPublicMediaNode(mediaNode, item) {
+  if (!mediaNode) return;
+
+  const record = asPlainObject(item);
+  const applyAsBackground =
+    record.target === "background" ||
+    record.background === true ||
+    record.applyAsBackground === true;
+
+  if (applyAsBackground) {
+    mediaNode.style.removeProperty("background-image");
+    mediaNode.removeAttribute("data-visual-background-src");
+    return;
+  }
+
+  try {
+    mediaNode.removeAttribute("src");
+    mediaNode.src = "";
+    if (mediaNode instanceof HTMLVideoElement) {
+      mediaNode.load();
+    }
+  } catch {
+    // noop
+  }
+
+  [
+    "src",
+    "data-visual-current-src",
+    "data-image-src",
+    "data-video-src",
+    "poster",
+  ].forEach((attribute) => mediaNode.removeAttribute(attribute));
+
+  mediaNode.style.opacity = "0";
+  mediaNode.setAttribute("data-visual-media-cleared", "true");
+}
+
 function materializePublicMedia(root, visualData) {
   if (!root) return;
 
@@ -855,8 +892,20 @@ function materializePublicMedia(root, visualData) {
   const content = asPlainObject(data.__content);
 
   Object.entries(content).forEach(([elementId, item]) => {
+    const record = asPlainObject(item);
     const source = getPermanentMediaSource(item);
-    if (!source) return;
+    const hasMediaFields =
+      record.src !== undefined ||
+      record.secureUrl !== undefined ||
+      record.secure_url !== undefined ||
+      record.url !== undefined ||
+      record.originalUrl !== undefined ||
+      record.mediaType !== undefined ||
+      record.resourceType !== undefined ||
+      record.resource_type !== undefined ||
+      record.target === "background" ||
+      record.background === true ||
+      record.applyAsBackground === true;
 
     const selector = safeVisualSelector(elementId);
     if (!selector) return;
@@ -867,7 +916,14 @@ function materializePublicMedia(root, visualData) {
     const mediaNode =
       selectedNode.matches("img, video")
         ? selectedNode
-        : selectedNode.querySelector("img, video");
+        : selectedNode.querySelector("img, video") || selectedNode;
+
+    if (!source) {
+      if (hasMediaFields) {
+        clearPublicMediaNode(mediaNode, item);
+      }
+      return;
+    }
 
     if (!mediaNode) return;
 
@@ -1438,14 +1494,40 @@ export default function PublicVisualSiteRenderer({
 
     let applyScheduled = false;
     let applying = false;
+    let reapplyQueued = false;
+
+    const insertedSectionIds = Object.keys(
+      asPlainObject(asPlainObject(visualData).__insertedSections),
+    );
+
+    const isInsertedVisualMissing = () => {
+      if (!insertedSectionIds.length) return false;
+
+      return insertedSectionIds.some((sectionId) => {
+        const selector = safeVisualSelector(sectionId);
+        if (!selector) return false;
+        return !root.querySelector(selector);
+      });
+    };
 
     const applyVisual = () => {
-      if (applying) return;
+      if (applying) {
+        reapplyQueued = true;
+        return;
+      }
+
       applying = true;
       try {
         applyPublicVisualData(root, visualData);
       } finally {
         applying = false;
+      }
+
+      if (reapplyQueued) {
+        reapplyQueued = false;
+        if (isInsertedVisualMissing()) {
+          window.requestAnimationFrame(() => applyVisual());
+        }
       }
     };
 
@@ -1453,12 +1535,10 @@ export default function PublicVisualSiteRenderer({
 
     /*
       תבניות כמו Justora מחליפות את עץ ה-DOM בניווט פנימי (בית/אודות...).
-      בלי re-apply, סקשנים שהוכנסו מהעורך נמחקים אחרי לחיצה על כפתור/לינק.
+      בלי re-apply, סקשנים שהוכנסו מהעורך ו-overrides של __content נמחקים.
+      צופים על root החיצוני (לא על צומת התבנית) כדי לא לאבד את ה-observer
+      כש-React מחליף את עץ התבנית.
     */
-    const templateRoot =
-      root.querySelector("[data-template-id]") ||
-      root.querySelector('[data-bizuply-template-fallback="true"]');
-
     const scheduleApply = () => {
       if (applyScheduled) return;
       applyScheduled = true;
@@ -1469,23 +1549,52 @@ export default function PublicVisualSiteRenderer({
     };
 
     const mutationObserver =
-      templateRoot && typeof MutationObserver !== "undefined"
+      typeof MutationObserver !== "undefined"
         ? new MutationObserver((mutations) => {
-            if (applying) return;
-
             const pageChanged = mutations.some(
               (mutation) =>
                 mutation.type === "attributes" &&
-                mutation.attributeName === "data-template-page-id",
+                (mutation.attributeName === "data-template-page-id" ||
+                  mutation.attributeName === "data-active-page-id"),
             );
 
-            if (pageChanged) scheduleApply();
+            const childrenChanged = mutations.some(
+              (mutation) => mutation.type === "childList",
+            );
+
+            if (pageChanged) {
+              scheduleApply();
+              return;
+            }
+
+            if (!childrenChanged) return;
+
+            if (applying) {
+              reapplyQueued = true;
+              return;
+            }
+
+            if (isInsertedVisualMissing()) {
+              scheduleApply();
+            }
           })
         : null;
 
-    mutationObserver?.observe(templateRoot, {
+    mutationObserver?.observe(root, {
+      childList: true,
+      subtree: true,
       attributes: true,
-      attributeFilter: ["data-template-page-id"],
+      attributeFilter: ["data-template-page-id", "data-active-page-id"],
+    });
+
+    /*
+      Justora (ואחרות) מחליפות children אחרי paint — rAF כפול תופס
+      גם remount שמפספס את ה-observer הראשון.
+    */
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!applying) applyVisual();
+      });
     });
 
     const handleClick = (event) => {

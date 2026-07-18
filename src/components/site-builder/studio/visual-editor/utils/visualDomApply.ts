@@ -1437,6 +1437,19 @@ export function applyVisualContentToDom(
           "",
       ).trim();
 
+      const hasMediaFields =
+        itemRecord.src !== undefined ||
+        itemRecord.secureUrl !== undefined ||
+        itemRecord.secure_url !== undefined ||
+        itemRecord.url !== undefined ||
+        itemRecord.originalUrl !== undefined ||
+        itemRecord.mediaType !== undefined ||
+        itemRecord.resourceType !== undefined ||
+        itemRecord.resource_type !== undefined ||
+        itemRecord.target === "background" ||
+        itemRecord.background === true ||
+        itemRecord.applyAsBackground === true;
+
       if (mediaSrc) {
         const applyAsBackground =
           itemRecord.target === "background" ||
@@ -1475,8 +1488,65 @@ export function applyVisualContentToDom(
               itemRecord.resource_type,
           );
         }
+      } else if (hasMediaFields) {
+        clearMediaContentFromNode(node, itemRecord);
       }
     });
+  });
+}
+
+function clearMediaContentFromNode(
+  node: HTMLElement,
+  itemRecord: Record<string, any>,
+) {
+  if (!node || isEditorOnlyNode(node)) return;
+
+  const applyAsBackground =
+    itemRecord.target === "background" ||
+    itemRecord.background === true ||
+    itemRecord.applyAsBackground === true;
+
+  if (applyAsBackground) {
+    node.style.removeProperty("background-image");
+    node.removeAttribute("data-visual-background-src");
+    return;
+  }
+
+  const imageNode = getBestImageNode(node);
+  const videoNode = getBestVideoNode(node);
+  const targets = [imageNode, videoNode, node].filter(
+    (value, index, list): value is HTMLElement =>
+      Boolean(value) && list.indexOf(value) === index,
+  );
+
+  targets.forEach((target) => {
+    clearEditorMediaPreview(target);
+
+    if (
+      target instanceof HTMLImageElement ||
+      target instanceof HTMLVideoElement
+    ) {
+      try {
+        target.removeAttribute("src");
+        target.src = "";
+        if (target instanceof HTMLVideoElement) {
+          target.load();
+        }
+      } catch {
+        // noop
+      }
+    }
+
+    [
+      "src",
+      "data-visual-current-src",
+      "data-image-src",
+      "data-video-src",
+      "poster",
+    ].forEach((attribute) => target.removeAttribute(attribute));
+
+    target.style.opacity = "0";
+    target.setAttribute("data-visual-media-cleared", "true");
   });
 }
 
@@ -1594,6 +1664,7 @@ export function applyMediaContentToNode(
   if (normalizedType === "image") {
     if (imageNode) {
       clearEditorMediaPreview(imageNode);
+      imageNode.removeAttribute("data-visual-media-cleared");
 
       imageNode.style.opacity = "";
       imageNode.style.visibility = "";

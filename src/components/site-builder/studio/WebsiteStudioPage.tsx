@@ -6689,7 +6689,31 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         publishedPages: summarizeStudioPagesForDebug(pagesForSave),
       });
 
-      if (published && (!homePage?.html || String(homePage.html).trim().length < 20)) {
+      const hasMeaningfulVisualPublishData = [
+        "__content",
+        "__insertedSections",
+        "__insertedElements",
+        "__styles",
+        "__sectionOrder",
+      ].some((key) => {
+        const collection = (cleanVisualData as any)?.[key];
+        return (
+          collection &&
+          typeof collection === "object" &&
+          !Array.isArray(collection) &&
+          Object.keys(collection).length > 0
+        );
+      });
+
+      /*
+        visual-react מפורסם מ-template + data. HTML הוא אופציונלי —
+        חסימה בגלל HTML ריק השאירה את האתר הציבורי על גרסה ישנה.
+      */
+      if (
+        published &&
+        (!homePage?.html || String(homePage.html).trim().length < 20) &&
+        !hasMeaningfulVisualPublishData
+      ) {
         studioError("handleVisualTemplateSave:no-html-before-publish", {
           cleanSlug,
           sourcePages: summarizeStudioPagesForDebug(sourcePages),
@@ -6703,7 +6727,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         });
 
         throw new Error(
-          "הפרסום נעצר: לא נוצר HTML לתבנית. פתחי Console ושלחי את הלוגים שמתחילים ב-BizUply Studio.",
+          "הפרסום נעצר: לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
         );
       }
 
