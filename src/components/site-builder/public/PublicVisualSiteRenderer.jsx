@@ -27,6 +27,11 @@ import {
   preserveVisualMediaBoxSize,
 } from "../studio/visual-editor/utils/visualMediaUtils";
 
+import {
+  readSiteAnalyticsContext,
+  trackBizuplyPageView,
+} from "@/utils/bizuplyAnalytics";
+
 const PUBLIC_BASE_CSS = `
 html,
 body,
@@ -1487,6 +1492,19 @@ export default function PublicVisualSiteRenderer({
     () => readPublicRevision(site, activePage),
     [site, activePage],
   );
+
+  useEffect(() => {
+    const context = readSiteAnalyticsContext(site);
+    if (!context) return;
+
+    trackBizuplyPageView({
+      ...context,
+      pageId: pageId || context.pageId,
+      pageSlug: activePage?.slug || context.pageSlug,
+      pageTitle: activePage?.title || context.pageTitle,
+      pathname: pathname || window.location.pathname || "/",
+    });
+  }, [site, pageId, pathname, activePage?.slug, activePage?.title]);
 
   /*
     התאמה 1:1 לעורך לכל התבניות visual-react:
