@@ -265,6 +265,61 @@ function isTextNode(node: HTMLElement | null) {
   );
 }
 
+function normalizeEditableText(value: unknown) {
+  return String(value || "")
+    .replace(/\u00a0/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Header nav links / CTAs are typed as "button" but their label text must still
+ * be inline-editable. Also allow text-bearing anchors/buttons.
+ */
+function isInlineTextEditableNode(node: HTMLElement | null) {
+  if (!node) return false;
+  if (isTextNode(node)) return true;
+
+  const type = getElementType(node);
+  const tagName = String(node.tagName || "").toLowerCase();
+  const isControl =
+    type === "button" ||
+    type === "link" ||
+    tagName === "a" ||
+    tagName === "button" ||
+    tagName === "label";
+
+  if (!isControl) return false;
+
+  if (node.querySelector("img, video, svg, input, textarea, select")) {
+    return false;
+  }
+
+  return Boolean(
+    normalizeEditableText(node.innerText || node.textContent || ""),
+  );
+}
+
+function resolveInlineTextEditTarget(node: HTMLElement) {
+  if (isInlineTextEditableNode(node) && isTextNode(node)) {
+    return node;
+  }
+
+  const nestedText = node.querySelector(
+    "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text'], [data-visual-edit-type='text']",
+  ) as HTMLElement | null;
+
+  if (nestedText && isInlineTextEditableNode(nestedText)) {
+    return nestedText;
+  }
+
+  if (isInlineTextEditableNode(node)) {
+    return node;
+  }
+
+  return null;
+}
+
 function getSelectionRect(node: HTMLElement) {
   /*
     מסגרת הבחירה נמדדת תמיד לפי הקופסה האמיתית של האלמנט.
@@ -916,7 +971,7 @@ export default function VisualEditorCanvas({
       clientX?: number,
       clientY?: number,
     ) => {
-      if (!elementId || !isTextNode(node)) return;
+      if (!elementId || !isInlineTextEditableNode(node)) return;
 
       if (editingNodeRef.current && editingNodeRef.current !== node) {
         finishInlineEdit(true);
@@ -935,6 +990,8 @@ export default function VisualEditorCanvas({
       node.style.cursor = "text";
       node.style.userSelect = "text";
       node.style.webkitUserSelect = "text";
+      node.style.setProperty("user-select", "text", "important");
+      node.style.setProperty("-webkit-user-select", "text", "important");
 
       setInlineEditingElementId(elementId);
 
@@ -1145,21 +1202,21 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      const editableTextChild = selectedNode.querySelector(
-        "[data-visual-editable='true'][data-visual-edit-type='text'], [data-editable='text']",
-      ) as HTMLElement | null;
+      /*
+        Header titles are often a box/h1 wrapper around a text child.
+        Nav items are typed as button/link but still need label editing.
+        Prefer the nested text target; never open link settings on dblclick
+        when the control itself has editable text.
+      */
+      const textTarget = resolveInlineTextEditTarget(selectedNode);
 
-      if (
-        String(selected.type || "") === "button" &&
-        editableTextChild &&
-        isTextNode(editableTextChild)
-      ) {
+      if (textTarget) {
         const textId =
-          editableTextChild.getAttribute("data-visual-edit-id") ||
-          `${selected.id}.text`;
+          textTarget.getAttribute("data-visual-edit-id") ||
+          selected.id;
 
         startInlineEdit(
-          editableTextChild,
+          textTarget,
           textId,
           event.clientX,
           event.clientY,
@@ -1169,16 +1226,6 @@ export default function VisualEditorCanvas({
 
       if (String(selected.type || "") === "button") {
         editorAny.openLinkSettings?.(selected.id);
-        return;
-      }
-
-      if (isTextNode(selectedNode)) {
-        startInlineEdit(
-          selectedNode,
-          selected.id,
-          event.clientX,
-          event.clientY,
-        );
       }
     };
 
@@ -1824,10 +1871,10 @@ export default function VisualEditorCanvas({
             cursor: grabbing !important;
           }
 
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] button,
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] a[data-visual-edit-type="button"],
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-type="button"],
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-editable="button"] {
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] button:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] a[data-visual-edit-type="button"]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-edit-type="button"]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-editable="button"]:not([data-visual-inline-editing="true"]) {
             cursor: grab !important;
             -webkit-user-drag: none !important;
           }

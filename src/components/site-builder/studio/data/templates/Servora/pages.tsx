@@ -542,10 +542,18 @@ function Header({
                   aria-current={isActive ? "page" : undefined}
                   onClick={(event) => {
                     /*
-                      Visual-link overrides (e.g. מחירים → /pricing-services)
-                      must navigate by href. Template SPA goTo would keep
-                      "ראשי" active and never open the linked page.
+                      While inline-editing the label, never hijack the click for SPA nav.
+                      Visual-link overrides must navigate by href on the public site.
                     */
+                    if (
+                      event.currentTarget.getAttribute(
+                        "data-visual-inline-editing",
+                      ) === "true" ||
+                      event.currentTarget.getAttribute("contenteditable") ===
+                        "true"
+                    ) {
+                      return;
+                    }
                     if (hasOverrideNavHref(event.currentTarget)) return;
                     event.preventDefault();
                     onNavigate(normalizePage(pageKey));
@@ -553,7 +561,7 @@ function Header({
                   data-editable="link"
                   {...visualProps(
                     `global.header.nav.${index}`,
-                    "button",
+                    "text",
                     `קישור ניווט ${index + 1}`,
                   )}
                 >
@@ -663,10 +671,7 @@ function HomePage({ data, onNavigate }: SharedProps & NavigateProps) {
                 {data.hero.eyebrow}
               </span>
 
-              <h1
-                className="servora-hero-title"
-                {...visualProps("home.hero.titleGroup", "box", "כותרת ראשית")}
-              >
+              <h1 className="servora-hero-title">
                 <span
                   data-editable="text"
                   {...visualProps("hero.title", "text", "כותרת ראשית")}
