@@ -496,11 +496,15 @@ export default function DashboardOverview({
         />
         <KpiCard
           title="Collaborations"
-          value={loading ? "—" : formatNumber(data?.collaborations.totalInPeriod || 0)}
+          value={
+            loading
+              ? "—"
+              : formatNumber(data?.collaborations.totalInPeriod || 0)
+          }
           subtitle={
             loading
               ? "Loading collaborations..."
-              : `${formatNumber(data?.collaborations.newInPeriod || 0)} approved this period`
+              : `${formatNumber(data?.collaborations.newInPeriod || 0)} approved this period · ${formatNumber(data?.collaborations.totalInPeriod || 0)} total`
           }
           change={data?.collaborations.change || 0}
           series={(data?.collaborations.series || []).map((item) => item.value)}
