@@ -15,7 +15,6 @@ import {
   YAxis,
 } from "recharts";
 import {
-  CalendarCheck2,
   CalendarPlus,
   ChevronDown,
   Eye,
@@ -24,6 +23,7 @@ import {
   Pencil,
   Settings2,
   Sparkles,
+  Star,
   TrendingUp,
   UserPlus,
 } from "lucide-react";
@@ -39,12 +39,10 @@ import type {
 import {
   buildBusinessGreeting,
   buildUpcomingAppointmentsFromCalendar,
-  countUpcomingAppointmentsNext7Days,
   formatAppointmentBadge,
   formatDateRangeLabel,
   formatLeadSource,
   formatLeadStatus,
-  formatNextAppointmentLabel,
   formatNumber,
   formatPercent,
   formatRelativeTime,
@@ -294,14 +292,6 @@ export default function DashboardOverview({
       ? upcomingFromCalendar
       : data?.appointments.upcoming || [];
 
-  const futureAppointmentsCount =
-    calendarAppointments.length > 0
-      ? countUpcomingAppointmentsNext7Days(calendarAppointments)
-      : data?.appointments.futureCount || 0;
-
-  const nextAppointment =
-    upcomingFromCalendar[0] || data?.appointments.nextAppointment || null;
-
   const performanceChartData = useMemo(() => {
     const current = data?.performance.current || [];
     const previous = data?.performance.previous || [];
@@ -486,19 +476,22 @@ export default function DashboardOverview({
           accent="blue"
         />
         <KpiCard
-          title="Future Appointments"
-          value={loading ? "—" : formatNumber(futureAppointmentsCount)}
+          title="Reviews"
+          value={
+            loading
+              ? "—"
+              : (data?.reviews.totalCount || 0) > 0
+                ? (data?.reviews.averageRating || 0).toFixed(1)
+                : "0"
+          }
           subtitle={
             loading
-              ? "Loading next appointment..."
-              : formatNextAppointmentLabel(
-                  nextAppointment?.date,
-                  nextAppointment?.time
-                )
+              ? "Loading reviews..."
+              : `${formatNumber(data?.reviews.newCount || 0)} new this period · ${formatNumber(data?.reviews.totalCount || 0)} total`
           }
-          change={data?.appointments.change || 0}
-          series={(data?.appointments.series || []).map((item) => item.value)}
-          icon={<CalendarCheck2 size={20} />}
+          change={data?.reviews.change || 0}
+          series={(data?.reviews.series || []).map((item) => item.value)}
+          icon={<Star size={20} />}
           accent="amber"
         />
         <KpiCard
