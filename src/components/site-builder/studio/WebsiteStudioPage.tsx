@@ -5340,6 +5340,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       })),
     });
 
+    const insertedCount = Object.keys(
+      asPlainObject(materialized.__insertedSections),
+    ).length;
+
+    if (!insertedCount) {
+      console.warn(
+        "[BizUply] library page materialized with 0 sections",
+        pageTemplate.id,
+        pageTemplate.sectionIds,
+      );
+    }
+
     const nextVisualData = {
       ...materialized,
       __activePageId: id,

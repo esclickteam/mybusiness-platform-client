@@ -2916,8 +2916,15 @@ export function applyVisualLibraryPageMode(
 
     const inserted =
       child.getAttribute("data-visual-inserted-section") === "true";
+    const isInsertHost =
+      child.getAttribute("data-visual-insert-host") === "true" ||
+      child.getAttribute("data-visual-runtime-host") === "true";
 
-    if (blankPage && !inserted) {
+    /*
+      Library / blank pages hide the template's default sections, but the
+      insert host must stay visible — inserted page sections mount inside it.
+    */
+    if (blankPage && !inserted && !isInsertHost) {
       if (
         !child.hasAttribute(
           "data-bizuply-library-original-display",

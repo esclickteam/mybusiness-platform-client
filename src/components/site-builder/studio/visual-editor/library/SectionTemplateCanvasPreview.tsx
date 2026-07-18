@@ -169,16 +169,29 @@ function NodePreview({
 export default function SectionTemplateCanvasPreview({
   section,
   theme,
+  fit = "contain",
+  align = "center",
+  forceVisible = false,
 }: {
   section: VisualLibrarySectionTemplate;
   theme?: VisualSectionTheme;
+  /** contain = fit whole section; width = scale to frame width (Wix page cards) */
+  fit?: "contain" | "width" | "none";
+  align?: "center" | "top";
+  /** Skip intersection lazy-load when parent already gates visibility */
+  forceVisible?: boolean;
 }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameSize, setFrameSize] = useState({ width: 320, height: 190 });
-  const [isVisible, setIsVisible] = useState(false);
+  const [isVisible, setIsVisible] = useState(forceVisible);
   const canvasHeight = numericHeight(section.minHeight);
 
   useEffect(() => {
+    if (forceVisible) {
+      setIsVisible(true);
+      return;
+    }
+
     const frame = frameRef.current;
     if (!frame) return;
 
@@ -198,7 +211,7 @@ export default function SectionTemplateCanvasPreview({
     );
     observer.observe(frame);
     return () => observer.disconnect();
-  }, []);
+  }, [forceVisible]);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -239,10 +252,30 @@ export default function SectionTemplateCanvasPreview({
     </NodePreview>
   );
 
-  const scale = Math.min(
-    frameSize.width / CANVAS_WIDTH,
-    frameSize.height / canvasHeight,
-  );
+  const scale =
+    fit === "none"
+      ? 1
+      : fit === "width"
+        ? Math.max(frameSize.width / CANVAS_WIDTH, 0.08)
+        : Math.min(
+            frameSize.width / CANVAS_WIDTH,
+            frameSize.height / canvasHeight,
+          );
+
+  const canvasStyle =
+    align === "top"
+      ? {
+          left: "50%",
+          top: 0,
+          transform: `translateX(-50%) scale(${scale})`,
+          transformOrigin: "top center" as const,
+        }
+      : {
+          left: "50%",
+          top: "50%",
+          transform: `translate(-50%, -50%) scale(${scale})`,
+          transformOrigin: "center" as const,
+        };
 
   return (
     <div
@@ -252,15 +285,14 @@ export default function SectionTemplateCanvasPreview({
     >
       {isVisible ? (
         <div
-          className="pointer-events-none absolute left-1/2 top-1/2 overflow-hidden"
+          className="pointer-events-none absolute overflow-hidden"
           style={{
             width: CANVAS_WIDTH,
             height: canvasHeight,
             backgroundColor: theme
               ? themeLibraryBackground(section.backgroundColor, theme)
               : section.backgroundColor || "#ffffff",
-            transform: `translate(-50%, -50%) scale(${scale})`,
-            transformOrigin: "center",
+            ...canvasStyle,
           }}
         >
           {(childNodes.get("") || []).map(renderNode)}

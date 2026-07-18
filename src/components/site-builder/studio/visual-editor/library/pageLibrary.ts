@@ -2,6 +2,7 @@ import type {
   VisualLibraryCategory,
   VisualLibraryPageTemplate,
 } from "./visualLibraryTypes";
+import { getSectionTemplateById } from "./sectionLibrary";
 
 type PageDef = {
   title: string;
@@ -1809,6 +1810,15 @@ const CATEGORY_DEFS: CategoryDef[] = [
   },
 ];
 
+function resolvePageThumbnail(sectionIds: string[]) {
+  for (const sectionId of sectionIds || []) {
+    if (sectionId === "section-footer") continue;
+    const section = getSectionTemplateById(sectionId);
+    if (section?.thumbnail) return section.thumbnail;
+  }
+  return undefined;
+}
+
 function buildPageLibrary(): VisualLibraryPageTemplate[] {
   const pages: VisualLibraryPageTemplate[] = [];
 
@@ -1824,6 +1834,7 @@ function buildPageLibrary(): VisualLibraryPageTemplate[] {
         description: pageDef.description,
         slugSuggestion: pageDef.slugSuggestion,
         keywords: pageDef.keywords,
+        thumbnail: resolvePageThumbnail(pageDef.sectionIds),
         sectionIds: pageDef.sectionIds,
       });
     });

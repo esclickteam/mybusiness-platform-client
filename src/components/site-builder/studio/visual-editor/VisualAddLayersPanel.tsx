@@ -64,6 +64,7 @@ import {
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
 import SectionTemplateCanvasPreview from "./library/SectionTemplateCanvasPreview";
+import PageLibraryCardPreview from "./library/PageLibraryCardPreview";
 import { resolveVisualSectionTheme } from "./library/sectionTheme";
 import {
   PAGE_LIBRARY,
@@ -1166,7 +1167,7 @@ export default function VisualAddLayersPanel({
                           ספריית עמודים · {activePageCategoryLabel}
                         </h3>
                         <p className="mt-1 text-xs font-bold text-slate-400">
-                          לחיצה יוצרת עמוד חדש עם הסקשנים המוכנים
+                          תצוגה מקדימה חיה של העמוד — לחיצה מוסיפה אותו לאתר
                         </p>
                       </div>
 
@@ -1175,17 +1176,23 @@ export default function VisualAddLayersPanel({
                       </span>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4 xl:grid-cols-3">
+                    <div className="grid grid-cols-2 gap-5 xl:grid-cols-3">
                       {filteredPages.map((page) => (
                         <button
                           key={page.id}
                           type="button"
                           onClick={() => handleAddLibraryPage(page)}
-                          className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_20px_45px_rgba(91,33,182,0.12)]"
+                          className="group overflow-hidden rounded-[18px] border border-slate-200 bg-white text-right shadow-[0_2px_12px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-1 hover:border-slate-400 hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)]"
                         >
-                          <div className="flex h-[120px] items-center justify-center border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-sky-50">
-                            <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                              <FileText className="h-6 w-6" />
+                          <div className="relative h-[340px] overflow-hidden border-b border-slate-100 bg-[#eef0f3]">
+                            <PageLibraryCardPreview
+                              page={page}
+                              theme={sectionTheme}
+                            />
+                            <div className="pointer-events-none absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white/90 to-transparent" />
+                            <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full bg-white/95 px-2.5 py-1 text-[10px] font-black text-slate-700 shadow-sm backdrop-blur">
+                              <Plus className="h-3 w-3" />
+                              הוספה
                             </span>
                           </div>
 
@@ -1197,14 +1204,10 @@ export default function VisualAddLayersPanel({
                               <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
                                 {page.description}
                               </p>
-                              <p className="mt-2 text-[11px] font-black text-violet-600">
+                              <p className="mt-2 text-[11px] font-black text-slate-500">
                                 {page.sectionIds.length} סקשנים
                               </p>
                             </div>
-
-                            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                              <Plus className="h-4 w-4" />
-                            </span>
                           </div>
                         </button>
                       ))}
