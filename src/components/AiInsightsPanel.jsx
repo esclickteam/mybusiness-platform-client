@@ -139,7 +139,9 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
         return;
       case "missing_seo":
         if (insight?.meta?.siteId) {
-          navigate(`${basePath}/website/sites/${insight.meta.siteId}/edit`);
+          navigate(`${basePath}/website/sites/${insight.meta.siteId}/edit`, {
+            state: { openSeo: true },
+          });
         } else {
           navigate(`${basePath}/website`);
         }

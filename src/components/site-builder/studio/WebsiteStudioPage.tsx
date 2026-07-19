@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import type {
   DeviceMode,
@@ -4643,6 +4644,9 @@ export default function WebsiteStudioPage({
   const layersRef = useRef<HTMLDivElement | null>(null);
   const editorRef = useRef<Editor | null>(null);
   const loadedFromServerRef = useRef(false);
+  const openedSeoFromInsightRef = useRef(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const selectedTemplateSeed = useMemo(() => {
     if (forceTemplateLoad && initialTemplateSeed) {
@@ -4749,6 +4753,32 @@ export default function WebsiteStudioPage({
   const activePage = useMemo(() => {
     return pages.find((page) => page.id === activePageId) || pages[0];
   }, [pages, activePageId]);
+
+  useEffect(() => {
+    const navState = location.state as { openSeo?: boolean } | null;
+    if (!navState?.openSeo || openedSeoFromInsightRef.current) return;
+    if (loadingSite || pages.length === 0) return;
+
+    const targetPage =
+      pages.find((page) => page.isHome) ||
+      pages.find((page) => page.id === "home") ||
+      pages[0];
+
+    if (!targetPage?.id) return;
+
+    openedSeoFromInsightRef.current = true;
+    setActivePageId(targetPage.id);
+    setPageSettingsModal({
+      open: true,
+      pageId: targetPage.id,
+      tab: "seo",
+    });
+
+    navigate(`${location.pathname}${location.search}`, {
+      replace: true,
+      state: null,
+    });
+  }, [location, loadingSite, pages, navigate]);
 
   const activePageClientPortal = useMemo(() => {
     return activePage?.clientPortal || createDefaultClientPortalConfig();
