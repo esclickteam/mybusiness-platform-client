@@ -16,6 +16,7 @@ import {
   Sparkles,
   Tags,
   Trash2,
+  Wand2,
   X,
 } from "lucide-react";
 
@@ -34,7 +35,10 @@ import {
   buildPagePath,
   buildPublicSiteUrl,
   buildRobotsContent,
+  buildSmartPageSeo,
   createSeoId,
+  deriveMetaDescription,
+  extractPlainTextFromHtml,
   getSeoFieldLengthStatus,
   normalizePageSeo,
   normalizeSiteSeoSettings,
@@ -70,6 +74,7 @@ type PageSettingsModalProps = {
   siteSlug: string;
   publicUrl?: string;
   seoSettings?: SiteSeoSettings | null;
+  pageHtml?: string;
   onClose: () => void;
   onSave: (payload: {
     title: string;
@@ -194,10 +199,12 @@ export default function PageSettingsModal({
   siteSlug,
   publicUrl,
   seoSettings,
+  pageHtml,
   onClose,
   onSave,
 }: PageSettingsModalProps) {
   const [tab, setTab] = useState<PageSettingsModalTab>(initialTab);
+  const [smartHint, setSmartHint] = useState("");
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [seoDraft, setSeoDraft] = useState<SitePageSeoSettings>({});
@@ -208,8 +215,33 @@ export default function PageSettingsModal({
     setTab(initialTab);
     setTitle(String(page.title || ""));
     setSlug(String(page.slug || ""));
-    setSeoDraft(normalizePageSeo(page.seo));
-  }, [open, page, initialTab]);
+    setSmartHint("");
+
+    const normalized = normalizePageSeo(page.seo);
+
+    /*
+      Basic auto-fill: if a page has no title/description yet, pre-populate the
+      fields with sensible values derived from the page + site so the owner sees
+      editable content instead of empty boxes. They can freely change it.
+    */
+    const meta = resolvePageSeoMeta({
+      page,
+      siteName,
+      siteSlug,
+      publicUrl,
+      seoSettings,
+    });
+    const pageText = extractPlainTextFromHtml(pageHtml || "");
+
+    if (!normalized.titleTag) {
+      normalized.titleTag = meta.titleTag;
+    }
+    if (!normalized.metaDescription) {
+      normalized.metaDescription = deriveMetaDescription(pageText);
+    }
+
+    setSeoDraft(normalized);
+  }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, pageHtml]);
 
   useEffect(() => {
     if (!open) return;
@@ -275,6 +307,38 @@ export default function PageSettingsModal({
         ...patch,
       },
     }));
+  };
+
+  const applySmartSeo = () => {
+    if (!page) return;
+    const smart = buildSmartPageSeo({
+      page: { ...page, title, slug, seo: seoDraft },
+      siteName,
+      siteSlug,
+      publicUrl,
+      seoSettings,
+      pageHtml,
+      overwrite: true,
+    });
+    setSeoDraft(smart);
+    setSmartHint("מילאנו SEO אוטומטית מתוכן העמוד — אפשר לערוך הכל.");
+    window.setTimeout(() => setSmartHint(""), 6000);
+  };
+
+  const fillExample = (field: "titleTag" | "metaDescription" | "keywords") => {
+    const exampleSiteName = siteName || "העסק שלי";
+    const examplePage = title || page?.title || "עמוד";
+    if (field === "titleTag") {
+      updateSeo({ titleTag: `${examplePage} | ${exampleSiteName}` });
+    } else if (field === "metaDescription") {
+      updateSeo({
+        metaDescription: `${examplePage} של ${exampleSiteName} — שירות מקצועי, איכותי ואמין. צרו קשר עוד היום לפרטים והצעת מחיר.`,
+      });
+    } else {
+      updateSeo({
+        keywords: `${examplePage}, ${exampleSiteName}, שירות, מקצועי, המלצות`,
+      });
+    }
   };
 
   const toggleRobotsDirective = (directive: SeoRobotsDirective) => {
@@ -458,6 +522,36 @@ export default function PageSettingsModal({
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-7 sm:py-6">
+          {tab !== "settings" ? (
+            <div className="mb-5 rounded-3xl border border-blue-200 bg-gradient-to-l from-blue-600 to-sky-500 p-4 text-white shadow-lg shadow-blue-200">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20">
+                    <Wand2 className="h-5 w-5" />
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-sm font-black">SEO חכם — מילוי אוטומטי</p>
+                    <p className="text-xs font-semibold text-blue-50">
+                      נמלא כותרת, תיאור, מילות מפתח וכרטיס Schema מתוכן העמוד.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={applySmartSeo}
+                  className="flex h-11 shrink-0 items-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-50"
+                >
+                  <Sparkles className="h-4 w-4" /> מלא אוטומטית
+                </button>
+              </div>
+              {smartHint ? (
+                <p className="mt-3 flex items-center gap-2 rounded-2xl bg-white/15 px-3 py-2 text-xs font-bold">
+                  <CheckCircle2 className="h-4 w-4" /> {smartHint}
+                </p>
+              ) : null}
+            </div>
+          ) : null}
+
           {(tab === "seo" || tab === "social") && previewMeta ? (
             <section className="mb-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-4">
               <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
@@ -581,15 +675,24 @@ export default function PageSettingsModal({
               ) : null}
 
               <label className="block space-y-2">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-black text-slate-800">
                     Title tag (כותרת בתוצאות החיפוש)
                   </span>
-                  <LengthHint
-                    value={seoDraft.titleTag || previewMeta?.titleTag || ""}
-                    idealMax={60}
-                    hardMax={70}
-                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fillExample("titleTag")}
+                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
+                    >
+                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
+                    </button>
+                    <LengthHint
+                      value={seoDraft.titleTag || previewMeta?.titleTag || ""}
+                      idealMax={60}
+                      hardMax={70}
+                    />
+                  </div>
                 </div>
                 <input
                   value={seoDraft.titleTag || ""}
@@ -602,15 +705,24 @@ export default function PageSettingsModal({
               </label>
 
               <label className="block space-y-2">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="text-sm font-black text-slate-800">
                     Meta description
                   </span>
-                  <LengthHint
-                    value={seoDraft.metaDescription || ""}
-                    idealMax={160}
-                    hardMax={320}
-                  />
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => fillExample("metaDescription")}
+                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
+                    >
+                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
+                    </button>
+                    <LengthHint
+                      value={seoDraft.metaDescription || ""}
+                      idealMax={160}
+                      hardMax={320}
+                    />
+                  </div>
                 </div>
                 <textarea
                   value={seoDraft.metaDescription || ""}
@@ -975,9 +1087,18 @@ export default function PageSettingsModal({
                 </label>
 
                 <label className="block space-y-2">
-                  <span className="text-sm font-black text-slate-800">
-                    מילות מפתח
-                  </span>
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-sm font-black text-slate-800">
+                      מילות מפתח
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => fillExample("keywords")}
+                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
+                    >
+                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
+                    </button>
+                  </div>
                   <input
                     value={seoDraft.keywords || ""}
                     onChange={(event) =>

@@ -7777,6 +7777,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             normalizePublicBusinessSlug(slug) || "your-business",
           )}
           seoSettings={siteSeoSettings}
+          pageHtml={(() => {
+            const target = pages.find(
+              (page) => page.id === pageSettingsModal.pageId,
+            );
+            if (!target) return "";
+            if (target.id === activePageId) {
+              try {
+                const liveHtml = editorRef.current?.getHtml?.() || "";
+                if (liveHtml) return liveHtml;
+              } catch {
+                /* fall back to stored html */
+              }
+            }
+            return String((target as any).html || "");
+          })()}
           onClose={() =>
             setPageSettingsModal((current) => ({ ...current, open: false }))
           }
