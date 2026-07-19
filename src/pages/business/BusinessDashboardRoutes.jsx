@@ -91,7 +91,9 @@ const HelpCenter = lazy(() => import("../HelpCenter"));
 
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
-const ChatGuidePage = lazy(() => import("../ChatGuidePage"));
+const WebsiteBuildingGuidePage = lazy(() =>
+  import("../WebsiteBuildingGuidePage")
+);
 const DashboardGuidePage = lazy(() => import("../DashboardGuidePage"));
 const AppointmentCRMGuidePage = lazy(() =>
   import("../AppointmentCRMGuidePage")
@@ -105,7 +107,7 @@ const BillingPage = lazy(() => import("../BillingPage"));
 /* FAQ pages */
 import ProfileFAQ from "../ProfileFAQ";
 import DashboardFAQ from "../DashboardFAQ";
-import CustomerMessagesFAQ from "../CustomerMessagesFAQ";
+import WebsiteBuildingFAQ from "../WebsiteBuildingFAQ";
 import CollaborationsFAQ from "../CollaborationsFAQ";
 import CrmFAQ from "../CrmFAQ";
 import BizUplyAdvisorFAQ from "../BizUplyAdvisorFAQ";
@@ -301,7 +303,10 @@ const BusinessDashboardRoutes = () => {
             element={<BuildBusinessGuidePage />}
           />
 
-          <Route path="articles/chat-guide" element={<ChatGuidePage />} />
+          <Route
+            path="articles/website-building-guide"
+            element={<WebsiteBuildingGuidePage />}
+          />
 
           <Route
             path="articles/dashboard-guide"
@@ -325,7 +330,7 @@ const BusinessDashboardRoutes = () => {
 
           <Route path="faq/profile" element={<ProfileFAQ />} />
           <Route path="faq/dashboard" element={<DashboardFAQ />} />
-          <Route path="faq/customer-messages" element={<CustomerMessagesFAQ />} />
+          <Route path="faq/website-building" element={<WebsiteBuildingFAQ />} />
           <Route path="faq/collaborations" element={<CollaborationsFAQ />} />
           <Route path="faq/crm" element={<CrmFAQ />} />
           <Route path="faq/BizUply-advisor" element={<BizUplyAdvisorFAQ />} />

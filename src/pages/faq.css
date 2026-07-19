@@ -8,6 +8,8 @@
   padding: 0 20px;
   font-family: Poppins, Inter, system-ui, Arial, sans-serif;
   color: #1f2937;
+  direction: rtl;
+  text-align: right;
 }
 
 /* =====================================================
@@ -68,7 +70,7 @@
 .faq-item::before {
   content: "";
   position: absolute;
-  left: 0;
+  right: 0;
   top: 16px;
   bottom: 16px;
   width: 4px;
@@ -105,7 +107,7 @@
   font-size: 1.05rem;
   font-weight: 600;
   color: #111827;
-  text-align: left;
+  text-align: right;
 }
 
 .faq-question:focus {
@@ -182,7 +184,7 @@
 }
 
 .faq-answer ul {
-  padding-left: 18px;
+  padding-right: 18px;
   margin: 12px 0;
 }
 

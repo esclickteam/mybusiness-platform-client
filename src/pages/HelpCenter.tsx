@@ -11,7 +11,7 @@ import {
   HelpCircle,
   LayoutDashboard,
   Mail,
-  MessageCircle,
+  Globe,
   Search,
   Settings,
   Sparkles,
@@ -56,19 +56,19 @@ type QuickAction = {
 };
 
 const SUGGESTED_QUERIES: QuickAction[] = [
-  { label: "איך לבנות עמוד עסקי?", query: "בניית עמוד עסקי" },
+  { label: "איך לבנות אתר?", query: "בניית אתר" },
+  { label: "איך לפרסם את האתר?", query: "פרסום אתר" },
   { label: "איך לנהל תורים ו-CRM?", query: "CRM תורים" },
   { label: "איך להשתמש ביועץ AI?", query: "יועץ AI" },
-  { label: "בעיות בדשבורד", query: "דשבורד" },
   { label: "עריכת פרופיל עסקי", query: "פרופיל עסקי" },
-  { label: "שיתופי פעולה עסקיים", query: "שיתופי פעולה" },
+  { label: "הגדרות SEO לאתר", query: "SEO" },
 ];
 
 const AI_QUICK_PROMPTS: QuickAction[] = [
-  { label: "איך לערוך את הפרופיל שלי?", query: "איך לערוך את הפרופיל העסקי שלי?" },
+  { label: "איך ליצור אתר חדש?", query: "איך ליצור אתר חדש ב-Bizuply?" },
+  { label: "איך לפרסם את האתר?", query: "איך מפרסמים אתר ב-Bizuply?" },
   { label: "הדשבורד לא מתעדכן", query: "הדשבורד לא מתעדכן, מה לעשות?" },
   { label: "איך לקבוע תור ללקוח?", query: "איך לקבוע תור ללקוח?" },
-  { label: "איך לשלוח הודעה ללקוח?", query: "איך לשלוח הודעה ללקוח?" },
 ];
 
 function matchesSearch(text: string, query: string) {
@@ -113,12 +113,12 @@ export default function HelpCenter() {
       },
       {
         id: 2,
-        title: "שימוש נכון בצ׳אט עם לקוחות",
+        title: "בניית אתר",
         description:
-          "טיפים לניהול שיחות חכמות עם לקוחות ולחיזוק הקשר עם הלקוחות שלך.",
-        url: `${basePath}/articles/chat-guide`,
-        icon: MessageCircle,
-        keywords: ["צ'אט", "הודעות", "לקוחות", "שיחה"],
+          "מדריך מלא ליצירת אתר מקצועי — מתבנית, עם AI, עריכה ופרסום.",
+        url: `${basePath}/articles/website-building-guide`,
+        icon: Globe,
+        keywords: ["אתר", "תבנית", "AI", "עורך", "פרסום", "SEO"],
       },
       {
         id: 3,
@@ -180,11 +180,11 @@ export default function HelpCenter() {
       },
       {
         id: 3,
-        title: "הודעות לקוחות",
-        description: "צ'אט, התראות ותקשורת עם לקוחות",
-        path: `${basePath}/faq/customer-messages`,
-        icon: MessageCircle,
-        keywords: ["הודעות", "צ'אט", "לקוחות"],
+        title: "בניית אתר",
+        description: "יצירה, עריכה, SEO ופרסום אתרים",
+        path: `${basePath}/faq/website-building`,
+        icon: Globe,
+        keywords: ["אתר", "תבנית", "AI", "עורך", "פרסום", "SEO"],
       },
       {
         id: 4,
