@@ -206,7 +206,7 @@ export default function PageSettingsModal({
         role="dialog"
         aria-modal="true"
         aria-label={`הגדרות עמוד (${page.title || "עמוד"})`}
-        className="relative my-auto flex max-h-[calc(100vh-24px)] w-full max-w-[860px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.32)] sm:max-h-[calc(100vh-48px)]"
+        className="relative my-auto flex h-[min(760px,calc(100vh-24px))] w-full max-w-[860px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.32)] sm:h-[min(760px,calc(100vh-48px))]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.14),transparent_55%),radial-gradient(circle_at_top_left,rgba(14,165,233,0.12),transparent_52%)]" />
