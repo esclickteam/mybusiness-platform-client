@@ -98,7 +98,7 @@ const TABS: Array<{
 ];
 
 const fieldClassName =
-  "h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
+  "h-12 w-full max-w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
 
 const textareaClassName =
   "min-h-[104px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
@@ -1201,9 +1201,8 @@ export default function PageSettingsModal({
                                 : Number(event.target.value),
                           })
                         }
-                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                        placeholder="-1 = ללא הגבלה"
-                        dir="ltr"
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                        placeholder="-1"
                       />
                     </label>
                     <label className="block space-y-1.5">
@@ -1226,12 +1225,14 @@ export default function PageSettingsModal({
                                 : Number(event.target.value),
                           })
                         }
-                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                        placeholder="-1 = ללא הגבלה"
-                        dir="ltr"
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                        placeholder="-1"
                       />
                     </label>
                   </div>
+                  <p className="px-3.5 pb-3 text-[11px] font-semibold text-slate-500">
+                    ריק = ברירת מחדל · ‎-1‎ = ללא הגבלה
+                  </p>
                 </details>
 
                 <div className="rounded-2xl bg-slate-900 px-4 py-3">
@@ -1414,8 +1415,7 @@ export default function PageSettingsModal({
                           setVerificationCode(event.target.value)
                         }
                         className={fieldClassName}
-                        placeholder="אפשר להדביק את הקוד או את כל השורה של גוגל"
-                        dir="ltr"
+                        placeholder="הדביקי כאן את הקוד או את כל השורה מגוגל"
                       />
                       {verificationCode ? (
                         <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
@@ -1488,9 +1488,8 @@ export default function PageSettingsModal({
                                 content: event.target.value,
                               })
                             }
-                            className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
+                            className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
                             placeholder="הערך של התג"
-                            dir="ltr"
                           />
                           <button
                             type="button"
