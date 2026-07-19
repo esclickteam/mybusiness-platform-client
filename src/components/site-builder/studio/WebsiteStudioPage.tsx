@@ -11,6 +11,8 @@ import type {
   WebsiteStudioPageProps,
   StudioSitePage,
   StudioSitePageType,
+  SiteSeoSettings,
+  SitePageSeoSettings,
 } from "./types";
 import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
 
@@ -18,6 +20,13 @@ import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import TemplateVisualEditor from "./TemplateVisualEditor";
+import PageSettingsModal, {
+  type PageSettingsModalTab,
+} from "./visual-editor/components/PageSettingsModal";
+import {
+  normalizePageSeo,
+  normalizeSiteSeoSettings,
+} from "./utils/pageSeoUtils";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 
@@ -4707,6 +4716,19 @@ export default function WebsiteStudioPage({
 
     return createInitialPages();
   });
+  const [siteName, setSiteName] = useState("האתר שלי");
+  const [siteSeoSettings, setSiteSeoSettings] = useState<SiteSeoSettings>(() =>
+    normalizeSiteSeoSettings(null),
+  );
+  const [pageSettingsModal, setPageSettingsModal] = useState<{
+    open: boolean;
+    pageId: string;
+    tab: PageSettingsModalTab;
+  }>({
+    open: false,
+    pageId: "",
+    tab: "seo",
+  });
   const [activePageId, setActivePageId] = useState(() => {
     if (selectedTemplateSeed) {
       return createPagesFromTemplateSeed(selectedTemplateSeed).activePageId;
@@ -4821,6 +4843,14 @@ export default function WebsiteStudioPage({
             ? { updatedAt: String(loadedSiteCode.updatedAt) }
             : {}),
         });
+
+        if (data.site.name) {
+          setSiteName(String(data.site.name));
+        }
+
+        setSiteSeoSettings(
+          normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
+        );
 
         const savedTemplateData = pickVisualTemplateDataFromSavedSite(
           data.site,
@@ -5218,6 +5248,8 @@ export default function WebsiteStudioPage({
           Array.isArray(data.site.pages) && data.site.pages.length
             ? data.site.pages.map((page: StudioSitePageWithPortal) => ({
                 ...page,
+                hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
+                seo: normalizePageSeo(page.seo),
                 clientPortal:
                   page.clientPortal || createDefaultClientPortalConfig(),
               }))
@@ -5232,6 +5264,12 @@ export default function WebsiteStudioPage({
         setSlug(
           normalizeBusinessSlug(data.site.slug || initialSlug) ||
             "your-business",
+        );
+        if (data.site.name) {
+          setSiteName(String(data.site.name));
+        }
+        setSiteSeoSettings(
+          normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
         );
         setPages(serverPages);
         setActivePageId(nextActivePageId);
@@ -5848,6 +5886,60 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } as StudioSitePageWithPortal;
   };
 
+  const handlePageSettingsModalSave = ({
+    title: nextTitle,
+    slug: nextSlugValue,
+    seo,
+  }: {
+    title: string;
+    slug: string;
+    seo: SitePageSeoSettings;
+  }) => {
+    const id = String(pageSettingsModal.pageId || "").trim();
+    if (!id) return;
+
+    const cleanTitle = String(nextTitle || "").trim();
+    if (!cleanTitle) return;
+
+    const nextSlug = normalizePageSlug(nextSlugValue || cleanTitle, pages, id);
+
+    setPages((prev) => {
+      const previousTitleById: Record<string, string> = {};
+      prev.forEach((page) => {
+        const pageId = String(page.id || "").trim();
+        const title = String(page.title || "").trim();
+        if (pageId && title) previousTitleById[pageId] = title;
+      });
+
+      const nextPages = prev.map((page) => {
+        if (page.id !== id) return page;
+
+        return {
+          ...page,
+          title: cleanTitle,
+          slug: page.isHome ? "" : nextSlug,
+          seo: normalizePageSeo(seo),
+          updatedAt: new Date().toISOString(),
+        };
+      });
+
+      const slimPages = slimSitePageNavSources(nextPages);
+
+      setVisualSessionData((previous) => {
+        const synced = syncSitePageTitlesIntoVisualData(
+          previous || {},
+          slimPages,
+          { previousTitleById },
+        );
+        delete (synced as any).__sitePages;
+        delete (synced as any).__previousSitePageTitles;
+        return synced;
+      });
+
+      return nextPages;
+    });
+  };
+
   const handleVisualSitePageAction = (
     action: string,
     pageId: string,
@@ -5858,27 +5950,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const target = pages.find((page) => page.id === id);
     if (!target) return;
 
-    if (action === "rename" || action === "settings") {
+    if (action === "settings") {
+      setPageSettingsModal({ open: true, pageId: id, tab: "settings" });
+      return;
+    }
+
+    if (action === "seo") {
+      setPageSettingsModal({ open: true, pageId: id, tab: "seo" });
+      return;
+    }
+
+    if (action === "social") {
+      setPageSettingsModal({ open: true, pageId: id, tab: "social" });
+      return;
+    }
+
+    if (action === "rename") {
       const nextTitle = window.prompt(
-        action === "settings"
-          ? "שם העמוד (הגדרות בסיס)"
-          : "שם חדש לעמוד",
+        "שם חדש לעמוד",
         String(target.title || ""),
       );
       if (nextTitle == null) return;
       const cleanTitle = String(nextTitle).trim();
       if (!cleanTitle) return;
-
-      let nextSlug = String(target.slug || "");
-      if (action === "settings" && !target.isHome) {
-        const slugAnswer = window.prompt(
-          "כתובת העמוד (slug) ללא /",
-          nextSlug,
-        );
-        if (slugAnswer != null) {
-          nextSlug = normalizePageSlug(slugAnswer || cleanTitle, pages, id);
-        }
-      }
 
       setPages((prev) => {
         const previousTitleById: Record<string, string> = {};
@@ -5891,30 +5985,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         const nextPages = prev.map((page) => {
           if (page.id !== id) return page;
 
-          /*
-            Rename updates the display title only. Slug changes only via
-            settings — otherwise library/nav href matching breaks in real time.
-          */
           return {
             ...page,
             title: cleanTitle,
-            slug:
-              page.isHome
-                ? ""
-                : action === "settings"
-                  ? nextSlug
-                  : page.slug,
             updatedAt: new Date().toISOString(),
           };
         });
 
         const slimPages = slimSitePageNavSources(nextPages);
 
-        /*
-          Sync only the live visual session with slim page descriptors.
-          Never merge full page visual payloads into every site page —
-          that nested __sitePages/html/data and blew past the API body limit.
-        */
         setVisualSessionData((previous) => {
           const synced = syncSitePageTitlesIntoVisualData(
             previous || {},
@@ -6026,15 +6105,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (
-      action === "seo" ||
-      action === "social" ||
       action === "background" ||
       action === "copy" ||
       action === "dynamic" ||
       action === "subpage"
     ) {
       window.alert(
-        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בשינוי שם, שכפול, דף בית, הסתרה מתפריט ומחיקה.",
+        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, שינוי שם, שכפול, דף בית, הסתרה מתפריט ומחיקה.",
       );
     }
   };
@@ -6360,6 +6437,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           slug,
           published,
         },
+        name: siteName,
+        seoSettings: siteSeoSettings,
         pages: savedPages,
         activePageId,
         clientPortalPages: savedPages.filter(
@@ -7232,6 +7311,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           url: nextPublicUrl,
           domain: BIZUPLY_PUBLIC_SITE_DOMAIN,
         },
+        name: siteName,
+        seoSettings: siteSeoSettings,
         pages: pagesForSave,
         activePageId: activeVisualPageId,
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
@@ -7683,6 +7764,24 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   onSelectSitePage={handleSelectVisualSitePage}
   onSitePageAction={handleVisualSitePageAction}
 />
+        <PageSettingsModal
+          open={pageSettingsModal.open}
+          tab={pageSettingsModal.tab}
+          page={
+            pages.find((page) => page.id === pageSettingsModal.pageId) || null
+          }
+          pages={pages}
+          siteName={siteName}
+          siteSlug={normalizePublicBusinessSlug(slug) || "your-business"}
+          publicUrl={buildPublicSiteUrl(
+            normalizePublicBusinessSlug(slug) || "your-business",
+          )}
+          seoSettings={siteSeoSettings}
+          onClose={() =>
+            setPageSettingsModal((current) => ({ ...current, open: false }))
+          }
+          onSave={handlePageSettingsModalSave}
+        />
       </div>
     );
   }
