@@ -75,6 +75,7 @@ type PageSettingsModalProps = {
   siteName: string;
   siteSlug: string;
   publicUrl?: string;
+  publicUrlIsPlaceholder?: boolean;
   seoSettings?: SiteSeoSettings | null;
   pageHtml?: string;
   onClose: () => void;
@@ -91,7 +92,7 @@ const TABS: Array<{
   icon: React.ReactNode;
 }> = [
   { id: "settings", label: "הגדרות", icon: <Settings2 className="h-4 w-4" /> },
-  { id: "seo", label: "יסודות SEO", icon: <Search className="h-4 w-4" /> },
+  { id: "seo", label: "SEO בסיסי", icon: <Search className="h-4 w-4" /> },
   { id: "advanced", label: "SEO מתקדם", icon: <Sparkles className="h-4 w-4" /> },
   { id: "social", label: "שיתוף ברשתות", icon: <Share2 className="h-4 w-4" /> },
 ];
@@ -200,6 +201,7 @@ export default function PageSettingsModal({
   siteName,
   siteSlug,
   publicUrl,
+  publicUrlIsPlaceholder,
   seoSettings,
   pageHtml,
   onClose,
@@ -599,7 +601,7 @@ export default function PageSettingsModal({
           })}
         </div>
 
-        <div className="relative min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-7 sm:py-6">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-5 py-5 sm:px-7 sm:py-6">
           {tab !== "settings" ? (
             <div className="mb-5 rounded-3xl border border-blue-200 bg-gradient-to-l from-blue-600 to-sky-500 p-4 text-white shadow-lg shadow-blue-200">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1011,6 +1013,14 @@ export default function PageSettingsModal({
                     </p>
                     {(seoDraft.structuredData || []).map((entry) => {
                       const status = validateJsonLd(entry.json);
+                      const entryPreset = STRUCTURED_DATA_PRESETS.find(
+                        (item) =>
+                          item.id === entry.name ||
+                          (status.valid &&
+                            new RegExp(`"@type"\\s*:\\s*"${item.id}"`).test(
+                              entry.json,
+                            )),
+                      );
                       return (
                         <div
                           key={entry.id}
@@ -1054,6 +1064,15 @@ export default function PageSettingsModal({
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
+                          {entryPreset ? (
+                            <p className="mt-2 flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-semibold leading-5 text-amber-800">
+                              <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
+                              <span>
+                                <span className="font-black">מה לשנות לשיפור: </span>
+                                {entryPreset.tips}
+                              </span>
+                            </p>
+                          ) : null}
                           <details className="group/code mt-2 [&_summary::-webkit-details-marker]:hidden">
                             <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-black text-blue-600">
                               <ChevronDown className="h-4 w-4 transition group-open/code:rotate-180" />
@@ -1235,8 +1254,9 @@ export default function PageSettingsModal({
                 badge={{ label: "לא חובה", tone: "optional" }}
               >
                 <HelpNote>
-                  Canonical אומר לגוגל מהי הכתובת ה״רשמית״ של העמוד. השאירו ריק אם
-                  יש רק כתובת אחת — נשתמש בה אוטומטית.
+                  Canonical אומר לגוגל מהי הכתובת ה״רשמית״ של העמוד. הכתובת נקבעת
+                  אוטומטית לפי האתר המפורסם + שם העמוד ומתעדכנת לבד — השאירו ריק
+                  אלא אם יש סיבה מיוחדת.
                 </HelpNote>
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
@@ -1282,6 +1302,7 @@ export default function PageSettingsModal({
                 title="אימות מול Google ותגי מטא"
                 description="חברו את האתר ל-Google Search Console כדי לעקוב אחרי הביצועים ולשלוח עמודים לגוגל."
                 badge={{ label: "מומלץ", tone: "recommended" }}
+                defaultOpen
               >
                 <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 text-xs font-semibold leading-6 text-slate-700">
                   <p className="mb-1 flex items-center gap-1.5 text-sm font-black text-slate-900">
@@ -1321,6 +1342,16 @@ export default function PageSettingsModal({
                       <p className="text-sm font-black text-slate-900">
                         בחרי "קידומת כתובת אתר" והדביקי את הכתובת שלך
                       </p>
+                      <p className="text-xs font-semibold text-slate-500">
+                        הכתובת נקלטת אוטומטית מהאתר המפורסם שלך — אין צורך להקליד.
+                      </p>
+                      {publicUrlIsPlaceholder ? (
+                        <p className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
+                          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          האתר עדיין לא פורסם, לכן זו כתובת לדוגמה. פרסמי את האתר
+                          והכתובת האמיתית תופיע כאן אוטומטית.
+                        </p>
+                      ) : null}
                       <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
                         <input
                           value={siteBaseUrl}

@@ -324,6 +324,7 @@ export type StructuredDataPreset = {
   id: string;
   label: string;
   description: string;
+  tips: string;
   build: (ctx: { siteName: string; pageTitle: string; url: string }) => string;
 };
 
@@ -336,6 +337,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "Organization",
     label: "ארגון / עסק (Organization)",
     description: "פרטי העסק, לוגו וקישורים לרשתות.",
+    tips: "מלאו: logo (קישור ללוגו), ו‑sameAs (קישורים לפייסבוק/אינסטגרם/לינקדאין).",
     build: ({ siteName, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -350,6 +352,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "LocalBusiness",
     label: "עסק מקומי (LocalBusiness)",
     description: "כתובת, טלפון ושעות פעילות — מצוין ל‑Local SEO.",
+    tips: "מלאו: telephone (טלפון), address (רחוב, עיר), ו‑openingHours (שעות פעילות). זה מה שמופיע בכרטיס גוגל.",
     build: ({ siteName, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -370,6 +373,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "Service",
     label: "שירות (Service)",
     description: "תיאור שירות שהעסק מספק.",
+    tips: "מלאו: name (שם השירות), description (תיאור), ו‑areaServed (אזור השירות).",
     build: ({ siteName, pageTitle }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -384,6 +388,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "Product",
     label: "מוצר (Product)",
     description: "מוצר עם מחיר ודירוג — מפעיל תוצאות עשירות.",
+    tips: "מלאו: name (שם המוצר), image (קישור לתמונה), ובתוך offers את price (מחיר). כך גוגל מציג מחיר.",
     build: ({ pageTitle }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -403,6 +408,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "FAQPage",
     label: "שאלות ותשובות (FAQPage)",
     description: "בלוק שו״ת שיכול להופיע ישירות בגוגל.",
+    tips: "החליפו את name (השאלה) ואת text (התשובה). אפשר לשכפל שורות כדי להוסיף עוד שאלות.",
     build: () =>
       jsonld({
         "@context": "https://schema.org",
@@ -420,6 +426,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "BreadcrumbList",
     label: "פירורי לחם (BreadcrumbList)",
     description: "היררכיית ניווט שמופיעה בתוצאות החיפוש.",
+    tips: "עדכנו את name (שם כל שלב) ואת item (הקישור לכל שלב) לפי מבנה האתר.",
     build: ({ siteName, pageTitle, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -434,6 +441,7 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
     id: "Article",
     label: "מאמר / בלוג (Article)",
     description: "כתבה או פוסט בלוג עם מחבר ותאריך.",
+    tips: "מלאו: headline (כותרת הכתבה), author (מחבר), ו‑datePublished (תאריך פרסום בפורמט 2026-07-19).",
     build: ({ siteName, pageTitle, url }) =>
       jsonld({
         "@context": "https://schema.org",
