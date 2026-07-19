@@ -3,144 +3,142 @@ import "./AICompanionGuidePage.css";
 
 export default function AICompanionGuidePage() {
   return (
-    <div className="ai-guide-container" dir="ltr" lang="en">
-      <h1>Artificial Intelligence in BizUply</h1>
+    <div className="ai-guide-container" dir="rtl" lang="he">
+      <h1>בינה מלאכותית ב-Bizuply</h1>
 
-      <h2>Why modern businesses need AI</h2>
+      <h2>למה עסקים מודרניים צריכים AI</h2>
       <p>
-        In an increasingly competitive environment, customers expect fast,
-        accurate, and personalized responses. Managing a business based solely
-        on intuition or manual processes is no longer sufficient.
+        בסביבה תחרותית יותר ויותר, לקוחות מצפים לתגובות מהירות,
+        מדויקות ומותאמות אישית. ניהול עסק שמסתמך רק על תחושת בטן
+        או תהליכים ידניים כבר לא מספיק.
       </p>
       <p>
-        Artificial intelligence enables data-driven decision-making by analyzing
-        real-time business activity. It helps businesses operate more efficiently,
-        respond faster to changes, and remain competitive in dynamic markets.
+        בינה מלאכותית מאפשרת קבלת החלטות מבוססת נתונים על ידי ניתוח
+        פעילות עסקית בזמן אמת. היא עוזרת לעסקים לפעול ביעילות רבה
+        יותר, להגיב מהר יותר לשינויים ולהישאר תחרותיים בשווקים
+        דינמיים.
       </p>
 
-      <h2>What is BizUply’s AI Partner</h2>
+      <h2>מהו יועץ ה-AI של Bizuply</h2>
       <p>
-        The AI Partner is an intelligent system embedded within the BizUply
-        platform. It continuously analyzes your business data and provides
-        actionable insights, alerts, and recommendations tailored specifically
-        to your operations.
+        יועץ ה-AI הוא מערכת חכמה המשולבת בפלטפורמת Bizuply. הוא
+        מנתח באופן רציף את נתוני העסק שלכם ומספק תובנות, התראות
+        והמלצות מעשיות המותאמות במיוחד לפעילות שלכם — מבניית האתר
+        ועד ניהול תורים, CRM ושיתופי פעולה.
       </p>
 
-      <h2>What the AI Partner includes</h2>
+      <h2>מה כולל יועץ ה-AI</h2>
       <ul>
         <li>
-          Personalized insights based on customer activity, bookings, and
-          engagement.
+          תובנות מותאמות אישית על בסיס פעילות לקוחות, הזמנות
+          ומעורבות.
         </li>
         <li>
-          Automated alerts for marketing opportunities, high-intent customers,
-          and early signs of potential issues.
+          התראות אוטומטיות להזדמנויות שיווק, לקוחות בעלי כוונת
+          רכישה גבוהה וסימנים מוקדמים לבעיות פוטנציאליות.
         </li>
         <li>
-          Data-driven recommendations covering marketing, pricing, scheduling,
-          and internal operations.
+          המלצות מבוססות נתונים בתחומי שיווק, תמחור, תיאום
+          ותפעול פנימי.
         </li>
         <li>
-          Continuous updates aligned with your real-time business performance.
+          עדכונים מתמשכים בהתאם לביצועי העסק בזמן אמת.
         </li>
       </ul>
       <p>
-        All AI-generated insights are also visible on your main dashboard,
-        ensuring that critical information is always accessible.
+        כל התובנות מ-AI גלויות גם בלוח הבקרה הראשי, כך שמידע קריטי
+        תמיד נגיש.
       </p>
 
-      <h2>Why the AI Partner is a strategic advisor</h2>
+      <h2>למה יועץ ה-AI הוא יועץ אסטרטגי</h2>
       <ol>
         <li>
-          <strong>Insights grounded in real business data</strong>
+          <strong>תובנות מבוססות נתונים עסקיים אמיתיים</strong>
           <br />
-          The AI analyzes inquiries, bookings, cancellations, reviews, and
-          operational patterns to surface insights that would otherwise be
-          difficult to identify.
+          ה-AI מנתח פניות, הזמנות, ביטולים, ביקורות ודפוסים
+          תפעוליים כדי לחשוף תובנות שקשה לזהות אחרת.
         </li>
         <li>
-          <strong>Actionable recommendations, not generic advice</strong>
+          <strong>המלצות מעשיות, לא עצות כלליות</strong>
           <br />
-          Suggestions are specific to your business context and designed to
-          support concrete actions rather than abstract guidance.
+          ההצעות מותאמות להקשר העסקי שלכם ומיועדות לתמוך
+          בפעולות קונקרטיות, לא בהנחיה מופשטת.
         </li>
         <li>
-          <strong>Early detection of changes and risks</strong>
+          <strong>זיהוי מוקדם של שינויים וסיכונים</strong>
           <br />
-          The system identifies anomalies such as declining inquiries or rising
-          cancellations and notifies you promptly, allowing timely intervention.
+          המערכת מזהה חריגות כמו ירידה בפניות או עלייה בביטולים
+          ומודיעה לכם בזמן, כדי לאפשר התערבות מהירה.
         </li>
         <li>
-          <strong>Continuous improvement without external dependency</strong>
+          <strong>שיפור מתמשך בלי תלות חיצונית</strong>
           <br />
-          With an always-available advisor, businesses can iterate, learn, and
-          improve without relying exclusively on external consultants.
+          עם יועץ זמין באופן קבוע, עסקים יכולים לשפר, ללמוד ולהתקדם
+          בלי להסתמך רק על יועצים חיצוניים.
         </li>
       </ol>
 
-      <h2>How to get the most value from the AI Partner</h2>
+      <h2>איך להפיק את המירב מיועץ ה-AI</h2>
       <ol>
         <li>
-          <strong>Define clear business goals</strong>
+          <strong>הגדירו יעדים עסקיים ברורים</strong>
           <br />
-          Identify areas you want to improve, such as marketing performance,
-          customer retention, pricing, or operational efficiency.
+          זהו תחומים שברצונכם לשפר, כמו ביצועי שיווק, שימור
+          לקוחות, תמחור או יעילות תפעולית.
         </li>
         <li>
-          <strong>Review insights consistently</strong>
+          <strong>עיינו בתובנות באופן עקבי</strong>
           <br />
-          Check the AI section regularly to stay informed about alerts,
-          recommendations, and emerging trends.
+          בדקו את מקטע ה-AI באופן קבוע כדי להישאר מעודכנים
+          בהתראות, המלצות ומגמות מתפתחות.
         </li>
         <li>
-          <strong>Apply marketing guidance strategically</strong>
+          <strong>יישמו הנחיות שיווק באופן אסטרטגי</strong>
           <br />
-          Use AI insights to determine optimal timing for promotions, which
-          services to highlight, and how to refine your messaging.
+          השתמשו בתובנות AI כדי לקבוע תזמון אופטימלי למבצעים,
+          אילו שירותים להדגיש ואיך לחדד את המסרים.
         </li>
         <li>
-          <strong>Optimize operations using data</strong>
+          <strong>ייעלו תפעול בעזרת נתונים</strong>
           <br />
-          Evaluate whether your time investment aligns with revenue, identify
-          pricing adjustments, and improve lead-to-conversion rates.
+          העריכו האם השקעת הזמן שלכם מתיישרת עם ההכנסות, זהו
+          התאמות תמחור ושפרו שיעורי המרה.
         </li>
         <li>
-          <strong>Learn from long-term patterns</strong>
+          <strong>למדו מדפוסים לטווח ארוך</strong>
           <br />
-          AI insights become more powerful over time as patterns emerge,
-          enabling continuous refinement of business strategy.
+          תובנות AI מתחזקות עם הזמן ככל שדפוסים מתגלים, ומאפשרות
+          שיפור מתמשך של האסטרטגיה העסקית.
         </li>
       </ol>
 
-      <h2>Key areas to consult the AI Partner</h2>
+      <h2>תחומים מרכזיים לייעוץ עם יועץ ה-AI</h2>
       <ul>
         <li>
-          Marketing and sales optimization, including lead conversion and
-          customer acquisition.
+          אופטימיזציה של שיווק ומכירות, כולל המרת לידים ורכישת
+          לקוחות.
         </li>
         <li>
-          Time management and workload balance to ensure profitability and
-          sustainability.
+          ניהול זמן ואיזון עומס כדי להבטיח רווחיות וקיימות.
         </li>
         <li>
-          Customer retention and relationship management through personalized
-          engagement.
+          שימור לקוחות וניהול קשרים באמצעות מעורבות מותאמת
+          אישית.
         </li>
         <li>
-          Service quality and operational improvements to reduce friction and
-          cancellations.
+          איכות שירות ושיפורים תפעוליים להפחתת חיכוך וביטולים.
         </li>
       </ul>
 
-      <h2>Summary</h2>
+      <h2>סיכום</h2>
       <p>
-        The AI Partner in BizUply functions as a strategic business advisor,
-        embedded directly into your daily workflow. It transforms raw data into
-        clear insights, enabling informed decisions and measurable improvements.
+        יועץ ה-AI ב-Bizuply פועל כיועץ עסקי אסטרטגי, משולב ישירות
+        בתהליך העבודה היומיומי. הוא הופך נתונים גולמיים לתובנות
+        ברורות, ומאפשר החלטות מושכלות ושיפורים מדידים.
       </p>
       <p>
-        In a data-driven business environment, AI is not a luxury. It is a core
-        capability that helps businesses adapt, grow, and remain competitive.
+        בסביבה עסקית מבוססת נתונים, AI אינו מותרות — הוא יכולת
+        ליבה שעוזרת לעסקים להסתגל, לגדול ולהישאר תחרותיים.
       </p>
     </div>
   );

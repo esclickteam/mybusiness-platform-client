@@ -3,201 +3,191 @@ import "./DashboardGuidePage.css";
 
 export default function DashboardGuidePage() {
   return (
-    <div className="dashboard-guide-container" dir="ltr" lang="en">
-      <h1>The BizUply Dashboard: Full Control at a Glance</h1>
+    <div className="dashboard-guide-container" dir="rtl" lang="he">
+      <h1>לוח הבקרה של Bizuply: שליטה מלאה במבט אחד</h1>
 
-      <h2>What is the BizUply dashboard and why it matters</h2>
+      <h2>מהו לוח הבקרה של Bizuply ולמה הוא חשוב</h2>
       <p>
-        The dashboard is your central control panel in BizUply. It brings together
-        all essential business data in one clear, accessible view, allowing you
-        to monitor activity in real time, understand performance, and identify
-        trends or issues early.
+        לוח הבקרה הוא מרכז השליטה שלכם ב-Bizuply. הוא מאגד את כל נתוני
+        העסק החיוניים בתצוגה אחת ברורה ונגישה, ומאפשר לעקוב אחר פעילות
+        בזמן אמת, להבין ביצועים ולזהות מגמות או בעיות מוקדם.
       </p>
       <p>
-        Instead of relying on intuition, the dashboard enables data-driven
-        decisions that help you manage and grow your business more effectively.
+        במקום להסתמך על תחושת בטן, לוח הבקרה מאפשר קבלת החלטות מבוססת
+        נתונים שעוזרת לנהל ולגדול ביעילות רבה יותר.
       </p>
 
-      <h2>Why the dashboard should be a core business tool</h2>
+      <h2>למה לוח הבקרה צריך להיות כלי ליבה בעסק</h2>
       <ul>
         <li>
-          All key systems—calendar, CRM, and analytics—are consolidated in one
-          place.
+          כל המערכות המרכזיות — יומן, CRM ואנליטיקה — מרוכזות במקום אחד.
         </li>
         <li>
-          You can make faster, more accurate decisions based on real, current
-          data.
+          אפשר לקבל החלטות מהירות ומדויקות יותר על בסיס נתונים עדכניים.
         </li>
         <li>
-          Seasonal patterns become clear, allowing better planning.
+          דפוסים עונתיים מתבהרים ומאפשרים תכנון טוב יותר.
         </li>
         <li>
-          When enabled, the AI Partner provides real-time, actionable
-          recommendations.
+          כשהוא מופעל, יועץ ה-AI מספק המלצות מעשיות בזמן אמת.
         </li>
       </ul>
 
-      <h2>What the dashboard includes</h2>
+      <h2>מה כולל לוח הבקרה</h2>
 
-      <h3>Customer Reviews</h3>
+      <h3>ביקורות לקוחות</h3>
       <p>
-        This section displays reviews submitted by your customers, offering a
-        clear picture of overall satisfaction.
+        מקטע זה מציג ביקורות שנשלחו על ידי הלקוחות שלכם, ומספק תמונה
+        ברורה של שביעות הרצון הכללית.
       </p>
-      <p><strong>How to use this data:</strong></p>
+      <p><strong>איך להשתמש בנתונים:</strong></p>
       <ul>
-        <li>Track customer sentiment over time.</li>
-        <li>Identify recurring strengths and improvement areas.</li>
+        <li>לעקוב אחר תחושת הלקוחות לאורך זמן.</li>
+        <li>לזהות חוזקות חוזרות ותחומים לשיפור.</li>
         <li>
-          Respond to reviews when appropriate to demonstrate engagement and
-          professionalism.
+          להגיב לביקורות כשמתאים, כדי להראות מעורבות ומקצועיות.
         </li>
       </ul>
       <p>
-        <strong>Example:</strong> If customers frequently mention friendly
-        service, emphasize it in your business description or marketing
-        messaging.
+        <strong>דוגמה:</strong> אם לקוחות מציינים לעתים קרובות שירות
+        ידידותי, הדגישו זאת בתיאור העסק או במסרים השיווקיים.
       </p>
 
-      <h3>Appointments and Business Calendar</h3>
+      <h3>תורים ויומן העסק</h3>
       <p>
-        A centralized view of upcoming and past appointments, synchronized with
-        your calendar and CRM.
+        תצוגה מרכזית של תורים קרובים ועבר, מסונכרנת עם היומן וה-CRM.
       </p>
-      <p><strong>Why this matters:</strong></p>
+      <p><strong>למה זה חשוב:</strong></p>
       <ul>
-        <li>Plan daily and monthly schedules efficiently.</li>
-        <li>Monitor workload in real time.</li>
+        <li>לתכנן לוחות זמנים יומיים וחודשיים ביעילות.</li>
+        <li>לעקוב אחר עומס העבודה בזמן אמת.</li>
         <li>
-          Easily manage rescheduling, cancellations, and availability changes.
+          לנהל בקלות שינויי מועד, ביטולים ועדכוני זמינות.
         </li>
       </ul>
       <p>
-        <strong>Example:</strong> If a specific month is fully booked, consider
-        adding additional time slots or extended service hours.
+        <strong>דוגמה:</strong> אם חודש מסוים מלא בתורים, שקלו להוסיף
+        חלונות זמן נוספים או להאריך שעות שירות.
       </p>
 
-      <h3>Appointments by Month</h3>
+      <h3>תורים לפי חודש</h3>
       <p>
-        A visual chart showing how appointment volume changes across months.
+        תרשים ויזואלי שמראה איך נפח התורים משתנה לאורך החודשים.
       </p>
-      <p><strong>How this helps:</strong></p>
+      <p><strong>איך זה עוזר:</strong></p>
       <ul>
-        <li>Identify peak and low-demand periods.</li>
-        <li>Detect growth trends or declines early.</li>
+        <li>לזהות תקופות שיא ותקופות ביקוש נמוך.</li>
+        <li>לגלות מגמות צמיחה או ירידה מוקדם.</li>
         <li>
-          Plan marketing campaigns and promotions based on actual demand.
+          לתכנן קמפיינים שיווקיים ומבצעים על בסיס ביקוש אמיתי.
         </li>
       </ul>
       <p>
-        <strong>Practical insight:</strong> If winter months show lower activity,
-        consider targeted promotions or introducing seasonal services.
+        <strong>תובנה מעשית:</strong> אם חודשי החורף מראים פעילות נמוכה
+        יותר, שקלו מבצעים ממוקדים או שירותים עונתיים.
       </p>
 
-      <h3>Insights and Actionable Recommendations</h3>
+      <h3>תובנות והמלצות לפעולה</h3>
       <p>
-        A summary of key performance indicators from the recent period, including
-        AI-driven insights when available.
+        סיכום של מדדי ביצוע מרכזיים מהתקופה האחרונה, כולל תובנות
+        מבוססות AI כשהן זמינות.
       </p>
       <p>
-        The system highlights unusual patterns such as drops in inquiries or
-        increased cancellations and suggests corrective actions.
+        המערכת מדגישה דפוסים חריגים כמו ירידה בפניות או עלייה בביטולים
+        ומציעה פעולות מתקנות.
       </p>
       <ul>
-        <li>Surface issues before they become critical.</li>
-        <li>Focus attention on areas that need immediate action.</li>
-        <li>Receive guidance on marketing and operational improvements.</li>
+        <li>לחשוף בעיות לפני שהן הופכות קריטיות.</li>
+        <li>להתמקד באזורים שדורשים פעולה מיידית.</li>
+        <li>לקבל הנחיה לשיפורי שיווק ותפעול.</li>
       </ul>
       <p>
-        <strong>Example:</strong> The AI Partner may suggest reaching out to
-        customers who have not booked recently or promoting availability for
-        the upcoming month.
+        <strong>דוגמה:</strong> יועץ ה-AI עשוי להציע לפנות ללקוחות
+        שלא קבעו תור לאחרונה, או לקדם זמינות לחודש הקרוב.
       </p>
 
-      <h3>Central Schedule Overview</h3>
+      <h3>סקירת לוח זמנים מרכזית</h3>
       <p>
-        A consolidated calendar view that displays all appointments by day and
-        time, even if they originate from different sources.
+        תצוגת יומן מאוחדת שמציגה את כל התורים לפי יום ושעה, גם אם
+        הם מגיעים ממקורות שונים.
       </p>
       <ul>
-        <li>Eliminates the need to switch between tools.</li>
-        <li>Prevents double bookings and scheduling conflicts.</li>
-        <li>Supports fast creation of new appointments.</li>
+        <li>מבטל את הצורך לעבור בין כלים.</li>
+        <li>מונע כפילות בתורים וקונפליקטים בלוח הזמנים.</li>
+        <li>תומך ביצירה מהירה של תורים חדשים.</li>
       </ul>
 
-      <h3>Weekly Summary</h3>
+      <h3>סיכום שבועי</h3>
       <p>
-        A detailed snapshot of recent business activity, including:
+        תמונת מצב מפורטת של פעילות העסק האחרונה, כולל:
       </p>
       <ul>
-        <li>Total appointments booked and completed.</li>
-        <li>Cancellations and no-shows.</li>
-        <li>Customer inquiries.</li>
+        <li>סך התורים שנקבעו והושלמו.</li>
+        <li>ביטולים ואי-הגעות.</li>
+        <li>פניות ופעילות באתר.</li>
       </ul>
-      <p><strong>How to use it:</strong></p>
+      <p><strong>איך להשתמש בזה:</strong></p>
       <ul>
-        <li>Compare bookings to attendance levels.</li>
-        <li>Evaluate inquiry volume against longer-term trends.</li>
+        <li>להשוות בין הזמנות לבין רמות נוכחות.</li>
+        <li>להעריך נפח פניות מול מגמות ארוכות טווח.</li>
         <li>
-          Connect marketing actions to changes in performance metrics.
+          לקשר פעולות שיווקיות לשינויים במדדי הביצוע.
         </li>
       </ul>
 
-      <h2>Why monitoring the dashboard is essential</h2>
+      <h2>למה חשוב לעקוב אחר לוח הבקרה</h2>
       <table>
         <thead>
           <tr>
-            <th>Reason</th>
-            <th>Business Impact</th>
+            <th>סיבה</th>
+            <th>השפעה עסקית</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Continuous performance tracking</td>
-            <td>Faster, more informed decision-making</td>
+            <td>מעקב ביצועים רציף</td>
+            <td>קבלת החלטות מהירה ומושכלת יותר</td>
           </tr>
           <tr>
-            <td>CRM and calendar integration</td>
-            <td>Streamlined management with fewer tools</td>
+            <td>אינטגרציה של CRM ויומן</td>
+            <td>ניהול יעיל יותר עם פחות כלים</td>
           </tr>
           <tr>
-            <td>Early trend detection</td>
-            <td>Timely response to potential issues</td>
+            <td>זיהוי מגמות מוקדם</td>
+            <td>תגובה בזמן לבעיות פוטנציאליות</td>
           </tr>
           <tr>
-            <td>AI Partner insights</td>
-            <td>Ongoing optimization and growth opportunities</td>
+            <td>תובנות מיועץ ה-AI</td>
+            <td>אופטימיזציה מתמשכת והזדמנויות צמיחה</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>Best practices for using the dashboard</h2>
+      <h2>שיטות עבודה מומלצות לשימוש בלוח הבקרה</h2>
       <ul>
         <li>
-          Review the dashboard daily or at least weekly to stay informed.
+          לעיין בלוח הבקרה מדי יום או לפחות מדי שבוע כדי להישאר מעודכנים.
         </li>
         <li>
-          Compare different time periods to identify meaningful trends.
+          להשוות תקופות זמן שונות כדי לזהות מגמות משמעותיות.
         </li>
         <li>
-          Set measurable goals based on data, such as increasing bookings by a
-          specific percentage.
+          לקבוע יעדים מדידים על בסיס נתונים, כמו הגדלת מספר התורים
+          באחוז מסוים.
         </li>
         <li>
-          Act on AI recommendations to improve service quality and marketing
-          performance.
+          לפעול לפי המלצות ה-AI כדי לשפר איכות שירות וביצועי שיווק.
         </li>
         <li>
-          Use insights to plan promotions, service adjustments, or new offerings.
+          להשתמש בתובנות לתכנון מבצעים, התאמות שירות או הצעות חדשות.
         </li>
       </ul>
 
-      <h2>Summary</h2>
+      <h2>סיכום</h2>
       <p>
-        The dashboard is a core management tool that provides immediate visibility
-        into your business performance. By understanding the data and acting on
-        insights, you can streamline operations, improve customer experience,
-        and support long-term growth.
+        לוח הבקרה הוא כלי ניהול מרכזי שמספק נראות מיידית לביצועי העסק.
+        על ידי הבנת הנתונים ופעולה לפי התובנות, אפשר לייעל תפעול, לשפר
+        את חוויית הלקוח ולתמוך בצמיחה לטווח ארוך.
       </p>
     </div>
   );

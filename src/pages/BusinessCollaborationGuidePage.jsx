@@ -3,141 +3,139 @@ import "./BusinessCollaborationGuidePage.css";
 
 export default function BusinessCollaborationGuidePage() {
   return (
-    <div className="business-collab-container" dir="ltr" lang="en">
-      <h1>Business Collaborations on BizUply</h1>
+    <div className="business-collab-container" dir="rtl" lang="he">
+      <h1>שיתופי פעולה עסקיים ב-Bizuply</h1>
 
-      <h2>Why business collaborations matter</h2>
+      <h2>למה שיתופי פעולה עסקיים חשובים</h2>
       <p>
-        Even when a business is performing well, growth does not happen in
-        isolation. Collaborations are not simply about sharing revenue—they are
-        a strategic way to expand reach, enter new markets, and build a trusted
-        professional network that would be difficult to create alone.
+        גם כשעסק מתפקד היטב, צמיחה לא קורית בבידוד. שיתופי פעולה
+        אינם רק חלוקת הכנסות — הם דרך אסטרטגית להרחיב טווח הגעה,
+        להיכנס לשווקים חדשים ולבנות רשת מקצועית אמינה שקשה ליצור
+        לבד.
       </p>
       <p>
-        By working with complementary businesses, you can:
+        בעבודה עם עסקים משלימים, אפשר:
       </p>
       <ul>
         <li>
-          Reach new customer segments that would otherwise be inaccessible.
+          להגיע לקהלי יעד חדשים שלא היו נגישים אחרת.
         </li>
         <li>
-          Strengthen credibility by aligning with established professionals.
+          לחזק אמינות דרך שיתוף פעולה עם אנשי מקצוע מבוססים.
         </li>
         <li>
-          Reduce marketing costs through shared promotion efforts.
+          להפחית עלויות שיווק באמצעות קידום משותף.
         </li>
         <li>
-          Create additional revenue through referrals, bundles, or commissions.
+          ליצור הכנסה נוספת דרך הפניות, חבילות או עמלות.
         </li>
         <li>
-          Unlock opportunities such as joint campaigns, events, or integrated
-          services.
+          לפתוח הזדמנויות כמו קמפיינים משותפים, אירועים או שירותים
+          משולבים.
         </li>
       </ul>
       <p>
-        The right collaboration acts as a multiplier for sustainable, long-term
-        growth.
+        שיתוף הפעולה הנכון פועל כמכפיל לצמיחה בת-קיימא לטווח ארוך.
       </p>
 
-      <h2>What the Collaborations section includes</h2>
+      <h2>מה כולל מקטע השיתופים</h2>
       <p>
-        The Collaborations section allows you to manage the entire collaboration
-        lifecycle in one organized workspace:
+        מקטע השיתופים מאפשר לנהל את מחזור החיים המלא של שיתוף
+        הפעולה במרחב עבודה מסודר אחד:
       </p>
       <ul>
         <li>
-          <strong>Search and propose collaborations</strong> by business category,
-          including a clear description of what you offer and what you are
-          looking for.
+          <strong>חיפוש והצעת שיתופי פעולה</strong> לפי קטגוריית עסק,
+          כולל תיאור ברור של מה אתם מציעים ומה אתם מחפשים.
         </li>
         <li>
-          <strong>Collaboration marketplace</strong> where you can publish open
-          offers or explore existing opportunities.
+          <strong>שוק שיתופי פעולה</strong> שבו אפשר לפרסם הצעות
+          פתוחות או לגלות הזדמנויות קיימות.
         </li>
         <li>
-          <strong>Dedicated pre-agreement chat</strong> to discuss expectations
-          and align before committing.
+          <strong>תיאום מקדים ייעודי</strong> לדיון בציפיות וליישור
+          קו לפני התחייבות.
         </li>
         <li>
-          <strong>Digital collaboration agreements</strong> to upload, create,
-          and sign contracts securely within the platform.
+          <strong>הסכמי שיתוף פעולה דיגיטליים</strong> להעלאה, יצירה
+          וחתימה על חוזים בצורה מאובטחת בתוך הפלטפורמה.
         </li>
         <li>
-          <strong>Active collaborations overview</strong> showing all current
-          partners, agreement details, and validity periods.
+          <strong>סקירת שיתופי פעולה פעילים</strong> שמציגה את כל
+          השותפים הנוכחיים, פרטי ההסכם ותקופות תוקף.
         </li>
       </ul>
 
-      <h2>Best practices for managing collaborations</h2>
+      <h2>שיטות עבודה מומלצות לניהול שיתופי פעולה</h2>
       <ol>
         <li>
-          <strong>Define clear goals</strong>
+          <strong>הגדירו יעדים ברורים</strong>
           <br />
-          Before starting a collaboration, ensure both sides agree on the
-          objective. This could include expanding audience reach, creating
-          referral channels, launching joint promotions, or sharing resources.
-          Clear goals reduce friction and increase success.
+          לפני תחילת שיתוף פעולה, ודאו ששני הצדדים מסכימים על המטרה.
+          זה יכול לכלול הרחבת קהל, יצירת ערוצי הפניה, השקת מבצעים
+          משותפים או שיתוף משאבים. יעדים ברורים מפחיתים חיכוך ומגבירים
+          הצלחה.
         </li>
         <li>
-          <strong>Select the right partners</strong>
+          <strong>בחרו את השותפים הנכונים</strong>
           <br />
-          Choose businesses that complement your services rather than compete
-          with them. The ideal partner serves a similar audience without
-          overlapping offerings and demonstrates reliability and professionalism.
+          בחרו עסקים שמשלימים את השירותים שלכם ולא מתחרים בהם.
+          השותף האידיאלי משרת קהל דומה בלי חפיפה בהצעות, ומפגין
+          אמינות ומקצועיות.
         </li>
         <li>
-          <strong>Choose a collaboration model</strong>
+          <strong>בחרו מודל שיתוף פעולה</strong>
           <br />
-          Common models include mutual referrals, commission-based referrals,
-          bundled services, and cross-promotion. Defining the model upfront helps
-          prevent future misunderstandings.
+          מודלים נפוצים כוללים הפניות הדדיות, הפניות מבוססות עמלה,
+          חבילות שירות משולבות וקידום צולב. הגדרת המודל מראש
+          מונעת אי-הבנות בעתיד.
         </li>
         <li>
-          <strong>Maintain consistent communication</strong>
+          <strong>שמרו על תקשורת עקבית</strong>
           <br />
-          Regular check-ins, shared performance insights, and open dialogue help
-          collaborations stay productive and adaptable over time.
+          בדיקות תקופתיות, תובנות ביצועים משותפות ודיאלוג פתוח
+          עוזרים לשיתופי פעולה להישאר יעילים וגמישים לאורך
+          זמן.
         </li>
         <li>
-          <strong>Document and honor agreements</strong>
+          <strong>תעדו וקיימו הסכמים</strong>
           <br />
-          Use the platform’s agreement management tools to store documents,
-          record changes, and ensure all commitments are clear and approved by
-          both parties.
+          השתמשו בכלי ניהול ההסכמים של הפלטפורמה לאחסון מסמכים,
+          תיעוד שינויים ווידוא שכל ההתחייבויות ברורות ומאושרות
+          על ידי שני הצדדים.
         </li>
       </ol>
 
-      <h2>Why collaborate even when your business is successful</h2>
+      <h2>למה לשתף פעולה גם כשהעסק מצליח</h2>
       <ul>
         <li>
-          Growth accelerates when businesses operate within a strong network.
+          צמיחה מאיצה כשעסקים פועלים בתוך רשת חזקה.
         </li>
         <li>
-          Revenue can increase without proportionally expanding staff or
-          marketing spend.
+          הכנסה יכולה לגדול בלי להגדיל באופן יחסי צוות או הוצאות
+          שיווק.
         </li>
         <li>
-          Collaborations enable faster entry into new markets.
+          שיתופי פעולה מאפשרים כניסה מהירה יותר לשווקים חדשים.
         </li>
         <li>
-          Partnerships reduce isolation and encourage shared learning.
+          שותפויות מפחיתות בידוד ומעודדות למידה משותפת.
         </li>
         <li>
-          Ongoing collaboration helps businesses stay relevant and competitive.
+          שיתוף פעולה מתמשך עוזר לעסקים להישאר רלוונטיים ותחרותיים.
         </li>
       </ul>
 
-      <h2>Summary</h2>
+      <h2>סיכום</h2>
       <p>
-        Business collaborations are a powerful strategic lever that can enhance
-        marketing, operations, and revenue. BizUply provides a structured,
-        professional environment to discover partners, manage agreements, and
-        maintain long-term collaborative relationships.
+        שיתופי פעולה עסקיים הם מנוף אסטרטגי שיכול לשפר שיווק, תפעול
+        והכנסות. Bizuply מספקת סביבה מובנית ומקצועית לגלות שותפים,
+        לנהל הסכמים ולשמר קשרי שיתוף פעולה לטווח ארוך.
       </p>
       <p>
-        By choosing the right partners, defining clear collaboration models, and
-        managing everything within the platform, you position your business for
-        scalable and sustainable growth.
+        על ידי בחירת השותפים הנכונים, הגדרת מודלים ברורים וניהול
+        הכל בתוך הפלטפורמה, אתם ממקמים את העסק לצמיחה בקנה מידה
+        ובת-קיימא.
       </p>
     </div>
   );
