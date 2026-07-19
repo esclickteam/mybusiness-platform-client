@@ -12,6 +12,8 @@ import {
   LayoutDashboard,
   Mail,
   Globe,
+  Megaphone,
+  PencilLine,
   Search,
   Settings,
   Sparkles,
@@ -53,15 +55,16 @@ type FaqCategoryItem = {
 type QuickAction = {
   label: string;
   query: string;
+  icon?: React.ElementType;
 };
 
 const SUGGESTED_QUERIES: QuickAction[] = [
-  { label: "איך לבנות אתר?", query: "בניית אתר" },
-  { label: "איך לפרסם את האתר?", query: "פרסום אתר" },
-  { label: "איך לנהל תורים ו-CRM?", query: "CRM תורים" },
-  { label: "איך להשתמש ביועץ AI?", query: "יועץ AI" },
-  { label: "עריכת פרופיל עסקי", query: "פרופיל עסקי" },
-  { label: "הגדרות SEO לאתר", query: "SEO" },
+  { label: "איך לבנות אתר?", query: "בניית אתר", icon: Globe },
+  { label: "איך לפרסם את האתר?", query: "פרסום אתר", icon: Megaphone },
+  { label: "איך לנהל תורים ב-CRM?", query: "CRM תורים", icon: UsersRound },
+  { label: "איך להשתמש ב-AI?", query: "יועץ AI", icon: Sparkles },
+  { label: "עריכת פרופיל עסקי", query: "פרופיל עסקי", icon: PencilLine },
+  { label: "הגדרות SEO לאתר", query: "SEO", icon: LayoutDashboard },
 ];
 
 const AI_QUICK_PROMPTS: QuickAction[] = [
@@ -314,189 +317,192 @@ export default function HelpCenter() {
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [searchFocused]);
 
+  const popularCardStyles = [
+    "bg-violet-50 text-violet-600",
+    "bg-fuchsia-50 text-fuchsia-600",
+    "bg-blue-50 text-blue-600",
+    "bg-cyan-50 text-cyan-600",
+    "bg-emerald-50 text-emerald-600",
+    "bg-amber-50 text-amber-600",
+  ];
+
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-right text-slate-950 sm:px-6 lg:px-8"
     >
-      <div className="mx-auto max-w-6xl">
-        {/* ── HERO + SEARCH ── */}
-        <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800 px-6 py-12 text-white shadow-2xl shadow-violet-500/25 sm:px-10 sm:py-16">
-          <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-indigo-400/20 blur-3xl" />
+      <div className="mx-auto max-w-[1440px]">
+        {/* HERO */}
+        <section className="relative overflow-visible rounded-[30px] border border-violet-100/80 bg-[linear-gradient(135deg,#f6f1ff_0%,#fbf9ff_46%,#eee1ff_100%)] px-5 py-7 shadow-[0_22px_70px_rgba(109,40,217,0.10)] sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+          <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[30px]">
+            <div className="absolute -left-20 -top-24 h-80 w-80 rounded-full bg-white/80 blur-3xl" />
+            <div className="absolute -right-20 -top-20 h-96 w-96 rounded-full bg-violet-200/40 blur-3xl" />
+            <div className="absolute bottom-[-120px] right-[12%] h-72 w-72 rounded-full bg-fuchsia-100/60 blur-3xl" />
+            <div className="absolute -right-10 top-10 h-[430px] w-[430px] rounded-full border border-white/80" />
+            <div className="absolute -right-2 top-14 h-[370px] w-[370px] rounded-full border border-violet-200/60" />
+            <div className="absolute bottom-7 right-10 grid grid-cols-8 gap-2 opacity-25">
+              {Array.from({ length: 48 }).map((_, index) => (
+                <span key={index} className="h-1.5 w-1.5 rounded-full bg-violet-500" />
+              ))}
+            </div>
+          </div>
 
+          <div className="relative grid items-center gap-8 lg:grid-cols-[300px_minmax(0,1fr)] xl:grid-cols-[330px_minmax(0,1fr)]">
+            {/* Mockup-style illustration */}
+            <div className="hidden min-h-[330px] items-center justify-center lg:flex">
+              <div className="relative h-[285px] w-[260px]">
+                <div className="absolute left-4 top-6 h-56 w-56 rounded-full border border-violet-200/80" />
+                <span className="absolute left-7 top-12 h-2.5 w-2.5 rounded-full bg-violet-500/70" />
+                <span className="absolute right-7 top-16 h-2 w-2 rounded-full bg-fuchsia-400/70" />
+                <span className="absolute right-14 bottom-24 h-2.5 w-2.5 rounded-full bg-violet-300" />
 
-          <div className="relative mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold backdrop-blur-sm">
-              <BookOpen size={14} />
-              מרכז העזרה של Bizuply
+                <div className="absolute bottom-7 left-1/2 h-7 w-44 -translate-x-1/2 rounded-full bg-violet-300/25 blur-xl" />
+                <div className="absolute bottom-8 left-1/2 h-11 w-40 -translate-x-1/2 rounded-[50%] border border-violet-200/80 bg-white/80 shadow-lg" />
+
+                <div className="absolute bottom-[54px] left-1/2 flex h-44 w-32 -translate-x-1/2 items-center justify-center rounded-[28px] border border-white bg-gradient-to-br from-white to-violet-50 shadow-[0_26px_60px_rgba(109,40,217,0.16)]">
+                  <div className="absolute -right-3 -top-3 h-full w-full rounded-[28px] border border-violet-100 bg-white/50 -z-10" />
+                  <span className="text-[86px] font-black leading-none text-violet-700">?</span>
+                </div>
+
+                <div className="absolute bottom-8 left-1 h-16 w-16 rounded-2xl border border-slate-100 bg-white shadow-lg" />
+                <div className="absolute bottom-[66px] left-[27px] h-9 w-2 rounded-full bg-emerald-500/70" />
+                <div className="absolute bottom-[89px] left-[17px] h-6 w-5 rotate-[-24deg] rounded-full bg-emerald-400/80" />
+                <div className="absolute bottom-[82px] left-[30px] h-6 w-5 rotate-[24deg] rounded-full bg-emerald-300/80" />
+                <div className="absolute bottom-[105px] left-[27px] h-6 w-5 rounded-full bg-emerald-500/70" />
+              </div>
             </div>
 
-            <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-5xl">
-              היי, איך אפשר לעזור?
-            </h1>
+            <div className="relative z-10 mx-auto w-full max-w-4xl text-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/90 bg-white/70 px-4 py-2 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
+                <BookOpen size={15} />
+                מרכז העזרה של Bizuply
+              </div>
 
-            <p className="mt-3 text-sm leading-relaxed text-violet-100 sm:text-base">
-              חפש מדריכים, שאלות נפוצות או שאל את העוזר החכם של Bizuply
-            </p>
+              <h1 className="mt-5 text-4xl font-black tracking-[-0.04em] text-[#1f1b55] sm:text-5xl lg:text-[62px] lg:leading-[1.02]">
+                איך אפשר לעזור?
+              </h1>
 
-            {/* Search bar */}
-            <div className="relative mt-8">
-              <div
-                className={`relative flex items-center overflow-hidden rounded-2xl bg-white shadow-xl transition-shadow ${
-                  searchFocused
-                    ? "ring-4 ring-white/30 shadow-2xl"
-                    : "shadow-lg"
-                }`}
-              >
-                <Search
-                  size={20}
-                  className="pointer-events-none absolute right-5 text-slate-400"
-                />
-                <input
-                  ref={searchInputRef}
-                  type="text"
-                  placeholder="חפש מדריכים, קטגוריות או נושאים..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
-                  dir="rtl"
-                  aria-label="חיפוש במרכז העזרה"
-                  autoComplete="off"
-                  className="h-14 w-full bg-transparent pr-13 pl-12 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400"
-                />
-                {searchTerm && (
-                  <button
-                    type="button"
-                    onClick={clearSearch}
-                    className="absolute left-4 flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
-                    aria-label="נקה חיפוש"
-                  >
-                    <X size={14} />
-                  </button>
+              <p className="mt-4 text-sm leading-7 text-slate-600 sm:text-base lg:text-lg">
+                חפשו מדריכים, שאלות נפוצות או שאלו את העוזר החכם של Bizuply
+              </p>
+
+              <div className="relative mx-auto mt-7 max-w-3xl">
+                <div
+                  className={`relative flex items-center overflow-hidden rounded-[20px] border bg-white transition-all duration-200 ${
+                    searchFocused
+                      ? "border-violet-300 shadow-[0_0_0_5px_rgba(139,92,246,0.12),0_22px_45px_rgba(109,40,217,0.12)]"
+                      : "border-white shadow-[0_14px_34px_rgba(76,29,149,0.10)]"
+                  }`}
+                >
+                  <Search size={22} className="pointer-events-none absolute right-5 text-slate-400" />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    placeholder="חפש מדריכים, קטגוריות או נושאים..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onFocus={() => setSearchFocused(true)}
+                    onBlur={() => setTimeout(() => setSearchFocused(false), 200)}
+                    dir="rtl"
+                    aria-label="חיפוש במרכז העזרה"
+                    autoComplete="off"
+                    className="h-[64px] w-full bg-transparent pr-14 pl-14 text-sm font-semibold text-slate-900 outline-none placeholder:font-medium placeholder:text-slate-400 sm:text-base"
+                  />
+                  {searchTerm && (
+                    <button
+                      type="button"
+                      onClick={clearSearch}
+                      className="absolute left-4 flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition hover:bg-slate-200"
+                      aria-label="נקה חיפוש"
+                    >
+                      <X size={15} />
+                    </button>
+                  )}
+                </div>
+
+                {searchFocused && normalizedSearch && (
+                  <div className="absolute left-0 right-0 top-[calc(100%+10px)] z-30 overflow-hidden rounded-2xl border border-violet-100 bg-white text-right shadow-[0_26px_60px_rgba(15,23,42,0.16)]">
+                    {searchSuggestions.articles.length > 0 && (
+                      <div className="border-b border-slate-100 p-2.5">
+                        <p className="px-3 py-2 text-xs font-black text-slate-400">מדריכים</p>
+                        {searchSuggestions.articles.map((article) => {
+                          const Icon = article.icon;
+                          return (
+                            <Link key={article.id} to={article.url} className="flex items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-violet-50">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700"><Icon size={17} /></div>
+                              <div className="min-w-0 text-right">
+                                <p className="truncate text-sm font-black text-slate-900">{article.title}</p>
+                                <p className="truncate text-xs text-slate-500">{article.description}</p>
+                              </div>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {searchSuggestions.categories.length > 0 && (
+                      <div className="p-2.5">
+                        <p className="px-3 py-2 text-xs font-black text-slate-400">קטגוריות</p>
+                        {searchSuggestions.categories.map((cat) => {
+                          const Icon = cat.icon;
+                          return (
+                            <button key={cat.id} type="button" onClick={() => navigate(cat.path)} className="flex w-full items-center gap-3 rounded-xl px-3 py-3 transition hover:bg-violet-50">
+                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600"><Icon size={17} /></div>
+                              <div className="min-w-0 text-right">
+                                <p className="truncate text-sm font-black text-slate-900">{cat.title}</p>
+                                <p className="truncate text-xs text-slate-500">{cat.description}</p>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {!hasSearchResults && (
+                      <div className="px-5 py-7 text-center">
+                        <p className="text-sm font-bold text-slate-700">לא נמצאו תוצאות</p>
+                        <button type="button" onClick={() => openChatWithPrompt(`אני מחפש: ${searchTerm}`)} className="mt-2 text-sm font-black text-violet-700 hover:underline">
+                          שאל את העוזר החכם של Bizuply
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
               </div>
 
-              {/* Live suggestions dropdown */}
-              {searchFocused && normalizedSearch && (
-                <div className="absolute left-0 right-0 top-[calc(100%+8px)] z-20 overflow-hidden rounded-2xl border border-slate-200 bg-white text-right shadow-2xl">
-                  {searchSuggestions.articles.length > 0 && (
-                    <div className="border-b border-slate-100 p-2">
-                      <p className="px-3 py-1.5 text-xs font-bold text-slate-400">
-                        מדריכים
-                      </p>
-                      {searchSuggestions.articles.map((article) => {
-                        const Icon = article.icon;
-                        return (
-                          <Link
-                            key={article.id}
-                            to={article.url}
-                            className="flex items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-violet-50"
-                          >
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
-                              <Icon size={16} />
-                            </div>
-                            <div className="min-w-0 text-right">
-                              <p className="truncate text-sm font-bold text-slate-900">
-                                {article.title}
-                              </p>
-                              <p className="truncate text-xs text-slate-500">
-                                {article.description}
-                              </p>
-                            </div>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  )}
-                  {searchSuggestions.categories.length > 0 && (
-                    <div className="p-2">
-                      <p className="px-3 py-1.5 text-xs font-bold text-slate-400">
-                        קטגוריות
-                      </p>
-                      {searchSuggestions.categories.map((cat) => {
-                        const Icon = cat.icon;
-                        return (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => navigate(cat.path)}
-                            className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 transition hover:bg-violet-50"
-                          >
-                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
-                              <Icon size={16} />
-                            </div>
-                            <div className="min-w-0 text-right">
-                              <p className="truncate text-sm font-bold text-slate-900">
-                                {cat.title}
-                              </p>
-                              <p className="truncate text-xs text-slate-500">
-                                {cat.description}
-                              </p>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                  {!hasSearchResults && (
-                    <div className="px-5 py-6 text-center">
-                      <p className="text-sm font-semibold text-slate-600">
-                        לא נמצאו תוצאות
-                      </p>
+              {!isSearching && (
+                <div className="mx-auto mt-6 flex max-w-4xl flex-wrap justify-center gap-3">
+                  {SUGGESTED_QUERIES.map((sq) => {
+                    const Icon = sq.icon;
+                    return (
                       <button
+                        key={sq.query}
                         type="button"
-                        onClick={() =>
-                          openChatWithPrompt(`אני מחפש: ${searchTerm}`)
-                        }
-                        className="mt-2 text-sm font-bold text-violet-600 hover:underline"
+                        onClick={() => handleSuggestionClick(sq.query)}
+                        className="inline-flex items-center gap-2 rounded-2xl border border-white/90 bg-white/80 px-4 py-2.5 text-xs font-bold text-slate-700 shadow-[0_7px_18px_rgba(76,29,149,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:bg-white hover:shadow-md sm:text-sm"
                       >
-                        שאל את העוזר החכם של Bizuply
+                        {Icon ? <Icon size={17} className="text-violet-600" /> : null}
+                        {sq.label}
                       </button>
-                    </div>
-                  )}
+                    );
+                  })}
                 </div>
               )}
+
+              <p className="mt-5 text-xs text-violet-500/70">
+                לחיפוש מהיר לחצו <kbd className="rounded-md border border-violet-200 bg-white/70 px-2 py-0.5 font-mono text-violet-700">/</kbd>
+              </p>
             </div>
-
-            {/* Suggested query chips */}
-            {!isSearching && (
-              <div className="mt-5 flex flex-wrap justify-center gap-2">
-                {SUGGESTED_QUERIES.map((sq) => (
-                  <button
-                    key={sq.query}
-                    type="button"
-                    onClick={() => handleSuggestionClick(sq.query)}
-                    className="rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
-                  >
-                    {sq.label}
-                  </button>
-                ))}
-              </div>
-            )}
-
-            <p className="mt-4 text-xs text-violet-200/70">
-              לחץ <kbd className="rounded bg-white/10 px-1.5 py-0.5 font-mono">/</kbd>{" "}
-              לחיפוש מהיר
-            </p>
           </div>
         </section>
 
-        {/* ── SEARCH RESULTS (full page) ── */}
+        {/* SEARCH RESULTS */}
         {isSearching && (
-          <section className="mt-8">
-            <div className="mb-5 flex items-center justify-between">
-              <h2 className="text-xl font-black text-slate-900">
-                תוצאות עבור &ldquo;{searchTerm}&rdquo;
-              </h2>
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="flex items-center gap-1 text-sm font-bold text-violet-600 hover:underline"
-              >
-                <ArrowLeft size={14} />
-                חזרה לכל הנושאים
+          <section className="mt-9">
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">תוצאות עבור &ldquo;{searchTerm}&rdquo;</h2>
+              <button type="button" onClick={clearSearch} className="flex items-center gap-1.5 rounded-xl border border-violet-200 bg-white px-4 py-2.5 text-sm font-bold text-violet-700 shadow-sm transition hover:bg-violet-50">
+                <ArrowLeft size={15} /> חזרה לכל הנושאים
               </button>
             </div>
 
@@ -504,29 +510,14 @@ export default function HelpCenter() {
               <div className="space-y-8">
                 {filteredArticles.length > 0 && (
                   <div>
-                    <h3 className="mb-3 text-sm font-bold text-slate-500">
-                      מדריכים ({filteredArticles.length})
-                    </h3>
-                    <div className="grid gap-3 sm:grid-cols-2">
-                      {filteredArticles.map((article) => {
+                    <h3 className="mb-3 text-sm font-bold text-slate-500">מדריכים ({filteredArticles.length})</h3>
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {filteredArticles.map((article, index) => {
                         const Icon = article.icon;
                         return (
-                          <Link
-                            key={article.id}
-                            to={article.url}
-                            className="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-4 transition hover:border-violet-200 hover:shadow-md"
-                          >
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
-                              <Icon size={20} />
-                            </div>
-                            <div>
-                              <p className="font-bold text-slate-900">
-                                {article.title}
-                              </p>
-                              <p className="mt-1 text-sm text-slate-500">
-                                {article.description}
-                              </p>
-                            </div>
+                          <Link key={article.id} to={article.url} className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg">
+                            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${popularCardStyles[index % popularCardStyles.length]}`}><Icon size={21} /></div>
+                            <div><p className="font-black text-slate-900">{article.title}</p><p className="mt-1.5 text-sm leading-6 text-slate-500">{article.description}</p></div>
                           </Link>
                         );
                       })}
@@ -536,30 +527,14 @@ export default function HelpCenter() {
 
                 {filteredCategories.length > 0 && (
                   <div>
-                    <h3 className="mb-3 text-sm font-bold text-slate-500">
-                      קטגוריות ({filteredCategories.length})
-                    </h3>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    <h3 className="mb-3 text-sm font-bold text-slate-500">קטגוריות ({filteredCategories.length})</h3>
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                       {filteredCategories.map((cat) => {
                         const Icon = cat.icon;
                         return (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => navigate(cat.path)}
-                            className="group flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-right transition hover:border-violet-200 hover:shadow-md"
-                          >
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition group-hover:bg-violet-600 group-hover:text-white">
-                              <Icon size={18} />
-                            </div>
-                            <div>
-                              <p className="font-bold text-slate-900">
-                                {cat.title}
-                              </p>
-                              <p className="text-xs text-slate-500">
-                                {cat.description}
-                              </p>
-                            </div>
+                          <button key={cat.id} type="button" onClick={() => navigate(cat.path)} className="group flex items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg">
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-50 text-violet-700"><Icon size={19} /></div>
+                            <div><p className="font-black text-slate-900">{cat.title}</p><p className="mt-0.5 text-xs text-slate-500">{cat.description}</p></div>
                           </button>
                         );
                       })}
@@ -568,196 +543,88 @@ export default function HelpCenter() {
                 )}
               </div>
             ) : (
-              <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-                <HelpCircle
-                  size={40}
-                  className="mx-auto text-slate-300"
-                />
-                <p className="mt-4 text-lg font-bold text-slate-700">
-                  לא מצאנו תוצאות
-                </p>
-                <p className="mt-2 text-sm text-slate-500">
-                  נסה מילות חיפוש אחרות, או שאל את העוזר החכם של Bizuply
-                </p>
-                <button
-                  type="button"
-                  onClick={() =>
-                    openChatWithPrompt(`אני מחפש עזרה בנושא: ${searchTerm}`)
-                  }
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-violet-700"
-                >
-                  <Bot size={16} />
-                  שאל את העוזר החכם
-                </button>
+              <div className="rounded-3xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center shadow-sm">
+                <HelpCircle size={40} className="mx-auto text-slate-300" />
+                <p className="mt-4 text-lg font-black text-slate-700">לא מצאנו תוצאות</p>
+                <p className="mt-2 text-sm text-slate-500">נסו מילות חיפוש אחרות או שאלו את העוזר החכם של Bizuply</p>
+                <button type="button" onClick={() => openChatWithPrompt(`אני מחפש עזרה בנושא: ${searchTerm}`)} className="mt-5 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-black text-white transition hover:bg-violet-700"><Bot size={16} /> שאלו את העוזר החכם</button>
               </div>
             )}
           </section>
         )}
 
-        {/* ── DEFAULT VIEW (no active search) ── */}
         {!isSearching && (
           <>
-            {/* Popular topics — Facebook-style */}
+            {/* POPULAR TOPICS */}
             <section className="mt-10">
-              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
-                נושאים פופולריים
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                המדריכים והנושאים הנפוצים ביותר ב-Bizuply
-              </p>
+              <div className="flex items-end justify-between gap-4">
+                <div>
+                  <div className="inline-flex items-center gap-2 text-violet-600"><Sparkles size={16} /><span className="text-sm font-black">נושאים פופולריים</span></div>
+                  <p className="mt-2 text-sm text-slate-500">המדריכים והשאלות הפופולריים ביותר ב-Bizuply</p>
+                </div>
+              </div>
 
-              <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {popularArticles.map((article) => {
+              <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+                {popularArticles.slice(0, 5).map((article, index) => {
                   const Icon = article.icon;
                   return (
-                    <Link
-                      key={article.id}
-                      to={article.url}
-                      className="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 transition hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100"
-                    >
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-50 text-violet-600 transition group-hover:bg-violet-600 group-hover:text-white">
-                        <Icon size={22} />
-                      </div>
-                      <h3 className="mt-4 text-base font-black text-slate-900">
-                        {article.title}
-                      </h3>
-                      <p className="mt-1.5 text-sm leading-relaxed text-slate-500">
-                        {article.description}
-                      </p>
-                      <span className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-violet-600 opacity-0 transition group-hover:opacity-100">
-                        קרא עוד
-                        <ChevronLeft size={14} />
-                      </span>
+                    <Link key={article.id} to={article.url} className="group flex min-h-[270px] flex-col rounded-[26px] border border-slate-200 bg-white p-5 shadow-[0_12px_32px_rgba(15,23,42,0.04)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_20px_45px_rgba(109,40,217,0.09)]">
+                      <div className={`flex h-13 w-13 items-center justify-center rounded-2xl ${popularCardStyles[index % popularCardStyles.length]}`}><Icon size={23} /></div>
+                      <h3 className="mt-5 text-base font-black leading-7 text-slate-900">{article.title}</h3>
+                      <p className="mt-2 text-sm leading-7 text-slate-500">{article.description}</p>
+                      <div className="mt-auto pt-5"><span className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-violet-100 text-violet-600 transition group-hover:bg-violet-50"><ChevronLeft size={17} /></span></div>
                     </Link>
                   );
                 })}
               </div>
             </section>
 
-            {/* Browse by topic — Wix-style */}
-            <section className="mt-12">
-              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
-                עיון לפי נושא
-              </h2>
-              <p className="mt-1 text-sm text-slate-500">
-                בחר קטגוריה ומצא תשובות לשאלות הנפוצות ביותר
-              </p>
-
-              <div className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {/* BROWSE BY TOPIC */}
+            <section className="mt-14 rounded-[30px] border border-violet-100 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.04)] sm:p-7">
+              <h2 className="text-2xl font-black text-slate-900">עיון לפי נושא</h2>
+              <p className="mt-2 text-sm text-slate-500">בחרו קטגוריה ומצאו תשובות לשאלות הנפוצות ביותר</p>
+              <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {faqCategories.map((cat) => {
                   const Icon = cat.icon;
                   return (
-                    <button
-                      key={cat.id}
-                      type="button"
-                      onClick={() => navigate(cat.path)}
-                      className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 text-right transition hover:border-violet-200 hover:bg-violet-50/50 hover:shadow-sm"
-                    >
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-600 transition group-hover:bg-violet-600 group-hover:text-white">
-                        <Icon size={20} />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="font-bold text-slate-900">{cat.title}</p>
-                        <p className="mt-0.5 truncate text-xs text-slate-500">
-                          {cat.description}
-                        </p>
-                      </div>
-                      <ChevronLeft
-                        size={16}
-                        className="shrink-0 text-slate-300 transition group-hover:text-violet-600"
-                      />
+                    <button key={cat.id} type="button" onClick={() => navigate(cat.path)} className="group flex items-center gap-4 rounded-2xl border border-slate-200 bg-[#fbfaff] p-4 text-right transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-white hover:shadow-md">
+                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white text-violet-600 shadow-sm ring-1 ring-violet-100"><Icon size={19} /></div>
+                      <div className="min-w-0 flex-1"><p className="font-black text-slate-900">{cat.title}</p><p className="mt-0.5 truncate text-xs text-slate-500">{cat.description}</p></div>
+                      <ChevronLeft size={16} className="shrink-0 text-slate-300 transition group-hover:-translate-x-1 group-hover:text-violet-600" />
                     </button>
                   );
                 })}
               </div>
             </section>
 
-            {/* AI Assistant — Facebook-style */}
-            <section className="mt-12 overflow-hidden rounded-3xl border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-indigo-50 p-6 sm:p-8">
-              <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+            {/* AI ASSISTANT */}
+            <section className="relative mt-14 overflow-hidden rounded-[30px] border border-violet-100 bg-[linear-gradient(135deg,#f6f0ff_0%,#ffffff_48%,#f2e8ff_100%)] p-6 shadow-[0_18px_45px_rgba(109,40,217,0.07)] sm:p-8">
+              <div className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full bg-violet-200/30 blur-3xl" />
+              <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-500/30">
-                    <Sparkles size={26} />
-                  </div>
-                  <div>
-                    <h2 className="text-xl font-black text-slate-900">
-                      שיחה עם העוזר החכם של Bizuply
-                    </h2>
-                    <p className="mt-1 max-w-lg text-sm leading-relaxed text-slate-600">
-                      קבל תשובות מיידיות, פתור בעיות ולמד איך להשתמש בפלטפורמה
-                      — זמין 24/7
-                    </p>
-                  </div>
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-500/25"><Sparkles size={26} /></div>
+                  <div><h2 className="text-xl font-black text-slate-900">שיחה עם העוזר החכם של Bizuply</h2><p className="mt-1 max-w-xl text-sm leading-7 text-slate-600">קבלו תשובות מיידיות, פתרו בעיות ולמדו איך להשתמש בפלטפורמה — זמין 24/7</p></div>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setChatOpen(true)}
-                  className="shrink-0 rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/25 transition hover:bg-violet-700"
-                >
-                  התחל שיחה
-                </button>
+                <button type="button" onClick={() => setChatOpen(true)} className="shrink-0 rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:bg-violet-700">התחלת שיחה</button>
               </div>
-
-              <div className="mt-5 flex flex-wrap gap-2">
+              <div className="relative mt-6 flex flex-wrap gap-2.5">
                 {AI_QUICK_PROMPTS.map((prompt) => (
-                  <button
-                    key={prompt.query}
-                    type="button"
-                    onClick={() => openChatWithPrompt(prompt.query)}
-                    className="rounded-full border border-violet-200 bg-white px-4 py-2 text-xs font-semibold text-violet-700 transition hover:bg-violet-100"
-                  >
-                    {prompt.label}
-                  </button>
+                  <button key={prompt.query} type="button" onClick={() => openChatWithPrompt(prompt.query)} className="rounded-full border border-violet-200 bg-white px-4 py-2 text-xs font-bold text-violet-700 transition hover:bg-violet-100">{prompt.label}</button>
                 ))}
               </div>
             </section>
 
-            {/* Additional help options */}
-            <section className="mt-10">
-              <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
-                דרכים נוספות לקבלת עזרה
-              </h2>
-
+            {/* EXTRA HELP */}
+            <section className="mt-12">
+              <h2 className="text-2xl font-black text-slate-900">דרכים נוספות לקבלת עזרה</h2>
               <div className="mt-5 grid gap-4 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={() => navigate("/business-support")}
-                  className="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:border-violet-200 hover:shadow-md"
-                >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600">
-                    <Mail size={22} />
-                  </div>
-                  <div>
-                    <p className="font-black text-slate-900">פנייה לתמיכה</p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      שלח פנייה לצוות התמיכה ונחזור אליך בהקדם
-                    </p>
-                    <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-violet-600 opacity-0 transition group-hover:opacity-100">
-                      שלח פנייה
-                      <ChevronLeft size={14} />
-                    </span>
-                  </div>
+                <button type="button" onClick={() => navigate("/business-support")} className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600"><Mail size={22} /></div>
+                  <div><p className="font-black text-slate-900">פנייה לתמיכה</p><p className="mt-1 text-sm leading-6 text-slate-500">שלחו פנייה לצוות התמיכה ונחזור אליכם בהקדם</p><span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-violet-600">שליחת פנייה <ChevronLeft size={14} /></span></div>
                 </button>
-
-                <Link
-                  to={`${basePath}/faq/troubleshooting`}
-                  className="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 text-right transition hover:border-violet-200 hover:shadow-md"
-                >
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600">
-                    <Wrench size={22} />
-                  </div>
-                  <div>
-                    <p className="font-black text-slate-900">
-                      פתרון תקלות נפוצות
-                    </p>
-                    <p className="mt-1 text-sm text-slate-500">
-                      מדריך לפתרון בעיות טכניות ושגיאות מערכת
-                    </p>
-                    <span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-violet-600 opacity-0 transition group-hover:opacity-100">
-                      צפה במדריך
-                      <ChevronLeft size={14} />
-                    </span>
-                  </div>
+                <Link to={`${basePath}/faq/troubleshooting`} className="group flex items-start gap-4 rounded-3xl border border-slate-200 bg-white p-5 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-600"><Wrench size={22} /></div>
+                  <div><p className="font-black text-slate-900">פתרון תקלות נפוצות</p><p className="mt-1 text-sm leading-6 text-slate-500">מדריך לפתרון בעיות טכניות ושגיאות מערכת</p><span className="mt-2 inline-flex items-center gap-1 text-sm font-bold text-violet-600">צפייה במדריך <ChevronLeft size={14} /></span></div>
                 </Link>
               </div>
             </section>
