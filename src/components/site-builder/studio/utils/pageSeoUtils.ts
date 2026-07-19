@@ -99,6 +99,27 @@ function normalizeMaxImagePreview(value: unknown): SeoMaxImagePreview {
   return MAX_IMAGE_PREVIEW_VALUES.includes(clean) ? clean : "";
 }
 
+const KNOWN_SCHEMA_TYPES = [
+  "LocalBusiness",
+  "Service",
+  "FAQPage",
+  "Product",
+  "Organization",
+  "WebSite",
+  "BreadcrumbList",
+];
+
+function detectSchemaTypeFromJson(json: string): string {
+  const match = safeString(json).match(/"@type"\s*:\s*"([^"]+)"/);
+  const type = match ? match[1] : "";
+  if (KNOWN_SCHEMA_TYPES.includes(type)) return type;
+  // LocalBusiness subtypes (Restaurant, Dentist, …) still map to the LocalBusiness form.
+  if (type && /Business|Store|Service|Salon|Agent|Dentist/i.test(type)) {
+    return "LocalBusiness";
+  }
+  return "Custom";
+}
+
 function normalizeStructuredData(value: unknown): SeoStructuredDataEntry[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -106,11 +127,31 @@ function normalizeStructuredData(value: unknown): SeoStructuredDataEntry[] {
       const source = asPlainObject(entry);
       const json = safeString(source.json);
       if (!json) return null;
-      return {
+
+      const schemaType =
+        safeString(source.schemaType) || detectSchemaTypeFromJson(json);
+      const mode =
+        safeString(source.mode) === "form" ? "form" : "custom";
+
+      const normalized: SeoStructuredDataEntry = {
         id: safeString(source.id) || createSeoId("ld"),
         name: safeString(source.name),
+        schemaType: schemaType as SeoStructuredDataEntry["schemaType"],
+        mode,
         json,
-      } as SeoStructuredDataEntry;
+      };
+
+      if (source.formData && typeof source.formData === "object") {
+        normalized.formData = source.formData as Record<string, unknown>;
+      }
+      if (safeString(source.lastGeneratedAt)) {
+        normalized.lastGeneratedAt = safeString(source.lastGeneratedAt);
+      }
+      if (typeof source.manuallyEdited === "boolean") {
+        normalized.manuallyEdited = source.manuallyEdited;
+      }
+
+      return normalized;
     })
     .filter(Boolean) as SeoStructuredDataEntry[];
 }

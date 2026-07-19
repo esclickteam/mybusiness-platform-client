@@ -48,6 +48,8 @@ import {
   truncateForPreview,
   validateJsonLd,
 } from "../../utils/pageSeoUtils";
+import SchemaBuilder from "./seo/schema-builder/SchemaBuilder";
+import type { SchemaBuilderContext } from "./seo/schema-builder/schemaTypes";
 
 const ROBOTS_DIRECTIVE_OPTIONS: Array<{
   value: SeoRobotsDirective;
@@ -528,12 +530,32 @@ export default function PageSettingsModal({
     maxVideoPreview: seoDraft.maxVideoPreview ?? null,
   });
 
+
   const previewUrl =
     previewMeta?.absoluteUrl ||
     `${(publicUrl || buildPublicSiteUrl(siteSlug)).replace(/\/+$/, "")}${buildPagePath({
       ...page,
       slug,
     })}`;
+
+  const parentPage = pages.find((item) => item.id === seoDraft.parentPageId);
+
+  const schemaBuilderContext: SchemaBuilderContext = {
+    siteName,
+    pageTitle: title || page.title || "",
+    previewUrl,
+    publicUrl: siteBaseUrl,
+    ogImage:
+      seoDraft.social?.ogImage || siteSeo.ogImage || siteSeo.defaultOgImage,
+    metaDescription: seoDraft.metaDescription || "",
+    logoUrl: siteSeo.ogImage || "",
+    parentPageId: seoDraft.parentPageId || "",
+    parentPageTitle: parentPage?.title || "",
+    parentPageUrl: parentPage
+      ? `${siteBaseUrl}/${String(parentPage.slug || parentPage.id || "").replace(/^\/+/, "")}`
+      : "",
+    homeUrl: siteBaseUrl,
+  };
 
   return createPortal(
     <div
@@ -971,138 +993,15 @@ export default function PageSettingsModal({
                 defaultOpen
               >
                 <HelpNote>
-                  בחרו מה שמתאים לעמוד ולחצו — נבנה עבורכם קוד מוכן. רוב העסקים
-                  מתחילים מ״עסק מקומי״. אפשר להוסיף כמה סוגים.
+                  בחרו סוג שמתאים לעמוד — נבנה עבורכם טופס ידידותי שממלא את
+                  הקוד לבד. אפשר גם לפתוח "עריכה מתקדמת" ולערוך את ה-JSON ידנית.
                 </HelpNote>
 
-                <div className="grid gap-2 sm:grid-cols-2">
-                  {STRUCTURED_DATA_PRESETS.map((preset) => (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() =>
-                        addStructuredData({
-                          id: createSeoId("ld"),
-                          name: preset.id,
-                          json: preset.build({
-                            siteName,
-                            pageTitle: title || page.title || "",
-                            url: previewUrl,
-                          }),
-                        })
-                      }
-                      className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-right transition hover:border-blue-300 hover:bg-blue-50/50"
-                    >
-                      <Plus className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
-                      <span className="min-w-0">
-                        <span className="block text-sm font-black text-slate-900">
-                          {preset.label}
-                        </span>
-                        <span className="block text-[11px] font-semibold leading-4 text-slate-500">
-                          {preset.description}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-
-                {(seoDraft.structuredData || []).length ? (
-                  <div className="space-y-2">
-                    <p className="text-xs font-black text-slate-700">
-                      סכימות בעמוד ({(seoDraft.structuredData || []).length})
-                    </p>
-                    {(seoDraft.structuredData || []).map((entry) => {
-                      const status = validateJsonLd(entry.json);
-                      const entryPreset = STRUCTURED_DATA_PRESETS.find(
-                        (item) =>
-                          item.id === entry.name ||
-                          (status.valid &&
-                            new RegExp(`"@type"\\s*:\\s*"${item.id}"`).test(
-                              entry.json,
-                            )),
-                      );
-                      return (
-                        <div
-                          key={entry.id}
-                          className="rounded-2xl border border-slate-200 bg-white p-3"
-                        >
-                          <div className="flex items-center gap-2">
-                            <input
-                              value={entry.name}
-                              onChange={(event) =>
-                                updateStructuredData(entry.id, {
-                                  name: event.target.value,
-                                })
-                              }
-                              className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
-                              placeholder="שם הסכימה"
-                            />
-                            <span
-                              className={[
-                                "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black",
-                                status.valid
-                                  ? "bg-emerald-50 text-emerald-600"
-                                  : "bg-rose-50 text-rose-600",
-                              ].join(" ")}
-                            >
-                              {status.valid ? (
-                                <>
-                                  <CheckCircle2 className="h-3.5 w-3.5" /> תקין
-                                </>
-                              ) : (
-                                <>
-                                  <AlertTriangle className="h-3.5 w-3.5" /> לתיקון
-                                </>
-                              )}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => removeStructuredData(entry.id)}
-                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                              aria-label="מחיקת סכימה"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                          {entryPreset ? (
-                            <p className="mt-2 flex items-start gap-2 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-semibold leading-5 text-amber-800">
-                              <Lightbulb className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-500" />
-                              <span>
-                                <span className="font-black">מה לשנות לשיפור: </span>
-                                {entryPreset.tips}
-                              </span>
-                            </p>
-                          ) : null}
-                          <details className="group/code mt-2 [&_summary::-webkit-details-marker]:hidden">
-                            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-black text-blue-600">
-                              <ChevronDown className="h-4 w-4 transition group-open/code:rotate-180" />
-                              עריכת הקוד (JSON-LD)
-                            </summary>
-                            <textarea
-                              value={entry.json}
-                              onChange={(event) =>
-                                updateStructuredData(entry.id, {
-                                  json: event.target.value,
-                                })
-                              }
-                              className="mt-2 min-h-[140px] w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs leading-5 text-slate-900 outline-none focus:border-blue-400"
-                              dir="ltr"
-                              spellCheck={false}
-                            />
-                            {!status.valid && entry.json ? (
-                              <p
-                                className="mt-1 text-[11px] font-bold text-rose-600"
-                                dir="ltr"
-                              >
-                                {status.error}
-                              </p>
-                            ) : null}
-                          </details>
-                        </div>
-                      );
-                    })}
-                  </div>
-                ) : null}
+                <SchemaBuilder
+                  entries={seoDraft.structuredData || []}
+                  context={schemaBuilderContext}
+                  onChange={(next) => updateSeo({ structuredData: next })}
+                />
               </AdvancedSection>
 
               <AdvancedSection
