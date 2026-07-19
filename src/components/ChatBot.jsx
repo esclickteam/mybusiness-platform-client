@@ -1,47 +1,75 @@
 import React, { useState, useRef, useEffect } from "react";
+import { Bot, Send, X } from "lucide-react";
 
-export default function ChatBot({ chatOpen, setChatOpen }) {
+export default function ChatBot({
+  chatOpen,
+  setChatOpen,
+  initialMessage = null,
+  onInitialMessageSent,
+}) {
   const [chatInput, setChatInput] = useState("");
   const [chatMessages, setChatMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [chatMessages]);
+  }, [chatMessages, isLoading]);
+
+  useEffect(() => {
+    if (chatOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [chatOpen]);
+
+  useEffect(() => {
+    if (chatOpen && initialMessage) {
+      sendMessage(initialMessage);
+      onInitialMessageSent?.();
+    }
+  }, [chatOpen, initialMessage]);
 
   function cleanText(text) {
     return text.replace(/\*\*/g, "");
   }
 
-  async function sendMessage() {
-    if (!chatInput.trim()) return;
+  async function sendMessage(messageText) {
+    const text = (messageText ?? chatInput).trim();
+    if (!text || isLoading) return;
 
-    const userMessage = { sender: "user", text: chatInput };
+    const userMessage = { sender: "user", text };
     setChatMessages((msgs) => [...msgs, userMessage]);
     setChatInput("");
+    setIsLoading(true);
 
     try {
       const response = await fetch("/api/chatbot", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: chatInput }),
+        body: JSON.stringify({ question: text }),
       });
 
       const data = await response.json();
 
       const botMessage = {
         sender: "bot",
-        text: cleanText(data.answer || "Sorry, no suitable answer was found."),
+        text: cleanText(data.answer || "מצטער, לא מצאתי תשובה מתאימה."),
         source: data.source || "Bizuply AI",
       };
       setChatMessages((msgs) => [...msgs, botMessage]);
-    } catch (error) {
+    } catch {
       setChatMessages((msgs) => [
         ...msgs,
-        { sender: "bot", text: "An error occurred, please try again later." },
+        {
+          sender: "bot",
+          text: "אירעה שגיאה, אנא נסה שוב מאוחר יותר.",
+        },
       ]);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -49,189 +77,113 @@ export default function ChatBot({ chatOpen, setChatOpen }) {
     return (
       <button
         onClick={() => setChatOpen(true)}
-        style={{
-          position: "fixed",
-          bottom: 20,
-          left: 20,
-          backgroundColor: "#007bff",
-          color: "white",
-          border: "none",
-          borderRadius: "50%",
-          width: 48,
-          height: 48,
-          cursor: "pointer",
-          fontSize: 28,
-          zIndex: 10000,
-          boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
-        }}
-        aria-label="Open AI Assistant"
+        className="fixed bottom-6 left-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-white shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:bg-violet-700"
+        aria-label="פתיחת העוזר החכם של Bizuply"
       >
-        💬
+        <Bot size={24} />
       </button>
     );
   }
 
   return (
     <section
-      style={{
-        position: "fixed",
-        bottom: 20,
-        left: 20,
-        width: 350,
-        maxHeight: 500,
-        backgroundColor: "#fff",
-        borderRadius: 14,
-        boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-        display: "flex",
-        flexDirection: "column",
-        fontFamily:
-          "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-        zIndex: 10000,
-        overflow: "hidden",
-      }}
+      dir="rtl"
+      className="fixed bottom-6 left-6 z-[10000] flex w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+      style={{ maxHeight: "min(560px,calc(100vh-3rem))" }}
     >
-      <header
-        style={{
-          backgroundColor: "#007bff",
-          color: "white",
-          padding: "12px 20px",
-          fontWeight: "700",
-          fontSize: 18,
-          letterSpacing: "0.5px",
-          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-          userSelect: "none",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        Bizuply AI Assistant
+      {/* Header */}
+      <header className="flex items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
+            <Bot size={18} />
+          </div>
+          <div>
+            <p className="text-sm font-black">עוזר Bizuply</p>
+            <p className="text-[10px] font-medium text-violet-200">
+              זמין 24/7
+            </p>
+          </div>
+        </div>
         <button
           onClick={() => setChatOpen(false)}
-          style={{
-            backgroundColor: "transparent",
-            border: "none",
-            color: "white",
-            fontSize: 24,
-            fontWeight: "bold",
-            cursor: "pointer",
-            lineHeight: "1",
-            padding: "0 6px",
-          }}
-          aria-label="Close Chat"
+          className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-white/20"
+          aria-label="סגירת הצ'אט"
         >
-          &times;
+          <X size={18} />
         </button>
       </header>
 
-      <div
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: 20,
-          backgroundColor: "#f6f8fa",
-          fontSize: 15,
-          lineHeight: 1.5,
-          color: "#333",
-        }}
-      >
-        {chatMessages.length === 0 && (
-          <p
-            style={{
-              color: "#888",
-              fontStyle: "italic",
-              textAlign: "center",
-              marginTop: 50,
-              userSelect: "none",
-            }}
-          >
-            Hello! How can I help you?
-          </p>
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto bg-slate-50 px-4 py-4">
+        {chatMessages.length === 0 && !isLoading && (
+          <div className="flex flex-col items-center justify-center py-8 text-center">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+              <Bot size={28} />
+            </div>
+            <p className="mt-4 text-sm font-bold text-slate-700">
+              שלום! איך אפשר לעזור?
+            </p>
+            <p className="mt-1 text-xs text-slate-500">
+              שאל כל שאלה על Bizuply
+            </p>
+          </div>
         )}
+
         {chatMessages.map((msg, i) => (
           <div
             key={i}
-            style={{
-              display: "flex",
-              flexDirection: msg.sender === "user" ? "row-reverse" : "row",
-              marginBottom: 18,
-            }}
+            className={`mb-3 flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}
           >
             <div
-              style={{
-                maxWidth: "75%",
-                padding: "12px 18px",
-                borderRadius: 25,
-                borderBottomRightRadius: msg.sender === "user" ? 0 : 25,
-                borderBottomLeftRadius: msg.sender === "user" ? 25 : 0,
-                boxShadow: "0 1px 4px rgba(0,0,0,0.1)",
-                whiteSpace: "pre-line",
-                fontWeight: msg.sender === "bot" ? "500" : "400",
-                fontSize: 15,
-              }}
-              title={msg.source ? `Answer source: ${msg.source}` : ""}
+              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                msg.sender === "user"
+                  ? "rounded-br-sm bg-violet-600 text-white"
+                  : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
+              }`}
+              title={msg.source ? `מקור: ${msg.source}` : ""}
             >
               {msg.text}
             </div>
           </div>
         ))}
+
+        {isLoading && (
+          <div className="mb-3 flex justify-end">
+            <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-3 shadow-sm">
+              <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:0ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:150ms]" />
+              <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:300ms]" />
+            </div>
+          </div>
+        )}
+
         <div ref={messagesEndRef} />
       </div>
 
-      <div
-        style={{
-          borderTop: "1px solid #ddd",
-          padding: "12px 15px",
-          display: "flex",
-          alignItems: "center",
-          backgroundColor: "white",
-        }}
-      >
-        <input
-          type="text"
-          value={chatInput}
-          onChange={(e) => setChatInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-          placeholder="Type a question..."
-          style={{
-            flex: 1,
-            border: "1.5px solid #ccc",
-            borderRadius: 25,
-            padding: "10px 18px",
-            fontSize: 15,
-            outline: "none",
-            direction: "ltr",
-            transition: "border-color 0.3s ease",
-          }}
-          aria-label="AI Bot Question"
-          onFocus={(e) => (e.target.style.borderColor = "#007bff")}
-          onBlur={(e) => (e.target.style.borderColor = "#ccc")}
-        />
-        <button
-          onClick={sendMessage}
-          style={{
-            marginLeft: 12,
-            backgroundColor: "#007bff",
-            border: "none",
-            borderRadius: "50%",
-            width: 42,
-            height: 42,
-            color: "white",
-            cursor: "pointer",
-            fontWeight: "bold",
-            fontSize: 20,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            boxShadow: "0 3px 8px rgba(0,123,255,0.6)",
-            transition: "background-color 0.3s ease",
-          }}
-          aria-label="Send question to AI Bot"
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = "#0056b3")}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = "#007bff")}
-        >
-          &#9658;
-        </button>
+      {/* Input */}
+      <div className="border-t border-slate-200 bg-white px-3 py-3">
+        <div className="flex items-center gap-2">
+          <input
+            ref={inputRef}
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            placeholder="שאל שאלה..."
+            dir="rtl"
+            disabled={isLoading}
+            className="h-10 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-2 focus:ring-violet-100 disabled:opacity-50"
+            aria-label="שאלה לעוזר החכם"
+          />
+          <button
+            onClick={() => sendMessage()}
+            disabled={!chatInput.trim() || isLoading}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+            aria-label="שליחת שאלה"
+          >
+            <Send size={16} />
+          </button>
+        </div>
       </div>
     </section>
   );
