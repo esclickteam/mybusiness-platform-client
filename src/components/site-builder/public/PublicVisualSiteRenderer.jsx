@@ -4,8 +4,10 @@ import React, {
   useMemo,
   useRef,
 } from "react";
+import { Helmet } from "react-helmet-async";
 
 import { getStudioTemplateRenderer } from "../studio/data/templates/templateRendererRegistry";
+import { resolvePageSeoMeta } from "../studio/utils/pageSeoUtils";
 
 import { buildVisualRuntimeCss } from "../studio/visual-editor/utils/visualCssRuntime";
 import {
@@ -1585,6 +1587,58 @@ function readSiteCustomCode(site) {
   );
 }
 
+function PublicSeoHead({ resolvedSeo }) {
+  if (!resolvedSeo) return null;
+
+  return (
+    <Helmet>
+      {resolvedSeo.titleTag ? <title>{resolvedSeo.titleTag}</title> : null}
+      {resolvedSeo.metaDescription ? (
+        <meta name="description" content={resolvedSeo.metaDescription} />
+      ) : null}
+      {resolvedSeo.keywords ? (
+        <meta name="keywords" content={resolvedSeo.keywords} />
+      ) : null}
+      <meta name="robots" content={resolvedSeo.robots || "index, follow"} />
+      {resolvedSeo.canonicalUrl ? (
+        <link rel="canonical" href={resolvedSeo.canonicalUrl} />
+      ) : null}
+      {resolvedSeo.social?.ogTitle ? (
+        <meta property="og:title" content={resolvedSeo.social.ogTitle} />
+      ) : null}
+      {resolvedSeo.social?.ogDescription ? (
+        <meta
+          property="og:description"
+          content={resolvedSeo.social.ogDescription}
+        />
+      ) : null}
+      {resolvedSeo.social?.ogImage ? (
+        <meta property="og:image" content={resolvedSeo.social.ogImage} />
+      ) : null}
+      {resolvedSeo.absoluteUrl ? (
+        <meta property="og:url" content={resolvedSeo.absoluteUrl} />
+      ) : null}
+      <meta property="og:type" content="website" />
+      <meta
+        name="twitter:card"
+        content={resolvedSeo.social?.twitterCard || "summary_large_image"}
+      />
+      {resolvedSeo.social?.ogTitle ? (
+        <meta name="twitter:title" content={resolvedSeo.social.ogTitle} />
+      ) : null}
+      {resolvedSeo.social?.ogDescription ? (
+        <meta
+          name="twitter:description"
+          content={resolvedSeo.social.ogDescription}
+        />
+      ) : null}
+      {resolvedSeo.social?.ogImage ? (
+        <meta name="twitter:image" content={resolvedSeo.social.ogImage} />
+      ) : null}
+    </Helmet>
+  );
+}
+
 function readCustomCode(site, activePage, visualData) {
   return mergeCustomCodeLayers(
     readSiteCustomCode(site),
@@ -1702,6 +1756,18 @@ export default function PublicVisualSiteRenderer({
     () => readPublicRevision(site, activePage),
     [site, activePage],
   );
+
+  const resolvedSeo = useMemo(() => {
+    if (site?.resolvedSeo) return site.resolvedSeo;
+
+    return resolvePageSeoMeta({
+      page: activePage,
+      siteName: site?.name,
+      siteSlug: site?.slug,
+      publicUrl: site?.publicUrl,
+      seoSettings: site?.seoSettings || site?.seo,
+    });
+  }, [site, activePage]);
 
   useEffect(() => {
     const context = readSiteAnalyticsContext(site);
@@ -1951,6 +2017,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
+        <PublicSeoHead resolvedSeo={resolvedSeo} />
         {css ? <style>{css}</style> : null}
 
         {customCode.enabled !== false ? (
@@ -1997,6 +2064,7 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
+        <PublicSeoHead resolvedSeo={resolvedSeo} />
         {css ? <style>{css}</style> : null}
 
         {customCode.enabled !== false ? (

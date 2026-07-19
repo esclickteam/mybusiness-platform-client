@@ -152,6 +152,7 @@ function PublicMiniSitePage() {
   const [loading, setLoading] = useState(true);
   const [site, setSite] = useState(null);
   const [error, setError] = useState("");
+  const [seoDocument, setSeoDocument] = useState(null);
   const siteRef = React.useRef(null);
   const requestRef = React.useRef({
     sequence: 0,
@@ -183,6 +184,38 @@ function PublicMiniSitePage() {
     try {
       const host = window.location.host;
       const pathname = pathnameOverride || window.location.pathname || "/";
+
+      if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
+        const seoPath =
+          pathname === "/sitemap.xml"
+            ? "public/by-host/sitemap.xml"
+            : "public/by-host/robots.txt";
+        const seoUrl = `${API_SITE_BUILDER_BASE_URL}/${seoPath}?host=${encodeURIComponent(
+          host
+        )}&_fresh=${Date.now()}`;
+
+        const seoRes = await fetch(seoUrl, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        const seoContent = await seoRes.text();
+
+        if (sequence !== requestRef.current.sequence) return;
+
+        setSeoDocument({
+          type: pathname === "/sitemap.xml" ? "xml" : "text",
+          content: seoContent,
+        });
+        setSite(null);
+        siteRef.current = null;
+        setError("");
+        return;
+      }
+
+      setSeoDocument(null);
 
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
         host
@@ -391,6 +424,23 @@ function PublicMiniSitePage() {
       window.removeEventListener("popstate", handlePopState);
     };
   }, [loadSite]);
+
+  if (seoDocument?.content) {
+    return (
+      <pre
+        style={{
+          whiteSpace: "pre-wrap",
+          wordBreak: "break-word",
+          margin: 0,
+          padding: 16,
+          fontFamily: "monospace",
+          fontSize: 13,
+        }}
+      >
+        {seoDocument.content}
+      </pre>
+    );
+  }
 
   if (loading) {
     return (

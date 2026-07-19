@@ -243,6 +243,9 @@ export type StudioSitePage = {
   css?: string;
   projectData?: unknown;
 
+  hiddenFromMenu?: boolean;
+  seo?: SitePageSeoSettings;
+
   createdAt?: string;
   updatedAt?: string;
 };
@@ -619,6 +622,40 @@ export type SiteSeoSettings = {
   description: string;
   keywords?: string;
   ogImage?: string;
+  siteIndexingEnabled?: boolean;
+  defaultTitleTemplate?: string;
+  defaultOgImage?: string;
+};
+
+export type SitePageSocialSettings = {
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterCard?: string;
+};
+
+export type SitePageSeoSettings = {
+  titleTag?: string;
+  metaDescription?: string;
+  parentPageId?: string;
+  indexable?: boolean;
+  canonicalUrl?: string;
+  keywords?: string;
+  social?: SitePageSocialSettings;
+};
+
+export type ResolvedPageSeoMeta = {
+  titleTag: string;
+  metaDescription: string;
+  keywords: string;
+  canonicalUrl: string;
+  pagePath: string;
+  absoluteUrl: string;
+  indexable: boolean;
+  robots: string;
+  social: Required<SitePageSocialSettings>;
+  parentPageId: string;
+  siteIndexingEnabled: boolean;
 };
 
 export type SiteDomainSettings = {
@@ -654,6 +691,7 @@ export type SiteSavePayload = {
   /** שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי */
   status?: SitePageStatus;
   seo?: SiteSeoSettings;
+  seoSettings?: SiteSeoSettings;
   domain?: SiteDomainSettings;
   brand?: SiteBrandSettings;
 
