@@ -601,7 +601,7 @@ export default function PageSettingsModal({
           })}
         </div>
 
-        <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-5 py-5 sm:px-7 sm:py-6">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-5 py-5 text-right sm:px-7 sm:py-6">
           {tab !== "settings" ? (
             <div className="mb-5 rounded-3xl border border-blue-200 bg-gradient-to-l from-blue-600 to-sky-500 p-4 text-white shadow-lg shadow-blue-200">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -1320,7 +1320,7 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       1
                     </span>
-                    <div className="flex-1 space-y-2 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
                         היכנסי ל-Google Search Console (בחינם)
                       </p>
@@ -1339,7 +1339,7 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       2
                     </span>
-                    <div className="flex-1 space-y-2 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
                         בחרי "קידומת כתובת אתר" והדביקי את הכתובת שלך
                       </p>
@@ -1383,7 +1383,7 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       3
                     </span>
-                    <div className="flex-1 space-y-2 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
                         בחרי אימות בשיטת "תג HTML" — גוגל יציג שורה כזו:
                       </p>
@@ -1405,7 +1405,7 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       4
                     </span>
-                    <div className="flex-1 space-y-2 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
                         הדביקי כאן את קוד האימות
                       </p>
@@ -1430,7 +1430,7 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       5
                     </span>
-                    <div className="flex-1 space-y-1 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-1 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
                         שמרי כאן, פרסמי את האתר, וחזרי ל-Search Console ללחוץ
                         "אמת"
