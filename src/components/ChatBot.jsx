@@ -37,7 +37,7 @@ export default function ChatBot({
   const initialSentRef = useRef(false);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [chatMessages, isLoading]);
 
   useEffect(() => {
@@ -132,10 +132,9 @@ export default function ChatBot({
   return (
     <section
       dir="rtl"
-      className="fixed bottom-6 right-6 z-[10000] flex w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
-      style={{ maxHeight: "min(580px,calc(100vh-3rem))" }}
+      className="fixed bottom-6 right-6 z-[10000] flex h-[min(580px,calc(100vh-3rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
     >
-      <header className="flex items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
+      <header className="flex shrink-0 items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
             <Bot size={18} />
@@ -154,7 +153,7 @@ export default function ChatBot({
         </button>
       </header>
 
-      <div className="flex-1 overflow-y-auto bg-slate-50 px-4 py-4">
+      <div className="min-h-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-slate-50 px-4 py-4 pb-6">
         {chatMessages.length === 0 && !isLoading && (
           <div className="py-4 text-center">
             <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
@@ -188,7 +187,7 @@ export default function ChatBot({
             >
               <div
                 dir="auto"
-                className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                className={`max-w-[88%] break-words whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   msg.sender === "user"
                     ? "rounded-br-sm bg-violet-600 text-white"
                     : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
@@ -208,7 +207,7 @@ export default function ChatBot({
                     onClick={() => sendMessage(suggestion, { fromSuggestion: true })}
                     disabled={isLoading}
                     dir="rtl"
-                    className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                    className="max-w-full break-words rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
                   >
                     {suggestion}
                   </button>
@@ -228,10 +227,10 @@ export default function ChatBot({
           </div>
         )}
 
-        <div ref={messagesEndRef} />
+        <div ref={messagesEndRef} className="h-1 shrink-0" />
       </div>
 
-      <div className="border-t border-slate-200 bg-white px-3 py-3">
+      <div className="shrink-0 border-t border-slate-200 bg-white px-3 py-3">
         <div className="flex items-center gap-2">
           <input
             ref={inputRef}
