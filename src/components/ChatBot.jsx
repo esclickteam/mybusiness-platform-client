@@ -192,7 +192,6 @@ export default function ChatBot({
                     ? "rounded-br-sm bg-violet-600 text-white"
                     : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
                 }`}
-                title={msg.source ? `מקור: ${msg.source}` : ""}
               >
                 {msg.text}
               </div>
