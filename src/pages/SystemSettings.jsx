@@ -3,44 +3,44 @@ import "./faq.css";
 
 const faqs = [
   {
-    question: "What are System Settings in BizUply?",
+    question: "מהן הגדרות המערכת ב-BizUply?",
     answer:
-      "System Settings allow you to manage the core configuration of the BizUply platform, including preferences, permissions, and internal tools that affect how your business operates.",
+      "הגדרות המערכת מאפשרות לנהל את התצורה המרכזית של פלטפורמת BizUply, כולל העדפות, הרשאות וכלים פנימיים שמשפיעים על אופן הפעלת העסק.",
   },
   {
-    question: "Where can I manage my business and account preferences?",
+    question: "איפה מנהלים את העדפות העסק והחשבון?",
     answer:
-      "You can manage your business profile details, contact information, visibility settings, and general preferences directly from your dashboard. Changes are applied in real time across the platform.",
+      "ניתן לנהל את פרטי פרופיל העסק, פרטי קשר, הגדרות נראות והעדפות כלליות ישירות מלוח הבקרה. השינויים מיושמים בזמן אמת בכל הפלטפורמה.",
   },
   {
-    question: "Which tools are considered part of the BizUply system?",
+    question: "אילו כלים נחשבים חלק ממערכת BizUply?",
     answer:
-      "BizUply includes Business Profiles, Dashboard & Analytics, CRM, Client Messaging, Business Collaborations, and internal system configuration tools.",
+      "BizUply כוללת בונה אתרים עסקי, לוח בקרה וניתוחים, CRM, שיתופי פעולה עסקיים, יועץ AI וכלי תצורת מערכת פנימיים.",
   },
   {
-    question: "How does BizUply handle data security and privacy?",
+    question: "איך BizUply מטפלת באבטחת מידע ופרטיות?",
     answer:
-      "BizUply is built with strong security practices, including controlled access, secure data handling, and system-level safeguards to protect your business information.",
+      "BizUply בנויה עם שיטות אבטחה חזקות, כולל בקרת גישה, טיפול מאובטח בנתונים והגנות ברמת המערכת להגנה על מידע העסק.",
   },
   {
-    question: "Can I control permissions and access within the system?",
+    question: "האם ניתן לשלוט בהרשאות ובגישה בתוך המערכת?",
     answer:
-      "Yes. BizUply allows controlled access to system features based on your account and business configuration. Additional permissions may depend on your plan.",
+      "כן. BizUply מאפשרת גישה מבוקרת לתכונות המערכת על בסיס החשבון והתצורה העסקית. הרשאות נוספות עשויות להיות תלויות בתוכנית שלכם.",
   },
   {
-    question: "How do system changes affect my dashboard and tools?",
+    question: "איך שינויי מערכת משפיעים על לוח הבקרה והכלים?",
     answer:
-      "System updates are reflected immediately across your dashboard, CRM, messaging, and collaboration tools to ensure consistency.",
+      "עדכוני מערכת משתקפים מיד בלוח הבקרה, ב-CRM, בבונה האתרים, ביועץ AI ובכלי שיתופי הפעולה כדי להבטיח עקביות.",
   },
   {
-    question: "What should I do if something doesn’t work as expected?",
+    question: "מה לעשות אם משהו לא עובד כצפוי?",
     answer:
-      "Try refreshing the page and checking your connection. If the issue persists, visit the Troubleshooting & Errors section or contact Technical Support.",
+      "נסו לרענן את הדף ולבדוק את החיבור. אם הבעיה נמשכת, עברו למקטע «פתרון תקלות ושגיאות» או פנו לתמיכה טכנית.",
   },
   {
-    question: "Are system features updated automatically?",
+    question: "האם תכונות המערכת מתעדכנות אוטומטית?",
     answer:
-      "Yes. BizUply continuously deploys system improvements and updates automatically to ensure stability, performance, and new capabilities.",
+      "כן. BizUply מפרסמת שיפורים ועדכוני מערכת באופן שוטף ואוטומטי כדי להבטיח יציבות, ביצועים ויכולות חדשות.",
   },
 ];
 
@@ -52,13 +52,13 @@ export default function SystemSettings() {
   };
 
   return (
-    <div className="faq-container">
+    <div className="faq-container" dir="rtl" lang="he">
       {/* Header */}
-      <h1 className="faq-title">BizUply System Settings</h1>
+      <h1 className="faq-title">הגדרות מערכת BizUply</h1>
 
       <p className="faq-subtitle">
-        Learn how the BizUply system works and how to manage your platform
-        settings effectively.
+        למדו איך מערכת BizUply עובדת ואיך לנהל את הגדרות הפלטפורמה
+        ביעילות.
       </p>
 
       {/* FAQ List */}

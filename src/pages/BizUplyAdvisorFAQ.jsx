@@ -3,142 +3,142 @@ import "./faq.css";
 
 const faqData = [
   {
-    question: "What is the BizUply Advisor and how can it help me",
+    question: "מהו יועץ BizUply ואיך הוא יכול לעזור לי",
     answer: `
-The BizUply Advisor is an advanced AI-based business and marketing advisory system designed to provide professional, personalized, and practical support for business, marketing, and operational challenges.
+יועץ BizUply הוא מערכת ייעוץ עסקי ושיווקי מתקדמת מבוססת בינה מלאכותית, שנועדה לספק תמיכה מקצועית, מותאמת אישית ומעשית לאתגרים עסקיים, שיווקיים ותפעוליים.
 
-It provides:
-• Immediate answers to professional questions
-• Personalized recommendations based on your business data
-• Strategic planning assistance
-• Identification of opportunities and operational improvements
+הוא מספק:
+• תשובות מיידיות לשאלות מקצועיות
+• המלצות מותאמות אישית על בסיס נתוני העסק שלכם
+• סיוע בתכנון אסטרטגי
+• זיהוי הזדמנויות ושיפורים תפעוליים
 
-The advisor helps you make smarter, faster, and more informed decisions.
+היועץ עוזר לקבל החלטות חכמות, מהירות ומושכלות יותר.
     `,
   },
   {
     question:
-      "How do I pick a ready-made question or ask a free-form question in the BizUply Advisor",
+      "איך בוחרים שאלה מוכנה או שואלים שאלה חופשית ביועץ BizUply",
     answer: `
-You can use the advisor in two ways:
+ניתן להשתמש ביועץ בשתי דרכים:
 
-Ready-made questions:
-• Choose from common business and marketing topics
-• Get fast, focused answers for frequent needs
+שאלות מוכנות:
+• בחרו מתוך נושאים עסקיים ושיווקיים נפוצים
+• קבלו תשובות מהירות וממוקדות לצרכים שכיחים
 
-Free-form questions:
-• Ask a specific or complex question
-• Receive a personalized AI-driven response
-• Get suggested next actions
+שאלות חופשיות:
+• שאלו שאלה ספecific או מורכבת
+• קבלו תשובה מותאמת אישית מבוססת AI
+• קבלו הצעות לפעולות המשך
 
-Use ready-made questions for speed and free-form questions for deeper, tailored guidance.
+השתמשו בשאלות מוכנות למהירות ובשאלות חופשיות להנחיה מעמיקה ומותאמת.
     `,
   },
   {
-    question: "Are the answers meant for all types of businesses",
+    question: "האם התשובות מתאימות לכל סוגי העסקים",
     answer: `
-The BizUply Advisor uses AI combined with your real business data to generate personalized insights.
+יועץ BizUply משתמש בבינה מלאכותית בשילוב עם נתוני העסק האמיתיים שלכם כדי ליצור תובנות מותאמות אישית.
 
-Answers are tailored to:
-• Your business profile
-• Performance history
-• Current activity
-• Business goals
+התשובות מותאמות ל:
+• פרופיל העסק שלכם
+• היסטוריית ביצועים
+• פעילות נוכחית
+• מטרות עסקיות
 
-While highly effective, complex legal or financial issues may still require specialized human consulting.
+למרות שהיועץ יעיל מאוד, נושאים משפטיים או פיננסיים מורכבים עשויים עדיין לדרוש ייעוץ אנושי מומחה.
     `,
   },
   {
-    question: "How do I use the marketing advisor within BizUply",
+    question: "איך משתמשים ביועץ השיווקי בתוך BizUply",
     answer: `
-The marketing advisor provides focused recommendations for digital and traditional marketing.
+היועץ השיווקי מספק המלצות ממוקדות לשיווק דיגיטלי ומסורתי.
 
-It helps you:
-• Build monthly marketing plans
-• Optimize ad spend
-• Choose the right channels
-• Improve conversion rates
-• Increase exposure and engagement
+הוא עוזר:
+• לבנות תוכניות שיווק חודשיות
+• למטב הוצאות פרסום
+• לבחור את הערוצים הנכונים
+• לשפר שיעורי המרה
+• להגביר חשיפה ומעורבות
 
-Recommendations are data-driven and updated in real time.
+ההמלצות מבוססות נתונים ומתעדכנות בזמן אמת.
     `,
   },
   {
-    question: "What if my question doesn’t appear in the list",
+    question: "מה אם השאלה שלי לא מופיעה ברשימה",
     answer: `
-You can ask any question freely using the free-form input.
+ניתן לשאול כל שאלה בחופשיות באמצעות שדה הקלט החופשי.
 
-The advisor:
-• Analyzes your question in real time
-• Provides a professional, relevant answer
-• Suggests next actions or tools
+היועץ:
+• מנתח את השאלה בזמן אמת
+• מספק תשובה מקצועית ורלוונטית
+• מציע פעולות או כלים להמשך
 
-This ensures accurate guidance even for unique or non-standard situations.
+כך מבטיחים הנחיה מדויקת גם במצבים ייחודיים או לא סטандardיים.
     `,
   },
   {
-    question: "Is the service available 24/7",
+    question: "האם השירות זמין 24/7",
     answer: `
-Yes. The BizUply Advisor is available 24/7.
+כן. יועץ BizUply זמין 24/7.
 
-This allows:
-• Immediate guidance anytime
-• Faster decision-making
-• Reduced delays and stress
-• Support during nights, weekends, and holidays
+זה מאפשר:
+• הנחיה מיידית בכל שעה
+• קבלת החלטות מהירה יותר
+• הפחתת עיכובים ולחץ
+• תמיכה בלילות, סופי שבוע וחגים
 
-Always-on access is a strategic advantage in today’s fast-paced business world.
+גישה זמינה תמיד היא יתרון אסטרטגי בעולם העסקים המהיר של היום.
     `,
   },
   {
-    question: "How can I maximize the value from the BizUply Advisor",
+    question: "איך ממקסמים את הערך מיועץ BizUply",
     answer: `
-To get the most value:
-• Apply recommendations in daily operations
-• Sync actions with CRM and dashboard
-• Track performance results
-• Ask follow-up questions
+כדי להפיק את המירב:
+• יישמו המלצות בפעילות היומיומית
+• סנכרוןו פעולות עם ה-CRM ולוח הבקרה
+• עקבו אחר תוצאות הביצועים
+• שאלו שאלות המשך
 
-Consistent execution combined with AI guidance leads to measurable improvement.
+יישום עקבי בשילוב עם הנחיית AI מוביל לשיפור מדיד.
     `,
   },
   {
-    question: "How do I integrate the BizUply Advisor with other business systems",
+    question: "איך משלבים את יועץ BizUply עם מערכות עסקיות אחרות",
     answer: `
-BizUply supports integration with:
-• CRM systems
-• Business dashboards
-• Marketing platforms
-• Customer and order management tools
+BizUply תומכת באינtegrציה עם:
+• מערכות CRM
+• לוחות בקרה עסקיים
+• פלטפורמות שיווק
+• כלי ניהול לקוחות והזמנות
 
-Real-time data sync ensures accurate, consistent insights and better decision-making.
+סנכרוןציית נתונים בזמן אמת מבטיחה תובנות מדויקות ועקביות וקבלת החלטות טובה יותר.
     `,
   },
   {
-    question: "What errors or issues might occur in the BizUply Advisor and how can I fix them",
+    question: "אילו שגיאות או בעיות עלולות להופיע ביועץ BizUply ואיך מתקנים",
     answer: `
-Common issues and solutions include:
+בעיות נפוצות ופתרונות:
 
-• Delayed responses: Check internet connection and refresh
-• Data-sync issues: Verify business data and re-sync
-• Login issues: Confirm permissions or reset password
-• Technical bugs: Update browser or contact support
+• תגובות מעוכבות: בדקו חיבור אינטרנט ורעננו
+• בעיות סנכרוןציית נתונים: ודאו נתוני עסק וסנכרוןו מחדש
+• בעיות התחברות: אשרו הרשאות או אפסו סיסמה
+• באגים טכניים: עדכנו דפדפן או פנו לתמיכה
 
-For unresolved issues, provide support with screenshots and system details.
+לבעיות שלא נפתרות, שלחו לתמיכה צילומי מסך ופרטי מערכת.
     `,
   },
   {
-    question: "How can I prevent recurring issues and errors in the BizUply Advisor",
+    question: "איך מונעים בעיות ושגיאות חוזרות ביועץ BizUply",
     answer: `
-Best practices:
-• Keep business data up to date
-• Ensure stable internet
-• Use a modern, updated browser
-• Manage permissions carefully
-• Restart the system periodically
-• Report issues promptly
+שיטות עבודה מומלצות:
+• שמרו על נתוני עסק מעודכנים
+• ודאו חיבור אינטרנט יציב
+• השתמשו בדפדפן מודרני ומעודכן
+• נהלו הרשאות בזהירות
+• הפעילו מחדש את המערכת מדי פעם
+• דווחו על בעיות במהירות
 
-These steps ensure reliable, smooth usage over time.
+צעדים אלה מבטיחים שימוש אמין וחלק לאורך זמן.
     `,
   },
 ];
@@ -151,8 +151,8 @@ export default function BizUplyAdvisorFAQ() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">FAQ – BizUply Advisor</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">שאלות נפוצות – יועץ BizUply</h1>
 
       <div className="faq-list">
         {faqData.map((faq, idx) => {

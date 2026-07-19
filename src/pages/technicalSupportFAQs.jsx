@@ -3,184 +3,185 @@ import "./faq.css";
 
 const technicalSupportFAQs = [
   {
-    question: "How can I get technical help",
+    question: "איך מקבלים עזרה טכנית",
     answer: (
       <>
-        <p>For quick and effective technical assistance, we recommend:</p>
+        <p>לסיוע טכני מהיר ויעיל, אנו ממליצים:</p>
         <ul>
           <li>
-            <b>Help Center & FAQs:</b> Review guides and FAQs that cover common
-            issues and solutions.
+            <b>מרכז עזרה ושאלות נפוצות:</b> עברו על מדריכים ושאלות נפוצות
+            שמכסים בעיות ופתרונות שכיחים.
           </li>
           <li>
-            <b>Support bot:</b> Use the built-in support bot for fast diagnosis
-            of routine issues.
+            <b>בוט תמיכה:</b> השתמשו בבוט התמיכה המובנה לאבחון מהיר
+            של בעיות שגרתיות.
           </li>
           <li>
-            <b>Self-troubleshooting:</b> Refresh the page, clear cache, or reset
-            your password.
+            <b>פתרון עצמי:</b> רעננו את הדף, נקו מטמון או אפסו
+            את הסיסמה.
           </li>
           <li>
-            <b>Contact support:</b><br />
-            <b>Email:</b> support@bizuply.com<br />
-            <b>Phone:</b> Relevant phone number<br />
-            Please include screenshots, browser, device, and time of issue.
+            <b>פנייה לתמיכה:</b><br />
+            <b>דוא"ל:</b> support@bizuply.com<br />
+            <b>טלפון:</b> מספר טלפון רלוונטי<br />
+            נא לצרף צילומי מסך, דפדפן, מכשיר ושעת התקלה.
           </li>
         </ul>
       </>
     ),
   },
   {
-    question: "How do I reset my password",
+    question: "איך מאפסים סיסמה",
     answer: (
       <>
-        <p>To reset your password:</p>
+        <p>לאיפוס סיסמה:</p>
         <ol>
-          <li>Go to the login page.</li>
-          <li>Click <b>“Forgot password”</b>.</li>
-          <li>Enter your account email.</li>
-          <li>Check your inbox (and spam folder).</li>
-          <li>Open the reset link.</li>
-          <li>Set a new password and confirm.</li>
+          <li>עברו לדף ההתחברות.</li>
+          <li>
+            לחצו על <b>«שכחתי סיסמה»</b>.
+          </li>
+          <li>הזינו את כתובת הדוא"ל של החשבון.</li>
+          <li>בדקו את תיבת הדואר (כולל תיקיית ספאם).</li>
+          <li>פתחו את קישור האיפוס.</li>
+          <li>הגדירו סיסמה חדשה ואשרו.</li>
         </ol>
         <p>
-          If you don’t receive the email, verify the address and try again or
-          contact support.
+          אם לא מגיע הדוא"ל, ודאו את הכתובת ונסו שוב או פנו
+          לתמיכה.
         </p>
       </>
     ),
   },
   {
-    question: "How do notifications work in the system",
+    question: "איך עובדות ההתראות במערכת",
     answer: (
       <>
         <p>
-          Notifications are sent automatically for key events such as new
-          messages, collaborations, and appointments.
+          התראות נשלחות אוטומטית לאירועים מרכזיים כמו שיתופי פעולה,
+          תורים ועדכוני מערכת.
         </p>
+        <p>ההתראות מופיעות תחת סמל הפעמון בפינה העליונה.</p>
         <p>
-          Notifications appear under the bell icon in the top-right corner.
-        </p>
-        <p>
-          <b>No manual configuration is required</b>. Push notifications depend
-          on browser or device permissions.
+          <b>אין צורך בהגדרה ידנית</b>. התראות push תלויות
+          בהרשאות הדפדפן או המכשיר.
         </p>
       </>
     ),
   },
   {
-    question: "Why don’t I see new updates in the system",
-    answer: (
-      <>
-        <ul>
-          <li>Check internet connection stability.</li>
-          <li>Refresh the page (<code>F5</code> / <code>Cmd + R</code>).</li>
-          <li>Clear browser cache.</li>
-          <li>Ensure your browser or app is up to date.</li>
-          <li>Try another browser or device.</li>
-        </ul>
-        <p>
-          If the issue continues, contact support with device and browser
-          details.
-        </p>
-      </>
-    ),
-  },
-  {
-    question: "How do I clear cache and cookies",
-    answer: (
-      <>
-        <p>In Google Chrome:</p>
-        <ol>
-          <li>Open menu → Settings.</li>
-          <li>Go to Privacy & Security.</li>
-          <li>Select Clear browsing data.</li>
-          <li>Choose <b>All time</b>.</li>
-          <li>Select Cookies and Cached files.</li>
-          <li>Click Clear data and restart the browser.</li>
-        </ol>
-        <p>The process is similar in Firefox, Edge, and Safari.</p>
-      </>
-    ),
-  },
-  {
-    question: "What should I do if the site is slow or lagging",
+    question: "למה אני לא רואה עדכונים חדשים במערכת",
     answer: (
       <>
         <ul>
-          <li>Check internet speed and stability.</li>
-          <li>Close background apps.</li>
-          <li>Clear browser cache.</li>
-          <li>Try another browser.</li>
-          <li>Ensure OS and browser are updated.</li>
-        </ul>
-        <p>
-          If performance issues persist, contact support with detailed
-          information.
-        </p>
-      </>
-    ),
-  },
-  {
-    question: "How can I tell if the issue is on my side or the system",
-    answer: (
-      <>
-        <ul>
-          <li>Try another device.</li>
-          <li>Try a different network.</li>
-          <li>Clear cache and disable extensions.</li>
-          <li>Check firewall or security software.</li>
-        </ul>
-        <p>
-          If the issue appears everywhere, it’s likely system-related. Contact
-          support with your findings.
-        </p>
-      </>
-    ),
-  },
-  {
-    question: "Does the system support old browsers",
-    answer: (
-      <>
-        <p>
-          The system is optimized for modern browsers to ensure performance,
-          security, and stability.
-        </p>
-        <p>
-          Older browsers may cause display errors, slow performance, or missing
-          functionality.
-        </p>
-        <p>
-          We strongly recommend updating your browser or switching to a
-          supported one.
-        </p>
-      </>
-    ),
-  },
-  {
-    question: "What should I do in case of account security issues",
-    answer: (
-      <>
-        <ul>
-          <li>Change your password immediately.</li>
-          <li>Review account activity.</li>
-          <li>Disconnect unknown devices.</li>
-          <li>Use strong, unique passwords.</li>
-          <li>Run antivirus checks on your device.</li>
-        </ul>
-        <p>If you can’t access your account, contact support immediately.</p>
-      </>
-    ),
-  },
-  {
-    question: "How do I recover my account if I forgot my login details",
-    answer: (
-      <>
-        <ul>
-          <li>Use the “Forgot password” option.</li>
-          <li>Check old system emails for username clues.</li>
+          <li>בדקו יציבות חיבור האינטרנט.</li>
           <li>
-            Contact support with identifying details if recovery fails.
+            רעננו את הדף (<code>F5</code> / <code>Cmd + R</code>).
+          </li>
+          <li>נקו מטמון דפדפן.</li>
+          <li>ודאו שהדפדפן או האפליקציה מעודכנים.</li>
+          <li>נסו דפדפן או מכשיר אחר.</li>
+        </ul>
+        <p>
+          אם הבעיה נמשכת, פנו לתמיכה עם פרטי מכשיר ודפדפן.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: "איך מנקים מטמון ועוגיות",
+    answer: (
+      <>
+        <p>ב-Google Chrome:</p>
+        <ol>
+          <li>פתחו תפריט → הגדרות.</li>
+          <li>עברו לפרטיות ואבטחה.</li>
+          <li>בחרו «ניקוי נתוני גלישה».</li>
+          <li>בחרו <b>כל הזמן</b>.</li>
+          <li>סמנו עוגיות וקבצים במטמון.</li>
+          <li>לחצו «נקה נתונים» והפעילו מחדש את הדפדפן.</li>
+        </ol>
+        <p>התהליך דומה ב-Firefox, Edge ו-Safari.</p>
+      </>
+    ),
+  },
+  {
+    question: "מה לעשות אם האתר איטי או נתקע",
+    answer: (
+      <>
+        <ul>
+          <li>בדקו מהירות ויציבות חיבור האינטרנט.</li>
+          <li>סגרו אפליקציות ברקע.</li>
+          <li>נקו מטמון דפדפן.</li>
+          <li>נסו דפדפן אחר.</li>
+          <li>ודאו שמערכת ההפעלה והדפדפן מעודכנים.</li>
+        </ul>
+        <p>
+          אם בעיות הביצועים נמשכות, פנו לתמיכה עם מידע
+          מפורט.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: "איך יודעים אם הבעיה אצלי או במערכת",
+    answer: (
+      <>
+        <ul>
+          <li>נסו מכשיר אחר.</li>
+          <li>נסו רשת אחרת.</li>
+          <li>נקו מטמון והשביתו תוספים.</li>
+          <li>בדקו חומת אש או תוכנות אבטחה.</li>
+        </ul>
+        <p>
+          אם הבעיה מופיעה בכל מקום, סביר שהיא קשורה למערכת.
+          פנו לתמיכה עם הממצאים שלכם.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: "האם המערכת תומכת בדפדפנים ישנים",
+    answer: (
+      <>
+        <p>
+          המערכת מותאמת לדפדפנים מודרניים כדי להבטיח ביצועים,
+          אבטחה ויציבות.
+        </p>
+        <p>
+          דפדפנים ישנים עלולים לגרום לשגיאות תצוגה, ביצועים
+          איטיים או פונקציונליות חסרה.
+        </p>
+        <p>
+          אנו ממליצים בחום לעדכן את הדפדפן או לעבור לדפדפן
+          נתמך.
+        </p>
+      </>
+    ),
+  },
+  {
+    question: "מה לעשות במקרה של בעיות אבטחת חשבון",
+    answer: (
+      <>
+        <ul>
+          <li>שנו את הסיסמה מיד.</li>
+          <li>עברו על פעילות החשבון.</li>
+          <li>נתקו מכשירים לא מוכרים.</li>
+          <li>השתמשו בסיסמאות חזקות וייחודיות.</li>
+          <li>הפעילו בדיקת אנטiוירוס במכשיר.</li>
+        </ul>
+        <p>אם אין גישה לחשבון, פנו לתמיכה מיד.</p>
+      </>
+    ),
+  },
+  {
+    question: "איך משחזרים חשבון אם שכחתי פרטי התחברות",
+    answer: (
+      <>
+        <ul>
+          <li>השתמשו באפשרות «שכחתי סיסמה».</li>
+          <li>חפשו בדוא"לים ישנים מהמערכת רמזים לשם משתמש.</li>
+          <li>
+            פנו לתמיכה עם פרטים מזהים אם השחזור נכשל.
           </li>
         </ul>
       </>
@@ -196,8 +197,8 @@ export default function TechnicalSupport() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">Technical Support – FAQ</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">תמיכה טכנית – שאלות נפוצות</h1>
 
       <div className="faq-list">
         {technicalSupportFAQs.map((faq, idx) => {

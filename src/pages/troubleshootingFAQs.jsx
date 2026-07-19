@@ -3,169 +3,170 @@ import "./faq.css";
 
 const troubleshootingFAQs = [
   {
-    question: "The system isn't loading — what should I do",
+    question: "המערכת לא נטענת — מה לעשות",
     answer: (
       <>
-        <p>When the system doesn't load, follow these steps in order:</p>
+        <p>כשהמערכת לא נטענת, בצעו את הצעדים הבאים לפי הסדר:</p>
         <ol>
           <li>
-            <b>Check your internet connection:</b> Make sure your device is
-            connected and the signal is stable. Try opening another website.
+            <b>בדקו את חיבור האינטרנט:</b> ודאו שהמכשיר מחובר
+            והאות יציב. נסו לפתוח אתר אחר.
           </li>
           <li>
-            <b>Refresh the page:</b> Press <code>F5</code> (Windows) or{" "}
+            <b>רעננו את הדף:</b> לחצו <code>F5</code> (Windows) או{" "}
             <code>Cmd + R</code> (Mac).
           </li>
           <li>
-            <b>Clear browser cache:</b>  
-            Chrome: Settings → Privacy & Security → Clear browsing data.  
-            Select “Cached images and files” and “Cookies”, then clear data.
+            <b>נקו מטמון דפדפן:</b>
+            Chrome: הגדרות → פרטיות ואבטחה → ניקוי נתוני גלישה.
+            סמנו «תמונות וקבצים במטמון» ו«עוגיות», ואז נקו.
           </li>
           <li>
-            <b>Log out and log back in:</b> Wait 2–3 minutes before signing in
-            again.
+            <b>התנתקו והתחברו מחדש:</b> המתינו 2–3 דקות לפני
+            ההתחברות מחדש.
           </li>
           <li>
-            <b>Try another browser or device:</b> Firefox, Edge, Safari, or a
-            different device.
+            <b>נסו דפדפן או מכשיר אחר:</b> Firefox, Edge, Safari
+            או מכשיר שונה.
           </li>
           <li>
-            <b>Disable extensions:</b> Temporarily disable ad blockers or
-            security extensions.
+            <b>השביתו תוספים:</b> השביתו זמנית חוסמי פרסומות
+            או תוספי אבטחה.
           </li>
         </ol>
         <p>
-          If the issue persists, contact support with screenshots and browser/OS
-          details.
+          אם הבעיה נמשכת, פנו לתמיכה עם צילומי מסך ופרטי
+          דפדפן/מערכת הפעלה.
         </p>
       </>
     ),
   },
   {
-    question: "I received a 500 server error — what should I do",
+    question: "קיבלתי שגיאת שרת 500 — מה לעשות",
     answer: (
       <>
-        <p>A 500 error indicates a server-side issue. Try the following:</p>
+        <p>שגיאת 500 מציינת בעיה בצד השרת. נסו את הדברים הבאים:</p>
         <ol>
-          <li>Refresh the page.</li>
-          <li>Clear cache and cookies.</li>
-          <li>Wait a few minutes and try again.</li>
-          <li>Test from another browser or device.</li>
-          <li>Disable content-blocking extensions.</li>
+          <li>רעננו את הדף.</li>
+          <li>נקו מטמון ועוגיות.</li>
+          <li>המתינו מספר דקות ונסו שוב.</li>
+          <li>בדקו מדפדפן או מכשיר אחר.</li>
+          <li>השביתו תוספים שחוסמים תוכן.</li>
         </ol>
         <p>
-          If the error continues, contact support with screenshots, time of
-          occurrence, and browser/OS details.
+          אם השגיאה נמשכת, פנו לתמיכה עם צילומי מסך, שעת
+          ההופעה ופרטי דפדפן/מערכת הפעלה.
         </p>
       </>
     ),
   },
   {
-    question: "I can’t log into my account — what can I do",
+    question: "אני לא מצליח להתחבר לחשבון — מה אפשר לעשות",
     answer: (
       <>
-        <p>If you can’t log in, try the following:</p>
+        <p>אם לא ניתן להתחבר, נסו את הדברים הבאים:</p>
         <ol>
-          <li>Verify username/password and keyboard language.</li>
-          <li>Use the “Forgot password” option.</li>
-          <li>Check spam folder for reset email.</li>
-          <li>Wait 15 minutes if the account is temporarily locked.</li>
-          <li>Try incognito mode or another browser.</li>
+          <li>ודאו שם משתמש/סיסמה ושפת מקלדת.</li>
+          <li>השתמשו באפשרות «שכחתי סיסמה».</li>
+          <li>בדקו תיקיית ספאם לדוא"ל איפוס.</li>
+          <li>המתינו 15 דקות אם החשבון ננעל זמנית.</li>
+          <li>נסו מצב incognito או דפדפן אחר.</li>
         </ol>
-        <p>If login still fails, contact support with account details.</p>
+        <p>אם ההתחברות עדיין נכשלת, פנו לתמיכה עם פרטי החשבון.</p>
       </>
     ),
   },
   {
-    question: "Files aren’t loading or displaying — what should I do",
+    question: "קבצים לא נטענים או לא מוצגים — מה לעשות",
     answer: (
       <>
-        <p>If files fail to load:</p>
+        <p>אם קבצים לא נטענים:</p>
         <ol>
-          <li>Verify supported format (JPG, PNG, PDF, MP4).</li>
-          <li>Ensure file size is within limits.</li>
-          <li>Check the file is not corrupted.</li>
-          <li>Refresh the page and try again.</li>
-          <li>Try another browser or private mode.</li>
-          <li>Contact support with error details.</li>
+          <li>ודאו פורמט נתמך (JPG, PNG, PDF, MP4).</li>
+          <li>ודאו שהקובץ בגודל המותר.</li>
+          <li>בדקו שהקובץ לא פגום.</li>
+          <li>רעננו את הדף ונסו שוב.</li>
+          <li>נסו דפדפן אחר או מצב פרטי.</li>
+          <li>פנו לתמיכה עם פרטי השגיאה.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "The system logs me out automatically — what should I do",
+    question: "המערכת מנתקת אותי אוטומטית — מה לעשות",
     answer: (
       <>
-        <p>Unexpected logouts can occur due to:</p>
+        <p>ניתוקים לא צפויים עלולים לנבוע מ:</p>
         <ol>
-          <li>Unstable internet connection.</li>
-          <li>Browser cache or extension conflicts.</li>
-          <li>Power-saving or sleep settings.</li>
-          <li>VPN or proxy interference.</li>
+          <li>חיבור אינטרנט לא יציב.</li>
+          <li>סכסוכים במטמון דפדפן או בתוספים.</li>
+          <li>הגדרות חיסכון באנרגיה או שינה.</li>
+          <li>הפרעה מ-VPN או proxy.</li>
         </ol>
         <p>
-          Try another browser/device and contact support if it continues.
+          נסו דפדפן/מכשיר אחר ופנו לתמיכה אם זה נמשך.
         </p>
       </>
     ),
   },
   {
-    question: "How do I report bugs in the system",
+    question: "איך מדווחים על באגים במערכת",
     answer: (
       <>
-        <p>To report bugs efficiently:</p>
+        <p>לדיווח יעיל על באגים:</p>
         <ol>
-          <li>Describe the action that caused the issue.</li>
-          <li>Attach screenshots.</li>
-          <li>Include device, OS, browser, and version.</li>
-          <li>Specify date and time.</li>
+          <li>תארו את הפעולה שגרמה לבעיה.</li>
+          <li>צרפו צילומי מסך.</li>
+          <li>כללו מכשיר, מערכת הפעלה, דפדפן וגרסה.</li>
+          <li>ציינו תאריך ושעה.</li>
           <li>
-            Send details to <b>support@bizuply.com</b> or open a support ticket.
+            שלחו פרטים ל-<b>support@bizuply.com</b> או פתחו
+            פניית תמיכה.
           </li>
         </ol>
       </>
     ),
   },
   {
-    question: "My account was blocked without reason — what should I do",
+    question: "החשבון שלי נחסם ללא סיבה — מה לעשות",
     answer: (
       <>
-        <p>If your account was blocked:</p>
+        <p>אם החשבון נחסם:</p>
         <ol>
-          <li>Confirm the block by attempting login.</li>
-          <li>Check emails (including spam).</li>
-          <li>Contact support with account details.</li>
-          <li>Describe recent actions before the block.</li>
+          <li>אשרו את החסימה בניסיון התחברות.</li>
+          <li>בדקו דוא"ל (כולל ספאם).</li>
+          <li>פנו לתמיכה עם פרטי החשבון.</li>
+          <li>תארו פעולות אחרונות לפני החסימה.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "I see a blank page or white screen — how do I fix it",
+    question: "אני רואה דף ריק או מסך לבן — איך מתקנים",
     answer: (
       <>
-        <p>To resolve blank screens:</p>
+        <p>לפתרון מסכים ריקים:</p>
         <ol>
-          <li>Check internet connection.</li>
-          <li>Clear cache and cookies.</li>
-          <li>Disable extensions temporarily.</li>
-          <li>Try incognito mode.</li>
-          <li>Try another browser or device.</li>
+          <li>בדקו חיבור אינטרנט.</li>
+          <li>נקו מטמון ועוגיות.</li>
+          <li>השביתו תוספים זמנית.</li>
+          <li>נסו מצב incognito.</li>
+          <li>נסו דפדפן או מכשיר אחר.</li>
         </ol>
       </>
     ),
   },
   {
-    question: "Timeout error — the site disconnects or doesn’t respond",
+    question: "שגיאת timeout — האתר מתנתק או לא מגיב",
     answer: (
       <>
-        <p>A timeout usually indicates a slow or interrupted connection.</p>
+        <p>timeout בדרך כלל מציין חיבור איטי או מופרע.</p>
         <ol>
-          <li>Check internet speed and stability.</li>
-          <li>Close bandwidth-heavy apps.</li>
-          <li>Refresh and retry.</li>
-          <li>Try again later if servers are busy.</li>
-          <li>Contact support if it repeats.</li>
+          <li>בדקו מהירות ויציבות אינטרנט.</li>
+          <li>סגרו אפליקציות שצורכות רוחב רב.</li>
+          <li>רעננו ונסו שוב.</li>
+          <li>נסו שוב מאוחר יותר אם השרתים עמוסים.</li>
+          <li>פנו לתמיכה אם זה חוזר על עצמו.</li>
         </ol>
       </>
     ),
@@ -180,8 +181,8 @@ export default function TroubleshootingSupport() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">Troubleshooting & Errors – FAQ</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">פתרון תקלות ושגיאות – שאלות נפוצות</h1>
 
       <div className="faq-list">
         {troubleshootingFAQs.map((faq, idx) => {

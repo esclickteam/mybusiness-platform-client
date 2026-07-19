@@ -3,132 +3,132 @@ import "./faq.css";
 
 const faqData = [
   {
-    question: "What does my business dashboard show",
+    question: "מה מציג לוח הבקרה של העסק שלי",
     answer: `
-The business dashboard is a real-time control panel that presents a comprehensive picture of your business activity.
+לוח הבקרה הוא מרכז שליטה בזמן אמת שמציג תמונה מקיפה של פעילות העסק.
 
-It includes:
-• Number of appointments by status (approved, pending, canceled)
-• Reviews and ratings trends
-• Profile views and exposure analytics
-• Visual charts for appointments and customer activity
-• Interactive calendar for scheduling and planning
+הוא כולל:
+• מספר תורים לפי סטטוס (מאושר, ממתין, בוטל)
+• מגמות ביקורות ודירוגים
+• צפיות בפרופיל וניתוח חשיפה
+• גרפים ויזואליים לתורים ופעילות לקוחות
+• יומן אינטראקטיבי לתכנון וניהול
     `,
   },
   {
-    question: "How can I see all scheduled appointments for the week or month",
+    question: "איך רואים את כל התורים המתוזמנים לשבוע או לחודש",
     answer: `
-In the Appointments section you can view all bookings using:
+במקטע התורים ניתן לצפות בכל ההזמנות באמצעות:
 
-• Monthly calendar with marked appointment dates
-• Daily appointment lists with customer and service details
-• Table view with sorting and advanced filters
-• Export options to Excel or PDF for reporting
+• יומן חודשי עם תאריכי תורים מסומנים
+• רשימות תורים יומיות עם פרטי לקוח ושירות
+• תצוגת טבלה עם מיון וסינון מתקדם
+• אפשרויות ייצוא ל-Excel או PDF לדיווח
     `,
   },
   {
-    question: "What should I do if appointments or views don’t update on the dashboard",
+    question: "מה לעשות אם תורים או צפיות לא מתעדכנים בלוח הבקרה",
     answer: `
-Try the following troubleshooting steps:
+נסו את צעדי האיתור הבאים:
 
-• Check your internet connection
-• Perform a hard refresh (Ctrl + F5 / Cmd + Shift + R)
-• Clear browser cache and cookies
-• Try another browser or device
-• Log out and log back in
-• Wait 5–10 minutes for data sync
-• Check for system maintenance messages
+• בדקו את חיבור האינטרנט
+• בצעו רענון מלא (Ctrl + F5 / Cmd + Shift + R)
+• נקו מטמון ועוגיות בדפדפן
+• נסו דפדפן או מכשיר אחר
+• התנתקו והתחברו מחדש
+• המתינו 5–10 דקות לסנכרון הנתונים
+• בדקו הודעות תחזוקת מערכת
 
-If the issue persists, contact support with full details.
+אם הבעיה נמשכת, פנו לתמיכה עם פרטים מלאים.
     `,
   },
   {
-    question: "What does the calendar on the dashboard represent",
+    question: "מה מייצג היומן בלוח הבקרה",
     answer: `
-The calendar provides a visual overview of scheduled appointments.
+היומן מספק סקירה ויזואלית של תורים מתוזמנים.
 
-• Each marked day indicates at least one appointment
-• Clicking a day shows all appointments ordered by time
-• You can navigate between months to plan ahead
-• Easily identify busy and available days
+• כל יום מסומן מציין לפחות תור אחד
+• לחיצה על יום מציגה את כל התורים לפי שעה
+• ניתן לנווט בין חודשים לתכנון מראש
+• זיהוי קל של ימים עמוסים ופנויים
     `,
   },
   {
-    question: "How do I read the customers booked by month chart",
+    question: "איך קוראים את גרף הלקוחות שהזמינו לפי חודש",
     answer: `
-This chart shows how many customers booked appointments each month.
+הגרף מציג כמה לקוחות הזמינו תורים בכל חודש.
 
-• Available as bar chart, line chart, or table
-• Helps identify seasonal trends and peak periods
-• Useful for planning marketing and budgeting strategies
+• זמין כגרף עמודות, גרף קווים או טבלה
+• עוזר לזהות מגמות עונתיות ותקופות שיא
+• שימושי לתכנון שיווק ותקציב
     `,
   },
   {
-    question: "What are smart action recommendations on the dashboard",
+    question: "מהן המלצות הפעולה החכמות בלוח הבקרה",
     answer: `
-Smart recommendations are generated using system analytics.
+המלצות חכמות נוצרות באמצעות ניתוחי המערכת.
 
-Examples include:
-• Suggestions to promote services when activity drops
-• Reminders to request reviews
-• Scheduling optimization tips
-• Customer engagement recommendations
+דוגמאות:
+• הצעות לקידום שירותים כשהפעילות יורדת
+• תזכורות לבקש ביקורות
+• טיפים לאופטימיזציה של לוח הזמנים
+• המלצות לשיפור מעורבות לקוחות
 
-They update in real time based on your data.
+הן מתעדכנות בזמן אמת על בסיס הנתונים שלכם.
     `,
   },
   {
-    question: "What should I do if I notice incorrect or missing dashboard data",
+    question: "מה לעשות אם שמתם לב לנתונים שגויים או חסרים בלוח הבקרה",
     answer: `
-• Verify appointments and statuses are correct
-• Check for sync issues
-• Refresh or re-login
-• Review system notices
-• If issues persist, report them with screenshots to support
+• ודאו שהתורים והסטטוסים נכונים
+• בדקו בעיות סנכרוןציה
+• רעננו או התחברו מחדש
+• עברו על הודעות מערכת
+• אם הבעיה נמשכת, דווחו עם צילומי מסך לתמיכה
     `,
   },
   {
-    question: "How can I get a weekly or monthly business summary",
+    question: "איך מקבלים סיכום עסקי שבועי או חודשי",
     answer: `
-The dashboard provides summary reports including:
+לוח הבקרה מספק דוחות סיכום הכוללים:
 
-• Total appointments
-• Profile exposure metrics
-• Reviews and ratings overview
+• סך התורים
+• מדדי חשיפה לפרופיל
+• סקירת ביקורות ודירוגים
 
-Reports can be viewed online, downloaded as PDF or Excel, and shared with your team.
+ניתן לצפות בדוחות אונליין, להוריד כ-PDF או Excel ולשתף עם הצוות.
     `,
   },
   {
-    question: "What if dashboard data isn’t updating in real time",
+    question: "מה אם הנתונים בלוח הבקרה לא מתעדכנים בזמן אמת",
     answer: `
-If data appears outdated:
+אם הנתונים נראים מיושנים:
 
-• Check internet stability
-• Perform a hard refresh
-• Clear cache and cookies
-• Try another browser or device
-• Look for maintenance alerts
-• Log out and log back in
-• Wait a few minutes for system sync
+• בדקו יציבות חיבור האינטרנט
+• בצעו רענון מלא
+• נקו מטמון ועוגיות
+• נסו דפדפן או מכשיר אחר
+• חפשו התראות תחזוקה
+• התנתקו והתחברו מחדש
+• המתינו מספר דקות לסנכרון המערכת
 
-Contact support if the issue continues.
+פנו לתמיכה אם הבעיה נמשכת.
     `,
   },
   {
-    question: "How can I improve dashboard metrics and increase business activity",
+    question: "איך משפרים את מדדי לוח הבקרה ומגבירים פעילות עסקית",
     answer: `
-Improvement tips:
+טיפים לשיפור:
 
-• Run targeted marketing campaigns
-• Keep your business profile updated and professional
-• Add high-quality images and videos
-• Manage availability and reduce no-shows
-• Encourage customer reviews
-• Analyze trends and adjust activity
-• Use CRM and analytics tools effectively
+• הפעילו קמפיינים שיווקיים ממוקדים
+• שמרו על פרופיל עסקי מעודכן ומקצועי
+• הוסיפו תמונות וסרטונים איכותיים
+• נהלו זמינות והפחיתו אי-הגעות
+• עודדו ביקורות מלקוחות
+• נתחו מגמות והתאימו את הפעילות
+• השתמשו ב-CRM ובכלי הניתוח ביעילות
 
-Consistent optimization leads to better performance and growth.
+אופטימיזציה עקבית מובילה לביצועים טובים יותר ולצמיחה.
     `,
   },
 ];
@@ -141,9 +141,9 @@ export default function DashboardFAQ() {
   };
 
   return (
-    <div className="faq-container">
+    <div className="faq-container" dir="rtl" lang="he">
       <h1 className="faq-title">
-        Detailed Help Center FAQ – Business Dashboard
+        מרכז עזרה מפורט – לוח בקרה עסקי
       </h1>
 
       <div className="faq-list">

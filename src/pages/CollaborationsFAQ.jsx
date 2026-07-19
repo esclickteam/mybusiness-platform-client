@@ -3,138 +3,137 @@ import "./faq.css";
 
 const faqData = [
   {
-    question: "What is a business collaboration and how can it grow my business",
+    question: "מהו שיתוף פעולה עסקי ואיך הוא יכול לצמוח את העסק",
     answer: `
-A business collaboration is a partnership between two or more businesses working together toward shared goals such as marketing, sales, or service development.
+שיתוף פעולה עסקי הוא שותפות בין שני עסקים או יותר שעובדים יחד למטרות משותפות כמו שיווק, מכירות או פיתוח שירותים.
 
-Benefits include:
-• Expanded market reach
-• Shared marketing costs
-• Access to new audiences
-• Increased trust and credibility
-• Stronger customer experience
+היתרונות כוללים:
+• הרחבת טווח הגעה לשוק
+• חלוקת עלויות שיווק
+• גישה לקהלים חדשים
+• הגברת אמון ומוניטין
+• חוויית לקוח משופרת
 
-Choosing partners with aligned values and goals ensures long-term success.
+בחירת שותפים עם ערכים ומטרות תואמים מבטיחה הצלחה לטווח ארוך.
     `,
   },
   {
-    question: "How do I publish a new collaboration offer in BizUply",
+    question: "איך מפרסמים הצעת שיתוף פעולה חדשה ב-BizUply",
     answer: `
-To publish a collaboration offer:
-• Fill out the collaboration form with a clear title and description
-• Define what your business offers and what you expect in return
-• Add contact details, budget, and expiration date
+לפרסום הצעת שיתוף פעולה:
+• מלאו את טופס השיתוף עם כותרת ותיאור ברורים
+• הגדירו מה העסק שלכם מציע ומה אתם מצפים בתמורה
+• הוסיפו פרטי קשר, תקציב ותאריך תפוגה
 
-Once published, offers are distributed to relevant businesses based on category, location, and collaboration type.
+לאחר הפרסום, ההצעות מופצות לעסקים רלוונטיים לפי קטגוריה, מיקום וסוג שיתוף.
     `,
   },
   {
-    question: "How do I identify and choose a suitable collaboration partner",
+    question: "איך מזהים ובוחרים שותף שיתוף פעולה מתאים",
     answer: `
-Key steps for choosing the right partner:
-• Ensure alignment in values and goals
-• Confirm target audiences complement each other
-• Review business reputation and references
-• Evaluate added value such as expertise or reach
-• Hold discovery meetings to define roles and expectations
+צעדים מרכזיים לבחירת השותף הנכון:
+• ודאו התאמה בערכים ובמטרות
+• ודאו שקהלי היעד משלימים זה את זה
+• בדקו מוניטין עסקי והמלצות
+• העריכו ערך מוסף כמו מומחיות או טווח הגעה
+• קיימו פגישות היכרות להגדרת תפקידים וציפיות
 
-Tracking KPIs helps ensure collaboration success.
+מעקב אחר מדדי ביצוע (KPI) עוזר להבטיח הצלחת השיתוף.
     `,
   },
   {
-    question: "What are the best ways to manage collaborations effectively",
+    question: "מהן הדרכים הטובות ביותר לנהל שיתופי פעולה ביעילות",
     answer: `
-Successful collaboration management includes:
-• Defining clear goals and KPIs
-• Assigning roles and responsibilities
-• Setting timelines and expectations
-• Maintaining organized records
-• Communicating regularly and transparently
-• Monitoring performance and outcomes
-• Addressing conflicts early
+ניהול שיתוף פעולה מוצלח כולל:
+• הגדרת מטרות ו-KPI ברורים
+• הקצאת תפקידים ואחריות
+• קביעת לוחות זמנים וציפיות
+• שמירה על רשומות מסודרות
+• תקשורת שוטפת ושקופה
+• מעקב אחר ביצועים ותוצאות
+• טיפול בסכסוכים מוקדם
 
-BizUply provides tools to support structured collaboration management.
+BizUply מספקת כלים לתמיכה בניהול שיתופי פעולה מובנה.
     `,
   },
   {
-    question: "How can I view and manage collaboration offers I’ve received",
+    question: "איך צופים ומנהלים הצעות שיתוף פעולה שהתקבלו",
     answer: `
-In the Received Offers section you can:
-• View all incoming collaboration proposals
-• Filter and search offers
-• Evaluate partner fit, budget, and timeline
-• Approve or decline offers efficiently
+במקטע «הצעות שהתקבלו» ניתן:
+• לצפות בכל הצעות שיתוף הפעולה הנכנסות
+• לסנן ולחפש הצעות
+• להעריך התאמת שותף, תקציב ולוח זמנים
+• לאשר או לדחות הצעות ביעילות
 
-Professional and timely responses increase success rates.
+תגובות מקצועיות ובזמן מגבירות את שיעור ההצלחה.
     `,
   },
   {
-    question: "What does Sent Offers mean and how do I manage them",
+    question: "מה פירוש «הצעות שנשלחו» ואיך מנהלים אותן",
     answer: `
-Sent Offers include all collaboration proposals you’ve sent to other businesses.
+«הצעות שנשלחו» כוללות את כל הצעות שיתוף הפעולה ששלחתם לעסקים אחרים.
 
-Best practices:
-• Track responses and follow-ups
-• Document communications
-• Set reminders for follow-up
-• Be proactive in negotiations
+שיטות עבודה מומלצות:
+• מעקב אחר תגובות ומעקבים
+• תיעוד תקשורת
+• הגדרת תזכורות למעקב
+• יוזמה במשא ומתן
 
-Effective management increases conversion and reduces uncertainty.
+ניהול יעיל מגביר המרות ומפחית אי-ודאות.
     `,
   },
   {
-    question: "Is there an expiration period for a collaboration offer",
+    question: "האם יש תקופת תפוגה להצעת שיתוף פעולה",
     answer: `
-Yes. You can define an expiration date and optional start/end dates.
+כן. ניתן להגדיר תאריך תפוגה ותאריכי התחלה/סיום אופציונליים.
 
-Benefits:
-• Better offer control
-• Clear timelines
-• Improved brand professionalism
-• Operational flexibility
+יתרונות:
+• שליטה טובה יותר בהצעות
+• לוחות זמנים ברורים
+• מקצועיות מותגית משופרת
+• גמישות תפעולית
 
-BizUply also supports digital agreements and electronic signatures.
+BizUply תומכת גם בהסכמים דיגיטליים וחתימות אלקטרוניות.
     `,
   },
   {
-    question: "What should I do if I can’t submit or publish a collaboration",
+    question: "מה לעשות אם לא ניתן לשלוח או לפרסם שיתוף פעולה",
     answer: `
-If submission fails, try:
-• Completing all required fields
-• Checking internet connectivity
-• Refreshing the page (Ctrl + F5 / Cmd + Shift + R)
-• Trying another browser or device
-• Verifying user permissions
-• Checking system maintenance notices
+אם השליחה נכשלת, נסו:
+• למלא את כל השדות הנדרשים
+• לבדוק חיבור אינטרנט
+• לרענן את הדף (Ctrl + F5 / Cmd + Shift + R)
+• לנסות דפדפן או מכשיר אחר
+• לוודא הרשאות משתמש
+• לבדוק הודעות תחזוקת מערכת
 
-Contact support if the issue persists.
+פנו לתמיכה אם הבעיה נמשכת.
     `,
   },
   {
-    question: "How do I communicate with a potential collaboration partner",
+    question: "איך מתקשרים עם שותף שיתוף פעולה פוטנציאלי",
     answer: `
-Communication options include:
-• Using contact details in the offer
-• BizUply’s internal messaging system
-• Real-time chat for quick coordination
-• Scheduling meetings when needed
-• Documenting agreements and discussions
+אפשרויות תקשורת:
+• שימוש בפרטי הקשר שמופיעים בהצעה
+• מערכת ההודעות הפנימית של BizUply
+• תיאום פגישות לפי הצורך
+• תיעוד הסכמות ודיונים
 
-Clear, professional communication is essential.
+תקשורת ברורה ומקצועית היא חיונית.
     `,
   },
   {
-    question: "How should conflicts or issues in collaborations be handled",
+    question: "איך יש לטפל בסכסוכים או בבעיות בשיתופי פעולה",
     answer: `
-Best practices for handling conflicts:
-• Maintain transparent, open communication
-• Keep written records of agreements
-• Define ground rules in advance
-• Monitor performance and expectations
-• Use mediation if necessary
-• Conduct periodic review meetings
+שיטות עבודה מומלצות לטיפול בסכסוכים:
+• שמירה על תקשורת שקופה ופתוחה
+• שמירת רשומות כתובות של הסכמות
+• הגדרת כללי בסיס מראש
+• מעקב אחר ביצועים וציפיות
+• שימוש בגישור במידת הצורך
+• קיום פגישות סקירה תקופתיות
 
-BizUply provides tools to support conflict resolution and collaboration tracking.
+BizUply מספקת כלים לתמיכה ביישוב סכסוכים ומעקב אחר שיתופי פעולה.
     `,
   },
 ];
@@ -147,8 +146,8 @@ export default function CollaborationsFAQ() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">Business Collaborations – FAQ</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">שיתופי פעולה עסקיים – שאלות נפוצות</h1>
 
       <div className="faq-list">
         {faqData.map((faq, idx) => {

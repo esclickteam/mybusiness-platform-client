@@ -3,142 +3,140 @@ import "./faq.css";
 
 const faqData = [
   {
-    question: "How do I use the different tabs on the business page",
+    question: "איך משתמשים בלשוניות השונות בדף העסק",
     answer: `
-The business page is divided into functional tabs that allow comprehensive, organized management and presentation of business information to both customers and the business owner.
+דף העסק ב-BizUply הוא אתר עסקי שאתם בונים ומנהלים דרך מערכת בניית האתרים. הוא מחולק ללשוניות שמאפשרות ניהול ותצוגה מסודרים של מידע העסק.
 
-Main: Shows an overview of the business, including name, description, and contact details.
+ראשי: מציג סקירה כללית של העסק — שם, תיאור ופרטי קשר.
 
-Gallery: Centralizes all media content—photos and videos—used to showcase the business.
+גלריה: מרכזת את כל התוכן הוויזואלי — תמונות וסרטונים — להצגת העסק.
 
-Reviews: Collects customer reviews and ratings and allows tracking overall performance.
+ביקורות: אוספת ביקורות ודירוגים מלקוחות ומאפשרת מעקב אחר ביצועים.
 
-Q&A: Displays frequently asked questions with answers from the business owner or support team.
+שאלות ותשובות: מציגה שאלות נפוצות עם תשובות מבעל העסק.
 
-Calendar: Manages appointments, meetings, and service bookings.
+יומן: מנהל תורים, פגישות והזמנות שירות.
 
-Chat with the business: Enables real-time communication between customers and the business.
-
-Each tab is designed to provide focused information and a smooth user experience.
+כל לשונית מספקת מידע ממוקד וחוויית שימוש נוחה לגולשים ולבעל העסק.
     `,
   },
   {
-    question: "What should I do if the changes I made don’t appear on the business page",
+    question: "מה לעשות אם השינויים שביצעתי לא מופיעים בדף העסק",
     answer: `
-If changes don’t appear after saving, try the following steps:
+אם השינויים לא מופיעים לאחר שמירה, נסו את הצעדים הבאים:
 
-1. Perform a hard refresh (Ctrl + F5 / Cmd + Shift + R).
-2. Clear browser cache and cookies.
-3. Check your internet connection.
-4. Try a different browser or device.
-5. Wait 5–10 minutes for data sync.
-6. Log out and log back in.
+1. בצעו רענון מלא (Ctrl + F5 / Cmd + Shift + R).
+2. נקו מטמון ועוגיות בדפדפן.
+3. בדקו את חיבור האינטרנט.
+4. נסו דפדפן או מכשיר אחר.
+5. המתינו 5–10 דקות לסנכרון הנתונים.
+6. התנתקו והתחברו מחדש.
 
-If the issue persists, contact technical support with screenshots and details.
+אם הבעיה נמשכת, פנו לתמיכה טכנית עם צילומי מסך ופרטים.
     `,
   },
   {
-    question: "How do I add or edit my business details",
+    question: "איך מוסיפים או עורכים את פרטי העסק",
     answer: `
-Go to the admin panel and open the business page editor.
+עברו ללוח הבקרה ופתחו את עורך דף העסק (בונה האתרים).
 
-You can update:
-• Business name and description
-• Phone number and email
-• City and category
-• Logo and gallery images
+ניתן לעדכן:
+• שם העסק ותיאור
+• מספר טלפון ודוא"ל
+• עיר וקטגוריה
+• לוגו ותמונות בגלריה
 
-Click “Save changes” to apply updates.
+לחצו על «שמירת שינויים» כדי להחיל את העדכונים.
     `,
   },
   {
-    question: "How do I manage the business image gallery",
+    question: "איך מנהלים את גלריית התמונות של העסק",
     answer: `
-Main gallery:
-Up to 5 primary images displayed on the business profile.
+גלריה ראשית:
+עד 5 תמונות עיקריות המוצגות בפרופיל העסק.
 
-Extended gallery:
-Additional images and videos under the Gallery tab.
+גלריה מורחבת:
+תמונות וסרטונים נוספים תחת לשונית הגלריה.
 
-Use high-quality visuals and keep content up to date.
+השתמשו בתמונות איכותיות ושמרו על תוכן מעודכן.
     `,
   },
   {
-    question: "Why is it important to set the business category and location correctly",
+    question: "למה חשוב להגדיר נכון את קטגוריית העסק והמיקום",
     answer: `
-Accurate category and location improve visibility and relevance on the platform.
+קטגוריה ומיקום מדויקים משפרים את הנראות והרלוונטיות של העסק בפלטפורמה.
 
-Benefits include:
-• Better exposure
-• More inquiries
-• Higher conversion rates
-• More accurate business collaborations
+היתרונות כוללים:
+• חשיפה טובה יותר
+• יותר פניות
+• שיעורי המרה גבוהים יותר
+• שיתופי פעולה עסקיים מדויקים יותר
 
-Incorrect settings may reduce visibility.
+הגדרות שגויות עלולות להפחית את הנראות.
     `,
   },
   {
-    question: "What should I do if I have trouble accessing the business page or system",
+    question: "מה לעשות אם יש בעיה בגישה לדף העסק או למערכת",
     answer: `
-Try the following steps:
-1. Check your internet connection.
-2. Try another browser.
-3. Clear cache and cookies.
-4. Perform a hard refresh.
-5. Try from another device or network.
+נסו את הצעדים הבאים:
+1. בדקו את חיבור האינטרנט.
+2. נסו דפדפן אחר.
+3. נקו מטמון ועוגיות.
+4. בצעו רענון מלא.
+5. נסו ממכשיר או רשת אחרת.
 
-If the problem continues, contact support with screenshots.
+אם הבעיה נמשכת, פנו לתמיכה עם צילומי מסך.
     `,
   },
   {
-    question: "How do I add videos to the business page and what are the benefits",
+    question: "איך מוסיפים סרטונים לדף העסק ומה היתרונות",
     answer: `
-Videos can be added in the Gallery tab.
+ניתן להוסיף סרטונים בלשונית הגלריה.
 
-Benefits:
-• Visual presentation of services
-• Increased trust
-• Higher customer engagement
+יתרונות:
+• הצגה ויזואלית של השירותים
+• הגברת אמון
+• מעורבות גבוהה יותר של גולשים
 
-Ensure videos are in MP4 format and within size limits.
+ודאו שהסרטונים בפורמט MP4 ובגודל המותר.
     `,
   },
   {
-    question: "How do I add services or service categories to the business page",
+    question: "איך מוסיפים שירותים או קטגוריות שירות לדף העסק",
     answer: `
-Services and categories are managed through the Calendar tab and CRM system.
+שירותים וקטגוריות מנוהלים דרך לשונית היומן ומערכת ה-CRM.
 
-This allows:
-• Better appointment management
-• Clear service organization
-• Improved marketing and conversions
+זה מאפשר:
+• ניהול תורים טוב יותר
+• ארגון ברור של השירותים
+• שיפור שיווק והמרות
     `,
   },
   {
-    question: "How can I manage and customize contact details on the business page",
+    question: "איך מנהלים ומותאמים אישית את פרטי הקשר בדף העסק",
     answer: `
-Contact details can be managed in the admin panel.
+פרטי הקשר מנוהלים בלוח הבקרה ובעורך האתר.
 
-You can:
-• Update phone, email, and address
-• Add social media links
-• Control which details are publicly visible
+ניתן:
+• לעדכן טלפון, דוא"ל וכתובת
+• להוסיף קישורים לרשתות חברתיות
+• לשלוט באילו פרטים מוצגים לציבור
     `,
   },
   {
-    question: "How do I handle issues with uploading images or saving changes",
+    question: "איך מתמודדים עם בעיות בהעלאת תמונות או בשמירת שינויים",
     answer: `
-Before contacting support, check the following:
+לפני פנייה לתמיכה, בדקו את הדברים הבאים:
 
-• File format (JPG/PNG for images, MP4 for videos)
-• File size limits
-• Perform a hard refresh
-• Clear browser cache
-• Check internet connection
-• Try another browser or device
-• Confirm that you clicked “Save”
+• פורמט הקובץ (JPG/PNG לתמונות, MP4 לסרטונים)
+• מגבלות גודל קובץ
+• רענון מלא של הדף
+• ניקוי מטמון הדפדפן
+• בדיקת חיבור האינטרנט
+• ניסיון בדפדפן או מכשיר אחר
+• וידוא שלחצתם על «שמירה»
 
-If the issue persists, contact support with details and screenshots.
+אם הבעיה נמשכת, פנו לתמיכה עם פרטים וצילומי מסך.
     `,
   },
 ];
@@ -151,8 +149,8 @@ export default function ProfileFAQ() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">FAQ – Business Profile</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">שאלות נפוצות – פרופיל עסקי</h1>
 
       <div className="faq-list">
         {faqData.map((faq, idx) => {

@@ -3,150 +3,149 @@ import "./faq.css";
 
 const faqData = [
   {
-    question: "What is a CRM system and how does it help manage my business",
+    question: "מהי מערכת CRM ואיך היא עוזרת לנהל את העסק",
     answer: `
-A CRM (Customer Relationship Management) system is a core tool for managing customer relationships in one centralized place.
+מערכת CRM (ניהול קשרי לקוחות) היא כלי מרכזי לניהול קשרי לקוחות במקום אחד.
 
-It allows you to:
-• Store and organize customer information
-• Track appointments, services, and interactions
-• Improve communication and customer retention
-• Analyze customer behavior and performance
-• Make data-driven business decisions
+היא מאפשרת:
+• אחסון וארגון מידע על לקוחות
+• מעקב אחר תורים, שירותים ואינטראקציות
+• שיפור תקשורת ושימור לקוחות
+• ניתוח התנהגות לקוחות וביצועים
+• קבלת החלטות עסקיות מבוססות נתונים
 
-On BizUply, the CRM is fully integrated with scheduling, messaging, and analytics tools for efficient management.
+ב-BizUply, ה-CRM משולב במלואו עם מערכת התורים, לוח הבקרה וכלי הניתוח לניהול יעיל.
     `,
   },
   {
-    question:
-      "What data can I see in a customer profile and how can I use it",
+    question: "אילו נתונים רואים בפרופיל לקוח ואיך משתמשים בהם",
     answer: `
-A customer profile includes:
-• Contact details (phone, email, address)
-• Service and purchase history
-• Upcoming and past appointments
-• Notes and interaction logs
+פרופיל לקוח כולל:
+• פרטי קשר (טלפון, דוא"ל, כתובת)
+• היסטוריית שירותים ורכישות
+• תורים קרובים ועבר
+• הערות ויומן אינטראקציות
 
-Using this data helps you:
-• Deliver personalized service
-• Improve retention and loyalty
-• Identify sales and marketing opportunities
-• Reduce cancellations with reminders
-• Improve internal coordination
+שימוש בנתונים אלה עוזר:
+• לספק שירות מותאם אישית
+• לשפר שימור ונאמנות
+• לזהות הזדמנויות מכירה ושיווק
+• להפחית ביטולים עם תזכורות
+• לשפר תיאום פנימי
     `,
   },
   {
-    question: "How are scheduling and bookings managed in the CRM",
+    question: "איך מנוהלים תזמון והזמנות ב-CRM",
     answer: `
-Scheduling is managed through a dedicated interface showing all bookings and availability.
+התזמון מנוהל דרך ממשק ייעודי שמציג את כל ההזמנות והזמינות.
 
-Features include:
-• Adding, editing, and canceling appointments
-• Automatic notifications to customers
-• Calendar synchronization
-• Optional advance payments
-• Reminder messages
+התכונות כוללות:
+• הוספה, עריכה וביטול תורים
+• התראות אוטומטיות ללקוחות
+• סנכרון עם היומן
+• תשלומים מראש אופציונליים
+• הודעות תזכורת
 
-Accurate scheduling improves efficiency and customer satisfaction.
+תזמון מדויק משפר יעילות ושביעות רצון לקוחות.
     `,
   },
   {
-    question: "Can I edit or cancel existing bookings and how does it work",
+    question: "האם ניתן לערוך או לבטל הזמנות קיימות ואיך זה עובד",
     answer: `
-Yes. Bookings can be edited or canceled directly from the scheduling interface.
+כן. ניתן לערוך או לבטל הזמנות ישירות מממשק התזמון.
 
-The system:
-• Automatically notifies customers
-• Keeps a full history log
-• Updates availability in real time
+המערכת:
+• מודיעה אוטומטית ללקוחות
+• שומרת יומן היסטוריה מלא
+• מעדכנת זמינות בזמן אמת
 
-To reduce cancellations:
-• Use reminders
-• Define a clear cancellation policy
-• Offer flexible rescheduling options
+להפחתת ביטולים:
+• השתמשו בתזכורות
+• הגדירו מדיניות ביטול ברורה
+• הציעו אפשרויות דחייה גמישות
     `,
   },
   {
-    question: "How can I add or update services and products in the CRM",
+    question: "איך מוסיפים או מעדכנים שירותים ומוצרים ב-CRM",
     answer: `
-Services can be managed in the Services tab.
+שירותים מנוהלים בלשונית השירותים.
 
-You can define:
-• Service description
-• Price
-• Duration
-• Special terms
+ניתן להגדיר:
+• תיאור שירות
+• מחיר
+• משך זמן
+• תנאים מיוחדים
 
-Accurate service setup prevents scheduling conflicts and improves customer experience.
+הגדרת שירותים מדויקת מונעת התנגשויות בתזמון ומשפרת חוויית לקוח.
     `,
   },
   {
-    question: "How do I manage the customer list and perform searches",
+    question: "איך מנהלים את רשימת הלקוחות ומבצעים חיפושים",
     answer: `
-The Customers tab provides:
-• A full customer list
-• Advanced search and filtering
-• Appointment and communication history
-• Notes and status indicators
+לשונית הלקוחות מספקת:
+• רשימת לקוחות מלאה
+• חיפוש וסינון מתקדם
+• היסטוריית תורים ותקשורת
+• הערות וסימוני סטטוס
 
-Good customer management improves service quality and operational control.
+ניהול לקוחות טוב משפר איכות שירות ושליטה תפעולית.
     `,
   },
   {
-    question: "What should I do if data is not updating or the system has issues",
+    question: "מה לעשות אם הנתונים לא מתעדכנים או שיש בעיה במערכת",
     answer: `
-Try the following steps:
-• Perform a hard refresh (Ctrl + F5 / Cmd + Shift + R)
-• Check your internet connection
-• Log out and log back in
-• Clear cache and cookies
-• Try another browser or device
-• Check system maintenance messages
+נסו את הצעדים הבאים:
+• בצעו רענון מלא (Ctrl + F5 / Cmd + Shift + R)
+• בדקו את חיבור האינטרנט
+• התנתקו והתחברו מחדש
+• נקו מטמון ועוגיות
+• נסו דפדפן או מכשיר אחר
+• בדקו הודעות תחזוקת מערכת
 
-If issues persist, contact technical support with screenshots and details.
+אם הבעיה נמשכת, פנו לתמיכה טכנית עם צילומי מסך ופרטים.
     `,
   },
   {
-    question: "How can I analyze and improve customer performance using the CRM",
+    question: "איך מנתחים ומשפרים ביצועי לקוחות באמצעות ה-CRM",
     answer: `
-CRM analytics help you:
-• Identify active and high-value customers
-• Track responses to campaigns
-• Improve service response times
-• Detect churn risks early
-• Create personalized offers
-• Define KPIs and success metrics
+ניתוחי CRM עוזרים:
+• לזהות לקוחות פעילים ובעלי ערך גבוה
+• לעקוב אחר תגובות לקמפיינים
+• לשפר זמני תגובה לשירות
+• לזהות סיכוני נטישה מוקדם
+• ליצור הצעות מותאמות אישית
+• להגדיר KPI ומדדי הצלחה
 
-Using CRM insights improves sales, retention, and customer satisfaction.
+שימוש בתובנות CRM משפר מכירות, שימור ושביעות רצון לקוחות.
     `,
   },
   {
-    question: "What is the difference between a CRM and an appointments-only system",
+    question: "מה ההבדל בין CRM למערכת תורים בלבד",
     answer: `
-An appointments system focuses only on scheduling and time management.
+מערכת תורים מתמקדת רק בתזמון וניהול זמן.
 
-A CRM provides:
-• Full customer profiles
-• Interaction history
-• Analytics and reports
-• Automated reminders
-• Marketing and retention tools
+CRM מספק:
+• פרופילי לקוחות מלאים
+• היסטוריית אינטראקציות
+• ניתוחים ודוחות
+• תזכורות אוטומטיות
+• כלי שיווק ושימור
 
-Together, they provide a complete business management solution.
+יחד, הם מספקים פתרון ניהול עסקי שלם.
     `,
   },
   {
-    question: "What should I do if I encounter errors in the CRM or scheduling system",
+    question: "מה לעשות אם נתקלתם בשגיאות ב-CRM או במערכת התורים",
     answer: `
-If errors occur:
-• Check internet stability
-• Refresh the system
-• Review maintenance notifications
-• Verify input accuracy
-• Document the issue with screenshots
-• Contact support with full details
+אם מתרחשות שגיאות:
+• בדקו יציבות חיבור האינטרנט
+• רעננו את המערכת
+• עברו על הודעות תחזוקה
+• ודאו דיוק בקלט
+• תעדו את הבעיה עם צילומי מסך
+• פנו לתמיכה עם פרטים מלאים
 
-Quick resolution helps prevent disruptions and data issues.
+פתרון מהיר עוזר למנוע הפרעות ובעיות נתונים.
     `,
   },
 ];
@@ -159,8 +158,8 @@ export default function CrmFAQ() {
   };
 
   return (
-    <div className="faq-container">
-      <h1 className="faq-title">CRM & Scheduling – FAQ</h1>
+    <div className="faq-container" dir="rtl" lang="he">
+      <h1 className="faq-title">CRM ותזמון – שאלות נפוצות</h1>
 
       <div className="faq-list">
         {faqData.map((faq, idx) => {
