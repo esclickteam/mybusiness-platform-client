@@ -8,6 +8,21 @@ const QUICK_PROMPTS = [
   "איך לפרסם את האתר?",
 ];
 
+const FALLBACK_SUGGESTIONS = [
+  "איך עורכים את האתר בעורך?",
+  "איך מגדירים SEO לאתר?",
+  "מה לעשות אם הדשבורד לא מתעדכן?",
+];
+
+function isHebrewText(text) {
+  return /[\u0590-\u05FF]/.test(String(text || ""));
+}
+
+function hebrewSuggestions(items) {
+  const filtered = (items || []).filter((item) => isHebrewText(item));
+  return filtered.length ? filtered : FALLBACK_SUGGESTIONS;
+}
+
 export default function ChatBot({
   chatOpen,
   setChatOpen,
@@ -72,9 +87,9 @@ export default function ChatBot({
           throw new Error(data.error || "request failed");
         }
 
-        const suggestions = Array.isArray(data.suggestions)
-          ? data.suggestions.filter(Boolean)
-          : [];
+        const suggestions = hebrewSuggestions(
+          Array.isArray(data.suggestions) ? data.suggestions : []
+        );
 
         setChatMessages((msgs) => [
           ...msgs,
@@ -185,13 +200,14 @@ export default function ChatBot({
             </div>
 
             {msg.sender === "bot" && msg.suggestions?.length > 0 && (
-              <div className="mt-2 flex flex-wrap justify-end gap-1.5">
+              <div className="mt-2 flex flex-wrap justify-end gap-1.5" dir="rtl">
                 {msg.suggestions.map((suggestion) => (
                   <button
                     key={suggestion}
                     type="button"
                     onClick={() => sendMessage(suggestion, { fromSuggestion: true })}
                     disabled={isLoading}
+                    dir="rtl"
                     className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
                   >
                     {suggestion}
