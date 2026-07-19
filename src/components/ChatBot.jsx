@@ -1,5 +1,12 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Bot, Send, X } from "lucide-react";
+
+const QUICK_PROMPTS = [
+  "איך ליצור אתר חדש?",
+  "מה יש בדשבורד?",
+  "איך לקבל לידים ל-CRM?",
+  "איך לפרסם את האתר?",
+];
 
 export default function ChatBot({
   chatOpen,
@@ -12,66 +19,88 @@ export default function ChatBot({
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const initialSentRef = useRef(false);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMessages, isLoading]);
 
   useEffect(() => {
-    if (chatOpen && inputRef.current) {
-      inputRef.current.focus();
-    }
+    if (chatOpen) inputRef.current?.focus();
   }, [chatOpen]);
 
   useEffect(() => {
-    if (chatOpen && initialMessage) {
+    if (!chatOpen) initialSentRef.current = false;
+  }, [chatOpen]);
+
+  useEffect(() => {
+    if (chatOpen && initialMessage && !initialSentRef.current) {
+      initialSentRef.current = true;
       sendMessage(initialMessage);
       onInitialMessageSent?.();
     }
-  }, [chatOpen, initialMessage]);
+  }, [chatOpen, initialMessage, onInitialMessageSent]);
 
   function cleanText(text) {
-    return text.replace(/\*\*/g, "");
+    return String(text || "")
+      .replace(/\*\*/g, "")
+      .trim();
   }
 
-  async function sendMessage(messageText) {
-    const text = (messageText ?? chatInput).trim();
-    if (!text || isLoading) return;
+  const sendMessage = useCallback(
+    async (messageText, { fromSuggestion = false } = {}) => {
+      const text = (messageText ?? chatInput).trim();
+      if (!text || isLoading) return;
 
-    const userMessage = { sender: "user", text };
-    setChatMessages((msgs) => [...msgs, userMessage]);
-    setChatInput("");
-    setIsLoading(true);
+      if (!fromSuggestion) {
+        setChatInput("");
+      }
 
-    try {
-      const response = await fetch("/api/chatbot", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: text }),
-      });
+      setChatMessages((msgs) => [...msgs, { sender: "user", text }]);
+      setIsLoading(true);
 
-      const data = await response.json();
+      try {
+        const response = await fetch("/api/chatbot", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text }),
+        });
 
-      const botMessage = {
-        sender: "bot",
-        text: cleanText(data.answer || "מצטער, לא מצאתי תשובה מתאימה."),
-        source: data.source || "Bizuply AI",
-      };
-      setChatMessages((msgs) => [...msgs, botMessage]);
-    } catch {
-      setChatMessages((msgs) => [
-        ...msgs,
-        {
-          sender: "bot",
-          text: "אירעה שגיאה, אנא נסה שוב מאוחר יותר.",
-        },
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || "request failed");
+        }
+
+        const suggestions = Array.isArray(data.suggestions)
+          ? data.suggestions.filter(Boolean)
+          : [];
+
+        setChatMessages((msgs) => [
+          ...msgs,
+          {
+            sender: "bot",
+            text: cleanText(
+              data.answer || "מצטער, לא מצאתי תשובה מתאימה. נסה לנסח אחרת."
+            ),
+            suggestions,
+            source: data.source || "Bizuply AI",
+          },
+        ]);
+      } catch {
+        setChatMessages((msgs) => [
+          ...msgs,
+          {
+            sender: "bot",
+            text: "אירעה שגיאה, אנא נסה שוב מאוחר יותר.",
+          },
+        ]);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [chatInput, isLoading]
+  );
 
   if (!chatOpen) {
     return (
@@ -88,10 +117,9 @@ export default function ChatBot({
   return (
     <section
       dir="rtl"
-      className="fixed bottom-6 left-6 z-[10000] flex w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
-      style={{ maxHeight: "min(560px,calc(100vh-3rem))" }}
+      className="fixed bottom-6 left-6 z-[10000] flex w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+      style={{ maxHeight: "min(580px,calc(100vh-3rem))" }}
     >
-      {/* Header */}
       <header className="flex items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
@@ -99,9 +127,7 @@ export default function ChatBot({
           </div>
           <div>
             <p className="text-sm font-black">עוזר Bizuply</p>
-            <p className="text-[10px] font-medium text-violet-200">
-              זמין 24/7
-            </p>
+            <p className="text-[10px] font-medium text-violet-200">זמין 24/7</p>
           </div>
         </div>
         <button
@@ -113,11 +139,10 @@ export default function ChatBot({
         </button>
       </header>
 
-      {/* Messages */}
       <div className="flex-1 overflow-y-auto bg-slate-50 px-4 py-4">
         {chatMessages.length === 0 && !isLoading && (
-          <div className="flex flex-col items-center justify-center py-8 text-center">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
+          <div className="py-4 text-center">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600">
               <Bot size={28} />
             </div>
             <p className="mt-4 text-sm font-bold text-slate-700">
@@ -126,24 +151,54 @@ export default function ChatBot({
             <p className="mt-1 text-xs text-slate-500">
               שאל כל שאלה על Bizuply
             </p>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {QUICK_PROMPTS.map((prompt) => (
+                <button
+                  key={prompt}
+                  type="button"
+                  onClick={() => sendMessage(prompt, { fromSuggestion: true })}
+                  className="rounded-full border border-violet-200 bg-white px-3 py-1.5 text-xs font-semibold text-violet-700 transition hover:bg-violet-50"
+                >
+                  {prompt}
+                </button>
+              ))}
+            </div>
           </div>
         )}
 
         {chatMessages.map((msg, i) => (
-          <div
-            key={i}
-            className={`mb-3 flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}
-          >
+          <div key={i} className="mb-3">
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
-                msg.sender === "user"
-                  ? "rounded-br-sm bg-violet-600 text-white"
-                  : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
-              }`}
-              title={msg.source ? `מקור: ${msg.source}` : ""}
+              className={`flex ${msg.sender === "user" ? "justify-start" : "justify-end"}`}
             >
-              {msg.text}
+              <div
+                dir="auto"
+                className={`max-w-[88%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  msg.sender === "user"
+                    ? "rounded-br-sm bg-violet-600 text-white"
+                    : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
+                }`}
+                title={msg.source ? `מקור: ${msg.source}` : ""}
+              >
+                {msg.text}
+              </div>
             </div>
+
+            {msg.sender === "bot" && msg.suggestions?.length > 0 && (
+              <div className="mt-2 flex flex-wrap justify-end gap-1.5">
+                {msg.suggestions.map((suggestion) => (
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => sendMessage(suggestion, { fromSuggestion: true })}
+                    disabled={isLoading}
+                    className="rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-[11px] font-semibold text-violet-700 transition hover:bg-violet-100 disabled:opacity-50"
+                  >
+                    {suggestion}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         ))}
 
@@ -160,7 +215,6 @@ export default function ChatBot({
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
       <div className="border-t border-slate-200 bg-white px-3 py-3">
         <div className="flex items-center gap-2">
           <input
@@ -181,7 +235,7 @@ export default function ChatBot({
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label="שליחת שאלה"
           >
-            <Send size={16} />
+            <Send size={16} className="-scale-x-100" />
           </button>
         </div>
       </div>
