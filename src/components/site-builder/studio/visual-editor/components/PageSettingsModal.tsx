@@ -127,27 +127,41 @@ function AdvancedSection({
   icon,
   title,
   description,
+  badge,
   defaultOpen = false,
   children,
 }: {
   icon: React.ReactNode;
   title: string;
   description: string;
+  badge?: { label: string; tone: "recommended" | "optional" };
   defaultOpen?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <details
       open={defaultOpen}
-      className="group rounded-3xl border border-slate-200 bg-white p-0 [&_summary::-webkit-details-marker]:hidden"
+      className="group overflow-hidden rounded-3xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden"
     >
-      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl px-4 py-4">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 transition hover:bg-slate-50/70">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
           {icon}
         </span>
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-black text-slate-900">
-            {title}
+          <span className="flex items-center gap-2">
+            <span className="text-sm font-black text-slate-900">{title}</span>
+            {badge ? (
+              <span
+                className={[
+                  "rounded-full px-2 py-0.5 text-[10px] font-black",
+                  badge.tone === "recommended"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-slate-100 text-slate-500",
+                ].join(" ")}
+              >
+                {badge.label}
+              </span>
+            ) : null}
           </span>
           <span className="mt-0.5 block text-xs font-semibold leading-5 text-slate-500">
             {description}
@@ -155,10 +169,19 @@ function AdvancedSection({
         </span>
         <ChevronDown className="h-5 w-5 shrink-0 text-slate-400 transition group-open:rotate-180" />
       </summary>
-      <div className="space-y-4 border-t border-slate-100 px-4 py-4">
+      <div className="space-y-4 border-t border-slate-100 bg-slate-50/40 px-4 py-4">
         {children}
       </div>
     </details>
+  );
+}
+
+function HelpNote({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="flex items-start gap-2 rounded-2xl bg-blue-50/80 px-3.5 py-2.5 text-xs font-semibold leading-5 text-blue-800">
+      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+      <span>{children}</span>
+    </p>
   );
 }
 
@@ -642,121 +665,159 @@ export default function PageSettingsModal({
 
           {tab === "advanced" ? (
             <div className="space-y-4">
+              <div className="flex items-start gap-3 rounded-3xl border border-blue-100 bg-gradient-to-l from-blue-50 to-sky-50 p-4">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white text-blue-600 shadow-sm">
+                  <Sparkles className="h-5 w-5" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">
+                    הגדרות למתקדמים — לא חובה
+                  </p>
+                  <p className="mt-1 text-xs font-semibold leading-5 text-slate-600">
+                    אפשר להשאיר הכל ריק והאתר יופיע בגוגל מצוין. הכלים כאן נועדו
+                    למי שרוצה שליטה מקצועית. לא בטוחים? דלגו — מה שחשוב באמת נמצא
+                    בטאב{" "}
+                    <span className="font-black text-blue-700">"יסודות SEO"</span>.
+                  </p>
+                </div>
+              </div>
+
               <AdvancedSection
                 icon={<Braces className="h-5 w-5" />}
-                title="נתונים מובנים (Structured data · JSON-LD)"
-                description="Schema.org לתוצאות עשירות בגוגל ולהבנת התוכן ע״י מנועי AI (GEO)."
+                title="כרטיס חכם בגוגל (Schema)"
+                description="עוזר לגוגל להציג כוכבי דירוג, שעות פתיחה, שאלות ותשובות — וגם ל-AI להבין את העסק."
+                badge={{ label: "מומלץ", tone: "recommended" }}
                 defaultOpen
               >
-                {(seoDraft.structuredData || []).length === 0 ? (
-                  <p className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500">
-                    אין עדיין סכימות. הוסיפו תבנית מוכנה או בלוק ריק והדביקו JSON-LD.
-                  </p>
-                ) : null}
+                <HelpNote>
+                  בחרו מה שמתאים לעמוד ולחצו — נבנה עבורכם קוד מוכן. רוב העסקים
+                  מתחילים מ״עסק מקומי״. אפשר להוסיף כמה סוגים.
+                </HelpNote>
 
-                {(seoDraft.structuredData || []).map((entry) => {
-                  const status = validateJsonLd(entry.json);
-                  return (
-                    <div
-                      key={entry.id}
-                      className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3"
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {STRUCTURED_DATA_PRESETS.map((preset) => (
+                    <button
+                      key={preset.id}
+                      type="button"
+                      onClick={() =>
+                        addStructuredData({
+                          id: createSeoId("ld"),
+                          name: preset.id,
+                          json: preset.build({
+                            siteName,
+                            pageTitle: title || page.title || "",
+                            url: previewUrl,
+                          }),
+                        })
+                      }
+                      className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-right transition hover:border-blue-300 hover:bg-blue-50/50"
                     >
-                      <div className="flex items-center gap-2">
-                        <input
-                          value={entry.name}
-                          onChange={(event) =>
-                            updateStructuredData(entry.id, {
-                              name: event.target.value,
-                            })
-                          }
-                          className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
-                          placeholder="שם הסכימה (למשל Organization)"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeStructuredData(entry.id)}
-                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                          aria-label="מחיקת סכימה"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <textarea
-                        value={entry.json}
-                        onChange={(event) =>
-                          updateStructuredData(entry.id, {
-                            json: event.target.value,
-                          })
-                        }
-                        className="min-h-[140px] w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs leading-5 text-slate-900 outline-none focus:border-blue-400"
-                        dir="ltr"
-                        spellCheck={false}
-                        placeholder='{ "@context": "https://schema.org", "@type": "Organization" }'
-                      />
-                      {status.valid ? (
-                        <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" /> JSON-LD תקין
-                        </p>
-                      ) : (
-                        <p className="flex items-center gap-1.5 text-xs font-bold text-rose-600">
-                          <AlertTriangle className="h-4 w-4" />
-                          {status.error || "יש להזין JSON תקין"}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-
-                <div className="flex flex-wrap items-center gap-2">
-                  <select
-                    value=""
-                    onChange={(event) => {
-                      const preset = STRUCTURED_DATA_PRESETS.find(
-                        (item) => item.id === event.target.value,
-                      );
-                      if (!preset) return;
-                      addStructuredData({
-                        id: createSeoId("ld"),
-                        name: preset.id,
-                        json: preset.build({
-                          siteName,
-                          pageTitle: title || page.title || "",
-                          url: previewUrl,
-                        }),
-                      });
-                      event.target.value = "";
-                    }}
-                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                  >
-                    <option value="">+ הוספת תבנית מוכנה…</option>
-                    {STRUCTURED_DATA_PRESETS.map((preset) => (
-                      <option key={preset.id} value={preset.id}>
-                        {preset.label}
-                      </option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addStructuredData({
-                        id: createSeoId("ld"),
-                        name: "",
-                        json: "",
-                      })
-                    }
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                  >
-                    <Plus className="h-4 w-4" /> בלוק ריק
-                  </button>
+                      <Plus className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
+                      <span className="min-w-0">
+                        <span className="block text-sm font-black text-slate-900">
+                          {preset.label}
+                        </span>
+                        <span className="block text-[11px] font-semibold leading-4 text-slate-500">
+                          {preset.description}
+                        </span>
+                      </span>
+                    </button>
+                  ))}
                 </div>
+
+                {(seoDraft.structuredData || []).length ? (
+                  <div className="space-y-2">
+                    <p className="text-xs font-black text-slate-700">
+                      סכימות בעמוד ({(seoDraft.structuredData || []).length})
+                    </p>
+                    {(seoDraft.structuredData || []).map((entry) => {
+                      const status = validateJsonLd(entry.json);
+                      return (
+                        <div
+                          key={entry.id}
+                          className="rounded-2xl border border-slate-200 bg-white p-3"
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              value={entry.name}
+                              onChange={(event) =>
+                                updateStructuredData(entry.id, {
+                                  name: event.target.value,
+                                })
+                              }
+                              className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
+                              placeholder="שם הסכימה"
+                            />
+                            <span
+                              className={[
+                                "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black",
+                                status.valid
+                                  ? "bg-emerald-50 text-emerald-600"
+                                  : "bg-rose-50 text-rose-600",
+                              ].join(" ")}
+                            >
+                              {status.valid ? (
+                                <>
+                                  <CheckCircle2 className="h-3.5 w-3.5" /> תקין
+                                </>
+                              ) : (
+                                <>
+                                  <AlertTriangle className="h-3.5 w-3.5" /> לתיקון
+                                </>
+                              )}
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeStructuredData(entry.id)}
+                              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                              aria-label="מחיקת סכימה"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
+                          <details className="group/code mt-2 [&_summary::-webkit-details-marker]:hidden">
+                            <summary className="flex cursor-pointer list-none items-center gap-1.5 text-xs font-black text-blue-600">
+                              <ChevronDown className="h-4 w-4 transition group-open/code:rotate-180" />
+                              עריכת הקוד (JSON-LD)
+                            </summary>
+                            <textarea
+                              value={entry.json}
+                              onChange={(event) =>
+                                updateStructuredData(entry.id, {
+                                  json: event.target.value,
+                                })
+                              }
+                              className="mt-2 min-h-[140px] w-full resize-y rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-xs leading-5 text-slate-900 outline-none focus:border-blue-400"
+                              dir="ltr"
+                              spellCheck={false}
+                            />
+                            {!status.valid && entry.json ? (
+                              <p
+                                className="mt-1 text-[11px] font-bold text-rose-600"
+                                dir="ltr"
+                              >
+                                {status.error}
+                              </p>
+                            ) : null}
+                          </details>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : null}
               </AdvancedSection>
 
               <AdvancedSection
                 icon={<Bot className="h-5 w-5" />}
-                title="הוראות לרובוטים (Robots meta)"
-                description="שליטה מדויקת באיך מנועי החיפוש סורקים ומציגים את העמוד."
+                title="שליטה בהופעה בגוגל (Robots)"
+                description="מה גוגל יציג מהעמוד. ברירת המחדל מצוינת לרוב העסקים."
+                badge={{ label: "לא חובה", tone: "optional" }}
               >
-                <div className="grid gap-2 sm:grid-cols-2">
+                <HelpNote>
+                  סמנו כאן רק אם יש סיבה ברורה. אם לא בטוחים — אל תשנו כלום.
+                </HelpNote>
+
+                <div className="space-y-2">
                   {ROBOTS_DIRECTIVE_OPTIONS.map((option) => {
                     const checked = (seoDraft.robotsDirectives || []).includes(
                       option.value,
@@ -767,7 +828,7 @@ export default function PageSettingsModal({
                         type="button"
                         onClick={() => toggleRobotsDirective(option.value)}
                         className={[
-                          "flex items-start gap-3 rounded-2xl border px-3 py-2.5 text-right transition",
+                          "flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-right transition",
                           checked
                             ? "border-blue-500 bg-blue-50"
                             : "border-slate-200 bg-white hover:border-slate-300",
@@ -775,7 +836,7 @@ export default function PageSettingsModal({
                       >
                         <span
                           className={[
-                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border",
+                            "flex h-5 w-5 shrink-0 items-center justify-center rounded-md border",
                             checked
                               ? "border-blue-600 bg-blue-600 text-white"
                               : "border-slate-300 bg-white",
@@ -783,12 +844,12 @@ export default function PageSettingsModal({
                         >
                           {checked ? <CheckCircle2 className="h-4 w-4" /> : null}
                         </span>
-                        <span className="min-w-0">
-                          <span className="block font-mono text-xs font-black text-slate-900">
-                            {option.label}
-                          </span>
-                          <span className="block text-[11px] font-semibold text-slate-500">
+                        <span className="min-w-0 flex-1">
+                          <span className="block text-sm font-black text-slate-900">
                             {option.hint}
+                          </span>
+                          <span className="block font-mono text-[11px] font-semibold text-slate-400">
+                            {option.label}
                           </span>
                         </span>
                       </button>
@@ -796,184 +857,157 @@ export default function PageSettingsModal({
                   })}
                 </div>
 
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <label className="block space-y-1.5">
-                    <span className="text-xs font-black text-slate-700">
-                      max-image-preview
-                    </span>
-                    <select
-                      value={seoDraft.maxImagePreview || ""}
-                      onChange={(event) =>
-                        updateSeo({
-                          maxImagePreview: event.target
-                            .value as SeoMaxImagePreview,
-                        })
-                      }
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                    >
-                      <option value="">ברירת מחדל</option>
-                      <option value="none">none</option>
-                      <option value="standard">standard</option>
-                      <option value="large">large</option>
-                    </select>
-                  </label>
-                  <label className="block space-y-1.5">
-                    <span className="text-xs font-black text-slate-700">
-                      max-snippet
-                    </span>
-                    <input
-                      type="number"
-                      value={
-                        seoDraft.maxSnippet === null ||
-                        seoDraft.maxSnippet === undefined
-                          ? ""
-                          : seoDraft.maxSnippet
-                      }
-                      onChange={(event) =>
-                        updateSeo({
-                          maxSnippet:
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                        })
-                      }
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                      placeholder="-1 = ללא הגבלה"
-                      dir="ltr"
-                    />
-                  </label>
-                  <label className="block space-y-1.5">
-                    <span className="text-xs font-black text-slate-700">
-                      max-video-preview
-                    </span>
-                    <input
-                      type="number"
-                      value={
-                        seoDraft.maxVideoPreview === null ||
-                        seoDraft.maxVideoPreview === undefined
-                          ? ""
-                          : seoDraft.maxVideoPreview
-                      }
-                      onChange={(event) =>
-                        updateSeo({
-                          maxVideoPreview:
-                            event.target.value === ""
-                              ? null
-                              : Number(event.target.value),
-                        })
-                      }
-                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
-                      placeholder="-1 = ללא הגבלה"
-                      dir="ltr"
-                    />
-                  </label>
-                </div>
+                <details className="group/adv rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
+                    <ChevronDown className="h-4 w-4 transition group-open/adv:rotate-180" />
+                    אפשרויות תצוגה נוספות (למומחים)
+                  </summary>
+                  <div className="grid gap-3 border-t border-slate-100 px-3.5 py-3 sm:grid-cols-3">
+                    <label className="block space-y-1.5">
+                      <span className="text-xs font-black text-slate-700">
+                        max-image-preview
+                      </span>
+                      <select
+                        value={seoDraft.maxImagePreview || ""}
+                        onChange={(event) =>
+                          updateSeo({
+                            maxImagePreview: event.target
+                              .value as SeoMaxImagePreview,
+                          })
+                        }
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                      >
+                        <option value="">ברירת מחדל</option>
+                        <option value="none">none</option>
+                        <option value="standard">standard</option>
+                        <option value="large">large</option>
+                      </select>
+                    </label>
+                    <label className="block space-y-1.5">
+                      <span className="text-xs font-black text-slate-700">
+                        max-snippet
+                      </span>
+                      <input
+                        type="number"
+                        value={
+                          seoDraft.maxSnippet === null ||
+                          seoDraft.maxSnippet === undefined
+                            ? ""
+                            : seoDraft.maxSnippet
+                        }
+                        onChange={(event) =>
+                          updateSeo({
+                            maxSnippet:
+                              event.target.value === ""
+                                ? null
+                                : Number(event.target.value),
+                          })
+                        }
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                        placeholder="-1 = ללא הגבלה"
+                        dir="ltr"
+                      />
+                    </label>
+                    <label className="block space-y-1.5">
+                      <span className="text-xs font-black text-slate-700">
+                        max-video-preview
+                      </span>
+                      <input
+                        type="number"
+                        value={
+                          seoDraft.maxVideoPreview === null ||
+                          seoDraft.maxVideoPreview === undefined
+                            ? ""
+                            : seoDraft.maxVideoPreview
+                        }
+                        onChange={(event) =>
+                          updateSeo({
+                            maxVideoPreview:
+                              event.target.value === ""
+                                ? null
+                                : Number(event.target.value),
+                          })
+                        }
+                        className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                        placeholder="-1 = ללא הגבלה"
+                        dir="ltr"
+                      />
+                    </label>
+                  </div>
+                </details>
 
                 <div className="rounded-2xl bg-slate-900 px-4 py-3">
                   <p className="text-[11px] font-black uppercase tracking-wide text-slate-400">
-                    תג robots שייווצר
+                    תג robots שייווצר אוטומטית
                   </p>
-                  <code className="mt-1 block break-all font-mono text-xs text-emerald-300" dir="ltr">
+                  <code
+                    className="mt-1 block break-all font-mono text-xs text-emerald-300"
+                    dir="ltr"
+                  >
                     &lt;meta name="robots" content="{robotsPreview}"&gt;
                   </code>
                 </div>
               </AdvancedSection>
 
               <AdvancedSection
-                icon={<Tags className="h-5 w-5" />}
-                title="תגי מטא מותאמים אישית"
-                description="הוסיפו כל תג name/property מותאם (author, theme-color, og:*)."
+                icon={<Globe className="h-5 w-5" />}
+                title="כתובת רשמית ומילות מפתח"
+                description="למניעת תוכן כפול כשאותו עמוד נגיש מכמה כתובות."
+                badge={{ label: "לא חובה", tone: "optional" }}
               >
-                {(seoDraft.customMetaTags || []).map((meta) => (
-                  <div
-                    key={meta.id}
-                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-2"
-                  >
-                    <select
-                      value={meta.attr}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, {
-                          attr: event.target.value as "name" | "property",
-                        })
-                      }
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-2 text-xs font-bold text-slate-800 outline-none focus:border-blue-400"
-                    >
-                      <option value="name">name</option>
-                      <option value="property">property</option>
-                    </select>
-                    <input
-                      value={meta.key}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, { key: event.target.value })
-                      }
-                      className="h-10 w-[130px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
-                      placeholder="og:site_name"
-                      dir="ltr"
-                    />
-                    <input
-                      value={meta.content}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, {
-                          content: event.target.value,
-                        })
-                      }
-                      className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
-                      placeholder="ערך התג"
-                      dir="ltr"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeCustomMetaTag(meta.id)}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                      aria-label="מחיקת תג"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => addCustomMetaTag()}
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-                  >
-                    <Plus className="h-4 w-4" /> תג חדש
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addCustomMetaTag({ attr: "property", key: "og:site_name" })
+                <HelpNote>
+                  Canonical אומר לגוגל מהי הכתובת ה״רשמית״ של העמוד. השאירו ריק אם
+                  יש רק כתובת אחת — נשתמש בה אוטומטית.
+                </HelpNote>
+                <label className="block space-y-2">
+                  <span className="text-sm font-black text-slate-800">
+                    Canonical URL
+                  </span>
+                  <input
+                    value={seoDraft.canonicalUrl || ""}
+                    onChange={(event) =>
+                      updateSeo({ canonicalUrl: event.target.value })
                     }
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    + og:site_name
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addCustomMetaTag({ key: "author" })}
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    + author
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addCustomMetaTag({ key: "theme-color" })}
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    + theme-color
-                  </button>
-                </div>
+                    className={fieldClassName}
+                    placeholder={previewUrl}
+                    dir="ltr"
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-black text-slate-800">
+                    מילות מפתח
+                  </span>
+                  <input
+                    value={seoDraft.keywords || ""}
+                    onChange={(event) =>
+                      updateSeo({ keywords: event.target.value })
+                    }
+                    className={fieldClassName}
+                    placeholder="מילה1, מילה2, מילה3"
+                  />
+                </label>
               </AdvancedSection>
 
               <AdvancedSection
                 icon={<Languages className="h-5 w-5" />}
                 title="שפות ואזורים (hreflang)"
-                description="קישור בין גרסאות שפה/מדינה של אותו עמוד."
+                description="קישור בין גרסאות של העמוד בשפות או מדינות שונות."
+                badge={{ label: "לא חובה", tone: "optional" }}
               >
+                <HelpNote>
+                  רלוונטי רק אם יש לעמוד גרסה בשפה אחרת. לדוגמה: he-IL לעברית,
+                  en-US לאנגלית.
+                </HelpNote>
+                {(seoDraft.hreflang || []).length === 0 ? (
+                  <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-4 text-center text-xs font-semibold text-slate-400">
+                    אין שפות נוספות. הוסיפו רק אם קיימת גרסה בשפה/מדינה אחרת.
+                  </p>
+                ) : null}
                 {(seoDraft.hreflang || []).map((entry) => (
                   <div
                     key={entry.id}
-                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-2"
+                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2"
                   >
                     <input
                       value={entry.lang}
@@ -1010,41 +1044,6 @@ export default function PageSettingsModal({
                 >
                   <Plus className="h-4 w-4" /> הוספת שפה
                 </button>
-              </AdvancedSection>
-
-              <AdvancedSection
-                icon={<Globe className="h-5 w-5" />}
-                title="Canonical ומילות מפתח"
-                description="כתובת רשמית למניעת תוכן כפול, ומילות מפתח לעמוד."
-              >
-                <label className="block space-y-2">
-                  <span className="text-sm font-black text-slate-800">
-                    Canonical URL
-                  </span>
-                  <input
-                    value={seoDraft.canonicalUrl || ""}
-                    onChange={(event) =>
-                      updateSeo({ canonicalUrl: event.target.value })
-                    }
-                    className={fieldClassName}
-                    placeholder={previewUrl}
-                    dir="ltr"
-                  />
-                </label>
-
-                <label className="block space-y-2">
-                  <span className="text-sm font-black text-slate-800">
-                    מילות מפתח
-                  </span>
-                  <input
-                    value={seoDraft.keywords || ""}
-                    onChange={(event) =>
-                      updateSeo({ keywords: event.target.value })
-                    }
-                    className={fieldClassName}
-                    placeholder="מילה1, מילה2, מילה3"
-                  />
-                </label>
               </AdvancedSection>
             </div>
           ) : null}
