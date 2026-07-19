@@ -67,12 +67,6 @@ const SUGGESTED_QUERIES: QuickAction[] = [
   { label: "הגדרות SEO לאתר", query: "SEO", icon: LayoutDashboard },
 ];
 
-const AI_QUICK_PROMPTS: QuickAction[] = [
-  { label: "איך ליצור אתר חדש?", query: "איך ליצור אתר חדש ב-Bizuply?" },
-  { label: "איך לפרסם את האתר?", query: "איך מפרסמים אתר ב-Bizuply?" },
-  { label: "הדשבורד לא מתעדכן", query: "הדשבורד לא מתעדכן, מה לעשות?" },
-  { label: "איך לקבוע תור ללקוח?", query: "איך לקבוע תור ללקוח?" },
-];
 
 function matchesSearch(text: string, query: string) {
   return text.toLowerCase().includes(query);
@@ -594,23 +588,6 @@ export default function HelpCenter() {
                     </button>
                   );
                 })}
-              </div>
-            </section>
-
-            {/* AI ASSISTANT */}
-            <section className="relative mt-14 overflow-hidden rounded-[30px] border border-violet-100 bg-[linear-gradient(135deg,#f6f0ff_0%,#ffffff_48%,#f2e8ff_100%)] p-6 shadow-[0_18px_45px_rgba(109,40,217,0.07)] sm:p-8">
-              <div className="pointer-events-none absolute -left-16 -top-20 h-56 w-56 rounded-full bg-violet-200/30 blur-3xl" />
-              <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-                <div className="flex items-start gap-4">
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-500/25"><Sparkles size={26} /></div>
-                  <div><h2 className="text-xl font-black text-slate-900">שיחה עם העוזר החכם של Bizuply</h2><p className="mt-1 max-w-xl text-sm leading-7 text-slate-600">קבלו תשובות מיידיות, פתרו בעיות ולמדו איך להשתמש בפלטפורמה — זמין 24/7</p></div>
-                </div>
-                <button type="button" onClick={() => setChatOpen(true)} className="shrink-0 rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:bg-violet-700">התחלת שיחה</button>
-              </div>
-              <div className="relative mt-6 flex flex-wrap gap-2.5">
-                {AI_QUICK_PROMPTS.map((prompt) => (
-                  <button key={prompt.query} type="button" onClick={() => openChatWithPrompt(prompt.query)} className="rounded-full border border-violet-200 bg-white px-4 py-2 text-xs font-bold text-violet-700 transition hover:bg-violet-100">{prompt.label}</button>
-                ))}
               </div>
             </section>
 
