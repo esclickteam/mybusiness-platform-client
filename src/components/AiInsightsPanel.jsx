@@ -12,6 +12,21 @@ import {
 } from "lucide-react";
 import API from "@/api";
 
+function buildSiteEditorUrl(basePath, siteId, { templateKey, openSeo = false } = {}) {
+  const params = new URLSearchParams();
+  const cleanTemplate = String(templateKey || "").trim();
+
+  if (cleanTemplate) {
+    params.set("template", cleanTemplate);
+  }
+  if (openSeo) {
+    params.set("openSeo", "1");
+  }
+
+  const query = params.toString();
+  return `${basePath}/website/sites/${siteId}/edit${query ? `?${query}` : ""}`;
+}
+
 const TYPE_ICONS = {
   followup: MessageSquareWarning,
   revenue: TrendingUp,
@@ -108,7 +123,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
     }
   };
 
-  const handleAction = (insight) => {
+  const handleAction = async (insight) => {
     handleDismiss(insight);
 
     if (insight?.cta?.action === "navigate" && insight?.cta?.target) {
@@ -137,15 +152,32 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
       case "no_published_website":
         navigate(`${basePath}/website/create`);
         return;
-      case "missing_seo":
-        if (insight?.meta?.siteId) {
-          navigate(`${basePath}/website/sites/${insight.meta.siteId}/edit`, {
-            state: { openSeo: true },
-          });
-        } else {
+      case "missing_seo": {
+        const siteId = insight?.meta?.siteId;
+        if (!siteId) {
           navigate(`${basePath}/website`);
+          return;
         }
+
+        let templateKey = String(insight?.meta?.templateKey || "").trim();
+        if (!templateKey) {
+          try {
+            const res = await API.get(`/site-builder/sites/${siteId}`);
+            templateKey = String(res.data?.site?.templateKey || "").trim();
+          } catch {
+            /* fall back to edit URL without template */
+          }
+        }
+
+        navigate(
+          buildSiteEditorUrl(basePath, siteId, {
+            templateKey,
+            openSeo: true,
+          }),
+          { state: { openSeo: true } }
+        );
         return;
+      }
       default:
         break;
     }

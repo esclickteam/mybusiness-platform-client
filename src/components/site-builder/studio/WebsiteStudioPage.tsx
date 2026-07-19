@@ -4755,9 +4755,16 @@ export default function WebsiteStudioPage({
   }, [pages, activePageId]);
 
   useEffect(() => {
+    if (!isVisualReactTemplate || !selectedTemplateRenderer) return;
+    if (!serverVisualTemplateLoaded) return;
+
+    const params = new URLSearchParams(location.search);
     const navState = location.state as { openSeo?: boolean } | null;
-    if (!navState?.openSeo || openedSeoFromInsightRef.current) return;
-    if (loadingSite || pages.length === 0) return;
+    const wantsOpenSeo =
+      navState?.openSeo === true || params.get("openSeo") === "1";
+
+    if (!wantsOpenSeo || openedSeoFromInsightRef.current) return;
+    if (pages.length === 0) return;
 
     const targetPage =
       pages.find((page) => page.isHome) ||
@@ -4774,11 +4781,20 @@ export default function WebsiteStudioPage({
       tab: "seo",
     });
 
-    navigate(`${location.pathname}${location.search}`, {
+    params.delete("openSeo");
+    const nextSearch = params.toString();
+    navigate(`${location.pathname}${nextSearch ? `?${nextSearch}` : ""}`, {
       replace: true,
       state: null,
     });
-  }, [location, loadingSite, pages, navigate]);
+  }, [
+    location,
+    pages,
+    navigate,
+    isVisualReactTemplate,
+    selectedTemplateRenderer,
+    serverVisualTemplateLoaded,
+  ]);
 
   const activePageClientPortal = useMemo(() => {
     return activePage?.clientPortal || createDefaultClientPortalConfig();
