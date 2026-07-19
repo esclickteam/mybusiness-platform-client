@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import AiInsightsPanel from "@/components/AiInsightsPanel";
+import useAiInsights from "@/hooks/useAiInsights";
 
 import type {
   DashboardFilters,
@@ -281,6 +283,9 @@ export default function DashboardOverview({
   const navigate = useNavigate();
   const { businessId } = useParams();
   const basePath = `/business/${businessId}/dashboard`;
+  const { insights: aiInsights, loading: aiInsightsLoading } = useAiInsights(
+    typeof businessId === "string" ? businessId : undefined
+  );
 
   const upcomingFromCalendar = useMemo(
     () => buildUpcomingAppointmentsFromCalendar(calendarAppointments, 5),
@@ -512,6 +517,12 @@ export default function DashboardOverview({
           accent="pink"
         />
       </section>
+
+      <AiInsightsPanel
+        insights={aiInsights}
+        loading={aiInsightsLoading}
+        businessId={businessId}
+      />
 
       <Panel className="p-3">
         <div className="flex flex-wrap gap-2">
