@@ -61,25 +61,59 @@ type QuickAction = {
 const SUGGESTED_QUERIES: QuickAction[] = [
   { label: "איך לבנות אתר?", query: "בניית אתר", icon: Globe },
   { label: "איך לפרסם את האתר?", query: "פרסום אתר", icon: Megaphone },
-  { label: "איך לנהל תורים ב-CRM?", query: "CRM תורים", icon: UsersRound },
+  { label: "איך לנהל תורים ב-CRM?", query: "CRM תורים", icon: CalendarDays },
   { label: "איך להשתמש ב-AI?", query: "יועץ AI", icon: Sparkles },
   { label: "עריכת פרופיל עסקי", query: "פרופיל עסקי", icon: PencilLine },
   { label: "הגדרות SEO לאתר", query: "SEO", icon: LayoutDashboard },
+  { label: "מה יש בדשבורד?", query: "דשבורד", icon: LayoutDashboard },
+  { label: "איך לקבל לידים?", query: "לידים CRM", icon: UsersRound },
 ];
 
 
-function matchesSearch(text: string, query: string) {
-  return text.toLowerCase().includes(query);
+function normalizeForSearch(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[\u0591-\u05c7]/g, "")
+    .replace(/[\u200f\u200e]/g, "")
+    .replace(/[\u05be\u2013\u2014\-_/|]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function tokenizeQuery(query: string) {
+  return normalizeForSearch(query)
+    .split(/\s+/)
+    .filter((token) => token.length > 0);
+}
+
+function textContainsToken(text: string, token: string) {
+  return normalizeForSearch(text).includes(token);
 }
 
 function itemMatchesQuery(
   item: { title: string; description?: string; keywords?: string[] },
   query: string
 ) {
-  if (matchesSearch(item.title, query)) return true;
-  if (item.description && matchesSearch(item.description, query)) return true;
-  if (item.keywords?.some((kw) => matchesSearch(kw, query))) return true;
-  return false;
+  const normalizedQuery = normalizeForSearch(query);
+  if (!normalizedQuery) return true;
+
+  const searchableTexts = [
+    item.title,
+    item.description ?? "",
+    ...(item.keywords ?? []),
+  ];
+
+  const fullMatch = searchableTexts.some((text) =>
+    normalizeForSearch(text).includes(normalizedQuery)
+  );
+  if (fullMatch) return true;
+
+  const tokens = tokenizeQuery(query);
+  if (tokens.length === 0) return false;
+
+  return tokens.every((token) =>
+    searchableTexts.some((text) => textContainsToken(text, token))
+  );
 }
 
 export default function HelpCenter() {
@@ -133,7 +167,7 @@ export default function HelpCenter() {
           "נהל תורים ולקוחות במקום אחד — בצורה פשוטה, מסודרת ויעילה.",
         url: `${basePath}/articles/appointment-crm-guide`,
         icon: CalendarDays,
-        keywords: ["CRM", "תורים", "לקוחות", "יומן", "קביעה"],
+        keywords: ["CRM", "תורים", "לקוחות", "יומן", "קביעה", "לידים", "ניהול"],
       },
       {
         id: 5,
@@ -142,7 +176,7 @@ export default function HelpCenter() {
           "הכירו את העוזר הדיגיטלי שמחזק את העסק בעזרת בינה מלאכותית.",
         url: `${basePath}/articles/ai-companion`,
         icon: Bot,
-        keywords: ["AI", "בינה מלאכותית", "יועץ", "עוזר"],
+        keywords: ["AI", "בינה מלאכותית", "יועץ", "עוזר", "Bizuply"],
       },
       {
         id: 6,
@@ -197,7 +231,7 @@ export default function HelpCenter() {
         description: "ניהול לקוחות, תורים ומעקב",
         path: `${basePath}/faq/crm`,
         icon: UsersRound,
-        keywords: ["CRM", "תורים", "לקוחות"],
+        keywords: ["CRM", "תורים", "לקוחות", "לידים", "קביעה"],
       },
       {
         id: 6,
@@ -205,7 +239,7 @@ export default function HelpCenter() {
         description: "שימוש בעוזר AI לקידום העסק",
         path: `${basePath}/faq/BizUply-advisor`,
         icon: Bot,
-        keywords: ["AI", "יועץ", "בינה מלאכותית"],
+        keywords: ["AI", "יועץ", "בינה מלאכותית", "עוזר", "Bizuply"],
       },
       {
         id: 7,
@@ -465,7 +499,7 @@ export default function HelpCenter() {
               </div>
 
               {!isSearching && (
-                <div className="mx-auto mt-6 flex max-w-4xl flex-wrap justify-center gap-3">
+                <div className="mx-auto mt-6 grid max-w-5xl grid-cols-2 gap-3 sm:grid-cols-4">
                   {SUGGESTED_QUERIES.map((sq) => {
                     const Icon = sq.icon;
                     return (
