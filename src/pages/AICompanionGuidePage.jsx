@@ -1,9 +1,9 @@
 import React from "react";
-import "./AICompanionGuidePage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function AICompanionGuidePage() {
   return (
-    <div className="ai-guide-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1>בינה מלאכותית ב-Bizuply</h1>
 
       <h2>למה עסקים מודרניים צריכים AI</h2>
@@ -140,6 +140,6 @@ export default function AICompanionGuidePage() {
         בסביבה עסקית מבוססת נתונים, AI אינו מותרות — הוא יכולת
         ליבה שעוזרת לעסקים להסתגל, לגדול ולהישאר תחרותיים.
       </p>
-    </div>
+    </HelpArticleLayout>
   );
 }

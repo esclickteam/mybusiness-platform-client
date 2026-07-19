@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./faq.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 const faqData = [
   {
@@ -158,7 +159,7 @@ export default function CrmFAQ() {
   };
 
   return (
-    <div className="faq-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1 className="faq-title">CRM ותזמון – שאלות נפוצות</h1>
 
       <div className="faq-list">
@@ -199,6 +200,6 @@ export default function CrmFAQ() {
           );
         })}
       </div>
-    </div>
+    </HelpArticleLayout>
   );
 }

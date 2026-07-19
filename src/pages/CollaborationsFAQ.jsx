@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./faq.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 const faqData = [
   {
@@ -146,7 +147,7 @@ export default function CollaborationsFAQ() {
   };
 
   return (
-    <div className="faq-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1 className="faq-title">שיתופי פעולה עסקיים – שאלות נפוצות</h1>
 
       <div className="faq-list">
@@ -187,6 +188,6 @@ export default function CollaborationsFAQ() {
           );
         })}
       </div>
-    </div>
+    </HelpArticleLayout>
   );
 }

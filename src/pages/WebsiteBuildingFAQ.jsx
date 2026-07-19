@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./faq.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 const faqData = [
   {
@@ -136,7 +137,7 @@ export default function WebsiteBuildingFAQ() {
   };
 
   return (
-    <div className="faq-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1 className="faq-title">שאלות נפוצות — בניית אתר</h1>
       <p className="faq-subtitle">
         תשובות לשאלות נפוצות על יצירה, עריכה ופרסום אתרים ב-Bizuply
@@ -179,6 +180,6 @@ export default function WebsiteBuildingFAQ() {
           );
         })}
       </div>
-    </div>
+    </HelpArticleLayout>
   );
 }

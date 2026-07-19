@@ -1,9 +1,9 @@
 import React from "react";
-import "./DashboardGuidePage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function DashboardGuidePage() {
   return (
-    <div className="dashboard-guide-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1>לוח הבקרה של Bizuply: שליטה מלאה במבט אחד</h1>
 
       <h2>מהו לוח הבקרה של Bizuply ולמה הוא חשוב</h2>
@@ -189,6 +189,6 @@ export default function DashboardGuidePage() {
         על ידי הבנת הנתונים ופעולה לפי התובנות, אפשר לייעל תפעול, לשפר
         את חוויית הלקוח ולתמוך בצמיחה לטווח ארוך.
       </p>
-    </div>
+    </HelpArticleLayout>
   );
 }

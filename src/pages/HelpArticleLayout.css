@@ -1,73 +1,86 @@
-.website-guide-container {
+/* ── Shared page shell for all help guides & FAQ ── */
+
+.guide-article-page {
+  min-height: 100%;
+  background: #f5f6fb;
+  padding: 1.5rem 0 3rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.guide-article-container {
   max-width: 860px;
-  margin: 2rem auto 4rem;
-  padding: 0 24px;
+  margin: 0 auto;
+  padding: 2rem 24px 3rem;
   font-family: Poppins, Inter, system-ui, Arial, sans-serif;
   color: #1f2937;
   line-height: 1.75;
   text-align: right;
+  direction: rtl;
 }
 
-.website-guide-container h1 {
+.guide-article-container h1 {
   font-size: 2rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-.website-guide-container h2 {
+.guide-article-container h2 {
   font-size: 1.35rem;
   font-weight: 700;
   margin: 2rem 0 0.75rem;
   color: #111827;
 }
 
-.website-guide-container h3 {
+.guide-article-container h3 {
   font-size: 1.1rem;
   font-weight: 600;
   margin: 1.25rem 0 0.5rem;
   color: #374151;
 }
 
-.website-guide-container p {
+.guide-article-container p {
   margin: 0.75rem 0;
   color: #4b5563;
 }
 
-.website-guide-container ul,
-.website-guide-container ol {
+.guide-article-container ul,
+.guide-article-container ol {
   padding-right: 1.5rem;
+  padding-left: 0;
   margin: 0.75rem 0;
 }
 
-.website-guide-container li {
+.guide-article-container li {
   margin-bottom: 0.4rem;
   color: #4b5563;
 }
 
-.website-guide-container table {
+.guide-article-container table {
   width: 100%;
   border-collapse: collapse;
   margin: 1rem 0;
   font-size: 0.95rem;
 }
 
-.website-guide-container th,
-.website-guide-container td {
+.guide-article-container th,
+.guide-article-container td {
   border: 1px solid #e5e7eb;
   padding: 10px 14px;
   text-align: right;
 }
 
-.website-guide-container th {
+.guide-article-container th {
   background: #f9fafb;
   font-weight: 600;
   color: #374151;
 }
 
-.website-guide-container code {
+.guide-article-container code {
   background: #f3f4f6;
   padding: 2px 6px;
   border-radius: 4px;
@@ -76,6 +89,19 @@
   display: inline-block;
 }
 
-.website-guide-container strong {
+.guide-article-container strong {
   color: #111827;
+}
+
+.guide-article-container em {
+  color: #374151;
+}
+
+.guide-article-container blockquote {
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-right: 4px solid #6a11cb;
+  background: #f5f3ff;
+  color: #4b5563;
+  border-radius: 0 8px 8px 0;
 }

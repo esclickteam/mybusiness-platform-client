@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./faq.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 const troubleshootingFAQs = [
   {
@@ -181,7 +182,7 @@ export default function TroubleshootingSupport() {
   };
 
   return (
-    <div className="faq-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1 className="faq-title">פתרון תקלות ושגיאות – שאלות נפוצות</h1>
 
       <div className="faq-list">
@@ -220,6 +221,6 @@ export default function TroubleshootingSupport() {
           );
         })}
       </div>
-    </div>
+    </HelpArticleLayout>
   );
 }

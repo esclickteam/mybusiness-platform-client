@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "./faq.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 const faqs = [
   {
@@ -52,7 +53,7 @@ export default function SystemSettings() {
   };
 
   return (
-    <div className="faq-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       {/* Header */}
       <h1 className="faq-title">הגדרות מערכת BizUply</h1>
 
@@ -99,6 +100,6 @@ export default function SystemSettings() {
           );
         })}
       </div>
-    </div>
+    </HelpArticleLayout>
   );
 }

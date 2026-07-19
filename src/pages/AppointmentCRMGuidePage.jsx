@@ -1,9 +1,9 @@
 import React from "react";
-import "./AppointmentCRMGuidePage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function AppointmentCRMGuidePage() {
   return (
-    <div className="appointment-crm-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1>ניהול תורים ו-CRM ב-Bizuply</h1>
 
       <h2>
@@ -154,6 +154,6 @@ export default function AppointmentCRMGuidePage() {
         עומס יתר, משפר שביעות רצון לקוחות ומספק בהירות ושליטה
         על הפעילות היומיומית.
       </p>
-    </div>
+    </HelpArticleLayout>
   );
 }

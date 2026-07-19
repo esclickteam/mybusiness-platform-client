@@ -1,9 +1,9 @@
 import React from "react";
-import "./WebsiteBuildingGuidePage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function WebsiteBuildingGuidePage() {
   return (
-    <div className="website-guide-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1>בניית אתר ב-Bizuply: המדריך המלא</h1>
 
       <h2>למה לבנות אתר בעסק שלך?</h2>
@@ -139,6 +139,6 @@ export default function WebsiteBuildingGuidePage() {
         <li>פרסם ושתף את הקישור עם לקוחות</li>
         <li>עקוב אחר תנועה ולידים מהדשבורד</li>
       </ul>
-    </div>
+    </HelpArticleLayout>
   );
 }

@@ -1,9 +1,9 @@
 import React from "react";
-import "./BusinessCollaborationGuidePage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function BusinessCollaborationGuidePage() {
   return (
-    <div className="business-collab-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       <h1>שיתופי פעולה עסקיים ב-Bizuply</h1>
 
       <h2>למה שיתופי פעולה עסקיים חשובים</h2>
@@ -137,6 +137,6 @@ export default function BusinessCollaborationGuidePage() {
         הכל בתוך הפלטפורמה, אתם ממקמים את העסק לצמיחה בקנה מידה
         ובת-קיימא.
       </p>
-    </div>
+    </HelpArticleLayout>
   );
 }

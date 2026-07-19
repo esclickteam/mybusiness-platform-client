@@ -1,40 +1,27 @@
-/* =====================================================
-   FAQ CONTAINER
-===================================================== */
-
-.faq-container {
-  max-width: 880px;
-  margin: 4rem auto;
-  padding: 0 20px;
-  font-family: Poppins, Inter, system-ui, Arial, sans-serif;
-  color: #1f2937;
-  direction: rtl;
-  text-align: right;
-}
+@import "./HelpArticleLayout.css";
 
 /* =====================================================
-   HEADER
+   FAQ TITLE (matches guide h1)
 ===================================================== */
 
 .faq-title {
-  text-align: center;
-  margin-bottom: 6px;
-
-  font-size: 2.4rem;
+  text-align: right;
+  margin-bottom: 0.5rem;
+  font-size: 2rem;
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-
+  line-height: 1.2;
   background: linear-gradient(90deg, #6a11cb, #2575fc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .faq-subtitle {
-  text-align: center;
-  margin-bottom: 3rem;
+  text-align: right;
+  margin-bottom: 2rem;
   color: #6b7280;
-  font-size: 1.05rem;
+  font-size: 1rem;
+  line-height: 1.6;
 }
 
 /* =====================================================
@@ -56,7 +43,7 @@
   background: #ffffff;
   border-radius: 16px;
   border: 1px solid #e5e7eb;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
   overflow: hidden;
   transition: border-color 0.25s ease, box-shadow 0.25s ease,
     transform 0.2s ease;
@@ -66,7 +53,6 @@
   transform: translateY(-1px);
 }
 
-/* Accent line */
 .faq-item::before {
   content: "";
   position: absolute;
@@ -78,10 +64,9 @@
   background: transparent;
 }
 
-/* OPEN STATE */
 .faq-item.open {
   border-color: #6a11cb;
-  box-shadow: 0 16px 40px rgba(106, 17, 203, 0.22);
+  box-shadow: 0 12px 32px rgba(106, 17, 203, 0.15);
 }
 
 .faq-item.open::before {
@@ -96,18 +81,17 @@
   width: 100%;
   background: transparent;
   border: none;
-  padding: 20px 22px 10px; /* רווח מדויק כמו בדוגמה */
+  padding: 20px 22px 10px;
   cursor: pointer;
-
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-
   font-size: 1.05rem;
   font-weight: 600;
   color: #111827;
   text-align: right;
+  direction: rtl;
 }
 
 .faq-question:focus {
@@ -118,46 +102,25 @@
   color: #2c1250;
 }
 
-/* =====================================================
-   CHEVRON ICON
-===================================================== */
-
-.faq-chevron {
-  width: 22px;
-  height: 22px;
+.faq-plus {
   flex-shrink: 0;
-
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
-
   border-radius: 50%;
   background: #f3f4f6;
   color: #6a11cb;
-
+  font-size: 1.25rem;
+  font-weight: 400;
+  line-height: 1;
   transition: transform 0.25s ease, background 0.25s ease;
 }
 
-.faq-item.open .faq-chevron {
-  transform: rotate(180deg);
+.faq-plus.open {
+  transform: rotate(45deg);
   background: linear-gradient(135deg, #6a11cb, #2575fc);
   color: #ffffff;
-}
-
-/* =====================================================
-   ANSWER WRAPPER (ANIMATED HEIGHT)
-===================================================== */
-
-.faq-answer-wrapper {
-  padding-top: 6px; /* המרווח הקטן והנכון */
-  overflow: hidden;
-  max-height: 0;
-  transition: max-height 0.35s ease, opacity 0.25s ease;
-  opacity: 0;
-}
-
-.faq-item.open .faq-answer-wrapper {
-  max-height: 1000px;
-  opacity: 1;
 }
 
 /* =====================================================
@@ -166,14 +129,14 @@
 
 .faq-answer {
   padding: 0 22px 22px;
-  max-width: 720px;
-
   color: #4b5563;
   font-size: 0.96rem;
   line-height: 1.7;
+  text-align: right;
+  direction: rtl;
+  white-space: pre-wrap;
 }
 
-/* איפוס רווחים שגורמים ל"קפיצה" */
 .faq-answer p:first-child,
 .faq-answer ul:first-child {
   margin-top: 0;
@@ -183,8 +146,10 @@
   margin: 0 0 12px;
 }
 
-.faq-answer ul {
+.faq-answer ul,
+.faq-answer ol {
   padding-right: 18px;
+  padding-left: 0;
   margin: 12px 0;
 }
 

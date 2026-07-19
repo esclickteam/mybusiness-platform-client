@@ -1,12 +1,14 @@
 import React from "react";
-import "./BuildBusinessPage.css";
+import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function BuildBusinessPage() {
   return (
-    <div className="build-business-page-container" dir="rtl" lang="he">
+    <HelpArticleLayout>
       {/* =====================================================
           INTRO
       ===================================================== */}
+      <h1>עריכת דף העסק ב-Bizuply</h1>
+
       <h2>עריכת דף העסק: למה זה חשוב</h2>
 
       <p>
@@ -234,6 +236,6 @@ export default function BuildBusinessPage() {
         <li>תשובות מראש לשאלות נפוצות</li>
         <li>עידוד לקוחות להשאיר ביקורות</li>
       </ul>
-    </div>
+    </HelpArticleLayout>
   );
 }
