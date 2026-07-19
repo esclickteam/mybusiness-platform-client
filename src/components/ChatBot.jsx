@@ -106,7 +106,7 @@ export default function ChatBot({
     return (
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 left-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-white shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:bg-violet-700"
+        className="fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-white shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:bg-violet-700"
         aria-label="פתיחת העוזר החכם של Bizuply"
       >
         <Bot size={24} />
@@ -117,7 +117,7 @@ export default function ChatBot({
   return (
     <section
       dir="rtl"
-      className="fixed bottom-6 left-6 z-[10000] flex w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
+      className="fixed bottom-6 right-6 z-[10000] flex w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
       style={{ maxHeight: "min(580px,calc(100vh-3rem))" }}
     >
       <header className="flex items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
