@@ -6,6 +6,8 @@ import {
   Bot,
   CheckCircle2,
   ChevronDown,
+  Copy,
+  ExternalLink,
   Globe,
   Languages,
   Lightbulb,
@@ -205,6 +207,7 @@ export default function PageSettingsModal({
 }: PageSettingsModalProps) {
   const [tab, setTab] = useState<PageSettingsModalTab>(initialTab);
   const [smartHint, setSmartHint] = useState("");
+  const [copiedHint, setCopiedHint] = useState(false);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [seoDraft, setSeoDraft] = useState<SitePageSeoSettings>({});
@@ -459,6 +462,60 @@ export default function PageSettingsModal({
       ...current,
       hreflang: (current.hreflang || []).filter((item) => item.id !== id),
     }));
+  };
+
+  const siteBaseUrl = (publicUrl || buildPublicSiteUrl(siteSlug)).replace(
+    /\/+$/,
+    "",
+  );
+
+  const verificationCode =
+    (seoDraft.customMetaTags || []).find(
+      (meta) => meta.key === "google-site-verification",
+    )?.content || "";
+
+  const setVerificationCode = (rawValue: string) => {
+    const match = rawValue.match(/content=["']([^"']+)["']/i);
+    const value = (match ? match[1] : rawValue).trim();
+
+    setSeoDraft((current) => {
+      const list = current.customMetaTags || [];
+      const existing = list.find(
+        (meta) => meta.key === "google-site-verification",
+      );
+
+      let next: SeoCustomMetaTag[];
+      if (!value) {
+        next = list.filter((meta) => meta.key !== "google-site-verification");
+      } else if (existing) {
+        next = list.map((meta) =>
+          meta.key === "google-site-verification"
+            ? { ...meta, content: value }
+            : meta,
+        );
+      } else {
+        next = [
+          ...list,
+          {
+            id: createSeoId("meta"),
+            attr: "name",
+            key: "google-site-verification",
+            content: value,
+          },
+        ];
+      }
+      return { ...current, customMetaTags: next };
+    });
+  };
+
+  const copyToClipboard = (value: string) => {
+    try {
+      navigator.clipboard?.writeText(value);
+      setCopiedHint(true);
+      window.setTimeout(() => setCopiedHint(false), 2000);
+    } catch {
+      /* clipboard not available */
+    }
   };
 
   const robotsPreview = buildRobotsContent({
@@ -876,10 +933,10 @@ export default function PageSettingsModal({
                 </div>
 
                 <p className="mt-3 text-[11px] font-semibold leading-5 text-slate-500">
-                  לחיבור מלא לגוגל: פרסמו את האתר, ואז ב‑Search Console אמתו
-                  בעלות (מדביקים את קוד האימות בטאב "SEO מתקדם" → "תגי מטא" →
-                  "אימות Google") ושלחו את ה‑sitemap. גוגל יתחיל להציג את האתר
-                  תוך כמה ימים.
+                  לחיבור מלא לגוגל: עברו לטאב{" "}
+                  <span className="font-black text-slate-700">"SEO מתקדם"</span>{" "}
+                  → "אימות מול Google" ועקבו אחרי השלבים. אחרי פרסום האתר, גוגל
+                  יתחיל להציג אותו תוך כמה ימים.
                 </p>
               </div>
             </div>
@@ -1222,91 +1279,221 @@ export default function PageSettingsModal({
 
               <AdvancedSection
                 icon={<Tags className="h-5 w-5" />}
-                title="תגי מטא מותאמים ואימות גוגל"
-                description="הוסיפו תגים מיוחדים — למשל קוד האימות של Google Search Console."
-                badge={{ label: "לא חובה", tone: "optional" }}
+                title="אימות מול Google ותגי מטא"
+                description="חברו את האתר ל-Google Search Console כדי לעקוב אחרי הביצועים ולשלוח עמודים לגוגל."
+                badge={{ label: "מומלץ", tone: "recommended" }}
               >
-                <HelpNote>
-                  לחיבור לגוגל: פתחו את Google Search Console, בחרו אימות בשיטת
-                  "תג HTML", העתיקו רק את הקוד (content), לחצו "+ אימות Google"
-                  והדביקו אותו.
-                </HelpNote>
-
-                {(seoDraft.customMetaTags || []).map((meta) => (
-                  <div
-                    key={meta.id}
-                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2"
-                  >
-                    <select
-                      value={meta.attr}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, {
-                          attr: event.target.value as "name" | "property",
-                        })
-                      }
-                      className="h-10 rounded-xl border border-slate-200 bg-white px-2 text-xs font-bold text-slate-800 outline-none focus:border-blue-400"
-                    >
-                      <option value="name">name</option>
-                      <option value="property">property</option>
-                    </select>
-                    <input
-                      value={meta.key}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, { key: event.target.value })
-                      }
-                      className="h-10 w-[150px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
-                      placeholder="google-site-verification"
-                      dir="ltr"
-                    />
-                    <input
-                      value={meta.content}
-                      onChange={(event) =>
-                        updateCustomMetaTag(meta.id, {
-                          content: event.target.value,
-                        })
-                      }
-                      className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
-                      placeholder="הערך / קוד האימות"
-                      dir="ltr"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => removeCustomMetaTag(meta.id)}
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
-                      aria-label="מחיקת תג"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </div>
-                ))}
-
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addCustomMetaTag({ key: "google-site-verification" })
-                    }
-                    className="flex h-11 items-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 text-sm font-black text-blue-700 transition hover:bg-blue-100"
-                  >
-                    <Plus className="h-4 w-4" /> אימות Google
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addCustomMetaTag({ attr: "property", key: "og:site_name" })
-                    }
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    + og:site_name
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => addCustomMetaTag()}
-                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
-                  >
-                    <Plus className="h-4 w-4" /> תג חדש
-                  </button>
+                <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 text-xs font-semibold leading-6 text-slate-700">
+                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black text-slate-900">
+                    <Lightbulb className="h-4 w-4 text-blue-500" /> מה זה "קוד
+                    אימות" של גוגל?
+                  </p>
+                  זהו קוד קצר ש-Google נותן לך, שמוכיח שהאתר הזה באמת שלך. מדביקים
+                  אותו פעם אחת — ומאותו רגע גוגל נותן לך לראות נתונים על האתר
+                  ולבקש ממנו לסרוק עמודים. זה חד-פעמי.
                 </div>
+
+                <ol className="space-y-3">
+                  <li className="flex gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                      1
+                    </span>
+                    <div className="flex-1 space-y-2 pt-0.5">
+                      <p className="text-sm font-black text-slate-900">
+                        היכנסי ל-Google Search Console (בחינם)
+                      </p>
+                      <a
+                        href="https://search.google.com/search-console/welcome"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 transition hover:bg-blue-50"
+                      >
+                        <ExternalLink className="h-4 w-4" /> פתיחת Search Console
+                      </a>
+                    </div>
+                  </li>
+
+                  <li className="flex gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                      2
+                    </span>
+                    <div className="flex-1 space-y-2 pt-0.5">
+                      <p className="text-sm font-black text-slate-900">
+                        בחרי "קידומת כתובת אתר" והדביקי את הכתובת שלך
+                      </p>
+                      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
+                        <input
+                          value={siteBaseUrl}
+                          readOnly
+                          dir="ltr"
+                          className="h-9 min-w-0 flex-1 rounded-lg bg-slate-50 px-3 text-xs font-bold text-slate-700 outline-none"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => copyToClipboard(siteBaseUrl)}
+                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-xs font-black text-white transition hover:bg-slate-800"
+                        >
+                          {copiedHint ? (
+                            <>
+                              <CheckCircle2 className="h-4 w-4" /> הועתק
+                            </>
+                          ) : (
+                            <>
+                              <Copy className="h-4 w-4" /> העתקה
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+
+                  <li className="flex gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                      3
+                    </span>
+                    <div className="flex-1 space-y-2 pt-0.5">
+                      <p className="text-sm font-black text-slate-900">
+                        בחרי אימות בשיטת "תג HTML" — גוגל יציג שורה כזו:
+                      </p>
+                      <code
+                        className="block break-all rounded-xl bg-slate-900 px-3 py-2 font-mono text-[11px] leading-5 text-emerald-300"
+                        dir="ltr"
+                      >
+                        &lt;meta name="google-site-verification"
+                        content="AbC123…" /&gt;
+                      </code>
+                      <p className="text-xs font-semibold text-slate-500">
+                        צריך להעתיק <span className="font-black">רק</span> את
+                        הקוד שבתוך content (למשל AbC123…).
+                      </p>
+                    </div>
+                  </li>
+
+                  <li className="flex gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                      4
+                    </span>
+                    <div className="flex-1 space-y-2 pt-0.5">
+                      <p className="text-sm font-black text-slate-900">
+                        הדביקי כאן את קוד האימות
+                      </p>
+                      <input
+                        value={verificationCode}
+                        onChange={(event) =>
+                          setVerificationCode(event.target.value)
+                        }
+                        className={fieldClassName}
+                        placeholder="אפשר להדביק את הקוד או את כל השורה של גוגל"
+                        dir="ltr"
+                      />
+                      {verificationCode ? (
+                        <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
+                          <CheckCircle2 className="h-4 w-4" /> הקוד נשמר — יתווסף
+                          לאתר אחרי לחיצה על "שמירה".
+                        </p>
+                      ) : null}
+                    </div>
+                  </li>
+
+                  <li className="flex gap-3">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                      5
+                    </span>
+                    <div className="flex-1 space-y-1 pt-0.5">
+                      <p className="text-sm font-black text-slate-900">
+                        שמרי כאן, פרסמי את האתר, וחזרי ל-Search Console ללחוץ
+                        "אמת"
+                      </p>
+                      <p className="text-xs font-semibold text-slate-500">
+                        חשוב: האתר צריך להיות מפורסם כדי שגוגל ימצא את הקוד.
+                      </p>
+                    </div>
+                  </li>
+                </ol>
+
+                <details className="group/meta rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
+                    <ChevronDown className="h-4 w-4 transition group-open/meta:rotate-180" />
+                    תגי מטא נוספים (למומחים)
+                  </summary>
+                  <div className="space-y-2 border-t border-slate-100 px-3.5 py-3">
+                    {(seoDraft.customMetaTags || [])
+                      .filter(
+                        (meta) => meta.key !== "google-site-verification",
+                      )
+                      .map((meta) => (
+                        <div
+                          key={meta.id}
+                          className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white p-2"
+                        >
+                          <select
+                            value={meta.attr}
+                            onChange={(event) =>
+                              updateCustomMetaTag(meta.id, {
+                                attr: event.target.value as "name" | "property",
+                              })
+                            }
+                            className="h-10 rounded-xl border border-slate-200 bg-white px-2 text-xs font-bold text-slate-800 outline-none focus:border-blue-400"
+                            dir="ltr"
+                          >
+                            <option value="name">name</option>
+                            <option value="property">property</option>
+                          </select>
+                          <input
+                            value={meta.key}
+                            onChange={(event) =>
+                              updateCustomMetaTag(meta.id, {
+                                key: event.target.value,
+                              })
+                            }
+                            className="h-10 w-[150px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
+                            placeholder="og:site_name"
+                            dir="ltr"
+                          />
+                          <input
+                            value={meta.content}
+                            onChange={(event) =>
+                              updateCustomMetaTag(meta.id, {
+                                content: event.target.value,
+                              })
+                            }
+                            className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
+                            placeholder="הערך של התג"
+                            dir="ltr"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeCustomMetaTag(meta.id)}
+                            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                            aria-label="מחיקת תג"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        </div>
+                      ))}
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          addCustomMetaTag({
+                            attr: "property",
+                            key: "og:site_name",
+                          })
+                        }
+                        className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                      >
+                        + og:site_name
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => addCustomMetaTag()}
+                        className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                      >
+                        <Plus className="h-4 w-4" /> תג חדש
+                      </button>
+                    </div>
+                  </div>
+                </details>
               </AdvancedSection>
 
               <AdvancedSection
