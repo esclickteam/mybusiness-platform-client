@@ -1,29 +1,59 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  AlertTriangle,
+  Braces,
+  Bot,
+  CheckCircle2,
+  ChevronDown,
   Globe,
+  Languages,
   Lightbulb,
+  Plus,
   Search,
   Settings2,
   Share2,
   Sparkles,
+  Tags,
+  Trash2,
   X,
 } from "lucide-react";
 
 import type {
+  SeoCustomMetaTag,
+  SeoHreflangEntry,
+  SeoMaxImagePreview,
+  SeoRobotsDirective,
+  SeoStructuredDataEntry,
   SitePageSeoSettings,
   SiteSeoSettings,
   StudioSitePage,
 } from "../../types";
 import {
+  STRUCTURED_DATA_PRESETS,
   buildPagePath,
   buildPublicSiteUrl,
+  buildRobotsContent,
+  createSeoId,
   getSeoFieldLengthStatus,
   normalizePageSeo,
   normalizeSiteSeoSettings,
   resolvePageSeoMeta,
   truncateForPreview,
+  validateJsonLd,
 } from "../../utils/pageSeoUtils";
+
+const ROBOTS_DIRECTIVE_OPTIONS: Array<{
+  value: SeoRobotsDirective;
+  label: string;
+  hint: string;
+}> = [
+  { value: "nofollow", label: "nofollow", hint: "לא לעקוב אחרי הקישורים בעמוד" },
+  { value: "noarchive", label: "noarchive", hint: "לא לשמור עותק שמור (cache)" },
+  { value: "nosnippet", label: "nosnippet", hint: "לא להציג תקציר טקסט בתוצאות" },
+  { value: "noimageindex", label: "noimageindex", hint: "לא לאנדקס תמונות מהעמוד" },
+  { value: "notranslate", label: "notranslate", hint: "לא להציע תרגום בתוצאות" },
+];
 
 export type PageSettingsModalTab =
   | "settings"
@@ -90,6 +120,45 @@ function LengthHint({
     <p className={`text-xs font-bold ${color}`}>
       {length}/{idealMax} תווים מומלצים
     </p>
+  );
+}
+
+function AdvancedSection({
+  icon,
+  title,
+  description,
+  defaultOpen = false,
+  children,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <details
+      open={defaultOpen}
+      className="group rounded-3xl border border-slate-200 bg-white p-0 [&_summary::-webkit-details-marker]:hidden"
+    >
+      <summary className="flex cursor-pointer list-none items-center gap-3 rounded-3xl px-4 py-4">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
+          {icon}
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-black text-slate-900">
+            {title}
+          </span>
+          <span className="mt-0.5 block text-xs font-semibold leading-5 text-slate-500">
+            {description}
+          </span>
+        </span>
+        <ChevronDown className="h-5 w-5 shrink-0 text-slate-400 transition group-open:rotate-180" />
+      </summary>
+      <div className="space-y-4 border-t border-slate-100 px-4 py-4">
+        {children}
+      </div>
+    </details>
   );
 }
 
@@ -172,20 +241,125 @@ export default function PageSettingsModal({
   };
 
   const updateSeo = (patch: Partial<SitePageSeoSettings>) => {
-    setSeoDraft((current) => normalizePageSeo({ ...current, ...patch }));
+    setSeoDraft((current) => ({ ...current, ...patch }));
   };
 
   const updateSocial = (patch: Partial<NonNullable<SitePageSeoSettings["social"]>>) => {
-    setSeoDraft((current) =>
-      normalizePageSeo({
-        ...current,
-        social: {
-          ...(current.social || {}),
-          ...patch,
-        },
-      }),
-    );
+    setSeoDraft((current) => ({
+      ...current,
+      social: {
+        ...(current.social || {}),
+        ...patch,
+      },
+    }));
   };
+
+  const toggleRobotsDirective = (directive: SeoRobotsDirective) => {
+    setSeoDraft((current) => {
+      const list = Array.isArray(current.robotsDirectives)
+        ? current.robotsDirectives
+        : [];
+      const next = list.includes(directive)
+        ? list.filter((item) => item !== directive)
+        : [...list, directive];
+      return { ...current, robotsDirectives: next };
+    });
+  };
+
+  const addStructuredData = (entry: SeoStructuredDataEntry) => {
+    setSeoDraft((current) => ({
+      ...current,
+      structuredData: [...(current.structuredData || []), entry],
+    }));
+  };
+
+  const updateStructuredData = (
+    id: string,
+    patch: Partial<SeoStructuredDataEntry>,
+  ) => {
+    setSeoDraft((current) => ({
+      ...current,
+      structuredData: (current.structuredData || []).map((item) =>
+        item.id === id ? { ...item, ...patch } : item,
+      ),
+    }));
+  };
+
+  const removeStructuredData = (id: string) => {
+    setSeoDraft((current) => ({
+      ...current,
+      structuredData: (current.structuredData || []).filter(
+        (item) => item.id !== id,
+      ),
+    }));
+  };
+
+  const addCustomMetaTag = (preset?: Partial<SeoCustomMetaTag>) => {
+    setSeoDraft((current) => ({
+      ...current,
+      customMetaTags: [
+        ...(current.customMetaTags || []),
+        {
+          id: createSeoId("meta"),
+          attr: preset?.attr || "name",
+          key: preset?.key || "",
+          content: preset?.content || "",
+        },
+      ],
+    }));
+  };
+
+  const updateCustomMetaTag = (id: string, patch: Partial<SeoCustomMetaTag>) => {
+    setSeoDraft((current) => ({
+      ...current,
+      customMetaTags: (current.customMetaTags || []).map((item) =>
+        item.id === id ? { ...item, ...patch } : item,
+      ),
+    }));
+  };
+
+  const removeCustomMetaTag = (id: string) => {
+    setSeoDraft((current) => ({
+      ...current,
+      customMetaTags: (current.customMetaTags || []).filter(
+        (item) => item.id !== id,
+      ),
+    }));
+  };
+
+  const addHreflang = () => {
+    setSeoDraft((current) => ({
+      ...current,
+      hreflang: [
+        ...(current.hreflang || []),
+        { id: createSeoId("hl"), lang: "", href: "" },
+      ],
+    }));
+  };
+
+  const updateHreflang = (id: string, patch: Partial<SeoHreflangEntry>) => {
+    setSeoDraft((current) => ({
+      ...current,
+      hreflang: (current.hreflang || []).map((item) =>
+        item.id === id ? { ...item, ...patch } : item,
+      ),
+    }));
+  };
+
+  const removeHreflang = (id: string) => {
+    setSeoDraft((current) => ({
+      ...current,
+      hreflang: (current.hreflang || []).filter((item) => item.id !== id),
+    }));
+  };
+
+  const robotsPreview = buildRobotsContent({
+    indexable: pageIndexingEnabled,
+    directives: seoDraft.robotsDirectives || [],
+    maxSnippet: seoDraft.maxSnippet ?? null,
+    maxImagePreview: (seoDraft.maxImagePreview as SeoMaxImagePreview) || "",
+    maxVideoPreview: seoDraft.maxVideoPreview ?? null,
+  });
 
   const previewUrl =
     previewMeta?.absoluteUrl ||
@@ -467,35 +641,411 @@ export default function PageSettingsModal({
           ) : null}
 
           {tab === "advanced" ? (
-            <div className="space-y-5">
-              <label className="block space-y-2">
-                <span className="text-sm font-black text-slate-800">
-                  Canonical URL
-                </span>
-                <input
-                  value={seoDraft.canonicalUrl || ""}
-                  onChange={(event) =>
-                    updateSeo({ canonicalUrl: event.target.value })
-                  }
-                  className={fieldClassName}
-                  placeholder={previewUrl}
-                  dir="ltr"
-                />
-              </label>
+            <div className="space-y-4">
+              <AdvancedSection
+                icon={<Braces className="h-5 w-5" />}
+                title="נתונים מובנים (Structured data · JSON-LD)"
+                description="Schema.org לתוצאות עשירות בגוגל ולהבנת התוכן ע״י מנועי AI (GEO)."
+                defaultOpen
+              >
+                {(seoDraft.structuredData || []).length === 0 ? (
+                  <p className="rounded-2xl bg-slate-50 px-4 py-3 text-xs font-semibold text-slate-500">
+                    אין עדיין סכימות. הוסיפו תבנית מוכנה או בלוק ריק והדביקו JSON-LD.
+                  </p>
+                ) : null}
 
-              <label className="block space-y-2">
-                <span className="text-sm font-black text-slate-800">
-                  מילות מפתח
-                </span>
-                <input
-                  value={seoDraft.keywords || ""}
-                  onChange={(event) =>
-                    updateSeo({ keywords: event.target.value })
-                  }
-                  className={fieldClassName}
-                  placeholder="מילה1, מילה2, מילה3"
-                />
-              </label>
+                {(seoDraft.structuredData || []).map((entry) => {
+                  const status = validateJsonLd(entry.json);
+                  return (
+                    <div
+                      key={entry.id}
+                      className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/70 p-3"
+                    >
+                      <div className="flex items-center gap-2">
+                        <input
+                          value={entry.name}
+                          onChange={(event) =>
+                            updateStructuredData(entry.id, {
+                              name: event.target.value,
+                            })
+                          }
+                          className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
+                          placeholder="שם הסכימה (למשל Organization)"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeStructuredData(entry.id)}
+                          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                          aria-label="מחיקת סכימה"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <textarea
+                        value={entry.json}
+                        onChange={(event) =>
+                          updateStructuredData(entry.id, {
+                            json: event.target.value,
+                          })
+                        }
+                        className="min-h-[140px] w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs leading-5 text-slate-900 outline-none focus:border-blue-400"
+                        dir="ltr"
+                        spellCheck={false}
+                        placeholder='{ "@context": "https://schema.org", "@type": "Organization" }'
+                      />
+                      {status.valid ? (
+                        <p className="flex items-center gap-1.5 text-xs font-bold text-emerald-600">
+                          <CheckCircle2 className="h-4 w-4" /> JSON-LD תקין
+                        </p>
+                      ) : (
+                        <p className="flex items-center gap-1.5 text-xs font-bold text-rose-600">
+                          <AlertTriangle className="h-4 w-4" />
+                          {status.error || "יש להזין JSON תקין"}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <select
+                    value=""
+                    onChange={(event) => {
+                      const preset = STRUCTURED_DATA_PRESETS.find(
+                        (item) => item.id === event.target.value,
+                      );
+                      if (!preset) return;
+                      addStructuredData({
+                        id: createSeoId("ld"),
+                        name: preset.id,
+                        json: preset.build({
+                          siteName,
+                          pageTitle: title || page.title || "",
+                          url: previewUrl,
+                        }),
+                      });
+                      event.target.value = "";
+                    }}
+                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                  >
+                    <option value="">+ הוספת תבנית מוכנה…</option>
+                    {STRUCTURED_DATA_PRESETS.map((preset) => (
+                      <option key={preset.id} value={preset.id}>
+                        {preset.label}
+                      </option>
+                    ))}
+                  </select>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      addStructuredData({
+                        id: createSeoId("ld"),
+                        name: "",
+                        json: "",
+                      })
+                    }
+                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                  >
+                    <Plus className="h-4 w-4" /> בלוק ריק
+                  </button>
+                </div>
+              </AdvancedSection>
+
+              <AdvancedSection
+                icon={<Bot className="h-5 w-5" />}
+                title="הוראות לרובוטים (Robots meta)"
+                description="שליטה מדויקת באיך מנועי החיפוש סורקים ומציגים את העמוד."
+              >
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {ROBOTS_DIRECTIVE_OPTIONS.map((option) => {
+                    const checked = (seoDraft.robotsDirectives || []).includes(
+                      option.value,
+                    );
+                    return (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => toggleRobotsDirective(option.value)}
+                        className={[
+                          "flex items-start gap-3 rounded-2xl border px-3 py-2.5 text-right transition",
+                          checked
+                            ? "border-blue-500 bg-blue-50"
+                            : "border-slate-200 bg-white hover:border-slate-300",
+                        ].join(" ")}
+                      >
+                        <span
+                          className={[
+                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border",
+                            checked
+                              ? "border-blue-600 bg-blue-600 text-white"
+                              : "border-slate-300 bg-white",
+                          ].join(" ")}
+                        >
+                          {checked ? <CheckCircle2 className="h-4 w-4" /> : null}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block font-mono text-xs font-black text-slate-900">
+                            {option.label}
+                          </span>
+                          <span className="block text-[11px] font-semibold text-slate-500">
+                            {option.hint}
+                          </span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-black text-slate-700">
+                      max-image-preview
+                    </span>
+                    <select
+                      value={seoDraft.maxImagePreview || ""}
+                      onChange={(event) =>
+                        updateSeo({
+                          maxImagePreview: event.target
+                            .value as SeoMaxImagePreview,
+                        })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                    >
+                      <option value="">ברירת מחדל</option>
+                      <option value="none">none</option>
+                      <option value="standard">standard</option>
+                      <option value="large">large</option>
+                    </select>
+                  </label>
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-black text-slate-700">
+                      max-snippet
+                    </span>
+                    <input
+                      type="number"
+                      value={
+                        seoDraft.maxSnippet === null ||
+                        seoDraft.maxSnippet === undefined
+                          ? ""
+                          : seoDraft.maxSnippet
+                      }
+                      onChange={(event) =>
+                        updateSeo({
+                          maxSnippet:
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                        })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                      placeholder="-1 = ללא הגבלה"
+                      dir="ltr"
+                    />
+                  </label>
+                  <label className="block space-y-1.5">
+                    <span className="text-xs font-black text-slate-700">
+                      max-video-preview
+                    </span>
+                    <input
+                      type="number"
+                      value={
+                        seoDraft.maxVideoPreview === null ||
+                        seoDraft.maxVideoPreview === undefined
+                          ? ""
+                          : seoDraft.maxVideoPreview
+                      }
+                      onChange={(event) =>
+                        updateSeo({
+                          maxVideoPreview:
+                            event.target.value === ""
+                              ? null
+                              : Number(event.target.value),
+                        })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-blue-400"
+                      placeholder="-1 = ללא הגבלה"
+                      dir="ltr"
+                    />
+                  </label>
+                </div>
+
+                <div className="rounded-2xl bg-slate-900 px-4 py-3">
+                  <p className="text-[11px] font-black uppercase tracking-wide text-slate-400">
+                    תג robots שייווצר
+                  </p>
+                  <code className="mt-1 block break-all font-mono text-xs text-emerald-300" dir="ltr">
+                    &lt;meta name="robots" content="{robotsPreview}"&gt;
+                  </code>
+                </div>
+              </AdvancedSection>
+
+              <AdvancedSection
+                icon={<Tags className="h-5 w-5" />}
+                title="תגי מטא מותאמים אישית"
+                description="הוסיפו כל תג name/property מותאם (author, theme-color, og:*)."
+              >
+                {(seoDraft.customMetaTags || []).map((meta) => (
+                  <div
+                    key={meta.id}
+                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-2"
+                  >
+                    <select
+                      value={meta.attr}
+                      onChange={(event) =>
+                        updateCustomMetaTag(meta.id, {
+                          attr: event.target.value as "name" | "property",
+                        })
+                      }
+                      className="h-10 rounded-xl border border-slate-200 bg-white px-2 text-xs font-bold text-slate-800 outline-none focus:border-blue-400"
+                    >
+                      <option value="name">name</option>
+                      <option value="property">property</option>
+                    </select>
+                    <input
+                      value={meta.key}
+                      onChange={(event) =>
+                        updateCustomMetaTag(meta.id, { key: event.target.value })
+                      }
+                      className="h-10 w-[130px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
+                      placeholder="og:site_name"
+                      dir="ltr"
+                    />
+                    <input
+                      value={meta.content}
+                      onChange={(event) =>
+                        updateCustomMetaTag(meta.id, {
+                          content: event.target.value,
+                        })
+                      }
+                      className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
+                      placeholder="ערך התג"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeCustomMetaTag(meta.id)}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                      aria-label="מחיקת תג"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => addCustomMetaTag()}
+                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                  >
+                    <Plus className="h-4 w-4" /> תג חדש
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() =>
+                      addCustomMetaTag({ attr: "property", key: "og:site_name" })
+                    }
+                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                  >
+                    + og:site_name
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addCustomMetaTag({ key: "author" })}
+                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                  >
+                    + author
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addCustomMetaTag({ key: "theme-color" })}
+                    className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-bold text-slate-600 transition hover:bg-slate-50"
+                  >
+                    + theme-color
+                  </button>
+                </div>
+              </AdvancedSection>
+
+              <AdvancedSection
+                icon={<Languages className="h-5 w-5" />}
+                title="שפות ואזורים (hreflang)"
+                description="קישור בין גרסאות שפה/מדינה של אותו עמוד."
+              >
+                {(seoDraft.hreflang || []).map((entry) => (
+                  <div
+                    key={entry.id}
+                    className="flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-2"
+                  >
+                    <input
+                      value={entry.lang}
+                      onChange={(event) =>
+                        updateHreflang(entry.id, { lang: event.target.value })
+                      }
+                      className="h-10 w-[110px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-900 outline-none focus:border-blue-400"
+                      placeholder="he-IL"
+                      dir="ltr"
+                    />
+                    <input
+                      value={entry.href}
+                      onChange={(event) =>
+                        updateHreflang(entry.id, { href: event.target.value })
+                      }
+                      className="h-10 min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 text-sm font-semibold text-slate-900 outline-none focus:border-blue-400"
+                      placeholder="https://example.com/en"
+                      dir="ltr"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeHreflang(entry.id)}
+                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-rose-500 transition hover:bg-rose-50"
+                      aria-label="מחיקת שפה"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  onClick={addHreflang}
+                  className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                >
+                  <Plus className="h-4 w-4" /> הוספת שפה
+                </button>
+              </AdvancedSection>
+
+              <AdvancedSection
+                icon={<Globe className="h-5 w-5" />}
+                title="Canonical ומילות מפתח"
+                description="כתובת רשמית למניעת תוכן כפול, ומילות מפתח לעמוד."
+              >
+                <label className="block space-y-2">
+                  <span className="text-sm font-black text-slate-800">
+                    Canonical URL
+                  </span>
+                  <input
+                    value={seoDraft.canonicalUrl || ""}
+                    onChange={(event) =>
+                      updateSeo({ canonicalUrl: event.target.value })
+                    }
+                    className={fieldClassName}
+                    placeholder={previewUrl}
+                    dir="ltr"
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-sm font-black text-slate-800">
+                    מילות מפתח
+                  </span>
+                  <input
+                    value={seoDraft.keywords || ""}
+                    onChange={(event) =>
+                      updateSeo({ keywords: event.target.value })
+                    }
+                    className={fieldClassName}
+                    placeholder="מילה1, מילה2, מילה3"
+                  />
+                </label>
+              </AdvancedSection>
             </div>
           ) : null}
 

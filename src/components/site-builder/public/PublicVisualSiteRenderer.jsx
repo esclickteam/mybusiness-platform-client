@@ -1635,8 +1635,68 @@ function PublicSeoHead({ resolvedSeo }) {
       {resolvedSeo.social?.ogImage ? (
         <meta name="twitter:image" content={resolvedSeo.social.ogImage} />
       ) : null}
+      {Array.isArray(resolvedSeo.hreflang)
+        ? resolvedSeo.hreflang
+            .filter((entry) => entry && entry.lang && entry.href)
+            .map((entry) => (
+              <link
+                key={`hreflang-${entry.lang}`}
+                rel="alternate"
+                hrefLang={entry.lang}
+                href={entry.href}
+              />
+            ))
+        : null}
+      {Array.isArray(resolvedSeo.customMetaTags)
+        ? resolvedSeo.customMetaTags
+            .filter((meta) => meta && meta.key)
+            .map((meta) =>
+              meta.attr === "property" ? (
+                <meta
+                  key={`custom-${meta.attr}-${meta.key}`}
+                  property={meta.key}
+                  content={meta.content || ""}
+                />
+              ) : (
+                <meta
+                  key={`custom-${meta.attr}-${meta.key}`}
+                  name={meta.key}
+                  content={meta.content || ""}
+                />
+              ),
+            )
+        : null}
+      {Array.isArray(resolvedSeo.structuredData)
+        ? resolvedSeo.structuredData
+            .filter((entry) => entry && entry.json && isValidJson(entry.json))
+            .map((entry, index) => (
+              <script
+                key={`ld-${entry.id || index}`}
+                type="application/ld+json"
+              >
+                {minifyJson(entry.json)}
+              </script>
+            ))
+        : null}
     </Helmet>
   );
+}
+
+function isValidJson(value) {
+  try {
+    JSON.parse(String(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function minifyJson(value) {
+  try {
+    return JSON.stringify(JSON.parse(String(value)));
+  } catch {
+    return String(value);
+  }
 }
 
 function readCustomCode(site, activePage, visualData) {
@@ -1758,15 +1818,30 @@ export default function PublicVisualSiteRenderer({
   );
 
   const resolvedSeo = useMemo(() => {
-    if (site?.resolvedSeo) return site.resolvedSeo;
-
-    return resolvePageSeoMeta({
+    const clientResolved = resolvePageSeoMeta({
       page: activePage,
       siteName: site?.name,
       siteSlug: site?.slug,
       publicUrl: site?.publicUrl,
       seoSettings: site?.seoSettings || site?.seo,
     });
+
+    if (!site?.resolvedSeo) return clientResolved;
+
+    /*
+      Prefer the server-resolved meta for scalar values, but backfill the
+      advanced arrays (structured data / custom meta / hreflang) from the
+      client resolver so they render even against an older server payload.
+    */
+    return {
+      ...clientResolved,
+      ...site.resolvedSeo,
+      structuredData:
+        site.resolvedSeo.structuredData ?? clientResolved.structuredData,
+      customMetaTags:
+        site.resolvedSeo.customMetaTags ?? clientResolved.customMetaTags,
+      hreflang: site.resolvedSeo.hreflang ?? clientResolved.hreflang,
+    };
   }, [site, activePage]);
 
   useEffect(() => {

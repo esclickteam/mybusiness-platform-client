@@ -634,6 +634,34 @@ export type SitePageSocialSettings = {
   twitterCard?: string;
 };
 
+export type SeoRobotsDirective =
+  | "nofollow"
+  | "noarchive"
+  | "nosnippet"
+  | "noimageindex"
+  | "notranslate";
+
+export type SeoMaxImagePreview = "" | "none" | "standard" | "large";
+
+export type SeoStructuredDataEntry = {
+  id: string;
+  name: string;
+  json: string;
+};
+
+export type SeoCustomMetaTag = {
+  id: string;
+  attr: "name" | "property";
+  key: string;
+  content: string;
+};
+
+export type SeoHreflangEntry = {
+  id: string;
+  lang: string;
+  href: string;
+};
+
 export type SitePageSeoSettings = {
   titleTag?: string;
   metaDescription?: string;
@@ -641,6 +669,13 @@ export type SitePageSeoSettings = {
   indexable?: boolean;
   canonicalUrl?: string;
   keywords?: string;
+  robotsDirectives?: SeoRobotsDirective[];
+  maxSnippet?: number | null;
+  maxImagePreview?: SeoMaxImagePreview;
+  maxVideoPreview?: number | null;
+  structuredData?: SeoStructuredDataEntry[];
+  customMetaTags?: SeoCustomMetaTag[];
+  hreflang?: SeoHreflangEntry[];
   social?: SitePageSocialSettings;
 };
 
@@ -653,6 +688,13 @@ export type ResolvedPageSeoMeta = {
   absoluteUrl: string;
   indexable: boolean;
   robots: string;
+  robotsDirectives: SeoRobotsDirective[];
+  maxSnippet: number | null;
+  maxImagePreview: SeoMaxImagePreview;
+  maxVideoPreview: number | null;
+  structuredData: SeoStructuredDataEntry[];
+  customMetaTags: SeoCustomMetaTag[];
+  hreflang: SeoHreflangEntry[];
   social: Required<SitePageSocialSettings>;
   parentPageId: string;
   siteIndexingEnabled: boolean;
