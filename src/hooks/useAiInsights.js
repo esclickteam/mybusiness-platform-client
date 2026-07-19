@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import API from "@/api";
 
 /**
@@ -9,55 +9,63 @@ export default function useAiInsights(businessId) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const fetchInsights = useCallback(async () => {
+    if (!businessId || typeof businessId !== "string" || businessId.length !== 24) {
+      setInsights([]);
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await API.post("/ai/insights", { businessId });
+
+      if (Array.isArray(res.data)) {
+        setInsights(res.data);
+      } else if (Array.isArray(res.data?.insights)) {
+        setInsights(res.data.insights);
+      } else {
+        setInsights([]);
+      }
+    } catch {
+      setError("לא ניתן לטעון המלצות כרגע");
+      setInsights([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [businessId]);
+
   useEffect(() => {
-    if (!businessId) {
-      setInsights([]);
-      return;
-    }
-
-    if (typeof businessId !== "string" || businessId.length !== 24) {
-      setInsights([]);
-      return;
-    }
-
     let isMounted = true;
 
-    const fetchInsights = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await API.post("/ai/insights", { businessId });
-
-        if (!isMounted) return;
-
-        if (Array.isArray(res.data)) {
-          setInsights(res.data);
-        } else if (Array.isArray(res.data?.insights)) {
-          setInsights(res.data.insights);
-        } else {
-          setInsights([]);
-        }
-      } catch (err) {
-        if (isMounted) {
-          setError("Failed to load AI insights");
-          setInsights([]);
-        }
-      } finally {
-        if (isMounted) setLoading(false);
-      }
+    const load = async () => {
+      await fetchInsights();
+      if (!isMounted) return;
     };
 
-    fetchInsights();
+    load();
 
     return () => {
       isMounted = false;
     };
-  }, [businessId]);
+  }, [fetchInsights]);
+
+  useEffect(() => {
+    if (!businessId) return undefined;
+
+    const refreshOnFocus = () => {
+      fetchInsights();
+    };
+
+    window.addEventListener("focus", refreshOnFocus);
+    return () => window.removeEventListener("focus", refreshOnFocus);
+  }, [businessId, fetchInsights]);
 
   return {
     insights,
     loading,
     error,
+    refetch: fetchInsights,
   };
 }

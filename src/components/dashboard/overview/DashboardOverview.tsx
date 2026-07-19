@@ -283,9 +283,8 @@ export default function DashboardOverview({
   const navigate = useNavigate();
   const { businessId } = useParams();
   const basePath = `/business/${businessId}/dashboard`;
-  const { insights: aiInsights, loading: aiInsightsLoading } = useAiInsights(
-    typeof businessId === "string" ? businessId : undefined
-  );
+  const { insights: aiInsights, loading: aiInsightsLoading, error: aiInsightsError } =
+    useAiInsights(typeof businessId === "string" ? businessId : undefined);
 
   const upcomingFromCalendar = useMemo(
     () => buildUpcomingAppointmentsFromCalendar(calendarAppointments, 5),
@@ -517,6 +516,12 @@ export default function DashboardOverview({
           accent="pink"
         />
       </section>
+
+      {aiInsightsError ? (
+        <div className="rounded-[28px] border border-rose-200 bg-rose-50/70 px-5 py-4 text-sm font-bold text-rose-700">
+          {aiInsightsError}
+        </div>
+      ) : null}
 
       <AiInsightsPanel
         insights={aiInsights}
