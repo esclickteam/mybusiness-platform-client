@@ -251,16 +251,34 @@ export default function HelpCenter() {
     return faqCategories.filter((c) => itemMatchesQuery(c, normalizedSearch));
   }, [normalizedSearch, faqCategories]);
 
-  const searchSuggestions = useMemo(() => {
-    if (!normalizedSearch) return [];
-    const articleHits = popularArticles
-      .filter((a) => itemMatchesQuery(a, normalizedSearch))
-      .slice(0, 3);
-    const categoryHits = faqCategories
-      .filter((c) => itemMatchesQuery(c, normalizedSearch))
-      .slice(0, 3);
-    return { articles: articleHits, categories: categoryHits };
-  }, [normalizedSearch, popularArticles, faqCategories]);
+  const searchSuggestions = useMemo<{
+  articles: ArticleItem[];
+  categories: FaqCategoryItem[];
+}>(() => {
+  if (!normalizedSearch) {
+    return {
+      articles: [],
+      categories: [],
+    };
+  }
+
+  const articleHits = popularArticles
+    .filter((article) =>
+      itemMatchesQuery(article, normalizedSearch),
+    )
+    .slice(0, 3);
+
+  const categoryHits = faqCategories
+    .filter((category) =>
+      itemMatchesQuery(category, normalizedSearch),
+    )
+    .slice(0, 3);
+
+  return {
+    articles: articleHits,
+    categories: categoryHits,
+  };
+}, [normalizedSearch, popularArticles, faqCategories]);
 
   const hasSearchResults =
     filteredArticles.length > 0 || filteredCategories.length > 0;
@@ -306,6 +324,7 @@ export default function HelpCenter() {
         <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-violet-700 to-indigo-800 px-6 py-12 text-white shadow-2xl shadow-violet-500/25 sm:px-10 sm:py-16">
           <div className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-16 -right-16 h-56 w-56 rounded-full bg-indigo-400/20 blur-3xl" />
+
 
           <div className="relative mx-auto max-w-3xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold backdrop-blur-sm">
