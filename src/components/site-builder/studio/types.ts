@@ -643,10 +643,29 @@ export type SeoRobotsDirective =
 
 export type SeoMaxImagePreview = "" | "none" | "standard" | "large";
 
+export type SeoStructuredDataMode = "form" | "custom";
+
+export type SeoSchemaType =
+  | "LocalBusiness"
+  | "Service"
+  | "FAQPage"
+  | "Product"
+  | "Organization"
+  | "WebSite"
+  | "BreadcrumbList"
+  | "Custom";
+
 export type SeoStructuredDataEntry = {
   id: string;
   name: string;
+  /** Optional for backward compatibility with legacy entries (id/name/json). */
+  schemaType?: SeoSchemaType;
+  /** Optional for backward compatibility; legacy entries default to "custom". */
+  mode?: SeoStructuredDataMode;
   json: string;
+  formData?: Record<string, unknown>;
+  lastGeneratedAt?: string;
+  manuallyEdited?: boolean;
 };
 
 export type SeoCustomMetaTag = {
@@ -732,6 +751,7 @@ export type SiteSavePayload = {
 
   /** שדות אופציונליים להמשך חיבור למונגו / פרסום אמיתי */
   status?: SitePageStatus;
+  name?: string;
   seo?: SiteSeoSettings;
   seoSettings?: SiteSeoSettings;
   domain?: SiteDomainSettings;
