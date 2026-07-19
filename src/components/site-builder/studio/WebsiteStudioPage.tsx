@@ -4755,8 +4755,25 @@ export default function WebsiteStudioPage({
   }, [activePage]);
 
   const publicUrl = useMemo(() => {
-    return buildPublicSiteUrl(normalizePublicBusinessSlug(slug) || "your-business");
-  }, [slug]);
+    /*
+      Prefer the real published URL that came back from the server (custom
+      domain or live slug). Fall back to the current slug, and only use the
+      generic placeholder when the site was never published/saved.
+    */
+    const fromSession = String(
+      (visualSessionData as any)?.__publicUrl || "",
+    ).trim();
+    if (fromSession) return fromSession.replace(/\/+$/, "");
+
+    const cleanSlug = normalizePublicBusinessSlug(slug);
+    if (cleanSlug) return buildPublicSiteUrl(cleanSlug);
+
+    return buildPublicSiteUrl("your-business");
+  }, [slug, visualSessionData]);
+
+  const publicUrlIsPlaceholder =
+    !normalizePublicBusinessSlug(slug) &&
+    !String((visualSessionData as any)?.__publicUrl || "").trim();
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && !isObjectIdLikeSlug(slug);
 
@@ -7772,10 +7789,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           }
           pages={pages}
           siteName={siteName}
-          siteSlug={normalizePublicBusinessSlug(slug) || "your-business"}
-          publicUrl={buildPublicSiteUrl(
-            normalizePublicBusinessSlug(slug) || "your-business",
-          )}
+          siteSlug={
+            normalizePublicBusinessSlug(slug) ||
+            normalizePublicBusinessSlug(
+              extractSlugFromPublicUrl(publicUrl),
+            ) ||
+            "your-business"
+          }
+          publicUrl={publicUrl}
+          publicUrlIsPlaceholder={publicUrlIsPlaceholder}
           seoSettings={siteSeoSettings}
           pageHtml={(() => {
             const target = pages.find(
