@@ -1989,6 +1989,18 @@ export default function VisualEditorCanvas({
             cursor: pointer;
           }
 
+          /* Contact/lead forms: keep children draggable outside the card bounds */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] {
+            overflow: visible !important;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"] [data-visual-edit-id],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] [data-visual-edit-id] {
+            cursor: grab;
+            touch-action: none;
+          }
+
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-section-key]:hover,
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-template-section-id]:hover {
             outline: 2px dashed rgba(124, 58, 237, 0.35);

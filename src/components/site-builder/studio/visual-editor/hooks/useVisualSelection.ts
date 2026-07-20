@@ -587,6 +587,26 @@ function normalizeCandidateNode(
     }
   }
 
+  /*
+    Form labels/buttons wrap tiny spans/icons. Prefer the stable editable
+    parent so drag/resize targets the whole field label or submit button.
+  */
+  if (
+    resolvedNode.getAttribute("data-visual-ignore-select") === "true" ||
+    (String(resolvedNode.tagName || "").toLowerCase() === "span" &&
+      resolvedNode.closest(
+        'label[data-visual-edit-id], button[data-visual-edit-id], [data-bizuply-form-field-label="true"]',
+      ))
+  ) {
+    const parent = resolvedNode.closest<HTMLElement>(
+      "[data-visual-edit-id], label, button",
+    );
+
+    if (parent && canvas.contains(parent)) {
+      return parent;
+    }
+  }
+
   return resolvedNode;
 }
 

@@ -449,8 +449,16 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     "peer min-h-[148px] w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-4 pr-12 text-right text-[15px] font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100";
 
   const labelHtml = `
-    <label for="${name}" class="mb-2.5 flex items-center gap-1.5 text-sm font-black text-slate-700">
-      <span>${label}</span>
+    <label
+      for="${name}"
+      class="mb-2.5 flex items-center gap-1.5 text-sm font-black text-slate-700"
+      data-visual-editable="true"
+      data-visual-edit-id="${visualId}.label"
+      data-visual-edit-type="text"
+      data-visual-edit-label="${label}"
+      data-bizuply-form-field-label="true"
+    >
+      <span data-visual-ignore-select="true">${label}</span>
       ${requiredMark}
     </label>
   `;
@@ -567,12 +575,19 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
       const wrapperClass =
         width === "full" ? "md:col-span-2" : "md:col-span-1";
 
+      const fieldId = escapeFormHtml(field.id || `field-${index + 1}`);
+      const fieldLabel = escapeFormHtml(field.label || `שדה ${index + 1}`);
+
       return `
         <div
           class="${wrapperClass}"
           data-bizuply-form-field-wrapper="true"
-          data-bizuply-form-field-id="${escapeFormHtml(field.id)}"
+          data-bizuply-form-field-id="${fieldId}"
           data-bizuply-form-field-width="${width}"
+          data-visual-editable="true"
+          data-visual-edit-id="form.field.${fieldId}"
+          data-visual-edit-type="box"
+          data-visual-edit-label="${fieldLabel}"
         >
           ${buildFormFieldHtml(field, index)}
         </div>
@@ -591,15 +606,34 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
   `;
 
   return `
-    <div class="mb-7">
-      <div class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
-        <span class="h-2 w-2 rounded-full bg-violet-500"></span>
+    <div class="mb-7" data-bizuply-form-header="true">
+      <div
+        class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700"
+        data-visual-editable="true"
+        data-visual-edit-id="form.badge"
+        data-visual-edit-type="text"
+        data-visual-edit-label="תגית טופס"
+      >
+        <span class="h-2 w-2 rounded-full bg-violet-500" data-visual-ignore-select="true"></span>
         נשמח לשמוע מכם
       </div>
-      <h2 class="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl" data-bizuply-form-title="true">
+      <h2
+        class="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl"
+        data-bizuply-form-title="true"
+        data-visual-editable="true"
+        data-visual-edit-id="form.title"
+        data-visual-edit-type="text"
+        data-visual-edit-label="${title}"
+      >
         ${title}
       </h2>
-      <p class="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
+      <p
+        class="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500"
+        data-visual-editable="true"
+        data-visual-edit-id="form.subtitle"
+        data-visual-edit-type="text"
+        data-visual-edit-label="תיאור טופס"
+      >
         השאירו פרטים ונחזור אליכם בהקדם.
       </p>
     </div>
@@ -616,8 +650,8 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
       data-visual-edit-label="${submitText}"
       class="group mt-7 inline-flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 px-6 text-center text-lg font-black text-white shadow-[0_20px_50px_rgba(79,70,229,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(79,70,229,0.34)] focus:outline-none focus:ring-4 focus:ring-violet-200"
     >
-      <span>${submitText}</span>
-      <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <span data-visual-ignore-select="true">${submitText}</span>
+      <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-visual-ignore-select="true">
         <path d="m9 18 6-6-6-6"/>
       </svg>
     </button>
@@ -649,7 +683,11 @@ export function applyFormBuilderConfigToFormNode(
   */
   const requiredClasses = [
     "relative",
-    "overflow-hidden",
+    /*
+      overflow-visible so dragged labels/buttons/fields are not clipped
+      inside the form card while editing (overflow-hidden made drag look broken).
+    */
+    "overflow-visible",
     "rounded-[32px]",
     "border",
     "border-white/80",
@@ -659,6 +697,8 @@ export function applyFormBuilderConfigToFormNode(
     "backdrop-blur",
     "md:p-8",
   ];
+
+  formNode.classList.remove("overflow-hidden");
 
   requiredClasses.forEach((className) => {
     formNode.classList.add(className);

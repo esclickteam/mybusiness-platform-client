@@ -783,26 +783,43 @@ function Gallery() {
   );
 }
 
-function Booking({ visible }: { visible: Record<string, boolean> }) {
+function Booking({
+  visible,
+  editMode = false,
+}: {
+  visible: Record<string, boolean>;
+  editMode?: boolean;
+}) {
+  const copyVisible = editMode || Boolean(visible["booking-copy"]);
+  const formVisible = editMode || Boolean(visible["booking-form"]);
+
   return (
     <section
       id="booking"
+      data-template-section-type="contact"
+      data-section-kind="contact"
       className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
       dir="rtl"
     >
       <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_0.9fr]">
         <div
           data-ido-reveal="booking-copy"
-          className={revealClass(visible["booking-copy"])}
+          className={revealClass(copyVisible)}
         >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#07100e]" />
-            <span className="text-sm font-black tracking-[0.24em] text-[#07100e]/70">
+            <span
+              className="text-sm font-black tracking-[0.24em] text-[#07100e]/70"
+              data-editable="text"
+            >
               CONSULTATION
             </span>
           </div>
 
-          <h2 className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl">
+          <h2
+            className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
+            data-editable="text"
+          >
             בואו נבנה
             <br />
             תוכנית צמיחה
@@ -810,7 +827,10 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
             לעסק שלך.
           </h2>
 
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
+          <p
+            className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65"
+            data-editable="text"
+          >
             אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
             בהמשך.
           </p>
@@ -818,23 +838,32 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
 
         <form
           data-ido-reveal="booking-form"
+          data-bizuply-form-id="ido-booking"
           className={[
-            revealClass(visible["booking-form"], "delay-100"),
-            "rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8",
+            revealClass(formVisible, editMode ? "" : "delay-100"),
+            "relative overflow-visible rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8",
           ].join(" ")}
         >
           <div className="grid gap-4">
             <input
               className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
               placeholder="שם מלא"
+              data-visual-editable="true"
+              data-visual-edit-type="input"
             />
 
             <input
               className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
               placeholder="טלפון"
+              data-visual-editable="true"
+              data-visual-edit-type="input"
             />
 
-            <select className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
+            <select
+              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+              data-visual-editable="true"
+              data-visual-edit-type="input"
+            >
               <option>מה מעניין אותך?</option>
               <option>ניהול סושיאל</option>
               <option>קמפיינים ממומנים</option>
@@ -845,17 +874,24 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
             <input
               className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
               placeholder="תקציב חודשי משוער"
+              data-visual-editable="true"
+              data-visual-edit-type="input"
             />
 
             <textarea
               className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
               placeholder="ספרו בקצרה על העסק והמטרה"
+              data-visual-editable="true"
+              data-visual-edit-type="input"
             />
           </div>
 
           <button
             type="button"
             className="mt-5 h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+            data-editable="button"
+            data-visual-editable="true"
+            data-visual-edit-type="button"
           >
             שליחת בקשה לשיחה
           </button>
@@ -942,8 +978,15 @@ export default function IdoPages({
       <Services visible={visible} />
       <About visible={visible} editMode={editMode} />
       <Gallery />
-      <Booking visible={visible} />
+      <Booking visible={visible} editMode={editMode} />
       <Faq visible={visible} />
+
+      {/* Host for library/contact sections so form fields can be freely dragged */}
+      <div
+        data-visual-insert-host="true"
+        data-visual-runtime-host="true"
+        className="relative min-h-0 overflow-visible"
+      />
 
       <footer
         className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
