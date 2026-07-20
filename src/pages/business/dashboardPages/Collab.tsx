@@ -21,6 +21,7 @@ type ProfileData = {
 
 type AuthUser = {
   email?: string;
+  role?: string;
   businessId?: string | number;
   subscriptionPlan?: string;
   hasAccess?: boolean;
@@ -31,6 +32,7 @@ type AuthUser = {
 type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
+  isImpersonating?: boolean;
 };
 
 type TabItem = {
@@ -58,7 +60,7 @@ const tabs: TabItem[] = [
 ];
 
 export default function Collab() {
-  const { user, loading } = useAuth() as AuthContextValue;
+  const { user, loading, isImpersonating } = useAuth() as AuthContextValue;
   const location = useLocation();
 
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
@@ -72,7 +74,11 @@ export default function Collab() {
 
   const devMode = false;
   const isDevUser = user?.email === "newuser@example.com";
+  const isAdmin = user?.role === "admin";
+  // Admin (or admin entering a business) bypasses plan paywalls
   const hasCollabAccess =
+    isAdmin ||
+    Boolean(isImpersonating) ||
     isDevUser ||
     Boolean(user?.hasAccess) ||
     Boolean(user?.isTrialActive) ||
