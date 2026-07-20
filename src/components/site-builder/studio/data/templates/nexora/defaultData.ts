@@ -121,4 +121,33 @@ export const nexoraDefaultData = {
   ctaText:
     "אלפי צוותים כבר עברו ל-Nexora. הצטרפו בחינם, בלי התחייבות, וגלו כמה זמן אפשר לחסוך.",
   ctaButton: "התחלה חינם",
+
+  pricingPopularBadge: "הכי פופולרי",
+  priceOneFeatureOne: "עד 3 משתמשים",
+  priceOneFeatureTwo: "אוטומציות בסיס",
+  priceOneFeatureThree: "תמיכה בקהילה",
+  priceTwoFeatureOne: "משתמשים ללא הגבלה",
+  priceTwoFeatureTwo: "אוטומציות מתקדמות",
+  priceTwoFeatureThree: "אנליטיקה בזמן אמת",
+  priceTwoFeatureFour: "תמיכה מהירה",
+  priceThreeFeatureOne: "הכול ב-Growth",
+  priceThreeFeatureTwo: "אבטחת ארגון",
+  priceThreeFeatureThree: "מנהל לקוח אישי",
+  priceThreeFeatureFour: "SLA מובטח",
+
+  logoOne: "Scaleo",
+  logoTwo: "TechFlow",
+  logoThree: "Loopy",
+  logoFour: "Orbit",
+  logoFive: "Dataline",
+  logoSix: "Northstar",
+
+  labelPhone: "טלפון",
+  labelEmail: "אימייל",
+  labelAddress: "כתובת",
+
+  formNamePlaceholder: "שם מלא",
+  formEmailPlaceholder: "אימייל עבודה",
+  formCompanyPlaceholder: "שם החברה",
+  formMessagePlaceholder: "ספרו לנו על הצוות שלכם",
 };

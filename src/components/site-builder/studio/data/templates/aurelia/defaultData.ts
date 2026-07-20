@@ -106,4 +106,28 @@ export const aureliaDefaultData = {
   ctaText:
     "בין אם זו ארוחה זוגית, חגיגה או ערב שף — אורליה בנויה לרגעים שנשארים. בואו לשבת, לטעום ולהישאר קצת יותר.",
   ctaButton: "להזמנת שולחן",
+
+  bookingTitle: "נשמור לכם ערב מושלם.",
+  bookingBenefitOne: "אישור מיידי בטלפון",
+  bookingBenefitTwo: "התאמת יינות לפי המנות",
+  bookingBenefitThree: "אפשרות לערב שף פרטי",
+
+  aboutPointOneTitle: "חומרי גלם",
+  aboutPointOneText: "עונתיים, מקומיים וטריים בכל בוקר",
+  aboutPointTwoTitle: "מטבח פתוח",
+  aboutPointTwoText: "שקיפות מלאה מהאש ועד הצלחת",
+  aboutPointThreeTitle: "אירוח חם",
+  aboutPointThreeText: "שירות אישי שמרגיש כמו בבית",
+
+  labelPhone: "טלפון",
+  labelEmail: "אימייל",
+  labelAddress: "כתובת",
+  labelHours: "שעות",
+
+  formNamePlaceholder: "שם מלא",
+  formPhonePlaceholder: "טלפון",
+  formDatePlaceholder: "תאריך",
+  formTimePlaceholder: "שעה",
+  formGuestsPlaceholder: "מספר סועדים",
+  formNotesPlaceholder: "בקשות מיוחדות",
 };
