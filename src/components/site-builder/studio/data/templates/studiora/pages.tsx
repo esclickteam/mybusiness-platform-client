@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { TemplateDecor, TemplateText } from "../shared/TemplateText";
 import { studioraDefaultData } from "./defaultData";
 
 export const studioraPages = [
@@ -46,15 +47,23 @@ function SectionTitle({
 }) {
   return (
     <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
-      <p className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-[#c3ff00]">
+      <TemplateText
+        as="p"
+        className="mb-4 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.28em] text-[#c3ff00]"
+      >
         <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
         {eyebrow}
-      </p>
-      <h2 className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-white md:text-6xl">
+      </TemplateText>
+      <TemplateText
+        as="h2"
+        className="text-4xl font-black uppercase leading-[0.95] tracking-tight text-white md:text-6xl"
+      >
         {title}
-      </h2>
+      </TemplateText>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-white/55">{text}</p>
+        <TemplateText as="p" className="mt-5 text-lg leading-8 text-white/55">
+          {text}
+        </TemplateText>
       ) : null}
     </div>
   );
@@ -201,18 +210,20 @@ function BookingModal({
         <div className="relative z-10">
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-[#c3ff00]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
-            בריף פרויקט
+            {getValue(data, "contactEyebrow")}
           </p>
-          <h3 className="mt-5 text-3xl font-black uppercase text-white">בואו נבנה משהו גדול.</h3>
+          <TemplateText as="h3" className="mt-5 text-3xl font-black uppercase text-white">
+            {getValue(data, "contactTitle")}
+          </TemplateText>
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
           <form className="mt-7 grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              placeholder={getValue(data, "formEmailPlaceholder")}
             />
             <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition focus:border-[#c3ff00]">
               <option>סוג הפרויקט</option>
@@ -223,7 +234,7 @@ function BookingModal({
             </select>
             <textarea
               className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הרעיון"
+              placeholder={getValue(data, "formIdeaPlaceholder")}
             />
             <button
               type="button"
@@ -262,9 +273,12 @@ function Hero({
           <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
           {getValue(data, "heroEyebrow")}
         </p>
-        <h1 className="max-w-5xl text-6xl font-black uppercase leading-[0.9] tracking-tight text-white md:text-8xl lg:text-[8.5rem]">
+        <TemplateText
+          as="h1"
+          className="max-w-5xl text-6xl font-black uppercase leading-[0.9] tracking-tight text-white md:text-8xl lg:text-[8.5rem]"
+        >
           {getValue(data, "heroTitle")}
-        </h1>
+        </TemplateText>
 
         <div className="mt-10 grid items-end gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <p className="max-w-2xl text-lg leading-8 text-white/55 md:text-xl">
@@ -314,8 +328,17 @@ function Marquee({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-y border-white/8 bg-[#c3ff00] py-5">
       <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 px-5 text-center text-lg font-black uppercase tracking-tight text-[#0a0a0a]">
-        {[0, 1, 2].map((i) => (
-          <span key={i} className="flex items-center gap-6">
+        <span className="flex items-center gap-6">
+          <TemplateText as="span">{text}</TemplateText>
+          <TemplateDecor className="text-2xl">✦</TemplateDecor>
+        </span>
+        {[0, 1].map((i) => (
+          <span
+            key={i}
+            className="flex items-center gap-6"
+            aria-hidden="true"
+            data-editor-only="true"
+          >
             {text}
             <span className="text-2xl">✦</span>
           </span>
@@ -543,9 +566,9 @@ function ContactSection({
   openBooking: () => void;
 }) {
   const info = [
-    ["טלפון", getValue(data, "phone")],
-    ["אימייל", getValue(data, "email")],
-    ["כתובת", getValue(data, "address")],
+    [getValue(data, "labelPhone"), getValue(data, "phone")],
+    [getValue(data, "labelEmail"), getValue(data, "email")],
+    [getValue(data, "labelAddress"), getValue(data, "address")],
   ];
 
   return (
@@ -559,9 +582,16 @@ function ContactSection({
           />
           <div className="mt-10 grid gap-3">
             {info.map(([label, value]) => (
-              <div key={label} className="rounded-2xl border border-white/8 bg-[#0a0a0a] px-4 py-4">
-                <div className="text-xs font-bold uppercase tracking-widest text-white/40">{label}</div>
-                <div className="mt-1 text-base font-bold text-white">{value}</div>
+              <div key={String(label)} className="rounded-2xl border border-white/8 bg-[#0a0a0a] px-4 py-4">
+                <TemplateText
+                  as="div"
+                  className="text-xs font-bold uppercase tracking-widest text-white/40"
+                >
+                  {label}
+                </TemplateText>
+                <TemplateText as="div" className="mt-1 text-base font-bold text-white">
+                  {value}
+                </TemplateText>
               </div>
             ))}
           </div>
@@ -570,19 +600,19 @@ function ContactSection({
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              placeholder={getValue(data, "formEmailPlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="תקציב משוער"
+              placeholder={getValue(data, "formBudgetPlaceholder")}
             />
             <textarea
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הפרויקט"
+              placeholder={getValue(data, "formMessagePlaceholder")}
             />
             <button
               type="button"
