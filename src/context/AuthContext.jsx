@@ -320,7 +320,7 @@ export function AuthProvider({ children }) {
         if (normalizedUser.role === "admin" && !isImpersonating) {
           navigate("/admin/dashboard", { replace: true });
           setLoading(false);
-          return { user: normalizedUser, redirectUrl };
+          return { user: normalizedUser, redirectUrl: "/admin/dashboard" };
         }
 
         if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
@@ -337,8 +337,13 @@ export function AuthProvider({ children }) {
         }
       }
 
+      const safeRedirectUrl =
+        normalizedUser.role === "admin"
+          ? "/admin/dashboard"
+          : redirectUrl;
+
       setLoading(false);
-      return { user: normalizedUser, redirectUrl };
+      return { user: normalizedUser, redirectUrl: safeRedirectUrl };
     } catch (err) {
       setError(
         err.response?.status >= 400 && err.response?.status < 500
@@ -485,7 +490,8 @@ export function AuthProvider({ children }) {
           activeToken = await refreshAccessTokenOnce();
           if (activeToken && !cancelled) {
             setToken(activeToken);
-            return;
+            // Continue init with the restored token (do not return early —
+            // otherwise initialized/refreshUser can be skipped until a hard refresh)
           }
         } catch {
           // No valid refresh cookie — user is logged out

@@ -99,19 +99,29 @@ export default function Login() {
       )) as LoginResponse;
 
       const loggedInUser = loginResult?.user;
+      const role = String(loggedInUser?.role || "").toLowerCase();
       const redirectUrl = loginResult?.redirectUrl;
 
       const urlRedirect = new URLSearchParams(location.search).get("redirect");
       const finalRedirect = urlRedirect || redirectUrl;
 
-      if (finalRedirect && finalRedirect.startsWith("/")) {
+      // Admin must always land on the admin panel — never client/business routes
+      if (role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (
+        finalRedirect &&
+        finalRedirect.startsWith("/") &&
+        !finalRedirect.startsWith("/client/dashboard")
+      ) {
         navigate(finalRedirect, { replace: true });
-      } else if (loggedInUser?.role === "affiliate") {
+      } else if (role === "affiliate") {
         navigate("/affiliate/dashboard", { replace: true });
-      } else if (loggedInUser?.role === "business") {
-        navigate(`/business/${loggedInUser.businessId}/dashboard`, {
+      } else if (role === "business") {
+        navigate(`/business/${loggedInUser?.businessId}/dashboard`, {
           replace: true,
         });
+      } else if (role === "customer") {
+        navigate("/client/dashboard", { replace: true });
       } else {
         navigate("/dashboard", { replace: true });
       }

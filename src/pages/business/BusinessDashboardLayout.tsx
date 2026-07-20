@@ -58,6 +58,12 @@ type AuthContextValue = {
   user: AuthUser | null;
   loading: boolean;
   logout?: () => Promise<void> | void;
+  isImpersonating?: boolean;
+  loginWithToken?: (
+    userFromServer: unknown,
+    accessToken: string,
+    options?: { skipRedirect?: boolean }
+  ) => void;
 };
 
 type UnreadCountResponse = {
@@ -154,7 +160,8 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
 }
 
 export default function BusinessDashboardLayout() {
-  const { user, loading, logout } = useAuth() as AuthContextValue;
+  const { user, loading, logout, isImpersonating, loginWithToken } =
+    useAuth() as AuthContextValue;
   const navigate = useNavigate();
   const location = useLocation();
   const businessId = useDashboardBusinessId();
@@ -166,6 +173,7 @@ export default function BusinessDashboardLayout() {
   const [isMobile, setIsMobile] = useState<boolean>(() => getIsMobile());
   const [showSidebar, setShowSidebar] = useState<boolean>(() => !getIsMobile());
   const [timeLeft, setTimeLeft] = useState<string>("");
+  const [exitingImpersonation, setExitingImpersonation] = useState(false);
 
   const isWebsiteFullScreen = useMemo(() => {
     return isWebsiteFullScreenRoute(location.pathname, location.search);
@@ -420,6 +428,23 @@ export default function BusinessDashboardLayout() {
     navigate("/admin/users", { replace: false });
   };
 
+  const handleExitImpersonation = async () => {
+    if (exitingImpersonation) return;
+    setExitingImpersonation(true);
+
+    try {
+      const { data } = await API.post("/admin/exit-impersonation");
+      loginWithToken?.(data.user, data.token, { skipRedirect: true });
+      localStorage.removeItem("impersonatedBy");
+      navigate("/admin/dashboard", { replace: true });
+    } catch (err) {
+      console.error("Exit impersonation failed:", err);
+      alert("לא ניתן לחזור לפאנל האדמין כרגע");
+    } finally {
+      setExitingImpersonation(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f5f6fb]">
@@ -435,6 +460,32 @@ export default function BusinessDashboardLayout() {
           dir="ltr"
           className="min-h-screen w-full bg-[#f5f6fb] text-slate-950"
         >
+          {isImpersonating ? (
+            <div
+              dir="rtl"
+              className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6"
+            >
+              <div className="text-right">
+                <strong className="block text-sm font-black">
+                  מצב אדמין — כניסה לעסק
+                </strong>
+                <span className="block text-xs font-bold text-amber-900/70">
+                  את/ה פועל/ת עם הרשאות מלאות בעסק{" "}
+                  {user?.businessName || user?.name || ""}. כל הפעולות נשמרות
+                  בעסק זה.
+                </span>
+              </div>
+
+              <button
+                type="button"
+                disabled={exitingImpersonation}
+                onClick={handleExitImpersonation}
+                className="rounded-2xl bg-amber-900 px-4 py-2.5 text-xs font-black text-white transition hover:bg-amber-800 disabled:opacity-60"
+              >
+                {exitingImpersonation ? "חוזר..." : "חזרה לפאנל אדמין"}
+              </button>
+            </div>
+          ) : null}
           {!isWebsiteFullScreen && isMobile && showSidebar && (
             <button
               type="button"
@@ -448,7 +499,7 @@ export default function BusinessDashboardLayout() {
             <aside
               ref={sidebarRef}
               className={`
-                fixed left-0 top-0 z-50 flex h-screen w-[250px]
+                fixed left-0 z-50 flex w-[250px]
                 flex-col border-r border-slate-200 bg-white
                 shadow-[0_20px_60px_rgba(15,23,42,0.10)]
                 transition-transform duration-300
@@ -460,6 +511,10 @@ export default function BusinessDashboardLayout() {
                     : "translate-x-0"
                 }
               `}
+              style={{
+                top: isImpersonating ? 56 : 0,
+                height: isImpersonating ? "calc(100vh - 56px)" : "100vh",
+              }}
             >
               <div className="flex h-16 shrink-0 items-center justify-center border-b border-slate-100 px-6">
                 <img
@@ -537,6 +592,7 @@ export default function BusinessDashboardLayout() {
                 backdrop-blur-xl transition-all duration-300 lg:px-6
               "
               style={{
+                top: isImpersonating ? 56 : 0,
                 left: isMobile ? 0 : SIDEBAR_WIDTH,
                 right: 0,
                 top: isAdmin ? 40 : 0,
@@ -680,10 +736,14 @@ export default function BusinessDashboardLayout() {
             className={[
               "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]",
               isWebsiteFullScreen
-                ? "pt-0 lg:pl-0"
+                ? isImpersonating
+                  ? "pt-14 lg:pl-0"
+                  : "pt-0 lg:pl-0"
                 : isAdmin
                   ? "pt-[104px] lg:pl-[250px]"
-                  : "pt-16 lg:pl-[250px]",
+                  : isImpersonating
+                    ? "pt-[120px] lg:pl-[250px]"
+                    : "pt-16 lg:pl-[250px]",
             ].join(" ")}
           >
             <div

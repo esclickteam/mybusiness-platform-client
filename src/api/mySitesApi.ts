@@ -10,6 +10,8 @@ export type MySiteSummary = {
   templateKey?: string;
   templateName?: string;
   thumbnailUrl?: string;
+  html?: string;
+  css?: string;
   folderId?: string | null;
   updatedAt?: string;
   createdAt?: string;

@@ -1,12 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
-import {
-  EARLY_ACCESS_EVENT_NAME,
-  getEarlyAccessRegistrations,
-} from "./earlyAccessStorage";
 
 type AdminStats = {
   totalUsers: number;
@@ -15,6 +12,7 @@ type AdminStats = {
   totalSales: number;
   activeManagers: number;
   blockedUsers: number;
+  earlyAccessCount: number;
 };
 
 const initialStats: AdminStats = {
@@ -24,6 +22,7 @@ const initialStats: AdminStats = {
   totalSales: 0,
   activeManagers: 0,
   blockedUsers: 0,
+  earlyAccessCount: 0,
 };
 
 function formatNumber(value: number) {
@@ -163,8 +162,10 @@ function AdminDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [stats] = useState<AdminStats>(initialStats);
-  const [earlyAccessCount, setEarlyAccessCount] = useState(0);
+  const [stats, setStats] = useState<AdminStats>(initialStats);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [statsError, setStatsError] = useState("");
+  const [connectedToServer, setConnectedToServer] = useState(false);
 
   const displayName = user?.name || user?.email || "מנהל";
 
@@ -185,18 +186,44 @@ function AdminDashboard() {
   }, [user, navigate]);
 
   useEffect(() => {
-    function refreshEarlyAccessCount() {
-      setEarlyAccessCount(getEarlyAccessRegistrations().length);
+    let cancelled = false;
+
+    async function loadDashboardStats() {
+      setLoadingStats(true);
+      setStatsError("");
+
+      try {
+        const { data } = await API.get("/admin/dashboard-stats");
+
+        if (cancelled) return;
+
+        setStats({
+          totalUsers: Number(data?.totalUsers || 0),
+          totalBusinesses: Number(data?.totalBusinesses || 0),
+          totalClients: Number(data?.totalClients || 0),
+          totalSales: Number(data?.totalSales || 0),
+          activeManagers: Number(data?.activeManagers || 0),
+          blockedUsers: Number(data?.blockedUsers || 0),
+          earlyAccessCount: Number(data?.earlyAccessCount || 0),
+        });
+        setConnectedToServer(true);
+      } catch (err) {
+        console.error("Failed to load admin dashboard stats:", err);
+        if (!cancelled) {
+          setStatsError("לא ניתן לטעון נתונים מהשרת");
+          setConnectedToServer(false);
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingStats(false);
+        }
+      }
     }
 
-    refreshEarlyAccessCount();
-
-    window.addEventListener("storage", refreshEarlyAccessCount);
-    window.addEventListener(EARLY_ACCESS_EVENT_NAME, refreshEarlyAccessCount);
+    loadDashboardStats();
 
     return () => {
-      window.removeEventListener("storage", refreshEarlyAccessCount);
-      window.removeEventListener(EARLY_ACCESS_EVENT_NAME, refreshEarlyAccessCount);
+      cancelled = true;
     };
   }, []);
 
@@ -224,8 +251,18 @@ function AdminDashboard() {
                     {todayLabel}
                   </span>
 
-                  <span className="rounded-full bg-amber-300/18 px-4 py-2 text-xs font-bold text-amber-100 ring-1 ring-amber-200/25">
-                    נתונים מקומיים ללא שרת
+                  <span
+                    className={`rounded-full px-4 py-2 text-xs font-bold ring-1 ${
+                      connectedToServer
+                        ? "bg-emerald-300/18 text-emerald-100 ring-emerald-200/25"
+                        : "bg-amber-300/18 text-amber-100 ring-amber-200/25"
+                    }`}
+                  >
+                    {loadingStats
+                      ? "טוען נתונים מהשרת..."
+                      : connectedToServer
+                        ? "מחובר לשרת"
+                        : "נתונים מקומיים ללא שרת"}
                   </span>
                 </div>
 
@@ -237,6 +274,12 @@ function AdminDashboard() {
                   סקירה מהירה של משתמשים, עסקים, מכירות והרשמות מוקדמות.
                   אזור ניהול ברור, בעברית ובכיוון ימין לשמאל.
                 </p>
+
+                {statsError ? (
+                  <p className="mt-3 text-sm font-bold text-amber-100">
+                    {statsError}
+                  </p>
+                ) : null}
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2 xl:w-[390px] xl:grid-cols-1">
@@ -273,7 +316,7 @@ function AdminDashboard() {
             <div className="grid gap-4 text-right md:grid-cols-2 xl:grid-cols-4">
               <MetricCard
                 title="משתמשים במערכת"
-                value={formatNumber(stats.totalUsers)}
+                value={loadingStats ? "…" : formatNumber(stats.totalUsers)}
                 icon="👥"
                 note="כל המשתמשים הרשומים"
                 tone="purple"
@@ -281,7 +324,7 @@ function AdminDashboard() {
 
               <MetricCard
                 title="עסקים רשומים"
-                value={formatNumber(stats.totalBusinesses)}
+                value={loadingStats ? "…" : formatNumber(stats.totalBusinesses)}
                 icon="🏢"
                 note="עסקים שנפתחו במערכת"
                 tone="blue"
@@ -289,7 +332,7 @@ function AdminDashboard() {
 
               <MetricCard
                 title="לקוחות רשומים"
-                value={formatNumber(stats.totalClients)}
+                value={loadingStats ? "…" : formatNumber(stats.totalClients)}
                 icon="🧑‍🤝‍🧑"
                 note="לקוחות פעילים ורשומים"
                 tone="green"
@@ -297,7 +340,9 @@ function AdminDashboard() {
 
               <MetricCard
                 title="הרשמות מוקדמות"
-                value={formatNumber(earlyAccessCount)}
+                value={
+                  loadingStats ? "…" : formatNumber(stats.earlyAccessCount)
+                }
                 icon="✨"
                 note="נרשמים מטופס ההשקה"
                 tone="gold"
@@ -305,7 +350,7 @@ function AdminDashboard() {
 
               <MetricCard
                 title="סך מכירות"
-                value={formatMoney(stats.totalSales)}
+                value={loadingStats ? "…" : formatMoney(stats.totalSales)}
                 icon="💰"
                 note="סה״כ הכנסות שנמדדו"
                 tone="gold"
@@ -313,7 +358,7 @@ function AdminDashboard() {
 
               <MetricCard
                 title="מנהלים פעילים"
-                value={formatNumber(stats.activeManagers)}
+                value={loadingStats ? "…" : formatNumber(stats.activeManagers)}
                 icon="🧑‍💼"
                 note="מנהלי מערכת פעילים"
                 tone="purple"
@@ -321,7 +366,7 @@ function AdminDashboard() {
 
               <MetricCard
                 title="משתמשים חסומים"
-                value={formatNumber(stats.blockedUsers)}
+                value={loadingStats ? "…" : formatNumber(stats.blockedUsers)}
                 icon="🚫"
                 note="חשבונות שנחסמו"
                 tone="red"
@@ -355,6 +400,13 @@ function AdminDashboard() {
                   title="ניהול משתמשים"
                   description="צפייה, עריכה, חסימה וניהול משתמשים"
                   onClick={() => navigate("/admin/users")}
+                />
+
+                <QuickAction
+                  icon="🏢"
+                  title="כניסה לעסקים"
+                  description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
+                  onClick={() => navigate("/admin/businesses")}
                 />
 
                 <QuickAction
@@ -395,16 +447,36 @@ function AdminDashboard() {
                     מקור נתונים
                   </span>
                   <strong className="text-sm font-black text-purple-950">
-                    מקומי
+                    {connectedToServer ? "שרת" : "מקומי"}
                   </strong>
                 </div>
 
-                <div className="flex flex-row items-center justify-between rounded-2xl bg-amber-50 p-4">
-                  <span className="text-sm font-bold text-amber-950/60">
+                <div
+                  className={`flex flex-row items-center justify-between rounded-2xl p-4 ${
+                    connectedToServer ? "bg-emerald-50" : "bg-amber-50"
+                  }`}
+                >
+                  <span
+                    className={`text-sm font-bold ${
+                      connectedToServer
+                        ? "text-emerald-950/60"
+                        : "text-amber-950/60"
+                    }`}
+                  >
                     שרת
                   </span>
-                  <strong className="text-sm font-black text-amber-700">
-                    עדיין לא מחובר
+                  <strong
+                    className={`text-sm font-black ${
+                      connectedToServer
+                        ? "text-emerald-700"
+                        : "text-amber-700"
+                    }`}
+                  >
+                    {loadingStats
+                      ? "מתחבר..."
+                      : connectedToServer
+                        ? "מחובר"
+                        : "לא מחובר"}
                   </strong>
                 </div>
 
@@ -413,7 +485,9 @@ function AdminDashboard() {
                     הרשמות
                   </span>
                   <strong className="text-sm font-black text-fuchsia-700">
-                    {formatNumber(earlyAccessCount)}
+                    {loadingStats
+                      ? "…"
+                      : formatNumber(stats.earlyAccessCount)}
                   </strong>
                 </div>
               </div>
@@ -426,5 +500,3 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
-
-
