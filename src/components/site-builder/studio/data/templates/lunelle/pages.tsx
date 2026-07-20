@@ -24,6 +24,12 @@ export const lunellePages = [
 
 type Props = {
   initialPage?: LunellePageId | string;
+  initialPageId?: LunellePageId | string;
+  page?: LunellePageId | string;
+  pageId?: LunellePageId | string;
+  activePageId?: LunellePageId | string;
+  currentPageId?: LunellePageId | string;
+  onPageChange?: (pageId: string) => void;
   isStudioStatic?: boolean;
 };
 
@@ -534,11 +540,32 @@ function LunellePageRoot({
 
 export default function LunellePages({
   initialPage = "home",
+  initialPageId,
+  page,
+  pageId,
+  activePageId,
+  currentPageId,
+  onPageChange,
   isStudioStatic = false,
 }: Props = {}) {
   const safeInitialPage = React.useMemo(
-    () => normalizePageInput(initialPage),
-    [initialPage],
+    () =>
+      normalizePageInput(
+        activePageId ||
+          currentPageId ||
+          pageId ||
+          page ||
+          initialPageId ||
+          initialPage,
+      ),
+    [
+      activePageId,
+      currentPageId,
+      pageId,
+      page,
+      initialPageId,
+      initialPage,
+    ],
   );
 
   const [activePage, setActivePage] =
@@ -571,6 +598,7 @@ export default function LunellePages({
 
       event.preventDefault();
       setActivePage(nextPage);
+      onPageChange?.(nextPage);
     }
 
     stack.addEventListener("click", handleClick);
@@ -578,7 +606,7 @@ export default function LunellePages({
     return () => {
       stack.removeEventListener("click", handleClick);
     };
-  }, [isStudioStatic]);
+  }, [isStudioStatic, onPageChange]);
 
   return (
     <main

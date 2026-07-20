@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { justoraDefaultData } from "./defaultData";
+import {
+  resolveTemplatePageId,
+  useTemplatePageNavigation,
+} from "../shared/useTemplatePageNavigation";
 
 export const justoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -13,9 +17,17 @@ export const justoraPages = [
 
 type JustoraPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
   page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "edit" | "published";
   data?: Record<string, any>;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
 };
 
 type JustoraCaseItem = {
@@ -51,18 +63,6 @@ const justoraPageSlugs: Record<string, string> = {
 
 function getJustoraHref(pageId: string) {
   return justoraPageSlugs[pageId] || "/";
-}
-
-function getPageFromBrowserPath() {
-  if (typeof window === "undefined") return "";
-
-  const cleanPath = window.location.pathname.replace(/\/+$/, "");
-  const lastSegment = cleanPath.split("/").filter(Boolean).pop() || "home";
-
-  if (lastSegment === "edit") return "home";
-  if (justoraAllowedPages.includes(lastSegment)) return lastSegment;
-
-  return "home";
 }
 
 function getCaseItems(data: Record<string, any>): JustoraCaseItem[] {
@@ -1692,29 +1692,19 @@ function SimplePage({
   );
 }
 
-function resolveInitialTemplatePage(
-  page: string | null | undefined,
-  initialPage: string | null | undefined,
-) {
-  const cleanPage = String(page || "").trim().toLowerCase();
-  const cleanInitialPage = String(initialPage || "").trim().toLowerCase();
-
-  if (justoraAllowedPages.includes(cleanPage)) {
-    return cleanPage;
-  }
-
-  if (justoraAllowedPages.includes(cleanInitialPage)) {
-    return cleanInitialPage;
-  }
-
-  return getPageFromBrowserPath();
-}
-
 export default function JustoraPages({
   initialPage = "home",
+  initialPageId,
   page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
 }: JustoraPagesProps) {
   const mergedData = useMemo(
     () => ({
@@ -1724,31 +1714,46 @@ export default function JustoraPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(() =>
-    resolveInitialTemplatePage(page, initialPage),
-  );
+  const navProps = {
+    page,
+    pageId,
+    initialPage,
+    initialPageId,
+    activePageId,
+    currentPageId,
+    onPageChange,
+    isPublic,
+    viewMode,
+    runtimeMode,
+  };
+
+  const { currentPage, goTo: navigateToPage, isPublicRuntime } =
+    useTemplatePageNavigation(navProps, {
+      allowedPages: justoraAllowedPages,
+      fallbackPage: "home",
+      scrollOnNavigate: false,
+    });
 
   const [consultationOpen, setConsultationOpen] = useState(false);
 
   const [selectedCase, setSelectedCase] = useState<JustoraCaseItem | null>(() =>
-    getCaseFromUrl({
-      ...justoraDefaultData,
-      ...(data ?? {}),
-    }),
+    isPublic || viewMode === "public" || runtimeMode === "public"
+      ? getCaseFromUrl({
+          ...justoraDefaultData,
+          ...(data ?? {}),
+        })
+      : null,
   );
 
   useEffect(() => {
-    const nextPage = resolveInitialTemplatePage(page, initialPage);
-    setCurrentPage((current) => (current === nextPage ? current : nextPage));
-  }, [page, initialPage]);
+    if (!isPublicRuntime) {
+      setSelectedCase(null);
+      return;
+    }
 
-  useEffect(() => {
     function syncFromBrowserUrl() {
       const nextCase = getCaseFromUrl(mergedData);
-      const nextPage = getPageFromBrowserPath();
-
       setSelectedCase(nextCase);
-      setCurrentPage(nextCase ? "cases" : resolveInitialTemplatePage(nextPage, "home"));
     }
 
     syncFromBrowserUrl();
@@ -1760,10 +1765,10 @@ export default function JustoraPages({
     return () => {
       window.removeEventListener("popstate", syncFromBrowserUrl);
     };
-  }, [mergedData]);
+  }, [isPublicRuntime, mergedData]);
 
   function pushPublishedUrl(nextPage: string, caseNumber?: string) {
-    if (typeof window === "undefined") return;
+    if (!isPublicRuntime || typeof window === "undefined") return;
 
     const nextPath = getJustoraHref(nextPage);
     const nextUrl = caseNumber ? `${nextPath}?case=${caseNumber}` : nextPath;
@@ -1780,16 +1785,20 @@ export default function JustoraPages({
   }
 
   function goTo(nextPage: string) {
-    const resolvedPage = resolveInitialTemplatePage(nextPage, "home");
+    const resolvedPage = resolveTemplatePageId(
+      { page: nextPage },
+      justoraAllowedPages,
+      "home",
+    );
 
     setSelectedCase(null);
-    setCurrentPage(resolvedPage);
+    navigateToPage(resolvedPage);
     pushPublishedUrl(resolvedPage);
     scrollToTop();
   }
 
   function openCase(item: JustoraCaseItem) {
-    setCurrentPage("cases");
+    navigateToPage("cases");
     setSelectedCase(item);
     pushPublishedUrl("cases", item.number);
     scrollToTop();
@@ -1797,7 +1806,7 @@ export default function JustoraPages({
 
   function backToCases() {
     setSelectedCase(null);
-    setCurrentPage("cases");
+    navigateToPage("cases");
     pushPublishedUrl("cases");
     scrollToTop();
   }

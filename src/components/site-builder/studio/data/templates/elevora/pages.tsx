@@ -25,6 +25,7 @@ type ElevoraPagesProps = {
   pageId?: ElevoraPageId | string;
   mode?: "preview" | "editor" | "public" | string;
   data?: Partial<ElevoraData>;
+  onPageChange?: (pageId: string) => void;
 };
 
 function isPlainObject(value: unknown): value is Record<string, any> {
@@ -162,6 +163,7 @@ export default function ElevoraPages({
   pageId,
   mode = "preview",
   data,
+  onPageChange,
 }: ElevoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
   const resolvedPage = normalizePage(
@@ -175,6 +177,7 @@ export default function ElevoraPages({
 
   function goTo(page: ElevoraPageId) {
     setCurrentPage(page);
+    onPageChange?.(page);
 
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() => {

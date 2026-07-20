@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalisDefaultData } from "./defaultData";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const vitalisPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -10,11 +11,21 @@ export const vitalisPages = [
   { id: "contact", label: "קביעת תור", slug: "/contact" },
 ];
 
+const vitalisAllowedPages = vitalisPages.map((page) => page.id);
+
 type VitalisPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
   page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "edit" | "published";
   data?: Record<string, any>;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -752,9 +763,17 @@ function SimplePage({
 
 export default function VitalisPages({
   initialPage = "home",
+  initialPageId,
   page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
 }: VitalisPagesProps) {
   const mergedData = useMemo(
     () => ({
@@ -764,15 +783,22 @@ export default function VitalisPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      page,
+      pageId,
+      initialPage,
+      initialPageId,
+      activePageId,
+      currentPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages: vitalisAllowedPages, fallbackPage: "home" },
+  );
   const [bookingOpen, setBookingOpen] = useState(false);
-
-  function goTo(nextPage: string) {
-    setCurrentPage(nextPage);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
 
   return (
     <div

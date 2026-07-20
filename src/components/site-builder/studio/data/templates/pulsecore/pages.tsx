@@ -48,6 +48,12 @@ export const pulsecorePages: Array<{
 
 type PulsecorePagesProps = {
   initialPage?: PulsecorePageInput;
+  initialPageId?: PulsecorePageInput;
+  page?: PulsecorePageInput;
+  pageId?: PulsecorePageInput;
+  activePageId?: PulsecorePageInput;
+  currentPageId?: PulsecorePageInput;
+  onPageChange?: (pageId: string) => void;
   isStudioStatic?: boolean;
 };
 
@@ -916,32 +922,50 @@ function SimplePage({
 
 export default function PulsecorePages({
   initialPage = "home",
+  initialPageId,
+  page,
+  pageId,
+  activePageId,
+  currentPageId,
+  onPageChange,
 }: PulsecorePagesProps) {
-  const [activePage, setActivePage] = useState<PulsecorePageId>(() =>
-    resolvePulsecorePageId(initialPage),
+  const requestedPage = resolvePulsecorePageId(
+    activePageId ||
+      currentPageId ||
+      pageId ||
+      page ||
+      initialPageId ||
+      initialPage,
   );
+  const [activePage, setActivePage] =
+    useState<PulsecorePageId>(requestedPage);
 
   const siteRootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    setActivePage(resolvePulsecorePageId(initialPage));
-  }, [initialPage]);
+    setActivePage(requestedPage);
+  }, [requestedPage]);
+
+  function handlePageChange(nextPage: PulsecorePageId) {
+    setActivePage(nextPage);
+    onPageChange?.(nextPage);
+  }
 
   return (
     <div ref={siteRootRef}>
-      <PulsecoreShell activePage={activePage} onPageChange={setActivePage}>
+      <PulsecoreShell activePage={activePage} onPageChange={handlePageChange}>
         <VisualPageStack
           activePageId={activePage}
           pages={[
             {
               id: "home",
-              content: <HomePage onPageChange={setActivePage} />,
+              content: <HomePage onPageChange={handlePageChange} />,
             },
             {
               id: "programs",
               content: (
                 <SimplePage title="תוכניות אימון לכל רמה וקצב" label="תוכניות">
-                  <ProgramsSection onPageChange={setActivePage} />
+                  <ProgramsSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
             },
@@ -957,7 +981,7 @@ export default function PulsecorePages({
               id: "pricing",
               content: (
                 <SimplePage title="מנויים גמישים לפי מטרה" label="מחירים">
-                  <PricingSection onPageChange={setActivePage} />
+                  <PricingSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
             },
@@ -965,7 +989,7 @@ export default function PulsecorePages({
               id: "schedule",
               content: (
                 <SimplePage title="מערכת שעות שבועית" label="מערכת שעות">
-                  <ScheduleSection onPageChange={setActivePage} />
+                  <ScheduleSection onPageChange={handlePageChange} />
                 </SimplePage>
               ),
             },

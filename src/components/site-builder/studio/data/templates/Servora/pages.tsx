@@ -27,6 +27,7 @@ type ServoraPagesProps = {
   pageId?: ServoraPageId | string;
   mode?: "preview" | "editor" | "public" | string;
   data?: Partial<ServoraData>;
+  onPageChange?: (pageId: string) => void;
 };
 
 type VisualElementType =
@@ -400,6 +401,7 @@ export default function ServoraPages({
   pageId,
   mode = "preview",
   data,
+  onPageChange,
 }: ServoraPagesProps) {
   const templateData = useMemo(() => mergeData(data), [data]);
   const rawPageId = String(
@@ -427,6 +429,7 @@ export default function ServoraPages({
 
   function goTo(page: ServoraPageId) {
     setCurrentPage(page);
+    onPageChange?.(page);
 
     if (typeof window !== "undefined") {
       window.requestAnimationFrame(() =>

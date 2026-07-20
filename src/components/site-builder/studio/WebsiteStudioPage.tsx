@@ -1761,7 +1761,7 @@ function createPagesFromRegisteredRenderer(
 
     return {
       id: pageId,
-      title: String(page.name || page.title || pageId),
+      title: String(page.label || page.name || page.title || pageId),
       slug: cleanSlug,
       type: (isHome ? "home" : pageId === "shop" ? "store" : "blank") as StudioSitePageType,
       isHome,

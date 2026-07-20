@@ -565,6 +565,13 @@ function syncNavStringFields(
     if (!title) return;
 
     const id = normalizeKey(page.id);
+    /*
+      Skip raw English page ids (e.g. "practice") so we never wipe Hebrew
+      navHome/navPractice labels that templates ship with by default.
+    */
+    if (!id || normalizeKey(title) === id) return;
+    if (/^[a-z][a-z0-9_-]*$/i.test(title.trim())) return;
+
     const candidates = new Set<string>();
 
     if (isHomePage(page) || id === "home") {

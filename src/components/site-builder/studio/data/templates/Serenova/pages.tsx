@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const serenovaPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -12,11 +13,21 @@ export const serenovaPages = [
   { id: "contact", label: "יצירת קשר", slug: "/contact" },
 ];
 
+const serenovaAllowedPages = serenovaPages.map((page) => page.id);
+
 type SerenovaPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
   page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "edit" | "published";
   data?: Record<string, any>;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -1295,9 +1306,17 @@ function SimplePage({
 
 export default function SerenovaPages({
   initialPage = "home",
+  initialPageId,
   page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
 }: SerenovaPagesProps) {
   const mergedData = useMemo(
     () => ({
@@ -1307,16 +1326,22 @@ export default function SerenovaPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      page,
+      pageId,
+      initialPage,
+      initialPageId,
+      activePageId,
+      currentPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages: serenovaAllowedPages, fallbackPage: "home" },
+  );
   const [bookingOpen, setBookingOpen] = useState(false);
-
-  function goTo(nextPage: string) {
-    setCurrentPage(nextPage);
-
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
 
   return (
     <div

@@ -20,10 +20,14 @@ type ShinoraPagesProps = {
   page?: PageKey | string;
   pageId?: PageKey | string;
   activePage?: PageKey | string;
+  activePageId?: PageKey | string;
   currentPage?: PageKey | string;
+  currentPageId?: PageKey | string;
   initialPage?: PageKey | string;
+  initialPageId?: PageKey | string;
   mode?: "preview" | "editor" | "published" | string;
   onNavigate?: (pageId: string) => void;
+  onPageChange?: (pageId: string) => void;
 };
 
 const cx = (...classes: Array<string | false | null | undefined>) =>
@@ -31,10 +35,13 @@ const cx = (...classes: Array<string | false | null | undefined>) =>
 
 function getPageKey(props: ShinoraPagesProps): PageKey {
   const raw = String(
-    props.page ||
+    props.activePageId ||
+      props.currentPageId ||
+      props.page ||
       props.pageId ||
       props.activePage ||
       props.currentPage ||
+      props.initialPageId ||
       props.initialPage ||
       "home",
   )
@@ -1947,6 +1954,8 @@ function ContactPage({ data }: { data: any }) {
 
 export default function ShinoraPages(props: ShinoraPagesProps) {
   const pageKey = getPageKey(props);
+  const handleNavigate =
+    props.onPageChange || props.onNavigate;
 
   const data = useMemo(
     () => ({ ...shinoraDefaultData, ...(props.data || {}) }),
@@ -1960,14 +1969,14 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
       data-template-id="shinora"
       data-visual-template-root="true"
     >
-      <Header data={data} pageKey={pageKey} onNavigate={props.onNavigate} />
+      <Header data={data} pageKey={pageKey} onNavigate={handleNavigate} />
       <VisualPageStack
         activePageId={pageKey}
         pages={[
           {
             id: "home",
             content: (
-              <HomePage data={data} onNavigate={props.onNavigate} />
+              <HomePage data={data} onNavigate={handleNavigate} />
             ),
           },
           {
@@ -1977,7 +1986,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
           {
             id: "services",
             content: (
-              <ServicesPage data={data} onNavigate={props.onNavigate} />
+              <ServicesPage data={data} onNavigate={handleNavigate} />
             ),
           },
           {
@@ -2030,7 +2039,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                 />
                 <BlogSection
                   data={data}
-                  onNavigate={props.onNavigate}
+                  onNavigate={handleNavigate}
                   limit={data.posts.length}
                 />
               </>
@@ -2042,7 +2051,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
           },
         ]}
       />
-      <Footer data={data} onNavigate={props.onNavigate} />
+      <Footer data={data} onNavigate={handleNavigate} />
     </main>
   );
 }

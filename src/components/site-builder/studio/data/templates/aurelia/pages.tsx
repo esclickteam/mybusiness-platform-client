@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aureliaDefaultData } from "./defaultData";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const aureliaPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -10,11 +11,21 @@ export const aureliaPages = [
   { id: "contact", label: "הזמנת שולחן", slug: "/contact" },
 ];
 
+const aureliaAllowedPages = aureliaPages.map((page) => page.id);
+
 type AureliaPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
   page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "edit" | "published";
   data?: Record<string, any>;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -797,9 +808,17 @@ function SimplePage({
 
 export default function AureliaPages({
   initialPage = "home",
+  initialPageId,
   page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
 }: AureliaPagesProps) {
   const mergedData = useMemo(
     () => ({
@@ -809,15 +828,22 @@ export default function AureliaPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      page,
+      pageId,
+      initialPage,
+      initialPageId,
+      activePageId,
+      currentPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages: aureliaAllowedPages, fallbackPage: "home" },
+  );
   const [bookingOpen, setBookingOpen] = useState(false);
-
-  function goTo(nextPage: string) {
-    setCurrentPage(nextPage);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
 
   return (
     <div

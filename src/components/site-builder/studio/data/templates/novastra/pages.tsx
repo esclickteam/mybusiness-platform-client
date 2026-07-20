@@ -77,9 +77,15 @@ type NovastraData = typeof novastraDefaultData & {
 
 type NovastraPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
+  page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: TemplateMode;
   data?: Partial<NovastraData>;
   onNavigate?: (pageId: string) => void;
+  onPageChange?: (pageId: string) => void;
 };
 
 const localNovastraCss = `
@@ -1732,33 +1738,48 @@ function ContactPage({ data }: { data: NovastraData }) {
 
 export function NovastraPages({
   initialPage = "home",
+  initialPageId,
+  page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
   onNavigate,
+  onPageChange,
 }: NovastraPagesProps) {
   const mergedData = useMemo(() => mergeTemplateData(data), [data]);
-  const [localPage, setLocalPage] = useState(initialPage || "home");
+  const requestedPage = String(
+    activePageId ||
+      currentPageId ||
+      pageId ||
+      page ||
+      initialPageId ||
+      initialPage ||
+      "home",
+  ).trim() || "home";
+  const [localPage, setLocalPage] = useState(requestedPage);
   const [selectedProduct, setSelectedProduct] = useState<NovastraProduct | null>(
     null,
   );
   const [cartItems, setCartItems] = useState<NovastraCartItem[]>([]);
 
+  React.useEffect(() => {
+    setLocalPage(requestedPage);
+  }, [requestedPage]);
+
   const currentPage = localPage || "home";
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  function handleNavigate(pageId: string) {
-    setLocalPage(pageId);
+  function handleNavigate(nextPageId: string) {
+    setLocalPage(nextPageId);
 
-    if (pageId !== "product") {
+    if (nextPageId !== "product") {
       setSelectedProduct(null);
     }
 
-    if (mode === "editor") {
-      onNavigate?.(pageId);
-      return;
-    }
-
-    onNavigate?.(pageId);
+    onPageChange?.(nextPageId);
+    onNavigate?.(nextPageId);
   }
 
   function handleProductClick(product: NovastraProduct) {

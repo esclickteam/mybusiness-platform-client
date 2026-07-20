@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nexoraDefaultData } from "./defaultData";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const nexoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -10,11 +11,21 @@ export const nexoraPages = [
   { id: "contact", label: "יצירת קשר", slug: "/contact" },
 ];
 
+const nexoraAllowedPages = nexoraPages.map((page) => page.id);
+
 type NexoraPagesProps = {
   initialPage?: string;
+  initialPageId?: string;
   page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "edit" | "published";
   data?: Record<string, any>;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -789,9 +800,17 @@ function SimplePage({
 
 export default function NexoraPages({
   initialPage = "home",
+  initialPageId,
   page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
   data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
 }: NexoraPagesProps) {
   const mergedData = useMemo(
     () => ({
@@ -801,15 +820,22 @@ export default function NexoraPages({
     [data],
   );
 
-  const [currentPage, setCurrentPage] = useState(page || initialPage || "home");
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      page,
+      pageId,
+      initialPage,
+      initialPageId,
+      activePageId,
+      currentPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages: nexoraAllowedPages, fallbackPage: "home" },
+  );
   const [bookingOpen, setBookingOpen] = useState(false);
-
-  function goTo(nextPage: string) {
-    setCurrentPage(nextPage);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
-  }
 
   return (
     <div

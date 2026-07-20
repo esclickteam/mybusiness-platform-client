@@ -987,6 +987,7 @@ export default function VisualEditorCanvas({
         initialPageId={activePageId}
         currentPageId={activePageId}
         pageId={activePageId}
+        page={activePageId}
         isStudioStatic={false}
         onPageChange={(nextPageId: string) => {
           const id = String(nextPageId || "").trim();
