@@ -9,6 +9,31 @@ type SiteCardPreviewProps = {
   title?: string;
 };
 
+/*
+  A static thumbnail has no JS, so entrance motion (CSS reveals, scroll-triggered
+  reveals, floating loops) would otherwise be captured before it finishes and the
+  first block would look empty. This CSS forces every animation to jump to its
+  final frame and reveals common "start hidden" states — presentation only, it
+  never changes the site's elements or content.
+*/
+const FREEZE_MOTION_CSS = `
+  *, *::before, *::after {
+    animation-delay: 0s !important;
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    animation-fill-mode: both !important;
+    transition: none !important;
+  }
+  [data-reveal], [data-animate], [data-motion], .bizuply-reveal-up,
+  [style*="opacity:0"], [style*="opacity: 0"],
+  [style*="visibility:hidden"], [style*="visibility: hidden"] {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: none !important;
+    filter: none !important;
+  }
+`;
+
 function buildSrcDoc(html: string, css = "") {
   return `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -25,6 +50,7 @@ function buildSrcDoc(html: string, css = "") {
   }
   body { width: ${PREVIEW_WIDTH}px; }
   ${css || ""}
+  ${FREEZE_MOTION_CSS}
 </style>
 </head>
 <body>${html}</body>

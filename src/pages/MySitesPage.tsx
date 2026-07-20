@@ -36,6 +36,9 @@ import {
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
 import SiteCardPreview from "../components/website/SiteCardPreview";
+import TemplateCardPreview, {
+  canRenderTemplatePreview,
+} from "../components/website/TemplateCardPreview";
 
 function hasRenderablePreviewHtml(html?: string) {
   return typeof html === "string" && html.trim().length > 40;
@@ -535,6 +538,13 @@ export default function MySitesPage() {
                           <SiteCardPreview
                             html={site.html || ""}
                             css={site.css || ""}
+                            title={site.name || "תצוגה מקדימה של האתר"}
+                          />
+                        </div>
+                      ) : canRenderTemplatePreview(site.templateKey) ? (
+                        <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
+                          <TemplateCardPreview
+                            templateKey={site.templateKey || ""}
                             title={site.name || "תצוגה מקדימה של האתר"}
                           />
                         </div>
