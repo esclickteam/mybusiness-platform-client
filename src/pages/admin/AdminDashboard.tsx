@@ -403,6 +403,13 @@ function AdminDashboard() {
                 />
 
                 <QuickAction
+                  icon="🏢"
+                  title="כניסה לעסקים"
+                  description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
+                  onClick={() => navigate("/admin/businesses")}
+                />
+
+                <QuickAction
                   icon="🤝"
                   title="ניהול שותפים"
                   description="ניהול אפיליאייטים ושותפים עסקיים"
