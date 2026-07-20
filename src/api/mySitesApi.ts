@@ -61,6 +61,11 @@ export async function listMySites(businessId: string, opts?: {
   return (data?.sites || []) as MySiteSummary[];
 }
 
+export async function getMySite(siteId: string) {
+  const { data } = await API.get(`/site-builder/sites/${siteId}`);
+  return (data?.site || null) as (MySiteSummary & Record<string, any>) | null;
+}
+
 export async function listSiteFolders(businessId: string) {
   const { data } = await API.get(
     `/site-builder/folders?businessId=${encodeURIComponent(businessId)}`

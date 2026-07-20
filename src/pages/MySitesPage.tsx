@@ -35,14 +35,7 @@ import {
   type SiteFolder,
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
-import SiteCardPreview from "../components/website/SiteCardPreview";
-import TemplateCardPreview, {
-  canRenderTemplatePreview,
-} from "../components/website/TemplateCardPreview";
-
-function hasRenderablePreviewHtml(html?: string) {
-  return typeof html === "string" && html.trim().length > 40;
-}
+import IframeCardPreview from "../components/website/IframeCardPreview";
 
 type MenuState = {
   siteId: string;
@@ -533,18 +526,10 @@ export default function MySitesPage() {
                           alt={site.name || "תצוגה מקדימה של האתר"}
                           className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
                         />
-                      ) : hasRenderablePreviewHtml(site.html) ? (
+                      ) : site._id ? (
                         <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
-                          <SiteCardPreview
-                            html={site.html || ""}
-                            css={site.css || ""}
-                            title={site.name || "תצוגה מקדימה של האתר"}
-                          />
-                        </div>
-                      ) : canRenderTemplatePreview(site.templateKey) ? (
-                        <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
-                          <TemplateCardPreview
-                            templateKey={site.templateKey || ""}
+                          <IframeCardPreview
+                            src={`/embed/site/${encodeURIComponent(site._id)}`}
                             title={site.name || "תצוגה מקדימה של האתר"}
                           />
                         </div>
