@@ -337,8 +337,13 @@ export function AuthProvider({ children }) {
         }
       }
 
+      const safeRedirectUrl =
+        normalizedUser.role === "admin"
+          ? "/admin/dashboard"
+          : redirectUrl;
+
       setLoading(false);
-      return { user: normalizedUser, redirectUrl };
+      return { user: normalizedUser, redirectUrl: safeRedirectUrl };
     } catch (err) {
       setError(
         err.response?.status >= 400 && err.response?.status < 500
