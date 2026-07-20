@@ -113,4 +113,14 @@ export const studioraDefaultData = {
   ctaText:
     "בין אם אתם מותג חדש שרוצה להתחיל נכון, או מותג קיים שצריך רענון — Studiora כאן כדי לקחת אתכם לשלב הבא.",
   ctaButton: "להתחיל פרויקט",
+
+  labelPhone: "טלפון",
+  labelEmail: "אימייל",
+  labelAddress: "כתובת",
+
+  formNamePlaceholder: "שם / חברה",
+  formEmailPlaceholder: "אימייל",
+  formBudgetPlaceholder: "תקציב משוער",
+  formMessagePlaceholder: "ספרו לנו על הפרויקט",
+  formIdeaPlaceholder: "ספרו לנו על הרעיון",
 };

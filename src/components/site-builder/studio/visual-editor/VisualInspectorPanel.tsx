@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -460,8 +460,48 @@ export default function VisualInspectorPanel({
     [editor?.content, elementId],
   );
 
+  const savedText = String(content.text ?? element?.text ?? "");
+  const [draftText, setDraftText] = useState(savedText);
+  const textFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const locked = Boolean(editor?.locked?.[elementId]);
   const hidden = Boolean(editor?.hidden?.[elementId]);
+
+  useEffect(() => {
+    setDraftText(String(content.text ?? element?.text ?? ""));
+  }, [elementId]);
+
+  useEffect(
+    () => () => {
+      if (textFlushTimerRef.current) {
+        clearTimeout(textFlushTimerRef.current);
+      }
+    },
+    [],
+  );
+
+  const queueTextUpdate = (value: string) => {
+    if (!elementId || locked) return;
+
+    if (textFlushTimerRef.current) {
+      clearTimeout(textFlushTimerRef.current);
+    }
+
+    textFlushTimerRef.current = setTimeout(() => {
+      editor?.updateText?.(elementId, value);
+      textFlushTimerRef.current = null;
+    }, 120);
+  };
+
+  const flushTextUpdate = (value: string) => {
+    if (!elementId || locked) return;
+
+    if (textFlushTimerRef.current) {
+      clearTimeout(textFlushTimerRef.current);
+      textFlushTimerRef.current = null;
+    }
+
+    editor?.updateText?.(elementId, value);
+  };
 
   useEffect(() => {
     if (!element) return;
@@ -620,11 +660,14 @@ export default function VisualInspectorPanel({
                   icon={<Type className="h-4 w-4" />}
                 >
                   <textarea
-                    value={String(content.text ?? element.text ?? "")}
+                    value={draftText}
                     disabled={locked}
-                    onChange={(event) =>
-                      editor?.updateText?.(elementId, event.target.value)
-                    }
+                    onChange={(event) => {
+                      const nextValue = event.target.value;
+                      setDraftText(nextValue);
+                      queueTextUpdate(nextValue);
+                    }}
+                    onBlur={() => flushTextUpdate(draftText)}
                     className="min-h-[150px] w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right text-sm font-bold leading-7 text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-50"
                   />
                 </InspectorSection>

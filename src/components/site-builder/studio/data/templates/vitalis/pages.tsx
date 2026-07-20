@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { TemplateDecor, TemplateText } from "../shared/TemplateText";
 import { vitalisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
@@ -57,14 +58,22 @@ function SectionTitle({
 }) {
   return (
     <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
-      <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
+      <TemplateText
+        as="p"
+        className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]"
+      >
         {eyebrow}
-      </p>
-      <h2 className="text-4xl font-bold leading-[1.12] tracking-tight text-[#0f2a36] md:text-5xl">
+      </TemplateText>
+      <TemplateText
+        as="h2"
+        className="text-4xl font-bold leading-[1.12] tracking-tight text-[#0f2a36] md:text-5xl"
+      >
         {title}
-      </h2>
+      </TemplateText>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#51707c]">{text}</p>
+        <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#51707c]">
+          {text}
+        </TemplateText>
       ) : null}
     </div>
   );
@@ -210,21 +219,23 @@ function BookingModal({
         </button>
         <div className="relative z-10">
           <p className="inline-flex rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
-            קביעת תור
+            {getValue(data, "contactEyebrow")}
           </p>
-          <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">נשמח לקבל אתכם.</h3>
+          <TemplateText as="h3" className="mt-5 text-3xl font-bold text-[#0f2a36]">
+            {getValue(data, "contactTitle")}
+          </TemplateText>
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
           <form className="mt-7 grid gap-4">
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              placeholder={getValue(data, "formPhonePlaceholder")}
             />
             <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]">
-              <option>סוג הטיפול</option>
+              <option>{getValue(data, "formTreatmentPlaceholder")}</option>
               <option>בדיקה כללית</option>
               <option>יישור שיניים</option>
               <option>השתלות</option>
@@ -269,12 +280,15 @@ function Hero({
           <p className="mb-5 inline-flex items-center gap-2 rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-[#0891b2]">
             {getValue(data, "heroEyebrow")}
           </p>
-          <h1 className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-tight text-[#0f2a36] md:text-6xl lg:text-7xl">
+          <TemplateText
+            as="h1"
+            className="max-w-3xl text-5xl font-bold leading-[1.05] tracking-tight text-[#0f2a36] md:text-6xl lg:text-7xl"
+          >
             {getValue(data, "heroTitle")}
-          </h1>
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#51707c]">
+          </TemplateText>
+          <TemplateText as="p" className="mt-7 max-w-xl text-lg leading-8 text-[#51707c]">
             {getValue(data, "heroSubtitle")}
-          </p>
+          </TemplateText>
           <div className="mt-9 flex flex-wrap gap-3">
             <button
               type="button"
@@ -298,8 +312,12 @@ function Hero({
                 key={label}
                 className="rounded-3xl border border-[#0891b2]/8 bg-white p-4 text-center shadow-lg shadow-[#0f2a36]/5 transition duration-500 hover:-translate-y-2"
               >
-                <div className="text-3xl font-bold text-[#0891b2]">{num}</div>
-                <div className="mt-1 text-xs font-semibold text-[#7c95a0]">{label}</div>
+                <TemplateText as="div" className="text-3xl font-bold text-[#0891b2]">
+                  {num}
+                </TemplateText>
+                <TemplateText as="div" className="mt-1 text-xs font-semibold text-[#7c95a0]">
+                  {label}
+                </TemplateText>
               </div>
             ))}
           </div>
@@ -579,10 +597,10 @@ function ContactSection({
   openBooking: () => void;
 }) {
   const info = [
-    ["טלפון", getValue(data, "phone")],
-    ["אימייל", getValue(data, "email")],
-    ["כתובת", getValue(data, "address")],
-    ["שעות", getValue(data, "hours")],
+    [getValue(data, "labelPhone"), getValue(data, "phone")],
+    [getValue(data, "labelEmail"), getValue(data, "email")],
+    [getValue(data, "labelAddress"), getValue(data, "address")],
+    [getValue(data, "labelHours"), getValue(data, "hours")],
   ];
 
   return (
@@ -596,9 +614,16 @@ function ContactSection({
           <p className="mt-5 text-lg leading-8 text-white/85">{getValue(data, "contactText")}</p>
           <div className="mt-10 grid gap-3 sm:grid-cols-2">
             {info.map(([label, value]) => (
-              <div key={label} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70">{label}</div>
-                <div className="mt-1 text-base font-semibold text-white">{value}</div>
+              <div key={String(label)} className="rounded-2xl border border-white/15 bg-white/10 px-4 py-4">
+                <TemplateText
+                  as="div"
+                  className="text-xs font-semibold uppercase tracking-[0.14em] text-white/70"
+                >
+                  {label}
+                </TemplateText>
+                <TemplateText as="div" className="mt-1 text-base font-semibold text-white">
+                  {value}
+                </TemplateText>
               </div>
             ))}
           </div>
@@ -607,19 +632,19 @@ function ContactSection({
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              placeholder={getValue(data, "formPhonePlaceholder")}
             />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="אימייל"
+              placeholder={getValue(data, "formEmailPlaceholder")}
             />
             <textarea
               className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="במה נוכל לעזור?"
+              placeholder={getValue(data, "formMessagePlaceholder")}
             />
             <button
               type="button"

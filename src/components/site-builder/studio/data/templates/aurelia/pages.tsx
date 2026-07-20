@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { TemplateDecor, TemplateText } from "../shared/TemplateText";
 import { aureliaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
@@ -57,14 +58,22 @@ function SectionTitle({
 }) {
   return (
     <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
-      <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c9a24b]/30 bg-[#c9a24b]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#c9a24b]">
+      <TemplateText
+        as="p"
+        className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#c9a24b]/30 bg-[#c9a24b]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#c9a24b]"
+      >
         {eyebrow}
-      </p>
-      <h2 className="font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-6xl">
+      </TemplateText>
+      <TemplateText
+        as="h2"
+        className="font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-6xl"
+      >
         {title}
-      </h2>
+      </TemplateText>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{text}</p>
+        <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#cdbfa6]">
+          {text}
+        </TemplateText>
       ) : null}
     </div>
   );
@@ -222,25 +231,31 @@ function BookingModal({
             }}
           >
             <p className="inline-flex rounded-full bg-[#c9a24b]/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">
-              הזמנת שולחן
+              {getValue(data, "contactEyebrow")}
             </p>
-            <h3 className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl">
-              נשמור לכם ערב מושלם.
-            </h3>
-            <p className="mt-5 text-base leading-7 text-[#e6dcc8]">
+            <TemplateText
+              as="h3"
+              className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl"
+            >
+              {getValue(data, "bookingTitle")}
+            </TemplateText>
+            <TemplateText as="p" className="mt-5 text-base leading-7 text-[#e6dcc8]">
               {getValue(data, "hours")}
-            </p>
+            </TemplateText>
             <div className="mt-8 grid gap-3">
-              {["אישור מיידי בטלפון", "התאמת יינות לפי המנות", "אפשרות לערב שף פרטי"].map(
-                (item) => (
-                  <div
-                    key={item}
-                    className="rounded-2xl border border-[#c9a24b]/15 bg-black/20 px-4 py-3 text-sm font-semibold text-[#e6dcc8]"
-                  >
-                    ✦ {item}
-                  </div>
-                ),
-              )}
+              {[
+                getValue(data, "bookingBenefitOne"),
+                getValue(data, "bookingBenefitTwo"),
+                getValue(data, "bookingBenefitThree"),
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="rounded-2xl border border-[#c9a24b]/15 bg-black/20 px-4 py-3 text-sm font-semibold text-[#e6dcc8]"
+                >
+                  <TemplateDecor className="ml-1">✦</TemplateDecor>{" "}
+                  <TemplateText as="span">{item}</TemplateText>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -248,24 +263,24 @@ function BookingModal({
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="שם מלא"
+                placeholder={getValue(data, "formNamePlaceholder")}
               />
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="טלפון"
+                placeholder={getValue(data, "formPhonePlaceholder")}
               />
               <div className="grid grid-cols-2 gap-4">
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="תאריך"
+                  placeholder={getValue(data, "formDatePlaceholder")}
                 />
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="שעה"
+                  placeholder={getValue(data, "formTimePlaceholder")}
                 />
               </div>
               <select className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition focus:border-[#c9a24b]">
-                <option>מספר סועדים</option>
+                <option>{getValue(data, "formGuestsPlaceholder")}</option>
                 <option>2 סועדים</option>
                 <option>3-4 סועדים</option>
                 <option>5-6 סועדים</option>
@@ -273,7 +288,7 @@ function BookingModal({
               </select>
               <textarea
                 className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="בקשות מיוחדות"
+                placeholder={getValue(data, "formNotesPlaceholder")}
               />
               <button
                 type="button"
@@ -311,17 +326,26 @@ function Hero({
 
       <div className="relative mx-auto grid max-w-7xl items-center gap-16 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
-          <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#c9a24b]/30 bg-[#c9a24b]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#c9a24b]">
+          <TemplateText
+            as="p"
+            className="mb-5 inline-flex items-center gap-2 rounded-full border border-[#c9a24b]/30 bg-[#c9a24b]/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-[#c9a24b]"
+          >
             {getValue(data, "heroEyebrow")}
-          </p>
+          </TemplateText>
 
-          <h1 className="max-w-4xl font-serif text-5xl font-semibold leading-[1.02] text-[#f5eee1] md:text-7xl lg:text-[5.4rem]">
+          <TemplateText
+            as="h1"
+            className="max-w-4xl font-serif text-5xl font-semibold leading-[1.02] text-[#f5eee1] md:text-7xl lg:text-[5.4rem]"
+          >
             {getValue(data, "heroTitle")}
-          </h1>
+          </TemplateText>
 
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#cdbfa6] md:text-xl">
+          <TemplateText
+            as="p"
+            className="mt-7 max-w-xl text-lg leading-8 text-[#cdbfa6] md:text-xl"
+          >
             {getValue(data, "heroSubtitle")}
-          </p>
+          </TemplateText>
 
           <div className="mt-9 flex flex-wrap gap-3">
             <button
@@ -346,8 +370,12 @@ function Hero({
                 key={label}
                 className="group rounded-3xl border border-[#c9a24b]/15 bg-[#1a1510]/70 p-4 text-center transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
               >
-                <div className="font-serif text-3xl font-semibold text-[#c9a24b]">{num}</div>
-                <div className="mt-1 text-xs font-semibold text-[#a2957c]">{label}</div>
+                <TemplateText as="div" className="font-serif text-3xl font-semibold text-[#c9a24b]">
+                  {num}
+                </TemplateText>
+                <TemplateText as="div" className="mt-1 text-xs font-semibold text-[#a2957c]">
+                  {label}
+                </TemplateText>
               </div>
             ))}
           </div>
@@ -364,12 +392,12 @@ function Hero({
           </div>
 
           <div className="absolute -bottom-6 right-8 max-w-[280px] rounded-[30px] border border-[#c9a24b]/25 bg-[#181310]/95 p-5 shadow-2xl shadow-black/40 backdrop-blur-xl">
-            <p className="font-serif text-lg font-semibold text-[#f5eee1]">
+            <TemplateText as="p" className="font-serif text-lg font-semibold text-[#f5eee1]">
               {getValue(data, "heroCardTitle")}
-            </p>
-            <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">
+            </TemplateText>
+            <TemplateText as="p" className="mt-2 text-sm leading-6 text-[#cdbfa6]">
               {getValue(data, "heroCardText")}
-            </p>
+            </TemplateText>
           </div>
         </div>
       </div>
@@ -379,9 +407,9 @@ function Hero({
 
 function AboutSection({ data }: { data: Record<string, any> }) {
   const points = [
-    ["חומרי גלם", "עונתיים, מקומיים וטריים בכל בוקר"],
-    ["מטבח פתוח", "שקיפות מלאה מהאש ועד הצלחת"],
-    ["אירוח חם", "שירות אישי שמרגיש כמו בבית"],
+    [getValue(data, "aboutPointOneTitle"), getValue(data, "aboutPointOneText")],
+    [getValue(data, "aboutPointTwoTitle"), getValue(data, "aboutPointTwoText")],
+    [getValue(data, "aboutPointThreeTitle"), getValue(data, "aboutPointThreeText")],
   ];
 
   return (
@@ -399,8 +427,12 @@ function AboutSection({ data }: { data: Record<string, any> }) {
                 key={title}
                 className="rounded-3xl border border-[#c9a24b]/15 bg-[#1a1510]/70 p-5 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
               >
-                <p className="font-serif text-lg font-semibold text-[#c9a24b]">{title}</p>
-                <p className="mt-2 text-sm leading-6 text-[#cdbfa6]">{text}</p>
+                <TemplateText as="p" className="font-serif text-lg font-semibold text-[#c9a24b]">
+                  {title}
+                </TemplateText>
+                <TemplateText as="p" className="mt-2 text-sm leading-6 text-[#cdbfa6]">
+                  {text}
+                </TemplateText>
               </div>
             ))}
           </div>
@@ -598,10 +630,10 @@ function ContactSection({
   openBooking: () => void;
 }) {
   const info = [
-    ["טלפון", getValue(data, "phone")],
-    ["אימייל", getValue(data, "email")],
-    ["כתובת", getValue(data, "address")],
-    ["שעות", getValue(data, "hours")],
+    [getValue(data, "labelPhone"), getValue(data, "phone")],
+    [getValue(data, "labelEmail"), getValue(data, "email")],
+    [getValue(data, "labelAddress"), getValue(data, "address")],
+    [getValue(data, "labelHours"), getValue(data, "hours")],
   ];
 
   return (
@@ -613,19 +645,31 @@ function ContactSection({
             <p className="mb-4 inline-flex rounded-full bg-[#c9a24b]/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">
               {getValue(data, "contactEyebrow")}
             </p>
-            <h2 className="font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-6xl">
+            <TemplateText
+              as="h2"
+              className="font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-6xl"
+            >
               {getValue(data, "contactTitle")}
-            </h2>
-            <p className="mt-5 text-lg leading-8 text-[#cdbfa6]">{getValue(data, "contactText")}</p>
+            </TemplateText>
+            <TemplateText as="p" className="mt-5 text-lg leading-8 text-[#cdbfa6]">
+              {getValue(data, "contactText")}
+            </TemplateText>
 
             <div className="mt-10 grid gap-3 sm:grid-cols-2">
               {info.map(([label, value]) => (
                 <div
-                  key={label}
+                  key={String(label)}
                   className="rounded-[24px] border border-[#c9a24b]/12 bg-[#14100d]/60 px-4 py-4 transition duration-300 hover:border-[#c9a24b]/35"
                 >
-                  <div className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]">{label}</div>
-                  <div className="mt-1 text-base font-semibold text-[#f5eee1]">{value}</div>
+                  <TemplateText
+                    as="div"
+                    className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a2957c]"
+                  >
+                    {label}
+                  </TemplateText>
+                  <TemplateText as="div" className="mt-1 text-base font-semibold text-[#f5eee1]">
+                    {value}
+                  </TemplateText>
                 </div>
               ))}
             </div>
@@ -644,19 +688,19 @@ function ContactSection({
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="שם מלא"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="טלפון"
+              placeholder={getValue(data, "formPhonePlaceholder")}
             />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="מספר סועדים"
+              placeholder={getValue(data, "formGuestsPlaceholder")}
             />
             <textarea
               className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="בקשות מיוחדות"
+              placeholder={getValue(data, "formNotesPlaceholder")}
             />
             <button
               type="button"

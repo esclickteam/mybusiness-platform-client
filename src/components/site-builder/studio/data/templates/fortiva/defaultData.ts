@@ -108,4 +108,14 @@ export const fortivaDefaultData = {
   ctaText:
     "בין אם אתם בתחילת דרך עסקית, בעיצומה של עסקה או מול אתגר משפטי — פורטיבה כאן כדי לתת לכם שקט וביטחון.",
   ctaButton: "לתיאום פגישה",
+
+  labelPhone: "טלפון",
+  labelEmail: "אימייל",
+  labelAddress: "כתובת",
+  labelHours: "שעות",
+
+  formNamePlaceholder: "שם מלא",
+  formPhonePlaceholder: "טלפון",
+  formEmailPlaceholder: "אימייל",
+  formMessagePlaceholder: "פרטים על הפנייה",
 };

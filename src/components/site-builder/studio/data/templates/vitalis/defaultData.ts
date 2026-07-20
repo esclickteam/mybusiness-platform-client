@@ -118,4 +118,15 @@ export const vitalisDefaultData = {
   ctaText:
     "בין אם זו בדיקה שגרתית, טיפול מורכב או שיקום חיוך — ויטליס כאן כדי ללוות אתכם בביטחון ובחום.",
   ctaButton: "לקביעת תור",
+
+  labelPhone: "טלפון",
+  labelEmail: "אימייל",
+  labelAddress: "כתובת",
+  labelHours: "שעות",
+
+  formNamePlaceholder: "שם מלא",
+  formPhonePlaceholder: "טלפון",
+  formEmailPlaceholder: "אימייל",
+  formMessagePlaceholder: "במה נוכל לעזור?",
+  formTreatmentPlaceholder: "סוג הטיפול",
 };
