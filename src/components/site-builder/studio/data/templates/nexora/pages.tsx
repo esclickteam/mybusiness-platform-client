@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { TemplateDecor, TemplateText } from "../shared/TemplateText";
 import { nexoraDefaultData } from "./defaultData";
 
 export const nexoraPages = [
@@ -46,14 +47,22 @@ function SectionTitle({
 }) {
   return (
     <div className={cx("mx-auto max-w-3xl", center ? "text-center" : "text-right")}>
-      <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">
+      <TemplateText
+        as="p"
+        className="mb-4 inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300"
+      >
         {eyebrow}
-      </p>
-      <h2 className="text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-5xl">
+      </TemplateText>
+      <TemplateText
+        as="h2"
+        className="text-4xl font-bold leading-[1.08] tracking-tight text-white md:text-5xl"
+      >
         {title}
-      </h2>
+      </TemplateText>
       {text ? (
-        <p className="mt-5 text-lg leading-8 text-slate-400">{text}</p>
+        <TemplateText as="p" className="mt-5 text-lg leading-8 text-slate-400">
+          {text}
+        </TemplateText>
       ) : null}
     </div>
   );
@@ -216,25 +225,30 @@ function BookingModal({
           ×
         </button>
         <div className="relative z-10">
-          <p className="inline-flex rounded-full bg-indigo-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">
-            תיאום דמו
-          </p>
-          <h3 className="mt-5 text-3xl font-bold text-white">בואו נראה לכם את Nexora בפעולה.</h3>
+          <TemplateText
+            as="p"
+            className="inline-flex rounded-full bg-indigo-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300"
+          >
+            {getValue(data, "contactEyebrow")}
+          </TemplateText>
+          <TemplateText as="h3" className="mt-5 text-3xl font-bold text-white">
+            {getValue(data, "contactTitle")}
+          </TemplateText>
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {getValue(data, "contactText")}
           </p>
           <form className="mt-7 grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם מלא"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="אימייל עבודה"
+              placeholder={getValue(data, "formEmailPlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם החברה"
+              placeholder={getValue(data, "formCompanyPlaceholder")}
             />
             <button
               type="button"
@@ -270,15 +284,24 @@ function Hero({
       <div className="absolute right-[10%] top-[30%] -z-10 h-72 w-72 rounded-full bg-violet-600/20 blur-[120px]" />
 
       <div className="mx-auto max-w-4xl text-center">
-        <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">
+        <TemplateText
+          as="p"
+          className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-400/25 bg-indigo-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300"
+        >
           {getValue(data, "heroEyebrow")}
-        </p>
-        <h1 className="mx-auto max-w-4xl text-5xl font-bold leading-[1.02] tracking-tight text-white md:text-7xl">
+        </TemplateText>
+        <TemplateText
+          as="h1"
+          className="mx-auto max-w-4xl text-5xl font-bold leading-[1.02] tracking-tight text-white md:text-7xl"
+        >
           {getValue(data, "heroTitle")}
-        </h1>
-        <p className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-400 md:text-xl">
+        </TemplateText>
+        <TemplateText
+          as="p"
+          className="mx-auto mt-7 max-w-2xl text-lg leading-8 text-slate-400 md:text-xl"
+        >
           {getValue(data, "heroSubtitle")}
-        </p>
+        </TemplateText>
         <div className="mt-9 flex flex-wrap justify-center gap-3">
           <GradientButton onClick={openBooking}>{getValue(data, "heroPrimaryButton")}</GradientButton>
           <button
@@ -306,10 +329,15 @@ function Hero({
               key={label}
               className="rounded-3xl border border-white/8 bg-white/5 p-5 text-center backdrop-blur transition duration-500 hover:-translate-y-2 hover:border-indigo-400/30"
             >
-              <div className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-3xl font-bold text-transparent">
+              <TemplateText
+                as="div"
+                className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-3xl font-bold text-transparent"
+              >
                 {num}
-              </div>
-              <div className="mt-1 text-xs font-semibold text-slate-400">{label}</div>
+              </TemplateText>
+              <TemplateText as="div" className="mt-1 text-xs font-semibold text-slate-400">
+                {label}
+              </TemplateText>
             </div>
           ))}
         </div>
@@ -319,7 +347,14 @@ function Hero({
 }
 
 function LogosStrip({ data }: { data: Record<string, any> }) {
-  const logos = ["Scaleo", "TechFlow", "Loopy", "Orbit", "Dataline", "Northstar"];
+  const logos = [
+    getValue(data, "logoOne"),
+    getValue(data, "logoTwo"),
+    getValue(data, "logoThree"),
+    getValue(data, "logoFour"),
+    getValue(data, "logoFive"),
+    getValue(data, "logoSix"),
+  ];
   return (
     <section className="px-5 py-14 lg:px-8">
       <div className="mx-auto max-w-6xl text-center">
@@ -332,7 +367,7 @@ function LogosStrip({ data }: { data: Record<string, any> }) {
               key={logo}
               className="text-center text-lg font-bold tracking-tight text-slate-400 transition duration-300 hover:text-white"
             >
-              {logo}
+              <TemplateText as="span">{logo}</TemplateText>
             </div>
           ))}
         </div>
@@ -420,21 +455,35 @@ function PricingSection({
       getValue(data, "priceOnePrice"),
       getValue(data, "priceOnePeriod"),
       getValue(data, "priceOneText"),
-      ["עד 3 משתמשים", "אוטומציות בסיס", "תמיכה בקהילה"],
+      [
+        getValue(data, "priceOneFeatureOne"),
+        getValue(data, "priceOneFeatureTwo"),
+        getValue(data, "priceOneFeatureThree"),
+      ],
     ],
     [
       getValue(data, "priceTwoName"),
       getValue(data, "priceTwoPrice"),
       getValue(data, "priceTwoPeriod"),
       getValue(data, "priceTwoText"),
-      ["משתמשים ללא הגבלה", "אוטומציות מתקדמות", "אנליטיקה בזמן אמת", "תמיכה מהירה"],
+      [
+        getValue(data, "priceTwoFeatureOne"),
+        getValue(data, "priceTwoFeatureTwo"),
+        getValue(data, "priceTwoFeatureThree"),
+        getValue(data, "priceTwoFeatureFour"),
+      ],
     ],
     [
       getValue(data, "priceThreeName"),
       getValue(data, "priceThreePrice"),
       getValue(data, "priceThreePeriod"),
       getValue(data, "priceThreeText"),
-      ["הכול ב-Growth", "אבטחת ארגון", "מנהל לקוח אישי", "SLA מובטח"],
+      [
+        getValue(data, "priceThreeFeatureOne"),
+        getValue(data, "priceThreeFeatureTwo"),
+        getValue(data, "priceThreeFeatureThree"),
+        getValue(data, "priceThreeFeatureFour"),
+      ],
     ],
   ] as const;
 
@@ -454,21 +503,32 @@ function PricingSection({
               )}
             >
               {index === 1 ? (
-                <span className="absolute left-6 top-6 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-1 text-xs font-semibold text-white">
-                  הכי פופולרי
-                </span>
+                <TemplateText
+                  as="span"
+                  className="absolute left-6 top-6 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-1 text-xs font-semibold text-white"
+                >
+                  {getValue(data, "pricingPopularBadge")}
+                </TemplateText>
               ) : null}
-              <h3 className="text-xl font-bold text-white">{name}</h3>
+              <TemplateText as="h3" className="text-xl font-bold text-white">
+                {name}
+              </TemplateText>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-white">{price}</span>
-                <span className="text-sm text-slate-400">{period}</span>
+                <TemplateText as="span" className="text-5xl font-bold text-white">
+                  {price}
+                </TemplateText>
+                <TemplateText as="span" className="text-sm text-slate-400">
+                  {period}
+                </TemplateText>
               </div>
-              <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>
+              <TemplateText as="p" className="mt-3 text-sm leading-6 text-slate-400">
+                {text}
+              </TemplateText>
               <ul className="mt-7 space-y-3 text-sm text-slate-300">
                 {(features as readonly string[]).map((feature) => (
                   <li key={feature} className="flex items-center gap-2">
-                    <span className="text-indigo-400">✓</span>
-                    {feature}
+                    <TemplateDecor className="text-indigo-400">✓</TemplateDecor>
+                    <TemplateText as="span">{feature}</TemplateText>
                   </li>
                 ))}
               </ul>
@@ -609,9 +669,9 @@ function ContactSection({
   openBooking: () => void;
 }) {
   const info = [
-    ["טלפון", getValue(data, "phone")],
-    ["אימייל", getValue(data, "email")],
-    ["כתובת", getValue(data, "address")],
+    [getValue(data, "labelPhone"), getValue(data, "phone")],
+    [getValue(data, "labelEmail"), getValue(data, "email")],
+    [getValue(data, "labelAddress"), getValue(data, "address")],
   ];
 
   return (
@@ -626,8 +686,13 @@ function ContactSection({
           />
           <div className="mt-10 grid gap-3">
             {info.map(([label, value]) => (
-              <div key={label} className="rounded-2xl border border-white/8 bg-white/5 px-4 py-4">
-                <div className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{label}</div>
+              <div key={String(label)} className="rounded-2xl border border-white/8 bg-white/5 px-4 py-4">
+                <TemplateText
+                  as="div"
+                  className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400"
+                >
+                  {label}
+                </TemplateText>
                 <div className="mt-1 text-base font-semibold text-white">{value}</div>
               </div>
             ))}
@@ -637,19 +702,19 @@ function ContactSection({
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם מלא"
+              placeholder={getValue(data, "formNamePlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="אימייל עבודה"
+              placeholder={getValue(data, "formEmailPlaceholder")}
             />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם החברה"
+              placeholder={getValue(data, "formCompanyPlaceholder")}
             />
             <textarea
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="ספרו לנו על הצוות שלכם"
+              placeholder={getValue(data, "formMessagePlaceholder")}
             />
             <button
               type="button"
