@@ -21,6 +21,11 @@ import { justoraTemplate } from "./justora/meta";
 import { shinoraTemplate } from "./shinora/meta";
 import { cycloraTemplate } from "./cyclora/meta";
 import { chanelTemplate } from "./chanel/meta";
+import { aureliaTemplate } from "./aurelia/meta";
+import { nexoraTemplate } from "./nexora/meta";
+import { fortivaTemplate } from "./fortiva/meta";
+import { vitalisTemplate } from "./vitalis/meta";
+import { studioraTemplate } from "./studiora/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -43,6 +48,11 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   shinoraTemplate,
   cycloraTemplate,
   chanelTemplate,
+  aureliaTemplate,
+  nexoraTemplate,
+  fortivaTemplate,
+  vitalisTemplate,
+  studioraTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

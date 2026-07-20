@@ -325,18 +325,107 @@ function getTemplateSearchText(template: WebsiteTemplate) {
     .toLowerCase();
 }
 
+function mapDefinitionToGalleryTemplate(
+  definition: any,
+  index: number
+): WebsiteTemplate {
+  const seed = (definition?.seed ||
+    getStudioTemplateSeedById(definition?.id || definition?.key) ||
+    {}) as any;
+
+  const image =
+    seed.image ||
+    definition?.previewImage ||
+    definition?.image ||
+    "";
+
+  const badge =
+    definition?.badge ||
+    (definition?.priceLabel === "Premium" ? "Premium" : "") ||
+    "";
+
+  return {
+    key: String(definition?.id || definition?.key || "").toLowerCase(),
+    name: definition?.name || definition?.id || "תבנית אתר",
+    category: definition?.category || seed.category || "business",
+    categoryLabel:
+      definition?.categoryLabel || seed.categoryLabel || definition?.category,
+    description: definition?.description || seed.description || "",
+    niche: seed.niche,
+    layout: seed.layout,
+    image,
+    heroTitle: seed.heroTitle || definition?.name,
+    heroSubtitle: seed.heroSubtitle || definition?.description,
+    isNew: badge === "חדש" || badge === "NEW",
+    badge,
+    thumbnailUrl: image,
+    previewImageUrl: image,
+    palette: seed.palette,
+    order: index + 1,
+  };
+}
+
+/**
+ * Merge the templates coming from Mongo with the in-app studio template
+ * definitions, so every locally-registered template shows up in the gallery
+ * even if it hasn't been synced to Mongo yet. Server data (edited names,
+ * uploaded images, etc.) takes precedence when it exists and is not empty.
+ */
+function mergeWithLocalTemplates(
+  serverTemplates: WebsiteTemplate[]
+): WebsiteTemplate[] {
+  const byKey = new Map<string, WebsiteTemplate>();
+
+  studioTemplateDefinitions.forEach((definition, index) => {
+    const key = normalizeText(
+      (definition as any)?.id || (definition as any)?.key
+    );
+    if (!key) return;
+    byKey.set(key, mapDefinitionToGalleryTemplate(definition, index));
+  });
+
+  serverTemplates.forEach((template) => {
+    const key = normalizeText(template.key || template._id);
+
+    if (!key) return;
+
+    const existing = byKey.get(key);
+
+    if (!existing) {
+      byKey.set(key, template);
+      return;
+    }
+
+    const overrides: Record<string, any> = {};
+    Object.entries(template).forEach(([field, value]) => {
+      if (value === null || value === undefined || value === "") return;
+      overrides[field] = value;
+    });
+
+    byKey.set(key, { ...existing, ...overrides });
+  });
+
+  return Array.from(byKey.values());
+}
+
 async function fetchWebsiteTemplates() {
-  const data = await apiRequest<{
-    success: boolean;
-    count: number;
-    templates: WebsiteTemplate[];
-  }>("/api/website-templates");
+  try {
+    const data = await apiRequest<{
+      success: boolean;
+      count: number;
+      templates: WebsiteTemplate[];
+    }>("/api/website-templates");
 
-  if (!data?.success) {
-    throw new Error("שגיאה בטעינת התבניות");
+    const serverTemplates =
+      data?.success && Array.isArray(data.templates) ? data.templates : [];
+
+    return mergeWithLocalTemplates(serverTemplates);
+  } catch (err) {
+    // Even if the server list fails, still show the locally-registered
+    // studio templates so the gallery is never empty.
+    console.error("Load website templates from server failed:", err);
+    return mergeWithLocalTemplates([]);
   }
-
-  return Array.isArray(data.templates) ? data.templates : [];
 }
 
 function normalizeTemplateForMongo(template: any, index: number) {

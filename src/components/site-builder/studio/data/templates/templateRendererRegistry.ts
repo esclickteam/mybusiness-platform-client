@@ -88,6 +88,31 @@ import ChanelPages, { chanelPages } from "./chanel/pages";
 import { chanelSchema } from "./chanel/schema";
 import { chanelDefaultData } from "./chanel/chanelData";
 
+import AureliaPages, { aureliaPages } from "./aurelia/pages";
+import { aureliaEditorCss } from "./aurelia/editorCss";
+import { aureliaSchema } from "./aurelia/schema";
+import { aureliaDefaultData } from "./aurelia/defaultData";
+
+import NexoraPages, { nexoraPages } from "./nexora/pages";
+import { nexoraEditorCss } from "./nexora/editorCss";
+import { nexoraSchema } from "./nexora/schema";
+import { nexoraDefaultData } from "./nexora/defaultData";
+
+import FortivaPages, { fortivaPages } from "./fortiva/pages";
+import { fortivaEditorCss } from "./fortiva/editorCss";
+import { fortivaSchema } from "./fortiva/schema";
+import { fortivaDefaultData } from "./fortiva/defaultData";
+
+import VitalisPages, { vitalisPages } from "./vitalis/pages";
+import { vitalisEditorCss } from "./vitalis/editorCss";
+import { vitalisSchema } from "./vitalis/schema";
+import { vitalisDefaultData } from "./vitalis/defaultData";
+
+import StudioraPages, { studioraPages } from "./studiora/pages";
+import { studioraEditorCss } from "./studiora/editorCss";
+import { studioraSchema } from "./studiora/schema";
+import { studioraDefaultData } from "./studiora/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -397,6 +422,61 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     schema: chanelSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: chanelDefaultData as unknown as Record<string, any>,
+  }),
+
+  aurelia: createRenderer({
+    key: "aurelia",
+    name: "Aurelia",
+    Component: AureliaPages,
+    pages: aureliaPages,
+    editorMode: "visual-react",
+    schema: aureliaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: aureliaDefaultData as unknown as Record<string, any>,
+    editorCss: aureliaEditorCss,
+  }),
+
+  nexora: createRenderer({
+    key: "nexora",
+    name: "Nexora",
+    Component: NexoraPages,
+    pages: nexoraPages,
+    editorMode: "visual-react",
+    schema: nexoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nexoraDefaultData as unknown as Record<string, any>,
+    editorCss: nexoraEditorCss,
+  }),
+
+  fortiva: createRenderer({
+    key: "fortiva",
+    name: "Fortiva",
+    Component: FortivaPages,
+    pages: fortivaPages,
+    editorMode: "visual-react",
+    schema: fortivaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: fortivaDefaultData as unknown as Record<string, any>,
+    editorCss: fortivaEditorCss,
+  }),
+
+  vitalis: createRenderer({
+    key: "vitalis",
+    name: "Vitalis",
+    Component: VitalisPages,
+    pages: vitalisPages,
+    editorMode: "visual-react",
+    schema: vitalisSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vitalisDefaultData as unknown as Record<string, any>,
+    editorCss: vitalisEditorCss,
+  }),
+
+  studiora: createRenderer({
+    key: "studiora",
+    name: "Studiora",
+    Component: StudioraPages,
+    pages: studioraPages,
+    editorMode: "visual-react",
+    schema: studioraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: studioraDefaultData as unknown as Record<string, any>,
+    editorCss: studioraEditorCss,
   }),
 };
 
