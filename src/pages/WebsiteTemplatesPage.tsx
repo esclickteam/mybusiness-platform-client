@@ -26,7 +26,9 @@ import {
 
 import DomainSearch from "../components/website/DomainSearch";
 import { createMySite } from "../api/mySitesApi";
-import { getTemplateCoverUrl } from "../utils/templateCover";
+import TemplateCardPreview, {
+  canRenderTemplatePreview,
+} from "../components/website/TemplateCardPreview";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -1106,12 +1108,6 @@ export default function WebsiteTemplatesPage() {
                           (template.isNew ? "NEW" : "") ||
                           (template.isFeatured ? "מומלץ" : "");
 
-                        const imageUrl =
-                          template.thumbnailUrl ||
-                          template.previewImageUrl ||
-                          getTemplateCoverUrl(template.key) ||
-                          "";
-
                         return (
                           <article key={template.key} className="group">
                             <div
@@ -1132,18 +1128,14 @@ export default function WebsiteTemplatesPage() {
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
                                 <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
-                                  {imageUrl ? (
-                                    <img
-                                      src={imageUrl}
-                                      alt={template.name}
-                                      loading={index < 4 ? "eager" : "lazy"}
-                                      decoding="async"
-                                      fetchPriority={index < 4 ? "high" : "auto"}
-                                      className="
-                                        h-full w-full object-cover object-top
-                                        transition duration-500 group-hover:scale-[1.025]
-                                      "
-                                    />
+                                  {canRenderTemplatePreview(template.key) ? (
+                                    <div className="h-full w-full transition duration-500 group-hover:scale-[1.02]">
+                                      <TemplateCardPreview
+                                        templateKey={template.key}
+                                        title={template.name}
+                                        eager={index < 4}
+                                      />
+                                    </div>
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
                                       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
