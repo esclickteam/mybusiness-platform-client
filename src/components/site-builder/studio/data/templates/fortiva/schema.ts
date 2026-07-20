@@ -1,0 +1,61 @@
+export const fortivaSchema = {
+  templateId: "fortiva",
+  name: "Fortiva",
+  fields: [
+    { key: "brandName", label: "שם המשרד", type: "text" },
+    { key: "logoText", label: "טקסט לוגו", type: "text" },
+
+    { key: "heroEyebrow", label: "כותרת קטנה בהירו", type: "text" },
+    { key: "heroTitle", label: "כותרת הירו", type: "textarea" },
+    { key: "heroSubtitle", label: "טקסט הירו", type: "textarea" },
+    { key: "heroPrimaryButton", label: "כפתור ראשי", type: "text" },
+    { key: "heroSecondaryButton", label: "כפתור משני", type: "text" },
+    { key: "heroImage", label: "תמונת הירו", type: "image" },
+
+    { key: "aboutTitle", label: "כותרת אודות", type: "textarea" },
+    { key: "aboutText", label: "טקסט אודות", type: "textarea" },
+    { key: "aboutImage", label: "תמונת אודות", type: "image" },
+
+    { key: "servicesTitle", label: "כותרת תחומי עיסוק", type: "textarea" },
+    { key: "serviceOneTitle", label: "תחום 1 - כותרת", type: "text" },
+    { key: "serviceOneText", label: "תחום 1 - טקסט", type: "textarea" },
+    { key: "serviceTwoTitle", label: "תחום 2 - כותרת", type: "text" },
+    { key: "serviceTwoText", label: "תחום 2 - טקסט", type: "textarea" },
+    { key: "serviceThreeTitle", label: "תחום 3 - כותרת", type: "text" },
+    { key: "serviceThreeText", label: "תחום 3 - טקסט", type: "textarea" },
+    { key: "serviceFourTitle", label: "תחום 4 - כותרת", type: "text" },
+    { key: "serviceFourText", label: "תחום 4 - טקסט", type: "textarea" },
+
+    { key: "processTitle", label: "כותרת תהליך", type: "textarea" },
+
+    { key: "casesTitle", label: "כותרת הצלחות", type: "textarea" },
+    { key: "caseOneTitle", label: "הצלחה 1 - כותרת", type: "text" },
+    { key: "caseOneText", label: "הצלחה 1 - טקסט", type: "textarea" },
+    { key: "caseTwoTitle", label: "הצלחה 2 - כותרת", type: "text" },
+    { key: "caseTwoText", label: "הצלחה 2 - טקסט", type: "textarea" },
+    { key: "caseThreeTitle", label: "הצלחה 3 - כותרת", type: "text" },
+    { key: "caseThreeText", label: "הצלחה 3 - טקסט", type: "textarea" },
+
+    { key: "teamTitle", label: "כותרת צוות", type: "textarea" },
+    { key: "teamOneName", label: "איש צוות 1 - שם", type: "text" },
+    { key: "teamOneRole", label: "איש צוות 1 - תפקיד", type: "text" },
+    { key: "teamOneImage", label: "איש צוות 1 - תמונה", type: "image" },
+    { key: "teamTwoName", label: "איש צוות 2 - שם", type: "text" },
+    { key: "teamTwoRole", label: "איש צוות 2 - תפקיד", type: "text" },
+    { key: "teamTwoImage", label: "איש צוות 2 - תמונה", type: "image" },
+    { key: "teamThreeName", label: "איש צוות 3 - שם", type: "text" },
+    { key: "teamThreeRole", label: "איש צוות 3 - תפקיד", type: "text" },
+    { key: "teamThreeImage", label: "איש צוות 3 - תמונה", type: "image" },
+
+    { key: "contactTitle", label: "כותרת יצירת קשר", type: "textarea" },
+    { key: "contactText", label: "טקסט יצירת קשר", type: "textarea" },
+    { key: "phone", label: "טלפון", type: "text" },
+    { key: "email", label: "אימייל", type: "text" },
+    { key: "address", label: "כתובת", type: "text" },
+    { key: "hours", label: "שעות פעילות", type: "text" },
+
+    { key: "ctaTitle", label: "כותרת CTA", type: "textarea" },
+    { key: "ctaText", label: "טקסט CTA", type: "textarea" },
+    { key: "ctaButton", label: "כפתור CTA", type: "text" },
+  ],
+};

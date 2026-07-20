@@ -1,0 +1,58 @@
+export const aureliaSchema = {
+  templateId: "aurelia",
+  name: "Aurelia",
+  fields: [
+    { key: "brandName", label: "שם המסעדה", type: "text" },
+    { key: "logoText", label: "טקסט לוגו", type: "text" },
+
+    { key: "heroEyebrow", label: "כותרת קטנה בהירו", type: "text" },
+    { key: "heroTitle", label: "כותרת הירו", type: "textarea" },
+    { key: "heroSubtitle", label: "טקסט הירו", type: "textarea" },
+    { key: "heroPrimaryButton", label: "כפתור ראשי", type: "text" },
+    { key: "heroSecondaryButton", label: "כפתור משני", type: "text" },
+    { key: "heroImage", label: "תמונת הירו", type: "image" },
+
+    { key: "aboutTitle", label: "כותרת הסיפור", type: "textarea" },
+    { key: "aboutText", label: "טקסט הסיפור", type: "textarea" },
+    { key: "aboutImage", label: "תמונת הסיפור", type: "image" },
+
+    { key: "menuTitle", label: "כותרת תפריט", type: "textarea" },
+    { key: "dishOneName", label: "מנה 1 - שם", type: "text" },
+    { key: "dishOnePrice", label: "מנה 1 - מחיר", type: "text" },
+    { key: "dishOneText", label: "מנה 1 - תיאור", type: "textarea" },
+    { key: "dishTwoName", label: "מנה 2 - שם", type: "text" },
+    { key: "dishTwoPrice", label: "מנה 2 - מחיר", type: "text" },
+    { key: "dishTwoText", label: "מנה 2 - תיאור", type: "textarea" },
+    { key: "dishThreeName", label: "מנה 3 - שם", type: "text" },
+    { key: "dishThreePrice", label: "מנה 3 - מחיר", type: "text" },
+    { key: "dishThreeText", label: "מנה 3 - תיאור", type: "textarea" },
+    { key: "dishFourName", label: "מנה 4 - שם", type: "text" },
+    { key: "dishFourPrice", label: "מנה 4 - מחיר", type: "text" },
+    { key: "dishFourText", label: "מנה 4 - תיאור", type: "textarea" },
+    { key: "dishFiveName", label: "מנה 5 - שם", type: "text" },
+    { key: "dishFivePrice", label: "מנה 5 - מחיר", type: "text" },
+    { key: "dishFiveText", label: "מנה 5 - תיאור", type: "textarea" },
+    { key: "dishSixName", label: "מנה 6 - שם", type: "text" },
+    { key: "dishSixPrice", label: "מנה 6 - מחיר", type: "text" },
+    { key: "dishSixText", label: "מנה 6 - תיאור", type: "textarea" },
+
+    { key: "galleryTitle", label: "כותרת גלריה", type: "textarea" },
+    { key: "galleryImageOne", label: "גלריה תמונה 1", type: "image" },
+    { key: "galleryImageTwo", label: "גלריה תמונה 2", type: "image" },
+    { key: "galleryImageThree", label: "גלריה תמונה 3", type: "image" },
+    { key: "galleryImageFour", label: "גלריה תמונה 4", type: "image" },
+
+    { key: "reviewsTitle", label: "כותרת ביקורות", type: "textarea" },
+
+    { key: "contactTitle", label: "כותרת הזמנה", type: "textarea" },
+    { key: "contactText", label: "טקסט הזמנה", type: "textarea" },
+    { key: "phone", label: "טלפון", type: "text" },
+    { key: "email", label: "אימייל", type: "text" },
+    { key: "address", label: "כתובת", type: "text" },
+    { key: "hours", label: "שעות פתיחה", type: "text" },
+
+    { key: "ctaTitle", label: "כותרת CTA", type: "textarea" },
+    { key: "ctaText", label: "טקסט CTA", type: "textarea" },
+    { key: "ctaButton", label: "כפתור CTA", type: "text" },
+  ],
+};

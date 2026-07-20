@@ -1,0 +1,60 @@
+export const vitalisSchema = {
+  templateId: "vitalis",
+  name: "Vitalis",
+  fields: [
+    { key: "brandName", label: "שם המרפאה", type: "text" },
+    { key: "logoText", label: "טקסט לוגו", type: "text" },
+
+    { key: "heroEyebrow", label: "כותרת קטנה בהירו", type: "text" },
+    { key: "heroTitle", label: "כותרת הירו", type: "textarea" },
+    { key: "heroSubtitle", label: "טקסט הירו", type: "textarea" },
+    { key: "heroPrimaryButton", label: "כפתור ראשי", type: "text" },
+    { key: "heroSecondaryButton", label: "כפתור משני", type: "text" },
+    { key: "heroImage", label: "תמונת הירו", type: "image" },
+
+    { key: "aboutTitle", label: "כותרת אודות", type: "textarea" },
+    { key: "aboutText", label: "טקסט אודות", type: "textarea" },
+    { key: "aboutImage", label: "תמונת אודות", type: "image" },
+
+    { key: "servicesTitle", label: "כותרת טיפולים", type: "textarea" },
+    { key: "serviceOneTitle", label: "טיפול 1 - כותרת", type: "text" },
+    { key: "serviceOneText", label: "טיפול 1 - טקסט", type: "textarea" },
+    { key: "serviceTwoTitle", label: "טיפול 2 - כותרת", type: "text" },
+    { key: "serviceTwoText", label: "טיפול 2 - טקסט", type: "textarea" },
+    { key: "serviceThreeTitle", label: "טיפול 3 - כותרת", type: "text" },
+    { key: "serviceThreeText", label: "טיפול 3 - טקסט", type: "textarea" },
+    { key: "serviceFourTitle", label: "טיפול 4 - כותרת", type: "text" },
+    { key: "serviceFourText", label: "טיפול 4 - טקסט", type: "textarea" },
+    { key: "serviceFiveTitle", label: "טיפול 5 - כותרת", type: "text" },
+    { key: "serviceFiveText", label: "טיפול 5 - טקסט", type: "textarea" },
+    { key: "serviceSixTitle", label: "טיפול 6 - כותרת", type: "text" },
+    { key: "serviceSixText", label: "טיפול 6 - טקסט", type: "textarea" },
+
+    { key: "processTitle", label: "כותרת תהליך", type: "textarea" },
+
+    { key: "teamTitle", label: "כותרת צוות", type: "textarea" },
+    { key: "teamOneName", label: "רופא 1 - שם", type: "text" },
+    { key: "teamOneRole", label: "רופא 1 - תפקיד", type: "text" },
+    { key: "teamOneImage", label: "רופא 1 - תמונה", type: "image" },
+    { key: "teamTwoName", label: "רופא 2 - שם", type: "text" },
+    { key: "teamTwoRole", label: "רופא 2 - תפקיד", type: "text" },
+    { key: "teamTwoImage", label: "רופא 2 - תמונה", type: "image" },
+    { key: "teamThreeName", label: "רופא 3 - שם", type: "text" },
+    { key: "teamThreeRole", label: "רופא 3 - תפקיד", type: "text" },
+    { key: "teamThreeImage", label: "רופא 3 - תמונה", type: "image" },
+
+    { key: "reviewsTitle", label: "כותרת ביקורות", type: "textarea" },
+    { key: "faqTitle", label: "כותרת שאלות", type: "textarea" },
+
+    { key: "contactTitle", label: "כותרת קביעת תור", type: "textarea" },
+    { key: "contactText", label: "טקסט קביעת תור", type: "textarea" },
+    { key: "phone", label: "טלפון", type: "text" },
+    { key: "email", label: "אימייל", type: "text" },
+    { key: "address", label: "כתובת", type: "text" },
+    { key: "hours", label: "שעות פעילות", type: "text" },
+
+    { key: "ctaTitle", label: "כותרת CTA", type: "textarea" },
+    { key: "ctaText", label: "טקסט CTA", type: "textarea" },
+    { key: "ctaButton", label: "כפתור CTA", type: "text" },
+  ],
+};
