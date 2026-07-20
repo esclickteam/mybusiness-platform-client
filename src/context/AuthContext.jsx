@@ -109,7 +109,13 @@ function normalizeUser(user) {
 /* ===========================
    🔓 Public routes
 =========================== */
+function isEmbedRoute(pathname) {
+  return String(pathname || "").startsWith("/embed/");
+}
+
 function isPublicRoute(pathname) {
+  if (isEmbedRoute(pathname)) return true;
+
   const publicRoutes = [
     "/",
     "/login",
@@ -517,6 +523,15 @@ export function AuthProvider({ children }) {
         }
 
         if (cancelled) return;
+
+        // Never redirect away from embed iframes (template/site card previews)
+        if (isEmbedRoute(location.pathname)) {
+          if (!cancelled) {
+            setLoading(false);
+            setInitialized(true);
+          }
+          return;
+        }
 
         if (
           freshUser.role === "admin" &&
