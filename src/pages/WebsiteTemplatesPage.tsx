@@ -26,9 +26,7 @@ import {
 
 import DomainSearch from "../components/website/DomainSearch";
 import { createMySite } from "../api/mySitesApi";
-import TemplateCardPreview, {
-  canRenderTemplatePreview,
-} from "../components/website/TemplateCardPreview";
+import { getTemplateCoverUrl } from "../utils/templateCover";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -1059,10 +1057,10 @@ export default function WebsiteTemplatesPage() {
                     טוען תבניות...
                   </p>
 
-                  <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
+                  <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {Array.from({ length: 8 }).map((_, index) => (
                       <div key={index} className="animate-pulse">
-                        <div className="aspect-[3/4] rounded-xl bg-[#f3f4f6]" />
+                        <div className="aspect-[4/3] rounded-xl bg-[#f3f4f6]" />
                         <div className="mt-4 h-5 w-2/3 rounded bg-[#f3f4f6]" />
                         <div className="mt-2 h-4 w-1/2 rounded bg-[#f3f4f6]" />
                       </div>
@@ -1111,13 +1109,11 @@ export default function WebsiteTemplatesPage() {
                         const imageUrl =
                           template.thumbnailUrl ||
                           template.previewImageUrl ||
+                          getTemplateCoverUrl(template.key) ||
                           "";
 
                         return (
-                          <article
-                            key={template.key}
-                            className="group [content-visibility:auto] [contain-intrinsic-size:520px]"
-                          >
+                          <article key={template.key} className="group">
                             <div
                               className="
                                 relative block w-full overflow-hidden rounded-xl
@@ -1135,17 +1131,19 @@ export default function WebsiteTemplatesPage() {
                                 className="block w-full text-right"
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
-                                <div className="aspect-[3/4] overflow-hidden bg-[#f3f4f6]">
-                                  {canRenderTemplatePreview(template.key) ||
-                                  imageUrl ? (
-                                    <div className="h-full w-full">
-                                      <TemplateCardPreview
-                                        templateKey={template.key}
-                                        title={template.name}
-                                        posterUrl={imageUrl}
-                                        eager={index < 4}
-                                      />
-                                    </div>
+                                <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
+                                  {imageUrl ? (
+                                    <img
+                                      src={imageUrl}
+                                      alt={template.name}
+                                      loading={index < 4 ? "eager" : "lazy"}
+                                      decoding="async"
+                                      fetchPriority={index < 4 ? "high" : "auto"}
+                                      className="
+                                        h-full w-full object-cover object-top
+                                        transition duration-500 group-hover:scale-[1.025]
+                                      "
+                                    />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
                                       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
