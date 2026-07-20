@@ -161,8 +161,8 @@ export default function SchemaEditorCard({
   )}`;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 bg-slate-50/60 px-3 py-2.5">
+    <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-sm">
+      <div className="flex flex-wrap items-center gap-2 border-b border-slate-100 bg-gradient-to-l from-slate-50/90 to-white px-3 py-2.5">
         <button
           type="button"
           onClick={() => setOpen((v) => !v)}

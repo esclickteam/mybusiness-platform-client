@@ -15,7 +15,7 @@ export default function SchemaTypePicker({
           key={def.id}
           type="button"
           onClick={() => onPick(def)}
-          className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-right transition hover:border-blue-300 hover:bg-blue-50/50"
+          className="flex items-start gap-3 rounded-2xl border border-slate-200/80 bg-gradient-to-l from-white to-slate-50/80 px-3 py-2.5 text-right transition hover:border-blue-300 hover:bg-blue-50/40 hover:shadow-sm"
         >
           <Plus className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
           <span className="min-w-0">

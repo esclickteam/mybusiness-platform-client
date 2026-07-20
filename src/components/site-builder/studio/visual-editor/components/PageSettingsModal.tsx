@@ -18,7 +18,6 @@ import {
   Sparkles,
   Tags,
   Trash2,
-  Wand2,
   X,
 } from "lucide-react";
 
@@ -41,7 +40,6 @@ import {
   createSeoId,
   deriveMetaDescription,
   extractPlainTextFromHtml,
-  getSeoFieldLengthStatus,
   normalizePageSeo,
   normalizeSiteSeoSettings,
   resolvePageSeoMeta,
@@ -50,6 +48,25 @@ import {
 } from "../../utils/pageSeoUtils";
 import SchemaBuilder from "./seo/schema-builder/SchemaBuilder";
 import type { SchemaBuilderContext } from "./seo/schema-builder/schemaTypes";
+import {
+  GooglePreviewCard,
+  SeoActionLink,
+  SeoAdvancedSection,
+  SeoExampleButton,
+  SeoFieldLabel,
+  SeoHelpNote,
+  SeoLengthHint,
+  SeoScoreCard,
+  SeoSection,
+  SeoSmartBanner,
+  SeoStatusPill,
+  SeoTabBar,
+  SeoToggle,
+  SocialPreviewCard,
+  computeSeoScore,
+  seoFieldClass,
+  seoTextareaClass,
+} from "./seo/SeoUi";
 
 const ROBOTS_DIRECTIVE_OPTIONS: Array<{
   value: SeoRobotsDirective;
@@ -98,102 +115,6 @@ const TABS: Array<{
   { id: "advanced", label: "SEO מתקדם", icon: <Sparkles className="h-4 w-4" /> },
   { id: "social", label: "שיתוף ברשתות", icon: <Share2 className="h-4 w-4" /> },
 ];
-
-const fieldClassName =
-  "h-12 w-full max-w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
-
-const textareaClassName =
-  "min-h-[104px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold leading-6 text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-blue-400 focus:ring-4 focus:ring-blue-100";
-
-function LengthHint({
-  value,
-  idealMax,
-  hardMax,
-}: {
-  value: string;
-  idealMax: number;
-  hardMax: number;
-}) {
-  const status = getSeoFieldLengthStatus(value, idealMax, hardMax);
-  const length = String(value || "").length;
-
-  const color =
-    status === "good"
-      ? "text-emerald-600"
-      : status === "warn"
-        ? "text-amber-600"
-        : status === "bad"
-          ? "text-rose-600"
-          : "text-slate-400";
-
-  return (
-    <p className={`text-xs font-bold ${color}`}>
-      {length}/{idealMax} תווים מומלצים
-    </p>
-  );
-}
-
-function AdvancedSection({
-  icon,
-  title,
-  description,
-  badge,
-  defaultOpen = false,
-  children,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-  badge?: { label: string; tone: "recommended" | "optional" };
-  defaultOpen?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <details
-      open={defaultOpen}
-      className="group overflow-hidden rounded-3xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden"
-    >
-      <summary className="flex cursor-pointer list-none items-center gap-3 px-4 py-4 transition hover:bg-slate-50/70">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-          {icon}
-        </span>
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-2">
-            <span className="text-sm font-black text-slate-900">{title}</span>
-            {badge ? (
-              <span
-                className={[
-                  "rounded-full px-2 py-0.5 text-[10px] font-black",
-                  badge.tone === "recommended"
-                    ? "bg-emerald-100 text-emerald-700"
-                    : "bg-slate-100 text-slate-500",
-                ].join(" ")}
-              >
-                {badge.label}
-              </span>
-            ) : null}
-          </span>
-          <span className="mt-0.5 block text-xs font-semibold leading-5 text-slate-500">
-            {description}
-          </span>
-        </span>
-        <ChevronDown className="h-5 w-5 shrink-0 text-slate-400 transition group-open:rotate-180" />
-      </summary>
-      <div className="space-y-4 border-t border-slate-100 bg-slate-50/40 px-4 py-4">
-        {children}
-      </div>
-    </details>
-  );
-}
-
-function HelpNote({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="flex items-start gap-2 rounded-2xl bg-blue-50/80 px-3.5 py-2.5 text-xs font-semibold leading-5 text-blue-800">
-      <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
-      <span>{children}</span>
-    </p>
-  );
-}
 
 export default function PageSettingsModal({
   open,
@@ -287,6 +208,51 @@ export default function PageSettingsModal({
   const siteSeo = normalizeSiteSeoSettings(seoSettings);
   const pageIndexingEnabled =
     siteSeo.siteIndexingEnabled !== false && seoDraft.indexable !== false;
+
+  const seoScore = useMemo(() => {
+    const titleValue = seoDraft.titleTag || previewMeta?.titleTag || "";
+    const descValue = seoDraft.metaDescription || "";
+    const hasSchema = (seoDraft.structuredData || []).length > 0;
+    const hasKeywords = Boolean(String(seoDraft.keywords || "").trim());
+    const hasOgImage = Boolean(
+      seoDraft.social?.ogImage || siteSeo.ogImage || siteSeo.defaultOgImage,
+    );
+
+    return computeSeoScore([
+      {
+        id: "title",
+        label: "כותרת לגוגל",
+        done: titleValue.length >= 20 && titleValue.length <= 70,
+        hint: "50–60 תווים מומלצים",
+      },
+      {
+        id: "description",
+        label: "תיאור Meta",
+        done: descValue.length >= 50 && descValue.length <= 160,
+        hint: "120–160 תווים מומלצים",
+      },
+      {
+        id: "index",
+        label: "פתוח לאינדוקס",
+        done: pageIndexingEnabled,
+      },
+      {
+        id: "schema",
+        label: "כרטיס Schema",
+        done: hasSchema,
+      },
+      {
+        id: "keywords",
+        label: "מילות מפתח",
+        done: hasKeywords,
+      },
+      {
+        id: "social",
+        label: "תמונת שיתוף",
+        done: hasOgImage,
+      },
+    ]);
+  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo]);
 
   if (!open || !page || typeof document === "undefined") return null;
 
@@ -569,23 +535,32 @@ export default function PageSettingsModal({
         role="dialog"
         aria-modal="true"
         aria-label={`הגדרות עמוד (${page.title || "עמוד"})`}
-        className="relative my-auto flex h-[min(760px,calc(100vh-24px))] w-full max-w-[860px] flex-col overflow-hidden rounded-[32px] border border-white/70 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.32)] sm:h-[min(760px,calc(100vh-48px))]"
+        className="relative my-auto flex h-[min(780px,calc(100vh-24px))] w-full max-w-[900px] flex-col overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_32px_120px_rgba(15,23,42,0.28)] sm:h-[min(780px,calc(100vh-48px))]"
         onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[radial-gradient(circle_at_top_right,rgba(37,99,235,0.14),transparent_55%),radial-gradient(circle_at_top_left,rgba(14,165,233,0.12),transparent_52%)]" />
 
-        <header className="relative flex shrink-0 items-start justify-between border-b border-slate-100 px-5 py-5 sm:px-7 sm:py-6">
+        <header className="relative flex shrink-0 items-start justify-between border-b border-slate-100/80 bg-white/80 px-5 py-5 backdrop-blur-sm sm:px-7 sm:py-6">
           <div className="flex min-w-0 items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-500 text-white shadow-lg shadow-blue-200">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-blue-600 to-sky-500 text-white shadow-lg shadow-blue-300/40 ring-2 ring-white">
               <Globe className="h-6 w-6" />
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-[30px]">
+              <p className="text-[11px] font-black uppercase tracking-wider text-blue-600">
                 הגדרות עמוד
-              </h2>
-              <p className="mt-1 truncate text-sm font-semibold text-slate-500">
+              </p>
+              <h2 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
                 {page.title || "עמוד"}
+              </h2>
+              <p className="mt-1 truncate text-xs font-semibold text-slate-400">
+                {tab === "settings"
+                  ? "שם וכתובת"
+                  : tab === "seo"
+                    ? "SEO בסיסי — כותרת, תיאור ואינדוקס"
+                    : tab === "advanced"
+                      ? "SEO מתקדם — Schema, גוגל ומטא"
+                      : "שיתוף ברשתות חברתיות"}
               </p>
             </div>
           </div>
@@ -600,119 +575,60 @@ export default function PageSettingsModal({
           </button>
         </header>
 
-        <div className="relative flex shrink-0 gap-1 overflow-x-auto border-b border-slate-100 px-4 sm:px-7">
-          {TABS.map((item) => {
-            const active = tab === item.id;
-
-            return (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setTab(item.id)}
-                className={[
-                  "flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 text-sm font-black transition",
-                  active
-                    ? "border-blue-600 text-blue-700"
-                    : "border-transparent text-slate-500 hover:text-slate-800",
-                ].join(" ")}
-              >
-                {item.icon}
-                {item.label}
-              </button>
-            );
-          })}
+        <div className="relative shrink-0 border-b border-slate-100/80 bg-slate-50/40">
+          <SeoTabBar tabs={TABS} active={tab} onChange={setTab} />
         </div>
 
-        <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain px-5 py-5 text-right sm:px-7 sm:py-6">
+        <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-gradient-to-b from-slate-50/30 to-white px-5 py-5 text-right sm:px-7 sm:py-6">
           {tab !== "settings" ? (
-            <div className="mb-5 rounded-3xl border border-blue-200 bg-gradient-to-l from-blue-600 to-sky-500 p-4 text-white shadow-lg shadow-blue-200">
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20">
-                    <Wand2 className="h-5 w-5" />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-black">SEO חכם — מילוי אוטומטי</p>
-                    <p className="text-xs font-semibold text-blue-50">
-                      נמלא כותרת, תיאור, מילות מפתח וכרטיס Schema מתוכן העמוד.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={applySmartSeo}
-                  className="flex h-11 shrink-0 items-center gap-2 rounded-2xl bg-white px-5 text-sm font-black text-blue-700 shadow-sm transition hover:bg-blue-50"
-                >
-                  <Sparkles className="h-4 w-4" /> מלא אוטומטית
-                </button>
-              </div>
-              {smartHint ? (
-                <p className="mt-3 flex items-center gap-2 rounded-2xl bg-white/15 px-3 py-2 text-xs font-bold">
-                  <CheckCircle2 className="h-4 w-4" /> {smartHint}
-                </p>
-              ) : null}
+            <SeoSmartBanner onApply={applySmartSeo} hint={smartHint || undefined} />
+          ) : null}
+
+          {tab !== "settings" ? (
+            <div className="mb-5">
+              <SeoScoreCard score={seoScore.score} items={seoScore.items} />
             </div>
           ) : null}
 
           {(tab === "seo" || tab === "social") && previewMeta ? (
-            <section className="mb-6 rounded-3xl border border-slate-200 bg-slate-50/80 p-4">
-              <div className="mb-3 flex items-center gap-2 text-sm font-black text-slate-700">
-                <Lightbulb className="h-4 w-4 text-amber-500" />
-                {tab === "social" ? "תצוגה מקדימה לשיתוף" : "תצוגה מקדימה בגוגל"}
-              </div>
-
+            <div className="mb-6">
               {tab === "seo" ? (
-                <div className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <p className="truncate text-lg font-medium text-[#1a0dab]">
-                    {truncateForPreview(previewMeta.titleTag, 70) || "כותרת העמוד"}
-                  </p>
-                  <p className="mt-1 truncate text-sm text-[#006621]">
-                    {previewUrl}
-                  </p>
-                  <p className="mt-2 text-sm leading-6 text-slate-600">
-                    {truncateForPreview(
-                      previewMeta.metaDescription,
-                      160,
-                    ) || "מנועי החיפוש עשויים להציג תיאור שונה."}
-                  </p>
-                </div>
+                <GooglePreviewCard
+                  title={
+                    truncateForPreview(previewMeta.titleTag, 70) || "כותרת העמוד"
+                  }
+                  url={previewUrl}
+                  description={
+                    truncateForPreview(previewMeta.metaDescription, 160) ||
+                    "מנועי החיפוש עשויים להציג תיאור שונה."
+                  }
+                />
               ) : (
-                <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-                  {previewMeta.social.ogImage ? (
-                    <img
-                      src={previewMeta.social.ogImage}
-                      alt=""
-                      className="h-40 w-full object-cover"
-                    />
-                  ) : (
-                    <div className="flex h-40 items-center justify-center bg-slate-100 text-sm font-bold text-slate-400">
-                      אין תמונת שיתוף
-                    </div>
+                <SocialPreviewCard
+                  title={truncateForPreview(previewMeta.social.ogTitle, 80)}
+                  description={truncateForPreview(
+                    previewMeta.social.ogDescription,
+                    160,
                   )}
-                  <div className="p-4">
-                    <p className="truncate text-sm font-black text-slate-900">
-                      {truncateForPreview(previewMeta.social.ogTitle, 80)}
-                    </p>
-                    <p className="mt-1 line-clamp-2 text-sm text-slate-600">
-                      {truncateForPreview(previewMeta.social.ogDescription, 160)}
-                    </p>
-                    <p className="mt-2 truncate text-xs font-bold uppercase tracking-wide text-slate-400">
-                      {previewUrl.replace(/^https?:\/\//, "")}
-                    </p>
-                  </div>
-                </div>
+                  imageUrl={previewMeta.social.ogImage}
+                  domain={previewUrl.replace(/^https?:\/\//, "")}
+                />
               )}
-            </section>
+            </div>
           ) : null}
 
           {tab === "settings" ? (
-            <div className="space-y-5">
+            <SeoSection
+              icon={<Settings2 className="h-5 w-5" />}
+              title="פרטי העמוד"
+              subtitle="שם העמוד וכתובת URL — הבסיס לכל הגדרות ה-SEO"
+            >
               <label className="block space-y-2">
                 <span className="text-sm font-black text-slate-800">שם העמוד</span>
                 <input
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
-                  className={fieldClassName}
+                  className={seoFieldClass}
                   placeholder="לדוגמה: שירותים"
                 />
               </label>
@@ -722,247 +638,197 @@ export default function PageSettingsModal({
                   <span className="text-sm font-black text-slate-800">
                     כתובת URL (slug)
                   </span>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3">
                     <span className="text-sm font-bold text-slate-400">/</span>
                     <input
                       value={slug}
                       onChange={(event) => setSlug(event.target.value)}
-                      className={fieldClassName}
+                      className="h-11 min-w-0 flex-1 border-0 bg-transparent px-1 text-left text-sm font-semibold text-slate-900 outline-none"
                       placeholder="services"
                       dir="ltr"
                     />
                   </div>
                 </label>
               ) : null}
-            </div>
+            </SeoSection>
           ) : null}
 
           {tab === "seo" ? (
             <div className="space-y-5">
-              <label className="block space-y-2">
-                <span className="text-sm font-black text-slate-800">
-                  עמוד אב (היררכיית האתר)
-                </span>
-                <select
-                  value={seoDraft.parentPageId || ""}
-                  onChange={(event) =>
-                    updateSeo({ parentPageId: event.target.value })
-                  }
-                  className={fieldClassName}
-                >
-                  <option value="">דף הבית</option>
-                  {parentPageOptions.map((parentPage) => (
-                    <option key={parentPage.id} value={parentPage.id}>
-                      {parentPage.title}
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              {!page.isHome ? (
+              <SeoSection
+                icon={<Search className="h-5 w-5" />}
+                title="מבנה וכתובת"
+                subtitle="היררכיית האתר וכתובת העמוד — משפיעים על הנראות בגוגל"
+              >
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
-                    כתובת URL (slug)
+                    עמוד אב (היררכיית האתר)
                   </span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-slate-400">/</span>
-                    <input
-                      value={slug}
-                      onChange={(event) => setSlug(event.target.value)}
-                      className={fieldClassName}
-                      dir="ltr"
-                    />
-                  </div>
-                </label>
-              ) : null}
-
-              <label className="block space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-black text-slate-800">
-                    Title tag (כותרת בתוצאות החיפוש)
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fillExample("titleTag")}
-                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
-                    >
-                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
-                    </button>
-                    <LengthHint
-                      value={seoDraft.titleTag || previewMeta?.titleTag || ""}
-                      idealMax={60}
-                      hardMax={70}
-                    />
-                  </div>
-                </div>
-                <input
-                  value={seoDraft.titleTag || ""}
-                  onChange={(event) =>
-                    updateSeo({ titleTag: event.target.value })
-                  }
-                  className={fieldClassName}
-                  placeholder={previewMeta?.titleTag || "שם העמוד | שם האתר"}
-                />
-              </label>
-
-              <label className="block space-y-2">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-sm font-black text-slate-800">
-                    Meta description
-                  </span>
-                  <div className="flex items-center gap-2">
-                    <button
-                      type="button"
-                      onClick={() => fillExample("metaDescription")}
-                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
-                    >
-                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
-                    </button>
-                    <LengthHint
-                      value={seoDraft.metaDescription || ""}
-                      idealMax={160}
-                      hardMax={320}
-                    />
-                  </div>
-                </div>
-                <textarea
-                  value={seoDraft.metaDescription || ""}
-                  onChange={(event) =>
-                    updateSeo({ metaDescription: event.target.value })
-                  }
-                  className={textareaClassName}
-                  placeholder="תיאור קצר שמסביר על מה העמוד. מנועי החיפוש עשויים להציג תיאור שונה."
-                />
-              </label>
-
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-black text-slate-900">
-                      לאפשר למנועי חיפוש לאנדקס את העמוד
-                    </p>
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
-                      כשהאפשרות כבויה, העמוד לא יופיע בתוצאות החיפוש.
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    role="switch"
-                    aria-checked={pageIndexingEnabled}
-                    onClick={() =>
-                      updateSeo({ indexable: !pageIndexingEnabled })
+                  <select
+                    value={seoDraft.parentPageId || ""}
+                    onChange={(event) =>
+                      updateSeo({ parentPageId: event.target.value })
                     }
-                    className={[
-                      "relative h-7 w-12 shrink-0 rounded-full transition",
-                      pageIndexingEnabled ? "bg-blue-600" : "bg-slate-300",
-                    ].join(" ")}
+                    className={seoFieldClass}
                   >
-                    <span
-                      className={[
-                        "absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition",
-                        pageIndexingEnabled ? "right-0.5" : "right-[22px]",
-                      ].join(" ")}
-                    />
-                  </button>
-                </div>
+                    <option value="">דף הבית</option>
+                    {parentPageOptions.map((parentPage) => (
+                      <option key={parentPage.id} value={parentPage.id}>
+                        {parentPage.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                {!page.isHome ? (
+                  <label className="block space-y-2">
+                    <span className="text-sm font-black text-slate-800">
+                      כתובת URL (slug)
+                    </span>
+                    <div className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3">
+                      <span className="text-sm font-bold text-slate-400">/</span>
+                      <input
+                        value={slug}
+                        onChange={(event) => setSlug(event.target.value)}
+                        className="h-11 min-w-0 flex-1 border-0 bg-transparent px-1 text-left text-sm font-semibold text-slate-900 outline-none"
+                        dir="ltr"
+                      />
+                    </div>
+                  </label>
+                ) : null}
+              </SeoSection>
+
+              <SeoSection
+                icon={<Sparkles className="h-5 w-5" />}
+                title="תוכן SEO"
+                subtitle="מה שגוגל מציג בתוצאות החיפוש — כותרת ותיאור"
+              >
+                <label className="block space-y-2">
+                  <SeoFieldLabel
+                    label="Title tag (כותרת בתוצאות החיפוש)"
+                    actions={
+                      <>
+                        <SeoExampleButton onClick={() => fillExample("titleTag")} />
+                        <SeoLengthHint
+                          value={seoDraft.titleTag || previewMeta?.titleTag || ""}
+                          idealMax={60}
+                          hardMax={70}
+                        />
+                      </>
+                    }
+                  />
+                  <input
+                    value={seoDraft.titleTag || ""}
+                    onChange={(event) =>
+                      updateSeo({ titleTag: event.target.value })
+                    }
+                    className={seoFieldClass}
+                    placeholder={previewMeta?.titleTag || "שם העמוד | שם האתר"}
+                  />
+                </label>
+
+                <label className="block space-y-2">
+                  <SeoFieldLabel
+                    label="Meta description (תיאור קצר)"
+                    actions={
+                      <>
+                        <SeoExampleButton
+                          onClick={() => fillExample("metaDescription")}
+                        />
+                        <SeoLengthHint
+                          value={seoDraft.metaDescription || ""}
+                          idealMax={160}
+                          hardMax={320}
+                        />
+                      </>
+                    }
+                  />
+                  <textarea
+                    value={seoDraft.metaDescription || ""}
+                    onChange={(event) =>
+                      updateSeo({ metaDescription: event.target.value })
+                    }
+                    className={seoTextareaClass}
+                    placeholder="תיאור קצר שמסביר על מה העמוד. מנועי החיפוש עשויים להציג תיאור שונה."
+                  />
+                </label>
+              </SeoSection>
+
+              <SeoSection
+                icon={<Globe className="h-5 w-5" />}
+                title="אינדוקס בגוגל"
+                subtitle="שליטה על הופעת העמוד בתוצאות החיפוש"
+              >
+                <SeoToggle
+                  checked={pageIndexingEnabled}
+                  onChange={() => updateSeo({ indexable: !pageIndexingEnabled })}
+                  label="לאפשר למנועי חיפוש לאנדקס את העמוד"
+                  description="כשהאפשרות כבויה, העמוד לא יופיע בתוצאות החיפוש."
+                />
 
                 {siteSeo.siteIndexingEnabled === false ? (
-                  <p className="mt-3 rounded-xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+                  <p className="rounded-xl border border-amber-200/80 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
                     כיביתם אינדוקס לכל האתר בהגדרות האתר. כדי שהעמוד יופיע בגוגל,
                     יש להפעיל אינדוקס ברמת האתר.
                   </p>
                 ) : null}
-              </div>
+              </SeoSection>
 
-              <div className="rounded-3xl border border-slate-200 bg-white p-4">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
-                    <Globe className="h-4.5 w-4.5" />
-                  </span>
-                  <div>
-                    <p className="text-sm font-black text-slate-900">
-                      בדיקה וחיבור לגוגל
-                    </p>
-                    <p className="text-[11px] font-semibold text-slate-500">
-                      גוגל סורק את האתר לבד אחרי פרסום — אין צורך בהתחברות.
-                    </p>
-                  </div>
-                </div>
+              <SeoSection
+                icon={<Globe className="h-5 w-5" />}
+                title="בדיקה וחיבור לגוגל"
+                subtitle="גוגל סורק את האתר לבד אחרי פרסום — אין צורך בהתחברות"
+              >
+                <SeoStatusPill tone={pageIndexingEnabled ? "success" : "danger"}>
+                  {pageIndexingEnabled
+                    ? "העמוד פתוח לאינדוקס — גוגל יכול להציג אותו"
+                    : "העמוד חסום מאינדוקס — הפעילי את המתג למעלה"}
+                </SeoStatusPill>
 
-                <div
-                  className={[
-                    "mt-3 flex items-center gap-2 rounded-2xl px-3 py-2 text-xs font-black",
-                    pageIndexingEnabled
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "bg-rose-50 text-rose-700",
-                  ].join(" ")}
-                >
-                  {pageIndexingEnabled ? (
-                    <>
-                      <CheckCircle2 className="h-4 w-4" /> העמוד פתוח לאינדוקס —
-                      גוגל יכול להציג אותו.
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="h-4 w-4" /> העמוד חסום מאינדוקס —
-                      הפעילי את המתג למעלה.
-                    </>
-                  )}
-                </div>
-
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <a
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <SeoActionLink
                     href={`https://search.google.com/test/rich-results?url=${encodeURIComponent(
                       previewUrl,
                     )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-black text-slate-700 transition hover:border-blue-300 hover:bg-blue-50"
+                    icon={<Search className="h-4 w-4" />}
                   >
-                    <Search className="h-4 w-4" /> בדיקת תצוגה בגוגל
-                  </a>
-                  <a
+                    בדיקת תצוגה בגוגל
+                  </SeoActionLink>
+                  <SeoActionLink
                     href={`https://www.google.com/search?q=${encodeURIComponent(
                       `site:${(publicUrl || buildPublicSiteUrl(siteSlug)).replace(
                         /^https?:\/\//,
                         "",
                       )}`,
                     )}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-black text-slate-700 transition hover:border-blue-300 hover:bg-blue-50"
+                    icon={<Globe className="h-4 w-4" />}
                   >
-                    <Globe className="h-4 w-4" /> האם האתר כבר בגוגל?
-                  </a>
-                  <a
+                    האם האתר כבר בגוגל?
+                  </SeoActionLink>
+                  <SeoActionLink
                     href={`${(publicUrl || buildPublicSiteUrl(siteSlug)).replace(
                       /\/+$/,
                       "",
                     )}/sitemap.xml`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-black text-slate-700 transition hover:border-blue-300 hover:bg-blue-50"
+                    icon={<ExternalLink className="h-4 w-4" />}
                   >
                     מפת אתר (sitemap.xml)
-                  </a>
-                  <a
+                  </SeoActionLink>
+                  <SeoActionLink
                     href="https://search.google.com/search-console"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-xs font-black text-slate-700 transition hover:border-blue-300 hover:bg-blue-50"
+                    icon={<ExternalLink className="h-4 w-4" />}
                   >
                     Google Search Console
-                  </a>
+                  </SeoActionLink>
                 </div>
 
-                <p className="mt-3 text-[11px] font-semibold leading-5 text-slate-500">
+                <p className="text-[11px] font-semibold leading-5 text-slate-500">
                   לחיבור מלא לגוגל: עברו לטאב{" "}
                   <span className="font-black text-slate-700">"SEO מתקדם"</span>{" "}
                   → "אימות מול Google" ועקבו אחרי השלבים. אחרי פרסום האתר, גוגל
                   יתחיל להציג אותו תוך כמה ימים.
                 </p>
-              </div>
+              </SeoSection>
             </div>
           ) : null}
 
@@ -980,39 +846,39 @@ export default function PageSettingsModal({
                     אפשר להשאיר הכל ריק והאתר יופיע בגוגל מצוין. הכלים כאן נועדו
                     למי שרוצה שליטה מקצועית. לא בטוחים? דלגו — מה שחשוב באמת נמצא
                     בטאב{" "}
-                    <span className="font-black text-blue-700">"יסודות SEO"</span>.
+                    <span className="font-black text-blue-700">"SEO בסיסי"</span>.
                   </p>
                 </div>
               </div>
 
-              <AdvancedSection
+              <SeoAdvancedSection
                 icon={<Braces className="h-5 w-5" />}
                 title="כרטיס חכם בגוגל (Schema)"
                 description="עוזר לגוגל להציג כוכבי דירוג, שעות פתיחה, שאלות ותשובות — וגם ל-AI להבין את העסק."
                 badge={{ label: "מומלץ", tone: "recommended" }}
                 defaultOpen
               >
-                <HelpNote>
+                <SeoHelpNote>
                   בחרו סוג שמתאים לעמוד — נבנה עבורכם טופס ידידותי שממלא את
                   הקוד לבד. אפשר גם לפתוח "עריכה מתקדמת" ולערוך את ה-JSON ידנית.
-                </HelpNote>
+                </SeoHelpNote>
 
                 <SchemaBuilder
                   entries={seoDraft.structuredData || []}
                   context={schemaBuilderContext}
                   onChange={(next) => updateSeo({ structuredData: next })}
                 />
-              </AdvancedSection>
+              </SeoAdvancedSection>
 
-              <AdvancedSection
+              <SeoAdvancedSection
                 icon={<Bot className="h-5 w-5" />}
                 title="שליטה בהופעה בגוגל (Robots)"
                 description="מה גוגל יציג מהעמוד. ברירת המחדל מצוינת לרוב העסקים."
                 badge={{ label: "לא חובה", tone: "optional" }}
               >
-                <HelpNote>
+                <SeoHelpNote>
                   סמנו כאן רק אם יש סיבה ברורה. אם לא בטוחים — אל תשנו כלום.
-                </HelpNote>
+                </SeoHelpNote>
 
                 <div className="space-y-2">
                   {ROBOTS_DIRECTIVE_OPTIONS.map((option) => {
@@ -1145,19 +1011,19 @@ export default function PageSettingsModal({
                     &lt;meta name="robots" content="{robotsPreview}"&gt;
                   </code>
                 </div>
-              </AdvancedSection>
+              </SeoAdvancedSection>
 
-              <AdvancedSection
+              <SeoAdvancedSection
                 icon={<Globe className="h-5 w-5" />}
                 title="כתובת רשמית ומילות מפתח"
                 description="למניעת תוכן כפול כשאותו עמוד נגיש מכמה כתובות."
                 badge={{ label: "לא חובה", tone: "optional" }}
               >
-                <HelpNote>
+                <SeoHelpNote>
                   Canonical אומר לגוגל מהי הכתובת ה״רשמית״ של העמוד. הכתובת נקבעת
                   אוטומטית לפי האתר המפורסם + שם העמוד ומתעדכנת לבד — השאירו ריק
                   אלא אם יש סיבה מיוחדת.
-                </HelpNote>
+                </SeoHelpNote>
                 <label className="block space-y-2">
                   <span className="text-sm font-black text-slate-800">
                     Canonical URL
@@ -1167,37 +1033,31 @@ export default function PageSettingsModal({
                     onChange={(event) =>
                       updateSeo({ canonicalUrl: event.target.value })
                     }
-                    className={fieldClassName}
+                    className={seoFieldClass}
                     placeholder={previewUrl}
                     dir="ltr"
                   />
                 </label>
 
                 <label className="block space-y-2">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <span className="text-sm font-black text-slate-800">
-                      מילות מפתח
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => fillExample("keywords")}
-                      className="flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600 transition hover:bg-slate-200"
-                    >
-                      <Lightbulb className="h-3.5 w-3.5" /> דוגמה
-                    </button>
-                  </div>
+                  <SeoFieldLabel
+                    label="מילות מפתח"
+                    actions={
+                      <SeoExampleButton onClick={() => fillExample("keywords")} />
+                    }
+                  />
                   <input
                     value={seoDraft.keywords || ""}
                     onChange={(event) =>
                       updateSeo({ keywords: event.target.value })
                     }
-                    className={fieldClassName}
+                    className={seoFieldClass}
                     placeholder="מילה1, מילה2, מילה3"
                   />
                 </label>
-              </AdvancedSection>
+              </SeoAdvancedSection>
 
-              <AdvancedSection
+              <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
                 title="אימות מול Google ותגי מטא"
                 description="חברו את האתר ל-Google Search Console כדי לעקוב אחרי הביצועים ולשלוח עמודים לגוגל."
@@ -1313,7 +1173,7 @@ export default function PageSettingsModal({
                         onChange={(event) =>
                           setVerificationCode(event.target.value)
                         }
-                        className={fieldClassName}
+                        className={seoFieldClass}
                         placeholder="הדביקי כאן את הקוד או את כל השורה מגוגל"
                       />
                       {verificationCode ? (
@@ -1423,18 +1283,18 @@ export default function PageSettingsModal({
                     </div>
                   </div>
                 </details>
-              </AdvancedSection>
+              </SeoAdvancedSection>
 
-              <AdvancedSection
+              <SeoAdvancedSection
                 icon={<Languages className="h-5 w-5" />}
                 title="שפות ואזורים (hreflang)"
                 description="קישור בין גרסאות של העמוד בשפות או מדינות שונות."
                 badge={{ label: "לא חובה", tone: "optional" }}
               >
-                <HelpNote>
+                <SeoHelpNote>
                   רלוונטי רק אם יש לעמוד גרסה בשפה אחרת. לדוגמה: he-IL לעברית,
                   en-US לאנגלית.
-                </HelpNote>
+                </SeoHelpNote>
                 {(seoDraft.hreflang || []).length === 0 ? (
                   <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-4 text-center text-xs font-semibold text-slate-400">
                     אין שפות נוספות. הוסיפו רק אם קיימת גרסה בשפה/מדינה אחרת.
@@ -1480,12 +1340,16 @@ export default function PageSettingsModal({
                 >
                   <Plus className="h-4 w-4" /> הוספת שפה
                 </button>
-              </AdvancedSection>
+              </SeoAdvancedSection>
             </div>
           ) : null}
 
           {tab === "social" ? (
-            <div className="space-y-5">
+            <SeoSection
+              icon={<Share2 className="h-5 w-5" />}
+              title="שיתוף ברשתות חברתיות"
+              subtitle="איך העמוד נראה כשמשתפים אותו בפייסבוק, וואטסאפ ולינקדאין"
+            >
               <label className="block space-y-2">
                 <span className="text-sm font-black text-slate-800">
                   כותרת לשיתוף
@@ -1495,7 +1359,7 @@ export default function PageSettingsModal({
                   onChange={(event) =>
                     updateSocial({ ogTitle: event.target.value })
                   }
-                  className={fieldClassName}
+                  className={seoFieldClass}
                   placeholder={previewMeta?.titleTag || ""}
                 />
               </label>
@@ -1509,7 +1373,7 @@ export default function PageSettingsModal({
                   onChange={(event) =>
                     updateSocial({ ogDescription: event.target.value })
                   }
-                  className={textareaClassName}
+                  className={seoTextareaClass}
                   placeholder={previewMeta?.metaDescription || ""}
                 />
               </label>
@@ -1523,30 +1387,38 @@ export default function PageSettingsModal({
                   onChange={(event) =>
                     updateSocial({ ogImage: event.target.value })
                   }
-                  className={fieldClassName}
+                  className={seoFieldClass}
                   placeholder="https://..."
                   dir="ltr"
                 />
+                <p className="text-[11px] font-semibold text-slate-400">
+                  יחס מומלץ 1.91:1 (1200×630 פיקסלים) — לתצוגה אופטימלית ברשתות.
+                </p>
               </label>
-            </div>
+            </SeoSection>
           ) : null}
         </div>
 
-        <footer className="relative flex shrink-0 items-center justify-end gap-3 border-t border-slate-100 bg-white px-5 py-4 sm:px-7">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
-          >
-            ביטול
-          </button>
-          <button
-            type="button"
-            onClick={handleSave}
-            className="rounded-2xl bg-blue-600 px-5 py-3 text-sm font-black text-white shadow-sm transition hover:bg-blue-700"
-          >
-            שמירה
-          </button>
+        <footer className="relative flex shrink-0 items-center justify-between gap-3 border-t border-slate-100/80 bg-white/90 px-5 py-4 backdrop-blur-sm sm:px-7">
+          <p className="hidden text-xs font-semibold text-slate-400 sm:block">
+            {tab !== "settings" ? `ציון SEO: ${seoScore.score}%` : "שינויים נשמרים בלחיצה על שמירה"}
+          </p>
+          <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+            >
+              ביטול
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-white shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600"
+            >
+              שמירה
+            </button>
+          </div>
         </footer>
       </div>
     </div>,
