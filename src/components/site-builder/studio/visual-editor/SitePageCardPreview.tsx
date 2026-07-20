@@ -1,5 +1,6 @@
 import React, {
   useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
@@ -31,6 +32,14 @@ type SitePageCardPreviewProps = {
   editorCss?: string;
 };
 
+const PAGE_PANEL_FORCE_CSS = `
+  [data-visual-page-panel][hidden],
+  [data-visual-page-visible="false"],
+  [data-visual-page-panel][aria-hidden="true"] {
+    display: none !important;
+  }
+`;
+
 function buildSrcDoc(html: string, css = "") {
   return `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -45,12 +54,7 @@ function buildSrcDoc(html: string, css = "") {
     overflow: hidden;
   }
   body { width: ${PREVIEW_WIDTH}px; }
-  /* Force inactive keep-alive panels out of the thumbnail crop */
-  [data-visual-page-panel][hidden],
-  [data-visual-page-visible="false"],
-  [data-visual-page-panel][aria-hidden="true"] {
-    display: none !important;
-  }
+  ${PAGE_PANEL_FORCE_CSS}
   ${css || ""}
 </style>
 </head>
@@ -114,7 +118,6 @@ function pagePropBag(page: VisualSitePageItem) {
     : `/${String(page.slug || id).replace(/^\//, "")}`;
 
   return {
-    // Common aliases used across BizUply templates
     initialPage: id,
     initialPageId: id,
     activePageId: id,
@@ -129,40 +132,77 @@ function pagePropBag(page: VisualSitePageItem) {
   };
 }
 
+function enforceVisiblePagePanel(host: HTMLElement, pageId: string) {
+  const targetId = String(pageId || "").trim();
+  if (!targetId) return;
+
+  host
+    .querySelectorAll<HTMLElement>("[data-visual-page-panel]")
+    .forEach((panel) => {
+      const panelId = String(panel.getAttribute("data-visual-page-panel") || "");
+      const visible = panelId === targetId;
+      panel.hidden = !visible;
+      panel.setAttribute("aria-hidden", visible ? "false" : "true");
+      panel.setAttribute(
+        "data-visual-page-visible",
+        visible ? "true" : "false",
+      );
+      panel.style.setProperty("display", visible ? "" : "none", "important");
+    });
+}
+
 function LiveTemplatePreview({
   page,
   PageComponent,
   pageData,
+  editorCss = "",
 }: {
   page: VisualSitePageItem;
   PageComponent: ComponentType<any>;
   pageData?: Record<string, any> | null;
+  editorCss?: string;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const pageProps = pagePropBag(page);
+  const previewData = useMemo(
+    () => ({
+      ...(pageData || {}),
+      __activePageId: page.id,
+      __previewPageId: page.id,
+    }),
+    [pageData, page.id],
+  );
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    // Belt-and-suspenders: hide every keep-alive panel that is not this page.
-    host
-      .querySelectorAll<HTMLElement>("[data-visual-page-panel]")
-      .forEach((panel) => {
-        const panelId = String(panel.getAttribute("data-visual-page-panel") || "");
-        const visible = panelId === page.id;
-        panel.hidden = !visible;
-        panel.setAttribute("aria-hidden", visible ? "false" : "true");
-        panel.setAttribute(
-          "data-visual-page-visible",
-          visible ? "true" : "false",
-        );
-        panel.style.display = visible ? "" : "none";
-      });
+    const apply = () => enforceVisiblePagePanel(host, page.id);
+    apply();
+
+    const observer = new MutationObserver(() => apply());
+    observer.observe(host, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: [
+        "hidden",
+        "aria-hidden",
+        "data-visual-page-visible",
+        "style",
+        "class",
+      ],
+    });
+
+    return () => observer.disconnect();
   }, [page.id]);
 
   return (
     <ScaledFrame height={1600}>
+      {editorCss ? (
+        <style dangerouslySetInnerHTML={{ __html: editorCss }} />
+      ) : null}
+      <style>{PAGE_PANEL_FORCE_CSS}</style>
       <div
         ref={hostRef}
         className="bg-white"
@@ -172,8 +212,9 @@ function LiveTemplatePreview({
         }}
       >
         <PageComponent
-          data={pageData || {}}
-          templateData={pageData || {}}
+          key={page.id}
+          data={previewData}
+          templateData={previewData}
           mode="preview"
           isStudioStatic
           {...pageProps}
@@ -193,7 +234,6 @@ function HtmlTemplatePreview({
   pageId: string;
 }) {
   const srcDoc = useMemo(() => {
-    // Prefer showing only the active page panel when HTML contains a stack.
     let nextHtml = html;
     try {
       if (typeof DOMParser !== "undefined") {
@@ -265,8 +305,8 @@ function PlaceholderPreview({ page }: { page: VisualSitePageItem }) {
 }
 
 /**
- * Wix-style page card thumbnail: page-specific HTML snapshot first,
- * then live template render with correct page props, then fallbacks.
+ * Page card thumbnail: prefer page-specific HTML snapshot, then live template
+ * render locked to that page id (so services/about/etc. never show home).
  */
 export default function SitePageCardPreview({
   page,
@@ -314,17 +354,18 @@ export default function SitePageCardPreview({
         <div className="absolute inset-0 animate-pulse bg-slate-100" />
       ) : libraryTemplate ? (
         <PageLibraryCardPreview page={libraryTemplate} />
-      ) : PageComponent ? (
-        <LiveTemplatePreview
-          page={page}
-          PageComponent={PageComponent}
-          pageData={pageData}
-        />
       ) : hasHtml ? (
         <HtmlTemplatePreview
           html={html}
           css={page.css || editorCss}
           pageId={page.id}
+        />
+      ) : PageComponent ? (
+        <LiveTemplatePreview
+          page={page}
+          PageComponent={PageComponent}
+          pageData={pageData}
+          editorCss={editorCss}
         />
       ) : page.thumbnail ? (
         <img
