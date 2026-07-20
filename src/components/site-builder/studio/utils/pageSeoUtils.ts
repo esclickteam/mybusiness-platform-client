@@ -5,6 +5,7 @@ import type {
   SeoMaxImagePreview,
   SeoRobotsDirective,
   SeoStructuredDataEntry,
+  SiteBrandSettings,
   SitePageSeoSettings,
   SiteSeoSettings,
   StudioSitePage,
@@ -278,6 +279,25 @@ export function normalizeSiteSeoSettings(
     defaultTitleTemplate:
       safeString(source.defaultTitleTemplate) || "%page% | %site%",
     defaultOgImage: safeString(source.defaultOgImage || source.ogImage),
+  };
+}
+
+export function normalizeSiteBrandSettings(
+  rawSettings?: Partial<SiteBrandSettings> | null,
+  fallbackName = "",
+): SiteBrandSettings {
+  const source = asPlainObject(rawSettings);
+
+  return {
+    businessName: safeString(source.businessName || fallbackName),
+    tagline: safeString(source.tagline),
+    logoUrl: safeString(source.logoUrl),
+    faviconUrl: safeString(source.faviconUrl),
+    paletteId: safeString(source.paletteId),
+    socialLinks: Array.isArray(source.socialLinks) ? source.socialLinks : [],
+    smartBot: source.smartBot,
+    digitalCourse: source.digitalCourse,
+    miniSaas: source.miniSaas,
   };
 }
 

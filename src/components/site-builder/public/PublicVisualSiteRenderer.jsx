@@ -1587,11 +1587,17 @@ function readSiteCustomCode(site) {
   );
 }
 
-function PublicSeoHead({ resolvedSeo }) {
+function PublicSeoHead({ resolvedSeo, faviconUrl }) {
   if (!resolvedSeo) return null;
 
   return (
     <Helmet>
+      {faviconUrl ? (
+        <>
+          <link rel="icon" href={faviconUrl} />
+          <link rel="apple-touch-icon" href={faviconUrl} />
+        </>
+      ) : null}
       {resolvedSeo.titleTag ? <title>{resolvedSeo.titleTag}</title> : null}
       {resolvedSeo.metaDescription ? (
         <meta name="description" content={resolvedSeo.metaDescription} />
@@ -2097,7 +2103,10 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
-        <PublicSeoHead resolvedSeo={resolvedSeo} />
+        <PublicSeoHead
+          resolvedSeo={resolvedSeo}
+          faviconUrl={site?.brand?.faviconUrl || ""}
+        />
         {css ? <style>{css}</style> : null}
 
         {customCode.enabled !== false ? (
@@ -2144,7 +2153,10 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         dir="rtl"
       >
-        <PublicSeoHead resolvedSeo={resolvedSeo} />
+        <PublicSeoHead
+          resolvedSeo={resolvedSeo}
+          faviconUrl={site?.brand?.faviconUrl || ""}
+        />
         {css ? <style>{css}</style> : null}
 
         {customCode.enabled !== false ? (

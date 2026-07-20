@@ -13,6 +13,7 @@ import type {
   StudioSitePage,
   StudioSitePageType,
   SiteSeoSettings,
+  SiteBrandSettings,
   SitePageSeoSettings,
 } from "./types";
 import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
@@ -26,6 +27,7 @@ import PageSettingsModal, {
 } from "./visual-editor/components/PageSettingsModal";
 import {
   normalizePageSeo,
+  normalizeSiteBrandSettings,
   normalizeSiteSeoSettings,
 } from "./utils/pageSeoUtils";
 
@@ -4724,6 +4726,9 @@ export default function WebsiteStudioPage({
   const [siteSeoSettings, setSiteSeoSettings] = useState<SiteSeoSettings>(() =>
     normalizeSiteSeoSettings(null),
   );
+  const [siteBrandSettings, setSiteBrandSettings] = useState<SiteBrandSettings>(() =>
+    normalizeSiteBrandSettings(null),
+  );
   const [pageSettingsModal, setPageSettingsModal] = useState<{
     open: boolean;
     pageId: string;
@@ -4913,6 +4918,9 @@ export default function WebsiteStudioPage({
 
         setSiteSeoSettings(
           normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
+        );
+        setSiteBrandSettings(
+          normalizeSiteBrandSettings(data.site.brand, String(data.site.name || "")),
         );
 
         const savedTemplateData = pickVisualTemplateDataFromSavedSite(
@@ -5335,6 +5343,9 @@ export default function WebsiteStudioPage({
         }
         setSiteSeoSettings(
           normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
+        );
+        setSiteBrandSettings(
+          normalizeSiteBrandSettings(data.site.brand, String(data.site.name || "")),
         );
         setPages(serverPages);
         setActivePageId(nextActivePageId);
@@ -5955,11 +5966,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     title: nextTitle,
     slug: nextSlugValue,
     seo,
+    siteSeo,
+    siteBrand,
   }: {
     title: string;
     slug: string;
     seo: SitePageSeoSettings;
+    siteSeo?: SiteSeoSettings;
+    siteBrand?: SiteBrandSettings;
   }) => {
+    if (siteSeo) {
+      setSiteSeoSettings(normalizeSiteSeoSettings(siteSeo));
+    }
+    if (siteBrand) {
+      setSiteBrandSettings(normalizeSiteBrandSettings(siteBrand, siteName));
+    }
     const id = String(pageSettingsModal.pageId || "").trim();
     if (!id) return;
 
@@ -6542,6 +6563,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         },
         name: siteName,
         seoSettings: siteSeoSettings,
+        brand: siteBrandSettings,
         pages: savedPages,
         activePageId,
         clientPortalPages: savedPages.filter(
@@ -7419,6 +7441,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         },
         name: siteName,
         seoSettings: siteSeoSettings,
+        brand: siteBrandSettings,
         pages: pagesForSave,
         activePageId: activeVisualPageId,
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
@@ -7889,6 +7912,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           publicUrl={publicUrl}
           publicUrlIsPlaceholder={publicUrlIsPlaceholder}
           seoSettings={siteSeoSettings}
+          brandSettings={siteBrandSettings}
+          businessId={businessId}
           pageHtml={(() => {
             const target = pages.find(
               (page) => page.id === pageSettingsModal.pageId,

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
 
 const inputClass =
-  "h-11 w-full max-w-full rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-400 focus:ring-2 focus:ring-blue-100";
+  "h-11 w-full max-w-full rounded-xl border border-slate-200/90 bg-white px-3 text-right text-sm font-semibold text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100/80";
 
 export function Field({
   label,
