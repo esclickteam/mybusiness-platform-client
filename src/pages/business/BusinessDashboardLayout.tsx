@@ -15,6 +15,11 @@ import {
   normalizeBusinessId,
   rewriteDashboardTargetForBusiness,
 } from "../../utils/notificationNavigation";
+import { useDashboardBusinessId } from "../../hooks/useDashboardBusinessId";
+import {
+  clearAdminActiveBusinessId,
+  setAdminActiveBusinessId,
+} from "../../utils/adminTenant";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -152,6 +157,8 @@ export default function BusinessDashboardLayout() {
   const { user, loading, logout } = useAuth() as AuthContextValue;
   const navigate = useNavigate();
   const location = useLocation();
+  const businessId = useDashboardBusinessId();
+  const isAdmin = user?.role === "admin";
 
   const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -164,30 +171,27 @@ export default function BusinessDashboardLayout() {
     return isWebsiteFullScreenRoute(location.pathname, location.search);
   }, [location.pathname, location.search]);
 
+  useEffect(() => {
+    if (isAdmin && businessId) {
+      setAdminActiveBusinessId(businessId);
+    }
+  }, [isAdmin, businessId]);
+
   /* ============================
      Persist current dashboard route (survives refresh)
   ============================ */
 
   useEffect(() => {
-    if (!user?.businessId) return;
+    if (!businessId) return;
     if (isWebsiteFullScreen) return;
 
-    saveLastDashboardRoute(
-      user.businessId,
-      location.pathname,
-      location.search
-    );
-  }, [
-    user?.businessId,
-    location.pathname,
-    location.search,
-    isWebsiteFullScreen,
-  ]);
+    saveLastDashboardRoute(businessId, location.pathname, location.search);
+  }, [businessId, location.pathname, location.search, isWebsiteFullScreen]);
 
   useEffect(() => {
     const handleNotificationNavigate = (event: Event) => {
       const url = (event as CustomEvent<{ url?: string }>).detail?.url;
-      const currentBusinessId = normalizeBusinessId(user?.businessId);
+      const currentBusinessId = normalizeBusinessId(businessId);
 
       if (!url || !currentBusinessId) return;
 
@@ -208,7 +212,7 @@ export default function BusinessDashboardLayout() {
         handleNotificationNavigate
       );
     };
-  }, [navigate, user?.businessId]);
+  }, [navigate, businessId]);
 
   const DAY = 1000 * 60 * 60 * 24;
 
@@ -248,7 +252,7 @@ export default function BusinessDashboardLayout() {
   ============================ */
 
   useEffect(() => {
-    if (!user?.businessId) return;
+    if (!businessId) return;
 
     API.get<UnreadCountResponse>("/chat/unread-count")
       .then((res) => {
@@ -262,7 +266,8 @@ export default function BusinessDashboardLayout() {
       socket.connect();
     }
 
-    socket.emit("joinRoom", `business-${user.businessId}`);
+    socket.emit("joinRoom", `business-${businessId}`);
+    socket.emit("joinBusinessRoom", businessId);
 
     const handleUnreadCountUpdate = (data: UnreadCountUpdatePayload) => {
       setMessagesCount(data?.count || 0);
@@ -272,9 +277,9 @@ export default function BusinessDashboardLayout() {
 
     return () => {
       socket.off("unreadCountUpdate", handleUnreadCountUpdate);
-      socket.emit("leaveRoom", `business-${user.businessId}`);
+      socket.emit("leaveRoom", `business-${businessId}`);
     };
-  }, [user?.businessId]);
+  }, [businessId]);
 
   /* ============================
      Resize Handler
@@ -395,18 +400,24 @@ export default function BusinessDashboardLayout() {
 
   const handleLogout = async () => {
     try {
-      if (user?.businessId) {
-        clearLastDashboardRoute(user.businessId);
+      if (businessId) {
+        clearLastDashboardRoute(businessId);
       } else {
         clearLastDashboardRoute();
       }
 
+      clearAdminActiveBusinessId();
       socket.disconnect();
       // logout() clears auth and navigates to /login; next login → main dashboard
       await logout?.();
     } catch {
       navigate("/login", { replace: true });
     }
+  };
+
+  const handleBackToAdmin = () => {
+    clearAdminActiveBusinessId();
+    navigate("/admin/users", { replace: false });
   };
 
   if (loading) {
@@ -491,16 +502,44 @@ export default function BusinessDashboardLayout() {
             </aside>
           )}
 
+          {!isWebsiteFullScreen && isAdmin && (
+            <div
+              className="
+                fixed left-0 top-0 z-[35] flex h-10 items-center justify-between
+                gap-3 bg-slate-900 px-4 text-sm text-white
+              "
+              style={{
+                left: isMobile ? 0 : SIDEBAR_WIDTH,
+                right: 0,
+              }}
+            >
+              <span className="truncate font-semibold">
+                מצב אדמין — צפייה וניהול בעסק
+              </span>
+              <button
+                type="button"
+                onClick={handleBackToAdmin}
+                className="
+                  shrink-0 rounded-lg bg-white/15 px-3 py-1 text-xs font-bold
+                  transition hover:bg-white/25
+                "
+              >
+                חזרה לפאנל אדמין
+              </button>
+            </div>
+          )}
+
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed left-0 top-0 z-30 flex h-16 items-center justify-between
+                fixed left-0 z-30 flex h-16 items-center justify-between
                 border-b border-slate-200 bg-white/95 px-4 shadow-sm
                 backdrop-blur-xl transition-all duration-300 lg:px-6
               "
               style={{
                 left: isMobile ? 0 : SIDEBAR_WIDTH,
                 right: 0,
+                top: isAdmin ? 40 : 0,
               }}
             >
               <div className="flex min-w-0 items-center gap-3">
@@ -524,6 +563,11 @@ export default function BusinessDashboardLayout() {
                   <span className="font-black text-slate-950">
                     {user?.businessName || user?.name}
                   </span>
+                  {isAdmin && (
+                    <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+                      Admin
+                    </span>
+                  )}
                 </div>
 
                 {!isMobile && isTrialActive && !hasPaid && (
@@ -635,7 +679,11 @@ export default function BusinessDashboardLayout() {
           <main
             className={[
               "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]",
-              isWebsiteFullScreen ? "pt-0 lg:pl-0" : "pt-16 lg:pl-[250px]",
+              isWebsiteFullScreen
+                ? "pt-0 lg:pl-0"
+                : isAdmin
+                  ? "pt-[104px] lg:pl-[250px]"
+                  : "pt-16 lg:pl-[250px]",
             ].join(" ")}
           >
             <div

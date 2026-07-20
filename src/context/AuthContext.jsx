@@ -515,7 +515,8 @@ export function AuthProvider({ children }) {
         if (
           freshUser.role === "admin" &&
           !isImpersonating &&
-          !location.pathname.startsWith("/admin")
+          !location.pathname.startsWith("/admin") &&
+          !location.pathname.startsWith("/business/")
         ) {
           navigate("/admin/dashboard", { replace: true });
           return;

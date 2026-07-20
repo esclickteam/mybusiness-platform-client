@@ -69,7 +69,9 @@
   }
   
   .delete-btn,
-  .status-btn {
+  .status-btn,
+  .enter-business-btn,
+  .impersonate-btn {
     padding: 6px 10px;
     border: none;
     border-radius: 6px;
@@ -79,7 +81,21 @@
     align-items: center;
     justify-content: center;
   }
-  
+
+  .enter-business-btn {
+    background-color: #0f172a;
+    color: white;
+  }
+
+  .enter-business-btn:hover {
+    background-color: #1e293b;
+  }
+
+  .impersonate-btn {
+    background-color: #c4b5fd;
+    color: #4a148c;
+  }
+
   /* כפתור מחיקה */
   .delete-btn {
     background-color: #f87171;

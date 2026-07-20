@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTrashAlt, FaBan, FaCheck, FaUserSecret } from "react-icons/fa";
+import { FaTrashAlt, FaBan, FaCheck, FaUserSecret, FaStore } from "react-icons/fa";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { setAdminActiveBusinessId } from "../../utils/adminTenant";
 import "./AdminUsers.css";
 
 function AdminUsers() {
@@ -79,7 +80,21 @@ function AdminUsers() {
   };
 
   /* ===============================
-     🔐 IMPERSONATION
+     Enter business as admin (role stays admin)
+  =============================== */
+  const handleEnterAsAdmin = (user) => {
+    const businessId = user.businessId?._id || user.businessId;
+    if (!businessId) {
+      alert("❌ למשתמש זה אין עסק משויך");
+      return;
+    }
+
+    setAdminActiveBusinessId(businessId);
+    navigate(`/business/${businessId}/dashboard`);
+  };
+
+  /* ===============================
+     🔐 IMPERSONATION (legacy — swaps identity)
   =============================== */
   const handleImpersonate = async (user) => {
     if (!window.confirm(`להיכנס כ־${user.name}?`)) return;
@@ -169,6 +184,17 @@ function AdminUsers() {
               <td>{user.status || "active"}</td>
 
               <td className="actions-cell">
+                {/* Enter business as admin — keep admin role */}
+                {user.role === "business" && user.businessId && (
+                  <button
+                    className="enter-business-btn"
+                    title="כניסה לעסק כאדמין"
+                    onClick={() => handleEnterAsAdmin(user)}
+                  >
+                    <FaStore />
+                  </button>
+                )}
+
                 {/* 🕵️‍♂️ Impersonate */}
                 {user.role !== "admin" && (
                   <button

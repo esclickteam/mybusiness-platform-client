@@ -4,6 +4,7 @@ import {
   registerAuthHeaderSetter,
   refreshAccessTokenOnce,
 } from "./utils/tokenRefresh";
+import { getAdminActiveBusinessId } from "./utils/adminTenant";
 
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
@@ -88,6 +89,14 @@ API.interceptors.request.use(
       config.headers["Authorization"] = `Bearer ${token}`;
     } else {
       delete config.headers["Authorization"];
+    }
+
+    // Admin cross-tenant: scope /business/my and CRM to the target business
+    const adminBusinessId = getAdminActiveBusinessId();
+    if (adminBusinessId) {
+      config.headers["X-Business-Id"] = adminBusinessId;
+    } else {
+      delete config.headers["X-Business-Id"];
     }
 
     // FormData must not be forced to JSON

@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useQueryClient } from "@tanstack/react-query";
 import { getLastDashboardRoute } from "../../utils/dashboardRoutePersistence";
 import { normalizeBusinessId } from "../../utils/notificationNavigation";
+import API from "../../api";
 
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
@@ -173,15 +174,23 @@ function DashboardIndexRedirect({ businessId }) {
 
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
-  const businessId = user?.businessId;
   const { businessId: urlBusinessId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const lastBusinessRedirectRef = useRef("");
+  const isAdmin = user?.role === "admin";
+
+  // Admin uses URL tenant; business owners use their own businessId
+  const businessId =
+    normalizeBusinessId(urlBusinessId) ||
+    normalizeBusinessId(user?.businessId);
 
   useEffect(() => {
-    const currentBusinessId = normalizeBusinessId(businessId);
+    // Admins may open any /business/:id — never rewrite their URL
+    if (isAdmin) return;
+
+    const currentBusinessId = normalizeBusinessId(user?.businessId);
     const routeBusinessId = normalizeBusinessId(urlBusinessId);
 
     if (!currentBusinessId || !routeBusinessId) return;
@@ -205,7 +214,8 @@ const BusinessDashboardRoutes = () => {
       state: location.state,
     });
   }, [
-    businessId,
+    isAdmin,
+    user?.businessId,
     urlBusinessId,
     location.pathname,
     location.search,
@@ -217,22 +227,18 @@ const BusinessDashboardRoutes = () => {
 
     queryClient.prefetchQuery({
       queryKey: ["businessProfile", businessId],
-      queryFn: () =>
-        fetch(`/api/business/${businessId}`).then((res) => res.json()),
+      queryFn: async () => (await API.get(`/business/${businessId}`)).data,
     });
 
     queryClient.prefetchQuery({
       queryKey: ["businessServices", businessId],
-      queryFn: () =>
-        fetch("/api/business/my/services").then((res) => res.json()),
+      queryFn: async () => (await API.get("/business/my/services")).data,
     });
 
     queryClient.prefetchQuery({
       queryKey: ["businessAppointments", businessId],
-      queryFn: () =>
-        fetch(`/api/appointments?businessId=${businessId}`).then((res) =>
-          res.json()
-        ),
+      queryFn: async () =>
+        (await API.get(`/appointments?businessId=${businessId}`)).data,
     });
   }, [businessId, queryClient]);
 
