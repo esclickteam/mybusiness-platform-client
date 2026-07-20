@@ -71,40 +71,27 @@ function revealClass(isVisible: boolean, delay = "") {
   ].join(" ");
 }
 
-function AnimatedLineTitle({
-  lines,
-  active,
-  className,
-  step = 38,
-  startDelay = 0,
+function FormFieldSlot({
+  id,
+  label,
+  className = "",
+  children,
 }: {
-  lines: string[];
-  active: boolean;
-  className: string;
-  step?: number;
-  startDelay?: number;
+  id: string;
+  label: string;
+  className?: string;
+  children: React.ReactNode;
 }) {
   return (
-    <h2 className={className}>
-      {lines.map((line, lineIndex) => (
-        <TemplateText
-          as="span"
-          key={`${line}-${lineIndex}`}
-          className={[
-            "block overflow-visible pb-[0.08em]",
-            "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
-            active
-              ? "translate-y-0 rotate-0 opacity-100 blur-none"
-              : "translate-y-full rotate-6 opacity-0 blur-md",
-          ].join(" ")}
-          style={{
-            transitionDelay: `${startDelay + lineIndex * step}ms`,
-          }}
-        >
-          {line}
-        </TemplateText>
-      ))}
-    </h2>
+    <div
+      className={["ido-form-field-slot w-full", className].join(" ")}
+      data-visual-editable="true"
+      data-visual-edit-id={id}
+      data-visual-edit-type="box"
+      data-visual-edit-label={label}
+    >
+      {children}
+    </div>
   );
 }
 
@@ -122,30 +109,46 @@ function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex items-center gap-3">
-          <span
+          <TemplateText
+            as="span"
+            editId="header.logo"
+            editLabel="לוגו"
             className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black"
             style={{ color: "#07100e" }}
           >
             IDO
-          </span>
+          </TemplateText>
 
-          <span className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block">
+          <TemplateText
+            as="span"
+            editId="header.brand"
+            editLabel="שם המותג"
+            className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block"
+          >
             SOCIAL STUDIO
-          </span>
+          </TemplateText>
         </a>
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-white/65 md:flex">
           <a href="#services" className="transition hover:text-[#c9f4dc]">
-            שירותים
+            <TemplateText as="span" editId="header.nav.services" editLabel="ניווט שירותים">
+              שירותים
+            </TemplateText>
           </a>
           <a href="#about" className="transition hover:text-[#c9f4dc]">
-            אודות
+            <TemplateText as="span" editId="header.nav.about" editLabel="ניווט אודות">
+              אודות
+            </TemplateText>
           </a>
           <a href="#gallery" className="transition hover:text-[#c9f4dc]">
-            קייסים
+            <TemplateText as="span" editId="header.nav.gallery" editLabel="ניווט קייסים">
+              קייסים
+            </TemplateText>
           </a>
           <a href="#booking" className="transition hover:text-[#c9f4dc]">
-            ייעוץ
+            <TemplateText as="span" editId="header.nav.booking" editLabel="ניווט ייעוץ">
+              ייעוץ
+            </TemplateText>
           </a>
         </nav>
 
@@ -154,7 +157,9 @@ function Header() {
           className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
-          קביעת שיחה
+          <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">
+            קביעת שיחה
+          </TemplateText>
         </a>
       </div>
     </header>
@@ -163,8 +168,6 @@ function Header() {
 
 function Hero() {
   const [open, setOpen] = useState(false);
-
-  const titleLines = ["מומחה סושיאל", "שבונה נוכחות", "שמוכרת בשבילך"];
 
   const heroImage =
     "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=2400&q=95";
@@ -237,20 +240,35 @@ function Hero() {
           style={{ transitionDelay: "100ms" }}
         >
           <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-          <TemplateText as="span">
+          <TemplateText as="span" editId="hero.badge" editLabel="תגית הירו">
             אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
           </TemplateText>
         </div>
 
-        <AnimatedLineTitle
-          lines={titleLines}
-          active={open}
-          step={44}
-          className="relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
-        />
+        <TemplateText
+          as="h2"
+          editId="hero.title"
+          editLabel="כותרת ראשית"
+          className={[
+            "relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]",
+            "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+            open
+              ? "translate-y-0 rotate-0 opacity-100 blur-none"
+              : "translate-y-full rotate-6 opacity-0 blur-md",
+          ].join(" ")}
+          style={{ transitionDelay: "100ms" }}
+        >
+          מומחה סושיאל
+          <br />
+          שבונה נוכחות
+          <br />
+          שמוכרת בשבילך
+        </TemplateText>
 
         <TemplateText
           as="p"
+          editId="hero.subtitle"
+          editLabel="תת-כותרת הירו"
           className={[
             "relative z-40 mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/76 drop-shadow-[0_16px_42px_rgba(0,0,0,.75)] md:text-lg",
             "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
@@ -279,14 +297,18 @@ function Hero() {
             className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
             style={{ color: "#07100e" }}
           >
-            קביעת שיחת ייעוץ
+            <TemplateText as="span" editId="hero.cta.primary" editLabel="כפתור ייעוץ ראשי">
+              קביעת שיחת ייעוץ
+            </TemplateText>
           </a>
 
           <a
             href="#services"
             className="rounded-full border border-white/15 bg-white/[0.09] px-7 py-4 text-sm font-black text-white shadow-2xl backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#c9f4dc] hover:bg-white/[0.14]"
           >
-            צפייה בשירותים
+            <TemplateText as="span" editId="hero.cta.secondary" editLabel="כפתור שירותים">
+              צפייה בשירותים
+            </TemplateText>
           </a>
         </div>
 
@@ -301,18 +323,28 @@ function Hero() {
           style={{ transitionDelay: "2750ms" }}
         >
           {[
-            ["7.2M", "חשיפות"],
-            ["340%", "צמיחה"],
-            ["48+", "מותגים"],
-          ].map(([num, label]) => (
+            ["7.2M", "חשיפות", "hero.stat.reach.value", "hero.stat.reach.label"],
+            ["340%", "צמיחה", "hero.stat.growth.value", "hero.stat.growth.label"],
+            ["48+", "מותגים", "hero.stat.brands.value", "hero.stat.brands.label"],
+          ].map(([num, label, numId, labelId]) => (
             <div
               key={label}
               className="rounded-[1.5rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl"
             >
-              <TemplateText as="div" className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
+              <TemplateText
+                as="div"
+                editId={numId}
+                editLabel={`ערך ${label}`}
+                className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]"
+              >
                 {num}
               </TemplateText>
-              <TemplateText as="div" className="mt-1 text-xs text-white/60">
+              <TemplateText
+                as="div"
+                editId={labelId}
+                editLabel={`תווית ${label}`}
+                className="mt-1 text-xs text-white/60"
+              >
                 {label}
               </TemplateText>
             </div>
@@ -352,12 +384,19 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
         >
           <TemplateText
             as="h2"
+            editId="services.title"
+            editLabel="כותרת שירותים"
             className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl"
           >
             אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
           </TemplateText>
 
-          <TemplateText as="p" className="mt-7 text-lg leading-8 text-[#111827]/75">
+          <TemplateText
+            as="p"
+            editId="services.text"
+            editLabel="טקסט שירותים"
+            className="mt-7 text-lg leading-8 text-[#111827]/75"
+          >
             אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
             מהיכרות ראשונה ועד פנייה אמיתית.
           </TemplateText>
@@ -366,7 +405,9 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             href="#about"
             className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
           >
-            אודות
+            <TemplateText as="span" editId="services.link" editLabel="קישור אודות">
+              אודות
+            </TemplateText>
             <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
               ←
             </span>
@@ -429,6 +470,8 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
 
           <TemplateText
             as="p"
+            editId="services.list"
+            editLabel="רשימת שירותים"
             className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80"
           >
             ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
@@ -437,6 +480,8 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
 
           <TemplateText
             as="div"
+            editId="services.tagline"
+            editLabel="תגית שירותים"
             className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60"
           >
             Digital Growth Partner
@@ -496,19 +541,35 @@ function About({ visible }: { visible: Record<string, boolean> }) {
             ].join(" ")}
           >
             <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-            <TemplateText as="span">לא רק תוכן — מערכת צמיחה</TemplateText>
+            <TemplateText as="span" editId="about.badge" editLabel="תגית אודות">
+              לא רק תוכן — מערכת צמיחה
+            </TemplateText>
           </div>
 
-          <AnimatedLineTitle
-            lines={["לא מעלים פוסטים.", "בונים ביקוש.", "מייצרים פניות."]}
-            active={titleActive}
-            step={34}
-            startDelay={160}
-            className="mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]"
-          />
+          <TemplateText
+            as="h2"
+            editId="about.title"
+            editLabel="כותרת אודות"
+            className={[
+              "mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]",
+              "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+              titleActive
+                ? "translate-y-0 opacity-100 blur-none"
+                : "translate-y-8 opacity-0 blur-md",
+            ].join(" ")}
+            style={{ transitionDelay: "160ms" }}
+          >
+            לא מעלים פוסטים.
+            <br />
+            בונים ביקוש.
+            <br />
+            מייצרים פניות.
+          </TemplateText>
 
           <TemplateText
             as="p"
+            editId="about.subtitle"
+            editLabel="תת-כותרת אודות"
             className={[
               "mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/62 md:text-lg",
               "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
@@ -565,10 +626,20 @@ function About({ visible }: { visible: Record<string, boolean> }) {
                 >
                   0{index + 1}
                 </TemplateDecor>
-                <TemplateText as="h3" className="text-3xl font-semibold tracking-[-0.045em]">
+                <TemplateText
+                  as="h3"
+                  editId={`about.card.${index + 1}.title`}
+                  editLabel={`כותרת כרטיס ${index + 1}`}
+                  className="text-3xl font-semibold tracking-[-0.045em]"
+                >
                   {item.title}
                 </TemplateText>
-                <TemplateText as="p" className="mt-4 leading-7 text-white/58">
+                <TemplateText
+                  as="p"
+                  editId={`about.card.${index + 1}.text`}
+                  editLabel={`טקסט כרטיס ${index + 1}`}
+                  className="mt-4 leading-7 text-white/58"
+                >
                   {item.text}
                 </TemplateText>
               </div>
@@ -744,6 +815,8 @@ function Gallery() {
         >
           <TemplateText
             as="h2"
+            editId="gallery.title"
+            editLabel="כותרת גלריה"
             className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl"
           >
             מחברים בין קהל, תוכן, דאטה
@@ -755,6 +828,8 @@ function Gallery() {
 
           <TemplateText
             as="p"
+            editId="gallery.text"
+            editLabel="טקסט גלריה"
             className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg"
           >
             המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
@@ -815,6 +890,8 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
             <span className="h-px w-12 bg-[#07100e]" />
             <TemplateText
               as="span"
+              editId="booking.badge"
+              editLabel="תגית ייעוץ"
               className="text-sm font-black tracking-[0.24em] text-[#07100e]/70"
             >
               CONSULTATION
@@ -823,6 +900,8 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
 
           <TemplateText
             as="h2"
+            editId="booking.title"
+            editLabel="כותרת ייעוץ"
             className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
           >
             בואו נבנה
@@ -832,7 +911,12 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
             לעסק שלך.
           </TemplateText>
 
-          <TemplateText as="p" className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
+          <TemplateText
+            as="p"
+            editId="booking.text"
+            editLabel="טקסט ייעוץ"
+            className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65"
+          >
             אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
             בהמשך.
           </TemplateText>
@@ -857,68 +941,61 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
             data-visual-edit-label="טופס יצירת קשר"
             className="relative rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8"
           >
-            <div className="ido-form-fields relative grid gap-4">
-              <input
-                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
-                placeholder="שם מלא"
-                data-visual-editable="true"
-                data-visual-edit-id="booking.form.name"
-                data-visual-edit-type="button"
-                data-visual-edit-label="שדה שם מלא"
-              />
+            <div className="ido-form-fields relative flex flex-col gap-4">
+              <FormFieldSlot id="booking.form.name" label="שדה שם מלא">
+                <input
+                  className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                  placeholder="שם מלא"
+                  name="name"
+                />
+              </FormFieldSlot>
 
-              <input
-                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
-                placeholder="טלפון"
-                data-visual-editable="true"
-                data-visual-edit-id="booking.form.phone"
-                data-visual-edit-type="button"
-                data-visual-edit-label="שדה טלפון"
-              />
+              <FormFieldSlot id="booking.form.phone" label="שדה טלפון">
+                <input
+                  className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                  placeholder="טלפון"
+                  name="phone"
+                />
+              </FormFieldSlot>
 
-              <select
-                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
-                data-visual-editable="true"
-                data-visual-edit-id="booking.form.interest"
-                data-visual-edit-type="button"
-                data-visual-edit-label="שדה בחירת שירות"
-              >
-                <option>מה מעניין אותך?</option>
-                <option>ניהול סושיאל</option>
-                <option>קמפיינים ממומנים</option>
-                <option>אסטרטגיית תוכן</option>
-                <option>מיתוג דיגיטלי</option>
-              </select>
+              <FormFieldSlot id="booking.form.interest" label="שדה בחירת שירות">
+                <select
+                  className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                  name="interest"
+                >
+                  <option>מה מעניין אותך?</option>
+                  <option>ניהול סושיאל</option>
+                  <option>קמפיינים ממומנים</option>
+                  <option>אסטרטגיית תוכן</option>
+                  <option>מיתוג דיגיטלי</option>
+                </select>
+              </FormFieldSlot>
 
-              <input
-                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
-                placeholder="תקציב חודשי משוער"
-                data-visual-editable="true"
-                data-visual-edit-id="booking.form.budget"
-                data-visual-edit-type="button"
-                data-visual-edit-label="שדה תקציב"
-              />
+              <FormFieldSlot id="booking.form.budget" label="שדה תקציב">
+                <input
+                  className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                  placeholder="תקציב חודשי משוער"
+                  name="budget"
+                />
+              </FormFieldSlot>
 
-              <textarea
-                className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 text-right outline-none transition focus:border-[#07100e]"
-                placeholder="ספרו בקצרה על העסק והמטרה"
-                data-visual-editable="true"
-                data-visual-edit-id="booking.form.message"
-                data-visual-edit-type="button"
-                data-visual-edit-label="שדה הודעה"
-              />
+              <FormFieldSlot id="booking.form.message" label="שדה הודעה">
+                <textarea
+                  className="min-h-32 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 text-right outline-none transition focus:border-[#07100e]"
+                  placeholder="ספרו בקצרה על העסק והמטרה"
+                  name="message"
+                />
+              </FormFieldSlot>
+
+              <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
+                <button
+                  type="button"
+                  className="h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+                >
+                  שליחת בקשה לשיחה
+                </button>
+              </FormFieldSlot>
             </div>
-
-            <button
-              type="button"
-              className="mt-5 h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
-              data-visual-editable="true"
-              data-visual-edit-id="booking.form.submit"
-              data-visual-edit-type="button"
-              data-visual-edit-label="כפתור שליחה"
-            >
-              <TemplateText as="span">שליחת בקשה לשיחה</TemplateText>
-            </button>
           </form>
         </div>
       </div>
@@ -939,13 +1016,20 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
         >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#c9f4dc]" />
-            <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
+            <TemplateText
+              as="span"
+              editId="faq.badge"
+              editLabel="תגית FAQ"
+              className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]"
+            >
               FAQ
-            </span>
+            </TemplateText>
           </div>
 
           <TemplateText
             as="h2"
+            editId="faq.title"
+            editLabel="כותרת FAQ"
             className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl"
           >
             שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.
@@ -972,11 +1056,21 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
                 "rounded-[1.7rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl",
               ].join(" ")}
             >
-              <TemplateText as="h3" className="text-xl font-semibold">
+              <TemplateText
+                as="h3"
+                editId={`faq.item.${index + 1}.question`}
+                editLabel={`שאלה ${index + 1}`}
+                className="text-xl font-semibold"
+              >
                 {q}
               </TemplateText>
 
-              <TemplateText as="p" className="mt-3 leading-7 text-white/62">
+              <TemplateText
+                as="p"
+                editId={`faq.item.${index + 1}.answer`}
+                editLabel={`תשובה ${index + 1}`}
+                className="mt-3 leading-7 text-white/62"
+              >
                 {a}
               </TemplateText>
             </div>
@@ -1017,11 +1111,21 @@ export default function IdoPages({
         dir="rtl"
       >
         <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
-          <TemplateText as="div" className="font-black tracking-[0.22em]">
+          <TemplateText
+            as="div"
+            editId="footer.brand"
+            editLabel="מותג פוטר"
+            className="font-black tracking-[0.22em]"
+          >
             IDO SOCIAL STUDIO
           </TemplateText>
 
-          <TemplateText as="div" className="text-[#07100e]/60">
+          <TemplateText
+            as="div"
+            editId="footer.tagline"
+            editLabel="טקסט פוטר"
+            className="text-[#07100e]/60"
+          >
             תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל
           </TemplateText>
         </div>

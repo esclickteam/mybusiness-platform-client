@@ -4,6 +4,8 @@ type TemplateTextProps = {
   as?: React.ElementType;
   className?: string;
   children?: React.ReactNode;
+  editId?: string;
+  editLabel?: string;
 } & React.HTMLAttributes<HTMLElement>;
 
 /** Leaf text node — one editable unit in the visual editor (avoids nested split editing). */
@@ -11,6 +13,8 @@ export function TemplateText({
   as: Tag = "span",
   className,
   children,
+  editId,
+  editLabel,
   ...props
 }: TemplateTextProps) {
   return (
@@ -18,6 +22,8 @@ export function TemplateText({
       className={className}
       data-visual-edit-type="text"
       data-visual-editable="true"
+      {...(editId ? { "data-visual-edit-id": editId } : {})}
+      {...(editLabel ? { "data-visual-edit-label": editLabel } : {})}
       {...props}
     >
       {children}
