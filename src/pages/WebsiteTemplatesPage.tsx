@@ -26,6 +26,9 @@ import {
 
 import DomainSearch from "../components/website/DomainSearch";
 import { createMySite } from "../api/mySitesApi";
+import TemplateCardPreview, {
+  canRenderTemplatePreview,
+} from "../components/website/TemplateCardPreview";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -1041,7 +1044,14 @@ export default function WebsiteTemplatesPage() {
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
                                 <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
-                                  {imageUrl ? (
+                                  {canRenderTemplatePreview(template.key) ? (
+                                    <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
+                                      <TemplateCardPreview
+                                        templateKey={template.key}
+                                        title={template.name}
+                                      />
+                                    </div>
+                                  ) : imageUrl ? (
                                     <img
                                       src={imageUrl}
                                       alt={template.name}
