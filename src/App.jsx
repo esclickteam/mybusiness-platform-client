@@ -30,6 +30,11 @@ const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
 );
 
+/* Standalone, isolated site preview embedded via <iframe> on My Sites cards */
+const EmbedSitePreviewPage = lazy(() =>
+  import("./pages/EmbedSitePreviewPage")
+);
+
 /* Public Pages */
 const HomePage = lazy(() => import("./pages/Home"));
 const BizuplyEarlyAccessLanding = lazy(() =>
@@ -558,6 +563,21 @@ export default function App() {
 
   if (isMiniSiteHost) {
     return <PublicMiniSitePage />;
+  }
+
+  if (location.pathname.startsWith("/embed/")) {
+    return (
+      <Suspense
+        fallback={<div style={{ minHeight: "100vh", background: "#fff" }} />}
+      >
+        <Routes location={location}>
+          <Route
+            path="/embed/site/:siteId"
+            element={<EmbedSitePreviewPage />}
+          />
+        </Routes>
+      </Suspense>
+    );
   }
 
   if (loading) return <LoginSkeleton />;

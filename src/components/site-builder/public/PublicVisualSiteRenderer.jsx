@@ -1750,6 +1750,7 @@ export default function PublicVisualSiteRenderer({
   pathname,
   templateData,
   className = "",
+  disableAnalytics = false,
 }) {
   const rootRef = useRef(null);
 
@@ -1782,7 +1783,9 @@ export default function PublicVisualSiteRenderer({
     [site, activePage, visualData],
   );
 
-  usePublicCustomCode(customCode);
+  // In preview mode we must not inject the site's custom code/scripts into the
+  // host document (dashboard). Only run it for the real published render.
+  usePublicCustomCode(disableAnalytics ? {} : customCode);
 
   const htmlResult = useMemo(
     () => chooseBestPublishedHtml(site, activePage),
@@ -1845,6 +1848,8 @@ export default function PublicVisualSiteRenderer({
   }, [site, activePage]);
 
   useEffect(() => {
+    if (disableAnalytics) return;
+
     const context = readSiteAnalyticsContext(site);
     if (!context) return;
 
@@ -1855,7 +1860,7 @@ export default function PublicVisualSiteRenderer({
       pageTitle: activePage?.title || context.pageTitle,
       pathname: pathname || window.location.pathname || "/",
     });
-  }, [site, pageId, pathname, activePage?.slug, activePage?.title]);
+  }, [site, pageId, pathname, activePage?.slug, activePage?.title, disableAnalytics]);
 
   /*
     התאמה 1:1 לעורך לכל התבניות visual-react:
