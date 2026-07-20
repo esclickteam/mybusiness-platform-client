@@ -1059,7 +1059,7 @@ export default function WebsiteTemplatesPage() {
                     טוען תבניות...
                   </p>
 
-                  <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                  <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [content-visibility:auto]">
                     {Array.from({ length: 8 }).map((_, index) => (
                       <div key={index} className="animate-pulse">
                         <div className="aspect-[3/4] rounded-xl bg-[#f3f4f6]" />
@@ -1097,7 +1097,7 @@ export default function WebsiteTemplatesPage() {
 
                   {filteredTemplates.length > 0 ? (
                     <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                      {filteredTemplates.map((template) => {
+                      {filteredTemplates.map((template, index) => {
                         const displayCategory =
                           template.categoryLabel ||
                           template.category ||
@@ -1114,7 +1114,10 @@ export default function WebsiteTemplatesPage() {
                           "";
 
                         return (
-                          <article key={template.key} className="group">
+                          <article
+                            key={template.key}
+                            className="group [content-visibility:auto] [contain-intrinsic-size:520px]"
+                          >
                             <div
                               className="
                                 relative block w-full overflow-hidden rounded-xl
@@ -1133,22 +1136,16 @@ export default function WebsiteTemplatesPage() {
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
                                 <div className="aspect-[3/4] overflow-hidden bg-[#f3f4f6]">
-                                  {canRenderTemplatePreview(template.key) ? (
+                                  {canRenderTemplatePreview(template.key) ||
+                                  imageUrl ? (
                                     <div className="h-full w-full">
                                       <TemplateCardPreview
                                         templateKey={template.key}
                                         title={template.name}
+                                        posterUrl={imageUrl}
+                                        eager={index < 4}
                                       />
                                     </div>
-                                  ) : imageUrl ? (
-                                    <img
-                                      src={imageUrl}
-                                      alt={template.name}
-                                      className="
-                                        h-full w-full object-cover object-top transition duration-500
-                                        group-hover:scale-[1.025]
-                                      "
-                                    />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
                                       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />

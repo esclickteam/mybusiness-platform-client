@@ -36,6 +36,86 @@ import {
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
 import IframeCardPreview from "../components/website/IframeCardPreview";
+import { getTemplateCoverUrl } from "../utils/templateCover";
+
+function SiteCardCover({
+  site,
+  eager = false,
+}: {
+  site: MySiteSummary;
+  eager?: boolean;
+}) {
+  const cover =
+    String(site.thumbnailUrl || "").trim() ||
+    getTemplateCoverUrl(site.templateKey);
+  const [showLive, setShowLive] = useState(false);
+  const hoverTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (hoverTimerRef.current) window.clearTimeout(hoverTimerRef.current);
+    };
+  }, []);
+
+  const handleEnter = () => {
+    if (!site._id) return;
+    if (hoverTimerRef.current) window.clearTimeout(hoverTimerRef.current);
+    hoverTimerRef.current = window.setTimeout(() => setShowLive(true), 280);
+  };
+
+  const handleLeave = () => {
+    if (hoverTimerRef.current) {
+      window.clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = null;
+    }
+    setShowLive(false);
+  };
+
+  return (
+    <div
+      className="relative h-full w-full overflow-hidden"
+      onMouseEnter={handleEnter}
+      onMouseLeave={handleLeave}
+    >
+      {cover ? (
+        <img
+          src={cover}
+          alt={site.name || "תצוגה מקדימה של האתר"}
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchPriority={eager ? "high" : "auto"}
+          className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.03]"
+        />
+      ) : (
+        <div className="relative flex h-full flex-col items-center justify-center gap-3 overflow-hidden px-4">
+          <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-violet-200/45 blur-3xl" />
+          <div className="absolute -bottom-12 -right-8 h-36 w-36 rounded-full bg-fuchsia-200/35 blur-3xl" />
+          <div className="relative flex h-14 w-14 items-center justify-center rounded-[18px] border border-white bg-white/80 shadow-md backdrop-blur">
+            <LayoutTemplate className="h-7 w-7 text-violet-500" />
+          </div>
+          <div className="relative text-center">
+            <p className="text-sm font-black text-slate-700">
+              {site.templateName || site.templateKey || "אתר Bizuply"}
+            </p>
+            <p className="mt-1 text-xs text-slate-400">
+              תצוגה מקדימה תופיע לאחר השמירה
+            </p>
+          </div>
+        </div>
+      )}
+
+      {showLive && site._id ? (
+        <div className="absolute inset-0">
+          <IframeCardPreview
+            src={`/embed/site/${encodeURIComponent(site._id)}`}
+            title={site.name || "תצוגה מקדימה של האתר"}
+            activateOn="immediate"
+          />
+        </div>
+      ) : null}
+    </div>
+  );
+}
 
 type MenuState = {
   siteId: string;
@@ -501,7 +581,7 @@ export default function MySitesPage() {
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            {sites.map((site) => {
+            {sites.map((site, index) => {
               const published =
                 site.published || site.status === "published";
               const folderLabel = site.folderId
@@ -512,7 +592,7 @@ export default function MySitesPage() {
               return (
                 <article
                   key={site._id}
-                  className="group relative overflow-hidden rounded-[26px] border border-slate-200/90 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_22px_48px_rgba(76,29,149,0.12)]"
+                  className="group relative overflow-hidden rounded-[26px] border border-slate-200/90 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_22px_48px_rgba(76,29,149,0.12)] [content-visibility:auto] [contain-intrinsic-size:360px]"
                 >
                   <button
                     type="button"
@@ -520,40 +600,7 @@ export default function MySitesPage() {
                     className="block w-full text-right"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
-                      {site.thumbnailUrl ? (
-                        <img
-                          src={site.thumbnailUrl}
-                          alt={site.name || "תצוגה מקדימה של האתר"}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]"
-                        />
-                      ) : site._id ? (
-                        <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
-                          <IframeCardPreview
-                            src={`/embed/site/${encodeURIComponent(site._id)}`}
-                            title={site.name || "תצוגה מקדימה של האתר"}
-                          />
-                        </div>
-                      ) : (
-                        <div className="relative flex h-full flex-col items-center justify-center gap-3 overflow-hidden px-4">
-                          <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-violet-200/45 blur-3xl" />
-                          <div className="absolute -bottom-12 -right-8 h-36 w-36 rounded-full bg-fuchsia-200/35 blur-3xl" />
-
-                          <div className="relative flex h-14 w-14 items-center justify-center rounded-[18px] border border-white bg-white/80 shadow-md backdrop-blur">
-                            <LayoutTemplate className="h-7 w-7 text-violet-500" />
-                          </div>
-
-                          <div className="relative text-center">
-                            <p className="text-sm font-black text-slate-700">
-                              {site.templateName ||
-                                site.templateKey ||
-                                "אתר Bizuply"}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-400">
-                              תצוגה מקדימה תופיע לאחר השמירה
-                            </p>
-                          </div>
-                        </div>
-                      )}
+                      <SiteCardCover site={site} eager={index < 3} />
 
                       <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-300 group-hover:bg-slate-950/35 group-hover:opacity-100">
                         <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-950 shadow-xl">
