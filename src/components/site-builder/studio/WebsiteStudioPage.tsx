@@ -5312,6 +5312,8 @@ export default function WebsiteStudioPage({
             ? data.site.pages.map((page: StudioSitePageWithPortal) => ({
                 ...page,
                 hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
+                parentPageId:
+                  String((page as any).parentPageId || "").trim() || undefined,
                 seo: normalizePageSeo(page.seo),
                 clientPortal:
                   page.clientPortal || createDefaultClientPortalConfig(),
@@ -6006,6 +6008,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   const handleVisualSitePageAction = (
     action: string,
     pageId: string,
+    meta?: { parentPageId?: string },
   ) => {
     const id = String(pageId || "").trim();
     if (!id) return;
@@ -6148,6 +6151,32 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return;
     }
 
+    if (action === "subpage") {
+      if (target.isHome) {
+        window.alert("לא ניתן להפוך את דף הבית לעמוד משנה.");
+        return;
+      }
+
+      const nextParentId = String(meta?.parentPageId || "").trim();
+
+      setPages((prev) =>
+        prev.map((page) =>
+          page.id === id
+            ? ({
+                ...page,
+                parentPageId: nextParentId || undefined,
+                seo: normalizePageSeo({
+                  ...(page.seo || {}),
+                  parentPageId: nextParentId || "",
+                }),
+                updatedAt: new Date().toISOString(),
+              } as StudioSitePageWithPortal)
+            : page,
+        ),
+      );
+      return;
+    }
+
     if (action === "delete") {
       if (target.isHome) {
         window.alert("לא ניתן למחוק את דף הבית. הגדירי קודם עמוד אחר כדף הבית.");
@@ -6156,7 +6185,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
       if (!ok) return;
 
-      setPages((prev) => prev.filter((page) => page.id !== id));
+      setPages((prev) =>
+        prev
+          .filter((page) => page.id !== id)
+          .map((page) =>
+            String((page as any).parentPageId || "") === id
+              ? ({
+                  ...page,
+                  parentPageId: undefined,
+                  updatedAt: new Date().toISOString(),
+                } as StudioSitePageWithPortal)
+              : page,
+          ),
+      );
       if (activePageId === id) {
         const fallback =
           pages.find((page) => page.isHome)?.id ||
@@ -6170,11 +6211,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (
       action === "background" ||
       action === "copy" ||
-      action === "dynamic" ||
-      action === "subpage"
+      action === "dynamic"
     ) {
       window.alert(
-        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, שינוי שם, שכפול, דף בית, הסתרה מתפריט ומחיקה.",
+        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, שינוי שם, שכפול, דף בית, הסתרה מתפריט, עמוד משנה ומחיקה.",
       );
     }
   };
@@ -7210,6 +7250,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           type: page.type,
           isHome: Boolean(page.isHome),
           hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
+          parentPageId:
+            String((page as any).parentPageId || "").trim() || undefined,
+          seo: normalizePageSeo((page as any).seo),
           createdAt: page.createdAt,
           // Every save creates a new authoritative page revision.
           // Keeping the original page.updatedAt made the public renderer
@@ -7815,6 +7858,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     slug: page.slug,
     isHome: Boolean(page.isHome),
     hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
+    parentPageId: String((page as any).parentPageId || "").trim() || undefined,
     html: String(page.html || ""),
     css: String(page.css || selectedTemplateRenderer?.editorCss || ""),
     libraryPageTemplateId: String(

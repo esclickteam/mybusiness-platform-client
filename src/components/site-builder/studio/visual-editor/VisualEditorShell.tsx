@@ -79,7 +79,11 @@ type VisualEditorShellProps = {
     pageId: string,
     currentVisualData?: Record<string, any>,
   ) => void;
-  onSitePageAction?: (action: string, pageId: string) => void;
+  onSitePageAction?: (
+    action: string,
+    pageId: string,
+    meta?: { parentPageId?: string },
+  ) => void;
 };
 
 const DEVICE_OPTIONS: Array<{
@@ -628,20 +632,6 @@ export default function VisualEditorShell({
             open={sidePanelMode === "pages"}
             pages={sitePages}
             activePageId={activeSitePageId}
-            PageComponent={(editor as any).renderer?.Component || null}
-            pageData={
-              ((editor as any).data as Record<string, any>) ||
-              (editor as any).renderer?.defaultData ||
-              null
-            }
-            templatePages={
-              Array.isArray((editor as any).renderer?.pages)
-                ? (editor as any).renderer.pages
-                : Array.isArray((editor as any).renderer?.defaultData?.pages)
-                  ? (editor as any).renderer.defaultData.pages
-                  : null
-            }
-            editorCss={String((editor as any).renderer?.editorCss || "")}
             onClose={() => setSidePanelMode(null)}
             onSelectPage={(pageId) => {
               if (typeof onSelectSitePage !== "function") return;

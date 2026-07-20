@@ -244,6 +244,8 @@ export type StudioSitePage = {
   projectData?: unknown;
 
   hiddenFromMenu?: boolean;
+  /** Nest under another site page in the menu (Wix-style subpage). */
+  parentPageId?: string;
   seo?: SitePageSeoSettings;
 
   createdAt?: string;
