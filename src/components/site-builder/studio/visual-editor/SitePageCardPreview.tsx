@@ -20,6 +20,7 @@ export type VisualSitePageItem = {
   isHome?: boolean;
   hiddenFromMenu?: boolean;
   parentPageId?: string;
+  menuOrder?: number;
   libraryPageTemplateId?: string;
   thumbnail?: string;
   html?: string;

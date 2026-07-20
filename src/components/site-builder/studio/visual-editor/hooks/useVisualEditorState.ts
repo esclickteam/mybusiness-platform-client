@@ -83,6 +83,10 @@ import {
   syncSitePageTitlesIntoVisualData,
 } from "../utils/syncNavWithSitePages";
 import {
+  buildHierarchicalLinkTargets,
+  resolveLinkTargetFromHref,
+} from "../utils/pageHierarchyUtils";
+import {
   applyVisualSectionOrderToDom,
   buildNextSectionOrder,
   collectVisualSectionItems,
@@ -1146,6 +1150,7 @@ export function useVisualEditorState({
     elementId: string;
     elementLabel: string;
     href: string;
+    sitePageId: string;
     phone: string;
     email: string;
     subject: string;
@@ -1155,6 +1160,7 @@ export function useVisualEditorState({
     elementId: "",
     elementLabel: "קישור",
     href: "",
+    sitePageId: "",
     phone: "",
     email: "",
     subject: "",
@@ -2129,6 +2135,12 @@ export function useVisualEditorState({
           selection.selectedElement?.id ||
           "קישור",
         href: String(contentItem?.href || ""),
+        sitePageId:
+          String(contentItem?.sitePageId || "").trim() ||
+          resolveLinkTargetFromHref(
+            sitePages || [],
+            String(contentItem?.href || ""),
+          ),
         phone: String(contentItem?.phoneNumber || contentItem?.phone || ""),
         email: String(contentItem?.email || ""),
         subject: String(contentItem?.subject || ""),
@@ -2137,7 +2149,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [selection.selectedElement],
+    [selection.selectedElement, sitePages],
   );
 
   const closeLinkModal = useCallback(() => {
@@ -2451,6 +2463,7 @@ export function useVisualEditorState({
     (payload: {
       href: string;
       target?: string;
+      sitePageId?: string;
       phoneNumber?: string;
       email?: string;
       subject?: string;
@@ -2464,6 +2477,7 @@ export function useVisualEditorState({
         target: payload.target || "_self",
         rel:
           payload.target === "_blank" ? "noopener noreferrer" : "",
+        sitePageId: payload.sitePageId || "",
         phoneNumber: payload.phoneNumber || "",
         email: payload.email || "",
         subject: payload.subject || "",
@@ -4034,27 +4048,13 @@ export function useVisualEditorState({
       : [];
 
     // Studio site pages (including library-added pages) win over template duplicates.
-    const studioLinkPages = (sitePages || [])
-      .map((page) => {
-        const id = String(page.id || page.slug || "").trim();
-        const isHome = Boolean(page.isHome) || id === "home";
-        const pageSlug = isHome
-          ? ""
-          : String(page.slug || id)
-              .replace(/^\//, "")
-              .replace(/\/$/, "");
-        return {
-          id,
-          label: String(page.title || page.name || id).trim(),
-          slug: pageSlug,
-          href: isHome ? "/" : `/${pageSlug}`,
-        };
-      })
-      .filter((page) => page.id);
+    const studioLinkPages = buildHierarchicalLinkTargets(sitePages || []);
 
     const pagesById = new Map<string, any>();
     templatePages.forEach((page) => {
-      if (page.id) pagesById.set(page.id, page);
+      if (page.id) {
+        pagesById.set(page.id, { ...page, depth: 0 });
+      }
     });
     studioLinkPages.forEach((page) => {
       if (page.id) pagesById.set(page.id, page);

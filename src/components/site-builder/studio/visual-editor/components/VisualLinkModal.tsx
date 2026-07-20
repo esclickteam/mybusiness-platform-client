@@ -8,6 +8,7 @@ import {
   ArrowDown,
   ArrowUp,
   Check,
+  CornerDownLeft,
   ExternalLink,
   FileText,
   Globe,
@@ -37,16 +38,25 @@ type VisualLinkModalProps = {
   elementId: string;
   elementLabel?: string;
   href?: string;
+  sitePageId?: string;
   phone?: string;
   email?: string;
   subject?: string;
   message?: string;
-  pages?: Array<{ id: string; label: string; href: string }>;
+  pages?: Array<{
+    id: string;
+    label: string;
+    href: string;
+    depth?: number;
+    parentPageId?: string;
+    isHome?: boolean;
+  }>;
   sections?: Array<{ id: string; label: string; href: string }>;
   onClose: () => void;
   onApply: (payload: {
     href: string;
     target?: string;
+    sitePageId?: string;
     phoneNumber?: string;
     email?: string;
     subject?: string;
@@ -175,6 +185,7 @@ export default function VisualLinkModal({
   elementId,
   elementLabel = "קישור",
   href = "",
+  sitePageId = "",
   phone = "",
   email = "",
   subject = "",
@@ -187,6 +198,7 @@ export default function VisualLinkModal({
 }: VisualLinkModalProps) {
   const [tab, setTab] = useState<VisualLinkModalTab>("web");
   const [hrefValue, setHrefValue] = useState(href);
+  const [selectedPageId, setSelectedPageId] = useState(sitePageId);
   const [phoneValue, setPhoneValue] = useState(phone);
   const [emailValue, setEmailValue] = useState(email);
   const [subjectValue, setSubjectValue] = useState(subject);
@@ -200,6 +212,7 @@ export default function VisualLinkModal({
 
     setTab(nextTab);
     setHrefValue(href);
+    setSelectedPageId(sitePageId);
     setPhoneValue(
       phone ||
         (href.startsWith("tel:") ? href.replace(/^tel:/, "") : ""),
@@ -233,6 +246,7 @@ export default function VisualLinkModal({
   }, [
     open,
     href,
+    sitePageId,
     phone,
     email,
     subject,
@@ -313,7 +327,7 @@ export default function VisualLinkModal({
     if (tab === "whatsapp" || tab === "phone") return Boolean(phoneValue.trim());
     if (tab === "email") return Boolean(emailValue.trim());
     if (tab === "address") return Boolean(addressValue.trim());
-    if (tab === "page") return Boolean(hrefValue || pages.length);
+    if (tab === "page") return Boolean(selectedPageId || hrefValue || pages.length);
     if (tab === "section") return Boolean(hrefValue || sections.length);
     return Boolean(hrefValue.trim());
   }, [
@@ -323,6 +337,7 @@ export default function VisualLinkModal({
     emailValue,
     addressValue,
     hrefValue,
+    selectedPageId,
     pages.length,
     sections.length,
   ]);
@@ -411,6 +426,20 @@ export default function VisualLinkModal({
       onApply({
         href: hrefValue || "#top",
         target: "_self",
+      });
+      onClose();
+      return;
+    }
+
+    if (tab === "page") {
+      const matched =
+        pages.find((page) => page.id === selectedPageId) ||
+        pages.find((page) => page.href === hrefValue);
+
+      onApply({
+        href: matched?.href || hrefValue || "/",
+        target: "_self",
+        sitePageId: matched?.id || selectedPageId || undefined,
       });
       onClose();
       return;
@@ -564,26 +593,71 @@ export default function VisualLinkModal({
 
             <div className="rounded-[24px] border border-slate-200 bg-slate-50/70 p-4 sm:p-5">
               {tab === "page" ? (
-                <label className="block">
+                <div className="block">
                   <span className="mb-2 block text-sm font-black text-slate-700">
-                    בחרי עמוד
+                    בחרי עמוד מהאתר
                   </span>
-                  <select
-                    value={hrefValue}
-                    onChange={(event) => setHrefValue(event.target.value)}
-                    className={fieldClassName}
-                  >
+                  <div className="max-h-[min(52vh,360px)] overflow-y-auto rounded-2xl border border-slate-200 bg-white">
                     {pages.length ? (
-                      pages.map((page) => (
-                        <option key={page.id} value={page.href}>
-                          {page.label}
-                        </option>
-                      ))
+                      pages.map((page) => {
+                        const depth = typeof page.depth === "number" ? page.depth : 0;
+                        const selected =
+                          selectedPageId === page.id ||
+                          (!selectedPageId && hrefValue === page.href);
+
+                        return (
+                          <button
+                            key={page.id}
+                            type="button"
+                            onClick={() => {
+                              setSelectedPageId(page.id);
+                              setHrefValue(page.href);
+                            }}
+                            className={[
+                              "flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-right transition last:border-b-0",
+                              selected
+                                ? "bg-violet-50 text-violet-950"
+                                : "hover:bg-slate-50",
+                            ].join(" ")}
+                            style={{ paddingInlineStart: 16 + depth * 20 }}
+                          >
+                            <span
+                              className={[
+                                "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                                selected
+                                  ? "bg-violet-600 text-white"
+                                  : "bg-slate-100 text-slate-600",
+                              ].join(" ")}
+                            >
+                              {page.isHome ? (
+                                <FileText className="h-4 w-4" />
+                              ) : depth > 0 ? (
+                                <CornerDownLeft className="h-4 w-4 rotate-180" />
+                              ) : (
+                                <FileText className="h-4 w-4" />
+                              )}
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-black">
+                                {page.label}
+                              </span>
+                              <span className="mt-0.5 block truncate text-[11px] font-semibold text-slate-400">
+                                {page.href}
+                              </span>
+                            </span>
+                            {selected ? (
+                              <Check className="h-4 w-4 shrink-0 text-violet-600" />
+                            ) : null}
+                          </button>
+                        );
+                      })
                     ) : (
-                      <option value="/">אין עמודים זמינים</option>
+                      <p className="px-4 py-8 text-center text-sm font-bold text-slate-400">
+                        אין עמודים זמינים
+                      </p>
                     )}
-                  </select>
-                </label>
+                  </div>
+                </div>
               ) : null}
 
               {tab === "section" ? (

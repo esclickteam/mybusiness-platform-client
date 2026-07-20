@@ -82,7 +82,11 @@ type VisualEditorShellProps = {
   onSitePageAction?: (
     action: string,
     pageId: string,
-    meta?: { parentPageId?: string },
+    meta?: {
+      parentPageId?: string;
+      targetPageId?: string;
+      placement?: "before" | "after" | "inside";
+    },
   ) => void;
 };
 
@@ -653,6 +657,7 @@ export default function VisualEditorShell({
           elementId={(editor as any).linkModal?.elementId || ""}
           elementLabel={(editor as any).linkModal?.elementLabel || "קישור"}
           href={(editor as any).linkModal?.href || ""}
+          sitePageId={(editor as any).linkModal?.sitePageId || ""}
           phone={(editor as any).linkModal?.phone || ""}
           email={(editor as any).linkModal?.email || ""}
           subject={(editor as any).linkModal?.subject || ""}
