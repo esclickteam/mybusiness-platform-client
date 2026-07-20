@@ -1062,7 +1062,7 @@ export default function WebsiteTemplatesPage() {
                   <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {Array.from({ length: 8 }).map((_, index) => (
                       <div key={index} className="animate-pulse">
-                        <div className="aspect-[4/3] rounded-xl bg-[#f3f4f6]" />
+                        <div className="aspect-[3/4] rounded-xl bg-[#f3f4f6]" />
                         <div className="mt-4 h-5 w-2/3 rounded bg-[#f3f4f6]" />
                         <div className="mt-2 h-4 w-1/2 rounded bg-[#f3f4f6]" />
                       </div>
@@ -1132,9 +1132,9 @@ export default function WebsiteTemplatesPage() {
                                 className="block w-full text-right"
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
-                                <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
+                                <div className="aspect-[3/4] overflow-hidden bg-[#f3f4f6]">
                                   {canRenderTemplatePreview(template.key) ? (
-                                    <div className="h-full w-full transition duration-500 group-hover:scale-[1.025]">
+                                    <div className="h-full w-full">
                                       <TemplateCardPreview
                                         templateKey={template.key}
                                         title={template.name}
@@ -1145,7 +1145,7 @@ export default function WebsiteTemplatesPage() {
                                       src={imageUrl}
                                       alt={template.name}
                                       className="
-                                        h-full w-full object-cover transition duration-500
+                                        h-full w-full object-cover object-top transition duration-500
                                         group-hover:scale-[1.025]
                                       "
                                     />

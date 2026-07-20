@@ -34,6 +34,9 @@ const StoreProductsPage = lazy(() =>
 const EmbedSitePreviewPage = lazy(() =>
   import("./pages/EmbedSitePreviewPage")
 );
+const EmbedTemplatePreviewPage = lazy(() =>
+  import("./pages/EmbedTemplatePreviewPage")
+);
 
 /* Public Pages */
 const HomePage = lazy(() => import("./pages/Home"));
@@ -574,6 +577,10 @@ export default function App() {
           <Route
             path="/embed/site/:siteId"
             element={<EmbedSitePreviewPage />}
+          />
+          <Route
+            path="/embed/template/:templateKey"
+            element={<EmbedTemplatePreviewPage />}
           />
         </Routes>
       </Suspense>
