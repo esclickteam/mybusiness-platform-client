@@ -104,7 +104,10 @@ export default function Login() {
       const urlRedirect = new URLSearchParams(location.search).get("redirect");
       const finalRedirect = urlRedirect || redirectUrl;
 
-      if (finalRedirect && finalRedirect.startsWith("/")) {
+      // Admin must always land on the admin panel — never client/business routes
+      if (loggedInUser?.role === "admin") {
+        navigate("/admin/dashboard", { replace: true });
+      } else if (finalRedirect && finalRedirect.startsWith("/")) {
         navigate(finalRedirect, { replace: true });
       } else if (loggedInUser?.role === "affiliate") {
         navigate("/affiliate/dashboard", { replace: true });
