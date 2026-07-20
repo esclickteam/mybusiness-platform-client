@@ -4,6 +4,7 @@ import {
   AlertTriangle,
   Braces,
   Bot,
+  Building2,
   CheckCircle2,
   ChevronDown,
   Copy,
@@ -27,6 +28,7 @@ import type {
   SeoMaxImagePreview,
   SeoRobotsDirective,
   SeoStructuredDataEntry,
+  SiteBrandSettings,
   SitePageSeoSettings,
   SiteSeoSettings,
   StudioSitePage,
@@ -41,6 +43,7 @@ import {
   deriveMetaDescription,
   extractPlainTextFromHtml,
   normalizePageSeo,
+  normalizeSiteBrandSettings,
   normalizeSiteSeoSettings,
   resolvePageSeoMeta,
   truncateForPreview,
@@ -48,6 +51,7 @@ import {
 } from "../../utils/pageSeoUtils";
 import SchemaBuilder from "./seo/schema-builder/SchemaBuilder";
 import type { SchemaBuilderContext } from "./seo/schema-builder/schemaTypes";
+import SeoImageUploader from "./seo/SeoImageUploader";
 import {
   GooglePreviewCard,
   SeoActionLink,
@@ -82,6 +86,7 @@ const ROBOTS_DIRECTIVE_OPTIONS: Array<{
 
 export type PageSettingsModalTab =
   | "settings"
+  | "site"
   | "seo"
   | "advanced"
   | "social";
@@ -93,15 +98,19 @@ type PageSettingsModalProps = {
   pages: StudioSitePage[];
   siteName: string;
   siteSlug: string;
+  businessId?: string;
   publicUrl?: string;
   publicUrlIsPlaceholder?: boolean;
   seoSettings?: SiteSeoSettings | null;
+  brandSettings?: SiteBrandSettings | null;
   pageHtml?: string;
   onClose: () => void;
   onSave: (payload: {
     title: string;
     slug: string;
     seo: SitePageSeoSettings;
+    siteSeo?: SiteSeoSettings;
+    siteBrand?: SiteBrandSettings;
   }) => void;
 };
 
@@ -111,6 +120,7 @@ const TABS: Array<{
   icon: React.ReactNode;
 }> = [
   { id: "settings", label: "הגדרות", icon: <Settings2 className="h-4 w-4" /> },
+  { id: "site", label: "הגדרות אתר", icon: <Building2 className="h-4 w-4" /> },
   { id: "seo", label: "SEO בסיסי", icon: <Search className="h-4 w-4" /> },
   { id: "advanced", label: "SEO מתקדם", icon: <Sparkles className="h-4 w-4" /> },
   { id: "social", label: "שיתוף ברשתות", icon: <Share2 className="h-4 w-4" /> },
@@ -126,6 +136,8 @@ export default function PageSettingsModal({
   publicUrl,
   publicUrlIsPlaceholder,
   seoSettings,
+  brandSettings,
+  businessId,
   pageHtml,
   onClose,
   onSave,
@@ -136,6 +148,12 @@ export default function PageSettingsModal({
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [seoDraft, setSeoDraft] = useState<SitePageSeoSettings>({});
+  const [siteSeoDraft, setSiteSeoDraft] = useState<SiteSeoSettings>(() =>
+    normalizeSiteSeoSettings(seoSettings),
+  );
+  const [siteBrandDraft, setSiteBrandDraft] = useState<SiteBrandSettings>(() =>
+    normalizeSiteBrandSettings(brandSettings, siteName),
+  );
 
   useEffect(() => {
     if (!open || !page) return;
@@ -169,7 +187,9 @@ export default function PageSettingsModal({
     }
 
     setSeoDraft(normalized);
-  }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, pageHtml]);
+    setSiteSeoDraft(normalizeSiteSeoSettings(seoSettings));
+    setSiteBrandDraft(normalizeSiteBrandSettings(brandSettings, siteName));
+  }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, brandSettings, pageHtml]);
 
   useEffect(() => {
     if (!open) return;
@@ -251,8 +271,13 @@ export default function PageSettingsModal({
         label: "תמונת שיתוף",
         done: hasOgImage,
       },
+      {
+        id: "favicon",
+        label: "פאביקון לאתר",
+        done: Boolean(String(siteBrandDraft.faviconUrl || "").trim()),
+      },
     ]);
-  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo]);
+  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo, siteBrandDraft]);
 
   if (!open || !page || typeof document === "undefined") return null;
 
@@ -264,6 +289,8 @@ export default function PageSettingsModal({
       title: cleanTitle,
       slug: page.isHome ? "" : String(slug || "").trim(),
       seo: normalizePageSeo(seoDraft),
+      siteSeo: normalizeSiteSeoSettings(siteSeoDraft),
+      siteBrand: normalizeSiteBrandSettings(siteBrandDraft, cleanTitle || siteName),
     });
     onClose();
   };
@@ -514,7 +541,7 @@ export default function PageSettingsModal({
     ogImage:
       seoDraft.social?.ogImage || siteSeo.ogImage || siteSeo.defaultOgImage,
     metaDescription: seoDraft.metaDescription || "",
-    logoUrl: siteSeo.ogImage || "",
+    logoUrl: siteBrandDraft.logoUrl || siteSeo.ogImage || "",
     parentPageId: seoDraft.parentPageId || "",
     parentPageTitle: parentPage?.title || "",
     parentPageUrl: parentPage
@@ -556,7 +583,9 @@ export default function PageSettingsModal({
               <p className="mt-1 truncate text-xs font-semibold text-slate-400">
                 {tab === "settings"
                   ? "שם וכתובת"
-                  : tab === "seo"
+                  : tab === "site"
+                    ? "פאביקון, לוגו ותמונת שיתוף ברמת האתר"
+                    : tab === "seo"
                     ? "SEO בסיסי — כותרת, תיאור ואינדוקס"
                     : tab === "advanced"
                       ? "SEO מתקדם — Schema, גוגל ומטא"
@@ -651,6 +680,65 @@ export default function PageSettingsModal({
                 </label>
               ) : null}
             </SeoSection>
+          ) : null}
+
+          {tab === "site" ? (
+            <div className="space-y-5">
+              <SeoHelpNote>
+                ההגדרות כאן חלות על <span className="font-black">כל האתר</span>{" "}
+                — לא רק על העמוד הנוכחי. הפאביקון יופיע בלשונית הדפדפן, והתמונות
+                ישמשו כברירת מחדל לכל העמודים.
+              </SeoHelpNote>
+
+              <SeoSection
+                icon={<Building2 className="h-5 w-5" />}
+                title="זהות האתר"
+                subtitle="פאביקון ולוגו — ייחודיים לעסק שלך, לא למערכת BizUply"
+              >
+                <SeoImageUploader
+                  label="פאביקון (Favicon)"
+                  hint="ICO, PNG או JPG — מומלץ 32×32 או 64×64 פיקסלים"
+                  value={siteBrandDraft.faviconUrl || ""}
+                  onChange={(url) =>
+                    setSiteBrandDraft((current) => ({ ...current, faviconUrl: url }))
+                  }
+                  businessId={businessId}
+                  previewAspect="square"
+                />
+
+                <SeoImageUploader
+                  label="לוגו העסק"
+                  hint="יופיע ב-Schema ובמקומות שדורשים לוגו"
+                  value={siteBrandDraft.logoUrl || ""}
+                  onChange={(url) =>
+                    setSiteBrandDraft((current) => ({ ...current, logoUrl: url }))
+                  }
+                  businessId={businessId}
+                  previewAspect="square"
+                />
+              </SeoSection>
+
+              <SeoSection
+                icon={<Share2 className="h-5 w-5" />}
+                title="ברירת מחדל לשיתוף"
+                subtitle="תמונה שתוצג כשעמוד לא הגדיר תמונה משלו"
+              >
+                <SeoImageUploader
+                  label="תמונת שיתוף ברירת מחדל"
+                  hint="יחס מומלץ 1.91:1 (1200×630) — לפייסבוק, וואטסאפ ולינקדאין"
+                  value={siteSeoDraft.defaultOgImage || siteSeoDraft.ogImage || ""}
+                  onChange={(url) =>
+                    setSiteSeoDraft((current) => ({
+                      ...current,
+                      defaultOgImage: url,
+                      ogImage: url,
+                    }))
+                  }
+                  businessId={businessId}
+                  previewAspect="social"
+                />
+              </SeoSection>
+            </div>
           ) : null}
 
           {tab === "seo" ? (
@@ -1378,23 +1466,14 @@ export default function PageSettingsModal({
                 />
               </label>
 
-              <label className="block space-y-2">
-                <span className="text-sm font-black text-slate-800">
-                  תמונת שיתוף (URL)
-                </span>
-                <input
-                  value={seoDraft.social?.ogImage || ""}
-                  onChange={(event) =>
-                    updateSocial({ ogImage: event.target.value })
-                  }
-                  className={seoFieldClass}
-                  placeholder="https://..."
-                  dir="ltr"
-                />
-                <p className="text-[11px] font-semibold text-slate-400">
-                  יחס מומלץ 1.91:1 (1200×630 פיקסלים) — לתצוגה אופטימלית ברשתות.
-                </p>
-              </label>
+              <SeoImageUploader
+                label="תמונת שיתוף"
+                hint="תמונה ייעודית לעמוד זה — דורסת את ברירת המחדל של האתר"
+                value={seoDraft.social?.ogImage || ""}
+                onChange={(url) => updateSocial({ ogImage: url })}
+                businessId={businessId}
+                previewAspect="social"
+              />
             </SeoSection>
           ) : null}
         </div>
