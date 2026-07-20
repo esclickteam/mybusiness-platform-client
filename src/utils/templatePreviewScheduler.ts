@@ -46,11 +46,11 @@ function pump() {
 }
 
 /**
- * Webflow-style gallery loading: schedule ALL template previews to mount in
- * quick batches on page open (not only when the user scrolls to them).
+ * Webflow-style gallery loading: schedule ALL card previews to mount in
+ * quick batches on page open (templates + my sites).
  */
-export function scheduleTemplatePreview(templateKey: string | null | undefined) {
-  const key = normalizeKey(templateKey);
+export function scheduleGalleryPreview(keyValue: string | null | undefined) {
+  const key = normalizeKey(keyValue);
   if (!key) return () => undefined;
 
   if (activated.has(key)) {
@@ -86,12 +86,19 @@ export function scheduleTemplatePreview(templateKey: string | null | undefined) 
   };
 }
 
-export function prefetchTemplatePreviewKeys(keys: Array<string | null | undefined>) {
+export function prefetchGalleryPreviewKeys(
+  keys: Array<string | null | undefined>,
+) {
   keys.forEach((key) => {
-    scheduleTemplatePreview(key);
+    scheduleGalleryPreview(key);
   });
 }
 
-export function isTemplatePreviewActivated(templateKey: string | null | undefined) {
-  return activated.has(normalizeKey(templateKey));
+/** @deprecated use scheduleGalleryPreview */
+export const scheduleTemplatePreview = scheduleGalleryPreview;
+/** @deprecated use prefetchGalleryPreviewKeys */
+export const prefetchTemplatePreviewKeys = prefetchGalleryPreviewKeys;
+
+export function isGalleryPreviewActivated(keyValue: string | null | undefined) {
+  return activated.has(normalizeKey(keyValue));
 }

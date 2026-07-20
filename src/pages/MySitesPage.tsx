@@ -35,7 +35,8 @@ import {
   type SiteFolder,
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
-import { getTemplateCoverUrl } from "../utils/templateCover";
+import MySiteCardPreview from "../components/website/MySiteCardPreview";
+import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
 
 type MenuState = {
   siteId: string;
@@ -139,6 +140,12 @@ export default function MySitesPage() {
 
     return () => window.clearTimeout(timer);
   }, [loadAll, query]);
+
+  // Same as templates: batch-load every site preview as soon as the list is ready
+  useEffect(() => {
+    if (!sites.length) return;
+    prefetchGalleryPreviewKeys(sites.map((site) => `site:${site._id}`));
+  }, [sites]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -501,7 +508,7 @@ export default function MySitesPage() {
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            {sites.map((site, index) => {
+            {sites.map((site) => {
               const published =
                 site.published || site.status === "published";
               const folderLabel = site.folderId
@@ -520,44 +527,7 @@ export default function MySitesPage() {
                     className="block w-full text-right"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
-                      {(() => {
-                        const cover =
-                          String(site.thumbnailUrl || "").trim() ||
-                          getTemplateCoverUrl(site.templateKey);
-
-                        if (cover) {
-                          return (
-                            <img
-                              src={cover}
-                              alt={site.name || "תצוגה מקדימה של האתר"}
-                              loading={index < 3 ? "eager" : "lazy"}
-                              decoding="async"
-                              fetchPriority={index < 3 ? "high" : "auto"}
-                              className="h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.025]"
-                            />
-                          );
-                        }
-
-                        return (
-                          <div className="relative flex h-full flex-col items-center justify-center gap-3 overflow-hidden px-4">
-                            <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-violet-200/45 blur-3xl" />
-                            <div className="absolute -bottom-12 -right-8 h-36 w-36 rounded-full bg-fuchsia-200/35 blur-3xl" />
-                            <div className="relative flex h-14 w-14 items-center justify-center rounded-[18px] border border-white bg-white/80 shadow-md backdrop-blur">
-                              <LayoutTemplate className="h-7 w-7 text-violet-500" />
-                            </div>
-                            <div className="relative text-center">
-                              <p className="text-sm font-black text-slate-700">
-                                {site.templateName ||
-                                  site.templateKey ||
-                                  "אתר Bizuply"}
-                              </p>
-                              <p className="mt-1 text-xs text-slate-400">
-                                תצוגה מקדימה תופיע לאחר השמירה
-                              </p>
-                            </div>
-                          </div>
-                        );
-                      })()}
+                      <MySiteCardPreview site={site} />
 
                       <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-300 group-hover:bg-slate-950/35 group-hover:opacity-100">
                         <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-950 shadow-xl">
