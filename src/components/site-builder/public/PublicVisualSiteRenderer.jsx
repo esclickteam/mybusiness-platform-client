@@ -1750,7 +1750,6 @@ export default function PublicVisualSiteRenderer({
   pathname,
   templateData,
   className = "",
-  disableAnalytics = false,
 }) {
   const rootRef = useRef(null);
 
@@ -1846,8 +1845,6 @@ export default function PublicVisualSiteRenderer({
   }, [site, activePage]);
 
   useEffect(() => {
-    if (disableAnalytics) return;
-
     const context = readSiteAnalyticsContext(site);
     if (!context) return;
 
@@ -1858,7 +1855,7 @@ export default function PublicVisualSiteRenderer({
       pageTitle: activePage?.title || context.pageTitle,
       pathname: pathname || window.location.pathname || "/",
     });
-  }, [site, pageId, pathname, activePage?.slug, activePage?.title, disableAnalytics]);
+  }, [site, pageId, pathname, activePage?.slug, activePage?.title]);
 
   /*
     התאמה 1:1 לעורך לכל התבניות visual-react:
