@@ -29,6 +29,8 @@ import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview, {
   canRenderTemplatePreview,
 } from "../components/website/TemplateCardPreview";
+import { prefetchTemplatePreviewKeys } from "../utils/templatePreviewScheduler";
+import { getStudioTemplateRendererKeys } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -657,6 +659,19 @@ export default function WebsiteTemplatesPage() {
       return String(b._id || b.key).localeCompare(String(a._id || a.key));
     });
   }, [activeCategory, search, sortValue, templates]);
+
+  // Webflow-style: start batch-loading ALL template previews as soon as the
+  // gallery opens — do not wait for the user to scroll each card into view.
+  useEffect(() => {
+    if (activeWebsiteView !== "templates") return;
+
+    const keys = [
+      ...filteredTemplates.map((template) => template.key),
+      ...getStudioTemplateRendererKeys(),
+    ];
+
+    prefetchTemplatePreviewKeys(keys);
+  }, [activeWebsiteView, filteredTemplates]);
 
   const activeCategoryLabel =
     activeCategory === "all"
