@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import { TemplateDecor, TemplateText } from "../shared/TemplateText";
 import { idoEditorCss } from "./editorCss";
 
 export type IdoPageId =
@@ -70,7 +71,7 @@ function revealClass(isVisible: boolean, delay = "") {
   ].join(" ");
 }
 
-function AnimatedLetterTitle({
+function AnimatedLineTitle({
   lines,
   active,
   className,
@@ -83,45 +84,25 @@ function AnimatedLetterTitle({
   step?: number;
   startDelay?: number;
 }) {
-  let counter = 0;
-
   return (
     <h2 className={className}>
-      {lines.map((line) => (
-        <span key={line} className="block overflow-visible pb-[0.08em]">
-          {Array.from(line).map((char, index) => {
-            const currentIndex = counter;
-            counter += 1;
-
-            if (char === " ") {
-              return (
-                <span
-                  key={`${line}-${index}`}
-                  className="inline-block w-[0.24em]"
-                >
-                  &nbsp;
-                </span>
-              );
-            }
-
-            return (
-              <span
-                key={`${line}-${index}`}
-                className={[
-                  "inline-block transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
-                  active
-                    ? "translate-y-0 rotate-0 opacity-100 blur-none"
-                    : "translate-y-full rotate-6 opacity-0 blur-md",
-                ].join(" ")}
-                style={{
-                  transitionDelay: `${startDelay + currentIndex * step}ms`,
-                }}
-              >
-                {char}
-              </span>
-            );
-          })}
-        </span>
+      {lines.map((line, lineIndex) => (
+        <TemplateText
+          as="span"
+          key={`${line}-${lineIndex}`}
+          className={[
+            "block overflow-visible pb-[0.08em]",
+            "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+            active
+              ? "translate-y-0 rotate-0 opacity-100 blur-none"
+              : "translate-y-full rotate-6 opacity-0 blur-md",
+          ].join(" ")}
+          style={{
+            transitionDelay: `${startDelay + lineIndex * step}ms`,
+          }}
+        >
+          {line}
+        </TemplateText>
       ))}
     </h2>
   );
@@ -256,17 +237,20 @@ function Hero() {
           style={{ transitionDelay: "100ms" }}
         >
           <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-          אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
+          <TemplateText as="span">
+            אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
+          </TemplateText>
         </div>
 
-        <AnimatedLetterTitle
+        <AnimatedLineTitle
           lines={titleLines}
           active={open}
           step={44}
-          className="pointer-events-none relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
+          className="relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
         />
 
-        <p
+        <TemplateText
+          as="p"
           className={[
             "relative z-40 mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/76 drop-shadow-[0_16px_42px_rgba(0,0,0,.75)] md:text-lg",
             "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
@@ -278,7 +262,7 @@ function Hero() {
         >
           בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,
           לקוחות ותוצאות מדידות.
-        </p>
+        </TemplateText>
 
         <div
           className={[
@@ -325,10 +309,12 @@ function Hero() {
               key={label}
               className="rounded-[1.5rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl"
             >
-              <div className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
+              <TemplateText as="div" className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
                 {num}
-              </div>
-              <div className="mt-1 text-xs text-white/60">{label}</div>
+              </TemplateText>
+              <TemplateText as="div" className="mt-1 text-xs text-white/60">
+                {label}
+              </TemplateText>
             </div>
           ))}
         </div>
@@ -347,7 +333,7 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
   return (
     <section
       id="services"
-      className="relative overflow-hidden bg-[#aebcc3] px-4 py-20 text-[#111827] md:px-8 md:py-0"
+      className="relative overflow-hidden bg-[#aebcc3] px-4 py-20 text-right text-[#111827] md:px-8 md:py-0"
       dir="rtl"
     >
       <div className="mx-auto grid min-h-[760px] max-w-[1800px] grid-cols-1 items-center gap-10 md:grid-cols-[1fr_0.92fr_1fr]">
@@ -364,14 +350,17 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             transitionDelay: "120ms",
           }}
         >
-          <h2 className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl">
+          <TemplateText
+            as="h2"
+            className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl"
+          >
             אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
-          </h2>
+          </TemplateText>
 
-          <p className="mt-7 text-lg leading-8 text-[#111827]/75">
+          <TemplateText as="p" className="mt-7 text-lg leading-8 text-[#111827]/75">
             אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
             מהיכרות ראשונה ועד פנייה אמיתית.
-          </p>
+          </TemplateText>
 
           <a
             href="#about"
@@ -438,14 +427,20 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             </div>
           </div>
 
-          <p className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80">
+          <TemplateText
+            as="p"
+            className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80"
+          >
             ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
             ושיפור מתמיד של הביצועים — במקום אחד.
-          </p>
+          </TemplateText>
 
-          <div className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60">
+          <TemplateText
+            as="div"
+            className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60"
+          >
             Digital Growth Partner
-          </div>
+          </TemplateText>
         </div>
       </div>
     </section>
@@ -477,7 +472,7 @@ function About({ visible }: { visible: Record<string, boolean> }) {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
+      className="relative overflow-hidden bg-[#07100e] px-4 py-24 text-right text-white md:px-8 md:py-32"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0">
@@ -489,6 +484,7 @@ function About({ visible }: { visible: Record<string, boolean> }) {
         <div
           data-ido-reveal="about-title"
           className="mx-auto max-w-6xl text-center"
+          data-ido-align="center"
         >
           <div
             className={[
@@ -500,10 +496,10 @@ function About({ visible }: { visible: Record<string, boolean> }) {
             ].join(" ")}
           >
             <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-            לא רק תוכן — מערכת צמיחה
+            <TemplateText as="span">לא רק תוכן — מערכת צמיחה</TemplateText>
           </div>
 
-          <AnimatedLetterTitle
+          <AnimatedLineTitle
             lines={["לא מעלים פוסטים.", "בונים ביקוש.", "מייצרים פניות."]}
             active={titleActive}
             step={34}
@@ -511,7 +507,8 @@ function About({ visible }: { visible: Record<string, boolean> }) {
             className="mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]"
           />
 
-          <p
+          <TemplateText
+            as="p"
             className={[
               "mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/62 md:text-lg",
               "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
@@ -523,7 +520,7 @@ function About({ visible }: { visible: Record<string, boolean> }) {
           >
             הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית
             למערכת שמייצרת אמון, תנועה, לידים ומכירות.
-          </p>
+          </TemplateText>
         </div>
 
         <div
@@ -561,14 +558,19 @@ function About({ visible }: { visible: Record<string, boolean> }) {
                 />
               </div>
 
-              <div className="p-7">
-                <div className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#c9f4dc]">
+              <div className="p-7 text-right">
+                <TemplateDecor
+                  as="div"
+                  className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#c9f4dc]"
+                >
                   0{index + 1}
-                </div>
-                <h3 className="text-3xl font-semibold tracking-[-0.045em]">
+                </TemplateDecor>
+                <TemplateText as="h3" className="text-3xl font-semibold tracking-[-0.045em]">
                   {item.title}
-                </h3>
-                <p className="mt-4 leading-7 text-white/58">{item.text}</p>
+                </TemplateText>
+                <TemplateText as="p" className="mt-4 leading-7 text-white/58">
+                  {item.text}
+                </TemplateText>
               </div>
             </article>
           ))}
@@ -731,6 +733,7 @@ function Gallery() {
       <div className="relative z-30 mx-auto flex min-h-[calc(100dvh-12rem)] max-w-[1700px] items-center justify-center">
         <div
           className="relative z-40 max-w-4xl rounded-[2.6rem] border border-white/10 bg-[#22292b]/86 px-6 py-8 text-center shadow-[0_35px_120px_rgba(0,0,0,.48)] backdrop-blur-xl md:px-12 md:py-10"
+          data-ido-align="center"
           style={{
             opacity: active ? 1 : 0,
             transform: active ? "translateY(0)" : "translateY(55px)",
@@ -739,18 +742,24 @@ function Gallery() {
             transitionDelay: "1500ms",
           }}
         >
-          <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl">
+          <TemplateText
+            as="h2"
+            className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl"
+          >
             מחברים בין קהל, תוכן, דאטה
             <br />
             וקמפיינים
             <br />
             למערכת צמיחה אחת ברורה.
-          </h2>
+          </TemplateText>
 
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg">
+          <TemplateText
+            as="p"
+            className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg"
+          >
             המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
             מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
-          </p>
+          </TemplateText>
         </div>
 
         {orbitImages.map((image) => (
@@ -792,79 +801,126 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
   return (
     <section
       id="booking"
-      className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
+      data-template-section-id="booking"
+      data-section-kind="booking"
+      className="bg-[#ecf3ea] px-4 py-24 text-right text-[#07100e] md:px-8 md:py-32"
       dir="rtl"
     >
-      <div className="mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_0.9fr]">
+      <div className="relative mx-auto grid max-w-7xl gap-10 md:grid-cols-[1fr_0.9fr]">
         <div
           data-ido-reveal="booking-copy"
           className={revealClass(visible["booking-copy"])}
         >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#07100e]" />
-            <span className="text-sm font-black tracking-[0.24em] text-[#07100e]/70">
+            <TemplateText
+              as="span"
+              className="text-sm font-black tracking-[0.24em] text-[#07100e]/70"
+            >
               CONSULTATION
-            </span>
+            </TemplateText>
           </div>
 
-          <h2 className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl">
+          <TemplateText
+            as="h2"
+            className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
+          >
             בואו נבנה
             <br />
             תוכנית צמיחה
             <br />
             לעסק שלך.
-          </h2>
+          </TemplateText>
 
-          <p className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
+          <TemplateText as="p" className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65">
             אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
             בהמשך.
-          </p>
+          </TemplateText>
         </div>
 
-        <form
+        <div
           data-ido-reveal="booking-form"
+          data-visual-editable="true"
+          data-visual-edit-id="booking.formBox"
+          data-visual-edit-type="box"
+          data-visual-edit-label="קופסת טופס יצירת קשר"
           className={[
             revealClass(visible["booking-form"], "delay-100"),
-            "rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8",
+            "relative",
           ].join(" ")}
         >
-          <div className="grid gap-4">
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="שם מלא"
-            />
-
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="טלפון"
-            />
-
-            <select className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
-              <option>מה מעניין אותך?</option>
-              <option>ניהול סושיאל</option>
-              <option>קמפיינים ממומנים</option>
-              <option>אסטרטגיית תוכן</option>
-              <option>מיתוג דיגיטלי</option>
-            </select>
-
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="תקציב חודשי משוער"
-            />
-
-            <textarea
-              className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
-              placeholder="ספרו בקצרה על העסק והמטרה"
-            />
-          </div>
-
-          <button
-            type="button"
-            className="mt-5 h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+          <form
+            data-bizuply-form-builder="true"
+            data-visual-editable="true"
+            data-visual-edit-id="booking.form"
+            data-visual-edit-type="box"
+            data-visual-edit-label="טופס יצירת קשר"
+            className="relative rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8"
           >
-            שליחת בקשה לשיחה
-          </button>
-        </form>
+            <div className="ido-form-fields relative grid gap-4">
+              <input
+                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                placeholder="שם מלא"
+                data-visual-editable="true"
+                data-visual-edit-id="booking.form.name"
+                data-visual-edit-type="button"
+                data-visual-edit-label="שדה שם מלא"
+              />
+
+              <input
+                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                placeholder="טלפון"
+                data-visual-editable="true"
+                data-visual-edit-id="booking.form.phone"
+                data-visual-edit-type="button"
+                data-visual-edit-label="שדה טלפון"
+              />
+
+              <select
+                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                data-visual-editable="true"
+                data-visual-edit-id="booking.form.interest"
+                data-visual-edit-type="button"
+                data-visual-edit-label="שדה בחירת שירות"
+              >
+                <option>מה מעניין אותך?</option>
+                <option>ניהול סושיאל</option>
+                <option>קמפיינים ממומנים</option>
+                <option>אסטרטגיית תוכן</option>
+                <option>מיתוג דיגיטלי</option>
+              </select>
+
+              <input
+                className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 text-right outline-none transition focus:border-[#07100e]"
+                placeholder="תקציב חודשי משוער"
+                data-visual-editable="true"
+                data-visual-edit-id="booking.form.budget"
+                data-visual-edit-type="button"
+                data-visual-edit-label="שדה תקציב"
+              />
+
+              <textarea
+                className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 text-right outline-none transition focus:border-[#07100e]"
+                placeholder="ספרו בקצרה על העסק והמטרה"
+                data-visual-editable="true"
+                data-visual-edit-id="booking.form.message"
+                data-visual-edit-type="button"
+                data-visual-edit-label="שדה הודעה"
+              />
+            </div>
+
+            <button
+              type="button"
+              className="mt-5 h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+              data-visual-editable="true"
+              data-visual-edit-id="booking.form.submit"
+              data-visual-edit-type="button"
+              data-visual-edit-label="כפתור שליחה"
+            >
+              <TemplateText as="span">שליחת בקשה לשיחה</TemplateText>
+            </button>
+          </form>
+        </div>
       </div>
     </section>
   );
@@ -873,7 +929,7 @@ function Booking({ visible }: { visible: Record<string, boolean> }) {
 function Faq({ visible }: { visible: Record<string, boolean> }) {
   return (
     <section
-      className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
+      className="bg-[#07100e] px-4 py-24 text-right text-white md:px-8 md:py-32"
       dir="rtl"
     >
       <div className="mx-auto max-w-4xl">
@@ -888,9 +944,12 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
             </span>
           </div>
 
-          <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
+          <TemplateText
+            as="h2"
+            className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl"
+          >
             שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.
-          </h2>
+          </TemplateText>
         </div>
 
         <div className="mt-12 space-y-4">
@@ -913,9 +972,13 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
                 "rounded-[1.7rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl",
               ].join(" ")}
             >
-              <h3 className="text-xl font-semibold">{q}</h3>
+              <TemplateText as="h3" className="text-xl font-semibold">
+                {q}
+              </TemplateText>
 
-              <p className="mt-3 leading-7 text-white/62">{a}</p>
+              <TemplateText as="p" className="mt-3 leading-7 text-white/62">
+                {a}
+              </TemplateText>
             </div>
           ))}
         </div>
@@ -950,15 +1013,17 @@ export default function IdoPages({
       <Faq visible={visible} />
 
       <footer
-        className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
+        className="bg-[#ecf3ea] px-4 py-10 text-right text-[#07100e] md:px-8"
         dir="rtl"
       >
         <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
-          <div className="font-black tracking-[0.22em]">IDO SOCIAL STUDIO</div>
+          <TemplateText as="div" className="font-black tracking-[0.22em]">
+            IDO SOCIAL STUDIO
+          </TemplateText>
 
-          <div className="text-[#07100e]/60">
+          <TemplateText as="div" className="text-[#07100e]/60">
             תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל
-          </div>
+          </TemplateText>
         </div>
       </footer>
     </main>
