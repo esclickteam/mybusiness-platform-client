@@ -25,8 +25,13 @@ export const idoPages: Array<{
 
 type IdoPagesProps = {
   initialPage?: IdoPageId;
-  mode?: "preview" | "editor" | "site";
+  mode?: "preview" | "editor" | "edit" | "site" | string;
 };
+
+function isIdoEditMode(mode?: string) {
+  const value = String(mode || "").trim().toLowerCase();
+  return value === "edit" || value === "editor";
+}
 
 function useReveal() {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
@@ -70,58 +75,39 @@ function revealClass(isVisible: boolean, delay = "") {
   ].join(" ");
 }
 
-function AnimatedLetterTitle({
+/**
+ * Whole-block title (one editable text node). Letter-per-span animation made
+ * the visual editor select each Hebrew character instead of the headline.
+ */
+function AnimatedTitle({
   lines,
   active,
   className,
-  step = 38,
   startDelay = 0,
 }: {
   lines: string[];
   active: boolean;
   className: string;
-  step?: number;
   startDelay?: number;
 }) {
-  let counter = 0;
-
   return (
-    <h2 className={className}>
-      {lines.map((line) => (
-        <span key={line} className="block overflow-visible pb-[0.08em]">
-          {Array.from(line).map((char, index) => {
-            const currentIndex = counter;
-            counter += 1;
-
-            if (char === " ") {
-              return (
-                <span
-                  key={`${line}-${index}`}
-                  className="inline-block w-[0.24em]"
-                >
-                  &nbsp;
-                </span>
-              );
-            }
-
-            return (
-              <span
-                key={`${line}-${index}`}
-                className={[
-                  "inline-block transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
-                  active
-                    ? "translate-y-0 rotate-0 opacity-100 blur-none"
-                    : "translate-y-full rotate-6 opacity-0 blur-md",
-                ].join(" ")}
-                style={{
-                  transitionDelay: `${startDelay + currentIndex * step}ms`,
-                }}
-              >
-                {char}
-              </span>
-            );
-          })}
-        </span>
+    <h2
+      className={[
+        className,
+        "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+        active
+          ? "translate-y-0 opacity-100 blur-none"
+          : "translate-y-8 opacity-0 blur-md",
+      ].join(" ")}
+      style={{ transitionDelay: `${startDelay}ms` }}
+      data-editable="text"
+      data-visual-edit-type="text"
+    >
+      {lines.map((line, index) => (
+        <React.Fragment key={`${index}-${line}`}>
+          {index > 0 ? <br /> : null}
+          {line}
+        </React.Fragment>
       ))}
     </h2>
   );
@@ -180,8 +166,8 @@ function Header() {
   );
 }
 
-function Hero() {
-  const [open, setOpen] = useState(false);
+function Hero({ editMode = false }: { editMode?: boolean }) {
+  const [open, setOpen] = useState(editMode);
 
   const titleLines = ["מומחה סושיאל", "שבונה נוכחות", "שמוכרת בשבילך"];
 
@@ -189,9 +175,14 @@ function Hero() {
     "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=2400&q=95";
 
   useEffect(() => {
+    if (editMode) {
+      setOpen(true);
+      return undefined;
+    }
+
     const timer = window.setTimeout(() => setOpen(true), 260);
     return () => window.clearTimeout(timer);
-  }, []);
+  }, [editMode]);
 
   return (
     <section
@@ -259,11 +250,10 @@ function Hero() {
           אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
         </div>
 
-        <AnimatedLetterTitle
+        <AnimatedTitle
           lines={titleLines}
           active={open}
-          step={44}
-          className="pointer-events-none relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
+          className="relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
         />
 
         <p
@@ -452,9 +442,15 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
   );
 }
 
-function About({ visible }: { visible: Record<string, boolean> }) {
-  const titleActive = visible["about-title"];
-  const imagesActive = visible["about-images"];
+function About({
+  visible,
+  editMode = false,
+}: {
+  visible: Record<string, boolean>;
+  editMode?: boolean;
+}) {
+  const titleActive = editMode || Boolean(visible["about-title"]);
+  const imagesActive = editMode || Boolean(visible["about-images"]);
 
   const aboutImages = [
     {
@@ -503,10 +499,9 @@ function About({ visible }: { visible: Record<string, boolean> }) {
             לא רק תוכן — מערכת צמיחה
           </div>
 
-          <AnimatedLetterTitle
+          <AnimatedTitle
             lines={["לא מעלים פוסטים.", "בונים ביקוש.", "מייצרים פניות."]}
             active={titleActive}
-            step={34}
             startDelay={160}
             className="mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]"
           />
@@ -930,6 +925,7 @@ export default function IdoPages({
 }: IdoPagesProps) {
   const visible = useReveal();
   const page = useMemo(() => initialPage || "home", [initialPage]);
+  const editMode = isIdoEditMode(mode);
 
   return (
     <main
@@ -942,9 +938,9 @@ export default function IdoPages({
     >
       <style>{idoEditorCss}</style>
       <Header />
-      <Hero />
+      <Hero editMode={editMode} />
       <Services visible={visible} />
-      <About visible={visible} />
+      <About visible={visible} editMode={editMode} />
       <Gallery />
       <Booking visible={visible} />
       <Faq visible={visible} />
