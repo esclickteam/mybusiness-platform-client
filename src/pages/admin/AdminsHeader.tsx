@@ -84,6 +84,14 @@ function AdminHeader() {
 
           <button
             type="button"
+            onClick={() => navigate("/admin/businesses")}
+            className={navClass("/admin/businesses")}
+          >
+            עסקים
+          </button>
+
+          <button
+            type="button"
             onClick={() => navigate("/admin/affiliates")}
             className={navClass("/admin/affiliates")}
           >
