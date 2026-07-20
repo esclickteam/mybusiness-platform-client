@@ -111,9 +111,20 @@ export default function ProtectedRoute({
   }
 
   /* ===========================
-     👑 Admin – full bypass
+     👑 Admin – send to admin panel, never client/business dashboards
   =========================== */
   if (isAdmin) {
+    const path = location.pathname || "";
+    const isAlreadyOnAdmin = path.startsWith("/admin");
+    const isWrongDashboard =
+      path.startsWith("/client/dashboard") ||
+      path === "/dashboard" ||
+      path.startsWith("/dashboard/");
+
+    if (!isAlreadyOnAdmin && isWrongDashboard) {
+      return <Navigate to="/admin/dashboard" replace />;
+    }
+
     return <>{children}</>;
   }
 
