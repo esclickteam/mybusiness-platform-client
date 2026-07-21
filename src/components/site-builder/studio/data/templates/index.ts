@@ -24,6 +24,11 @@ import { chanelTemplate } from "./chanel/meta";
 import { aureliaTemplate } from "./aurelia/meta";
 import { nexoraTemplate } from "./nexora/meta";
 import { fluxoraTemplate } from "./fluxora/meta";
+import { meridianTemplate } from "./meridian/meta";
+import { cinderTemplate } from "./cinder/meta";
+import { vesperaTemplate } from "./vespera/meta";
+import { arboraTemplate } from "./arbora/meta";
+import { solenneTemplate } from "./solenne/meta";
 import { fortivaTemplate } from "./fortiva/meta";
 import { vitalisTemplate } from "./vitalis/meta";
 import { studioraTemplate } from "./studiora/meta";
@@ -62,6 +67,11 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   aureliaTemplate,
   nexoraTemplate,
   fluxoraTemplate,
+  meridianTemplate,
+  cinderTemplate,
+  vesperaTemplate,
+  arboraTemplate,
+  solenneTemplate,
   fortivaTemplate,
   vitalisTemplate,
   studioraTemplate,
