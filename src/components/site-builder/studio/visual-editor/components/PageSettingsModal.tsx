@@ -1245,6 +1245,19 @@ export default function PageSettingsModal({
                   </p>
                 </div>
 
+                <div className="rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-3 text-xs font-semibold leading-6 text-violet-900">
+                  <p className="font-black">
+                    אחרי שמירה ופרסום — בדקו שהתג באתר לפני VERIFY
+                  </p>
+                  <p className="mt-1">
+                    פתחו את האתר המפורסם → Ctrl+U → חפשו{" "}
+                    <span className="font-black" dir="ltr">
+                      google-site-verification
+                    </span>
+                    . אם התג מופיע בקוד המקור — רק אז לחצו VERIFY בגוגל.
+                  </p>
+                </div>
+
                 {verificationCode ? (
                   <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-bold text-emerald-800">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
