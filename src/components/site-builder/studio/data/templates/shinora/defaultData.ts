@@ -3,7 +3,7 @@ export const shinoraDefaultData = {
   name: "Shinora",
   brandName: "שינורה",
   logoText: "S",
-  salonLabel: "Salon",
+  salonLabel: "סלון",
 
   navDemos: "דמואים",
   navHome: "בית",
@@ -25,9 +25,9 @@ export const shinoraDefaultData = {
     "אנחנו מאמינות שכל לקוחה צריכה יחס אישי, אבחון מדויק וטיפול שמותאם בדיוק לעור, לשיער ולסגנון שלה — כדי לצאת מהסלון רעננה, בטוחה וזוהרת.",
   heroPrimaryButton: "לקביעת ייעוץ",
   heroSecondaryButton: "לראות שירותים",
-  heroBadgeTop: "Consultation",
+  heroBadgeTop: "ייעוץ",
   heroBadgeText: "אבחון קצר לפני טיפול",
-  heroScrollText: "shine • beauty • glow • salon •",
+  heroScrollText: "זוהר • יופי • גלואו • סלון •",
   heroImage:
     "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1500&q=88",
   heroImageTwo:
@@ -41,7 +41,7 @@ export const shinoraDefaultData = {
     "מהרגע שנכנסים לסלון הכול מרגיש רגוע ומדויק: שיחה קצרה, התאמת טיפול, שימוש במוצרים איכותיים ותוצאה שנראית טבעית, יוקרתית ולא מתאמצת.",
   introButton: "עוד על הסלון",
 
-  servicesEyebrow: "Our services",
+  servicesEyebrow: "השירותים שלנו",
   servicesTitle: "השירותים המבוקשים ביותר",
   servicesText:
     "שירותים מוצגים בכרטיסים גדולים, עם מחיר התחלתי, תמונה, טקסט קצר וכפתור לפרטי הטיפול.",
@@ -54,16 +54,16 @@ export const shinoraDefaultData = {
   consultationSuccess: "תודה! הבקשה התקבלה ונחזור אלייך בקרוב.",
   consultationError: "אופס, משהו השתבש בשליחה.",
 
-  whyEyebrow: "Why our clients choose us",
+  whyEyebrow: "למה לקוחות בוחרות בנו",
   whyTitle: "למה לקוחות בוחרות בנו",
   whyText:
     "יחס אישי, צוות מומחיות, מוצרים פרימיום ואווירה שמרגישה כמו רגע לעצמך — בדיוק כמו אתר סלון יוקרתי צריך לשדר.",
 
-  videoEyebrow: "Salon video",
+  videoEyebrow: "סרטון הסלון",
   videoSectionTitle: "סרטון אווירה אחד שמראה את החוויה בסלון",
   videoSectionText:
     "במקום עיגולים, טאבים ותמונה סטטית — אזור וידאו גדול ונקי שמציג את הסלון, הטיפולים והתחושה שהלקוחה מקבלת עוד לפני שהיא קובעת תור.",
-  videoBadge: "Shinora experience",
+  videoBadge: "חוויית Shinora",
   videoCtaText:
     "אפשר להחליף את הסרטון לכל קובץ MP4 של העסק: סיור בסלון, רגעי טיפול, לפני־אחרי או סרטון תדמית קצר.",
 
@@ -72,11 +72,11 @@ export const shinoraDefaultData = {
 
   videoPoster:
     "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=1600&q=88",
-  videoTitle: "Watch how we work",
+  videoTitle: "כך אנחנו עובדות",
   videoText:
     "הצצה קצרה לאווירה, לחדרי הטיפול ולדרך שבה אנחנו בונות לכל לקוחה חוויה רגועה ומדויקת.",
 
-  directorRole: "Director",
+  directorRole: "מנהלת מקצועית",
   directorName: "נועה קולס",
   directorText:
     "אנחנו בונות לכל לקוחה מסלול טיפול אישי — לא טיפול גנרי. המטרה היא תוצאה מחמיאה, רגועה ומדויקת שמרגישה באמת שלך.",
@@ -91,7 +91,7 @@ export const shinoraDefaultData = {
   blogTitle: "פוסטים פופולריים מהבלוג",
   blogButton: "לכל המאמרים",
 
-  footerSalon: "Salon",
+  footerSalon: "סלון",
   footerText: "צרי קשר לקביעת תור או ייעוץ אישי לפני טיפול.",
   newsletterTitle: "הרשמה לעדכונים",
   newsletterText: "טיפים, מבצעים ותורים פנויים לפני כולם.",
@@ -101,7 +101,7 @@ export const shinoraDefaultData = {
   services: [
     {
       title: "עיצוב גבות",
-      category: "Face",
+      category: "פנים",
       price: "החל מ־₪180",
       text: "דיוק טבעי למסגרת הפנים, התאמה לצורה האישית וגימור נקי שמחזיק.",
       image:
@@ -109,7 +109,7 @@ export const shinoraDefaultData = {
     },
     {
       title: "הרמת ריסים",
-      category: "Face",
+      category: "פנים",
       price: "החל מ־₪240",
       text: "מראה פתוח ועדין בלי עומס, עם תוצאה רכה שמדגישה את העיניים.",
       image:
@@ -117,7 +117,7 @@ export const shinoraDefaultData = {
     },
     {
       title: "מניקור ג׳ל",
-      category: "Nails",
+      category: "ציפורניים",
       price: "החל מ־₪160",
       text: "מבנה נקי, צבע מדויק וגימור מבריק שמרגיש יוקרתי ומוקפד.",
       image:
@@ -125,7 +125,7 @@ export const shinoraDefaultData = {
     },
     {
       title: "פדיקור ספא",
-      category: "Nails",
+      category: "ציפורניים",
       price: "החל מ־₪220",
       text: "ריכוך, ניקוי, עיסוי וגימור מושלם לחוויה מפנקת ונקייה.",
       image:
@@ -133,7 +133,7 @@ export const shinoraDefaultData = {
     },
     {
       title: "תספורת ועיצוב",
-      category: "Hair",
+      category: "שיער",
       price: "החל מ־₪260",
       text: "אבחון מבנה פנים, בחירת אורך וגימור שמתאים לשגרה ולסגנון שלך.",
       image:
@@ -141,7 +141,7 @@ export const shinoraDefaultData = {
     },
     {
       title: "צבע וגוונים",
-      category: "Hair",
+      category: "שיער",
       price: "החל מ־₪390",
       text: "בחירת גוון, שמירה על ברק השיער ותוצאה רכה שלא נראית מלאכותית.",
       image:
@@ -227,20 +227,20 @@ export const shinoraDefaultData = {
 
   pricing: [
     {
-      title: "Beauty Start",
+      title: "התחלת יופי",
       price: "₪180+",
       description: "טיפול קצר ומדויק לפגישה ראשונה או תחזוקה חודשית.",
       items: ["אבחון קצר", "טיפול אחד לבחירה", "המלצות המשך", "קביעת תור אונליין"],
     },
     {
-      title: "Glow Ritual",
+      title: "טקס זוהר",
       price: "₪390+",
       description: "חבילת טיפוח מלאה לפני אירוע, צילומים או התחלה חדשה.",
       items: ["שני טיפולים משולבים", "מוצרי פרימיום", "זמן ספא רגוע", "ליווי אישי"],
       featured: true,
     },
     {
-      title: "Bridal Luxe",
+      title: "כלות פרימיום",
       price: "₪890+",
       description: "לוק שלם לכלה או אירוע מיוחד עם תכנון מראש.",
       items: ["פגישת ניסיון", "איפור ושיער", "טאצ׳ אפ", "תיאום מלא ליום האירוע"],

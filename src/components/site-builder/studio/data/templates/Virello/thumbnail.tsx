@@ -66,7 +66,7 @@ export default function AdionThumbnail() {
       <div className="relative z-10 mt-6">
         <div className="mb-2 flex flex-wrap gap-1.5">
           <p className="inline-flex rounded-full bg-[#ffe3a8] px-3 py-1 text-[10px] font-black">
-            Branding
+            מיתוג
           </p>
 
           <p className="inline-flex rounded-full bg-[#eadcff] px-3 py-1 text-[10px] font-black">
@@ -120,18 +120,18 @@ export default function AdionThumbnail() {
         <div className="flex w-max animate-[adionThumbMarquee_16s_linear_infinite] gap-5 text-[11px] font-black uppercase tracking-[-0.02em] text-[#301b12]/35">
           {[
             "UI/UX",
-            "Web Design",
-            "Branding",
-            "Motion",
-            "Development",
-            "Marketing",
+            "עיצוב אתרים",
+            "מיתוג",
+            "תנועה",
+            "פיתוח",
+            "שיווק",
             "Virello",
             "UI/UX",
-            "Web Design",
-            "Branding",
-            "Motion",
-            "Development",
-            "Marketing",
+            "עיצוב אתרים",
+            "מיתוג",
+            "תנועה",
+            "פיתוח",
+            "שיווק",
             "Virello",
           ].map((item, index) => (
             <span key={`${item}-${index}`}>{item}</span>

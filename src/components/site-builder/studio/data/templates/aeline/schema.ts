@@ -4,17 +4,17 @@ export const aelineSchema: StudioTemplateSchema = {
   sections: [
     {
       id: "header",
-      label: "Header",
-      description: "Brand and navigation content.",
+      label: "כותרת עליונה",
+      description: "תוכן המותג והניווט.",
       fields: [
         {
           key: "brand.name",
-          label: "Brand Name",
+          label: "שם המותג",
           type: "text",
         },
         {
           key: "brand.tagline",
-          label: "Tagline",
+          label: "סלוגן",
           type: "text",
         },
       ],
@@ -22,37 +22,37 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "hero",
-      label: "Hero",
-      description: "Main hero section.",
+      label: "הירו",
+      description: "סקשן ההירו הראשי.",
       fields: [
         {
           key: "hero.badge",
-          label: "Badge",
+          label: "תגית",
           type: "text",
         },
         {
           key: "hero.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
         {
           key: "hero.subtitle",
-          label: "Subtitle",
+          label: "כותרת משנה",
           type: "textarea",
         },
         {
           key: "hero.primaryButton",
-          label: "Primary Button",
+          label: "כפתור ראשי",
           type: "text",
         },
         {
           key: "hero.secondaryButton",
-          label: "Secondary Button",
+          label: "כפתור משני",
           type: "text",
         },
         {
           key: "hero.image",
-          label: "Hero Image",
+          label: "תמונת הירו",
           type: "image",
         },
       ],
@@ -60,22 +60,22 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "services",
-      label: "Services",
-      description: "Services section text.",
+      label: "שירותים",
+      description: "טקסט סקשן השירותים.",
       fields: [
         {
           key: "services.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "services.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
         {
           key: "services.button",
-          label: "Button",
+          label: "כפתור",
           type: "text",
         },
       ],
@@ -83,27 +83,27 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "expertise",
-      label: "Expertise",
-      description: "Expertise section content.",
+      label: "מומחיות",
+      description: "תוכן סקשן המומחיות.",
       fields: [
         {
           key: "expertise.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "expertise.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
         {
           key: "expertise.text",
-          label: "Text",
+          label: "טקסט",
           type: "textarea",
         },
         {
           key: "expertise.image",
-          label: "Image",
+          label: "תמונה",
           type: "image",
         },
       ],
@@ -111,17 +111,17 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "pricing",
-      label: "Pricing",
-      description: "Pricing headline content.",
+      label: "מחירים",
+      description: "כותרות סקשן המחירים.",
       fields: [
         {
           key: "pricing.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "pricing.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
       ],
@@ -129,17 +129,17 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "testimonials",
-      label: "Testimonials",
-      description: "Testimonials headline content.",
+      label: "המלצות",
+      description: "כותרות סקשן ההמלצות.",
       fields: [
         {
           key: "testimonials.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "testimonials.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
       ],
@@ -147,17 +147,17 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "blog",
-      label: "Blog",
-      description: "Blog headline content.",
+      label: "בלוג",
+      description: "כותרות סקשן הבלוג.",
       fields: [
         {
           key: "blog.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "blog.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
       ],
@@ -165,32 +165,32 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "cta",
-      label: "CTA",
-      description: "Final call to action section.",
+      label: "קריאה לפעולה",
+      description: "סקשן הקריאה לפעולה בסיום.",
       fields: [
         {
           key: "cta.label",
-          label: "Small Label",
+          label: "תווית קטנה",
           type: "text",
         },
         {
           key: "cta.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
         {
           key: "cta.text",
-          label: "Text",
+          label: "טקסט",
           type: "textarea",
         },
         {
           key: "cta.button",
-          label: "Button",
+          label: "כפתור",
           type: "text",
         },
         {
           key: "cta.image",
-          label: "Image",
+          label: "תמונה",
           type: "image",
         },
       ],
@@ -198,22 +198,22 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "contact",
-      label: "Contact",
-      description: "Contact page content.",
+      label: "צור קשר",
+      description: "תוכן עמוד יצירת הקשר.",
       fields: [
         {
           key: "contact.title",
-          label: "Title",
+          label: "כותרת",
           type: "text",
         },
         {
           key: "contact.text",
-          label: "Text",
+          label: "טקסט",
           type: "textarea",
         },
         {
           key: "contact.button",
-          label: "Button",
+          label: "כפתור",
           type: "text",
         },
       ],
@@ -221,17 +221,17 @@ export const aelineSchema: StudioTemplateSchema = {
 
     {
       id: "footer",
-      label: "Footer",
-      description: "Footer content.",
+      label: "פוטר",
+      description: "תוכן הפוטר.",
       fields: [
         {
           key: "brand.name",
-          label: "Brand Name",
+          label: "שם המותג",
           type: "text",
         },
         {
           key: "brand.tagline",
-          label: "Footer Text",
+          label: "טקסט פוטר",
           type: "textarea",
         },
       ],

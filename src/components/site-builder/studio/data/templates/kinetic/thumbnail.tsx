@@ -11,12 +11,12 @@ export default function KineticThumbnail() {
           <span className="text-sm font-bold">Kinetic</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff2d2d" }}>
-          Fitness Studio
+          סטודיו כושר
         </span>
       </div>
       <div className="mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#ff2d2d" }}>
-          Fitness Studio
+          סטודיו כושר
         </p>
         <h3 className="max-w-[220px] text-2xl font-black leading-tight">תנועה שמייצרת תוצאות.</h3>
         <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#ff2d2d33" }}>

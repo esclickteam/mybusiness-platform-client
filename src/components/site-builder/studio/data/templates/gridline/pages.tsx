@@ -505,7 +505,7 @@ function Hero({
                 data={data}
                 dataKey="heroImage"
                 label="תמונת הירו"
-                alt="Gridline hero"
+                alt="הירו Gridline"
                 className="h-[420px] w-full border-b border-black object-cover lg:h-[640px] lg:border-b-0 lg:border-l"
               />
               <div className="flex flex-col justify-between bg-[#ecece6]">
@@ -636,7 +636,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
             data={data}
             dataKey="aboutImage"
             label="תמונת אודות"
-            alt="Gridline about"
+                alt="אודות Gridline"
             className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
           />
         </Reveal>
@@ -684,10 +684,10 @@ function ServicesSection({
   compact?: boolean;
 }) {
   const services = [
-    ["serviceOneTitle", "serviceOneText", "Service 01"],
-    ["serviceTwoTitle", "serviceTwoText", "Service 02"],
-    ["serviceThreeTitle", "serviceThreeText", "Service 03"],
-    ["serviceFourTitle", "serviceFourText", "Service 04"],
+    ["serviceOneTitle", "serviceOneText", "שירות 01"],
+    ["serviceTwoTitle", "serviceTwoText", "שירות 02"],
+    ["serviceThreeTitle", "serviceThreeText", "שירות 03"],
+    ["serviceFourTitle", "serviceFourText", "שירות 04"],
   ];
 
   return (
@@ -935,10 +935,10 @@ function ContactSection({
   textKey?: string;
 }) {
   const info = [
-    ["phone", "טלפון", "Info 01"],
-    ["email", "אימייל", "Info 02"],
-    ["address", "כתובת", "Info 03"],
-    ["hours", "שעות פעילות", "Info 04"],
+    ["phone", "טלפון", "מידע 01"],
+    ["email", "אימייל", "מידע 02"],
+    ["address", "כתובת", "מידע 03"],
+    ["hours", "שעות פעילות", "מידע 04"],
   ];
 
   return (

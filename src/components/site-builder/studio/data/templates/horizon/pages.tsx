@@ -31,9 +31,9 @@ type HorizonPagesProps = {
 };
 
 const propertyMeta = [
-  { zone: "SEA FRONT", size: "340 מ\"ר", status: "במכירה פרטית" },
-  { zone: "CENTRAL TLV", size: "480 מ\"ר", status: "השכרה מנוהלת" },
-  { zone: "JERUSALEM HILLS", size: "610 מ\"ר", status: "מגרש לבנייה" },
+  { zone: "חזית ים", size: "340 מ\"ר", status: "במכירה פרטית" },
+  { zone: "מרכז ת״א", size: "480 מ\"ר", status: "השכרה מנוהלת" },
+  { zone: "הרי ירושלים", size: "610 מ\"ר", status: "מגרש לבנייה" },
 ];
 
 const serviceNotes = [
@@ -311,10 +311,10 @@ function MarketStrip() {
 
 function SignatureStats({ data }: { data: Record<string, any> }) {
   const items = [
-    ["PIPELINE", getValue(data, "statOne"), getValue(data, "statOneLabel")],
-    ["YEARS", getValue(data, "statTwo"), getValue(data, "statTwoLabel")],
-    ["RETENTION", getValue(data, "statThree"), getValue(data, "statThreeLabel")],
-    ["DESK", getValue(data, "statFour"), getValue(data, "statFourLabel")],
+    ["צנרת עסקאות", getValue(data, "statOne"), getValue(data, "statOneLabel")],
+    ["שנים", getValue(data, "statTwo"), getValue(data, "statTwoLabel")],
+    ["שימור", getValue(data, "statThree"), getValue(data, "statThreeLabel")],
+    ["דסק", getValue(data, "statFour"), getValue(data, "statFourLabel")],
   ];
 
   return (
@@ -480,7 +480,7 @@ function DistrictTable() {
     <section className="border-y border-[#1c1c1c]/10 bg-[#fffdf9] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <SectionTitle
-          eyebrow="Market Scan"
+          eyebrow="סריקת שוק"
           title="שכונות, מגמות והזדמנויות בזמן אמת."
           text="מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה."
         />
@@ -512,8 +512,8 @@ function DistrictTable() {
 
 function InsightPanels({ data }: { data: Record<string, any> }) {
   const insights = [
-    [getValue(data, "insightOneTitle"), getValue(data, "insightOneText"), "Quarterly Report"],
-    [getValue(data, "insightTwoTitle"), getValue(data, "insightTwoText"), "Advisory Memo"],
+    [getValue(data, "insightOneTitle"), getValue(data, "insightOneText"), "דוח רבעוני"],
+    [getValue(data, "insightTwoTitle"), getValue(data, "insightTwoText"), "תזכיר ייעוץ"],
   ];
 
   return (
@@ -538,16 +538,16 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
           </div>
           <div className="border border-[#1c1c1c]/10 bg-[#1c1c1c] p-8">
             <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">
-              Advisory Desk
+              דסק ייעוץ
             </TemplateText>
             <TemplateText as="h3" className="mt-5 text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">
               תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.
             </TemplateText>
             <div className="mt-10 grid gap-5 border-t border-[#b8956b]/20 pt-6">
               {[
-                ["VALUE MAP", "ניתוח שכונות, מחירי יעד ומסלולי השבחה."],
-                ["BUYER JOURNEY", "עמודי תהליך, תשובות לשאלות ומסמכי הכנה לפגישה."],
-                ["PIPELINE CONTENT", "מאמרים, דוחות ועדכונים שמחזיקים את הקהל קרוב."],
+                ["מפת ערך", "ניתוח שכונות, מחירי יעד ומסלולי השבחה."],
+                ["מסע רוכש", "עמודי תהליך, תשובות לשאלות ומסמכי הכנה לפגישה."],
+                ["תוכן צנרת", "מאמרים, דוחות ועדכונים שמחזיקים את הקהל קרוב."],
               ].map(([title, text]) => (
                 <div key={title}>
                   <TemplateText as="div" className="text-sm font-semibold uppercase tracking-[0.28em] text-[#b8956b]">
@@ -568,9 +568,9 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
 
 function ContactSection({ data }: { data: Record<string, any> }) {
   const info = [
-    ["PHONE", getValue(data, "phone")],
-    ["EMAIL", getValue(data, "email")],
-    ["ADDRESS", getValue(data, "address")],
+    ["טלפון", getValue(data, "phone")],
+    ["אימייל", getValue(data, "email")],
+    ["כתובת", getValue(data, "address")],
   ];
 
   return (

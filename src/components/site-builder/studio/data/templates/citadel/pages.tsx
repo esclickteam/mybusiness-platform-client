@@ -307,7 +307,7 @@ function HeroSection({
   data: TemplateData;
   goTo: (pageId: string) => void;
 }) {
-  const commandBlocks = ["ENCRYPT", "MONITOR", "RESPOND"];
+  const commandBlocks = ["הצפנה", "ניטור", "תגובה"];
   const statusRows = [
     `${getValue(data, "statOne")} :: ${getValue(data, "statOneLabel")}`,
     `${getValue(data, "statTwo")} :: ${getValue(data, "statTwoLabel")}`,
@@ -380,11 +380,11 @@ function HeroSection({
                   {formatBracketLabel(block)}
                 </div>
                 <div className="text-sm leading-7" style={{ color: citadelTheme.muted }}>
-                  {block === "ENCRYPT"
-                    ? "Transport, identity, and data-layer hardening with policy-first controls."
-                    : block === "MONITOR"
-                      ? "Continuous telemetry, anomaly detection, and exposure mapping."
-                      : "Incident playbooks, containment routing, and board-level reporting."}
+                  {block === "הצפנה"
+                    ? "חיזוק שכבות תעבורה, זהות ונתונים עם בקרות שמבוססות מדיניות."
+                    : block === "ניטור"
+                      ? "טלמטריה רציפה, זיהוי חריגות ומיפוי חשיפות."
+                      : "פלייבוקים לאירועים, ניתוב הכלה ודיווח ברמת דירקטוריון."}
                 </div>
               </div>
             ))}
@@ -407,10 +407,10 @@ function HeroSection({
               <div className="border-b p-5 lg:border-b-0 lg:border-l" style={{ borderColor: citadelTheme.border }}>
                 <div className="mb-4 space-y-2 text-left text-[12px] leading-6" style={{ color: citadelTheme.muted }}>
                   {[
-                    "> initiating perimeter check",
-                    "> validating endpoint posture",
-                    "> rotating credentials + enforcing MFA",
-                    "> syncing SOC escalation routes",
+                    "> מתחילים בדיקת היקף",
+                    "> מאמתים מצב תחנות קצה",
+                    "> מסובבים הרשאות ומחילים MFA",
+                    "> מסנכרנים מסלולי הסלמה ל־SOC",
                   ].map((line) => (
                     <div key={line} className="citadel-code-line">{line}</div>
                   ))}
@@ -451,10 +451,10 @@ function HeroSection({
 
 function SignalTicker({ data }: { data: TemplateData }) {
   const items = [
-    "ENCRYPT",
+    "הצפנה",
     "SOC 24/7",
-    "ZERO TRUST",
-    "THREAT HUNT",
+    "Zero Trust",
+    "ציד איומים",
     getValue(data, "brandName").toUpperCase(),
     getValue(data, "tagline").toUpperCase(),
   ];
@@ -507,9 +507,9 @@ function StatsSection({ data }: { data: TemplateData }) {
 
 function AboutSection({ data }: { data: TemplateData }) {
   const bulletLines = [
-    "Identity-first access layers for staff, vendors, and leadership.",
-    "Board-ready posture reporting that translates risk into action.",
-    "Security architecture designed to scale with operations and compliance.",
+    "שכבות גישה מבוססות זהות לעובדים, ספקים והנהלה.",
+    "דיווח מצב מוכן לדירקטוריון שמתרגם סיכון לפעולה.",
+    "ארכיטקטורת אבטחה שנועדת להתרחב עם התפעול והרגולציה.",
   ];
 
   return (
@@ -520,7 +520,7 @@ function AboutSection({ data }: { data: TemplateData }) {
         </div>
         <div>
           <SectionHeading
-            label="ARCHITECTURE"
+            label="ארכיטקטורה"
             title={getValue(data, "aboutTitle")}
             text={getValue(data, "aboutText")}
           />
@@ -550,16 +550,16 @@ function ServicesSection({ data }: { data: TemplateData }) {
   const services = [1, 2, 3, 4].map((index) => ({
     title: getValue(data, `service${["One", "Two", "Three", "Four"][index - 1]}Title`),
     text: getValue(data, `service${["One", "Two", "Three", "Four"][index - 1]}Text`),
-    label: ["ENCRYPT", "DETECT", "CONTAIN", "OPTIMIZE"][index - 1],
+    label: ["הצפנה", "זיהוי", "הכלה", "אופטימיזציה"][index - 1],
   }));
 
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="SERVICES"
+          label="שירותים"
           title={getValue(data, "servicesTitle")}
-          text="Layered advisory, implementation, and response programs built to reduce exposure without slowing delivery."
+          text="תוכניות ייעוץ, יישום ותגובה בשכבות — שנועדו להקטין חשיפה בלי להאט את המסירה."
           center
         />
         <div className="mt-12 grid gap-0 md:grid-cols-2 xl:grid-cols-4">
@@ -596,16 +596,16 @@ function WorkSection({ data }: { data: TemplateData }) {
   const workItems = [1, 2, 3].map((index) => ({
     title: getValue(data, `work${["One", "Two", "Three"][index - 1]}Title`),
     text: getValue(data, `work${["One", "Two", "Three"][index - 1]}Text`),
-    command: ["PERIMETER", "PIPELINE", "INCIDENT"][index - 1],
+    command: ["היקף", "צנרת", "אירוע"][index - 1],
   }));
 
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border, background: citadelTheme.surface }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="CASEFILES"
+          label="תיקים"
           title={getValue(data, "workTitle")}
-          text="Selected engagements focused on resilience, control coverage, and faster response time across high-risk environments."
+          text="פרויקטים נבחרים עם דגש על חוסן, כיסוי בקרות וזמן תגובה מהיר יותר בסביבות סיכון גבוה."
         />
         <div className="mt-12 grid gap-0 lg:grid-cols-3">
           {workItems.map((item, index) => (
@@ -641,16 +641,16 @@ function ProcessSection({ data }: { data: TemplateData }) {
   const steps = [1, 2, 3, 4].map((index) => ({
     title: getValue(data, `process${["One", "Two", "Three", "Four"][index - 1]}Title`),
     text: getValue(data, `process${["One", "Two", "Three", "Four"][index - 1]}Text`),
-    label: ["DISCOVER", "MODEL", "EXECUTE", "FORTIFY"][index - 1],
+    label: ["גילוי", "מידול", "ביצוע", "חיזוק"][index - 1],
   }));
 
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="PIPELINE"
+          label="תהליך"
           title={getValue(data, "processTitle")}
-          text="A disciplined operating model that moves from exposure discovery into hardening, validation, and iteration."
+          text="מודל תפעול ממושמע שעובר מגילוי חשיפות לחיזוק, אימות ושיפור מתמשך."
         />
         <div className="mt-12 grid gap-0 md:grid-cols-2 xl:grid-cols-4">
           {steps.map((step, index) => (
@@ -683,16 +683,16 @@ function InsightsSection({ data }: { data: TemplateData }) {
   const insights = [1, 2].map((index) => ({
     title: getValue(data, `insight${["One", "Two"][index - 1]}Title`),
     text: getValue(data, `insight${["One", "Two"][index - 1]}Text`),
-    label: ["FORECAST", "PLAYBOOK"][index - 1],
+    label: ["תחזית", "מדריך פעולה"][index - 1],
   }));
 
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: citadelTheme.border, background: citadelTheme.surface }}>
       <div className="mx-auto max-w-7xl">
         <SectionHeading
-          label="INTEL"
+          label="מודיעין"
           title={getValue(data, "insightsTitle")}
-          text="Actionable analysis for teams that need to brief leadership, prioritize remediation, and stay ahead of operational drift."
+          text="ניתוח מעשי לצוותים שצריכים לתדרך הנהלה, לתעדף תיקון ולהישאר לפני סטייה תפעולית."
         />
         <div className="mt-12 grid gap-0 lg:grid-cols-2">
           {insights.map((insight) => (
@@ -724,15 +724,15 @@ function ContactSection({ data }: { data: TemplateData }) {
       <div className="mx-auto grid max-w-7xl gap-8 xl:grid-cols-[0.9fr_1.1fr]">
         <div>
           <SectionHeading
-            label="HANDSHAKE"
+            label="יצירת קשר"
             title={getValue(data, "contactTitle")}
             text={getValue(data, "contactText")}
           />
           <div className="mt-8 grid gap-3">
             {[
-              ["LINE", getValue(data, "phone")],
-              ["MAIL", getValue(data, "email")],
-              ["NODE", getValue(data, "address")],
+              ["טלפון", getValue(data, "phone")],
+              ["אימייל", getValue(data, "email")],
+              ["כתובת", getValue(data, "address")],
             ].map(([label, value]) => (
               <div
                 key={label}
@@ -818,7 +818,7 @@ function CtaSection({
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-8 xl:flex-row xl:items-center">
         <div className="max-w-3xl text-right">
           <div className="mb-5">
-            <TerminalLabel label="DEPLOY_NEXT" />
+            <TerminalLabel label="הצעד_הבא" />
           </div>
           <TemplateText as="h2" className="text-3xl font-bold md:text-5xl" style={{ color: citadelTheme.light }}>
             {getValue(data, "ctaTitle")}
@@ -902,7 +902,7 @@ function CitadelFooter({
         </div>
         <div>
           <div className="mb-4">
-            <TerminalLabel label="NAV" />
+            <TerminalLabel label="ניווט" />
           </div>
           <div className="grid gap-2">
             {nav.map(([pageId, label]) => (
@@ -920,7 +920,7 @@ function CitadelFooter({
         </div>
         <div>
           <div className="mb-4">
-            <TerminalLabel label="CONTACT" />
+            <TerminalLabel label="צור_קשר" />
           </div>
           <div className="space-y-2 text-sm leading-7" style={{ color: citadelTheme.muted }}>
             <TemplateText as="div">{getValue(data, "phone")}</TemplateText>

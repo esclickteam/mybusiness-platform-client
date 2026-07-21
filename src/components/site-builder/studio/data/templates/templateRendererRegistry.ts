@@ -98,6 +98,11 @@ import { nexoraEditorCss } from "./nexora/editorCss";
 import { nexoraSchema } from "./nexora/schema";
 import { nexoraDefaultData } from "./nexora/defaultData";
 
+import FluxoraPages, { fluxoraPages } from "./fluxora/pages";
+import { fluxoraEditorCss } from "./fluxora/editorCss";
+import { fluxoraSchema } from "./fluxora/schema";
+import { fluxoraDefaultData } from "./fluxora/defaultData";
+
 import FortivaPages, { fortivaPages } from "./fortiva/pages";
 import { fortivaEditorCss } from "./fortiva/editorCss";
 import { fortivaSchema } from "./fortiva/schema";
@@ -494,6 +499,17 @@ export const studioTemplateRendererRegistry: Record<
     schema: nexoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: nexoraDefaultData as unknown as Record<string, any>,
     editorCss: nexoraEditorCss,
+  }),
+
+  fluxora: createRenderer({
+    key: "fluxora",
+    name: "Fluxora",
+    Component: FluxoraPages,
+    pages: fluxoraPages,
+    editorMode: "visual-react",
+    schema: fluxoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: fluxoraDefaultData as unknown as Record<string, any>,
+    editorCss: fluxoraEditorCss,
   }),
 
   fortiva: createRenderer({

@@ -8,7 +8,7 @@ import AelineThumbnail from "./thumbnail";
 
 export const aelineTemplate: StudioTemplateDefinition = {
   id: "aeline",
-  name: "Nova Flow",
+  name: "Aeline",
   author: "BizUply",
   category: "business",
   categoryLabel: "עסקים",
@@ -17,7 +17,7 @@ export const aelineTemplate: StudioTemplateDefinition = {
     "תבנית פרימיום לעסקי שירות, אוטומציות, CRM, מכירות וחוויית לקוח דיגיטלית.",
   seed: {
     ...aelineSeed,
-    name: "Nova Flow",
+    name: "Aeline",
     niche: "digital-growth",
     heroTitle: "הופכים פניות ללקוחות משלמים",
     heroSubtitle:

@@ -197,7 +197,7 @@ function getProductKey(product: NovastraProduct) {
 }
 
 function getProductImage(product: NovastraProduct) {
-  if (product.title === "Oversized Blazer") {
+  if (product.title === "בלייזר אוברסייז" || product.title === "Oversized Blazer") {
     return "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80";
   }
 
@@ -302,7 +302,7 @@ function Header({
           type="button"
           onClick={() => onNavigate("home")}
           className="flex items-center gap-2 text-left"
-          aria-label="Novastra home"
+          aria-label="Novastra — דף הבית"
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-sm font-black text-white">
             N
@@ -326,7 +326,7 @@ function Header({
               <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-4">
                 <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
                   <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
-                    Category
+                    קטגוריה
                   </p>
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCategories.map((item) => (
@@ -344,7 +344,7 @@ function Header({
 
                 <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
                   <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
-                    Collections
+                    קולקציות
                   </p>
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCollections.map((item) => (
@@ -406,7 +406,7 @@ function Header({
           <button
             type="button"
             className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-zinc-950 hover:text-white"
-            aria-label="Search"
+            aria-label="חיפוש"
           >
             <Search className="h-4 w-4" />
           </button>
@@ -431,7 +431,7 @@ function Header({
             type="button"
             onClick={() => onNavigate("cart")}
             className="relative grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
-            aria-label="Cart"
+            aria-label="עגלה"
           >
             <ShoppingBag className="h-5 w-5" />
             {cartCount > 0 ? (
@@ -445,7 +445,7 @@ function Header({
             type="button"
             onClick={() => setMobileOpen(true)}
             className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950"
-            aria-label="Open menu"
+            aria-label="פתיחת תפריט"
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -462,7 +462,7 @@ function Header({
               type="button"
               onClick={() => setMobileOpen(false)}
               className="grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
-              aria-label="Close menu"
+              aria-label="סגירת תפריט"
             >
               <X className="h-5 w-5" />
             </button>
@@ -818,7 +818,7 @@ function ProductPage({
 
           <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8 lg:sticky lg:top-32 lg:self-start">
             <p className="text-xs font-black uppercase tracking-[0.26em] text-zinc-500">
-              {product.category || "Collection"}
+              {product.category || "קולקציה"}
             </p>
 
             <h1 className="mt-4 text-5xl font-black uppercase leading-[0.9] tracking-[-0.07em] sm:text-7xl">
@@ -988,7 +988,7 @@ function CartPage({
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <SectionEyebrow>Shopping cart</SectionEyebrow>
+            <SectionEyebrow>סל קניות</SectionEyebrow>
             <h1 className="mt-3 text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">
               סל הקניות שלך
             </h1>
@@ -1052,7 +1052,7 @@ function CartPage({
                       type="button"
                       onClick={() => onRemoveItem(item.product)}
                       className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-red-50 hover:text-red-600"
-                      aria-label="Remove item"
+                      aria-label="הסרת פריט"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1571,7 +1571,7 @@ function FloatingChat({ data }: { data: NovastraData }) {
               type="button"
               onClick={() => setOpen(false)}
               className="grid h-8 w-8 place-items-center rounded-full bg-white/10"
-              aria-label="Close chat"
+              aria-label="סגירת צ׳אט"
             >
               <X className="h-4 w-4" />
             </button>
@@ -1589,7 +1589,7 @@ function FloatingChat({ data }: { data: NovastraData }) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="grid h-14 w-14 place-items-center rounded-full bg-white text-zinc-950 shadow-2xl shadow-black/25 ring-1 ring-zinc-200 transition hover:-translate-y-1"
-        aria-label="Open chat"
+        aria-label="פתיחת צ׳אט"
       >
         <MessageCircle className="h-6 w-6" />
       </button>
@@ -1933,48 +1933,48 @@ export function NovastraPages({
 export const novastraPages = [
   {
     id: "home",
-    name: "Home",
-    label: "Home",
+    name: "בית",
+    label: "בית",
     path: "/",
     Component: NovastraPages,
     component: NovastraPages,
   },
   {
     id: "collection",
-    name: "Collection",
-    label: "Collection",
+    name: "קולקציה",
+    label: "קולקציה",
     path: "/collection",
     Component: NovastraPages,
     component: NovastraPages,
   },
   {
     id: "product",
-    name: "Product",
-    label: "Product",
+    name: "מוצר",
+    label: "מוצר",
     path: "/product",
     Component: NovastraPages,
     component: NovastraPages,
   },
   {
     id: "cart",
-    name: "Cart",
-    label: "Cart",
+    name: "עגלה",
+    label: "עגלה",
     path: "/cart",
     Component: NovastraPages,
     component: NovastraPages,
   },
   {
     id: "journal",
-    name: "Journal",
-    label: "Journal",
+    name: "יומן",
+    label: "יומן",
     path: "/journal",
     Component: NovastraPages,
     component: NovastraPages,
   },
   {
     id: "contact",
-    name: "Contact",
-    label: "Contact",
+    name: "צור קשר",
+    label: "צור קשר",
     path: "/contact",
     Component: NovastraPages,
     component: NovastraPages,

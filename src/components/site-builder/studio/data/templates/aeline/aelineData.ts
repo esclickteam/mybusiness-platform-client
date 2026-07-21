@@ -33,7 +33,7 @@ export const aelineServices = [
 
 export const aelinePlans = [
   {
-    name: "חבילת Launch",
+    name: "חבילת התחלה",
     price: "₪6,500",
     text: "לעסק שרוצה להרים תשתית דיגיטלית חכמה ולהתחיל לנהל פניות בצורה מסודרת.",
     items: [
@@ -44,7 +44,7 @@ export const aelinePlans = [
     ],
   },
   {
-    name: "חבילת Scale",
+    name: "חבילת צמיחה",
     price: "₪18,900",
     text: "לעסק שרוצה לחבר מכירות, שירות, תזכורות ודוחות למערכת אחת שעובדת ברקע.",
     items: [
@@ -55,7 +55,7 @@ export const aelinePlans = [
     ],
   },
   {
-    name: "חבילת Flow",
+    name: "חבילת ארגונים",
     price: "מותאם אישית",
     text: "לעסקים עם כמה מחלקות, מספר ערוצי פנייה ותהליכים מורכבים שדורשים מערכת מותאמת.",
     items: [
@@ -140,9 +140,9 @@ export const aelineCss = `
 
 export const aelineSeed: ReadyWebsiteTemplateSeed = {
   id: "aeline",
-  name: "Nova Flow",
+  name: "Aeline",
   category: "business",
-  niche: "Digital Growth Studio",
+  niche: "סטודיו לצמיחה דיגיטלית",
   layout: "premium-digital-growth-flow",
   description:
     "תבנית פרימיום לעסקי שירות, אוטומציות, CRM, מכירות וחוויית לקוח דיגיטלית.",

@@ -195,7 +195,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
         <div className="relative mx-auto grid max-w-[1500px] gap-16 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
           <Reveal>
             <p className="text-sm tracking-[0.26em] text-black/45">
-              CONTACT ATELIER NOA
+              צרו קשר עם ATELIER NOA
             </p>
 
             <h1 className="mt-8 [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.9] tracking-[-0.06em] text-[#2b2722] md:text-[112px]">

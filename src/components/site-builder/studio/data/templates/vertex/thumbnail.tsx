@@ -11,12 +11,12 @@ export default function VertexThumbnail() {
           <span className="text-sm font-bold">Vertex</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#00ff88" }}>
-          Tech Consulting
+          ייעוץ טכנולוגי
         </span>
       </div>
       <div className="mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#00ff88" }}>
-          Tech Consulting
+          ייעוץ טכנולוגי
         </p>
         <h3 className="max-w-[220px] text-2xl font-black leading-tight">מערכות שמזנקות קדימה.</h3>
         <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#00ff8833" }}>

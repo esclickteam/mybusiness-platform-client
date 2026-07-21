@@ -99,10 +99,10 @@ export const velmoraTemplate = {
   id: "velmora",
   name: "Velmora",
   author: "BizUply",
-  priceLabel: "Included",
+  priceLabel: "כלול",
   category: "store",
-  categoryLabel: "Retail & E-Commerce",
-  badge: "NEW",
+  categoryLabel: "קמעונאות / מסחר אלקטרוני",
+  badge: "חדש",
   description:
     "תבנית בוטיק עברית לחנות בגדים, קולקציות, מוצרים, לוקבוק וסיפור מותג.",
   previewImage:
