@@ -183,16 +183,25 @@ const EDITOR_UI_SELECTOR = [
   ".visual-context-menu",
 ].join(",");
 
-function getDeviceWidth(device: VisualDeviceMode) {
+function getDeviceWidth(device: VisualDeviceMode, preview = false) {
   if (device === "mobile") return "390px";
   if (device === "tablet") return "820px";
+  // Wix-style framed desktop preview (not full bleed)
+  if (preview) return "min(1280px, calc(100vw - 96px))";
   return "100%";
 }
 
-function getDeviceMaxWidth(device: VisualDeviceMode) {
+function getDeviceMaxWidth(device: VisualDeviceMode, preview = false) {
   if (device === "mobile") return "390px";
   if (device === "tablet") return "820px";
+  if (preview) return "1280px";
   return "100%";
+}
+
+function getPreviewDeviceLabel(device: VisualDeviceMode) {
+  if (device === "mobile") return "מובייל · 390px";
+  if (device === "tablet") return "טאבלט · 820px";
+  return "דסקטופ · 1280px";
 }
 
 function isHTMLElement(value: unknown): value is HTMLElement {
@@ -715,8 +724,8 @@ export default function VisualEditorCanvas({
     if (typeof editorAny.buildRuntimeCss === "function") {
       return (
         editorAny.buildRuntimeCss({
-          selectedElementId,
-          hoveredElementId,
+          selectedElementId: isPreviewMode ? "" : selectedElementId,
+          hoveredElementId: isPreviewMode ? "" : hoveredElementId,
         }) || ""
       );
     }
@@ -729,6 +738,7 @@ export default function VisualEditorCanvas({
     editorAny.customCode,
     selectedElementId,
     hoveredElementId,
+    isPreviewMode,
   ]);
 
   const customCodeEnabled = editorAny.customCode?.enabled !== false;
@@ -1807,7 +1817,8 @@ export default function VisualEditorCanvas({
   return (
     <div
       className={[
-        "visual-editor-scroll-area h-full overflow-y-auto overflow-x-hidden bg-slate-100",
+        "visual-editor-scroll-area h-full overflow-y-auto overflow-x-hidden",
+        isPreviewMode ? "bg-slate-300/90" : "bg-slate-100",
         className,
       ]
         .filter(Boolean)
@@ -2076,15 +2087,33 @@ export default function VisualEditorCanvas({
         `}
       </style>
 
-      <div className="mx-auto min-h-full px-3 pb-8 pt-28 lg:px-6">
+      <div
+        className={[
+          "mx-auto min-h-full",
+          isPreviewMode
+            ? "flex flex-col items-center px-4 pb-10 pt-8 lg:px-8"
+            : "px-3 pb-8 pt-28 lg:px-6",
+        ].join(" ")}
+      >
+        {isPreviewMode ? (
+          <div className="mb-4 flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-1.5 text-xs font-black text-slate-600 shadow-sm backdrop-blur">
+            <span>תצוגה מקדימה</span>
+            <span className="h-1 w-1 rounded-full bg-slate-300" />
+            <span>{getPreviewDeviceLabel(deviceMode)}</span>
+          </div>
+        ) : null}
+
         <div
           className={[
-            "mx-auto min-h-[720px] overflow-visible bg-white shadow-[0_24px_90px_rgba(15,23,42,0.14)] transition-all duration-300",
-            deviceMode === "desktop" ? "w-full" : "rounded-[32px]",
+            "mx-auto overflow-hidden bg-white shadow-[0_24px_90px_rgba(15,23,42,0.18)] transition-all duration-300",
+            isPreviewMode || deviceMode !== "desktop"
+              ? "rounded-[28px] ring-1 ring-black/10"
+              : "",
+            isPreviewMode ? "max-h-[calc(100vh-170px)] overflow-y-auto" : "min-h-[720px] overflow-visible",
           ].join(" ")}
           style={{
-            width: getDeviceWidth(deviceMode),
-            maxWidth: getDeviceMaxWidth(deviceMode),
+            width: getDeviceWidth(deviceMode, isPreviewMode),
+            maxWidth: getDeviceMaxWidth(deviceMode, isPreviewMode),
           }}
         >
           <div

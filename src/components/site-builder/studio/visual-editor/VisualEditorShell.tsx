@@ -46,6 +46,8 @@ type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   isInlineEditing?: boolean;
   setIsInlineEditing?: React.Dispatch<React.SetStateAction<boolean>>;
 
+  clearSelection?: () => void;
+
   isSaving: boolean;
   isUploadingMedia?: boolean;
   lastSavedAt?: string;
@@ -201,6 +203,7 @@ export default function VisualEditorShell({
   function handleTogglePreview() {
     editor.setIsInlineEditing?.(false);
     setSidePanelMode(null);
+    editor.clearSelection?.();
 
     if (typeof editor.togglePreviewMode === "function") {
       editor.togglePreviewMode();

@@ -3478,8 +3478,9 @@ export function useVisualEditorState({
 
   const togglePreviewMode = useCallback(() => {
     setIsInlineEditing(false);
+    selection.clearSelection();
     setIsPreviewMode((current) => !current);
-  }, []);
+  }, [selection]);
 
   const openBackgroundMediaPicker = useCallback(
     (elementId: string) =>
