@@ -3,11 +3,7 @@ import GridlinePages from "./pages";
 
 export default function GridlinePreview() {
   return (
-    <div
-      dir="ltr"
-      data-template-id="gridline-preview"
-      className="min-h-screen w-full overflow-x-hidden bg-white"
-    >
+    <div dir="rtl" data-template-id="gridline-preview" className="min-h-screen w-full" style={{ background: "#f4f4f0", overflowX: "hidden" }}>
       <GridlinePages initialPage="home" mode="preview" />
     </div>
   );

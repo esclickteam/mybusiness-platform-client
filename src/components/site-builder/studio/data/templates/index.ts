@@ -36,6 +36,7 @@ import { horizonTemplate } from "./horizon/meta";
 import { ledgerTemplate } from "./ledger/meta";
 import { kineticTemplate } from "./kinetic/meta";
 import { citadelTemplate } from "./citadel/meta";
+import { salonixTemplate } from "./salonix/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -73,6 +74,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   ledgerTemplate,
   kineticTemplate,
   citadelTemplate,
+  salonixTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

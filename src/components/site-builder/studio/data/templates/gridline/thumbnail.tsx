@@ -2,39 +2,31 @@ import React from "react";
 
 export default function GridlineThumbnail() {
   return (
-    <div
-      dir="ltr"
-      className="relative h-full min-h-[260px] w-full overflow-hidden bg-white p-4 text-black"
-    >
+    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#f4f4f0", color: "#111111" }}>
       <div className="flex items-center justify-between">
-        <div className="rounded bg-black px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-white">
-          Gala
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center text-xs font-black" style={{ background: "#111111", color: "#f4f4f0" }}>
+            GR
+          </div>
+          <span className="text-sm font-bold">Gridline</span>
         </div>
-        <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#fc427f]">
-          Nail Salon
+        <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#111111" }}>
+          Architecture Studio
         </span>
       </div>
-
-      <div className="mt-5 overflow-hidden rounded-md">
-        <div className="h-16 bg-gradient-to-r from-[#111] via-[#333] to-[#fc427f]" />
-      </div>
-
-      <div className="mt-4 grid grid-cols-3 gap-2">
-        {[1, 2, 3].map((item) => (
-          <div
-            key={item}
-            className="aspect-square rounded-[18px] border-2 border-[#e7e7e7] bg-[#fafafa]"
-          />
-        ))}
-      </div>
-
-      <div className="mt-4">
-        <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#fc427f]">
-          Our Service
+      <div className="mt-10">
+        <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#111111" }}>
+          Architecture Studio
         </p>
-        <h3 className="mt-1 text-lg font-bold uppercase leading-tight">
-          Gala Nail Salon
-        </h3>
+        <h3 className="max-w-[220px] text-2xl font-black leading-tight">מרחבים שמדברים בקו ישר.</h3>
+        <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#11111133" }}>
+          {[["120+", "פרויקטים"], ["18", "שנים"], ["96%", "שביעות"]].map(([n, l]) => (
+            <div key={l} className="border px-2 py-3" style={{ borderColor: "#11111133" }}>
+              <div className="text-sm font-black">{n}</div>
+              <div className="text-[9px] opacity-60">{l}</div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );
