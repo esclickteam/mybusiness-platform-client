@@ -52,6 +52,16 @@ import { horizonTemplate } from "./horizon/meta";
 import { ledgerTemplate } from "./ledger/meta";
 import { kineticTemplate } from "./kinetic/meta";
 import { citadelTemplate } from "./citadel/meta";
+import { dunewaveTemplate } from "./dunewave/meta";
+import { coralineTemplate } from "./coraline/meta";
+import { sunriftTemplate } from "./sunrift/meta";
+import { tidehausTemplate } from "./tidehaus/meta";
+import { mirageTemplate } from "./mirage/meta";
+import { driftwoodTemplate } from "./driftwood/meta";
+import { azurelineTemplate } from "./azureline/meta";
+import { seabloomTemplate } from "./seabloom/meta";
+import { saltforgeTemplate } from "./saltforge/meta";
+import { horizonixTemplate } from "./horizonix/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -105,6 +115,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   ledgerTemplate,
   kineticTemplate,
   citadelTemplate,
+  dunewaveTemplate,
+  coralineTemplate,
+  sunriftTemplate,
+  tidehausTemplate,
+  mirageTemplate,
+  driftwoodTemplate,
+  azurelineTemplate,
+  seabloomTemplate,
+  saltforgeTemplate,
+  horizonixTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
