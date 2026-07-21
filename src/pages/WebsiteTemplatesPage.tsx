@@ -238,6 +238,8 @@ function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
   if (
     rawCategory === "real-estate" ||
     rawCategory === "real_estate" ||
+    rawCategory === "realestate" ||
+    rawCategory.includes("real estate") ||
     rawLabel.includes("נדל") ||
     rawLabel.includes("real estate")
   ) {

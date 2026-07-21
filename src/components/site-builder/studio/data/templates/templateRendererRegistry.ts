@@ -102,6 +102,56 @@ import FluxoraPages, { fluxoraPages } from "./fluxora/pages";
 import { fluxoraEditorCss } from "./fluxora/editorCss";
 import { fluxoraSchema } from "./fluxora/schema";
 import { fluxoraDefaultData } from "./fluxora/defaultData";
+import LoteraPages, { loteraPages } from "./lotera/pages";
+import { loteraEditorCss } from "./lotera/editorCss";
+import { loteraSchema } from "./lotera/schema";
+import { loteraDefaultData } from "./lotera/defaultData";
+
+import KeyoraPages, { keyoraPages } from "./keyora/pages";
+import { keyoraEditorCss } from "./keyora/editorCss";
+import { keyoraSchema } from "./keyora/schema";
+import { keyoraDefaultData } from "./keyora/defaultData";
+
+import EstateoPages, { estateoPages } from "./estateo/pages";
+import { estateoEditorCss } from "./estateo/editorCss";
+import { estateoSchema } from "./estateo/schema";
+import { estateoDefaultData } from "./estateo/defaultData";
+
+import HomaraPages, { homaraPages } from "./homara/pages";
+import { homaraEditorCss } from "./homara/editorCss";
+import { homaraSchema } from "./homara/schema";
+import { homaraDefaultData } from "./homara/defaultData";
+
+import UrbanixPages, { urbanixPages } from "./urbanix/pages";
+import { urbanixEditorCss } from "./urbanix/editorCss";
+import { urbanixSchema } from "./urbanix/schema";
+import { urbanixDefaultData } from "./urbanix/defaultData";
+
+import RivaraPages, { rivaraPages } from "./rivara/pages";
+import { rivaraEditorCss } from "./rivara/editorCss";
+import { rivaraSchema } from "./rivara/schema";
+import { rivaraDefaultData } from "./rivara/defaultData";
+
+import VillairePages, { villairePages } from "./villaire/pages";
+import { villaireEditorCss } from "./villaire/editorCss";
+import { villaireSchema } from "./villaire/schema";
+import { villaireDefaultData } from "./villaire/defaultData";
+
+import ParcelPages, { parcelPages } from "./parcel/pages";
+import { parcelEditorCss } from "./parcel/editorCss";
+import { parcelSchema } from "./parcel/schema";
+import { parcelDefaultData } from "./parcel/defaultData";
+
+import SkylaraPages, { skylaraPages } from "./skylara/pages";
+import { skylaraEditorCss } from "./skylara/editorCss";
+import { skylaraSchema } from "./skylara/schema";
+import { skylaraDefaultData } from "./skylara/defaultData";
+
+import NestoraPages, { nestoraPages } from "./nestora/pages";
+import { nestoraEditorCss } from "./nestora/editorCss";
+import { nestoraSchema } from "./nestora/schema";
+import { nestoraDefaultData } from "./nestora/defaultData";
+
 
 import MeridianPages, { meridianPages } from "./meridian/pages";
 import { meridianEditorCss } from "./meridian/editorCss";
@@ -536,6 +586,116 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: fluxoraDefaultData as unknown as Record<string, any>,
     editorCss: fluxoraEditorCss,
   }),
+  lotera: createRenderer({
+    key: "lotera",
+    name: "Lotera",
+    Component: LoteraPages,
+    pages: loteraPages,
+    editorMode: "visual-react",
+    schema: loteraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: loteraDefaultData as unknown as Record<string, any>,
+    editorCss: loteraEditorCss,
+  }),
+
+  keyora: createRenderer({
+    key: "keyora",
+    name: "Keyora",
+    Component: KeyoraPages,
+    pages: keyoraPages,
+    editorMode: "visual-react",
+    schema: keyoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: keyoraDefaultData as unknown as Record<string, any>,
+    editorCss: keyoraEditorCss,
+  }),
+
+  estateo: createRenderer({
+    key: "estateo",
+    name: "Estateo",
+    Component: EstateoPages,
+    pages: estateoPages,
+    editorMode: "visual-react",
+    schema: estateoSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: estateoDefaultData as unknown as Record<string, any>,
+    editorCss: estateoEditorCss,
+  }),
+
+  homara: createRenderer({
+    key: "homara",
+    name: "Homara",
+    Component: HomaraPages,
+    pages: homaraPages,
+    editorMode: "visual-react",
+    schema: homaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: homaraDefaultData as unknown as Record<string, any>,
+    editorCss: homaraEditorCss,
+  }),
+
+  urbanix: createRenderer({
+    key: "urbanix",
+    name: "Urbanix",
+    Component: UrbanixPages,
+    pages: urbanixPages,
+    editorMode: "visual-react",
+    schema: urbanixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: urbanixDefaultData as unknown as Record<string, any>,
+    editorCss: urbanixEditorCss,
+  }),
+
+  rivara: createRenderer({
+    key: "rivara",
+    name: "Rivara",
+    Component: RivaraPages,
+    pages: rivaraPages,
+    editorMode: "visual-react",
+    schema: rivaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: rivaraDefaultData as unknown as Record<string, any>,
+    editorCss: rivaraEditorCss,
+  }),
+
+  villaire: createRenderer({
+    key: "villaire",
+    name: "Villaire",
+    Component: VillairePages,
+    pages: villairePages,
+    editorMode: "visual-react",
+    schema: villaireSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: villaireDefaultData as unknown as Record<string, any>,
+    editorCss: villaireEditorCss,
+  }),
+
+  parcel: createRenderer({
+    key: "parcel",
+    name: "Parcel",
+    Component: ParcelPages,
+    pages: parcelPages,
+    editorMode: "visual-react",
+    schema: parcelSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: parcelDefaultData as unknown as Record<string, any>,
+    editorCss: parcelEditorCss,
+  }),
+
+  skylara: createRenderer({
+    key: "skylara",
+    name: "Skylara",
+    Component: SkylaraPages,
+    pages: skylaraPages,
+    editorMode: "visual-react",
+    schema: skylaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: skylaraDefaultData as unknown as Record<string, any>,
+    editorCss: skylaraEditorCss,
+  }),
+
+  nestora: createRenderer({
+    key: "nestora",
+    name: "Nestora",
+    Component: NestoraPages,
+    pages: nestoraPages,
+    editorMode: "visual-react",
+    schema: nestoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nestoraDefaultData as unknown as Record<string, any>,
+    editorCss: nestoraEditorCss,
+  }),
+
 
   meridian: createRenderer({
     key: "meridian",

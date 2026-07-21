@@ -24,6 +24,16 @@ import { chanelTemplate } from "./chanel/meta";
 import { aureliaTemplate } from "./aurelia/meta";
 import { nexoraTemplate } from "./nexora/meta";
 import { fluxoraTemplate } from "./fluxora/meta";
+import { loteraTemplate } from "./lotera/meta";
+import { keyoraTemplate } from "./keyora/meta";
+import { estateoTemplate } from "./estateo/meta";
+import { homaraTemplate } from "./homara/meta";
+import { urbanixTemplate } from "./urbanix/meta";
+import { rivaraTemplate } from "./rivara/meta";
+import { villaireTemplate } from "./villaire/meta";
+import { parcelTemplate } from "./parcel/meta";
+import { skylaraTemplate } from "./skylara/meta";
+import { nestoraTemplate } from "./nestora/meta";
 import { meridianTemplate } from "./meridian/meta";
 import { cinderTemplate } from "./cinder/meta";
 import { vesperaTemplate } from "./vespera/meta";
@@ -67,6 +77,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   aureliaTemplate,
   nexoraTemplate,
   fluxoraTemplate,
+  loteraTemplate,
+  keyoraTemplate,
+  estateoTemplate,
+  homaraTemplate,
+  urbanixTemplate,
+  rivaraTemplate,
+  villaireTemplate,
+  parcelTemplate,
+  skylaraTemplate,
+  nestoraTemplate,
   meridianTemplate,
   cinderTemplate,
   vesperaTemplate,

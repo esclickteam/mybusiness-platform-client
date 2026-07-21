@@ -1,0 +1,9 @@
+import React from "react";
+import ParcelPages from "./pages";
+export default function ParcelPreview() {
+  return (
+    <div dir="rtl" data-template-id="parcel-preview" className="min-h-screen w-full" style={{ background: "#f3efe6", color: "#243018" }}>
+      <ParcelPages initialPage="home" mode="preview" />
+    </div>
+  );
+}
