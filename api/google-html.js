@@ -1,9 +1,11 @@
 /**
  * Proxies Google Search Console verification files for customer site hosts.
- * Kept tiny and isolated so homepage stays on static SPA routing.
  */
 
-const API =
+const https = require("https");
+const { URL } = require("url");
+
+const API_BASE =
   "https://api.bizuply.com/api/site-builder/public/by-host/google-html";
 
 function getHost(req) {
@@ -29,46 +31,76 @@ function normalizeFile(value) {
   return file;
 }
 
-module.exports = async function handler(req, res) {
-  if (req.method && req.method !== "GET" && req.method !== "HEAD") {
-    res.statusCode = 405;
-    res.end("Method Not Allowed");
-    return;
-  }
-
-  const host = getHost(req);
-  const file = normalizeFile(
-    (req.query && req.query.file) ||
-      (req.url && String(req.url).split("file=")[1]) ||
-      "",
-  );
-
-  if (!host || !file) {
-    res.statusCode = 404;
-    res.setHeader("content-type", "text/plain; charset=utf-8");
-    res.end("Not found");
-    return;
-  }
-
+function readQueryFile(req) {
   try {
-    const apiUrl = `${API}?host=${encodeURIComponent(host)}&file=${encodeURIComponent(file)}&_t=${Date.now()}`;
-    const apiRes = await fetch(apiUrl, {
-      headers: { accept: "text/html,text/plain" },
-    });
-    const body = await apiRes.text();
+    const u = new URL(req.url || "/", "http://localhost");
+    return u.searchParams.get("file") || "";
+  } catch {
+    return "";
+  }
+}
+
+function fetchText(url) {
+  return new Promise((resolve, reject) => {
+    https
+      .get(url, (res) => {
+        const chunks = [];
+        res.on("data", (chunk) => chunks.push(chunk));
+        res.on("end", () => {
+          resolve({
+            status: res.statusCode || 500,
+            body: Buffer.concat(chunks).toString("utf8"),
+          });
+        });
+      })
+      .on("error", reject);
+  });
+}
+
+module.exports = async function handler(req, res) {
+  try {
+    if (req.method && req.method !== "GET" && req.method !== "HEAD") {
+      res.statusCode = 405;
+      res.end("Method Not Allowed");
+      return;
+    }
+
+    const host = getHost(req);
+    const file = normalizeFile(readQueryFile(req));
+
+    if (!host || !file) {
+      res.statusCode = 404;
+      res.setHeader("content-type", "text/plain; charset=utf-8");
+      res.end("Not found");
+      return;
+    }
+
+    const apiUrl =
+      `${API_BASE}?host=${encodeURIComponent(host)}` +
+      `&file=${encodeURIComponent(file)}&_t=${Date.now()}`;
+
+    const apiRes = await fetchText(apiUrl);
 
     res.statusCode = apiRes.status;
     res.setHeader("content-type", "text/html; charset=utf-8");
     res.setHeader("cache-control", "public, max-age=0, must-revalidate");
-    res.setHeader("x-bizuply-google-html", apiRes.ok ? "1" : "0");
+    res.setHeader("x-bizuply-google-html", apiRes.status === 200 ? "1" : "0");
+    res.setHeader("x-bizuply-google-host", host);
+    res.setHeader("x-bizuply-google-file", file);
+
     if (req.method === "HEAD") {
       res.end();
       return;
     }
-    res.end(body);
+
+    res.end(apiRes.body);
   } catch (error) {
     res.statusCode = 502;
     res.setHeader("content-type", "text/plain; charset=utf-8");
-    res.end("Verification file unavailable");
+    res.end(
+      `Verification file unavailable: ${
+        error && error.message ? error.message : "unknown"
+      }`,
+    );
   }
 };
