@@ -1,9 +1,7 @@
 /**
  * Proxies Google Search Console verification files for customer site hosts.
+ * ESM export for package.json "type": "module".
  */
-
-const https = require("https");
-const { URL } = require("url");
 
 const API_BASE =
   "https://api.bizuply.com/api/site-builder/public/by-host/google-html";
@@ -40,24 +38,7 @@ function readQueryFile(req) {
   }
 }
 
-function fetchText(url) {
-  return new Promise((resolve, reject) => {
-    https
-      .get(url, (res) => {
-        const chunks = [];
-        res.on("data", (chunk) => chunks.push(chunk));
-        res.on("end", () => {
-          resolve({
-            status: res.statusCode || 500,
-            body: Buffer.concat(chunks).toString("utf8"),
-          });
-        });
-      })
-      .on("error", reject);
-  });
-}
-
-module.exports = async function handler(req, res) {
+export default async function handler(req, res) {
   try {
     if (req.method && req.method !== "GET" && req.method !== "HEAD") {
       res.statusCode = 405;
@@ -79,12 +60,15 @@ module.exports = async function handler(req, res) {
       `${API_BASE}?host=${encodeURIComponent(host)}` +
       `&file=${encodeURIComponent(file)}&_t=${Date.now()}`;
 
-    const apiRes = await fetchText(apiUrl);
+    const apiRes = await fetch(apiUrl, {
+      headers: { accept: "text/html,text/plain" },
+    });
+    const body = await apiRes.text();
 
     res.statusCode = apiRes.status;
     res.setHeader("content-type", "text/html; charset=utf-8");
     res.setHeader("cache-control", "public, max-age=0, must-revalidate");
-    res.setHeader("x-bizuply-google-html", apiRes.status === 200 ? "1" : "0");
+    res.setHeader("x-bizuply-google-html", apiRes.ok ? "1" : "0");
     res.setHeader("x-bizuply-google-host", host);
     res.setHeader("x-bizuply-google-file", file);
 
@@ -93,7 +77,7 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    res.end(apiRes.body);
+    res.end(body);
   } catch (error) {
     res.statusCode = 502;
     res.setHeader("content-type", "text/plain; charset=utf-8");
@@ -103,4 +87,4 @@ module.exports = async function handler(req, res) {
       }`,
     );
   }
-};
+}

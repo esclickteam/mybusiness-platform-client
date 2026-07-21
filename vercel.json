@@ -1,16 +1,20 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
+      "source": "/google:file(.*).html",
+      "destination": "/api/google-html?file=google:file$1.html"
     },
     {
-      "src": "api/google-html.cjs",
-      "use": "@vercel/node"
+      "source": "/google:file([^/.]+)",
+      "destination": "/api/google-html?file=google:file$1.html"
+    },
+    {
+      "source": "/api/((?!google-html$).*)",
+      "destination": "https://api.bizuply.com/api/$1"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ],
   "headers": [
@@ -36,19 +40,6 @@
         { "key": "Cache-Control", "value": "public, max-age=86400" }
       ]
     }
-  ],
-  "routes": [
-    {
-      "src": "^/google([a-z0-9]+)\\.html$",
-      "dest": "/api/google-html.cjs?file=google$1.html"
-    },
-    {
-      "src": "^/google([a-z0-9]+)$",
-      "dest": "/api/google-html.cjs?file=google$1.html"
-    },
-    { "src": "^/api/google-html$", "dest": "/api/google-html.cjs" },
-    { "src": "^/api/(.*)$", "dest": "https://api.bizuply.com/api/$1" },
-    { "src": "^/(.*)$", "dest": "/index.html" }
   ],
   "cleanUrls": false,
   "trailingSlash": false
