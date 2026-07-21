@@ -1,18 +1,22 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
-import { gridlineDefaultData } from "./defaultData";
+import {
+  gridlineDefaultData,
+  gridlineImages,
+  gridlineServiceCategories,
+} from "./defaultData";
 import { gridlineEditorCss } from "./editorCss";
 
 export const gridlinePages = [
-  { id: "home", label: "בית", slug: "/" },
-  { id: "about", label: "אודות", slug: "/about" },
-  { id: "services", label: "שירותים", slug: "/services" },
-  { id: "work", label: "פרויקטים", slug: "/work" },
-  { id: "insights", label: "תובנות", slug: "/insights" },
-  { id: "contact", label: "צור קשר", slug: "/contact" },
+  { id: "home", label: "Home", slug: "/" },
+  { id: "about", label: "About Us", slug: "/about" },
+  { id: "services", label: "Services", slug: "/service" },
+  { id: "gallery", label: "Gallery", slug: "/gallery" },
+  { id: "contact", label: "Contact Us", slug: "/contact" },
+  { id: "booking", label: "Booking", slug: "/booking" },
 ];
 
 const gridlineAllowedPages = gridlinePages.map((page) => page.id);
@@ -32,14 +36,6 @@ type GridlinePagesProps = {
   runtimeMode?: string;
 };
 
-type EditableTextProps = {
-  data: Record<string, any>;
-  dataKey: string;
-  label: string;
-  as?: React.ElementType;
-  className?: string;
-} & Omit<React.HTMLAttributes<HTMLElement>, "children">;
-
 function getValue(data: Record<string, any>, key: string) {
   return data?.[key] ?? (gridlineDefaultData as Record<string, any>)[key] ?? "";
 }
@@ -48,238 +44,78 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
-function getPageKeySet(type: string) {
-  if (type === "about") {
-    return {
-      eyebrowKey: "aboutEyebrow",
-      titleKey: "aboutTitle",
-      textKey: "aboutText",
-    };
-  }
-  if (type === "services") {
-    return {
-      eyebrowKey: "servicesEyebrow",
-      titleKey: "servicesTitle",
-      textKey: "serviceOneText",
-    };
-  }
-  if (type === "work") {
-    return {
-      eyebrowKey: "workEyebrow",
-      titleKey: "workTitle",
-      textKey: "workOneText",
-    };
-  }
-  if (type === "insights") {
-    return {
-      eyebrowKey: "insightsEyebrow",
-      titleKey: "insightsTitle",
-      textKey: "insightOneText",
-    };
-  }
-  if (type === "contact") {
-    return {
-      eyebrowKey: "contactEyebrow",
-      titleKey: "contactTitle",
-      textKey: "contactText",
-    };
-  }
-  return {
-    eyebrowKey: "heroEyebrow",
-    titleKey: "heroTitle",
-    textKey: "heroSubtitle",
-  };
-}
-
 function useReveal() {
-  const [node, setNode] = useState<HTMLDivElement | null>(null);
+  const ref = useRef<HTMLDivElement | null>(null);
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    const node = ref.current;
     if (!node) return;
     if (typeof IntersectionObserver === "undefined") {
       setVisible(true);
       return;
     }
-
     const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
+      ([entry]) => {
+        if (entry?.isIntersecting) {
           setVisible(true);
           observer.disconnect();
-        });
+        }
       },
-      { threshold: 0.18 },
+      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
     );
-
     observer.observe(node);
     return () => observer.disconnect();
-  }, [node]);
+  }, []);
 
-  return { setNode, visible };
+  return { ref, visible };
 }
 
 function Reveal({
   children,
   className,
-  delay = 0,
 }: {
   children: React.ReactNode;
   className?: string;
-  delay?: number;
 }) {
-  const { setNode, visible } = useReveal();
-
+  const { ref, visible } = useReveal();
   return (
-    <div
-      ref={setNode}
-      className={cx(
-        "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]",
-        visible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
-        className,
-      )}
-      style={{ transitionDelay: `${delay}ms` }}
-    >
+    <div ref={ref} className={cx("gala-reveal", visible && "is-visible", className)}>
       {children}
-    </div>
-  );
-}
-
-function EditableText({
-  data,
-  dataKey,
-  label,
-  as = "span",
-  className,
-  ...props
-}: EditableTextProps) {
-  return (
-    <TemplateText
-      as={as}
-      className={className}
-      editId={dataKey}
-      editLabel={label}
-      {...props}
-    >
-      {getValue(data, dataKey)}
-    </TemplateText>
-  );
-}
-
-function EditableImage({
-  data,
-  dataKey,
-  label,
-  className,
-  alt,
-}: {
-  data: Record<string, any>;
-  dataKey: string;
-  label: string;
-  className?: string;
-  alt: string;
-}) {
-  return (
-    <img
-      src={getValue(data, dataKey)}
-      alt={alt}
-      className={className}
-      data-visual-editable="true"
-      data-visual-edit-id={dataKey}
-      data-visual-edit-type="image"
-      data-visual-edit-label={label}
-    />
-  );
-}
-
-function GridlineMark({ data }: { data: Record<string, any> }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="grid h-12 w-12 place-items-center border border-black bg-black text-sm font-bold uppercase tracking-[0.24em] text-white">
-        <EditableText
-          data={data}
-          dataKey="logoText"
-          label="טקסט לוגו"
-          as="span"
-          className="font-mono"
-        />
-      </div>
-      <div className="text-right">
-        <EditableText
-          data={data}
-          dataKey="brandName"
-          label="שם המותג"
-          as="div"
-          className="text-lg font-semibold uppercase tracking-[0.18em] text-black"
-        />
-        <EditableText
-          data={data}
-          dataKey="tagline"
-          label="שורת תיאור"
-          as="div"
-          className="font-mono text-[11px] uppercase tracking-[0.28em] text-black/55"
-        />
-      </div>
     </div>
   );
 }
 
 function SectionHeading({
   data,
-  eyebrowKey,
-  eyebrowLabel,
   titleKey,
-  titleLabel,
-  textKey,
-  textLabel,
-  dark = false,
-  align = "right",
+  subtitleKey,
 }: {
   data: Record<string, any>;
-  eyebrowKey: string;
-  eyebrowLabel: string;
   titleKey: string;
-  titleLabel: string;
-  textKey?: string;
-  textLabel?: string;
-  dark?: boolean;
-  align?: "right" | "center";
+  subtitleKey?: string;
 }) {
   return (
-    <div className={cx("max-w-3xl", align === "center" ? "mx-auto text-center" : "text-right")}>
-      <EditableText
-        data={data}
-        dataKey={eyebrowKey}
-        label={eyebrowLabel}
-        as="p"
-        className={cx(
-          "font-mono text-xs uppercase tracking-[0.32em]",
-          dark ? "text-white/65" : "text-black/55",
-        )}
-      />
-      <EditableText
-        data={data}
-        dataKey={titleKey}
-        label={titleLabel}
-        as="h2"
-        className={cx(
-          "mt-5 text-4xl font-semibold leading-[1.06] md:text-5xl",
-          dark ? "text-white" : "text-black",
-        )}
-      />
-      {textKey ? (
-        <EditableText
-          data={data}
-          dataKey={textKey}
-          label={textLabel || titleLabel}
-          as="p"
-          className={cx(
-            "mt-5 text-base leading-8 md:text-lg",
-            dark ? "text-white/72" : "text-black/68",
-          )}
-        />
+    <div className="flex flex-col items-center justify-center gap-4 py-4">
+      <TemplateText
+        as="div"
+        className="gala-custom-title"
+        editId={titleKey}
+        editLabel={titleKey}
+      >
+        {getValue(data, titleKey)}
+      </TemplateText>
+      {subtitleKey ? (
+        <TemplateText
+          as="div"
+          className="gala-sub-title"
+          editId={subtitleKey}
+          editLabel={subtitleKey}
+        >
+          {getValue(data, subtitleKey)}
+        </TemplateText>
       ) : null}
+      <span className="gala-accent-bar" aria-hidden="true" />
     </div>
   );
 }
@@ -287,25 +123,25 @@ function SectionHeading({
 function Header({
   data,
   currentPage,
-  goTo,
+  onNavigate,
 }: {
   data: Record<string, any>;
   currentPage: string;
-  goTo: (page: string) => void;
+  onNavigate: (pageId: string) => void;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const nav = [
-    { id: "home", key: "navHome", label: "ניווט בית" },
-    { id: "about", key: "navAbout", label: "ניווט אודות" },
-    { id: "services", key: "navServices", label: "ניווט שירותים" },
-    { id: "work", key: "navWork", label: "ניווט פרויקטים" },
-    { id: "insights", key: "navInsights", label: "ניווט תובנות" },
-    { id: "contact", key: "navContact", label: "ניווט יצירת קשר" },
-  ];
+    ["home", getValue(data, "navHome")],
+    ["about", getValue(data, "navAbout")],
+    ["services", getValue(data, "navServices")],
+    ["booking", getValue(data, "navBooking"), getValue(data, "bookingUrl")],
+    ["gallery", getValue(data, "navGallery")],
+    ["contact", getValue(data, "navContact")],
+  ] as const;
 
-  function handleNavigate(pageId: string) {
-    goTo(pageId);
+  function handleNav(pageId: string) {
+    onNavigate(pageId);
     setMobileOpen(false);
   }
 
@@ -314,1095 +150,910 @@ function Header({
       data-visual-flow-lock="true"
       data-template-section-type="header"
       data-section-kind="header"
-      className="sticky top-0 z-50 border-b border-black bg-[#f3f3ef]/95 backdrop-blur"
+      className="sticky top-0 z-30 w-full bg-white shadow-sm lg:py-[5px]"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 lg:px-8">
-        <button type="button" onClick={() => handleNavigate("home")} className="text-right">
-          <GridlineMark data={data} />
-        </button>
+      <div className="gala-container">
+        <nav className="relative flex h-full w-full items-center justify-between px-[15px] lg:gap-6 lg:px-0">
+          <button
+            type="button"
+            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
+            aria-label="Menu"
+            onClick={() => setMobileOpen((open) => !open)}
+          >
+            <span className="block h-0.5 w-6 bg-black" />
+            <span className="block h-0.5 w-6 bg-black" />
+            <span className="block h-0.5 w-6 bg-black" />
+          </button>
 
-        <nav className="hidden items-center gap-2 lg:flex">
-          {nav.map((item) => (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => handleNavigate(item.id)}
-              className={cx(
-                "border px-4 py-3 text-sm font-semibold uppercase tracking-[0.22em] transition",
-                currentPage === item.id
-                  ? "border-black bg-black text-white"
-                  : "border-black/15 bg-white text-black hover:border-black",
-              )}
-            >
-              <TemplateText
-                as="span"
-                editId={item.key}
-                editLabel={item.label}
-                className="font-mono"
-              >
-                {getValue(data, item.key)}
-              </TemplateText>
+          <div className="flex w-full flex-col items-center justify-center">
+            <button type="button" onClick={() => handleNav("home")} className="shrink-0">
+              <img
+                src={getValue(data, "logoImage")}
+                alt={getValue(data, "brandName")}
+                className="max-h-[90px] object-contain"
+              />
             </button>
-          ))}
+          </div>
+
+          <div className="hidden w-full lg:block">
+            <ul className="flex h-full items-center justify-center">
+              {nav.map(([id, label, external]) => (
+                <li key={id}>
+                  {external && id === "booking" ? (
+                    <a
+                      href={external}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="gala-nav-link text-black"
+                    >
+                      {label}
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleNav(id)}
+                      className={cx(
+                        "gala-nav-link text-black",
+                        currentPage === id && "is-active",
+                      )}
+                    >
+                      {label}
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="w-10 lg:hidden" />
         </nav>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleNavigate("contact")}
-            className="hidden border border-black bg-black px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-white hover:text-black sm:inline-flex"
-          >
-            <TemplateText
-              as="span"
-              editId="heroPrimaryButton"
-              editLabel="כפתור ראשי הירו"
-              className="font-mono"
-            >
-              {getValue(data, "heroPrimaryButton")}
-            </TemplateText>
-          </button>
-          <button
-            type="button"
-            onClick={() => setMobileOpen((value) => !value)}
-            className="grid h-11 w-11 place-items-center border border-black bg-white text-xl text-black lg:hidden"
-          >
-            {mobileOpen ? "×" : "☰"}
-          </button>
+        <div className={cx("gala-mobile-nav bg-white lg:hidden", mobileOpen && "is-open")}>
+          <ul className="flex flex-col border-t border-[#ececec] py-2">
+            {nav.map(([id, label, external]) => (
+              <li key={id}>
+                {external && id === "booking" ? (
+                  <a
+                    href={external}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block px-4 py-3 text-sm font-semibold uppercase"
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleNav(id)}
+                    className={cx(
+                      "block w-full px-4 py-3 text-left text-sm font-semibold uppercase",
+                      currentPage === id && "bg-[#909090] text-white",
+                    )}
+                  >
+                    {label}
+                  </button>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
-
-      {mobileOpen ? (
-        <div className="border-t border-black bg-[#f3f3ef] px-4 py-4 lg:hidden">
-          <div className="grid gap-2">
-            {nav.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => handleNavigate(item.id)}
-                className={cx(
-                  "border px-4 py-4 text-right text-sm font-semibold uppercase tracking-[0.18em]",
-                  currentPage === item.id
-                    ? "border-black bg-black text-white"
-                    : "border-black/15 bg-white text-black",
-                )}
-              >
-                <TemplateText
-                  as="span"
-                  editId={item.key}
-                  editLabel={item.label}
-                  className="font-mono"
-                >
-                  {getValue(data, item.key)}
-                </TemplateText>
-              </button>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
 
-function Hero({
-  data,
-  goTo,
-}: {
-  data: Record<string, any>;
-  goTo: (page: string) => void;
-}) {
-  const notes = [
-    [getValue(data, "statOne"), getValue(data, "statOneLabel")],
-    [getValue(data, "statTwo"), getValue(data, "statTwoLabel")],
-    [getValue(data, "statThree"), getValue(data, "statThreeLabel")],
-  ];
+function HeroSlider({ data }: { data: Record<string, any> }) {
+  const slides = [
+    getValue(data, "heroSlideOne"),
+    getValue(data, "heroSlideTwo"),
+    getValue(data, "heroSlideThree"),
+    getValue(data, "heroSlideFour"),
+  ].filter(Boolean);
+
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (slides.length <= 1) return;
+    const timer = window.setInterval(() => {
+      setIndex((current) => (current + 1) % slides.length);
+    }, 5000);
+    return () => window.clearInterval(timer);
+  }, [slides.length]);
+
+  function go(delta: number) {
+    setIndex((current) => (current + delta + slides.length) % slides.length);
+  }
 
   return (
-    <section className="border-b border-black bg-[#f3f3ef]">
-      <div className="mx-auto grid max-w-7xl gap-0 lg:grid-cols-[1.05fr_0.95fr]">
-        <Reveal className="border-b border-black p-6 lg:border-b-0 lg:border-l lg:p-10" delay={20}>
-          <EditableText
-            data={data}
-            dataKey="heroEyebrow"
-            label="כותרת עליונה הירו"
-            as="p"
-            className="font-mono text-xs uppercase tracking-[0.34em] text-black/55"
-          />
-          <EditableText
-            data={data}
-            dataKey="heroTitle"
-            label="כותרת ראשית הירו"
-            as="h1"
-            className="mt-6 max-w-3xl text-5xl font-semibold leading-[0.94] text-black md:text-7xl"
-          />
-          <EditableText
-            data={data}
-            dataKey="heroSubtitle"
-            label="טקסט משנה הירו"
-            as="p"
-            className="mt-6 max-w-2xl text-base leading-8 text-black/70 md:text-lg"
-          />
-
-          <div className="mt-10 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={() => goTo("contact")}
-              className="border border-black bg-black px-6 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:bg-white hover:text-black"
-            >
-              <TemplateText
-                as="span"
-                editId="heroPrimaryButton"
-                editLabel="כפתור ראשי הירו"
-                className="font-mono"
-              >
-                {getValue(data, "heroPrimaryButton")}
-              </TemplateText>
-            </button>
-            <button
-              type="button"
-              onClick={() => goTo("work")}
-              className="border border-black px-6 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-black transition hover:bg-black hover:text-white"
-            >
-              <TemplateText
-                as="span"
-                editId="heroSecondaryButton"
-                editLabel="כפתור משני הירו"
-                className="font-mono"
-              >
-                {getValue(data, "heroSecondaryButton")}
-              </TemplateText>
-            </button>
-          </div>
-
-          <div className="mt-12 grid gap-0 border border-black sm:grid-cols-3">
-            {notes.map(([value, label], index) => (
-              <div key={label + index} className="border-b border-black p-5 last:border-b-0 sm:border-b-0 sm:border-l sm:last:border-l-0">
-                <div className="font-mono text-xs uppercase tracking-[0.28em] text-black/45">
-                  0{index + 1}
-                </div>
-                <div className="mt-3 text-3xl font-semibold text-black">{value}</div>
-                <div className="mt-2 font-mono text-xs uppercase tracking-[0.24em] text-black/55">
-                  {label}
-                </div>
-              </div>
-            ))}
-          </div>
-        </Reveal>
-
-        <Reveal className="relative p-6 lg:p-10" delay={120}>
-          <div className="absolute inset-6 border border-black/10 gridline-hero-grid lg:inset-10" />
-          <div className="relative border border-black bg-white">
-            <div className="border-b border-black px-5 py-4 font-mono text-[11px] uppercase tracking-[0.32em] text-black/55">
-              <EditableText
-                data={data}
-                dataKey="heroPanelBadge"
-                label="תג הירו"
-                as="span"
-                className="font-mono"
-              />
-            </div>
-            <div className="grid gap-0 lg:grid-cols-[1fr_220px]">
-              <EditableImage
-                data={data}
-                dataKey="heroImage"
-                label="תמונת הירו"
-                alt="Gridline hero"
-                className="h-[420px] w-full border-b border-black object-cover lg:h-[640px] lg:border-b-0 lg:border-l"
-              />
-              <div className="flex flex-col justify-between bg-[#ecece6]">
-                <div className="border-b border-black p-5">
-                  <EditableText
-                    data={data}
-                    dataKey="heroPanelTitle"
-                    label="כותרת פאנל הירו"
-                    as="h3"
-                    className="text-2xl font-semibold leading-[1.15] text-black"
-                  />
-                  <EditableText
-                    data={data}
-                    dataKey="heroPanelText"
-                    label="טקסט פאנל הירו"
-                    as="p"
-                    className="mt-4 text-sm leading-7 text-black/68"
-                  />
-                </div>
-                <div className="grid gap-0">
-                  <div className="border-b border-black p-5">
-                    <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45">
-                      studio line
-                    </div>
-                    <EditableText
-                      data={data}
-                      dataKey="tagline"
-                      label="תג ליין"
-                      as="div"
-                      className="mt-3 text-lg font-semibold uppercase tracking-[0.16em] text-black"
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-0">
-                    <div className="border-l border-black p-5">
-                      <div className="text-2xl font-semibold text-black">
-                        {getValue(data, "statFour")}
-                      </div>
-                      <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.24em] text-black/55">
-                        {getValue(data, "statFourLabel")}
-                      </div>
-                    </div>
-                    <div className="p-5">
-                      <div className="text-2xl font-semibold text-black">
-                        {getValue(data, "statTwo")}
-                      </div>
-                      <div className="mt-2 font-mono text-[11px] uppercase tracking-[0.24em] text-black/55">
-                        {getValue(data, "statTwoLabel")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function MarqueeSection({ data }: { data: Record<string, any> }) {
-  const items = [
-    getValue(data, "marqueeOne"),
-    getValue(data, "marqueeTwo"),
-    getValue(data, "marqueeThree"),
-    getValue(data, "marqueeFour"),
-    getValue(data, "marqueeFive"),
-  ];
-
-  return (
-    <section className="overflow-hidden border-b border-black bg-white py-5">
-      <div
-        className="flex min-w-max gap-4"
-        style={{ animation: "gridline-marquee 24s linear infinite" }}
+    <section
+      data-section-kind="hero"
+      className="gala-section-hero relative w-full"
+    >
+      <button
+        type="button"
+        className="gala-hero-arrow prev"
+        aria-label="Previous slide"
+        onClick={() => go(-1)}
       >
-        {[...items, ...items].map((item, index) => (
+        ‹
+      </button>
+      <button
+        type="button"
+        className="gala-hero-arrow next"
+        aria-label="Next slide"
+        onClick={() => go(1)}
+      >
+        ›
+      </button>
+
+      <div className="relative w-full" style={{ aspectRatio: "863 / 320" }}>
+        {slides.map((src, slideIndex) => (
           <div
-            key={`${item}-${index}`}
-            className="gridline-marquee-item border px-5 py-3 font-mono text-xs uppercase tracking-[0.34em] text-black"
+            key={`${src}-${slideIndex}`}
+            className={cx("gala-hero-slide", slideIndex === index && "is-active")}
           >
-            {item}
+            <img
+              src={src}
+              alt="Beauty nail"
+              className="aspect-[863/320] w-full cursor-pointer object-cover"
+            />
           </div>
+        ))}
+      </div>
+
+      <div className="gala-hero-dots">
+        {slides.map((_, dotIndex) => (
+          <button
+            key={dotIndex}
+            type="button"
+            aria-label={`Slide ${dotIndex + 1}`}
+            className={cx("gala-dot", dotIndex === index && "is-active")}
+            onClick={() => setIndex(dotIndex)}
+          />
         ))}
       </div>
     </section>
   );
 }
 
-function StatsSection({ data }: { data: Record<string, any> }) {
-  const stats = [
-    [getValue(data, "statOne"), getValue(data, "statOneLabel")],
-    [getValue(data, "statTwo"), getValue(data, "statTwoLabel")],
-    [getValue(data, "statThree"), getValue(data, "statThreeLabel")],
-    [getValue(data, "statFour"), getValue(data, "statFourLabel")],
-  ];
-
+function ServiceCard({
+  data,
+  service,
+  onNavigate,
+}: {
+  data: Record<string, any>;
+  service: (typeof gridlineImages.services)[number];
+  onNavigate: (pageId: string) => void;
+}) {
   return (
-    <section className="border-b border-black bg-[#ecece6] px-4 py-16 lg:px-8">
-      <Reveal className="mx-auto max-w-7xl">
-        <div className="grid gap-0 border border-black md:grid-cols-4">
-          {stats.map(([value, label], index) => (
-            <div key={label} className="border-b border-black p-6 last:border-b-0 md:border-b-0 md:border-l md:last:border-l-0">
-              <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45">
-                grid.{index + 1}
-              </div>
-              <div className="mt-4 text-4xl font-semibold text-black md:text-5xl">{value}</div>
-              <div className="mt-3 text-sm font-medium text-black/62">{label}</div>
-            </div>
-          ))}
+    <div className="gala-hover-item relative h-full w-full px-[15px]">
+      <div
+        className="gala-bg-hover-left hidden bg-cover sm:block"
+        style={{ backgroundImage: `url('${getValue(data, "bgServiceImage")}')` }}
+      />
+      <div
+        className="gala-bg-hover-right hidden bg-cover sm:block"
+        style={{ backgroundImage: `url('${getValue(data, "bgServiceImage")}')` }}
+      />
+      <button
+        type="button"
+        onClick={() => onNavigate("services")}
+        className="mx-0 flex w-full flex-col items-center justify-center bg-white md:mx-[30px]"
+      >
+        <div className="gala-service-circle">
+          <img src={service.image} alt={service.title} className="h-full w-full object-cover" />
         </div>
-      </Reveal>
-    </section>
-  );
-}
-
-function AboutSection({ data }: { data: Record<string, any> }) {
-  const points = [
-    ["aboutPointOne", "נקודת חוזקה 1"],
-    ["aboutPointTwo", "נקודת חוזקה 2"],
-    ["aboutPointThree", "נקודת חוזקה 3"],
-  ];
-
-  return (
-    <section className="border-b border-black bg-[#f3f3ef] px-4 py-20 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-0 border border-black lg:grid-cols-[0.92fr_1.08fr]">
-        <Reveal className="border-b border-black lg:border-b-0 lg:border-l" delay={10}>
-          <EditableImage
-            data={data}
-            dataKey="aboutImage"
-            label="תמונת אודות"
-            alt="Gridline about"
-            className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
-          />
-        </Reveal>
-
-        <Reveal className="p-6 lg:p-10" delay={100}>
-          <SectionHeading
-            data={data}
-            eyebrowKey="aboutEyebrow"
-            eyebrowLabel="אייברו אודות"
-            titleKey="aboutTitle"
-            titleLabel="כותרת אודות"
-            textKey="aboutText"
-            textLabel="טקסט אודות"
-          />
-          <div className="mt-10 grid gap-0 border border-black">
-            {points.map(([key, label], index) => (
-              <div
-                key={key}
-                className="grid gap-4 border-b border-black p-5 last:border-b-0 md:grid-cols-[120px_1fr]"
-              >
-                <div className="font-mono text-xs uppercase tracking-[0.28em] text-black/45">
-                  note.0{index + 1}
-                </div>
-                <EditableText
-                  data={data}
-                  dataKey={key}
-                  label={label}
-                  as="p"
-                  className="text-base leading-8 text-black/72"
-                />
-              </div>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
+        <h3 className="gala-title-service">{service.title}</h3>
+      </button>
+    </div>
   );
 }
 
 function ServicesSection({
   data,
-  compact = false,
+  onNavigate,
 }: {
   data: Record<string, any>;
-  compact?: boolean;
+  onNavigate: (pageId: string) => void;
 }) {
-  const services = [
-    ["serviceOneTitle", "serviceOneText", "Service 01"],
-    ["serviceTwoTitle", "serviceTwoText", "Service 02"],
-    ["serviceThreeTitle", "serviceThreeText", "Service 03"],
-    ["serviceFourTitle", "serviceFourText", "Service 04"],
-  ];
+  const [mobileIndex, setMobileIndex] = useState(0);
+  const services = gridlineImages.services;
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setMobileIndex((current) => (current + 1) % services.length);
+    }, 4000);
+    return () => window.clearInterval(timer);
+  }, [services.length]);
 
   return (
-    <section className="border-b border-black bg-white px-4 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
+    <section data-section-kind="services" className="w-full bg-white py-4">
+      <div className="gala-container">
         <Reveal>
           <SectionHeading
             data={data}
-            eyebrowKey="servicesEyebrow"
-            eyebrowLabel="אייברו שירותים"
             titleKey="servicesTitle"
-            titleLabel="כותרת שירותים"
-            textKey={compact ? undefined : "heroSubtitle"}
-            textLabel="טקסט שירותים"
+            subtitleKey="servicesSubtitle"
           />
         </Reveal>
 
-        <div className="mt-10 grid gap-0 border border-black md:grid-cols-2">
-          {services.map(([titleKey, textKey, code], index) => (
-            <Reveal key={titleKey} delay={index * 70}>
-              <article className="border-b border-black p-6 last:border-b-0 md:min-h-[240px] md:border-b-0 md:border-l md:last:border-l-0">
-                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45">
-                  {code}
-                </div>
-                <EditableText
-                  data={data}
-                  dataKey={titleKey}
-                  label={`כותרת שירות ${index + 1}`}
-                  as="h3"
-                  className="mt-5 text-2xl font-semibold text-black"
-                />
-                <EditableText
-                  data={data}
-                  dataKey={textKey}
-                  label={`תיאור שירות ${index + 1}`}
-                  as="p"
-                  className="mt-4 text-base leading-8 text-black/68"
-                />
-              </article>
-            </Reveal>
+        <div className="relative z-20 mt-6 hidden w-full grid-cols-1 items-center justify-center gap-x-[10px] gap-y-[20px] md:grid-cols-2 lg:grid lg:grid-cols-3 xl:grid-cols-6">
+          {services.map((service) => (
+            <ServiceCard
+              key={service.anchor}
+              data={data}
+              service={service}
+              onNavigate={onNavigate}
+            />
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-function WorkSection({ data }: { data: Record<string, any> }) {
-  const items = [
-    {
-      imageKey: "workOneImage",
-      tagKey: "workOneTag",
-      titleKey: "workOneTitle",
-      textKey: "workOneText",
-    },
-    {
-      imageKey: "workTwoImage",
-      tagKey: "workTwoTag",
-      titleKey: "workTwoTitle",
-      textKey: "workTwoText",
-    },
-    {
-      imageKey: "workThreeImage",
-      tagKey: "workThreeTag",
-      titleKey: "workThreeTitle",
-      textKey: "workThreeText",
-    },
-  ];
-
-  return (
-    <section className="border-b border-black bg-[#ecece6] px-4 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionHeading
-            data={data}
-            eyebrowKey="workEyebrow"
-            eyebrowLabel="אייברו פרויקטים"
-            titleKey="workTitle"
-            titleLabel="כותרת פרויקטים"
-            textKey="heroPanelText"
-            textLabel="טקסט פרויקטים"
-          />
-        </Reveal>
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {items.map((item, index) => (
-            <Reveal key={item.titleKey} delay={index * 80}>
-              <article className="border border-black bg-white">
-                <EditableImage
-                  data={data}
-                  dataKey={item.imageKey}
-                  label={`תמונת פרויקט ${index + 1}`}
-                  alt={`Project ${index + 1}`}
-                  className="h-72 w-full border-b border-black object-cover"
-                />
-                <div className="p-6">
-                  <EditableText
-                    data={data}
-                    dataKey={item.tagKey}
-                    label={`תג פרויקט ${index + 1}`}
-                    as="p"
-                    className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45"
-                  />
-                  <EditableText
-                    data={data}
-                    dataKey={item.titleKey}
-                    label={`כותרת פרויקט ${index + 1}`}
-                    as="h3"
-                    className="mt-4 text-2xl font-semibold text-black"
-                  />
-                  <EditableText
-                    data={data}
-                    dataKey={item.textKey}
-                    label={`טקסט פרויקט ${index + 1}`}
-                    as="p"
-                    className="mt-4 text-base leading-8 text-black/68"
-                  />
-                </div>
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProcessSection({ data }: { data: Record<string, any> }) {
-  const steps = [
-    ["processOneTitle", "processOneText"],
-    ["processTwoTitle", "processTwoText"],
-    ["processThreeTitle", "processThreeText"],
-    ["processFourTitle", "processFourText"],
-  ];
-
-  return (
-    <section className="border-b border-black bg-black px-4 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionHeading
-            data={data}
-            eyebrowKey="processEyebrow"
-            eyebrowLabel="אייברו תהליך"
-            titleKey="processTitle"
-            titleLabel="כותרת תהליך"
-            textKey="heroPanelText"
-            textLabel="טקסט תהליך"
-            dark
-          />
-        </Reveal>
-
-        <div className="mt-10 grid gap-0 border border-white/15 md:grid-cols-4">
-          {steps.map(([titleKey, textKey], index) => (
-            <Reveal key={titleKey} delay={index * 70}>
-              <div className="border-b border-white/15 p-6 last:border-b-0 md:min-h-[260px] md:border-b-0 md:border-l md:last:border-l-0">
-                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/45">
-                  phase.0{index + 1}
-                </div>
-                <EditableText
-                  data={data}
-                  dataKey={titleKey}
-                  label={`כותרת שלב ${index + 1}`}
-                  as="h3"
-                  className="mt-5 text-2xl font-semibold text-white"
-                />
-                <EditableText
-                  data={data}
-                  dataKey={textKey}
-                  label={`תיאור שלב ${index + 1}`}
-                  as="p"
-                  className="mt-4 text-base leading-8 text-white/72"
-                />
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function InsightsSection({ data }: { data: Record<string, any> }) {
-  const insights = [
-    ["insightOneTag", "insightOneTitle", "insightOneText"],
-    ["insightTwoTag", "insightTwoTitle", "insightTwoText"],
-    ["insightThreeTag", "insightThreeTitle", "insightThreeText"],
-  ];
-
-  return (
-    <section className="border-b border-black bg-[#f3f3ef] px-4 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal>
-          <SectionHeading
-            data={data}
-            eyebrowKey="insightsEyebrow"
-            eyebrowLabel="אייברו תובנות"
-            titleKey="insightsTitle"
-            titleLabel="כותרת תובנות"
-            textKey="heroSubtitle"
-            textLabel="טקסט תובנות"
-          />
-        </Reveal>
-
-        <div className="mt-10 grid gap-6 lg:grid-cols-3">
-          {insights.map(([tagKey, titleKey, textKey], index) => (
-            <Reveal key={titleKey} delay={index * 80}>
-              <article className="border border-black bg-white p-6">
-                <EditableText
-                  data={data}
-                  dataKey={tagKey}
-                  label={`תג תובנה ${index + 1}`}
-                  as="p"
-                  className="font-mono text-[11px] uppercase tracking-[0.3em] text-black/45"
-                />
-                <EditableText
-                  data={data}
-                  dataKey={titleKey}
-                  label={`כותרת תובנה ${index + 1}`}
-                  as="h3"
-                  className="mt-5 text-2xl font-semibold leading-[1.2] text-black"
-                />
-                <EditableText
-                  data={data}
-                  dataKey={textKey}
-                  label={`טקסט תובנה ${index + 1}`}
-                  as="p"
-                  className="mt-4 text-base leading-8 text-black/68"
-                />
-              </article>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ContactSection({
-  data,
-  titleKey = "contactTitle",
-  textKey = "contactText",
-}: {
-  data: Record<string, any>;
-  titleKey?: string;
-  textKey?: string;
-}) {
-  const info = [
-    ["phone", "טלפון", "Info 01"],
-    ["email", "אימייל", "Info 02"],
-    ["address", "כתובת", "Info 03"],
-    ["hours", "שעות פעילות", "Info 04"],
-  ];
-
-  return (
-    <section className="border-b border-black bg-white px-4 py-20 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-0 border border-black lg:grid-cols-[0.9fr_1.1fr]">
-        <Reveal className="border-b border-black bg-black p-6 lg:border-b-0 lg:border-l lg:p-10" delay={20}>
-          <EditableText
-            data={data}
-            dataKey="contactEyebrow"
-            label="אייברו יצירת קשר"
-            as="p"
-            className="font-mono text-xs uppercase tracking-[0.32em] text-white/65"
-          />
-          <EditableText
-            data={data}
-            dataKey={titleKey}
-            label="כותרת יצירת קשר"
-            as="h2"
-            className="mt-5 text-4xl font-semibold leading-[1.08] text-white md:text-5xl"
-          />
-          <EditableText
-            data={data}
-            dataKey={textKey}
-            label="טקסט יצירת קשר"
-            as="p"
-            className="mt-5 text-base leading-8 text-white/72"
-          />
-
-          <div className="mt-10 grid gap-0 border border-white/15">
-            {info.map(([key, label, code]) => (
-              <div key={key} className="grid gap-4 border-b border-white/15 p-5 last:border-b-0 md:grid-cols-[120px_1fr]">
-                <div className="font-mono text-[11px] uppercase tracking-[0.3em] text-white/45">
-                  {code}
-                </div>
-                <div>
-                  <div className="font-mono text-[11px] uppercase tracking-[0.24em] text-white/45">
-                    {label}
-                  </div>
-                  <EditableText
-                    data={data}
-                    dataKey={key}
-                    label={label}
-                    as="div"
-                    className="mt-2 text-lg font-medium text-white"
-                  />
-                </div>
+        <div className="relative mt-6 overflow-hidden lg:hidden">
+          <div
+            className="gala-service-track"
+            style={{ transform: `translateX(-${mobileIndex * 100}%)` }}
+          >
+            {services.map((service) => (
+              <div key={service.anchor} className="min-w-full shrink-0 px-2">
+                <ServiceCard data={data} service={service} onNavigate={onNavigate} />
               </div>
             ))}
           </div>
-        </Reveal>
+          <div className="mt-4 flex justify-center gap-2">
+            {services.map((service, dotIndex) => (
+              <button
+                key={service.anchor}
+                type="button"
+                aria-label={service.title}
+                className={cx("gala-dot border-black!", mobileIndex === dotIndex && "is-active")}
+                onClick={() => setMobileIndex(dotIndex)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
 
-        <Reveal className="bg-[#ecece6] p-6 lg:p-10" delay={120}>
-          <form
-            data-bizuply-form-builder="true"
-            data-visual-editable="true"
-            data-visual-edit-id="contact.form"
-            data-visual-edit-type="box"
-            data-visual-edit-label="טופס יצירת קשר"
-            className="grid gap-0 border border-black bg-white"
-          >
-            <input
-              className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:border-l"
-              placeholder="שם מלא"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.name"
-              data-visual-edit-type="control"
-              data-visual-edit-label="שדה שם"
-            />
-            <input
-              className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35"
-              placeholder="טלפון"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.phone"
-              data-visual-edit-type="control"
-              data-visual-edit-label="שדה טלפון"
-            />
-            <input
-              className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:border-l"
-              placeholder="אימייל"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.email"
-              data-visual-edit-type="control"
-              data-visual-edit-label="שדה אימייל"
-            />
-            <input
-              className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35"
-              placeholder="סוג פרויקט"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.topic"
-              data-visual-edit-type="control"
-              data-visual-edit-label="שדה סוג פרויקט"
-            />
-            <textarea
-              className="min-h-40 border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:col-span-2"
-              placeholder="ספרו לנו על השטח, היעד, הלו״ז והאתגר"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.message"
-              data-visual-edit-type="control"
-              data-visual-edit-label="שדה הודעה"
-            />
-            <button
-              type="button"
-              className="bg-black px-5 py-4 text-sm font-semibold uppercase tracking-[0.22em] text-white transition hover:bg-[#2a2a2a] md:col-span-2"
-              data-visual-editable="true"
-              data-visual-edit-id="contact.form.submit"
-              data-visual-edit-type="button"
-              data-visual-edit-label="כפתור שליחת טופס"
-            >
+function WelcomeSection({
+  data,
+  onNavigate,
+}: {
+  data: Record<string, any>;
+  onNavigate: (pageId: string) => void;
+}) {
+  const lines = String(getValue(data, "welcomeTitle")).split("\n");
+
+  return (
+    <section data-section-kind="about" className="w-full bg-white py-8">
+      <div className="gala-container">
+        <Reveal>
+          <div className="grid grid-cols-1 items-stretch justify-between gap-0 lg:grid-cols-2 lg:gap-4">
+            <div className="relative min-h-[320px] overflow-hidden">
+              <img
+                src={getValue(data, "welcomeImage")}
+                alt={getValue(data, "brandName")}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <div className="relative flex flex-col items-center justify-start gap-6 p-4">
+              <div
+                className="gala-welcome-bg"
+                style={{
+                  backgroundImage: `url('${getValue(data, "bgWelcomeImage")}')`,
+                }}
+              />
               <TemplateText
-                as="span"
-                editId="contactButton"
-                editLabel="כפתור יצירת קשר"
-                className="font-mono"
+                as="div"
+                className="relative z-10 text-center text-[26px] font-semibold uppercase leading-[34px] text-white"
+                editId="welcomeTitle"
+                editLabel="Welcome title"
               >
-                {getValue(data, "contactButton")}
+                {lines.map((line, index) => (
+                  <React.Fragment key={`${line}-${index}`}>
+                    {line}
+                    {index < lines.length - 1 ? <br /> : null}
+                  </React.Fragment>
+                ))}
               </TemplateText>
-            </button>
-          </form>
+              <TemplateText
+                as="div"
+                className="relative z-10 text-justify text-[18px] font-normal leading-[34px] text-black"
+                editId="welcomeText"
+                editLabel="Welcome text"
+              >
+                {String(getValue(data, "welcomeText"))
+                  .split("\n\n")
+                  .map((paragraph, index) => (
+                    <p key={index} className={index > 0 ? "mt-4" : undefined}>
+                      {paragraph}
+                    </p>
+                  ))}
+              </TemplateText>
+              <button type="button" onClick={() => onNavigate("about")} className="relative z-10 w-full">
+                <TemplateText
+                  as="span"
+                  className="gala-view-more-link text-[18px] leading-[34px]"
+                  editId="welcomeButton"
+                  editLabel="Welcome button"
+                >
+                  {getValue(data, "welcomeButton")}
+                </TemplateText>
+              </button>
+            </div>
+          </div>
         </Reveal>
       </div>
     </section>
   );
 }
 
-function CtaSection({
+function GalleryGrid({
+  images,
+  limit,
+}: {
+  images: string[];
+  limit?: number;
+}) {
+  const list = limit ? images.slice(0, limit) : images;
+  return (
+    <div className="mt-6 grid grid-cols-2 gap-[12px] md:grid-cols-3 lg:grid-cols-4">
+      {list.map((src, index) => (
+        <div key={`${src}-${index}`} className="gala-hover-transform aspect-square cursor-pointer">
+          <img src={src} alt={`Gallery ${index + 1}`} className="h-full w-full object-cover" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function GalleryPreview({
   data,
-  goTo,
+  onNavigate,
 }: {
   data: Record<string, any>;
-  goTo: (page: string) => void;
+  onNavigate: (pageId: string) => void;
 }) {
   return (
-    <section className="border-b border-black bg-black px-4 py-20 lg:px-8">
-      <Reveal className="mx-auto max-w-7xl border border-white/15 bg-black p-6 lg:p-10">
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-          <div className="text-right">
-            <div className="font-mono text-xs uppercase tracking-[0.32em] text-white/45">
-              final call
-            </div>
-            <EditableText
-              data={data}
-              dataKey="ctaTitle"
-              label="כותרת קריאה לפעולה"
-              as="h2"
-              className="mt-5 text-4xl font-semibold leading-[1.08] text-white md:text-5xl"
-            />
-            <EditableText
-              data={data}
-              dataKey="ctaText"
-              label="טקסט קריאה לפעולה"
-              as="p"
-              className="mt-5 max-w-2xl text-base leading-8 text-white/72"
-            />
-          </div>
-          <div className="flex flex-col gap-3 lg:items-end">
-            <button
-              type="button"
-              onClick={() => goTo("contact")}
-              className="border border-white bg-white px-6 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-black transition hover:bg-black hover:text-white"
-            >
-              <TemplateText
-                as="span"
-                editId="ctaButton"
-                editLabel="כפתור קריאה לפעולה"
-                className="font-mono"
-              >
-                {getValue(data, "ctaButton")}
-              </TemplateText>
-            </button>
-            <button
-              type="button"
-              onClick={() => goTo("work")}
-              className="border border-white/35 px-6 py-4 text-sm font-semibold uppercase tracking-[0.24em] text-white transition hover:border-white"
-            >
-              <TemplateText
-                as="span"
-                editId="navWork"
-                editLabel="כפתור פרויקטים בפוטר"
-                className="font-mono"
-              >
-                {getValue(data, "navWork")}
+    <section data-section-kind="gallery" className="section_gallery w-full bg-white py-5">
+      <div className="gala-container">
+        <Reveal>
+          <SectionHeading
+            data={data}
+            titleKey="galleryTitle"
+            subtitleKey="gallerySubtitle"
+          />
+          <GalleryGrid images={gridlineImages.gallery} limit={12} />
+          <div className="flex w-full flex-col items-center justify-center">
+            <button type="button" className="gala-view-more" onClick={() => onNavigate("gallery")}>
+              <TemplateText editId="galleryButton" editLabel="Gallery button">
+                {getValue(data, "galleryButton")}
               </TemplateText>
             </button>
           </div>
-        </div>
-      </Reveal>
+        </Reveal>
+      </div>
     </section>
   );
 }
 
-function Footer({
-  data,
-  goTo,
-}: {
-  data: Record<string, any>;
-  goTo: (page: string) => void;
-}) {
-  const nav = [
-    { id: "home", key: "navHome", label: "ניווט בית תחתון" },
-    { id: "about", key: "navAbout", label: "ניווט אודות תחתון" },
-    { id: "services", key: "navServices", label: "ניווט שירותים תחתון" },
-    { id: "work", key: "navWork", label: "ניווט פרויקטים תחתון" },
-    { id: "insights", key: "navInsights", label: "ניווט תובנות תחתון" },
-    { id: "contact", key: "navContact", label: "ניווט יצירת קשר תחתון" },
-  ];
+function PageBanner({ title }: { title: string }) {
+  return <div className="gala-breadcrumb">{title}</div>;
+}
+
+function AboutPage({ data }: { data: Record<string, any> }) {
+  const lines = String(getValue(data, "aboutTitle")).split("\n");
 
   return (
-    <footer className="bg-[#f3f3ef] px-4 py-10 lg:px-8">
-      <div className="mx-auto max-w-7xl border border-black bg-white">
-        <div className="grid gap-0 border-b border-black lg:grid-cols-[0.95fr_1.05fr]">
-          <div className="border-b border-black p-6 lg:border-b-0 lg:border-l lg:p-8">
-            <GridlineMark data={data} />
-            <EditableText
-              data={data}
-              dataKey="footerText"
-              label="טקסט פוטר"
-              as="p"
-              className="mt-5 max-w-xl text-sm leading-7 text-black/65"
+    <div>
+      <PageBanner title={getValue(data, "navAbout")} />
+      <section className="bg-white py-10">
+        <div className="gala-container grid gap-8 lg:grid-cols-2">
+          <Reveal>
+            <img
+              src={getValue(data, "aboutImage")}
+              alt={getValue(data, "brandName")}
+              className="h-full min-h-[320px] w-full object-cover"
             />
-          </div>
-          <div className="p-6 lg:p-8">
-            <div className="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
-              {nav.map((item) => (
-                <button
-                  key={item.id}
-                  type="button"
-                  onClick={() => goTo(item.id)}
-                  className="border border-black/15 px-4 py-3 text-right text-sm font-semibold uppercase tracking-[0.18em] text-black transition hover:border-black"
-                >
-                  <TemplateText
-                    as="span"
-                    editId={item.key}
-                    editLabel={item.label}
-                    className="font-mono"
-                  >
-                    {getValue(data, item.key)}
-                  </TemplateText>
-                </button>
+          </Reveal>
+          <Reveal>
+            <TemplateText
+              as="h1"
+              className="gala-custom-title text-left"
+              editId="aboutTitle"
+              editLabel="About title"
+            >
+              {lines.map((line, index) => (
+                <React.Fragment key={`${line}-${index}`}>
+                  {line}
+                  {index < lines.length - 1 ? <br /> : null}
+                </React.Fragment>
               ))}
+            </TemplateText>
+            <TemplateText
+              as="div"
+              className="mt-6 text-justify text-[18px] leading-[34px] text-black"
+              editId="aboutText"
+              editLabel="About text"
+            >
+              {String(getValue(data, "aboutText"))
+                .split("\n\n")
+                .map((paragraph, index) => (
+                  <p key={index} className={index > 0 ? "mt-4" : undefined}>
+                    {paragraph}
+                  </p>
+                ))}
+            </TemplateText>
+          </Reveal>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ServicePriceList({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="bg-white py-10">
+      <div className="gala-container space-y-12">
+        {gridlineServiceCategories.map((category) => (
+          <Reveal key={category.id}>
+            <div id={category.id} className="scroll-mt-28">
+              <h2 className="gala-custom-title text-left text-[28px]">{category.title}</h2>
+              <span className="gala-accent-bar mt-3" />
+
+              {"items" in category && category.items ? (
+                <div className="mt-6">
+                  {category.items.map((item) => (
+                    <div
+                      key={`${category.id}-${item.name}`}
+                      className="gala-price-row flex flex-col gap-1 py-4 md:flex-row md:items-start md:justify-between"
+                    >
+                      <div>
+                        <p className="text-[16px] font-semibold uppercase text-black">{item.name}</p>
+                        {"note" in item && item.note ? (
+                          <p className="mt-1 max-w-2xl text-sm leading-6 text-[#666]">{item.note}</p>
+                        ) : null}
+                      </div>
+                      <p className="text-[16px] font-bold text-[#fc427f]">{item.price}</p>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {"groups" in category && category.groups ? (
+                <div className="mt-6 grid gap-8 md:grid-cols-2">
+                  {category.groups.map((group) => (
+                    <div key={group.title} className="rounded border border-[#ececec] p-5">
+                      <h3 className="text-lg font-bold uppercase">{group.title}</h3>
+                      <div className="mt-4 space-y-3">
+                        {group.items.map((item) => (
+                          <div
+                            key={`${group.title}-${item.name}`}
+                            className="gala-price-row flex items-center justify-between py-2"
+                          >
+                            <span className="font-semibold uppercase">{item.name}</span>
+                            <span className="font-bold text-[#fc427f]">{item.price}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
             </div>
+          </Reveal>
+        ))}
+
+        <Reveal>
+          <div className="rounded border border-[#ececec] bg-[#fafafa] p-8 text-center">
+            <TemplateText
+              as="h3"
+              className="text-2xl font-bold uppercase"
+              editId="bookingTitle"
+              editLabel="Booking title"
+            >
+              {getValue(data, "bookingTitle")}
+            </TemplateText>
+            <TemplateText
+              as="p"
+              className="mx-auto mt-4 max-w-2xl text-[18px] leading-8 text-[#444]"
+              editId="bookingText"
+              editLabel="Booking text"
+            >
+              {getValue(data, "bookingText")}
+            </TemplateText>
+            <a
+              href={getValue(data, "bookingUrl")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gala-view-more mt-6 inline-block"
+            >
+              <TemplateText editId="bookingButton" editLabel="Booking button">
+                {getValue(data, "bookingButton")}
+              </TemplateText>
+            </a>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+function GalleryPage() {
+  return (
+    <div>
+      <PageBanner title="Gallery" />
+      <section className="bg-white py-10">
+        <div className="gala-container">
+          <Reveal>
+            <GalleryGrid images={gridlineImages.galleryFull} />
+          </Reveal>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function ContactPage({ data }: { data: Record<string, any> }) {
+  return (
+    <div>
+      <PageBanner title={getValue(data, "contactTitle")} />
+      <section className="bg-white py-10">
+        <div className="gala-container grid gap-10 lg:grid-cols-2">
+          <Reveal>
+            <TemplateText
+              as="h2"
+              className="gala-custom-title text-left text-[28px]"
+              editId="contactTitle"
+              editLabel="Contact title"
+            >
+              {getValue(data, "contactTitle")}
+            </TemplateText>
+            <TemplateText
+              as="p"
+              className="gala-sub-title mt-3 text-left"
+              editId="contactSubtitle"
+              editLabel="Contact subtitle"
+            >
+              {getValue(data, "contactSubtitle")}
+            </TemplateText>
+            <TemplateText
+              as="p"
+              className="mt-4 text-[18px] leading-8 text-[#444]"
+              editId="contactText"
+              editLabel="Contact text"
+            >
+              {getValue(data, "contactText")}
+            </TemplateText>
+
+            <div className="mt-8 space-y-4 text-[18px] leading-[30px]">
+              <p>
+                <strong>Phone:</strong>{" "}
+                <TemplateText editId="phone" editLabel="Phone">
+                  {getValue(data, "phone")}
+                </TemplateText>
+              </p>
+              <p>
+                <strong>Email:</strong>{" "}
+                <TemplateText editId="email" editLabel="Email">
+                  {getValue(data, "email")}
+                </TemplateText>
+              </p>
+              <p>
+                <strong>Address:</strong>{" "}
+                <TemplateText editId="address" editLabel="Address">
+                  {getValue(data, "address")}
+                </TemplateText>
+              </p>
+              <div className="pt-2">
+                <TemplateText editId="hoursLineOne" editLabel="Hours line 1">
+                  {getValue(data, "hoursLineOne")}
+                </TemplateText>
+                <br />
+                <TemplateText editId="hoursLineTwo" editLabel="Hours line 2">
+                  {getValue(data, "hoursLineTwo")}
+                </TemplateText>
+                <br />
+                <TemplateText editId="hoursLineThree" editLabel="Hours line 3">
+                  {getValue(data, "hoursLineThree")}
+                </TemplateText>
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal>
+            <form className="space-y-4 rounded border border-[#ececec] bg-[#fafafa] p-6">
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold uppercase">
+                  {getValue(data, "contactNameLabel")}
+                </span>
+                <input
+                  type="text"
+                  className="w-full border border-[#ddd] bg-white px-4 py-3 outline-none"
+                  placeholder={getValue(data, "contactNameLabel")}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold uppercase">
+                  {getValue(data, "contactEmailLabel")}
+                </span>
+                <input
+                  type="email"
+                  className="w-full border border-[#ddd] bg-white px-4 py-3 outline-none"
+                  placeholder={getValue(data, "contactEmailLabel")}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold uppercase">
+                  {getValue(data, "contactPhoneLabel")}
+                </span>
+                <input
+                  type="tel"
+                  className="w-full border border-[#ddd] bg-white px-4 py-3 outline-none"
+                  placeholder={getValue(data, "contactPhoneLabel")}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-2 block text-sm font-semibold uppercase">
+                  {getValue(data, "contactMessageLabel")}
+                </span>
+                <textarea
+                  rows={5}
+                  className="w-full border border-[#ddd] bg-white px-4 py-3 outline-none"
+                  placeholder={getValue(data, "contactMessageLabel")}
+                />
+              </label>
+              <button type="button" className="gala-view-more">
+                <TemplateText editId="contactButton" editLabel="Contact button">
+                  {getValue(data, "contactButton")}
+                </TemplateText>
+              </button>
+            </form>
+          </Reveal>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function BookingPage({ data }: { data: Record<string, any> }) {
+  return (
+    <div>
+      <PageBanner title={getValue(data, "navBooking")} />
+      <section className="bg-white py-16">
+        <div className="gala-container max-w-3xl text-center">
+          <Reveal>
+            <TemplateText
+              as="h1"
+              className="gala-custom-title"
+              editId="bookingTitle"
+              editLabel="Booking title"
+            >
+              {getValue(data, "bookingTitle")}
+            </TemplateText>
+            <TemplateText
+              as="p"
+              className="mx-auto mt-6 max-w-2xl text-[18px] leading-8 text-[#444]"
+              editId="bookingText"
+              editLabel="Booking text"
+            >
+              {getValue(data, "bookingText")}
+            </TemplateText>
+            <a
+              href={getValue(data, "bookingUrl")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="gala-view-more mt-8 inline-block"
+            >
+              <TemplateText editId="bookingButton" editLabel="Booking button">
+                {getValue(data, "bookingButton")}
+              </TemplateText>
+            </a>
+          </Reveal>
+        </div>
+      </section>
+    </div>
+  );
+}
+
+function Footer({ data }: { data: Record<string, any> }) {
+  return (
+    <footer data-section-kind="footer" className="bg-white">
+      <div className="gala-container grid gap-8 py-10 md:grid-cols-3">
+        <div>
+          <img
+            src={getValue(data, "logoImage")}
+            alt={getValue(data, "brandName")}
+            className="max-h-[80px] object-contain"
+          />
+          <TemplateText
+            as="p"
+            className="mt-4 text-[18px] leading-8 text-[#444]"
+            editId="contactText"
+            editLabel="Footer intro"
+          >
+            {getValue(data, "contactText")}
+          </TemplateText>
+        </div>
+        <div>
+          <h3 className="text-lg font-bold uppercase">Contact</h3>
+          <div className="mt-4 space-y-2 text-[16px] leading-[30px]">
+            <p>{getValue(data, "phone")}</p>
+            <p>{getValue(data, "email")}</p>
+            <p>{getValue(data, "address")}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-3 px-6 py-4 font-mono text-[11px] uppercase tracking-[0.24em] text-black/45 md:flex-row md:items-center md:justify-between">
-          <div>
-            © {new Date().getFullYear()} {getValue(data, "brandName")}
+        <div>
+          <h3 className="text-lg font-bold uppercase">Opening Hours</h3>
+          <div className="mt-4 space-y-1 text-[16px] leading-[30px]">
+            <p>{getValue(data, "hoursLineOne")}</p>
+            <p>{getValue(data, "hoursLineTwo")}</p>
+            <p>{getValue(data, "hoursLineThree")}</p>
           </div>
-          <div>Gridline template · Bizuply Studio</div>
+        </div>
+      </div>
+      <div className="bg-black py-3">
+        <div className="gala-container">
+          <TemplateText
+            as="p"
+            className="text-center text-[14px] leading-[26px] text-white"
+            editId="footerText"
+            editLabel="Footer text"
+          >
+            {getValue(data, "footerText")}
+          </TemplateText>
         </div>
       </div>
     </footer>
   );
 }
 
-function PageHero({
-  data,
-  type,
-}: {
-  data: Record<string, any>;
-  type: string;
-}) {
-  const keys = getPageKeySet(type);
-  const indexMap: Record<string, string> = {
-    about: "01",
-    services: "02",
-    work: "03",
-    insights: "04",
-    contact: "05",
-  };
+function FloatingActions({ data }: { data: Record<string, any> }) {
+  return (
+    <>
+      <div className="fixed bottom-0 z-50 flex w-full flex-row items-center justify-center gap-5 md:bottom-[85px] md:right-[15px] md:w-auto md:flex-col">
+        <a
+          href={`tel:${String(getValue(data, "phone")).replace(/[^\d+]/g, "")}`}
+          className="gala-custom-hover mx-[15px] w-full cursor-pointer rounded border-[3px] border-white bg-black p-[10px] md:mx-0 md:w-auto md:px-[10px] md:py-[7px] lg:w-auto"
+        >
+          <div className="flex w-full items-center justify-center gap-2">
+            <span className="text-xl text-white">☎</span>
+            <p className="whitespace-nowrap text-center text-[17px] font-semibold uppercase text-white md:hidden">
+              {getValue(data, "floatCallLabel")}
+            </p>
+          </div>
+        </a>
+        <a
+          href={getValue(data, "bookingUrl")}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="gala-custom-hover mx-[15px] w-full cursor-pointer rounded border-[3px] border-white bg-black p-[10px] md:mx-0 md:w-auto md:px-[10px] md:py-[7px] lg:w-auto"
+        >
+          <div className="flex w-full items-center justify-center gap-2">
+            <span className="text-xl text-white">📅</span>
+            <p className="whitespace-nowrap text-center text-[17px] font-semibold uppercase text-white md:hidden">
+              {getValue(data, "floatBookLabel")}
+            </p>
+          </div>
+        </a>
+      </div>
+      <ScrollTopButton />
+    </>
+  );
+}
+
+function ScrollTopButton() {
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    function onScroll() {
+      setVisible(window.scrollY > 500);
+    }
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <section className="border-b border-black bg-black px-4 py-20 lg:px-8">
-      <Reveal className="mx-auto grid max-w-7xl gap-0 border border-white/15 lg:grid-cols-[0.24fr_1fr]">
-        <div className="border-b border-white/15 p-6 font-mono text-6xl font-semibold text-white/20 lg:border-b-0 lg:border-l lg:p-10">
-          {indexMap[type]}
-        </div>
-        <div className="p-6 lg:p-10">
-          <EditableText
-            data={data}
-            dataKey={keys.eyebrowKey}
-            label={`אייברו עמוד ${type}`}
-            as="p"
-            className="font-mono text-xs uppercase tracking-[0.32em] text-white/55"
-          />
-          <EditableText
-            data={data}
-            dataKey={keys.titleKey}
-            label={`כותרת עמוד ${type}`}
-            as="h1"
-            className="mt-6 max-w-4xl text-5xl font-semibold leading-[0.96] text-white md:text-7xl"
-          />
-          <EditableText
-            data={data}
-            dataKey={keys.textKey}
-            label={`טקסט עמוד ${type}`}
-            as="p"
-            className="mt-6 max-w-3xl text-base leading-8 text-white/72 md:text-lg"
-          />
-        </div>
-      </Reveal>
-    </section>
+    <button
+      type="button"
+      aria-label="Scroll to top"
+      onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+      className={cx(
+        "gala-scroll-top fixed bottom-[80px] right-[15px] z-50 rounded border-[3px] border-[#fc427f] bg-[#fc427f] px-[10px] py-[5px] md:bottom-[15px]",
+        visible && "is-visible",
+      )}
+    >
+      <span className="block p-1 text-xl text-white">↑</span>
+    </button>
   );
 }
 
 function HomePage({
   data,
-  goTo,
+  onNavigate,
 }: {
   data: Record<string, any>;
-  goTo: (page: string) => void;
+  onNavigate: (pageId: string) => void;
 }) {
   return (
     <>
-      <Hero data={data} goTo={goTo} />
-      <MarqueeSection data={data} />
-      <StatsSection data={data} />
-      <AboutSection data={data} />
-      <ServicesSection data={data} />
-      <WorkSection data={data} />
-      <ProcessSection data={data} />
-      <InsightsSection data={data} />
-      <ContactSection data={data} />
-      <CtaSection data={data} goTo={goTo} />
+      <HeroSlider data={data} />
+      <ServicesSection data={data} onNavigate={onNavigate} />
+      <WelcomeSection data={data} onNavigate={onNavigate} />
+      <GalleryPreview data={data} onNavigate={onNavigate} />
     </>
   );
 }
 
-function SimplePage({
-  data,
-  type,
-  goTo,
-}: {
-  data: Record<string, any>;
-  type: string;
-  goTo: (page: string) => void;
-}) {
-  const pageContent: Record<string, React.ReactNode> = {
-    about: (
-      <>
-        <AboutSection data={data} />
-        <StatsSection data={data} />
-        <ProcessSection data={data} />
-      </>
-    ),
-    services: (
-      <>
-        <ServicesSection data={data} compact />
-        <ProcessSection data={data} />
-        <ContactSection data={data} titleKey="ctaTitle" textKey="ctaText" />
-      </>
-    ),
-    work: (
-      <>
-        <WorkSection data={data} />
-        <StatsSection data={data} />
-        <ContactSection data={data} titleKey="workTitle" textKey="heroPanelText" />
-      </>
-    ),
-    insights: (
-      <>
-        <InsightsSection data={data} />
-        <MarqueeSection data={data} />
-        <ContactSection data={data} titleKey="insightsTitle" textKey="insightThreeText" />
-      </>
-    ),
-    contact: (
-      <>
-        <ContactSection data={data} />
-        <StatsSection data={data} />
-      </>
-    ),
-  };
-
-  return (
-    <>
-      <PageHero data={data} type={type} />
-      {pageContent[type] ?? null}
-      <CtaSection data={data} goTo={goTo} />
-    </>
-  );
-}
-
-export default function GridlinePages({
-  initialPage = "home",
-  initialPageId,
-  page,
-  pageId,
-  activePageId,
-  currentPageId,
-  mode = "preview",
-  data,
-  onPageChange,
-  isPublic,
-  viewMode,
-  runtimeMode,
-}: GridlinePagesProps) {
+function GridlinePages(props: GridlinePagesProps) {
   const mergedData = useMemo(
-    () => ({
-      ...gridlineDefaultData,
-      ...(data ?? {}),
-    }),
-    [data],
+    () => ({ ...gridlineDefaultData, ...(props.data || {}) }),
+    [props.data],
   );
 
-  const { currentPage, goTo } = useTemplatePageNavigation(
-    {
-      page,
-      pageId,
-      initialPage,
-      initialPageId,
-      activePageId,
-      currentPageId,
-      onPageChange,
-      isPublic,
-      viewMode,
-      runtimeMode,
-    },
-    { allowedPages: gridlineAllowedPages, fallbackPage: "home" },
-  );
+  const mode = props.mode || "preview";
+  const { currentPage, goTo } = useTemplatePageNavigation(props, {
+    allowedPages: gridlineAllowedPages,
+    fallbackPage: "home",
+  });
 
   return (
     <div
-      dir="rtl"
-      data-template-id="gridline"
-      data-template-mode={mode}
-      className="min-h-screen overflow-x-hidden bg-[#f3f3ef] text-black"
-      style={{ fontFamily: '"IBM Plex Sans Arabic", "Inter", "Arial", sans-serif' }}
+      data-template-id={mode === "preview" ? "gridline-preview" : "gridline"}
+      data-bizuply-site="true"
+      data-studio-page="true"
+      className="min-h-screen w-full overflow-x-hidden bg-white font-sans text-black"
+      dir="ltr"
     >
       <style>{gridlineEditorCss}</style>
-      <style>{`
-        @keyframes gridline-marquee {
-          from {
-            transform: translateX(0);
-          }
-          to {
-            transform: translateX(-50%);
-          }
-        }
-      `}</style>
-
-      <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
+      <Header
+        data={mergedData}
+        currentPage={currentPage}
+        onNavigate={goTo}
+      />
 
       <VisualPageStack
         activePageId={currentPage}
         pages={[
           {
             id: "home",
-            content: <HomePage data={mergedData} goTo={goTo} />,
+            content: <HomePage data={mergedData} onNavigate={goTo} />,
           },
-          ...gridlinePages
-            .filter((item) => item.id !== "home")
-            .map((item) => ({
-              id: item.id,
-              content: (
-                <SimplePage
-                  data={mergedData}
-                  type={item.id}
-                  goTo={goTo}
-                />
-              ),
-            })),
+          {
+            id: "about",
+            content: <AboutPage data={mergedData} />,
+          },
+          {
+            id: "services",
+            content: (
+              <div>
+                <PageBanner title={getValue(mergedData, "navServices")} />
+                <ServicePriceList data={mergedData} />
+              </div>
+            ),
+          },
+          {
+            id: "gallery",
+            content: <GalleryPage />,
+          },
+          {
+            id: "contact",
+            content: <ContactPage data={mergedData} />,
+          },
+          {
+            id: "booking",
+            content: <BookingPage data={mergedData} />,
+          },
         ]}
       />
 
-      <Footer data={mergedData} goTo={goTo} />
+      <Footer data={mergedData} />
+      <FloatingActions data={mergedData} />
     </div>
   );
 }
+
+export default GridlinePages;
