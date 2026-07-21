@@ -9,20 +9,18 @@ import { createPortal } from "react-dom";
 import {
   DndContext,
   DragOverlay,
+  MouseSensor,
   PointerSensor,
+  TouchSensor,
   closestCenter,
+  useDraggable,
+  useDroppable,
   useSensor,
   useSensors,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowRightLeft,
   CornerDownLeft,
@@ -148,13 +146,6 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
       dividerAfter: true,
     },
     {
-      action: "addSubpage",
-      label: "הוספת עמוד משנה",
-      hint: "יצירת עמוד חדש שיופיע תחת העמוד הזה",
-      icon: <Plus className="h-4 w-4" />,
-      dividerAfter: true,
-    },
-    {
       action: "rename",
       label: "שינוי שם",
       hint: "שינוי שם התצוגה של העמוד",
@@ -246,12 +237,51 @@ function getDropPlacement(
   const relativeY = pointerY - overRect.top;
   const ratio = relativeY / Math.max(overRect.height, 1);
 
-  if (ratio < 0.28) return "before";
-  if (ratio > 0.72) return "after";
+  if (ratio < 0.3) return "before";
+  if (ratio > 0.7) return "after";
   return "inside";
 }
 
-function SortablePageRow({
+function PageRowPreview({
+  page,
+  depth,
+  isActive,
+}: {
+  page: VisualSitePageItem;
+  depth: number;
+  isActive: boolean;
+}) {
+  return (
+    <div
+      className={[
+        "flex items-center gap-2 rounded-xl border px-3 py-2 shadow-xl",
+        isActive
+          ? "border-blue-300 bg-blue-50"
+          : "border-slate-200 bg-white",
+      ].join(" ")}
+      style={{ marginInlineStart: depth * 18, width: 320 }}
+    >
+      <GripVertical className="h-4 w-4 text-slate-500" />
+      <span
+        className={[
+          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+          isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600",
+        ].join(" ")}
+      >
+        {page.isHome ? (
+          <Home className="h-4 w-4" />
+        ) : (
+          <FileText className="h-4 w-4" />
+        )}
+      </span>
+      <span className="truncate text-sm font-black text-slate-950">
+        {page.title || "עמוד"}
+      </span>
+    </div>
+  );
+}
+
+function DraggablePageRow({
   page,
   depth,
   isActive,
@@ -274,173 +304,138 @@ function SortablePageRow({
   onAddSubpage: () => void;
   buttonRef: (node: HTMLButtonElement | null) => void;
 }) {
+  const canDrag = !page.isHome;
+
   const {
     attributes,
     listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging: isSortableDragging,
-  } = useSortable({
+    setNodeRef: setDragRef,
+    isDragging: isDraggableActive,
+  } = useDraggable({
     id: page.id,
-    disabled: Boolean(page.isHome),
-    animateLayoutChanges: () => false,
+    disabled: !canDrag,
   });
 
-  const dragging = isDragging || isSortableDragging;
+  const { setNodeRef: setDropRef } = useDroppable({
+    id: page.id,
+  });
+
+  const setRefs = (node: HTMLDivElement | null) => {
+    setDragRef(node);
+    setDropRef(node);
+  };
+
+  const dragging = isDragging || isDraggableActive;
 
   return (
     <div
-      ref={setNodeRef}
-      style={{
-        transform: CSS.Transform.toString(transform),
-        transition: dragging ? undefined : transition,
-        opacity: dragging ? 0.35 : 1,
-        zIndex: dragging ? 20 : 1,
-        marginInlineStart: depth * 18,
-      }}
+      ref={setRefs}
+      style={{ marginInlineStart: depth * 18 }}
       className={[
-        "group relative flex items-center gap-1 rounded-xl border px-1.5 py-1.5 transition",
+        "group relative rounded-xl border transition",
         isActive
           ? "border-blue-300 bg-blue-50"
           : "border-transparent bg-white hover:border-slate-200 hover:bg-slate-50",
-        dropHint === "inside" ? "ring-2 ring-blue-300 ring-offset-1" : "",
-        dragging ? "shadow-lg" : "",
+        dropHint === "inside" ? "ring-2 ring-blue-400 ring-offset-1" : "",
+        dragging ? "opacity-40" : "",
       ].join(" ")}
     >
       {dropHint === "before" ? (
-        <div className="pointer-events-none absolute inset-x-3 -top-1 h-0.5 rounded-full bg-blue-500" />
+        <div className="pointer-events-none absolute inset-x-3 -top-1 z-10 h-1 rounded-full bg-blue-500 shadow-sm" />
       ) : null}
       {dropHint === "after" ? (
-        <div className="pointer-events-none absolute inset-x-3 -bottom-1 h-0.5 rounded-full bg-blue-500" />
+        <div className="pointer-events-none absolute inset-x-3 -bottom-1 z-10 h-1 rounded-full bg-blue-500 shadow-sm" />
       ) : null}
 
-      <button
-        type="button"
-        className={[
-          "flex h-8 w-5 shrink-0 items-center justify-center touch-none",
-          page.isHome
-            ? "cursor-default text-slate-200"
-            : "cursor-grab text-slate-300 opacity-0 transition group-hover:opacity-100 hover:text-slate-500 active:cursor-grabbing",
-        ].join(" ")}
-        title={page.isHome ? "דף הבית קבוע בראש" : "גרור לשינוי סדר או קינון"}
-        aria-label="גרירת עמוד"
-        {...(page.isHome ? {} : { ...attributes, ...listeners })}
-      >
-        <GripVertical className="h-3.5 w-3.5" />
-      </button>
-
-      <button
-        type="button"
-        onClick={onSelectPage}
-        className="flex min-w-0 flex-1 items-center gap-2.5 px-1 py-1 text-right"
-      >
-        <span
+      <div className="flex items-center gap-1 px-1.5 py-1.5">
+        <button
+          type="button"
           className={[
-            "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-            isActive
-              ? "bg-blue-600 text-white"
-              : "bg-slate-100 text-slate-600",
+            "flex h-9 w-7 shrink-0 items-center justify-center rounded-lg touch-none select-none",
+            canDrag
+              ? "cursor-grab bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-700 active:cursor-grabbing"
+              : "cursor-default bg-transparent text-slate-200",
+          ].join(" ")}
+          title={
+            canDrag
+              ? "גררו לשינוי מיקום"
+              : "דף הבית נשאר בראש — גררו עמודים אחרים"
+          }
+          aria-label={canDrag ? "גרירת עמוד" : "דף הבית"}
+          {...(canDrag ? { ...attributes, ...listeners } : {})}
+        >
+          <GripVertical className="h-4 w-4" />
+        </button>
+
+        <button
+          type="button"
+          onClick={onSelectPage}
+          className="flex min-w-0 flex-1 items-center gap-2.5 px-1 py-1 text-right"
+        >
+          <span
+            className={[
+              "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
+              isActive
+                ? "bg-blue-600 text-white"
+                : "bg-slate-100 text-slate-600",
+            ].join(" ")}
+          >
+            {page.isHome ? (
+              <Home className="h-4 w-4" />
+            ) : (
+              <FileText className="h-4 w-4" />
+            )}
+          </span>
+
+          <span className="min-w-0 flex-1">
+            <span className="flex items-center gap-1.5">
+              <span className="truncate text-sm font-black text-slate-950">
+                {page.title || "עמוד"}
+              </span>
+              {page.hiddenFromMenu ? (
+                <EyeOff className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+              ) : null}
+              {depth > 0 ? (
+                <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
+                  משנה
+                </span>
+              ) : null}
+            </span>
+          </span>
+        </button>
+
+        <button
+          ref={buttonRef}
+          type="button"
+          aria-label={`פעולות עבור ${page.title || "עמוד"}`}
+          aria-expanded={menuOpen}
+          onClick={onOpenMenu}
+          className={[
+            "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition",
+            menuOpen
+              ? "border-blue-500 bg-blue-600 text-white shadow-sm"
+              : "border-transparent text-slate-500 opacity-70 hover:border-slate-200 hover:bg-white group-hover:opacity-100",
+            isActive ? "opacity-100" : "",
           ].join(" ")}
         >
-          {page.isHome ? (
-            <Home className="h-4 w-4" />
-          ) : (
-            <FileText className="h-4 w-4" />
-          )}
-        </span>
+          <MoreHorizontal className="h-4 w-4" />
+        </button>
+      </div>
 
-        <span className="min-w-0 flex-1">
-          <span className="flex items-center gap-1.5">
-            <span className="truncate text-sm font-black text-slate-950">
-              {page.title || "עמוד"}
-            </span>
-            {page.hiddenFromMenu ? (
-              <EyeOff className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-            ) : null}
-            {depth > 0 ? (
-              <span className="shrink-0 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
-                משנה
-              </span>
-            ) : null}
-          </span>
-        </span>
-      </button>
-
-      <button
-        type="button"
-        onClick={(event) => {
-          event.stopPropagation();
-          onAddSubpage();
-        }}
-        className={[
-          "flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-black transition",
-          page.isHome || isActive
-            ? "bg-blue-600 text-white hover:bg-blue-700"
-            : "border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100",
-        ].join(" ")}
-        title={`הוספת עמוד משנה תחת ${page.title || "עמוד"}`}
-        aria-label={`הוספת עמוד משנה תחת ${page.title || "עמוד"}`}
-      >
-        <Plus className="h-3 w-3" />
-        עמוד משנה
-      </button>
-
-      <button
-        ref={buttonRef}
-        type="button"
-        aria-label={`פעולות עבור ${page.title || "עמוד"}`}
-        aria-expanded={menuOpen}
-        onClick={onOpenMenu}
-        className={[
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition",
-          menuOpen
-            ? "border-blue-500 bg-blue-600 text-white shadow-sm"
-            : "border-transparent text-slate-500 opacity-0 group-hover:opacity-100 hover:border-slate-200 hover:bg-white",
-          isActive ? "opacity-100" : "",
-        ].join(" ")}
-      >
-        <MoreHorizontal className="h-4 w-4" />
-      </button>
-    </div>
-  );
-}
-
-function PageRowPreview({
-  page,
-  depth,
-  isActive,
-}: {
-  page: VisualSitePageItem;
-  depth: number;
-  isActive: boolean;
-}) {
-  return (
-    <div
-      className={[
-        "flex items-center gap-2 rounded-xl border px-3 py-2 shadow-xl",
-        isActive
-          ? "border-blue-300 bg-blue-50"
-          : "border-slate-200 bg-white",
-      ].join(" ")}
-      style={{ marginInlineStart: depth * 18 }}
-    >
-      <GripVertical className="h-4 w-4 text-slate-400" />
-      <span
-        className={[
-          "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg",
-          isActive ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-600",
-        ].join(" ")}
-      >
-        {page.isHome ? (
-          <Home className="h-4 w-4" />
-        ) : (
-          <FileText className="h-4 w-4" />
-        )}
-      </span>
-      <span className="truncate text-sm font-black text-slate-950">
-        {page.title || "עמוד"}
-      </span>
+      <div className="border-t border-slate-100 px-2 pb-2 pt-1">
+        <button
+          type="button"
+          onClick={(event) => {
+            event.stopPropagation();
+            onAddSubpage();
+          }}
+          className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 text-xs font-black text-white transition hover:bg-blue-700"
+          title={`יצירת עמוד חדש תחת "${page.title || "עמוד"}"`}
+        >
+          <Plus className="h-3.5 w-3.5" />
+          הוספת עמוד משנה
+        </button>
+      </div>
     </div>
   );
 }
@@ -464,14 +459,16 @@ export default function VisualSitePagesPanel({
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
   const pageRows = useMemo(() => buildPageTreeRows(pages), [pages]);
-  const sortableIds = useMemo(
-    () => pageRows.map((row) => row.page.id),
-    [pageRows],
-  );
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 6 },
+      activationConstraint: { distance: 4 },
+    }),
+    useSensor(MouseSensor, {
+      activationConstraint: { distance: 4 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 120, tolerance: 6 },
     }),
   );
 
@@ -555,8 +552,10 @@ export default function VisualSitePagesPanel({
   };
 
   const handleDragOver = (event: DragOverEvent) => {
+    const activeId = String(event.active.id || "");
     const overId = String(event.over?.id || "");
-    if (!overId || overId === draggingPageId) {
+
+    if (!overId || overId === activeId) {
       setDropTargetId("");
       setDropPlacement(null);
       return;
@@ -602,13 +601,6 @@ export default function VisualSitePagesPanel({
     pageId: string,
   ) => {
     if (!onPageAction) return;
-
-    if (action === "addSubpage") {
-      onPageAction("addSubpage", pageId, { parentPageId: pageId });
-      setMenuPageId("");
-      setMenuAnchor(null);
-      return;
-    }
 
     if (action === "subpage") {
       const page = pages.find((item) => item.id === pageId);
@@ -682,14 +674,14 @@ export default function VisualSitePagesPanel({
   return (
     <>
       <aside
-        className="absolute inset-y-0 right-0 z-[2147483000] flex w-[320px] max-w-[92vw] flex-col border-l border-slate-200 bg-white shadow-[-18px_0_50px_rgba(15,23,42,0.12)]"
+        className="absolute inset-y-0 right-0 z-[2147483000] flex w-[360px] max-w-[92vw] flex-col border-l border-slate-200 bg-white shadow-[-18px_0_50px_rgba(15,23,42,0.12)]"
         dir="rtl"
       >
         <header className="flex h-14 shrink-0 items-center justify-between border-b border-slate-200 px-4">
           <div>
             <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
             <p className="text-[11px] font-bold text-slate-400">
-              {pages.length} עמודים · + עמוד משנה · גרירה לסידור
+              גררו ≡ לסידור · הוספת משנה מתוך כל עמוד
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -698,7 +690,7 @@ export default function VisualSitePagesPanel({
               onClick={onAddPage}
               className="rounded-lg px-2.5 py-1.5 text-xs font-black text-blue-600 transition hover:bg-blue-50"
             >
-              + הוספת עמוד
+              + עמוד ראשי
             </button>
             <button
               type="button"
@@ -720,54 +712,49 @@ export default function VisualSitePagesPanel({
             onDragEnd={handleDragEnd}
             onDragCancel={handleDragCancel}
           >
-            <SortableContext
-              items={sortableIds}
-              strategy={verticalListSortingStrategy}
-            >
-              <div className="space-y-1.5">
-                {pageRows.map(({ page, depth }) => {
-                  const isActive = page.id === activePageId;
-                  const menuOpen = menuPageId === page.id;
-                  const dropHint =
-                    dropTargetId === page.id && draggingPageId !== page.id
-                      ? dropPlacement
-                      : null;
+            <div className="space-y-2">
+              {pageRows.map(({ page, depth }) => {
+                const isActive = page.id === activePageId;
+                const menuOpen = menuPageId === page.id;
+                const dropHint =
+                  dropTargetId === page.id && draggingPageId !== page.id
+                    ? dropPlacement
+                    : null;
 
-                  return (
-                    <SortablePageRow
-                      key={page.id}
-                      page={page}
-                      depth={depth}
-                      isActive={isActive}
-                      menuOpen={menuOpen}
-                      dropHint={dropHint}
-                      isDragging={draggingPageId === page.id}
-                      onSelectPage={() => onSelectPage(page.id)}
-                      onAddSubpage={() =>
-                        onPageAction?.("addSubpage", page.id, {
-                          parentPageId: page.id,
-                        })
-                      }
-                      onOpenMenu={(event) => {
-                        event.stopPropagation();
-                        setMenuPageId((current) => {
-                          if (current === page.id) {
-                            setMenuAnchor(null);
-                            return "";
-                          }
-                          return page.id;
-                        });
-                      }}
-                      buttonRef={(node) => {
-                        buttonRefs.current[page.id] = node;
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            </SortableContext>
+                return (
+                  <DraggablePageRow
+                    key={page.id}
+                    page={page}
+                    depth={depth}
+                    isActive={isActive}
+                    menuOpen={menuOpen}
+                    dropHint={dropHint}
+                    isDragging={draggingPageId === page.id}
+                    onSelectPage={() => onSelectPage(page.id)}
+                    onAddSubpage={() =>
+                      onPageAction?.("addSubpage", page.id, {
+                        parentPageId: page.id,
+                      })
+                    }
+                    onOpenMenu={(event) => {
+                      event.stopPropagation();
+                      setMenuPageId((current) => {
+                        if (current === page.id) {
+                          setMenuAnchor(null);
+                          return "";
+                        }
+                        return page.id;
+                      });
+                    }}
+                    buttonRef={(node) => {
+                      buttonRefs.current[page.id] = node;
+                    }}
+                  />
+                );
+              })}
+            </div>
 
-            <DragOverlay dropAnimation={{ duration: 180, easing: "ease-out" }}>
+            <DragOverlay dropAnimation={{ duration: 160, easing: "ease-out" }}>
               {draggingRow ? (
                 <PageRowPreview
                   page={draggingRow.page}
@@ -784,7 +771,7 @@ export default function VisualSitePagesPanel({
                 אין עמודים עדיין
               </p>
               <p className="mt-1 text-xs font-bold text-slate-400">
-                הוסיפו עמוד חדש מהספרייה
+                הוסיפו עמוד ראשי מהכפתור למעלה
               </p>
             </div>
           ) : null}
@@ -794,10 +781,10 @@ export default function VisualSitePagesPanel({
           <button
             type="button"
             onClick={onAddPage}
-            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-blue-600 text-sm font-black text-white shadow-sm transition hover:bg-blue-700"
+            className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 text-sm font-black text-blue-700 transition hover:bg-blue-100"
           >
             <Plus className="h-4 w-4" />
-            הוספת עמוד
+            הוספת עמוד ראשי
           </button>
         </div>
       </aside>

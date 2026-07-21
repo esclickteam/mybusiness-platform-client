@@ -6282,7 +6282,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         const moved = applyPageTreeMove(prev, id, targetPageId, placement);
         if (!moved) return prev;
         return flattenPagesInTreeOrder(
-          normalizePageMenuOrders(moved),
+          normalizePageMenuOrders(
+            moved.map((page) =>
+              page.id === id || page.id === targetPageId
+                ? ({
+                    ...page,
+                    updatedAt: new Date().toISOString(),
+                  } as StudioSitePageWithPortal)
+                : page,
+            ),
+          ),
         ) as StudioSitePageWithPortal[];
       });
       return;
