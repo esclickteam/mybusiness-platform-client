@@ -28,6 +28,25 @@ function safeString(value: unknown) {
   return String(value ?? "").trim();
 }
 
+export function resolvePageParentId(page: PageHierarchyItem | null | undefined) {
+  if (!page) return undefined;
+
+  const direct = safeString(page.parentPageId);
+  if (direct) return direct;
+
+  const fromSeo = safeString((page as { seo?: { parentPageId?: string } }).seo?.parentPageId);
+  return fromSeo || undefined;
+}
+
+function withResolvedParentIds(
+  pages: PageHierarchyItem[],
+): PageHierarchyItem[] {
+  return pages.map((page) => {
+    const parentPageId = resolvePageParentId(page);
+    return parentPageId ? { ...page, parentPageId } : page;
+  });
+}
+
 function siblingKey(parentPageId?: string) {
   return safeString(parentPageId) || "__root__";
 }
@@ -40,7 +59,7 @@ function getChildrenMap(pages: PageHierarchyItem[]) {
   const byParent = new Map<string, PageHierarchyItem[]>();
 
   pages.forEach((page) => {
-    const parentId = safeString(page.parentPageId);
+    const parentId = resolvePageParentId(page);
     const parentExists =
       parentId && pages.some((item) => item.id === parentId);
     const key = parentExists ? parentId : "__root__";
@@ -121,7 +140,7 @@ export function normalizePageMenuOrders(
 export function buildPageTreeRows(
   pages: PageHierarchyItem[] | null | undefined,
 ): PageTreeRow[] {
-  const list = Array.isArray(pages) ? pages : [];
+  const list = withResolvedParentIds(Array.isArray(pages) ? pages : []);
   if (!list.length) return [];
 
   const normalized = normalizePageMenuOrders(list);
@@ -305,8 +324,10 @@ function getSiblings(
 ) {
   const parentId = safeString(parentPageId);
   return pages.filter((page) => {
-    const pageParent = safeString(page.parentPageId);
-    if (!parentId) return !pageParent || !pages.some((item) => item.id === pageParent);
+    const pageParent = resolvePageParentId(page);
+    if (!parentId) {
+      return !pageParent || !pages.some((item) => item.id === pageParent);
+    }
     return pageParent === parentId;
   });
 }
@@ -328,7 +349,7 @@ function reindexSiblings(
   });
 
   return pages.map((page) => {
-    const pageParent = safeString(page.parentPageId);
+    const pageParent = resolvePageParentId(page);
     const sameGroup = parentId
       ? pageParent === parentId
       : !pageParent || !pages.some((item) => item.id === pageParent);
@@ -365,7 +386,7 @@ function effectiveParentId(
   pages: PageHierarchyItem[],
   page: PageHierarchyItem | undefined,
 ) {
-  const parentId = safeString(page?.parentPageId);
+  const parentId = resolvePageParentId(page);
   if (!parentId) return undefined;
   return pages.some((item) => item.id === parentId) ? parentId : undefined;
 }

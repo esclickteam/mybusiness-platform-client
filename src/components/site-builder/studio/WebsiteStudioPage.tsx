@@ -57,10 +57,12 @@ import {
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
   applyDisplayRowsToPages,
+  applyDragToDisplayRows,
   applyPageTreeMove,
   commitPageOrderFromDrag,
   flattenPagesInTreeOrder,
   normalizePageMenuOrders,
+  resolvePageParentId,
 } from "./visual-editor/utils/pageHierarchyUtils";
 
 export type StudioPageSection = {
@@ -2151,7 +2153,40 @@ function mergeTemplateAndSavedPages(
     return true;
   });
 
-  return [...mergedTemplatePages, ...extraPages];
+  return flattenPagesInTreeOrder(
+    normalizePageMenuOrders(
+      withResolvedHierarchyFields([...mergedTemplatePages, ...extraPages]),
+    ),
+  ) as StudioSitePageWithPortal[];
+}
+
+function withResolvedHierarchyFields(
+  pages: StudioSitePageWithPortal[],
+): StudioSitePageWithPortal[] {
+  return pages.map((page) => {
+    const parentPageId =
+      resolvePageParentId(page as any) ||
+      safeTrim((page as any).parentPageId) ||
+      safeTrim((page as any).seo?.parentPageId) ||
+      undefined;
+
+    return {
+      ...page,
+      parentPageId,
+      menuOrder:
+        typeof (page as any).menuOrder === "number"
+          ? (page as any).menuOrder
+          : undefined,
+      seo: normalizePageSeo({
+        ...(page as any).seo,
+        parentPageId: parentPageId || "",
+      }),
+    } as StudioSitePageWithPortal;
+  });
+}
+
+function safeTrim(value: unknown) {
+  return String(value ?? "").trim();
 }
 
 
@@ -5324,19 +5359,15 @@ export default function WebsiteStudioPage({
 
         const serverPages: StudioSitePageWithPortal[] =
           Array.isArray(data.site.pages) && data.site.pages.length
-            ? data.site.pages.map((page: StudioSitePageWithPortal) => ({
-                ...page,
-                hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
-                parentPageId:
-                  String((page as any).parentPageId || "").trim() || undefined,
-                menuOrder:
-                  typeof (page as any).menuOrder === "number"
-                    ? (page as any).menuOrder
-                    : undefined,
-                seo: normalizePageSeo(page.seo),
-                clientPortal:
-                  page.clientPortal || createDefaultClientPortalConfig(),
-              }))
+            ? withResolvedHierarchyFields(
+                data.site.pages.map((page: StudioSitePageWithPortal) => ({
+                  ...page,
+                  hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
+                  seo: normalizePageSeo(page.seo),
+                  clientPortal:
+                    page.clientPortal || createDefaultClientPortalConfig(),
+                })),
+              )
             : createInitialPages();
 
         const nextActivePageId =
@@ -6263,6 +6294,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         type: "blank",
         parentPageId: parentId,
         menuOrder: siblingCount,
+        seo: normalizePageSeo({
+          parentPageId: parentId,
+        }),
         html: "",
         css: "",
         projectData: {
@@ -8026,7 +8060,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     slug: page.slug,
     isHome: Boolean(page.isHome),
     hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
-    parentPageId: String((page as any).parentPageId || "").trim() || undefined,
+    parentPageId: resolvePageParentId(page as any) || undefined,
     menuOrder:
       typeof (page as any).menuOrder === "number"
         ? (page as any).menuOrder
