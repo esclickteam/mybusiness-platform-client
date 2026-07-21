@@ -8072,6 +8072,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         (page as any)?.visualEditorPayload?.data?.__libraryPageTemplateId ||
         "",
     ),
+    pageData:
+      extractVisualDataFromPayload({
+        data: (page as any)?.data,
+        templateData: (page as any)?.templateData,
+        projectData: (page as any)?.projectData,
+        visualEditorPayload: (page as any)?.visualEditorPayload,
+      }) || {},
   }))}
   activeSitePageId={activePageId}
   onSelectSitePage={handleSelectVisualSitePage}

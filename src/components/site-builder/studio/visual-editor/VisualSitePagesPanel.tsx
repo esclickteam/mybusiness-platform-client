@@ -26,6 +26,8 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowRightLeft,
+  ChevronDown,
+  ChevronLeft,
   CornerDownLeft,
   Copy,
   EyeOff,
@@ -33,6 +35,7 @@ import {
   FileText,
   GripVertical,
   Home,
+  Layers3,
   MoreHorizontal,
   Plus,
   Search,
@@ -52,6 +55,10 @@ import {
   type PageTreeMovePlacement,
   type PageTreeRow,
 } from "./utils/pageHierarchyUtils";
+import {
+  collectSectionItemsFromVisualData,
+  type VisualSectionItem,
+} from "./utils/visualSectionOrder";
 
 export type { VisualSitePageItem };
 
@@ -71,8 +78,18 @@ export type VisualSitePageMenuAction =
   | "reorder"
   | "delete";
 
+type VisualEditorPagesPanelRuntime = {
+  getSectionItems?: () => VisualSectionItem[];
+  selectByElementId?: (elementId: string) => void;
+  applySectionOrder?: (orderedKeys: string[]) => void;
+  selectedElement?: { id?: string } | null;
+  data?: Record<string, any>;
+  activePageId?: string;
+};
+
 type VisualSitePagesPanelProps = {
   open: boolean;
+  editor?: VisualEditorPagesPanelRuntime | null;
   pages: VisualSitePageItem[];
   activePageId: string;
   onClose: () => void;
@@ -266,15 +283,56 @@ function getDropPlacementLabel(placement: PageTreeMovePlacement | null) {
   return "";
 }
 
+function SectionListItem({
+  section,
+  isActive,
+  onSelect,
+}: {
+  section: VisualSectionItem;
+  isActive: boolean;
+  onSelect: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onSelect}
+      className={[
+        "flex w-full items-center gap-2 rounded-xl border px-2.5 py-2 text-right transition",
+        isActive
+          ? "border-violet-400 bg-violet-50 shadow-sm"
+          : "border-slate-200/80 bg-white hover:border-violet-200 hover:bg-violet-50/40",
+      ].join(" ")}
+    >
+      <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-500">
+        <Layers3 className="h-3.5 w-3.5" />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block truncate text-xs font-black text-slate-900">
+          {section.label}
+        </span>
+        <span className="block truncate text-[10px] font-bold text-slate-400">
+          {section.pinned ? "קבוע" : section.inserted ? "נוסף" : "בתבנית"}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 function SortablePageRow({
   page,
   depth,
   parentTitle,
   isActive,
+  expanded,
+  sections,
+  sectionsLoading,
   menuOpen,
   dropHint,
   isDraggingGlobal,
+  selectedSectionId,
+  onToggleExpand,
   onSelectPage,
+  onSelectSection,
   onOpenMenu,
   buttonRef,
 }: {
@@ -282,10 +340,16 @@ function SortablePageRow({
   depth: number;
   parentTitle?: string;
   isActive: boolean;
+  expanded: boolean;
+  sections: VisualSectionItem[];
+  sectionsLoading?: boolean;
   menuOpen: boolean;
   dropHint: PageTreeMovePlacement | null;
   isDraggingGlobal: boolean;
+  selectedSectionId?: string;
+  onToggleExpand: () => void;
   onSelectPage: () => void;
+  onSelectSection: (sectionKey: string) => void;
   onOpenMenu: (event: React.MouseEvent) => void;
   buttonRef: (node: HTMLButtonElement | null) => void;
 }) {
@@ -372,13 +436,29 @@ function SortablePageRow({
 
           <button
             type="button"
+            onClick={(event) => {
+              event.stopPropagation();
+              onToggleExpand();
+            }}
+            className="flex h-9 w-7 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-violet-600"
+            aria-label={expanded ? "כיווץ סקשנים" : "הצגת סקשנים"}
+          >
+            {expanded ? (
+              <ChevronDown className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
+
+          <button
+            type="button"
             className={[
               "flex h-9 w-6 shrink-0 items-center justify-center touch-none select-none rounded-lg",
               canDrag
                 ? "cursor-grab text-slate-400 opacity-100 hover:bg-slate-100 hover:text-violet-600 active:cursor-grabbing"
                 : "cursor-default text-slate-200",
             ].join(" ")}
-            title={canDrag ? "גררו לשינוי סדר והיררכיה" : "דף הבית נשאר בראש"}
+            title={canDrag ? "גררו לשינוי מיקום והיררכיה" : "דף הבית נשאר בראש"}
             aria-label={canDrag ? "גרירת עמוד" : "דף הבית"}
             {...(canDrag ? { ...attributes, ...listeners } : {})}
           >
@@ -387,7 +467,10 @@ function SortablePageRow({
 
           <button
             type="button"
-            onClick={onSelectPage}
+            onClick={() => {
+              onSelectPage();
+              if (!expanded) onToggleExpand();
+            }}
             className="flex min-w-0 flex-1 items-center gap-3 px-1 py-0.5 text-right"
           >
             <span
@@ -445,6 +528,65 @@ function SortablePageRow({
             <MoreHorizontal className="h-4 w-4" />
           </button>
         </div>
+
+        {expanded ? (
+          <div className="mr-3 mt-2 border-r border-slate-200 pr-3">
+            <div className="mb-2 flex items-center justify-between px-1">
+              <span className="text-[11px] font-black text-slate-500">
+                סקשנים ({sections.length})
+              </span>
+              {!isActive ? (
+                <span className="text-[10px] font-bold text-violet-500">
+                  תצוגה מקדימה
+                </span>
+              ) : null}
+            </div>
+
+            {sectionsLoading ? (
+              <div className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-4 text-center text-[11px] font-bold text-slate-400">
+                טוען סקשנים...
+              </div>
+            ) : sections.length ? (
+              <div className="space-y-1.5">
+                {sections.map((section) => (
+                  <SectionListItem
+                    key={section.key}
+                    section={section}
+                    isActive={
+                      isActive &&
+                      (selectedSectionId === section.elementId ||
+                        selectedSectionId === section.key)
+                    }
+                    onSelect={() => {
+                      if (!isActive) {
+                        onSelectPage();
+                        return;
+                      }
+                      onSelectSection(section.elementId || section.key);
+                    }}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-dashed border-slate-200 bg-white px-3 py-4 text-center">
+                <p className="text-[11px] font-bold text-slate-500">
+                  {isActive
+                    ? "אין סקשנים בעמוד הזה"
+                    : "פתחי את העמוד כדי לראות את הסקשנים"}
+                </p>
+                {!isActive ? (
+                  <button
+                    type="button"
+                    onClick={onSelectPage}
+                    className="mt-2 text-[11px] font-black text-violet-600 hover:underline"
+                  >
+                    פתיחת העמוד
+                  </button>
+                ) : null}
+              </div>
+            )}
+          </div>
+        ) : null}
       </div>
     </div>
   );
@@ -452,6 +594,7 @@ function SortablePageRow({
 
 export default function VisualSitePagesPanel({
   open,
+  editor,
   pages,
   activePageId,
   onClose,
@@ -465,6 +608,10 @@ export default function VisualSitePagesPanel({
   const [dropTargetId, setDropTargetId] = useState("");
   const [dropPlacement, setDropPlacement] =
     useState<PageTreeMovePlacement | null>(null);
+  const [expandedPages, setExpandedPages] = useState<Record<string, boolean>>(
+    {},
+  );
+  const [liveSections, setLiveSections] = useState<VisualSectionItem[]>([]);
   const dropTargetRef = useRef<{ id: string; placement: PageTreeMovePlacement } | null>(
     null,
   );
@@ -476,6 +623,48 @@ export default function VisualSitePagesPanel({
     () => new Map(pages.map((page) => [page.id, page])),
     [pages],
   );
+  const singlePageMode = pages.length <= 1;
+  const selectedSectionId = String(editor?.selectedElement?.id || "").trim();
+
+  const getSectionsForPage = (page: VisualSitePageItem): VisualSectionItem[] => {
+    if (page.id === activePageId && liveSections.length) {
+      return liveSections;
+    }
+    if (page.id === activePageId && typeof editor?.getSectionItems === "function") {
+      return editor.getSectionItems();
+    }
+    return collectSectionItemsFromVisualData(page.pageData || {}, page.id);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+
+    if (singlePageMode && pages[0]?.id) {
+      setExpandedPages({ [pages[0].id]: true });
+      return;
+    }
+
+    if (activePageId) {
+      setExpandedPages((current) => ({
+        ...current,
+        [activePageId]: true,
+      }));
+    }
+  }, [open, activePageId, singlePageMode, pages]);
+
+  useEffect(() => {
+    if (!open || !activePageId) return;
+
+    const refresh = () => {
+      if (typeof editor?.getSectionItems !== "function") return;
+      const next = editor.getSectionItems();
+      setLiveSections(Array.isArray(next) ? next : []);
+    };
+
+    refresh();
+    const timer = window.setInterval(refresh, 1200);
+    return () => window.clearInterval(timer);
+  }, [open, activePageId, editor?.data, editor?.getSectionItems, editor?.selectedElement?.id]);
   const [displayRows, setDisplayRows] = useState<PageTreeRow[]>([]);
   const isDraggingRef = useRef(false);
   const displayRowsRef = useRef<PageTreeRow[]>([]);
@@ -762,7 +951,9 @@ export default function VisualSitePagesPanel({
               <div className="min-w-0">
                 <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
                 <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
-                  {pages.length} עמודים · גררו לסידור · אמצע השורה = עמוד משנה
+                  {singlePageMode
+                    ? "העמוד והסקשנים שלו"
+                    : `${pages.length} עמודים · לחצי על עמוד לסקשנים · גרירה לסידור`}
                 </p>
               </div>
               <button
@@ -800,6 +991,9 @@ export default function VisualSitePagesPanel({
                 {displayRows.map(({ page, depth }) => {
                   const isActive = page.id === activePageId;
                   const menuOpen = menuPageId === page.id;
+                  const expanded = singlePageMode
+                    ? true
+                    : Boolean(expandedPages[page.id]);
                   const dropHint =
                     dropTargetId === page.id && draggingPageId !== page.id
                       ? dropPlacement
@@ -808,6 +1002,7 @@ export default function VisualSitePagesPanel({
                   const parentTitle = parentId
                     ? pageById.get(parentId)?.title || "עמוד"
                     : undefined;
+                  const sections = expanded ? getSectionsForPage(page) : [];
 
                   return (
                     <SortablePageRow
@@ -816,10 +1011,24 @@ export default function VisualSitePagesPanel({
                       depth={depth}
                       parentTitle={parentTitle}
                       isActive={isActive}
+                      expanded={expanded}
+                      sections={sections}
+                      sectionsLoading={isActive && expanded && !sections.length}
                       menuOpen={menuOpen}
                       dropHint={dropHint}
                       isDraggingGlobal={Boolean(draggingPageId)}
+                      selectedSectionId={selectedSectionId}
+                      onToggleExpand={() => {
+                        if (singlePageMode) return;
+                        setExpandedPages((current) => ({
+                          ...current,
+                          [page.id]: !expanded,
+                        }));
+                      }}
                       onSelectPage={() => onSelectPage(page.id)}
+                      onSelectSection={(sectionKey) => {
+                        editor?.selectByElementId?.(sectionKey);
+                      }}
                       onOpenMenu={(event) => {
                         event.stopPropagation();
                         setMenuPageId((current) => {

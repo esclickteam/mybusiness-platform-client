@@ -636,6 +636,7 @@ export default function VisualEditorShell({
         {!isPreviewMode ? (
           <VisualSitePagesPanel
             open={sidePanelMode === "pages"}
+            editor={editor as any}
             pages={sitePages}
             activePageId={activeSitePageId}
             onClose={() => setSidePanelMode(null)}

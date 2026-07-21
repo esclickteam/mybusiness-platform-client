@@ -22,6 +22,7 @@ export type VisualSitePageItem = {
   parentPageId?: string;
   menuOrder?: number;
   libraryPageTemplateId?: string;
+  pageData?: Record<string, any> | null;
   thumbnail?: string;
   html?: string;
   css?: string;

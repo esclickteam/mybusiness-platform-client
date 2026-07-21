@@ -1,4 +1,8 @@
 import { safeCssSelectorValue } from "./visualSelectors";
+import {
+  readVisualInsertedSections,
+  readVisualSectionOrder,
+} from "./visualData";
 
 export type VisualSectionOrderMap = Record<string, string[]>;
 
@@ -257,6 +261,72 @@ export function collectVisualSectionItems(
         elementId,
       });
     });
+  });
+
+  return items;
+}
+
+function labelFromSectionKey(key: string) {
+  const clean = normalizeKey(key);
+  if (!clean) return "בלוק";
+  if (clean === "header") return "כותרת עליונה";
+  if (clean === "footer") return "פוטר";
+  if (clean === "nav") return "ניווט";
+  if (clean === "hero") return "אזור פתיחה";
+  if (clean === "contact") return "יצירת קשר";
+  if (clean === "services") return "שירותים";
+  if (clean === "about") return "אודות";
+  if (clean === "projects") return "פרויקטים";
+  return clean.replace(/[-_]+/g, " ");
+}
+
+function isPinnedSectionKey(key: string) {
+  const clean = normalizeKey(key).toLowerCase();
+  return clean === "header" || clean === "footer" || clean === "nav";
+}
+
+export function collectSectionItemsFromVisualData(
+  data: Record<string, any> | null | undefined,
+  pageId: string,
+): VisualSectionItem[] {
+  if (!data || typeof data !== "object") return [];
+
+  const resolvedPageId = normalizeKey(pageId) || "home";
+  const orderMap = readVisualSectionOrder(data);
+  const preferredOrder =
+    orderMap[resolvedPageId] ||
+    (resolvedPageId === "home" ? orderMap.home : undefined) ||
+    [];
+  const inserted = readVisualInsertedSections(data);
+  const items: VisualSectionItem[] = [];
+  const seen = new Set<string>();
+
+  const pushItem = (key: string, insertedEntry?: Record<string, any>) => {
+    const normalized = normalizeKey(key);
+    if (!normalized || seen.has(normalized)) return;
+    seen.add(normalized);
+
+    const label =
+      normalizeKey(insertedEntry?.label) ||
+      normalizeKey(insertedEntry?.title) ||
+      labelFromSectionKey(normalized);
+
+    items.push({
+      id: normalized,
+      key: normalized,
+      label,
+      pinned: isPinnedSectionKey(normalized),
+      inserted: Boolean(insertedEntry),
+      elementId: normalized,
+    });
+  };
+
+  preferredOrder.forEach((key) => {
+    pushItem(key, inserted[key] as Record<string, any> | undefined);
+  });
+
+  Object.entries(inserted).forEach(([key, entry]) => {
+    pushItem(key, entry as Record<string, any>);
   });
 
   return items;
