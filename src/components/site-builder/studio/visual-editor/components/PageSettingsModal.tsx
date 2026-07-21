@@ -11,7 +11,6 @@ import {
   ExternalLink,
   Globe,
   Languages,
-  Lightbulb,
   Plus,
   Search,
   Settings2,
