@@ -378,9 +378,9 @@ function SteelMarquee({ data }: { data: Record<string, any> }) {
     getValue(data, "brandName"),
     getValue(data, "tagline"),
     getValue(data, "heroEyebrow"),
-    "PRECISION",
-    "FABRICATION",
-    "LOGISTICS",
+    "דיוק",
+    "ייצור",
+    "לוגיסטיקה",
   ];
 
   return (
@@ -555,9 +555,9 @@ function SteelServicesBand({
 
 function SteelWorkBand({ data }: { data: Record<string, any> }) {
   const workItems = [
-    ["workOneTitle", "workOneText", "PLANT / 01"],
-    ["workTwoTitle", "workTwoText", "LOGISTICS / 02"],
-    ["workThreeTitle", "workThreeText", "SYSTEMS / 03"],
+    ["workOneTitle", "workOneText", "מפעל / 01"],
+    ["workTwoTitle", "workTwoText", "לוגיסטיקה / 02"],
+    ["workThreeTitle", "workThreeText", "מערכות / 03"],
   ] as const;
 
   return (
@@ -652,8 +652,8 @@ function SteelInsightsBand({
   goTo: (page: string) => void;
 }) {
   const insights = [
-    ["insightOneTitle", "insightOneText", "FIELD REPORT 01"],
-    ["insightTwoTitle", "insightTwoText", "FIELD REPORT 02"],
+    ["insightOneTitle", "insightOneText", "דוח שטח 01"],
+    ["insightTwoTitle", "insightTwoText", "דוח שטח 02"],
   ] as const;
 
   return (
@@ -686,7 +686,7 @@ function SteelInsightsBand({
             </article>
           ))}
           <div className="border-t border-white/10 px-6 py-8 lg:border-r lg:border-t-0">
-            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">OPS NOTE</div>
+            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">הערת תפעול</div>
             <TemplateText as="p" className="mt-5 text-2xl font-black uppercase leading-tight text-[#f3f0ea]">
               לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.
             </TemplateText>
@@ -709,9 +709,9 @@ function SteelInsightsBand({
 
 function SteelContactBand({ data }: { data: Record<string, any> }) {
   const info = [
-    ["PHONE", "phone"],
-    ["EMAIL", "email"],
-    ["ADDRESS", "address"],
+    ["טלפון", "phone"],
+    ["אימייל", "email"],
+    ["כתובת", "address"],
   ] as const;
 
   return (

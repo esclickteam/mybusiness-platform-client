@@ -20,42 +20,42 @@ const collectionCards = [
     subtitle: "בדים טבעיים, צבעים בהירים וגזרות נקיות.",
     image:
       "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1200&q=90",
-    tag: "SUMMER EDIT",
+    tag: "עריכת קיץ",
   },
   {
     title: "קולקציית ערב",
     subtitle: "פריטים אלגנטיים לאירועים, ערב ויציאה.",
     image:
       "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=90",
-    tag: "EVENING LINE",
+    tag: "קו ערב",
   },
   {
     title: "סטיילינג יומיומי",
     subtitle: "מלתחה מדויקת לעבודה, פגישות ושגרה.",
     image:
       "https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=1200&q=90",
-    tag: "DAILY WEAR",
+    tag: "לבוש יום־יום",
   },
   {
     title: "קולקציית מעבר",
     subtitle: "שכבות קלות, גווני אדמה ופריטים רב־שימושיים.",
     image:
       "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1200&q=90",
-    tag: "TRANSITION",
+    tag: "מעבר עונות",
   },
   {
     title: "אקססוריז",
     subtitle: "תיקים, צעיפים ופריטים משלימים למראה שלם.",
     image:
       "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=1200&q=90",
-    tag: "ACCESSORIES",
+    tag: "אקססוריז",
   },
   {
     title: "קולקציית סטודיו",
     subtitle: "פריטים שקטים, נקיים ונוחים לשימוש יומיומי.",
     image:
       "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1200&q=90",
-    tag: "STUDIO PIECES",
+    tag: "פריטי סטודיו",
   },
 ];
 
@@ -180,7 +180,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
         <div className="relative mx-auto max-w-[1500px]">
           <Reveal className="text-center">
             <p className="text-sm tracking-[0.26em] text-black/45">
-              ATELIER NOA COLLECTIONS
+              קולקציות ATELIER NOA
             </p>
 
             <h1 className="mx-auto mt-8 max-w-5xl [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.9] tracking-[-0.06em] text-[#2b2722] md:text-[112px]">
@@ -301,7 +301,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
           <Reveal className="mb-12 flex flex-col justify-between gap-5 md:flex-row md:items-end">
             <div>
               <p className="text-sm tracking-[0.22em] text-black/45">
-                COLLECTIONS
+                קולקציות
               </p>
 
               <SerifTitle className="mt-4 text-5xl md:text-6xl">

@@ -11,12 +11,12 @@ export default function FramehausThumbnail() {
           <span className="text-sm font-bold">Framehaus</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff3b30" }}>
-          Photography Studio
+          סטודיו צילום
         </span>
       </div>
       <div className="mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#ff3b30" }}>
-          Photography Studio
+          סטודיו צילום
         </p>
         <h3 className="max-w-[220px] text-2xl font-black leading-tight">פריים אחרי פריים.</h3>
         <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#ff3b3033" }}>

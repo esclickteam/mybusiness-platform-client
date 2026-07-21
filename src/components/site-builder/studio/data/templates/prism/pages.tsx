@@ -330,7 +330,7 @@ function PrismHero({
           {[
             { color: PRISM_RED, label: getValue(data, "brandName"), textClass: "text-white" },
             { color: PRISM_BLUE, label: getValue(data, "tagline"), textClass: "text-white" },
-            { color: PRISM_YELLOW, label: "BAUHAUS", textClass: "text-black" },
+            { color: PRISM_YELLOW, label: "באוהאוס", textClass: "text-black" },
           ].map((column, index) => (
             <div
               key={`${column.label}-${index}`}
@@ -361,10 +361,10 @@ function PrismManifestoBand({ data }: { data: Record<string, any> }) {
   const items = [
     getValue(data, "brandName"),
     getValue(data, "tagline"),
-    "FORM",
-    "COLOR",
-    "MESSAGE",
-    "SYSTEM",
+    "צורה",
+    "צבע",
+    "מסר",
+    "מערכת",
   ];
 
   return (
@@ -528,7 +528,7 @@ function PrismServicesBand({
               </TemplateText>
               <div className="mt-8">
                 <PrismButton variant={index % 2 === 0 ? "blue" : "red"} onClick={() => goTo("contact")}>
-                  START PROJECT
+                  להתחיל פרויקט
                 </PrismButton>
               </div>
             </article>
@@ -641,8 +641,8 @@ function PrismInsightsBand({
   goTo: (page: string) => void;
 }) {
   const insights = [
-    ["insightOneTitle", "insightOneText", "NOTE 01", PRISM_RED],
-    ["insightTwoTitle", "insightTwoText", "NOTE 02", PRISM_BLUE],
+    ["insightOneTitle", "insightOneText", "הערה 01", PRISM_RED],
+    ["insightTwoTitle", "insightTwoText", "הערה 02", PRISM_BLUE],
   ] as const;
 
   return (
@@ -703,9 +703,9 @@ function PrismInsightsBand({
 
 function PrismContactBand({ data }: { data: Record<string, any> }) {
   const info = [
-    ["PHONE", "phone", PRISM_RED],
-    ["EMAIL", "email", PRISM_BLUE],
-    ["ADDRESS", "address", PRISM_YELLOW],
+    ["טלפון", "phone", PRISM_RED],
+    ["אימייל", "email", PRISM_BLUE],
+    ["כתובת", "address", PRISM_YELLOW],
   ] as const;
 
   return (

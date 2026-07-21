@@ -30,16 +30,16 @@ type LedgerPagesProps = {
 };
 
 const auditRows = [
-  ["FORECAST", "תכנון תזרים ותרחישים"],
-  ["REPORTING", "דוחות הנהלה וליווי תקציבי"],
-  ["CONTROL", "בקרות, מעקב וסטנדרטיזציה"],
-  ["ADVISORY", "קבלת החלטות עם הקשר עסקי"],
+  ["תחזית", "תכנון תזרים ותרחישים"],
+  ["דיווח", "דוחות הנהלה וליווי תקציבי"],
+  ["בקרה", "בקרות, מעקב וסטנדרטיזציה"],
+  ["ייעוץ", "קבלת החלטות עם הקשר עסקי"],
 ];
 
 const governanceRows = [
-  ["Board Rhythm", "פגישות סדורות, חומרים אחידים ותקציב פתוח."],
-  ["Risk Watch", "זיהוי חריגות, תרחישים והשפעה ישירה על המזומן."],
-  ["Decision Layer", "מתרגמים נתונים לשאלות הנהלה, לא רק לאקסל."],
+  ["קצב דירקטוריון", "פגישות סדורות, חומרים אחידים ותקציב פתוח."],
+  ["מעקב סיכונים", "זיהוי חריגות, תרחישים והשפעה ישירה על המזומן."],
+  ["שכבת החלטות", "מתרגמים נתונים לשאלות הנהלה, לא רק לאקסל."],
 ];
 
 const registerRows = [
@@ -410,7 +410,7 @@ function RegisterTable() {
     <section className="border-y border-[#102018]/10 bg-[#fffdf8] px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <LedgerSectionTitle
-          eyebrow="Ledger View"
+          eyebrow="תצוגת Ledger"
           title="מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק."
           text="הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה."
         />
@@ -467,9 +467,9 @@ function WorkRegister({ data }: { data: Record<string, any> }) {
 
 function ContactBoard({ data }: { data: Record<string, any> }) {
   const info = [
-    ["PHONE", getValue(data, "phone")],
-    ["EMAIL", getValue(data, "email")],
-    ["ADDRESS", getValue(data, "address")],
+    ["טלפון", getValue(data, "phone")],
+    ["אימייל", getValue(data, "email")],
+    ["כתובת", getValue(data, "address")],
   ];
 
   return (

@@ -57,7 +57,7 @@ const productNames = [
   ["שמלת ערב רכה", "שמלות"],
   ["שמלת פשתן נקייה", "שמלות"],
   ["שמלת קיץ בהירה", "שמלות"],
-  ["חולצת ATELIER", "חולצות"],
+  ["חולצת אטלייה", "חולצות"],
   ["חולצת כפתורים לבנה", "חולצות"],
   ["חולצת משי רכה", "חולצות"],
   ["חולצת בסיס איכותית", "חולצות"],
@@ -91,7 +91,7 @@ const productNames = [
   ["ז׳קט קצר", "מעילים"],
   ["חליפת SOFT", "חליפות"],
   ["סט יום־יום", "חליפות"],
-  ["תיק SHOPPER", "אקססוריז"],
+  ["תיק קניות", "אקססוריז"],
   ["שרשרת מינימלית", "אקססוריז"],
   ["צעיף סאטן", "אקססוריז"],
   ["נעלי עקב נמוך", "נעליים"],
@@ -120,9 +120,9 @@ const products: Product[] = productNames.map(([name, category], index) => {
       index % 11 === 0
         ? "חדש"
         : index % 8 === 0
-        ? "Best Seller"
+        ? "רב־מכר"
         : index % 9 === 0
-        ? "Limited"
+        ? "מוגבל"
         : undefined,
     colors:
       index % 4 === 0
@@ -345,7 +345,7 @@ export default function VelmoraShop({ onPageChange }: Props) {
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
               <div>
                 <p className="text-sm tracking-[0.24em] text-black/45">
-                  ATELIER NOA SHOP
+                  חנות ATELIER NOA
                 </p>
 
                 <h1 className="mt-6 [font-family:Georgia,Times_New_Roman,serif] text-[64px] font-normal leading-[0.95] tracking-[-0.055em] text-[#2b2722] md:text-[104px]">

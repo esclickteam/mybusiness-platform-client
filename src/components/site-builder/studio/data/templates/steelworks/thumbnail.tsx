@@ -11,12 +11,12 @@ export default function SteelworksThumbnail() {
           <span className="text-sm font-bold">Steelworks</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#ff6b2c" }}>
-          Industrial Manufacturing
+          ייצור תעשייתי
         </span>
       </div>
       <div className="mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#ff6b2c" }}>
-          Industrial Manufacturing
+          ייצור תעשייתי
         </p>
         <h3 className="max-w-[220px] text-2xl font-black leading-tight">חוזק שאפשר למדוד.</h3>
         <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#ff6b2c33" }}>

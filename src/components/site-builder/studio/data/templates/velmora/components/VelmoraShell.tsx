@@ -182,7 +182,7 @@ export default function VelmoraShell({
   const footer = mergedData.footer || {};
 
   const logoTitle = header.logoTitle || "ATELIER NOA";
-  const logoSubtitle = header.logoSubtitle || "Boutique";
+  const logoSubtitle = header.logoSubtitle || "בוטיק";
   const cartLabel = header.cartLabel || "סל קניות";
 
   const leftNavItems = Array.isArray(header.leftNav) && header.leftNav.length
@@ -241,7 +241,7 @@ export default function VelmoraShell({
             data-link-url={getVelmoraPageHref("home")}
             onClick={(event) => handleVelmoraNavClick(event, "home", onPageChange)}
             className="text-center transition duration-300 active:scale-95"
-            aria-label="Go to homepage"
+            aria-label="חזרה לדף הבית"
           >
             <p className="[font-family:Georgia,serif] text-[25px] font-normal uppercase leading-none tracking-[0.08em] text-[#27231f]">
               {logoTitle}
@@ -295,7 +295,7 @@ export default function VelmoraShell({
               data-link-url={getVelmoraPageHref("cart")}
               onClick={(event) => handleVelmoraNavClick(event, "cart", onPageChange)}
               className="relative flex h-10 w-10 items-center justify-center rounded-md border border-[#caa36d]/40 bg-[#caa36d] text-[#292318]"
-              aria-label="Open cart"
+              aria-label="פתיחת סל קניות"
             >
               <ShoppingBag className="h-5 w-5" />
 
@@ -309,7 +309,7 @@ export default function VelmoraShell({
             <button
               type="button"
               className="mr-2 flex h-10 w-10 items-center justify-center rounded-md border border-black/10 bg-white"
-              aria-label="Open menu"
+              aria-label="פתיחת תפריט"
             >
               <Menu className="h-5 w-5" />
             </button>

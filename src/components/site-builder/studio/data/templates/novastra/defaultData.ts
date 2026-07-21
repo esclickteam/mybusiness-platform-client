@@ -1,368 +1,368 @@
 export const novastraDefaultData = {
-  direction: "ltr",
+  direction: "rtl",
 
   brandName: "NOVASTRA",
-  announcement: "Exclusive gift on orders over ₪500",
-  navHome: "Home",
-  navShop: "Shop",
-  navJournal: "Journal",
-  navContact: "Contact",
+  announcement: "מתנה בלעדית בהזמנות מעל ₪500",
+  navHome: "בית",
+  navShop: "חנות",
+  navJournal: "יומן",
+  navContact: "צור קשר",
   cartLabel: "0",
 
-  megaCategories: ["New Arrivals", "Women Collection", "Men Collection"],
+  megaCategories: ["חדש בקולקציה", "קולקציית נשים", "קולקציית גברים"],
   megaCollections: ["Noir Capsule", "Orbit Essentials", "Archive Drop"],
   megaImage:
     "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=1200&q=80",
-  megaTitle: "The Midnight Drop",
-  megaText: "Tailored layers, sculpted silhouettes and limited seasonal pieces.",
+  megaTitle: "דרופ חצות",
+  megaText: "שכבות מחויטות, צלליות מפוסלות ופריטים עונתיים במהדורה מוגבלת.",
 
-  heroEyebrow: "New seasonal capsule",
-  heroTitle: "Fashion That Moves Like Midnight",
+  heroEyebrow: "קפסולה עונתית חדשה",
+  heroTitle: "אופנה שנעה כמו חצות",
   heroText:
-    "A bold fashion experience for modern labels: oversized visuals, premium product cards, editorial sections and smooth motion that feels like a high-end Webflow store.",
-  primaryCta: "Shop Collection",
-  secondaryCta: "View Journal",
-  heroBadge: "Limited Drop",
-  popularSearches: ["Noir Coat", "Orbit Set", "Oversized Tee", "New Drop"],
+    "חוויית אופנה נועזת למותגים מודרניים: ויזואלים גדולים, כרטיסי מוצר פרימיום, מקטעים עיתונאיים ותנועה חלקה שמרגישה כמו חנות Webflow יוקרתית.",
+  primaryCta: "לקולקציה",
+  secondaryCta: "ליומן האופנה",
+  heroBadge: "דרופ מוגבל",
+  popularSearches: ["מעיל Noir", "סט Orbit", "טי שירט אוברסייז", "דרופ חדש"],
 
   heroImages: [
     {
       src: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=1000&q=80",
-      alt: "Fashion model in editorial streetwear",
+      alt: "דוגמנית בלוק סטריטוור עיתונאי",
     },
     {
       src: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=1000&q=80",
-      alt: "Model wearing premium fashion look",
+      alt: "דוגמן בלוק אופנה פרימיום",
     },
     {
       src: "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=80",
-      alt: "Fashion studio portrait",
+      alt: "פורטרט אופנה בסטודיו",
     },
     {
       src: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=1000&q=80",
-      alt: "Minimal luxury fashion portrait",
+      alt: "פורטרט אופנה יוקרתי מינימליסטי",
     },
   ],
 
   marqueeItems: [],
 
-  categoryEyebrow: "Collections",
-  categoryTitle: "Built for every mood",
+  categoryEyebrow: "קולקציות",
+  categoryTitle: "מותאם לכל מצב רוח",
   categoryText:
-    "Create a premium storefront feeling without touching the old builder logic. Each block is visual, editable and responsive.",
+    "תחושת חנות פרימיום בלי לגעת בלוגיקת בנייה ישנה. כל בלוק ויזואלי, ניתן לעריכה ורספונסיבי.",
   categories: [
-   {
-  title: "Noir Capsule",
-  text: "Dark premium pieces, sharp textures and clean editorial styling.",
-  src: "https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=1000&q=80",
-  alt: "Dark fashion capsule",
-},
+    {
+      title: "Noir Capsule",
+      text: "פריטים כהים ופרימיום, טקסטורות חדות וסטיילינג עיתונאי נקי.",
+      src: "https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=1000&q=80",
+      alt: "קפסולת אופנה כהה",
+    },
     {
       title: "Orbit Essentials",
-      text: "Soft daily pieces with oversized comfort and a modern cut.",
+      text: "פריטי יום רכים עם נוחות אוברסייז וגזרה מודרנית.",
       src: "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1000&q=80",
-      alt: "Everyday premium essentials",
+      alt: "פריטי בסיס פרימיום ליום־יום",
     },
     {
       title: "Archive Drop",
-      text: "Limited edits, rare silhouettes and collectible seasonal looks.",
+      text: "עריכות מוגבלות, צלליות נדירות ולוקים עונתיים לאספנים.",
       src: "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=1000&q=80",
-      alt: "Archive fashion drop",
+      alt: "דרופ ארכיון אופנה",
     },
   ],
 
   promoCards: [
     {
-      title: "New season collection — now live",
+      title: "קולקציית העונה החדשה — עכשיו באוויר",
       src: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
-      alt: "New collection fashion model",
+      alt: "דוגמנית בקולקציה חדשה",
     },
     {
-      title: "Limited pieces crafted in small batches",
+      title: "פריטים מוגבלים שנעשו בסדרות קטנות",
       src: "https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=900&q=80",
-      alt: "Limited fashion pieces",
+      alt: "פריטי אופנה במהדורה מוגבלת",
     },
     {
-      title: "Streetwear energy with luxury finish",
+      title: "אנרגיית סטריטוור עם גימור יוקרתי",
       src: "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80",
-      alt: "Streetwear luxury editorial",
+      alt: "עריכת סטריטוור יוקרתית",
     },
     {
-      title: "Weekly arrivals for modern wardrobes",
+      title: "הגעות שבועיות למלתחה מודרנית",
       src: "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=80",
-      alt: "Modern wardrobe fashion",
+      alt: "אופנה למלתחה מודרנית",
     },
   ],
 
-  communityEyebrow: "Community",
-  communityTitle: "Worn by people who move culture",
+  communityEyebrow: "קהילה",
+  communityTitle: "נלבש על ידי אנשים שמזיזים תרבות",
   communityText:
-    "A bold social-proof block with layered imagery, floating avatars and strong stats — perfect for fashion, streetwear, beauty and lifestyle brands.",
+    "בלוק הוכחה חברתית נועז עם שכבות דימויים, אווטארים צפים וסטטיסטיקה חזקה — מושלם לאופנה, סטריטוור, יופי ולייפסטייל.",
   communityImage:
     "https://images.unsplash.com/photo-1520975954732-35dd22299614?auto=format&fit=crop&w=1400&q=80",
-  communityBadge: "Growing daily",
+  communityBadge: "גדלים כל יום",
   communityAvatars: [
     "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
     "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
   ],
   communityStats: [
-    { value: "14K+", label: "Members" },
-    { value: "98%", label: "Loved fit" },
-    { value: "24H", label: "Fast support" },
+    { value: "14K+", label: "חברים" },
+    { value: "98%", label: "אוהבים את הגזרה" },
+    { value: "24H", label: "תמיכה מהירה" },
   ],
 
-  productsEyebrow: "New arrivals",
-  productsTitle: "The latest pieces",
+  productsEyebrow: "חדש בקולקציה",
+  productsTitle: "הפריטים האחרונים",
   productsText:
-    "Product cards with large images, badges, category labels and clean pricing. You can connect it later to your store logic if needed.",
-  productBadgeFallback: "New",
+    "כרטיסי מוצר עם תמונות גדולות, תגיות, קטגוריות ותמחור נקי. אפשר לחבר אחר כך ללוגיקת החנות.",
+  productBadgeFallback: "חדש",
   products: [
     {
-      title: "The Silk Shirt",
-      category: "Cotton Shirt",
+      title: "חולצת משי",
+      category: "חולצות כותנה",
       price: "₪265",
-      badge: "New",
+      badge: "חדש",
       image:
         "https://images.unsplash.com/photo-1552374196-1ab2a1c593e8?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Oversized Blazer",
-      category: "Tailoring",
+      title: "בלייזר אוברסייז",
+      category: "חייטות",
       price: "₪420",
-      badge: "Drop",
+      badge: "דרופ",
       image:
         "https://images.unsplash.com/photo-1516762689617-e1cffcef479d?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Puffer Jacket",
-      category: "Outerwear",
+      title: "מעיל פוך",
+      category: "אורטוור",
       price: "₪590",
-      badge: "Hot",
+      badge: "חם",
       image:
         "https://images.unsplash.com/photo-1523398002811-999ca8dec234?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Classic Coat",
-      category: "Winter",
+      title: "מעיל קלאסי",
+      category: "חורף",
       price: "₪760",
-      badge: "Limited",
+      badge: "מוגבל",
       image:
         "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Soft Hoodie",
-      category: "Essentials",
+      title: "קפוצ׳ון רך",
+      category: "בסיסיים",
       price: "₪195",
-      badge: "Restock",
+      badge: "חזר למלאי",
       image:
         "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Shell Jacket",
-      category: "Streetwear",
+      title: "מעיל של",
+      category: "סטריטוור",
       price: "₪485",
-      badge: "New",
+      badge: "חדש",
       image:
         "https://images.unsplash.com/photo-1527719327859-c6ce80353573?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Patterned Coat",
-      category: "Statement",
+      title: "מעיל מודפס",
+      category: "סטייטמנט",
       price: "₪680",
-      badge: "Rare",
+      badge: "נדיר",
       image:
         "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=900&q=80",
     },
     {
-      title: "Street Jacket",
-      category: "Capsule",
+      title: "ג׳קט רחוב",
+      category: "קפסולה",
       price: "₪340",
-      badge: "Drop",
+      badge: "דרופ",
       image:
         "https://images.unsplash.com/photo-1516257984-b1b4d707412e?auto=format&fit=crop&w=900&q=80",
     },
   ],
 
-  featuredEyebrow: "Featured piece",
-  featuredTitle: "The piece you'll live in",
+  featuredEyebrow: "פריט נבחר",
+  featuredTitle: "הפריט שתלבשו כל יום",
   featuredImage:
     "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=80",
-  featuredProductLabel: "Signature drop",
-  featuredProductName: "Midnight Pullover",
-  featuredProductCategory: "Premium fleece",
+  featuredProductLabel: "דרופ חתימה",
+  featuredProductName: "פולובר חצות",
+  featuredProductCategory: "פליס פרימיום",
   featuredText:
-    "Crafted for comfort, designed to hold structure and made to sit perfectly inside a premium editorial product block.",
+    "נוצר לנוחות, מעוצב לשמירה על מבנה ומיועד לשבת מושלם בתוך בלוק מוצר עיתונאי פרימיום.",
   featuredProductImage:
     "https://images.unsplash.com/photo-1578587018452-892bacefd3f2?auto=format&fit=crop&w=1000&q=80",
-  buyCta: "Buy now",
+  buyCta: "לרכישה",
 
   benefits: [
     {
-      title: "Worldwide Shipping",
-      text: "Fast delivery blocks that make the store feel reliable and complete.",
+      title: "משלוחים לכל העולם",
+      text: "בלוקי משלוח מהירים שגורמים לחנות להרגיש אמינה ומלאה.",
     },
     {
-      title: "Secured Payment",
-      text: "Clean trust cards with icons, strong contrast and simple copy.",
+      title: "תשלום מאובטח",
+      text: "כרטיסי אמון נקיים עם אייקונים, ניגודיות חזקה וטקסט פשוט.",
     },
     {
-      title: "Free Returns",
-      text: "Flexible return messaging for premium online fashion stores.",
+      title: "החזרות חינם",
+      text: "מסר החזרה גמיש לחנויות אופנה אונליין פרימיום.",
     },
     {
-      title: "Surprise Gift",
-      text: "Promote a voucher, limited gift or member-only benefit.",
+      title: "מתנה מפתיעה",
+      text: "קידום שובר, מתנה מוגבלת או הטבה לחברים בלבד.",
     },
   ],
 
-  reviewsEyebrow: "Customer reviews",
-  reviewsTitle: "What they are saying",
+  reviewsEyebrow: "ביקורות לקוחות",
+  reviewsTitle: "מה אומרים עלינו",
   reviews: [
     {
       quote:
-        "The fit feels premium, the photos matched the product exactly, and the whole experience felt like a luxury drop.",
-      name: "Maya Cohen",
-      meta: "Customer, Tel Aviv",
+        "הגזרה מרגישה פרימיום, התמונות תאמו בדיוק למוצר, וכל החוויה הרגישה כמו דרופ יוקרתי.",
+      name: "מאיה כהן",
+      meta: "לקוחה, תל אביב",
       avatar:
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
     },
     {
       quote:
-        "Finally a clean store design with movement, strong product cards and a brand feeling that does not look basic.",
-      name: "Daniel Levi",
-      meta: "Customer, London",
+        "סוף סוף עיצוב חנות נקי עם תנועה, כרטיסי מוצר חזקים ותחושת מותג שלא נראית בסיסית.",
+      name: "דניאל לוי",
+      meta: "לקוח, לונדון",
       avatar:
         "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
     },
     {
       quote:
-        "The collection page feels editorial, not just another grid. That is exactly what made me keep scrolling.",
-      name: "Noa Ben Ami",
-      meta: "Customer, Paris",
+        "עמוד הקולקציה מרגיש עיתונאי, לא רק עוד רשת. זה בדיוק מה שגרם לי להמשיך לגלול.",
+      name: "נועה בן עמי",
+      meta: "לקוחה, פריז",
       avatar:
         "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
     },
     {
       quote:
-        "Bold, clean and modern. The layout feels expensive and the motion makes the whole site feel alive.",
-      name: "Roy Avrahami",
-      meta: "Customer, Milan",
+        "נועז, נקי ומודרני. הפריסה מרגישה יוקרתית והתנועה גורמת לכל האתר להרגיש חי.",
+      name: "רועי אברהמי",
+      meta: "לקוח, מילאנו",
       avatar:
         "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
     },
   ],
 
-  journalEyebrow: "From the journal",
-  journalTitle: "Latest journal entries",
+  journalEyebrow: "מהיומן",
+  journalTitle: "רשומות אחרונות מהיומן",
   journalText:
-    "Editorial blog cards inspired by premium fashion magazines — perfect for campaigns, trends and brand stories.",
-  journalPageTitle: "Stories behind the capsule",
+    "כרטיסי בלוג עיתונאיים בהשראת מגזיני אופנה פרימיום — מושלמים לקמפיינים, טרנדים וסיפורי מותג.",
+  journalPageTitle: "הסיפורים מאחורי הקפסולה",
   articles: [
     {
-      tag: "Trends",
-      date: "May 25, 2026",
-      title: "Best outfit ideas for casual and formal looks",
+      tag: "טרנדים",
+      date: "25 במאי 2026",
+      title: "רעיונות לוק לקז׳ואל ולפורמלי",
       excerpt:
-        "Build outfits that blend comfort, structure and standout styling for everyday moments.",
+        "בנו לוקים שמשלבים נוחות, מבנה וסטיילינג בולט לרגעי יום־יום.",
       image:
         "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1000&q=80",
     },
     {
-      tag: "Fashion",
-      date: "May 18, 2026",
-      title: "Layering ideas for modern wardrobes",
+      tag: "אופנה",
+      date: "18 במאי 2026",
+      title: "רעיונות לשכבות במלתחה מודרנית",
       excerpt:
-        "Simple layering techniques that create depth without making the outfit feel heavy.",
+        "טכניקות שכבות פשוטות שיוצרות עומק בלי להכביד על הלוק.",
       image:
         "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1000&q=80",
     },
     {
-      tag: "Style",
-      date: "May 19, 2026",
-      title: "Futuristic everyday styling",
+      tag: "סטייל",
+      date: "19 במאי 2026",
+      title: "סטיילינג עתידני ליום־יום",
       excerpt:
-        "A clean guide to sharper silhouettes, muted colors and premium streetwear styling.",
+        "מדריך נקי לצלליות חדות, צבעים עמומים וסטיילינג סטריטוור פרימיום.",
       image:
         "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80",
     },
   ],
 
-  faqEyebrow: "Need help?",
-  faqTitle: "Support and FAQ center",
+  faqEyebrow: "צריכים עזרה?",
+  faqTitle: "מרכז תמיכה ושאלות נפוצות",
   faqText:
-    "A strong FAQ block with dark contrast, smooth details and an easy support CTA.",
-  faqCta: "Let's talk",
+    "בלוק FAQ חזק עם ניגודיות כהה, פרטים חלקים וקריאה ברורה לפנייה לתמיכה.",
+  faqCta: "בואו נדבר",
   faqs: [
     {
-      question: "How do I choose the right size?",
+      question: "איך בוחרים את המידה הנכונה?",
       answer:
-        "Use the size guide on each product page and compare it with your favorite item at home. For relaxed fits, choose your usual size.",
+        "השתמשו במדריך המידות בכל עמוד מוצר והשוו לפריט האהוב עליכם בבית. לגזרות רפויות — בחרו את המידה הרגילה שלכם.",
     },
     {
-      question: "Where do you ship?",
+      question: "לאן אתם שולחים?",
       answer:
-        "The design supports global shipping copy, local pickup messages and delivery estimates per region.",
+        "העיצוב תומך בטקסט משלוח גלובלי, הודעות איסוף עצמי והערכות משלוח לפי אזור.",
     },
     {
-      question: "Can I edit the products?",
+      question: "אפשר לערוך את המוצרים?",
       answer:
-        "Yes. The template data includes an editable products array with image, title, category, badge and price.",
+        "כן. נתוני התבנית כוללים מערך מוצרים ניתן לעריכה עם תמונה, כותרת, קטגוריה, תגית ומחיר.",
     },
     {
-      question: "Can this work without a real store?",
+      question: "האם זה עובד בלי חנות אמיתית?",
       answer:
-        "Yes. It can be used as a catalog, collection page or brand landing page until checkout logic is connected.",
+        "כן. אפשר להשתמש כקטלוג, עמוד קולקציה או דף נחיתה של מותג עד שמחברים לוגיקת קופה.",
     },
   ],
 
-  newsletterEyebrow: "Unlock the drop",
-  newsletterTitle: "Get 20% off your first capsule",
+  newsletterEyebrow: "פתחו את הדרופ",
+  newsletterTitle: "קבלו 20% הנחה על הקפסולה הראשונה",
   newsletterText:
-    "Newsletter section with a strong visual area, rounded inputs and a premium conversion style.",
-  newsletterPlaceholder: "Email address",
-  newsletterButton: "Join now",
+    "סקשן ניוזלטר עם אזור ויזואלי חזק, שדות מעוגלים וסגנון המרה פרימיום.",
+  newsletterPlaceholder: "כתובת אימייל",
+  newsletterButton: "להצטרפות",
   newsletterImage:
     "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=1200&q=80",
 
-  collectionPageEyebrow: "Full collection",
-  collectionPageTitle: "Explore the newest capsule",
+  collectionPageEyebrow: "הקולקציה המלאה",
+  collectionPageTitle: "גלו את הקפסולה החדשה",
   collectionPageText:
-    "A clean collection page for all products, drops and categories. It uses the same cards as the homepage.",
+    "עמוד קולקציה נקי לכל המוצרים, הדרופים והקטגוריות. משתמש באותם כרטיסים כמו בדף הבית.",
 
-  contactEyebrow: "Contact",
-  contactTitle: "Need help finding your look?",
+  contactEyebrow: "צור קשר",
+  contactTitle: "צריכים עזרה למצוא את הלוק?",
   contactText:
-    "Use this contact page for styling questions, order support, collaborations or studio inquiries.",
+    "השתמשו בעמוד יצירת הקשר לשאלות סטיילינג, תמיכה בהזמנות, שיתופי פעולה או פניות לסטודיו.",
   contactEmail: "hello@novastra.store",
   contactPhone: "+972 50 000 0000",
-  contactAddress: "Tel Aviv · Worldwide online",
-  contactNamePlaceholder: "Your name",
-  contactEmailPlaceholder: "Email address",
-  contactSubjectPlaceholder: "Subject",
-  contactMessagePlaceholder: "Message",
-  contactButton: "Send message",
+  contactAddress: "תל אביב · אונליין לכל העולם",
+  contactNamePlaceholder: "השם שלכם",
+  contactEmailPlaceholder: "כתובת אימייל",
+  contactSubjectPlaceholder: "נושא",
+  contactMessagePlaceholder: "הודעה",
+  contactButton: "שליחת הודעה",
 
-  chatTitle: "Fashion Expert",
-  chatStatus: "Online",
+  chatTitle: "מומחה אופנה",
+  chatStatus: "מחובר/ת",
   chatMessage:
-    "Hey! Welcome to Novastra. Need help choosing a capsule, size or look? We have got this.",
+    "היי! ברוכים הבאים ל־Novastra. צריכים עזרה לבחור קפסולה, מידה או לוק? אנחנו כאן.",
 
   footerText:
-    "Redefining everyday fashion with premium silhouettes, smooth motion and a visual store experience.",
-  footerCol1Title: "Categories",
+    "מגדירים מחדש אופנה יומיומית עם צלליות פרימיום, תנועה חלקה וחוויית חנות ויזואלית.",
+  footerCol1Title: "קטגוריות",
   footerCol1Links: [
-    "Women Collection",
-    "Men Collection",
-    "Size Guide",
-    "All Products",
+    "קולקציית נשים",
+    "קולקציית גברים",
+    "מדריך מידות",
+    "כל המוצרים",
   ],
-  footerCol2Title: "Links",
-  footerCol2Links: ["Home", "Collection", "Journal", "Contact"],
-  footerCol3Title: "Utility",
-  footerCol3Links: ["License", "Changelog", "Style Guide", "Not Found"],
-  copyright: "© NOVASTRA. All rights reserved.",
-  footerCredit: "Built for Bizuply Studio",
+  footerCol2Title: "קישורים",
+  footerCol2Links: ["בית", "קולקציה", "יומן", "צור קשר"],
+  footerCol3Title: "שירות",
+  footerCol3Links: ["רישיון", "יומן שינויים", "מדריך סגנון", "לא נמצא"],
+  copyright: "© NOVASTRA. כל הזכויות שמורות.",
+  footerCredit: "נבנה עבור Bizuply Studio",
 };
 
 export type NovastraDefaultData = typeof novastraDefaultData;

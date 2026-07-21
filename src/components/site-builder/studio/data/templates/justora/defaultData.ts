@@ -13,12 +13,12 @@ export const justoraDefaultData = {
   navBlog: "מאמרים",
   navContact: "יצירת קשר",
 
-  heroEyebrow: "YOUR LEGAL ADVOCATE",
+  heroEyebrow: "הייצוג המשפטי שלכם",
   heroTitle: "מומחיות משפטית שאפשר לסמוך עליה.",
   heroSubtitle:
     "משרד עורכי דין מוביל שמעניק ייעוץ, אסטרטגיה וייצוג מקצועי לכל צורך משפטי — בדיסקרטיות, בהירות וזמינות.",
-  heroPrimaryButton: "FREE CONSULTATION",
-  heroSecondaryButton: "PRACTICE AREAS",
+  heroPrimaryButton: "ייעוץ ללא התחייבות",
+  heroSecondaryButton: "תחומי התמחות",
   heroImage:
     "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=1200&q=90",
 
@@ -38,7 +38,7 @@ export const justoraDefaultData = {
   aboutImage:
     "https://images.unsplash.com/photo-1521791055366-0d553872125f?auto=format&fit=crop&w=1400&q=85",
 
-  practiceEyebrow: "Practice Areas",
+  practiceEyebrow: "תחומי התמחות",
   practiceTitle: "מגוון תחומי התמחות משפטיים",
   practiceOneTitle: "דיני משפחה",
   practiceOneText:
@@ -53,11 +53,11 @@ export const justoraDefaultData = {
   practiceFourText:
     "ייצוג בבתי משפט, בניית אסטרטגיה משפטית, כתבי טענות וניהול תיק מקצה לקצה.",
 
-  reviewEyebrow: "Free Case Review",
+  reviewEyebrow: "בדיקת תיק ללא עלות",
   reviewTitle: "בדיקת התאמה ראשונית לפני שמתחילים הליך.",
   reviewText:
     "הלקוח משאיר פרטים, המשרד מבין את סוג המקרה וחוזר עם כיוון ראשוני ברור ומקצועי.",
-  reviewButton: "BOOK NOW",
+  reviewButton: "קביעת תור",
 
   processEyebrow: "תהליך העבודה",
   processTitle: "שלושה שלבים פשוטים שמייצרים ודאות וביטחון.",
@@ -71,7 +71,7 @@ export const justoraDefaultData = {
   processThreeText:
     "ניהול התיק, עדכונים שוטפים, ייצוג מקצועי וקבלת החלטות לאורך הדרך.",
 
-  lawyersEyebrow: "Our Lawyers",
+  lawyersEyebrow: "עורכי הדין שלנו",
   lawyersTitle: "עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר.",
 
   lawyerOneName: "עו״ד דניאל רוזן",
@@ -89,7 +89,7 @@ export const justoraDefaultData = {
   lawyerThreeImage:
     "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=900&q=90",
 
-  casesEyebrow: "Case Studies",
+  casesEyebrow: "תיקי הצלחה",
   casesTitle: "סיפורי הצלחה משפטיים",
   caseOneTitle: "הסכם משפחתי מורכב",
   caseOneText:
@@ -101,7 +101,7 @@ export const justoraDefaultData = {
   caseThreeText:
     "בדיקה משפטית וליווי חוזי שמנעו סיכונים משמעותיים לפני חתימה והבטיחו עסקה בטוחה יותר.",
 
-  testimonialsEyebrow: "Testimonials",
+  testimonialsEyebrow: "המלצות",
   testimonialsTitle: "מה לקוחות אומרים?",
   testimonialOneText:
     "הרגשנו שיש מי שמנהל את התיק בביטחון, מסביר כל שלב ולא משאיר אותנו לבד.",
@@ -113,8 +113,8 @@ export const justoraDefaultData = {
     "מקצועיות, זמינות ותחושה שיש אסטרטגיה ברורה לאורך כל הדרך.",
   testimonialThreeName: "לקוח נדל״ן",
 
-  blogEyebrow: "Articles",
-  blogTitle: "Discover our resource",
+  blogEyebrow: "מאמרים",
+  blogTitle: "גלו את מאמרי המשרד",
   postOneTitle: "מה חשוב לבדוק לפני חתימה על חוזה?",
   postOneText:
     "נקודות משפטיות שחשוב להבין לפני התחייבות כספית או עסקית, ואיך לזהות סעיפים שעלולים להפוך לסיכון.",
@@ -125,7 +125,7 @@ export const justoraDefaultData = {
   postThreeText:
     "סימנים שמראים שכדאי לקבל ייעוץ מוקדם ולא לחכות שהבעיה תגדל או תסתבך.",
 
-  faqEyebrow: "FAQ",
+  faqEyebrow: "שאלות נפוצות",
   faqTitle: "לפני שקובעים ייעוץ — כל מה שחשוב לדעת.",
   faqOneQuestion: "האם פגישת הייעוץ מחייבת המשך טיפול?",
   faqOneAnswer:
@@ -137,7 +137,7 @@ export const justoraDefaultData = {
   faqThreeAnswer:
     "זה משתנה לפי סוג ההליך, מורכבות המקרה והצדדים המעורבים. בפגישה הראשונית ניתן לקבל הערכה כללית.",
 
-  contactEyebrow: "Contact",
+  contactEyebrow: "צור קשר",
   contactTitle: "צריכים ייעוץ משפטי? נשמח לבדוק איך אפשר לעזור.",
   contactText:
     "השאירו פרטים ונחזור אליכם לשיחת התאמה ראשונית, דיסקרטית וברורה.",
@@ -149,5 +149,5 @@ export const justoraDefaultData = {
   ctaTitle: "אתר משפטי שמרגיש חד, יוקרתי ומוביל לפניות איכותיות.",
   ctaText:
     "Justora מתאימה למשרדי עורכי דין שרוצים נוכחות דיגיטלית מקצועית, אמינה ומרשימה — עם חוויית משתמש שמובילה את הלקוח לקביעת ייעוץ.",
-  ctaButton: "FREE CONSULTATION",
+  ctaButton: "ייעוץ ללא התחייבות",
 };

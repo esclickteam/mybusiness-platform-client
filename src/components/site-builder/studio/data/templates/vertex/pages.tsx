@@ -323,9 +323,9 @@ function HeroSection({
 }) {
   const stats = getStats(data).slice(0, 3);
   const heroCards = [
-    ["Latency", getValue(data, "serviceOneTitle")],
-    ["Pipeline", getValue(data, "serviceTwoTitle")],
-    ["Signal", getValue(data, "serviceFourTitle")],
+    ["השהייה", getValue(data, "serviceOneTitle")],
+    ["צנרת", getValue(data, "serviceTwoTitle")],
+    ["אות", getValue(data, "serviceFourTitle")],
   ];
 
   return (
@@ -701,9 +701,9 @@ function ContactSection({
   openInquiry: () => void;
 }) {
   const info = [
-    ["Phone", getValue(data, "phone")],
-    ["Email", getValue(data, "email")],
-    ["Location", getValue(data, "address")],
+    ["טלפון", getValue(data, "phone")],
+    ["אימייל", getValue(data, "email")],
+    ["מיקום", getValue(data, "address")],
   ];
 
   return (

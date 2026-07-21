@@ -38,7 +38,7 @@ export default function NovastraThumbnail() {
         </div>
 
         <p className="max-w-[300px] text-4xl font-black uppercase leading-[0.82] tracking-[-0.09em]">
-          Fashion That Moves Like Midnight
+          אופנה שנעה כמו חצות
         </p>
       </div>
     </div>

@@ -532,7 +532,7 @@ function Hero({
               data={data}
               dataKey="heroImage"
               label="תמונת הירו"
-              alt="Monolith hero"
+                alt="הירו Monolith"
               className="relative h-[420px] w-full object-cover lg:h-[640px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0c1a33] via-[#0c1a33]/20 to-transparent" />
@@ -669,7 +669,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
             data={data}
             dataKey="aboutImage"
             label="תמונת אודות"
-            alt="Monolith about"
+                alt="אודות Monolith"
             className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
           />
         </Reveal>

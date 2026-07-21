@@ -28,7 +28,7 @@ export const pulsecoreSeed: ReadyWebsiteTemplateSeed = {
   id: "pulsecore",
   name: "PulseCore",
   category: "fitness",
-  niche: "Fitness Studio",
+  niche: "סטודיו כושר",
   layout: "high-energy-fitness-studio",
   description:
     "תבנית פיטנס אנרגטית למאמנים, סטודיו כושר, חדרי כושר ותוכניות אימון.",

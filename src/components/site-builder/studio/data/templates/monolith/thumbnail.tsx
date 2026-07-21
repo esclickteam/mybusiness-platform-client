@@ -11,12 +11,12 @@ export default function MonolithThumbnail() {
           <span className="text-sm font-bold">Monolith</span>
         </div>
         <span className="text-[10px] font-bold uppercase tracking-[0.2em]" style={{ color: "#c8a96a" }}>
-          Corporate Advisory
+          ייעוץ ארגוני
         </span>
       </div>
       <div className="mt-10">
         <p className="mb-3 text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "#c8a96a" }}>
-          Corporate Advisory
+          ייעוץ ארגוני
         </p>
         <h3 className="max-w-[220px] text-2xl font-black leading-tight">ייעוץ ארגוני ברמת פרימיום.</h3>
         <div className="mt-6 grid grid-cols-3 gap-0 border" style={{ borderColor: "#c8a96a33" }}>

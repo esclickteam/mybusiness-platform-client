@@ -23,7 +23,7 @@ function PulsecoreThumbnail() {
       {thumbnailImage ? (
         <img
           src={thumbnailImage}
-          alt="PulseCore fitness template"
+          alt="תבנית כושר PulseCore"
           className="absolute inset-0 h-full w-full object-cover opacity-45"
         />
       ) : null}

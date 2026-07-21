@@ -73,19 +73,19 @@ const stats = [
 
 const programs = [
   {
-    title: "HIIT Burn",
+    title: "שריפת HIIT",
     text: "אימון קצר, חד ועוצמתי שמשלב דופק גבוה, כוח ותנועה מהירה.",
     icon: Flame,
     color: "#FF4D1D",
   },
   {
-    title: "Strength Lab",
+    title: "מעבדת כוח",
     text: "אימוני כוח מדויקים לבניית שריר, יציבה, שליטה וביטחון.",
     icon: Dumbbell,
     color: "#D7FF36",
   },
   {
-    title: "Mobility Flow",
+    title: "זרימת מוביליטי",
     text: "תנועה, גמישות והתאוששות כדי לשמור על גוף חזק לאורך זמן.",
     icon: HeartPulse,
     color: "#8B5CF6",
@@ -112,20 +112,20 @@ const trainers = [
 
 const plans = [
   {
-    name: "Basic",
+    name: "התחלה",
     price: "₪249",
     text: "למי שרוצה להתחיל לזוז בקצב נוח.",
     items: ["2 אימונים בשבוע", "גישה לאפליקציה", "קבוצת וואטסאפ"],
   },
   {
-    name: "Pro",
+    name: "צמיחה",
     price: "₪399",
     text: "המסלול הפופולרי למי שרוצה תוצאות עקביות.",
     items: ["אימונים ללא הגבלה", "בדיקת מדדים חודשית", "ליווי מאמן"],
     featured: true,
   },
   {
-    name: "Elite",
+    name: "עילית",
     price: "₪690",
     text: "ליווי אישי מלא למי שרוצה תוכנית מדויקת.",
     items: ["תוכנית אישית", "2 פגישות מאמן בחודש", "מעקב תזונה והרגלים"],
@@ -133,12 +133,12 @@ const plans = [
 ];
 
 const schedule = [
-  { day: "ראשון", time: "07:00", name: "HIIT Burn" },
-  { day: "ראשון", time: "19:00", name: "Strength Lab" },
-  { day: "שני", time: "18:30", name: "Mobility Flow" },
-  { day: "שלישי", time: "07:30", name: "Power Circuit" },
-  { day: "רביעי", time: "20:00", name: "HIIT Burn" },
-  { day: "חמישי", time: "18:00", name: "Strength Lab" },
+  { day: "ראשון", time: "07:00", name: "שריפת HIIT" },
+  { day: "ראשון", time: "19:00", name: "מעבדת כוח" },
+  { day: "שני", time: "18:30", name: "זרימת מוביליטי" },
+  { day: "שלישי", time: "07:30", name: "מעגל כוח" },
+  { day: "רביעי", time: "20:00", name: "שריפת HIIT" },
+  { day: "חמישי", time: "18:00", name: "מעבדת כוח" },
 ];
 
 function resolvePulsecorePageId(

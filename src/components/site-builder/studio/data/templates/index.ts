@@ -23,6 +23,7 @@ import { cycloraTemplate } from "./cyclora/meta";
 import { chanelTemplate } from "./chanel/meta";
 import { aureliaTemplate } from "./aurelia/meta";
 import { nexoraTemplate } from "./nexora/meta";
+import { fluxoraTemplate } from "./fluxora/meta";
 import { fortivaTemplate } from "./fortiva/meta";
 import { vitalisTemplate } from "./vitalis/meta";
 import { studioraTemplate } from "./studiora/meta";
@@ -60,6 +61,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   chanelTemplate,
   aureliaTemplate,
   nexoraTemplate,
+  fluxoraTemplate,
   fortivaTemplate,
   vitalisTemplate,
   studioraTemplate,

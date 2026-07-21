@@ -63,16 +63,16 @@ const motionCss = `
 `;
 
 const intensityRows = [
-  ["POWER", "אימוני כוח מדורגים עם עומסים ברורים."],
-  ["ENGINE", "בניית סיבולת וקצב עבודה יציב."],
-  ["SPEED", "חדות, קצב ותנועה אגרסיבית."],
-  ["RECOVERY", "ניהול עומס, טכניקה והחזרה ליום הבא."],
+  ["כוח", "אימוני כוח מדורגים עם עומסים ברורים."],
+  ["מנוע", "בניית סיבולת וקצב עבודה יציב."],
+  ["מהירות", "חדות, קצב ותנועה אגרסיבית."],
+  ["התאוששות", "ניהול עומס, טכניקה והחזרה ליום הבא."],
 ];
 
 const sessionRows = [
-  ["06:30", "STRONG START", "קבוצה למתאמנים שרוצים פתיחת יום מהירה."],
-  ["12:00", "MIDDAY RESET", "פורמט קצר עם דגש על איכות וטכניקה."],
-  ["19:30", "PRIME TIME", "אימון ערב עצים עם מסלול התקדמות קבוע."],
+  ["06:30", "התחלה חזקה", "קבוצה למתאמנים שרוצים פתיחת יום מהירה."],
+  ["12:00", "איפוס צהריים", "פורמט קצר עם דגש על איכות וטכניקה."],
+  ["19:30", "שעת שיא", "אימון ערב עצים עם מסלול התקדמות קבוע."],
 ];
 
 const conversionRows = [
@@ -483,7 +483,7 @@ function ScheduleBoard() {
     <section className="bg-black px-5 py-20 lg:px-8">
       <div className="mx-auto max-w-7xl">
         <KineticSectionTitle
-          eyebrow="Schedule"
+          eyebrow="מערכת שעות"
           title="עמודים בנויים להנעה מהירה לפעולה."
           text="הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג."
           light
@@ -510,9 +510,9 @@ function ScheduleBoard() {
 
 function ContactIntake({ data }: { data: Record<string, any> }) {
   const info = [
-    ["PHONE", getValue(data, "phone")],
-    ["EMAIL", getValue(data, "email")],
-    ["ADDRESS", getValue(data, "address")],
+    ["טלפון", getValue(data, "phone")],
+    ["אימייל", getValue(data, "email")],
+    ["כתובת", getValue(data, "address")],
   ];
 
   return (

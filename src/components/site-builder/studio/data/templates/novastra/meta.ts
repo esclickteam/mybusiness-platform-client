@@ -41,7 +41,7 @@ export const novastraSeed = {
   name: "Novastra",
   title: "Novastra",
   description:
-    "Premium fashion / ecommerce inspired template with collage hero, mega menu, moving banners, product grid, reviews, journal, FAQ and newsletter.",
+    "תבנית אופנה / מסחר אלקטרוני פרימיום עם הירו קולאז׳, מגה־מניו, באנרים זזים, רשת מוצרים, ביקורות, יומן, FAQ וניוזלטר.",
   category: "ecommerce",
   categoryLabel: "חנויות / אופנה",
   palette,
@@ -70,7 +70,7 @@ export const novastraTemplate = {
   categoryLabel: "חנויות / אופנה",
   badge: "חדש",
   description:
-    "תבנית אופנה פרימיום בסגנון Astral Threads: הירו קולאז׳, מגה-מניו, באנרים זזים, מוצרים, ביקורות, Journal, FAQ וניוזלטר.",
+    "תבנית אופנה פרימיום בסגנון Astral Threads: הירו קולאז׳, מגה־מניו, באנרים זזים, מוצרים, ביקורות, יומן, FAQ וניוזלטר.",
   thumbnail: NovastraThumbnail,
   preview: NovastraPreview,
   component: NovastraPages,

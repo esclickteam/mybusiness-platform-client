@@ -70,7 +70,7 @@ export const virelloDefaultData = {
     },
     {
       number: "02",
-      title: "Web עיצוב",
+      title: "עיצוב אתרים",
       icon: "◌",
       description:
         "אתרים פרימיום עם טיפוגרפיה חזקה, סקשנים יצירתיים ודגש על המרות.",
@@ -84,7 +84,7 @@ export const virelloDefaultData = {
     },
     {
       number: "04",
-      title: "SEO & שיווק",
+      title: "קידום ושיווק",
       icon: "◇",
       description:
         "אסטרטגיית צמיחה, קמפיינים ומבנה תוכן שמגדילים חשיפה ותוצאות.",
@@ -94,7 +94,7 @@ export const virelloDefaultData = {
   about: {
     kicker: "אודות",
     title:
-      "At Virello, we innovate digital solutions empowering brands to connect, grow, & lead",
+      "ב־Virello אנחנו מחדשים פתרונות דיגיטליים שמעצימים מותגים להתחבר, לצמוח ולהוביל",
     description:
       "אנחנו משלבים אסטרטגיה, עיצוב, פיתוח ותנועה כדי ליצור חוויות דיגיטליות יוקרתיות, זכירות ומכוונות תוצאה.",
     button: "עוד עלינו",
@@ -102,7 +102,7 @@ export const virelloDefaultData = {
       "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=85",
     experience: {
       value: "07",
-      label: "Years of Experience",
+      label: "שנות ניסיון",
     },
   },
 
@@ -158,21 +158,21 @@ export const virelloDefaultData = {
     },
     {
       kind: "אפליקציה",
-      title: "Ausi — אפליקציה מיתוג עיצוב",
+      title: "Ausi — עיצוב ומיתוג לאפליקציה",
       date: "09 אוגוסט, 2026",
       image:
         "https://images.unsplash.com/photo-1551650975-87deedd944c3?auto=format&fit=crop&w=1200&q=85",
     },
     {
       kind: "פרינט",
-      title: "Gio — Billboard מיתוג",
+      title: "Gio — מיתוג לשלטי חוצות",
       date: "27 פברואר, 2026",
       image:
         "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=85",
     },
     {
       kind: "מיתוג",
-      title: "Fiona — Product מיתוג",
+      title: "Fiona — מיתוג מוצר",
       date: "09 ינואר, 2026",
       image:
         "https://images.unsplash.com/photo-1557683316-973673baf926?auto=format&fit=crop&w=1200&q=85",
@@ -295,7 +295,7 @@ export const virelloDefaultData = {
     {
       number: "02",
       label: "אסטרטגיה",
-      title: "עיצוב Experiences that are Built with Precision",
+      title: "עיצוב חוויות שנבנות בדיוק ובבהירות",
       timeline: "זמן משוער — 3 ימים",
       icon: "✎",
     },
@@ -317,7 +317,7 @@ export const virelloDefaultData = {
     {
       question: "איך נקבע המחיר?",
       answer:
-        "חבילות varies depending on selected features, usage limits, service level, and the overall requirements of your business.",
+        "החבילות משתנות לפי הפיצ׳רים שנבחרים, מגבלות שימוש, רמת שירות והדרישות הכוללות של העסק.",
     },
     {
       question: "מה אפשר לבנות איתכם?",
@@ -345,7 +345,7 @@ export const virelloDefaultData = {
         "https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85",
     },
     {
-      title: "The Art and Strategy Behind Modern Digital מיתוג",
+      title: "האמנות והאסטרטגיה מאחורי מיתוג דיגיטלי מודרני",
       author: "אורן שלו",
       date: "27 פברואר, 2026",
       image:
@@ -368,7 +368,7 @@ export const virelloDefaultData = {
     button: "שליחת הודעה",
     ctaTitle: "בואו נבנה יחד נוכחות דיגיטלית שבאמת עובדת",
     ctaDescription:
-      "Ready to build a moving, premium and memorable digital brand? Let's create the next version together.",
+      "מוכנים לבנות מותג דיגיטלי נע, פרימיום ובלתי נשכח? בואו ניצור יחד את הגרסה הבאה.",
     ctaButton: "דברו איתנו",
   },
 

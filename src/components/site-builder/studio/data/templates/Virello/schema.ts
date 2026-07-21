@@ -29,7 +29,7 @@ export const adionSchema = {
           path: "brand.location",
           label: "מיקום",
           type: "text",
-          defaultValue: "California, USA",
+          defaultValue: "תל אביב, ישראל",
         },
         {
           id: "brand.address",
@@ -37,7 +37,7 @@ export const adionSchema = {
           path: "brand.address",
           label: "כתובת",
           type: "text",
-          defaultValue: "210 Wallet Street, California, Main HQ, USA",
+          defaultValue: "רחוב הברזל 12, תל אביב",
         },
         {
           id: "brand.phone",
@@ -52,7 +52,7 @@ export const adionSchema = {
 
     {
       id: "hero",
-      title: "Hero",
+      title: "הירו",
       fields: [
         {
           id: "hero.kicker",
@@ -60,7 +60,7 @@ export const adionSchema = {
           path: "hero.kicker",
           label: "תגית עליונה",
           type: "text",
-          defaultValue: "[ California, USA ]",
+          defaultValue: "[ תל אביב, ישראל ]",
         },
         {
           id: "hero.title",
@@ -76,7 +76,7 @@ export const adionSchema = {
           path: "hero.subtitle",
           label: "כותרת משנה",
           type: "textarea",
-          defaultValue: "We help you build, manage & grow your business",
+          defaultValue: "אנחנו עוזרים לבנות, לנהל ולצמוח עם העסק",
         },
         {
           id: "hero.description",
@@ -85,7 +85,7 @@ export const adionSchema = {
           label: "תיאור",
           type: "textarea",
           defaultValue:
-            "A bold digital agency template with floating cards, moving strips, creative sections, strong typography and premium visual motion.",
+            "תבנית סוכנות דיגיטלית נועזת עם כרטיסים צפים, רצועות נעות, סקשנים יצירתיים, טיפוגרפיה חזקה ותנועה ויזואלית פרימיום.",
         },
         {
           id: "hero.primaryButton",
@@ -93,7 +93,7 @@ export const adionSchema = {
           path: "hero.primaryButton",
           label: "טקסט כפתור ראשי",
           type: "text",
-          defaultValue: "Get Started",
+          defaultValue: "מתחילים עכשיו",
         },
         {
           id: "hero.badgeText",
@@ -101,7 +101,7 @@ export const adionSchema = {
           path: "hero.badgeText",
           label: "טקסט עיגול בפרונט",
           type: "text",
-          defaultValue: "1.2k Projects",
+          defaultValue: "1.2k פרויקטים",
         },
         {
           id: "hero.floatingText",
@@ -109,7 +109,7 @@ export const adionSchema = {
           path: "hero.floatingText",
           label: "טקסט צף",
           type: "text",
-          defaultValue: "Creative Studio",
+          defaultValue: "סטודיו יצירתי",
         },
       ],
     },
@@ -124,7 +124,7 @@ export const adionSchema = {
           path: "servicesTitle",
           label: "כותרת שירותים",
           type: "textarea",
-          defaultValue: "Built by us, flown by them.",
+          defaultValue: "נבנה על ידינו, מוטס על ידם.",
         },
         {
           id: "servicesDescription",
@@ -133,7 +133,7 @@ export const adionSchema = {
           label: "תיאור שירותים",
           type: "textarea",
           defaultValue:
-            "Smooth service strips, icon cards and a duplicated moving row to create the same premium moving-template feeling.",
+            "רצועות שירות חלקות, כרטיסי אייקונים ושורה נעה כפולה שיוצרים את אותה תחושת תבנית פרימיום בתנועה.",
         },
       ],
     },
@@ -148,7 +148,7 @@ export const adionSchema = {
           path: "about.kicker",
           label: "תגית אודות",
           type: "text",
-          defaultValue: "About",
+          defaultValue: "אודות",
         },
         {
           id: "about.title",
@@ -157,7 +157,7 @@ export const adionSchema = {
           label: "כותרת אודות",
           type: "textarea",
           defaultValue:
-            "At Virello, we innovate digital solutions empowering brands to connect, grow, & lead",
+            "ב־Virello אנחנו מחדשים פתרונות דיגיטליים שמעצימים מותגים להתחבר, לצמוח ולהוביל",
         },
         {
           id: "about.description",
@@ -166,7 +166,7 @@ export const adionSchema = {
           label: "תיאור אודות",
           type: "textarea",
           defaultValue:
-            "We combine strategy, design, development and motion to create digital experiences that feel premium, memorable and business-driven.",
+            "אנחנו משלבים אסטרטגיה, עיצוב, פיתוח ותנועה כדי ליצור חוויות דיגיטליות יוקרתיות, זכירות ומכוונות תוצאה עסקית.",
         },
         {
           id: "about.button",
@@ -174,7 +174,7 @@ export const adionSchema = {
           path: "about.button",
           label: "כפתור אודות",
           type: "text",
-          defaultValue: "More About Us",
+          defaultValue: "עוד עלינו",
         },
         {
           id: "about.experience.value",
@@ -190,7 +190,7 @@ export const adionSchema = {
           path: "about.experience.label",
           label: "טקסט שנות ניסיון",
           type: "text",
-          defaultValue: "Years of Experience",
+          defaultValue: "שנות ניסיון",
         },
       ],
     },
@@ -205,7 +205,7 @@ export const adionSchema = {
           path: "whyUs.kicker",
           label: "תגית",
           type: "text",
-          defaultValue: "Why Us",
+          defaultValue: "למה אנחנו",
         },
         {
           id: "whyUs.title",
@@ -213,7 +213,7 @@ export const adionSchema = {
           path: "whyUs.title",
           label: "כותרת",
           type: "textarea",
-          defaultValue: "Why Virello right for business",
+          defaultValue: "למה Virello נכון לעסק שלכם",
         },
       ],
     },
@@ -228,7 +228,7 @@ export const adionSchema = {
           path: "projects.kicker",
           label: "תגית פרויקטים",
           type: "text",
-          defaultValue: "Projects",
+          defaultValue: "פרויקטים",
         },
         {
           id: "projects.title",
@@ -236,7 +236,7 @@ export const adionSchema = {
           path: "projects.title",
           label: "כותרת פרויקטים",
           type: "textarea",
-          defaultValue: "We build great products",
+          defaultValue: "אנחנו בונים מוצרים מעולים",
         },
         {
           id: "projects.button",
@@ -244,7 +244,7 @@ export const adionSchema = {
           path: "projects.button",
           label: "כפתור פרויקטים",
           type: "text",
-          defaultValue: "All Projects",
+          defaultValue: "כל הפרויקטים",
         },
       ],
     },
@@ -259,7 +259,7 @@ export const adionSchema = {
           path: "testimonials.kicker",
           label: "תגית המלצות",
           type: "text",
-          defaultValue: "Testimonials",
+          defaultValue: "המלצות",
         },
         {
           id: "testimonials.title",
@@ -267,7 +267,7 @@ export const adionSchema = {
           path: "testimonials.title",
           label: "כותרת המלצות",
           type: "textarea",
-          defaultValue: "Don’t take our word for it",
+          defaultValue: "אל תסתמכו רק על המילה שלנו",
         },
       ],
     },
@@ -282,7 +282,7 @@ export const adionSchema = {
           path: "team.kicker",
           label: "תגית צוות",
           type: "text",
-          defaultValue: "Team",
+          defaultValue: "צוות",
         },
         {
           id: "team.title",
@@ -290,7 +290,7 @@ export const adionSchema = {
           path: "team.title",
           label: "כותרת צוות",
           type: "textarea",
-          defaultValue: "Small team, massive impact",
+          defaultValue: "צוות קטן, השפעה גדולה",
         },
       ],
     },
@@ -305,7 +305,7 @@ export const adionSchema = {
           path: "pricing.kicker",
           label: "תגית מחירים",
           type: "text",
-          defaultValue: "Pricing",
+          defaultValue: "מחירים",
         },
         {
           id: "pricing.title",
@@ -313,7 +313,7 @@ export const adionSchema = {
           path: "pricing.title",
           label: "כותרת מחירים",
           type: "textarea",
-          defaultValue: "Find the best option, choose yours",
+          defaultValue: "מצאו את האפשרות הנכונה ובחרו",
         },
         {
           id: "pricing.monthlyLabel",
@@ -321,7 +321,7 @@ export const adionSchema = {
           path: "pricing.monthlyLabel",
           label: "טקסט חודשי",
           type: "text",
-          defaultValue: "Monthly",
+          defaultValue: "חודשי",
         },
         {
           id: "pricing.yearlyLabel",
@@ -329,7 +329,7 @@ export const adionSchema = {
           path: "pricing.yearlyLabel",
           label: "טקסט שנתי",
           type: "text",
-          defaultValue: "Yearly",
+          defaultValue: "שנתי",
         },
       ],
     },
@@ -344,7 +344,7 @@ export const adionSchema = {
           path: "process.kicker",
           label: "תגית תהליך",
           type: "text",
-          defaultValue: "Process",
+          defaultValue: "תהליך",
         },
         {
           id: "process.title",
@@ -352,7 +352,7 @@ export const adionSchema = {
           path: "process.title",
           label: "כותרת תהליך",
           type: "textarea",
-          defaultValue: "Take a tour of our work process",
+          defaultValue: "הציצו לתהליך העבודה שלנו",
         },
       ],
     },
@@ -367,7 +367,7 @@ export const adionSchema = {
           path: "faq.kicker",
           label: "תגית FAQ",
           type: "text",
-          defaultValue: "Faq's",
+          defaultValue: "שאלות נפוצות",
         },
         {
           id: "faq.title",
@@ -375,7 +375,7 @@ export const adionSchema = {
           path: "faq.title",
           label: "כותרת FAQ",
           type: "textarea",
-          defaultValue: "Ask away, we're here to help",
+          defaultValue: "שאלו בחופשיות — אנחנו כאן לעזור",
         },
       ],
     },
@@ -390,7 +390,7 @@ export const adionSchema = {
           path: "blog.kicker",
           label: "תגית בלוג",
           type: "text",
-          defaultValue: "Our Blog",
+          defaultValue: "הבלוג שלנו",
         },
         {
           id: "blog.title",
@@ -398,7 +398,7 @@ export const adionSchema = {
           path: "blog.title",
           label: "כותרת בלוג",
           type: "textarea",
-          defaultValue: "Modern tips for digital growth",
+          defaultValue: "טיפים מודרניים לצמיחה דיגיטלית",
         },
         {
           id: "blog.button",
@@ -406,7 +406,7 @@ export const adionSchema = {
           path: "blog.button",
           label: "כפתור בלוג",
           type: "text",
-          defaultValue: "All Articles",
+          defaultValue: "כל המאמרים",
         },
       ],
     },
@@ -421,7 +421,7 @@ export const adionSchema = {
           path: "contact.kicker",
           label: "תגית יצירת קשר",
           type: "text",
-          defaultValue: "Contact",
+          defaultValue: "צור קשר",
         },
         {
           id: "contact.title",
@@ -429,7 +429,7 @@ export const adionSchema = {
           path: "contact.title",
           label: "כותרת יצירת קשר",
           type: "textarea",
-          defaultValue: "Let’s build something great",
+          defaultValue: "בואו נבנה משהו גדול",
         },
         {
           id: "contact.description",
@@ -438,7 +438,7 @@ export const adionSchema = {
           label: "תיאור יצירת קשר",
           type: "textarea",
           defaultValue:
-            "Leave your details and we’ll get back to you for a strategy call.",
+            "השאירו פרטים ונחזור אליכם לשיחת אסטרטגיה.",
         },
         {
           id: "contact.button",
@@ -446,7 +446,7 @@ export const adionSchema = {
           path: "contact.button",
           label: "כפתור שליחה",
           type: "text",
-          defaultValue: "Send Message",
+          defaultValue: "שליחת הודעה",
         },
         {
           id: "contact.ctaTitle",
@@ -454,7 +454,7 @@ export const adionSchema = {
           path: "contact.ctaTitle",
           label: "כותרת CTA",
           type: "textarea",
-          defaultValue: "Let’s work together or talk—we’re happy to help!",
+          defaultValue: "בואו נעבוד יחד או נדבר — נשמח לעזור!",
         },
         {
           id: "contact.ctaDescription",
@@ -463,7 +463,7 @@ export const adionSchema = {
           label: "תיאור CTA",
           type: "textarea",
           defaultValue:
-            "Ready to build a moving, premium and memorable digital brand? Let's create the next version together.",
+            "מוכנים לבנות מותג דיגיטלי נע, פרימיום ובלתי נשכח? בואו ניצור יחד את הגרסה הבאה.",
         },
         {
           id: "contact.ctaButton",
@@ -471,7 +471,7 @@ export const adionSchema = {
           path: "contact.ctaButton",
           label: "כפתור CTA",
           type: "text",
-          defaultValue: "Let's Talk",
+          defaultValue: "דברו איתנו",
         },
       ],
     },

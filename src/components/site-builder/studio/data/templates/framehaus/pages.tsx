@@ -687,9 +687,9 @@ function ContactSection({
   openInquiry: () => void;
 }) {
   const info = [
-    ["Phone", getValue(data, "phone")],
-    ["Email", getValue(data, "email")],
-    ["Studio", getValue(data, "address")],
+    ["טלפון", getValue(data, "phone")],
+    ["אימייל", getValue(data, "email")],
+    ["סטודיו", getValue(data, "address")],
   ];
 
   return (

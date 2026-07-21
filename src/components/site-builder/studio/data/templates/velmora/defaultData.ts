@@ -1,7 +1,7 @@
 export const velmoraDefaultData = {
   header: {
     logoTitle: "ATELIER NOA",
-    logoSubtitle: "Boutique",
+    logoSubtitle: "בוטיק",
     leftNav: [
       { label: "אודות", pageId: "about" },
       { label: "חנות", pageId: "shop" },

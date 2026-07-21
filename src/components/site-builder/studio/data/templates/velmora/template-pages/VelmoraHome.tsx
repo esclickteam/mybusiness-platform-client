@@ -603,7 +603,7 @@ export default function VelmoraHome({
 
               <div className="absolute bottom-6 right-6 z-[3] rounded-[4px] bg-white/90 px-5 py-4 shadow-xl backdrop-blur">
                 <p className="text-xs font-bold tracking-[0.2em] text-black/45">
-                  ATELIER EDIT
+                  עריכת ATELIER
                 </p>
                 <p className="mt-1 [font-family:Georgia,serif] text-2xl">
                   פריטים עם אופי

@@ -1658,7 +1658,7 @@ function Footer({
     {
       title: data.navDemos,
       items: [
-        ["home", "Home 1"],
+        ["home", "בית"],
         ["about", data.navAbout],
         ["gallery", data.navGallery],
       ],
@@ -1680,7 +1680,7 @@ function Footer({
       ],
     },
     {
-      title: "Info",
+      title: "מידע",
       items: [
         ["gallery", data.navGallery],
         ["contact", data.navContact],
