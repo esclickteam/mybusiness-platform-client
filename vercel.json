@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/google:file(.*).html",
-      "destination": "/api/google-html?file=google:file$1.html"
+      "source": "/:file(google[a-z0-9]+\\.html)",
+      "destination": "/api/google-html?file=:file"
     },
     {
-      "source": "/google:file([^/.]+)",
-      "destination": "/api/google-html?file=google:file$1.html"
+      "source": "/:file(google[a-z0-9]+)",
+      "destination": "/api/google-html?file=:file.html"
     },
     {
       "source": "/api/((?!google-html$).*)",
