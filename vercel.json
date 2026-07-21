@@ -40,6 +40,7 @@
   "routes": [
     { "src": "^/api/site-html$", "dest": "/api/site-html.js" },
     { "src": "^/$", "dest": "/api/site-html.js" },
+    { "src": "^/spa-shell\\.html$", "dest": "/spa-shell.html" },
     { "src": "^/api/(.*)$", "dest": "https://api.bizuply.com/api/$1" },
     { "src": "^/(.*)$", "dest": "/index.html" }
   ],
