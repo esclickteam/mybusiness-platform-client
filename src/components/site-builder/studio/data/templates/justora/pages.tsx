@@ -4,6 +4,7 @@ import {
   resolveTemplatePageId,
   useTemplatePageNavigation,
 } from "../shared/useTemplatePageNavigation";
+import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
 
 export const justoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -1733,6 +1734,8 @@ export default function JustoraPages({
       fallbackPage: "home",
       scrollOnNavigate: false,
     });
+  const libraryPage = useVisualLibraryPage();
+  const isLibraryPage = Boolean(libraryPage?.isLibraryPage);
 
   const [consultationOpen, setConsultationOpen] = useState(false);
 
@@ -1816,14 +1819,17 @@ export default function JustoraPages({
     בעבר החלפת HomePage/SimplePage מחקה סקשנים/מדיה שהעורך הזריק ל-DOM,
     והאתר הציבורי נראה שונה מהעורך. הדפים נשארים בעץ; רק מוסתרים.
   */
-  const showHome = !selectedCase && currentPage === "home";
-  const showCaseDetail = Boolean(selectedCase);
+  const showHome = !isLibraryPage && !selectedCase && currentPage === "home";
+  const showCaseDetail = !isLibraryPage && Boolean(selectedCase);
 
   return (
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "justora-preview" : "justora"}
-      data-template-page-id={currentPage}
+      data-template-page-id={
+        isLibraryPage ? libraryPage?.rawPageId || currentPage : currentPage
+      }
+      data-bizuply-library-page={isLibraryPage ? "true" : undefined}
       className="min-h-screen w-full overflow-x-hidden bg-[linear-gradient(180deg,#efe2d2_0%,#fbf3e8_42%,#f1e5d6_100%)] font-sans !text-[#2b1b1d]"
     >
       <JustoraButtonTextFix />
@@ -1852,7 +1858,8 @@ export default function JustoraPages({
         {justoraAllowedPages
           .filter((pageId) => pageId !== "home")
           .map((pageId) => {
-            const visible = !selectedCase && currentPage === pageId;
+            const visible =
+              !isLibraryPage && !selectedCase && currentPage === pageId;
 
             return (
               <div

@@ -1,5 +1,11 @@
 import React from "react";
 
+import {
+  resolveVisualLibraryStackPageId,
+  useVisualLibraryPage,
+  VISUAL_LIBRARY_STACK_ID,
+} from "./visualLibraryPage";
+
 export type VisualPagePanel = {
   id: string;
   content: React.ReactNode;
@@ -16,30 +22,53 @@ type VisualPageStackProps = {
   /** When false, skip auto insert-host (template already declares one). */
   includeInsertHost?: boolean;
   className?: string;
+  /**
+   * Optional visual data — when provided (or via VisualLibraryPageProvider),
+   * custom/library Site Pages force `__library__` so template bodies stay hidden.
+   */
+  data?: Record<string, unknown> | null;
 };
 
 /**
  * Keep-alive page stack for visual-react templates.
  * Inactive pages stay in the DOM (hidden) so editor inserts / media
  * are not wiped on navigation. Same contract as Justora.
+ *
+ * Library / blank / custom Site Pages resolve to `__library__` so no built-in
+ * template panel paints — inserted sections mount on the insert host instead.
  */
 export function VisualPageStack({
   activePageId,
   pages,
   includeInsertHost = true,
   className,
+  data,
 }: VisualPageStackProps) {
+  const libraryContext = useVisualLibraryPage();
+  const knownPageIds = pages.map((page) => page.id);
+  const effectiveActivePageId = resolveVisualLibraryStackPageId({
+    activePageId,
+    rawPageId: libraryContext?.rawPageId || activePageId,
+    data: data || libraryContext?.data || null,
+    knownPageIds,
+  });
+
+  const forceLibrary =
+    effectiveActivePageId === VISUAL_LIBRARY_STACK_ID ||
+    libraryContext?.isLibraryPage === true;
+
   return (
     <>
       <div
         data-visual-page-stack="true"
+        data-visual-library-stack={forceLibrary ? "true" : undefined}
         className={className}
       >
         {pages.map((page) => {
           const visible =
             typeof page.visible === "boolean"
               ? page.visible
-              : page.id === activePageId;
+              : !forceLibrary && page.id === effectiveActivePageId;
 
           return (
             <div

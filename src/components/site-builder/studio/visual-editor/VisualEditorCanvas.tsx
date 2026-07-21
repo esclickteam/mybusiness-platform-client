@@ -6,6 +6,8 @@ import React, {
   useState,
 } from "react";
 
+import { VisualLibraryPageProvider } from "../../runtime/visualLibraryPage";
+
 import {
   applyAllVisualDataToDom,
   markSelectedVisualElementInDom,
@@ -978,28 +980,30 @@ export default function VisualEditorCanvas({
     };
 
     return (
-      <TemplateComponent
-        data={templateData}
-        mode={isPreviewMode ? "preview" : "edit"}
-        businessId={editorAny.businessId}
-        activePageId={activePageId}
-        initialPage={activePageId}
-        initialPageId={activePageId}
-        currentPageId={activePageId}
-        pageId={activePageId}
-        page={activePageId}
-        isStudioStatic={false}
-        onPageChange={(nextPageId: string) => {
-          const id = String(nextPageId || "").trim();
-          if (!id) return;
-          if (typeof editorAny.onSelectSitePage === "function") {
-            editorAny.onSelectSitePage(
-              id,
-              (editorAny.data as Record<string, any>) || {},
-            );
-          }
-        }}
-      />
+      <VisualLibraryPageProvider pageId={activePageId} data={templateData}>
+        <TemplateComponent
+          data={templateData}
+          mode={isPreviewMode ? "preview" : "edit"}
+          businessId={editorAny.businessId}
+          activePageId={activePageId}
+          initialPage={activePageId}
+          initialPageId={activePageId}
+          currentPageId={activePageId}
+          pageId={activePageId}
+          page={activePageId}
+          isStudioStatic={false}
+          onPageChange={(nextPageId: string) => {
+            const id = String(nextPageId || "").trim();
+            if (!id) return;
+            if (typeof editorAny.onSelectSitePage === "function") {
+              editorAny.onSelectSitePage(
+                id,
+                (editorAny.data as Record<string, any>) || {},
+              );
+            }
+          }}
+        />
+      </VisualLibraryPageProvider>
     );
     // templateEpoch gates remounts; section-order-only updates skip it on purpose.
     // onPageChange reads editorAny.data at click-time, so data is not a memo dep.

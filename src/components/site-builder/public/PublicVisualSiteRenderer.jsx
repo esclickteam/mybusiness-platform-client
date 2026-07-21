@@ -8,6 +8,7 @@ import { Helmet } from "react-helmet-async";
 
 import { getStudioTemplateRenderer } from "../studio/data/templates/templateRendererRegistry";
 import { resolvePageSeoMeta } from "../studio/utils/pageSeoUtils";
+import { VisualLibraryPageProvider } from "../runtime/visualLibraryPage";
 
 import { buildVisualRuntimeCss } from "../studio/visual-editor/utils/visualCssRuntime";
 import {
@@ -627,6 +628,27 @@ function readTemplateData(site, activePage, explicitData) {
     if (blankOnly) {
       return asPlainObject(blankOnly.value);
     }
+
+    /*
+      Library pages must never fall back to richer home/site data — that leaves
+      /gallery-four with an empty insert host after template bodies are hidden.
+    */
+    const anyPageData = pageCandidates.find((candidate) => {
+      const value = asPlainObject(candidate.value);
+      return Object.keys(value).length > 0;
+    });
+    if (anyPageData) {
+      return asPlainObject(anyPageData.value);
+    }
+
+    if (Object.keys(explicit).length > 0) {
+      return explicit;
+    }
+
+    return {
+      __blankVisualPage: true,
+      __libraryPage: true,
+    };
   }
 
   if (hasMeaningfulVisualData(explicit)) {
@@ -2321,22 +2343,24 @@ export default function PublicVisualSiteRenderer({
             וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
             דרך props + applyPublicVisualData, בלי להרוס את העץ.
           */}
-          <TemplateComponent
-            key={templateKey || "template"}
-            mode="preview"
-            viewMode="public"
-            runtimeMode="public"
-            initialPage={pageId}
-            initialPageId={pageId}
-            activePageId={pageId}
-            currentPageId={pageId}
-            pageId={pageId}
-            page={pageId}
-            data={visualData}
-            templateData={visualData}
-            isPublic
-            isStudioStatic={false}
-          />
+          <VisualLibraryPageProvider pageId={pageId} data={visualData}>
+            <TemplateComponent
+              key={templateKey || "template"}
+              mode="preview"
+              viewMode="public"
+              runtimeMode="public"
+              initialPage={pageId}
+              initialPageId={pageId}
+              activePageId={pageId}
+              currentPageId={pageId}
+              pageId={pageId}
+              page={pageId}
+              data={visualData}
+              templateData={visualData}
+              isPublic
+              isStudioStatic={false}
+            />
+          </VisualLibraryPageProvider>
         </div>
 
         {customCode.enabled !== false ? (
