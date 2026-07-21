@@ -22,6 +22,8 @@ const justoraSeed = {
   priceLabel: "Premium",
   pages: justoraPages,
   defaultData: justoraDefaultData,
+  image: justoraDefaultData.heroImage,
+  previewImage: justoraDefaultData.heroImage,
 } as unknown as ReadyWebsiteTemplateSeed;
 
 export const justoraTemplate = {
@@ -34,6 +36,9 @@ export const justoraTemplate = {
   category: "business",
   categoryLabel: "עורכי דין",
   priceLabel: "Premium",
+
+  image: justoraDefaultData.heroImage,
+  previewImage: justoraDefaultData.heroImage,
 
   thumbnail: React.createElement(JustoraThumbnail),
   preview: React.createElement(JustoraPreview),

@@ -277,6 +277,7 @@ function normalizePublicBusinessSlug(value: string) {
 
   if (!clean) return "";
   if (clean === "your-business") return "";
+  if (clean.startsWith("draft-")) return "";
   if (isObjectIdLikeSlug(clean)) return "";
 
   return clean;
@@ -7249,6 +7250,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (
         !cleanSlug ||
         cleanSlug === "your-business" ||
+        cleanSlug.startsWith("draft-") ||
         !cleanSlugValid ||
         isObjectIdLikeSlug(cleanSlug)
       ) {

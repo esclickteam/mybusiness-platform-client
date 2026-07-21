@@ -1,34 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { LayoutTemplate } from "lucide-react";
 
 import type { MySiteSummary } from "../../api/mySitesApi";
 import { getTemplateCoverUrl } from "../../utils/templateCover";
-import { scheduleGalleryPreview } from "../../utils/templatePreviewScheduler";
-import IframeCardPreview from "./IframeCardPreview";
+import TemplateCardPreview, {
+  canRenderTemplatePreview,
+} from "./TemplateCardPreview";
 
 type MySiteCardPreviewProps = {
   site: MySiteSummary;
 };
 
 /**
- * My Sites card preview — same batch-loading UX as templates gallery:
- * poster paints immediately, then live embed of the real saved site mounts
- * in quick batches for every card on page open.
+ * My Sites card preview — same official template look as the gallery
+ * (cover still + live scaled template homepage), so cards match the
+ * chosen template instead of a divergent saved-site embed.
  */
 export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
-  const siteId = String(site._id || "").trim();
-  const cover =
-    String(site.thumbnailUrl || "").trim() ||
-    getTemplateCoverUrl(site.templateKey);
-
-  const [active, setActive] = useState(false);
-
-  useEffect(() => {
-    if (!siteId) return;
-
-    const subscribe = scheduleGalleryPreview(`site:${siteId}`);
-    return subscribe((isActive) => setActive(isActive));
-  }, [siteId]);
+  const templateKey = String(site.templateKey || "").trim();
+  const cover = getTemplateCoverUrl(templateKey);
+  const canLiveTemplate = canRenderTemplatePreview(templateKey);
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
@@ -52,22 +43,18 @@ export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
               {site.templateName || site.templateKey || "אתר Bizuply"}
             </p>
             <p className="mt-1 text-xs text-slate-400">
-              תצוגה מקדימה תופיע לאחר השמירה
+              תצוגה מקדימה של התבנית
             </p>
           </div>
         </div>
       )}
 
-      {!active && cover ? (
-        <div className="pointer-events-none absolute inset-0 animate-pulse bg-white/10" />
-      ) : null}
-
-      {active && siteId ? (
+      {canLiveTemplate && templateKey ? (
         <div className="absolute inset-0 bg-white">
-          <IframeCardPreview
-            src={`/embed/site/${encodeURIComponent(siteId)}`}
-            title={site.name || "תצוגה מקדימה של האתר"}
-            activateOn="immediate"
+          <TemplateCardPreview
+            templateKey={templateKey}
+            title={site.name || site.templateName || templateKey}
+            eager
           />
         </div>
       ) : null}

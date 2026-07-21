@@ -3,6 +3,14 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 
+function firstHttpUrl(...values: unknown[]) {
+  for (const value of values) {
+    const text = String(value || "").trim();
+    if (/^https?:\/\//i.test(text)) return text;
+  }
+  return "";
+}
+
 /**
  * Instant cover image for template/site cards (Webflow-style marketplace).
  * Prefer seed/meta stills so the grid paints immediately without iframes.
@@ -17,20 +25,31 @@ export function getTemplateCoverUrl(
     | {
         previewImage?: string;
         image?: string;
-        seed?: { image?: string; previewImage?: string };
+        seed?: Record<string, any>;
+        renderer?: { defaultData?: Record<string, any> };
       }
     | undefined;
 
-  const seed = getStudioTemplateSeedById(key) as
-    | { image?: string; previewImage?: string }
+  const seed = (getStudioTemplateSeedById(key) || definition?.seed || {}) as
+    | Record<string, any>
     | undefined;
 
+  const defaultData = (definition?.renderer?.defaultData ||
+    seed?.defaultData ||
+    {}) as Record<string, any>;
+
   return (
-    String(seed?.image || "").trim() ||
-    String(seed?.previewImage || "").trim() ||
-    String(definition?.previewImage || "").trim() ||
-    String(definition?.image || "").trim() ||
-    String(definition?.seed?.image || "").trim() ||
-    ""
+    firstHttpUrl(
+      seed?.image,
+      seed?.previewImage,
+      definition?.previewImage,
+      definition?.image,
+      definition?.seed?.image,
+      definition?.seed?.previewImage,
+      defaultData?.heroImage,
+      defaultData?.image,
+      defaultData?.coverImage,
+      defaultData?.previewImage,
+    ) || ""
   );
 }

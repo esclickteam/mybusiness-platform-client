@@ -63,7 +63,11 @@ function formatUpdatedAt(value?: string) {
 
 function statusLabel(site: MySiteSummary) {
   if (site.published || site.status === "published") {
-    return site.publicUrl || site.slug || "מפורסם";
+    const url = String(site.publicUrl || site.slug || "").trim();
+    if (/draft-/i.test(url)) {
+      return "מפורסם — יש לבחור כתובת קבועה";
+    }
+    return url || "מפורסם";
   }
 
   return "טיוטה — טרם פורסם";
@@ -85,6 +89,38 @@ function siteStatus(site: MySiteSummary) {
     wrapper: "border-amber-200 bg-amber-50 text-amber-700",
     dot: "bg-amber-500",
   };
+}
+
+function normalizeSiteDedupeKey(site: MySiteSummary) {
+  const templateKey = String(site.templateKey || "")
+    .trim()
+    .toLowerCase();
+  const name = String(site.name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, " ");
+  return `${templateKey}::${name}`;
+}
+
+function isPublishedSite(site: MySiteSummary) {
+  return Boolean(site.published || site.status === "published");
+}
+
+/**
+ * Hide orphan draft cards when a published site with the same
+ * template + name already exists (common after publish left a leftover draft).
+ */
+function dedupeSitesForDisplay(sites: MySiteSummary[]) {
+  const publishedKeys = new Set(
+    sites.filter(isPublishedSite).map(normalizeSiteDedupeKey),
+  );
+
+  return sites.filter((site) => {
+    if (isPublishedSite(site)) return true;
+    const key = normalizeSiteDedupeKey(site);
+    if (!key || key === "::") return true;
+    return !publishedKeys.has(key);
+  });
 }
 
 export default function MySitesPage() {
@@ -124,7 +160,7 @@ export default function MySitesPage() {
         listSiteFolders(businessId),
       ]);
 
-      setSites(nextSites);
+      setSites(dedupeSitesForDisplay(nextSites));
       setFolders(nextFolders);
     } catch (err: any) {
       setError(err?.message || "לא ניתן לטעון את האתרים כרגע");
@@ -141,10 +177,14 @@ export default function MySitesPage() {
     return () => window.clearTimeout(timer);
   }, [loadAll, query]);
 
-  // Same as templates: batch-load every site preview as soon as the list is ready
+  // Batch-load official template previews (same scheduler keys as TemplateCardPreview)
   useEffect(() => {
     if (!sites.length) return;
-    prefetchGalleryPreviewKeys(sites.map((site) => `site:${site._id}`));
+    prefetchGalleryPreviewKeys(
+      sites
+        .map((site) => String(site.templateKey || "").trim().toLowerCase())
+        .filter(Boolean),
+    );
   }, [sites]);
 
   useEffect(() => {
