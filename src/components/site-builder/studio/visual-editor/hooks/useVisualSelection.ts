@@ -607,6 +607,28 @@ function normalizeCandidateNode(
     }
   }
 
+  /*
+    Prefer the field slot/wrapper over nested inputs so contact forms
+    drag as whole boxes (header/nav already use leaf text nodes).
+  */
+  {
+    const fieldSlot = resolvedNode.closest<HTMLElement>(
+      '[data-bizuply-form-field-wrapper="true"][data-visual-edit-id], .ido-form-field-slot[data-visual-edit-id]',
+    );
+
+    if (
+      fieldSlot &&
+      canvas.contains(fieldSlot) &&
+      (resolvedNode === fieldSlot ||
+        fieldSlot.contains(resolvedNode) ||
+        ["input", "textarea", "select", "button"].includes(
+          String(resolvedNode.tagName || "").toLowerCase(),
+        ))
+    ) {
+      return fieldSlot;
+    }
+  }
+
   return resolvedNode;
 }
 

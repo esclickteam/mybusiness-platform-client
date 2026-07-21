@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import { TemplateText } from "../shared/TemplateText";
 import { idoEditorCss } from "./editorCss";
 
 export type IdoPageId =
@@ -113,10 +114,34 @@ function AnimatedTitle({
   );
 }
 
+/** Draggable field slot — inputs stay non-interactive in edit mode (canvas CSS). */
+function FormFieldSlot({
+  id,
+  label,
+  className = "",
+  children,
+}: {
+  id: string;
+  label: string;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={["ido-form-field-slot w-full", className].join(" ")}
+      data-visual-editable="true"
+      data-visual-edit-id={id}
+      data-visual-edit-type="box"
+      data-visual-edit-label={label}
+    >
+      {children}
+    </div>
+  );
+}
+
 function Header() {
   return (
     <header
-      data-visual-flow-lock="true"
       data-template-section-type="header"
       data-section-kind="header"
       data-template-section-id="header"
@@ -127,30 +152,46 @@ function Header() {
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex items-center gap-3">
-          <span
+          <TemplateText
+            as="span"
+            editId="header.logo"
+            editLabel="לוגו"
             className="grid h-10 w-10 place-items-center rounded-full bg-[#c9f4dc] text-sm font-black"
             style={{ color: "#07100e" }}
           >
             IDO
-          </span>
+          </TemplateText>
 
-          <span className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block">
+          <TemplateText
+            as="span"
+            editId="header.brand"
+            editLabel="שם המותג"
+            className="hidden text-sm font-bold tracking-[0.24em] text-white/90 sm:block"
+          >
             SOCIAL STUDIO
-          </span>
+          </TemplateText>
         </a>
 
         <nav className="hidden items-center gap-7 text-sm font-medium text-white/65 md:flex">
           <a href="#services" className="transition hover:text-[#c9f4dc]">
-            שירותים
+            <TemplateText as="span" editId="header.nav.services" editLabel="ניווט שירותים">
+              שירותים
+            </TemplateText>
           </a>
           <a href="#about" className="transition hover:text-[#c9f4dc]">
-            אודות
+            <TemplateText as="span" editId="header.nav.about" editLabel="ניווט אודות">
+              אודות
+            </TemplateText>
           </a>
           <a href="#gallery" className="transition hover:text-[#c9f4dc]">
-            קייסים
+            <TemplateText as="span" editId="header.nav.gallery" editLabel="ניווט קייסים">
+              קייסים
+            </TemplateText>
           </a>
           <a href="#booking" className="transition hover:text-[#c9f4dc]">
-            ייעוץ
+            <TemplateText as="span" editId="header.nav.booking" editLabel="ניווט ייעוץ">
+              ייעוץ
+            </TemplateText>
           </a>
         </nav>
 
@@ -159,7 +200,9 @@ function Header() {
           className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
-          קביעת שיחה
+          <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">
+            קביעת שיחה
+          </TemplateText>
         </a>
       </div>
     </header>
@@ -839,62 +882,64 @@ function Booking({
         <form
           data-ido-reveal="booking-form"
           data-bizuply-form-id="ido-booking"
+          data-bizuply-form-builder="true"
+          data-visual-editable="true"
+          data-visual-edit-id="booking.formBox"
+          data-visual-edit-type="box"
+          data-visual-edit-label="טופס יצירת קשר"
           className={[
             revealClass(formVisible, editMode ? "" : "delay-100"),
             "relative overflow-visible rounded-[2.6rem] border border-[#07100e]/10 bg-white p-6 shadow-[0_35px_110px_rgba(7,16,14,0.15)] md:p-8",
           ].join(" ")}
         >
-          <div className="grid gap-4">
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="שם מלא"
-              data-visual-editable="true"
-              data-visual-edit-type="input"
-            />
+          <div className="ido-form-fields relative flex flex-col gap-4">
+            <FormFieldSlot id="booking.form.name" label="שדה שם מלא">
+              <input
+                className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+                placeholder="שם מלא"
+              />
+            </FormFieldSlot>
 
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="טלפון"
-              data-visual-editable="true"
-              data-visual-edit-type="input"
-            />
+            <FormFieldSlot id="booking.form.phone" label="שדה טלפון">
+              <input
+                className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+                placeholder="טלפון"
+              />
+            </FormFieldSlot>
 
-            <select
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              data-visual-editable="true"
-              data-visual-edit-type="input"
-            >
-              <option>מה מעניין אותך?</option>
-              <option>ניהול סושיאל</option>
-              <option>קמפיינים ממומנים</option>
-              <option>אסטרטגיית תוכן</option>
-              <option>מיתוג דיגיטלי</option>
-            </select>
+            <FormFieldSlot id="booking.form.interest" label="שדה בחירת שירות">
+              <select className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
+                <option>מה מעניין אותך?</option>
+                <option>ניהול סושיאל</option>
+                <option>קמפיינים ממומנים</option>
+                <option>אסטרטגיית תוכן</option>
+                <option>מיתוג דיגיטלי</option>
+              </select>
+            </FormFieldSlot>
 
-            <input
-              className="h-14 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-              placeholder="תקציב חודשי משוער"
-              data-visual-editable="true"
-              data-visual-edit-type="input"
-            />
+            <FormFieldSlot id="booking.form.budget" label="שדה תקציב">
+              <input
+                className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
+                placeholder="תקציב חודשי משוער"
+              />
+            </FormFieldSlot>
 
-            <textarea
-              className="min-h-32 rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
-              placeholder="ספרו בקצרה על העסק והמטרה"
-              data-visual-editable="true"
-              data-visual-edit-type="input"
-            />
+            <FormFieldSlot id="booking.form.message" label="שדה הודעה">
+              <textarea
+                className="min-h-32 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
+                placeholder="ספרו בקצרה על העסק והמטרה"
+              />
+            </FormFieldSlot>
+
+            <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
+              <button
+                type="button"
+                className="h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+              >
+                שליחת בקשה לשיחה
+              </button>
+            </FormFieldSlot>
           </div>
-
-          <button
-            type="button"
-            className="mt-5 h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
-            data-editable="button"
-            data-visual-editable="true"
-            data-visual-edit-type="button"
-          >
-            שליחת בקשה לשיחה
-          </button>
         </form>
       </div>
     </section>
