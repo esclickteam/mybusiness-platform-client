@@ -11,7 +11,6 @@ import {
   Monitor,
   Plus,
   Redo2,
-  Save,
   Smartphone,
   Tablet,
   Undo2,
@@ -321,11 +320,22 @@ export default function VisualEditorShell({
               {templateName}
             </p>
 
-            <div className="mt-0.5 flex items-center gap-1.5 text-xs font-bold text-slate-400">
+            <button
+              type="button"
+              title="שמירה מהירה (Ctrl+S)"
+              disabled={busy}
+              onClick={handleSaveDraft}
+              className="mt-0.5 flex items-center gap-1.5 text-xs font-bold text-slate-400 transition hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-60"
+            >
               {isUploadingMedia ? (
                 <>
                   <UploadCloud className="h-3.5 w-3.5 animate-pulse text-violet-500" />
                   מעלה מדיה
+                </>
+              ) : isSaving ? (
+                <>
+                  <Cloud className="h-3.5 w-3.5 animate-pulse text-violet-500" />
+                  שומר...
                 </>
               ) : savedMessage ? (
                 <>
@@ -335,10 +345,10 @@ export default function VisualEditorShell({
               ) : (
                 <>
                   <Cloud className="h-3.5 w-3.5" />
-                  Visual React Editor
+                  נשמר בענן
                 </>
               )}
-            </div>
+            </button>
           </div>
 
           <div className="hidden items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 xl:flex">
@@ -495,27 +505,10 @@ export default function VisualEditorShell({
           <button
             type="button"
             disabled={busy}
-            onClick={handleSaveDraft}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-sm transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
-          >
-            <Save className="h-4 w-4" />
-
-            <span className="hidden sm:inline">
-              {isUploadingMedia
-                ? "מעלה..."
-                : isSaving
-                  ? "שומר..."
-                  : "שמירה"}
-            </span>
-          </button>
-
-          <button
-            type="button"
-            disabled={busy}
             onClick={handlePublish}
-            className="hidden h-11 items-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 md:inline-flex"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
-            פרסום
+            {isSaving ? "מפרסם..." : "פרסום"}
           </button>
         </div>
       </header>
