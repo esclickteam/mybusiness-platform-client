@@ -55,6 +55,11 @@ import {
   slimSitePageNavSources,
   syncSitePageTitlesIntoVisualData,
 } from "./visual-editor/utils/syncNavWithSitePages";
+import {
+  applyPageTreeMove,
+  flattenPagesInTreeOrder,
+  normalizePageMenuOrders,
+} from "./visual-editor/utils/pageHierarchyUtils";
 
 export type StudioPageSection = {
   id: string;
@@ -5322,6 +5327,10 @@ export default function WebsiteStudioPage({
                 hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
                 parentPageId:
                   String((page as any).parentPageId || "").trim() || undefined,
+                menuOrder:
+                  typeof (page as any).menuOrder === "number"
+                    ? (page as any).menuOrder
+                    : undefined,
                 seo: normalizePageSeo(page.seo),
                 clientPortal:
                   page.clientPortal || createDefaultClientPortalConfig(),
@@ -6029,7 +6038,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   const handleVisualSitePageAction = (
     action: string,
     pageId: string,
-    meta?: { parentPageId?: string },
+    meta?: {
+      parentPageId?: string;
+      targetPageId?: string;
+      placement?: "before" | "after" | "inside";
+    },
   ) => {
     const id = String(pageId || "").trim();
     if (!id) return;
@@ -6180,21 +6193,128 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       const nextParentId = String(meta?.parentPageId || "").trim();
 
-      setPages((prev) =>
-        prev.map((page) =>
-          page.id === id
-            ? ({
-                ...page,
-                parentPageId: nextParentId || undefined,
-                seo: normalizePageSeo({
-                  ...(page.seo || {}),
-                  parentPageId: nextParentId || "",
-                }),
-                updatedAt: new Date().toISOString(),
-              } as StudioSitePageWithPortal)
-            : page,
-        ),
+      setPages((prev) => {
+        const next = normalizePageMenuOrders(
+          prev.map((page) =>
+            page.id === id
+              ? ({
+                  ...page,
+                  parentPageId: nextParentId || undefined,
+                  seo: normalizePageSeo({
+                    ...(page.seo || {}),
+                    parentPageId: nextParentId || "",
+                  }),
+                  updatedAt: new Date().toISOString(),
+                } as StudioSitePageWithPortal)
+              : page,
+          ),
+        );
+        return flattenPagesInTreeOrder(next) as StudioSitePageWithPortal[];
+      });
+      return;
+    }
+
+    if (action === "addSubpage") {
+      const parentId = String(meta?.parentPageId || pageId || "").trim();
+      if (!parentId) return;
+
+      const parentPage = pages.find((page) => page.id === parentId);
+      const defaultTitle = "עמוד משנה";
+      const nextTitle = window.prompt(
+        parentPage
+          ? `שם לעמוד משנה תחת "${parentPage.title}"`
+          : "שם לעמוד המשנה",
+        defaultTitle,
       );
+      if (nextTitle == null) return;
+      const cleanTitle = String(nextTitle).trim() || defaultTitle;
+
+      const newId = uid("page");
+      const siblingCount = pages.filter(
+        (page) => String((page as any).parentPageId || "") === parentId,
+      ).length;
+
+      const slug = normalizePageSlug(cleanTitle, pages);
+      const nextVisualData = {
+        ...materializePageVisualData({
+          id: newId,
+          title: cleanTitle,
+          slug,
+          sections: [],
+        }),
+        __activePageId: newId,
+        __blankVisualPage: true,
+        __libraryPage: false,
+      };
+
+      const templateKey =
+        selectedTemplateRenderer?.key ||
+        selectedTemplateSeed?.id ||
+        "";
+
+      const nextPage: StudioSitePageWithPortal = {
+        id: newId,
+        title: cleanTitle,
+        slug,
+        type: "blank",
+        parentPageId: parentId,
+        menuOrder: siblingCount,
+        html: "",
+        css: "",
+        projectData: {
+          editorMode: "visual-react",
+          templateKey,
+          data: nextVisualData,
+          templateData: nextVisualData,
+        },
+        data: nextVisualData,
+        templateData: nextVisualData,
+        visualEditorPayload: {
+          editorMode: "visual-react",
+          templateKey,
+          data: nextVisualData,
+          templateData: nextVisualData,
+          activePageId: newId,
+        },
+        htmlSnapshot: "",
+        snapshotPageId: newId,
+        visualSnapshotVersion: 5,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        clientPortal: createDefaultClientPortalConfig(),
+      };
+
+      setPages((prev) =>
+        flattenPagesInTreeOrder(
+          normalizePageMenuOrders([...prev, nextPage]),
+        ) as StudioSitePageWithPortal[],
+      );
+      setVisualSessionData(nextVisualData);
+      setActivePageId(newId);
+      return;
+    }
+
+    if (action === "reorder") {
+      const targetPageId = String(meta?.targetPageId || "").trim();
+      const placement = meta?.placement;
+      if (!targetPageId || !placement) return;
+
+      setPages((prev) => {
+        const moved = applyPageTreeMove(prev, id, targetPageId, placement);
+        if (!moved) return prev;
+        return flattenPagesInTreeOrder(
+          normalizePageMenuOrders(
+            moved.map((page) =>
+              page.id === id || page.id === targetPageId
+                ? ({
+                    ...page,
+                    updatedAt: new Date().toISOString(),
+                  } as StudioSitePageWithPortal)
+                : page,
+            ),
+          ),
+        ) as StudioSitePageWithPortal[];
+      });
       return;
     }
 
@@ -7274,6 +7394,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
           parentPageId:
             String((page as any).parentPageId || "").trim() || undefined,
+          menuOrder:
+            typeof (page as any).menuOrder === "number"
+              ? (page as any).menuOrder
+              : undefined,
           seo: normalizePageSeo((page as any).seo),
           createdAt: page.createdAt,
           // Every save creates a new authoritative page revision.
@@ -7882,6 +8006,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     isHome: Boolean(page.isHome),
     hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
     parentPageId: String((page as any).parentPageId || "").trim() || undefined,
+    menuOrder:
+      typeof (page as any).menuOrder === "number"
+        ? (page as any).menuOrder
+        : undefined,
     html: String(page.html || ""),
     css: String(page.css || selectedTemplateRenderer?.editorCss || ""),
     libraryPageTemplateId: String(

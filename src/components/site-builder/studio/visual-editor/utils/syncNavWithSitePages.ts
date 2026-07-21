@@ -3,6 +3,7 @@ import {
   removeVisualContentItem,
   writeVisualContentItem,
 } from "./visualData";
+import { flattenPagesInTreeOrder } from "./pageHierarchyUtils";
 
 export type SitePageNavSource = {
   id?: string;
@@ -726,6 +727,8 @@ export function sortSitePagesByHeaderNavOrder<
     title?: string;
     name?: string;
     isHome?: boolean;
+    parentPageId?: string;
+    menuOrder?: number;
   },
 >(
   pages: T[] | null | undefined,
@@ -737,6 +740,16 @@ export function sortSitePagesByHeaderNavOrder<
 ): T[] {
   const list = Array.isArray(pages) ? [...pages] : [];
   if (list.length < 2) return list;
+
+  const hasHierarchy = list.some(
+    (page) =>
+      String((page as any).parentPageId || "").trim() ||
+      typeof (page as any).menuOrder === "number",
+  );
+
+  if (hasHierarchy) {
+    return flattenPagesInTreeOrder(list as any) as T[];
+  }
 
   const orderKeys: string[] = [];
   const seen = new Set<string>();

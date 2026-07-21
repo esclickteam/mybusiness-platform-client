@@ -246,6 +246,8 @@ export type StudioSitePage = {
   hiddenFromMenu?: boolean;
   /** Nest under another site page in the menu (Wix-style subpage). */
   parentPageId?: string;
+  /** Sibling order within the same parent in the site menu tree. */
+  menuOrder?: number;
   seo?: SitePageSeoSettings;
 
   createdAt?: string;
