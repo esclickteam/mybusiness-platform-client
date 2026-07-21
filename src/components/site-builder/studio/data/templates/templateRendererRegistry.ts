@@ -531,7 +531,7 @@ export const studioTemplateRendererRegistry: Record<
 
   gridline: createRenderer({
     key: "gridline",
-    name: "Gridline",
+    name: "Gala Nail Salon",
     Component: GridlinePages,
     pages: gridlinePages,
     editorMode: "visual-react",
