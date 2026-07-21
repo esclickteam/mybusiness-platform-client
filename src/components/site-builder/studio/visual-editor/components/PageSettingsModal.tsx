@@ -1364,14 +1364,16 @@ export default function PageSettingsModal({
                         value={String(
                           siteSeoDraft.googleHtmlVerificationFile || "",
                         )}
-                        onChange={(event) =>
+                        onChange={(event) => {
+                          let next = event.target.value.trim().replace(/^\/+/, "");
+                          if (/^google[a-z0-9]+$/i.test(next)) {
+                            next = `${next}.html`;
+                          }
                           setSiteSeoDraft((current) => ({
                             ...current,
-                            googleHtmlVerificationFile: event.target.value
-                              .trim()
-                              .replace(/^\/+/, ""),
-                          }))
-                        }
+                            googleHtmlVerificationFile: next,
+                          }));
+                        }}
                         className={seoFieldClass}
                         placeholder="googleXXXXXXXX.html"
                         dir="ltr"

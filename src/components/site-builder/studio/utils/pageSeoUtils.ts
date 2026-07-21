@@ -341,9 +341,13 @@ export function normalizeSiteSeoSettings(
 }
 
 function normalizeGoogleHtmlFileName(value: unknown): string {
-  const clean = safeString(value).replace(/^\/+/, "");
+  let clean = safeString(value).replace(/^\/+/, "").toLowerCase();
+  if (!clean) return "";
+  if (/^google[a-z0-9]+$/i.test(clean)) {
+    clean = `${clean}.html`;
+  }
   if (!/^google[a-z0-9]+\.html$/i.test(clean)) return "";
-  return clean.toLowerCase();
+  return clean;
 }
 
 export function normalizeSiteBrandSettings(
