@@ -19,6 +19,7 @@ import {
 import SitePluginStore from "../components/website/site-management/SitePluginStore";
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
+import SiteMorningInvoicePanel from "../components/website/site-management/SiteMorningInvoicePanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import {
   getSectionIcon,
@@ -334,6 +335,10 @@ export default function SiteManagementPanelPage() {
 
           {activeSection === "payments" && enabledSet.has("payments") ? (
             <SitePaymentsPanel businessId={businessId} />
+          ) : null}
+
+          {activeSection === "invoices" && enabledSet.has("invoices") ? (
+            <SiteMorningInvoicePanel businessId={businessId} />
           ) : null}
 
           {activeSection === "leads" && enabledSet.has("leads") ? (

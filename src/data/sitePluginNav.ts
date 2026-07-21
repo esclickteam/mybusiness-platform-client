@@ -2,6 +2,7 @@ import {
   BadgePercent,
   CalendarDays,
   CreditCard,
+  FileText,
   LayoutGrid,
   Mail,
   Puzzle,
@@ -16,6 +17,7 @@ export type SitePanelSection =
   | "store"
   | "booking"
   | "payments"
+  | "invoices"
   | "leads"
   | "reviews"
   | "club";
@@ -24,6 +26,7 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   store: "store",
   booking: "booking",
   payments: "payments",
+  invoices: "invoices",
   leads: "leads",
   reviews: "reviews",
   club: "club",
@@ -56,6 +59,11 @@ export const SECTION_META: Record<
     description: "חיבור ספקי תשלום ואמצעי סליקה",
     pluginKey: "payments",
   },
+  invoices: {
+    label: "חשבוניות Morning",
+    description: "חיבור ל-Morning והפקת חשבוניות אוטומטית",
+    pluginKey: "invoices",
+  },
   leads: {
     label: "טופס לידים",
     description: "ניהול פניות מלקוחות",
@@ -81,6 +89,8 @@ export function getPluginIcon(key: string, size = 20) {
       return CalendarDays;
     case "payments":
       return CreditCard;
+    case "invoices":
+      return FileText;
     case "leads":
       return Mail;
     case "reviews":
