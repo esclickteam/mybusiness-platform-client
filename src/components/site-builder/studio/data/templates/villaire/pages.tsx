@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { villaireDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -23,89 +23,82 @@ type Props = {
 function v(data: Record<string, any>, key: string) {
   return data?.[key] ?? (villaireDefaultData as Record<string, any>)[key] ?? "";
 }
-function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(Boolean).join(" "); }
 
-function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const [open, setOpen] = useState(false);
-  const nav = villairePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+function Header({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
-    <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
-      style={{ background: "#0a0a0af2", borderColor: "rgba(244,239,230,0.12)", backdropFilter: "blur(12px)" }}>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
-          <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "logoText")}</span>
-          <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
+    <header
+      data-template-section-type="header"
+      data-section-kind="header"
+      className="sticky top-0 z-50 border-b"
+      style={{ background: "#0a0a0af6", borderColor: "rgba(226,199,160,0.18)", backdropFilter: "blur(14px)" }}
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
+        <button type="button" onClick={() => goTo("home")} className="tpl-display text-2xl font-bold tracking-[0.08em]" style={{ color: "#f4efe6" }}>
+          {v(data, "brandName")}
         </button>
-        <nav className="hidden items-center gap-6 lg:flex">
-          {nav.map(([id, label]) => (
-            <button key={id} type="button" onClick={() => goTo(id)} className="text-sm font-semibold"
-              style={{ color: currentPage === id ? "#f4efe6" : "#a89a86" }}>{label}</button>
-          ))}
-        </nav>
-        <div className="flex items-center gap-2">
-          <button type="button" onClick={onCta} className="hidden px-5 py-2.5 text-sm font-bold sm:inline-flex"
-            style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "heroPrimary")}</button>
-          <button type="button" onClick={() => setOpen((x) => !x)} className="grid h-10 w-10 place-items-center border lg:hidden" style={{ borderColor: "rgba(244,239,230,0.12)" }}>{open ? "×" : "☰"}</button>
-        </div>
+        <button type="button" onClick={() => goTo("contact")} className="border px-5 py-2.5 text-xs font-bold tracking-[0.22em]" style={{ borderColor: "#e2c7a0", color: "#e2c7a0" }}>
+          {v(data, "heroPrimary")}
+        </button>
       </div>
-      {open ? (
-        <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
-          <div className="grid gap-1 pt-3">
-            {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
-            ))}
-          </div>
-        </div>
-      ) : null}
     </header>
   );
 }
 
-function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
+function CinemaHero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
-    <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
-      <input className={field} style={{ borderColor: "rgba(244,239,230,0.12)", color: "#f4efe6" }} placeholder="שם מלא" />
-      <input className={field} style={{ borderColor: "rgba(244,239,230,0.12)", color: "#f4efe6" }} placeholder="טלפון" />
-      <input className={field} style={{ borderColor: "rgba(244,239,230,0.12)", color: "#f4efe6" }} placeholder="אימייל" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(244,239,230,0.12)", color: "#f4efe6" }} placeholder="מה אתם מחפשים?" />
-      <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "cta")}</button>
-    </form>
+    <section className="px-5 py-16 text-center lg:px-8 lg:py-24" style={{ background: "#0a0a0a" }}>
+      <p className="tpl-rise text-xs font-bold tracking-[0.42em]" style={{ color: "#e2c7a0" }}>{v(data, "heroEyebrow")}</p>
+      <h1 className="tpl-display tpl-rise-2 mx-auto mt-7 max-w-5xl text-6xl font-bold leading-[0.9] md:text-8xl lg:text-9xl" style={{ color: "#f4efe6" }}>{v(data, "heroTitle")}</h1>
+      <div className="tpl-draw mx-auto mt-9 h-px w-48" style={{ background: "#e2c7a0" }} />
+      <p className="tpl-rise-3 mx-auto mt-8 max-w-2xl text-lg leading-8" style={{ color: "#a89a86" }}>{v(data, "heroSubtitle")}</p>
+      <div className="tpl-rise-3 mt-9 flex flex-wrap justify-center gap-3">
+        <button type="button" onClick={() => goTo("contact")} className="px-8 py-4 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("villas")} className="border px-8 py-4 text-sm font-semibold" style={{ borderColor: "rgba(226,199,160,0.3)", color: "#f4efe6" }}>{v(data, "heroSecondary")}</button>
+      </div>
+      <div className="tpl-sweep relative mx-auto mt-16 max-w-6xl overflow-hidden border" style={{ borderColor: "rgba(226,199,160,0.18)" }}>
+        <img src={v(data, "heroImage")} alt="" className="tpl-ken aspect-[21/9] w-full object-cover" />
+      </div>
+    </section>
   );
 }
 
-function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+function FeaturedVilla({ data }: { data: Record<string, any> }) {
   return (
-      <section className="relative overflow-hidden px-5 py-16 text-center lg:px-8 lg:py-24" style={{ background: "#0a0a0a" }}>
-        <p className="tpl-rise text-xs font-semibold tracking-[0.34em]" style={{ color: "#e2c7a0" }}>{v(data, "heroEyebrow")}</p>
-        <h1 className="tpl-display tpl-rise-2 mx-auto mt-6 max-w-4xl text-6xl font-bold leading-[0.95] md:text-8xl">{v(data, "heroTitle")}</h1>
-        <div className="tpl-draw mx-auto mt-8 h-px w-40" style={{ background: "#e2c7a0" }} />
-        <p className="tpl-rise-3 mx-auto mt-8 max-w-xl text-lg leading-8" style={{ color: "#a89a86" }}>{v(data, "heroSubtitle")}</p>
-        <div className="tpl-rise-3 mt-8 flex flex-wrap justify-center gap-3">
-          <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "heroPrimary")}</button>
-          <button type="button" onClick={() => goTo("villas")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(244,239,230,0.12)" }}>{v(data, "heroSecondary")}</button>
-        </div>
-        <div className="tpl-sweep relative mx-auto mt-14 max-w-6xl overflow-hidden">
-          <img src={v(data, "heroImage")} alt="" className="tpl-ken aspect-[21/9] w-full object-cover" />
-        </div>
-      </section>
-  );
-}
-
-function ItemsList({ data }: { data: Record<string, any> }) {
-  const items = [1, 2, 3].map((i) => [v(data, `item${i}Title`), v(data, `item${i}Meta`), v(data, `item${i}Text`)]);
-  return (
-    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
+    <section className="border-t px-5 py-14 lg:px-8 lg:py-20" style={{ borderColor: "rgba(226,199,160,0.16)", background: "#0a0a0a" }}>
       <div className="mx-auto max-w-7xl">
-        <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e2c7a0" }}>{v(data, "brandName")}</p>
-        <h2 className="tpl-display mt-3 text-4xl font-bold md:text-5xl">נכסים נבחרים</h2>
-        <div className="mt-10">
-          {items.map(([title, meta, text]) => (
-            <div key={title} className="grid gap-3 border-t py-8 md:grid-cols-[1.2fr_0.6fr_1.2fr] md:items-baseline" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
-              <h3 className="tpl-display text-2xl font-bold">{title}</h3>
-              <p className="text-sm font-semibold" style={{ color: "#e2c7a0" }}>{meta}</p>
-              <p className="text-base leading-7" style={{ color: "#a89a86" }}>{text}</p>
+        <div className="relative border" style={{ borderColor: "rgba(226,199,160,0.18)" }}>
+          <img src={v(data, "featuredImage")} alt="" className="h-[62vh] min-h-[390px] w-full object-cover" />
+          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, transparent 52%, rgba(10,10,10,0.82))" }} />
+          <div className="absolute inset-x-0 bottom-0 grid gap-4 border-t px-6 py-6 md:grid-cols-[1fr_auto]" style={{ borderColor: "rgba(226,199,160,0.22)", background: "rgba(10,10,10,0.78)" }}>
+            <div>
+              <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#e2c7a0" }}>{v(data, "featuredLabel")}</p>
+              <h2 className="tpl-display mt-2 text-4xl font-bold md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "featuredTitle")}</h2>
             </div>
+            <p className="max-w-md self-end text-base leading-7" style={{ color: "#a89a86" }}>{v(data, "featuredCaption")}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VillaLedger({ data }: { data: Record<string, any> }) {
+  const villas = [1, 2, 3, 4].map((i) => ({
+    name: v(data, `villa${i}Name`),
+    rooms: v(data, `villa${i}Rooms`),
+    action: v(data, `villa${i}Action`),
+  }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(226,199,160,0.16)", background: "#0a0a0a" }}>
+      <div className="mx-auto max-w-5xl">
+        <p className="text-center text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>{v(data, "ledgerEyebrow")}</p>
+        <div className="mt-10 border-t" style={{ borderColor: "rgba(226,199,160,0.24)" }}>
+          {villas.map((villa, index) => (
+            <button key={villa.name} type="button" className="tpl-rise grid w-full gap-4 border-b py-6 text-right md:grid-cols-[1fr_0.5fr_0.6fr] md:items-center" style={{ borderColor: "rgba(226,199,160,0.18)", animationDelay: `${index * 0.07}s` }}>
+              <span className="tpl-display text-3xl font-bold" style={{ color: "#f4efe6" }}>{villa.name}</span>
+              <span className="text-sm tracking-[0.22em]" style={{ color: "#a89a86" }}>{villa.rooms}</span>
+              <span className="text-left text-xs font-bold tracking-[0.26em]" style={{ color: "#e2c7a0" }}>{villa.action}</span>
+            </button>
           ))}
         </div>
       </div>
@@ -113,76 +106,84 @@ function ItemsList({ data }: { data: Record<string, any> }) {
   );
 }
 
-function AboutBlock({ data }: { data: Record<string, any> }) {
+function ChampagnePrinciples({ data }: { data: Record<string, any> }) {
+  const principles = [1, 2, 3].map((i) => ({
+    title: v(data, `principle${i}Title`),
+    text: v(data, `principle${i}Text`),
+  }));
   return (
-    <section className="border-t" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e2c7a0" }}>אודות</p>
-          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
-          <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#a89a86" }}>{v(data, "aboutText")}</p>
-        </div>
-        <div className="min-h-[360px] overflow-hidden"><img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" /></div>
-      </div>
-    </section>
-  );
-}
-
-function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  return (
-    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(244,239,230,0.12)", background: "#141414" }}>
-      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(226,199,160,0.16)", background: "#111111" }}>
+      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr]">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e2c7a0" }}>יצירת קשר</p>
-          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
-          <p className="mt-6 text-lg leading-8" style={{ color: "#a89a86" }}>{v(data, "contactText")}</p>
-          <div className="mt-8 space-y-2 text-sm" style={{ color: "#a89a86" }}>
-            <p>{v(data, "phone")}</p>
-            <p>{v(data, "email")}</p>
-            <p>{v(data, "address")}</p>
-          </div>
+          <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>ARCHITECTURE</p>
+          <h2 className="tpl-display mt-4 text-5xl font-bold leading-none md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "principlesTitle")}</h2>
         </div>
-        <ContactForm data={data} onCta={onCta} />
+        <div className="grid gap-8">
+          {principles.map((principle) => (
+            <article key={principle.title} className="border-l-2 pl-8" style={{ borderColor: "#e2c7a0" }}>
+              <h3 className="tpl-display text-3xl font-bold" style={{ color: "#f4efe6" }}>{principle.title}</h3>
+              <p className="mt-3 max-w-2xl text-lg leading-8" style={{ color: "#a89a86" }}>{principle.text}</p>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function Footer({ data }: { data: Record<string, any> }) {
+function NarrowInquiry({ data }: { data: Record<string, any> }) {
+  const field = "border bg-transparent px-4 py-3.5 text-center outline-none";
   return (
-    <footer className="border-t px-5 py-8 lg:px-8" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm md:flex-row md:items-center md:justify-between" style={{ color: "#a89a86" }}>
-        <span className="tpl-display text-lg font-bold" style={{ color: "#f4efe6" }}>{v(data, "brandName")}</span>
-        <span>{v(data, "email")} · {v(data, "phone")}</span>
+    <section className="border-t px-5 py-16 text-center lg:px-8 lg:py-24" style={{ borderColor: "rgba(226,199,160,0.16)", background: "#0a0a0a" }}>
+      <div className="mx-auto max-w-xl">
+        <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>PRIVATE REQUEST</p>
+        <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "contactTitle")}</h2>
+        <p className="mx-auto mt-5 max-w-md text-base leading-7" style={{ color: "#a89a86" }}>{v(data, "contactText")}</p>
+        <form className="mt-10 grid gap-3" onSubmit={(e) => e.preventDefault()}>
+          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="שם" />
+          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="טלפון" />
+          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="איזו וילה אתם מדמיינים?" />
+          <button type="button" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "cta")}</button>
+        </form>
+      </div>
+    </section>
+  );
+}
+
+function ThinFooter({ data }: { data: Record<string, any> }) {
+  return (
+    <footer className="border-t px-5 py-7 lg:px-8" style={{ borderColor: "rgba(226,199,160,0.18)", background: "#050505" }}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 text-xs tracking-[0.22em] md:flex-row md:items-center md:justify-between" style={{ color: "#a89a86" }}>
+        <span className="tpl-display text-xl tracking-normal" style={{ color: "#f4efe6" }}>{v(data, "brandName")}</span>
+        <span>{v(data, "footerLine")}</span>
+        <span>{v(data, "email")}</span>
       </div>
     </footer>
   );
 }
 
-function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+function HomePage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <Hero data={data} goTo={goTo} onCta={onCta} />
-      <ItemsList data={data} />
-      <AboutBlock data={data} />
-      <ContactBlock data={data} onCta={onCta} />
-      <Footer data={data} />
+      <CinemaHero data={data} goTo={goTo} />
+      <FeaturedVilla data={data} />
+      <VillaLedger data={data} />
+      <ChampagnePrinciples data={data} />
+      <NarrowInquiry data={data} />
+      <ThinFooter data={data} />
     </>
   );
 }
 
-function InnerPage({ data, title, children, onCta }: { data: Record<string, any>; title: string; children: React.ReactNode; onCta: () => void }) {
+function InnerPage({ data, title, children }: { data: Record<string, any>; title: string; children: React.ReactNode }) {
   return (
     <>
-      <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(244,239,230,0.12)" }}>
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e2c7a0" }}>{v(data, "brandName")}</p>
-          <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{title}</h1>
-        </div>
+      <section className="border-b px-5 py-20 text-center lg:px-8" style={{ borderColor: "rgba(226,199,160,0.16)" }}>
+        <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>{v(data, "brandName")}</p>
+        <h1 className="tpl-display mt-5 text-6xl font-bold md:text-7xl" style={{ color: "#f4efe6" }}>{title}</h1>
       </section>
       {children}
-      <ContactBlock data={data} onCta={onCta} />
-      <Footer data={data} />
+      <ThinFooter data={data} />
     </>
   );
 }
@@ -197,20 +198,15 @@ export default function VillairePages({
     { allowedPages, fallbackPage: "home" },
   );
   const pageContent: Record<string, React.ReactNode> = {
-    home: <HomePage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    home: <HomePage data={merged} goTo={goTo} />,
+    villas: <InnerPage data={merged} title="וילות"><FeaturedVilla data={merged} /><VillaLedger data={merged} /></InnerPage>,
+    architecture: <InnerPage data={merged} title="אדריכלות"><ChampagnePrinciples data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title="אודות"><ChampagnePrinciples data={merged} /><FeaturedVilla data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title="יצירת קשר"><NarrowInquiry data={merged} /></InnerPage>,
   };
-  for (const pg of villairePages) {
-    if (pg.id === "home") continue;
-    pageContent[pg.id] = (
-      <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
-        {pg.id.includes("contact") ? null : <ItemsList data={merged} />}
-      </InnerPage>
-    );
-  }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "villaire-preview" : "villaire"} className="min-h-screen w-full overflow-x-hidden"
-      style={{ background: "#0a0a0a", color: "#f4efe6" }}>
-      <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
+    <div dir="rtl" data-template-id={mode === "preview" ? "villaire-preview" : "villaire"} className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>
+      <Header data={merged} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>
   );
