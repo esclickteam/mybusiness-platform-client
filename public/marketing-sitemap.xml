@@ -5,7 +5,7 @@
   xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
                       http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 
-  <!-- 🏠 Homepage -->
+  <!-- Homepage -->
   <url>
     <loc>https://bizuply.com/</loc>
     <lastmod>2025-10-14</lastmod>
@@ -13,7 +13,7 @@
     <priority>1.0</priority>
   </url>
 
-  <!-- 🚀 Product Pages -->
+  <!-- Product Pages -->
   <url>
     <loc>https://bizuply.com/how-it-works</loc>
     <lastmod>2025-10-14</lastmod>
@@ -42,7 +42,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- 🏢 Company Pages -->
+  <!-- Company Pages -->
   <url>
     <loc>https://bizuply.com/about</loc>
     <lastmod>2025-10-14</lastmod>
@@ -71,7 +71,7 @@
     <priority>0.7</priority>
   </url>
 
-  <!-- 💬 Support Pages -->
+  <!-- Support Pages -->
   <url>
     <loc>https://bizuply.com/faq</loc>
     <lastmod>2025-10-14</lastmod>
@@ -86,7 +86,7 @@
     <priority>0.8</priority>
   </url>
 
-  <!-- ⚖️ Legal Pages -->
+  <!-- Legal Pages -->
   <url>
     <loc>https://bizuply.com/terms</loc>
     <lastmod>2025-10-14</lastmod>
@@ -108,7 +108,7 @@
     <priority>0.4</priority>
   </url>
 
-  <!-- 🔎 Search -->
+  <!-- Search -->
   <url>
     <loc>https://bizuply.com/search</loc>
     <lastmod>2025-10-14</lastmod>

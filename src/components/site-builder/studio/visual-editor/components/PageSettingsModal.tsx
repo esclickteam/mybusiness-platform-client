@@ -500,10 +500,20 @@ export default function PageSettingsModal({
     }));
   };
 
-  const siteBaseUrl = (publicUrl || buildPublicSiteUrl(siteSlug)).replace(
-    /\/+$/,
-    "",
-  );
+  const siteBaseUrl = (() => {
+    const raw = String(publicUrl || buildPublicSiteUrl(siteSlug) || "").trim();
+    if (!raw) return "";
+    try {
+      // Always origin only — never /business/.../dashboard from the studio URL bar.
+      const parsed = new URL(raw.includes("://") ? raw : `https://${raw}`);
+      return `${parsed.protocol}//${parsed.host}`.replace(/\/+$/, "");
+    } catch {
+      return raw
+        .replace(/^https?:\/\//i, "https://")
+        .replace(/\/(business|admin|dashboard)(\/.*)?$/i, "")
+        .replace(/\/+$/, "");
+    }
+  })();
 
   const verificationCode = String(
     siteSeoDraft.googleSiteVerification || "",
@@ -1300,7 +1310,11 @@ export default function PageSettingsModal({
                       </p>
                       <p className="text-xs font-semibold text-slate-500">
                         העתיקו את הכתובת המדויקת מכאן → הדביקו בשדה של גוגל →
-                        לחצו "המשך".
+                        לחצו "המשך". חשוב: רק כתובת האתר הציבורית — בלי{" "}
+                        <span className="font-black" dir="ltr">
+                          /business/.../dashboard
+                        </span>
+                        .
                       </p>
                       {publicUrlIsPlaceholder ? (
                         <p className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
@@ -1443,7 +1457,11 @@ export default function PageSettingsModal({
                     <li>
                       למעלה בשורת{" "}
                       <span className="font-black">בדיקת כתובת URL</span>{" "}
-                      הדביקו את כתובת האתר → Enter → לחצו{" "}
+                      הדביקו רק את כתובת האתר הציבורית (
+                      <span className="font-black" dir="ltr">
+                        {siteBaseUrl || "https://yoursite.sites.bizuply.com"}
+                      </span>
+                      ) — לא את כתובת הדשבורד — ואז Enter →{" "}
                       <span className="font-black">
                         הגש בקשה ליצירת אינדקס
                       </span>

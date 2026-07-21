@@ -37,8 +37,8 @@ ${staticPages.map(createUrlXml).join('')}
     fs.mkdirSync(outputDir, { recursive: true });
   }
 
-  fs.writeFileSync(path.join(outputDir, 'sitemap.xml'), sitemap.trim(), 'utf8');
-  console.log('Sitemap generated at public/sitemap.xml');
+  fs.writeFileSync(path.join(outputDir, 'marketing-sitemap.xml'), sitemap.trim(), 'utf8');
+  console.log('Sitemap generated at public/marketing-sitemap.xml');
 }
 
 generateSitemap();

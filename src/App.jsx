@@ -155,6 +155,19 @@ function getMiniSiteSlugFromHost() {
   return hostname.replace(suffix, "");
 }
 
+/** App/dashboard paths that must never appear on a public customer site URL. */
+function isInternalAppPath(pathname) {
+  const path = String(pathname || "").toLowerCase();
+  return (
+    path.startsWith("/business/") ||
+    path.startsWith("/admin") ||
+    path.startsWith("/staff") ||
+    path.startsWith("/client") ||
+    path.startsWith("/dashboard") ||
+    path.includes("/dashboard/")
+  );
+}
+
 function PublicMiniSitePage() {
   const location = useLocation();
 
@@ -192,7 +205,15 @@ function PublicMiniSitePage() {
 
     try {
       const host = window.location.host;
-      const pathname = pathnameOverride || window.location.pathname || "/";
+      let pathname = pathnameOverride || window.location.pathname || "/";
+
+      // Keep public site URLs clean (never /business/.../dashboard).
+      if (isInternalAppPath(pathname)) {
+        if (window.location.pathname !== "/") {
+          window.history.replaceState({}, "", "/");
+        }
+        pathname = "/";
+      }
 
       if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
         const seoPath =
@@ -431,6 +452,10 @@ function PublicMiniSitePage() {
       }
 
       const nextPath = nextUrl.pathname || "/";
+      // Ignore internal BizUply app links that leaked into public site HTML.
+      if (isInternalAppPath(nextPath)) {
+        return;
+      }
       const nextPathWithSearch = `${nextPath}${nextUrl.search || ""}`;
       const currentPathWithSearch = `${window.location.pathname}${window.location.search}`;
 
