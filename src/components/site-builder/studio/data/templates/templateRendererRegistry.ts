@@ -103,6 +103,31 @@ import { fluxoraEditorCss } from "./fluxora/editorCss";
 import { fluxoraSchema } from "./fluxora/schema";
 import { fluxoraDefaultData } from "./fluxora/defaultData";
 
+import MeridianPages, { meridianPages } from "./meridian/pages";
+import { meridianEditorCss } from "./meridian/editorCss";
+import { meridianSchema } from "./meridian/schema";
+import { meridianDefaultData } from "./meridian/defaultData";
+
+import CinderPages, { cinderPages } from "./cinder/pages";
+import { cinderEditorCss } from "./cinder/editorCss";
+import { cinderSchema } from "./cinder/schema";
+import { cinderDefaultData } from "./cinder/defaultData";
+
+import VesperaPages, { vesperaPages } from "./vespera/pages";
+import { vesperaEditorCss } from "./vespera/editorCss";
+import { vesperaSchema } from "./vespera/schema";
+import { vesperaDefaultData } from "./vespera/defaultData";
+
+import ArboraPages, { arboraPages } from "./arbora/pages";
+import { arboraEditorCss } from "./arbora/editorCss";
+import { arboraSchema } from "./arbora/schema";
+import { arboraDefaultData } from "./arbora/defaultData";
+
+import SolennePages, { solennePages } from "./solenne/pages";
+import { solenneEditorCss } from "./solenne/editorCss";
+import { solenneSchema } from "./solenne/schema";
+import { solenneDefaultData } from "./solenne/defaultData";
+
 import FortivaPages, { fortivaPages } from "./fortiva/pages";
 import { fortivaEditorCss } from "./fortiva/editorCss";
 import { fortivaSchema } from "./fortiva/schema";
@@ -510,6 +535,61 @@ export const studioTemplateRendererRegistry: Record<
     schema: fluxoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: fluxoraDefaultData as unknown as Record<string, any>,
     editorCss: fluxoraEditorCss,
+  }),
+
+  meridian: createRenderer({
+    key: "meridian",
+    name: "Meridian",
+    Component: MeridianPages,
+    pages: meridianPages,
+    editorMode: "visual-react",
+    schema: meridianSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: meridianDefaultData as unknown as Record<string, any>,
+    editorCss: meridianEditorCss,
+  }),
+
+  cinder: createRenderer({
+    key: "cinder",
+    name: "Cinder",
+    Component: CinderPages,
+    pages: cinderPages,
+    editorMode: "visual-react",
+    schema: cinderSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: cinderDefaultData as unknown as Record<string, any>,
+    editorCss: cinderEditorCss,
+  }),
+
+  vespera: createRenderer({
+    key: "vespera",
+    name: "Vespera",
+    Component: VesperaPages,
+    pages: vesperaPages,
+    editorMode: "visual-react",
+    schema: vesperaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vesperaDefaultData as unknown as Record<string, any>,
+    editorCss: vesperaEditorCss,
+  }),
+
+  arbora: createRenderer({
+    key: "arbora",
+    name: "Arbora",
+    Component: ArboraPages,
+    pages: arboraPages,
+    editorMode: "visual-react",
+    schema: arboraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: arboraDefaultData as unknown as Record<string, any>,
+    editorCss: arboraEditorCss,
+  }),
+
+  solenne: createRenderer({
+    key: "solenne",
+    name: "Solenne",
+    Component: SolennePages,
+    pages: solennePages,
+    editorMode: "visual-react",
+    schema: solenneSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: solenneDefaultData as unknown as Record<string, any>,
+    editorCss: solenneEditorCss,
   }),
 
   fortiva: createRenderer({
