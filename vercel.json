@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "api/public-html.js",
+      "src": "serverless/public-html.js",
       "use": "@vercel/node"
     }
   ],
@@ -38,10 +38,9 @@
     }
   ],
   "rewrites": [
-    { "source": "/", "destination": "/api/public-html" },
-    { "source": "/api/public-html", "destination": "/api/public-html" },
+    { "source": "/", "destination": "/serverless/public-html" },
     { "source": "/api/:path*", "destination": "https://api.bizuply.com/api/:path*" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/((?!serverless/).*)", "destination": "/" }
   ],
   "cleanUrls": true,
   "trailingSlash": false

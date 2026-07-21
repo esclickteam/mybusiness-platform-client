@@ -1,6 +1,8 @@
 /**
  * Serves the SPA HTML shell with Google Search Console verification meta
  * injected for customer site hosts. GSC reads raw HTML and does not wait for React.
+ *
+ * Mounted outside `/api/*` so Vercel does not proxy it to the Railway backend.
  */
 
 const SEO_HEAD_URL =
@@ -101,10 +103,6 @@ export default async function handler(req, res) {
 
   let html = "";
   try {
-    /*
-      `/index.html` is a real static file from the Vite build, so Vercel serves
-      it without hitting the SPA catch-all rewrite (avoids a loop).
-    */
     const indexRes = await fetch(`${proto}://${host}/index.html`, {
       headers: { accept: "text/html" },
     });
@@ -112,7 +110,7 @@ export default async function handler(req, res) {
     if (!indexRes.ok || !html.includes("<html")) {
       throw new Error(`index.html status ${indexRes.status}`);
     }
-  } catch (error) {
+  } catch {
     res.statusCode = 502;
     res.setHeader("content-type", "text/plain; charset=utf-8");
     res.end("Failed to load site HTML shell");
@@ -125,9 +123,15 @@ export default async function handler(req, res) {
   res.statusCode = 200;
   res.setHeader("content-type", "text/html; charset=utf-8");
   res.setHeader("cache-control", "public, max-age=0, must-revalidate");
+  res.setHeader("x-bizuply-seo-inject", verificationHeader(seo));
   if (req.method === "HEAD") {
     res.end();
     return;
   }
   res.end(html);
+}
+
+function verificationHeader(seo) {
+  const token = String(seo?.googleSiteVerification || "").trim();
+  return token ? "1" : "0";
 }
