@@ -7,6 +7,10 @@
       "config": {
         "distDir": "dist"
       }
+    },
+    {
+      "src": "api/google-html.js",
+      "use": "@vercel/node"
     }
   ],
   "headers": [
@@ -33,17 +37,18 @@
       ]
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/google:file(.*).html",
-      "destination": "https://api.bizuply.com/api/site-builder/public/by-host/google-html?file=google:file$1.html"
+      "src": "^/google([a-z0-9]+)\\.html$",
+      "dest": "/api/google-html.js?file=google$1.html"
     },
     {
-      "source": "/google:file([^/.]+)",
-      "destination": "https://api.bizuply.com/api/site-builder/public/by-host/google-html?file=google:file$1.html"
+      "src": "^/google([a-z0-9]+)$",
+      "dest": "/api/google-html.js?file=google$1.html"
     },
-    { "source": "/api/:path*", "destination": "https://api.bizuply.com/api/:path*" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    { "src": "^/api/google-html$", "dest": "/api/google-html.js" },
+    { "src": "^/api/(.*)$", "dest": "https://api.bizuply.com/api/$1" },
+    { "src": "^/(.*)$", "dest": "/index.html" }
   ],
   "cleanUrls": false,
   "trailingSlash": false
