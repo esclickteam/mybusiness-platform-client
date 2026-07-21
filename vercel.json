@@ -38,9 +38,13 @@
       "source": "/google:file(.*).html",
       "destination": "https://api.bizuply.com/api/site-builder/public/by-host/google-html?file=google:file$1.html"
     },
+    {
+      "source": "/google:file([^/.]+)",
+      "destination": "https://api.bizuply.com/api/site-builder/public/by-host/google-html?file=google:file$1.html"
+    },
     { "source": "/api/:path*", "destination": "https://api.bizuply.com/api/:path*" },
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
-  "cleanUrls": true,
+  "cleanUrls": false,
   "trailingSlash": false
 }

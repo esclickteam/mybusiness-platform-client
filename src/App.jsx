@@ -224,6 +224,33 @@ function PublicMiniSitePage() {
         return;
       }
 
+      const googleHtmlMatch = pathname.match(/^\/(google[a-z0-9]+)(\.html)?$/i);
+      if (googleHtmlMatch) {
+        const file = `${googleHtmlMatch[1].toLowerCase()}.html`;
+        const seoUrl = `${API_SITE_BUILDER_BASE_URL}/public/by-host/google-html?host=${encodeURIComponent(
+          host
+        )}&file=${encodeURIComponent(file)}&_fresh=${Date.now()}`;
+
+        const seoRes = await fetch(seoUrl, {
+          method: "GET",
+          credentials: "include",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const seoContent = await seoRes.text();
+
+        if (sequence !== requestRef.current.sequence) return;
+
+        setSeoDocument({
+          type: "text",
+          content: seoContent,
+        });
+        setSite(null);
+        siteRef.current = null;
+        setError("");
+        return;
+      }
+
       setSeoDocument(null);
 
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(

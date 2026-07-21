@@ -1,18 +1,30 @@
 /**
  * Serve Google Search Console HTML verification files from the BizUply API.
- * Matcher is file-only so homepage routing stays untouched.
+ * Handles both `/google….html` and `/google…` (cleanUrls-stripped) paths.
  */
 export const config = {
-  matcher: ["/google:path*.html"],
+  matcher: ["/google:path*"],
 };
+
+function normalizeGoogleFile(pathname) {
+  let file = String(pathname || "")
+    .replace(/^\/+/, "")
+    .toLowerCase();
+  if (!file) return "";
+  if (/^google[a-z0-9]+$/i.test(file)) {
+    file = `${file}.html`;
+  }
+  if (!/^google[a-z0-9]+\.html$/i.test(file)) return "";
+  return file;
+}
 
 export default async function middleware(request) {
   const host = String(request.headers.get("host") || "")
     .split(":")[0]
     .toLowerCase();
-  const file = new URL(request.url).pathname.replace(/^\/+/, "").toLowerCase();
+  const file = normalizeGoogleFile(new URL(request.url).pathname);
 
-  if (!host || !/^google[a-z0-9]+\.html$/i.test(file)) {
+  if (!host || !file) {
     return;
   }
 
@@ -29,7 +41,8 @@ export default async function middleware(request) {
       status: apiRes.status,
       headers: {
         "content-type": "text/html; charset=utf-8",
-        "cache-control": "public, max-age=60, must-revalidate",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-google-html": apiRes.ok ? "1" : "0",
       },
     });
   } catch {
