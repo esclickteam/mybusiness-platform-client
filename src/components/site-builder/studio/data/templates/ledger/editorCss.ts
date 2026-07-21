@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const ledgerEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="ledger"] .ledger-hero-grid {
   background-image: linear-gradient(#0d5c4522 1px, transparent 1px), linear-gradient(90deg, #0d5c4522 1px, transparent 1px);

@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const horizonEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="horizon"] .horizon-hero-grid {
   background-image: linear-gradient(#b8956b22 1px, transparent 1px), linear-gradient(90deg, #b8956b22 1px, transparent 1px);

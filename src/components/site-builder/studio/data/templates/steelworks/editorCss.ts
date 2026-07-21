@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const steelworksEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="steelworks"] .steelworks-hero-grid {
   background-image: linear-gradient(#ff6b2c22 1px, transparent 1px), linear-gradient(90deg, #ff6b2c22 1px, transparent 1px);

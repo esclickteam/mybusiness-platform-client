@@ -18,7 +18,7 @@ import {
   type RectPageDef,
   type RectTemplateNavProps,
   type RectTheme,
-} from "./rectTemplateKit";
+} from "./rectTemplateParts";
 
 export type RectLayoutVariant =
   | "gridline"

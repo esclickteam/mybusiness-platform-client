@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const vertexEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="vertex"] .vertex-hero-grid {
   background-image: linear-gradient(#00ff8822 1px, transparent 1px), linear-gradient(90deg, #00ff8822 1px, transparent 1px);

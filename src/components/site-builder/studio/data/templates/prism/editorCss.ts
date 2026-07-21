@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const prismEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="prism"] .prism-hero-grid {
   background-image: linear-gradient(#0057ff22 1px, transparent 1px), linear-gradient(90deg, #0057ff22 1px, transparent 1px);

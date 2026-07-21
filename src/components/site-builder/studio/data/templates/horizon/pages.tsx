@@ -1,4 +1,4 @@
-import { createRectTemplatePages } from "../shared/createRectTemplatePages";
+import { createRectTemplatePages } from "../shared/createRectTemplatePagesFactory";
 import { horizonDefaultData } from "./defaultData";
 import { horizonEditorCss } from "./editorCss";
 

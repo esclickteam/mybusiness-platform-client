@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const framehausEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="framehaus"] .framehaus-hero-grid {
   background-image: linear-gradient(#ff3b3022 1px, transparent 1px), linear-gradient(90deg, #ff3b3022 1px, transparent 1px);

@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const monolithEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="monolith"] .monolith-hero-grid {
   background-image: linear-gradient(#c8a96a22 1px, transparent 1px), linear-gradient(90deg, #c8a96a22 1px, transparent 1px);

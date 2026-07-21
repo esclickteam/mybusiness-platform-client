@@ -1,4 +1,4 @@
-import { createRectTemplatePages } from "../shared/createRectTemplatePages";
+import { createRectTemplatePages } from "../shared/createRectTemplatePagesFactory";
 import { kineticDefaultData } from "./defaultData";
 import { kineticEditorCss } from "./editorCss";
 

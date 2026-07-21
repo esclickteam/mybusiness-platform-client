@@ -1,4 +1,4 @@
-export const rectEditorCssBase = `
+export const rectTemplateEditorCssBase = `
 [data-rect-reveal] {
   will-change: transform, opacity;
 }

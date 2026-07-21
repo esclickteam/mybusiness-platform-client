@@ -1,7 +1,7 @@
-import { rectEditorCssBase } from "../shared/rectEditorCssBase";
+import { rectTemplateEditorCssBase } from "../shared/rectTemplateEditorCssBase";
 
 export const gridlineEditorCss = `
-${rectEditorCssBase}
+${rectTemplateEditorCssBase}
 
 [data-template-id="gridline"] .gridline-hero-grid {
   background-image: linear-gradient(#11111122 1px, transparent 1px), linear-gradient(90deg, #11111122 1px, transparent 1px);
