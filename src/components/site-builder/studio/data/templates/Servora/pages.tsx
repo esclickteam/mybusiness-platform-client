@@ -642,6 +642,8 @@ function Header({
                       const childActive = Boolean(
                         activeNavPage && activeNavPage === childPage,
                       );
+                      const knownTemplatePage =
+                        isServoraTemplatePageId(childPage);
                       return (
                         <a
                           key={`${childPage}-${childIndex}`}
@@ -652,9 +654,33 @@ function Header({
                           }`}
                           aria-current={childActive ? "page" : undefined}
                           data-site-page-id={String(child.__sitePageId || "")}
-                          onClick={(event) =>
-                            handleNavClick(event, childPage)
-                          }
+                          data-visual-link-href={childHref}
+                          data-bizuply-public-href={childHref}
+                          data-link-url={childHref}
+                          data-bizuply-public-link="true"
+                          onClick={(event) => {
+                            if (
+                              event.currentTarget.getAttribute(
+                                "data-visual-inline-editing",
+                              ) === "true" ||
+                              event.currentTarget.getAttribute(
+                                "contenteditable",
+                              ) === "true"
+                            ) {
+                              return;
+                            }
+
+                            /*
+                              Nested Site Pages must use real URLs. Template
+                              normalizePage() only knows built-in ids and would
+                              incorrectly send users back to home.
+                            */
+                            if (!knownTemplatePage && childHref && childHref !== "#") {
+                              return;
+                            }
+
+                            handleNavClick(event, childPage);
+                          }}
                         >
                           {String(child.label || childPage)}
                         </a>

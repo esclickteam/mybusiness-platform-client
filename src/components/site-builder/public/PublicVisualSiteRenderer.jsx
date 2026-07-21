@@ -114,6 +114,13 @@ body {
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
+  overflow: visible;
+}
+
+nav,
+[data-template-section-type="header"],
+[data-section-kind="header"] {
+  overflow: visible;
 }
 
 [data-bizuply-nav-item] > :first-child {
@@ -157,6 +164,7 @@ body {
   border-radius: 0.65rem;
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
   z-index: 80;
+  pointer-events: auto;
 }
 
 [data-bizuply-nav-item].is-open > [data-bizuply-nav-submenu="true"],
@@ -169,7 +177,24 @@ body {
   [data-bizuply-nav-item] > [data-bizuply-nav-submenu="true"] {
     position: absolute;
     inset-inline-start: 0;
-    top: calc(100% + 0.35rem);
+    top: 100%;
+    padding-top: 0.55rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  [data-bizuply-nav-item] > [data-bizuply-nav-submenu="true"]::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0.55rem;
+    bottom: 0;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 0.65rem;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+    z-index: -1;
   }
 }
 
@@ -2094,6 +2119,31 @@ export default function PublicVisualSiteRenderer({
       });
     });
 
+    const handleSubmenuNavigate = (event) => {
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+
+      const anchor = target.closest(
+        '[data-bizuply-nav-submenu="true"] a[href], [data-bizuply-nav-submenu="true"] [data-bizuply-public-href]',
+      );
+
+      if (!(anchor instanceof Element) || !root.contains(anchor)) return;
+
+      const href = normalizePublicHref(
+        anchor.getAttribute("data-bizuply-public-href") ||
+          anchor.getAttribute("data-visual-link-href") ||
+          anchor.getAttribute("data-link-url") ||
+          (anchor.matches("a") ? anchor.getAttribute("href") : "") ||
+          "",
+      );
+
+      if (!href || href === "#") return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      navigatePublicLink(href, "_self");
+    };
+
     const handleClick = (event) => {
       if (
         event.defaultPrevented ||
@@ -2141,6 +2191,9 @@ export default function PublicVisualSiteRenderer({
       navigatePublicLink(link.href, link.target);
     };
 
+    // Capture phase so nested menu links navigate even if a template
+    // onClick preventDefault + SPA normalizePage would otherwise swallow them.
+    root.addEventListener("click", handleSubmenuNavigate, true);
     root.addEventListener("click", handleClick);
     root.addEventListener("keydown", handleKeyDown);
 
@@ -2166,6 +2219,7 @@ export default function PublicVisualSiteRenderer({
 
     return () => {
       mutationObserver?.disconnect();
+      root.removeEventListener("click", handleSubmenuNavigate, true);
       root.removeEventListener("click", handleClick);
       root.removeEventListener("keydown", handleKeyDown);
     };

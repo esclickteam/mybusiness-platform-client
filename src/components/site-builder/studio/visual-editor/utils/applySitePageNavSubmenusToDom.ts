@@ -18,6 +18,7 @@ const NAV_SUBMENU_CSS = `
   display: inline-flex;
   flex-direction: column;
   align-items: stretch;
+  overflow: visible;
 }
 
 [${WRAPPER_ATTR}] > :first-child {
@@ -61,6 +62,7 @@ const NAV_SUBMENU_CSS = `
   border-radius: 0.65rem;
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
   z-index: 80;
+  pointer-events: auto;
 }
 
 [${WRAPPER_ATTR}].is-open > [${SUBMENU_ATTR}="true"],
@@ -73,7 +75,25 @@ const NAV_SUBMENU_CSS = `
   [${WRAPPER_ATTR}] > [${SUBMENU_ATTR}="true"] {
     position: absolute;
     inset-inline-start: 0;
-    top: calc(100% + 0.35rem);
+    /* Keep hover bridge: no empty gap between trigger and menu */
+    top: 100%;
+    padding-top: 0.55rem;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+  }
+
+  [${WRAPPER_ATTR}] > [${SUBMENU_ATTR}="true"]::before {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0.55rem;
+    bottom: 0;
+    background: #ffffff;
+    border: 1px solid rgba(15, 23, 42, 0.1);
+    border-radius: 0.65rem;
+    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+    z-index: -1;
   }
 }
 
