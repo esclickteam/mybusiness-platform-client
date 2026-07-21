@@ -106,6 +106,9 @@ export function SiteTemplateNav({
               data-site-page-id={String(item.__sitePageId || "")}
             >
               {label}
+              {hasSubpages ? (
+                <span data-bizuply-nav-chevron="true" aria-hidden="true" />
+              ) : null}
             </a>
           ) : (
             <button
@@ -119,6 +122,9 @@ export function SiteTemplateNav({
               data-site-page-id={String(item.__sitePageId || "")}
             >
               {label}
+              {hasSubpages ? (
+                <span data-bizuply-nav-chevron="true" aria-hidden="true" />
+              ) : null}
             </button>
           );
 
@@ -134,44 +140,50 @@ export function SiteTemplateNav({
           >
             {trigger}
             <div data-bizuply-nav-submenu="true" role="menu">
-              {subpages.map((child, childIndex) => {
-                const childPageId = getPageId(child) || `child-${childIndex}`;
-                const childLabel = resolveNavLabelFromSitePages(
-                  child,
-                  sitePages,
-                  { previousTitleById },
-                );
-                const childHref =
-                  getHref?.(child, childPageId) ||
-                  String(child.href || "").trim() ||
-                  `/${childPageId}`;
-                const childActive = Boolean(
-                  currentPage && currentPage === childPageId,
-                );
+              <div data-bizuply-nav-submenu-panel="true">
+                {subpages.map((child, childIndex) => {
+                  const childPageId = getPageId(child) || `child-${childIndex}`;
+                  const childLabel = resolveNavLabelFromSitePages(
+                    child,
+                    sitePages,
+                    { previousTitleById },
+                  );
+                  const childHref =
+                    getHref?.(child, childPageId) ||
+                    String(child.href || "").trim() ||
+                    `/${childPageId}`;
+                  const childActive = Boolean(
+                    currentPage && currentPage === childPageId,
+                  );
 
-                return as === "a" || !onNavigate ? (
-                  <a
-                    key={`${childPageId}-${childIndex}`}
-                    href={childHref}
-                    role="menuitem"
-                    aria-current={childActive ? "page" : undefined}
-                    data-site-page-id={String(child.__sitePageId || "")}
-                  >
-                    {childLabel}
-                  </a>
-                ) : (
-                  <button
-                    key={`${childPageId}-${childIndex}`}
-                    type="button"
-                    role="menuitem"
-                    aria-current={childActive ? "page" : undefined}
-                    onClick={() => onNavigate(childPageId)}
-                    data-site-page-id={String(child.__sitePageId || "")}
-                  >
-                    {childLabel}
-                  </button>
-                );
-              })}
+                  return as === "a" || !onNavigate ? (
+                    <a
+                      key={`${childPageId}-${childIndex}`}
+                      href={childHref}
+                      role="menuitem"
+                      aria-current={childActive ? "page" : undefined}
+                      data-site-page-id={String(child.__sitePageId || "")}
+                      data-visual-link-href={childHref}
+                      data-bizuply-public-href={childHref}
+                      data-link-url={childHref}
+                      data-bizuply-public-link="true"
+                    >
+                      {childLabel}
+                    </a>
+                  ) : (
+                    <button
+                      key={`${childPageId}-${childIndex}`}
+                      type="button"
+                      role="menuitem"
+                      aria-current={childActive ? "page" : undefined}
+                      onClick={() => onNavigate(childPageId)}
+                      data-site-page-id={String(child.__sitePageId || "")}
+                    >
+                      {childLabel}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
         );

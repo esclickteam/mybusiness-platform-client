@@ -613,6 +613,9 @@ function Header({
                   )}
                 >
                   {label}
+                  {subpages.length ? (
+                    <span data-bizuply-nav-chevron="true" aria-hidden="true" />
+                  ) : null}
                 </a>
               );
 
@@ -632,6 +635,7 @@ function Header({
                 >
                   {trigger}
                   <div data-bizuply-nav-submenu="true" role="menu">
+                    <div data-bizuply-nav-submenu-panel="true">
                     {subpages.map((child, childIndex) => {
                       const childPage = String(
                         child.page || child.__sitePageId || "",
@@ -686,6 +690,7 @@ function Header({
                         </a>
                       );
                     })}
+                    </div>
                   </div>
                 </div>
               );

@@ -326,17 +326,37 @@ function JustoraButtonTextFix() {
         align-items: center;
       }
 
+      [data-template-id^="justora"] header [data-bizuply-nav-item] > a {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 0.4em;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-chevron="true"] {
+        border-color: currentColor;
+        opacity: 0.9;
+      }
+
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] {
         position: absolute !important;
         inset-inline-start: 0;
-        top: calc(100% + 0.4rem) !important;
+        top: 100% !important;
         z-index: 220 !important;
         min-width: 12rem;
+        padding: 0.45rem 0 0 !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        pointer-events: auto !important;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu-panel="true"] {
         padding: 0.4rem !important;
         background: #fff6e9 !important;
         border: 1px solid rgba(43, 27, 29, 0.12) !important;
         border-radius: 1rem !important;
         box-shadow: 0 16px 36px rgba(23, 16, 15, 0.22) !important;
+        pointer-events: auto !important;
       }
 
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a,
@@ -348,6 +368,7 @@ function JustoraButtonTextFix() {
         color: #2b1b1d !important;
         -webkit-text-fill-color: #2b1b1d !important;
         opacity: 1 !important;
+        pointer-events: auto !important;
       }
 
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a:hover,
@@ -428,13 +449,13 @@ function Header({
   ) {
     const mobile = Boolean(opts?.mobile);
     const isActive = currentPage === item.id;
+    const hasSubpages = item.subpages.length > 0;
     const trigger = (
       <a
         href={item.href}
         onClick={(event) => {
           if (shouldUseNativeJustoraNavigation()) return;
           if (!item.isBuiltin && item.href && item.href !== "#") {
-            // Custom Site Pages keep real URLs
             setMobileOpen(false);
             return;
           }
@@ -442,6 +463,7 @@ function Header({
           handleNavigate(item.id);
         }}
         className={cx(
+          "inline-flex items-center gap-1.5",
           mobile
             ? "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition"
             : "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
@@ -453,14 +475,18 @@ function Header({
               ? "!text-[#fff6e9] hover:bg-white/10"
               : "!text-[#fff6e9] hover:bg-white/10 hover:!text-white",
         )}
-        aria-haspopup={item.subpages.length ? "true" : undefined}
+        aria-haspopup={hasSubpages ? "true" : undefined}
+        aria-expanded={hasSubpages ? "false" : undefined}
         data-site-page-id={item.id}
       >
-        {item.label}
+        <span>{item.label}</span>
+        {hasSubpages ? (
+          <span data-bizuply-nav-chevron="true" aria-hidden="true" />
+        ) : null}
       </a>
     );
 
-    if (!item.subpages.length) {
+    if (!hasSubpages) {
       return <React.Fragment key={item.id}>{trigger}</React.Fragment>;
     }
 
@@ -472,32 +498,53 @@ function Header({
       >
         {trigger}
         <div data-bizuply-nav-submenu="true" role="menu">
-          {item.subpages.map((child) => {
-            const childHref =
-              String(child.href || "").trim() ||
-              `/${child.slug || child.id}`;
-            const childId = String(child.id || child.slug || "");
-            return (
-              <a
-                key={childId}
-                href={childHref}
-                role="menuitem"
-                data-site-page-id={childId}
-                data-visual-link-href={childHref}
-                data-bizuply-public-href={childHref}
-                data-link-url={childHref}
-                data-bizuply-public-link="true"
-                onClick={() => setMobileOpen(false)}
-                style={{
-                  color: "#2b1b1d",
-                  WebkitTextFillColor: "#2b1b1d",
-                  opacity: 1,
-                }}
-              >
-                {child.title || child.slug || child.id}
-              </a>
-            );
-          })}
+          <div data-bizuply-nav-submenu-panel="true">
+            {item.subpages.map((child) => {
+              const childHref =
+                String(child.href || "").trim() ||
+                `/${child.slug || child.id}`;
+              const childId = String(child.id || child.slug || "");
+              const childSlug = normalizeJustoraNavKey(child.slug || child.id);
+              const isBuiltinChild = justoraAllowedPages.includes(childSlug);
+              return (
+                <a
+                  key={childId}
+                  href={childHref}
+                  role="menuitem"
+                  data-site-page-id={childId}
+                  data-visual-link-href={childHref}
+                  data-bizuply-public-href={childHref}
+                  data-link-url={childHref}
+                  data-bizuply-public-link="true"
+                  onMouseDown={(event) => {
+                    // Keep click for navigation; don't let editor drag/select steal it
+                    event.stopPropagation();
+                  }}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    setMobileOpen(false);
+                    if (isBuiltinChild) {
+                      event.preventDefault();
+                      handleNavigate(childSlug);
+                      return;
+                    }
+                    // Custom / library Site Pages — navigate by page id in editor/SPA
+                    event.preventDefault();
+                    handleNavigate(childId || childSlug);
+                  }}
+                  style={{
+                    color: "#2b1b1d",
+                    WebkitTextFillColor: "#2b1b1d",
+                    opacity: 1,
+                    pointerEvents: "auto",
+                    cursor: "pointer",
+                  }}
+                >
+                  {child.title || child.slug || child.id}
+                </a>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
@@ -1952,15 +1999,26 @@ export default function JustoraPages({
   }
 
   function goTo(nextPage: string) {
-    const resolvedPage = resolveTemplatePageId(
-      { page: nextPage },
-      justoraAllowedPages,
-      "home",
-    );
+    const raw = String(nextPage || "").trim() || "home";
+    const isBuiltin = justoraAllowedPages.includes(raw);
+    const resolvedPage = isBuiltin
+      ? resolveTemplatePageId(
+          { page: raw },
+          justoraAllowedPages,
+          "home",
+        )
+      : raw;
 
     setSelectedCase(null);
     navigateToPage(resolvedPage);
-    pushPublishedUrl(resolvedPage);
+    if (isBuiltin) {
+      pushPublishedUrl(resolvedPage);
+    } else if (typeof window !== "undefined") {
+      const nextPath = raw.startsWith("/") ? raw : `/${raw}`;
+      if (window.location.pathname !== nextPath) {
+        window.history.pushState({}, "", nextPath);
+      }
+    }
     scrollToTop();
   }
 

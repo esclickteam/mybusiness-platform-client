@@ -1226,6 +1226,11 @@ export default function VisualEditorCanvas({
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
 
+      // Nested Site Menu links must navigate — don't steal the click for selection
+      if (target.closest('[data-bizuply-nav-submenu="true"] a, [data-bizuply-nav-submenu="true"] button')) {
+        return;
+      }
+
       const editingNode = editingNodeRef.current;
 
       if (editingNode) {
@@ -1635,6 +1640,15 @@ export default function VisualEditorCanvas({
       if (!(event.target instanceof HTMLElement)) return;
       if (event.target.closest(EDITOR_UI_SELECTOR)) return;
       if (event.target.closest('[contenteditable="true"]')) return;
+
+      // Let nested Site Menu links receive the click (navigate / follow href)
+      if (
+        event.target.closest(
+          '[data-bizuply-nav-submenu="true"] a, [data-bizuply-nav-submenu="true"] button',
+        )
+      ) {
+        return;
+      }
 
       const selected = editorAny.selectNode?.(event.target);
       const node =

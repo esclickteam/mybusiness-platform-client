@@ -6,6 +6,7 @@ import {
 
 const STYLE_ID = "bizuply-nav-submenu-styles";
 const SUBMENU_ATTR = "data-bizuply-nav-submenu";
+const SUBMENU_PANEL_ATTR = "data-bizuply-nav-submenu-panel";
 const PARENT_ATTR = "data-bizuply-nav-parent";
 const CHILD_HIDDEN_ATTR = "data-bizuply-nav-child-hidden";
 const WRAPPER_ATTR = "data-bizuply-nav-item";
@@ -30,51 +31,52 @@ nav,
 }
 
 [${WRAPPER_ATTR}] > :first-child {
-  display: inline-flex;
+  display: inline-flex !important;
   align-items: center;
-  gap: 0.35em;
+  gap: 0.4em;
 }
 
 [${CHEVRON_ATTR}="true"] {
   display: inline-block;
-  width: 0.45em;
-  height: 0.45em;
-  border-inline-end: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
+  width: 0.4em;
+  height: 0.4em;
+  border-inline-end: 1.6px solid currentColor;
+  border-bottom: 1.6px solid currentColor;
   transform: rotate(45deg);
-  opacity: 0.75;
+  opacity: 0.85;
   flex: 0 0 auto;
-  margin-top: -0.15em;
+  margin-top: -0.2em;
   transition: transform 0.18s ease;
+  pointer-events: none;
 }
 
 [${WRAPPER_ATTR}].is-open [${CHEVRON_ATTR}="true"],
 [${WRAPPER_ATTR}]:hover [${CHEVRON_ATTR}="true"],
 [${WRAPPER_ATTR}]:focus-within [${CHEVRON_ATTR}="true"] {
   transform: rotate(-135deg);
-  margin-top: 0.15em;
+  margin-top: 0.12em;
 }
 
+/*
+  Outer submenu is the hover hit-area (padding-top = bridge).
+  Inner panel carries the visible cream/white surface — no dead gap.
+*/
 [${SUBMENU_ATTR}="true"],
 header [${SUBMENU_ATTR}="true"],
 [data-template-section-type="header"] [${SUBMENU_ATTR}="true"] {
   position: absolute;
   inset-inline-start: 0;
-  top: calc(100% + 0.35rem);
+  top: 100%;
   display: none;
   flex-direction: column;
   align-items: stretch;
-  gap: 0.15rem;
   min-width: max(11rem, 100%);
-  padding: 0.45rem 0.35rem;
+  padding: 0.45rem 0 0;
   margin: 0;
   list-style: none;
-  background: #ffffff !important;
-  color: #111827 !important;
-  -webkit-text-fill-color: #111827 !important;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  border-radius: 0.65rem;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
   z-index: 200;
   pointer-events: auto;
 }
@@ -83,6 +85,21 @@ header [${SUBMENU_ATTR}="true"],
 [${WRAPPER_ATTR}]:hover > [${SUBMENU_ATTR}="true"],
 [${WRAPPER_ATTR}]:focus-within > [${SUBMENU_ATTR}="true"] {
   display: flex;
+}
+
+[${SUBMENU_PANEL_ATTR}="true"] {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+  padding: 0.45rem 0.35rem;
+  background: #ffffff !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  border-radius: 0.65rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+  pointer-events: auto;
 }
 
 [${SUBMENU_ATTR}="true"] a,
@@ -106,6 +123,9 @@ header [${SUBMENU_ATTR}="true"] button,
   text-decoration: none !important;
   cursor: pointer;
   white-space: nowrap;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 1;
 }
 
 [${SUBMENU_ATTR}="true"] a *,
@@ -117,6 +137,7 @@ header [${SUBMENU_ATTR}="true"] button *,
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
   opacity: 1 !important;
+  pointer-events: none;
 }
 
 [${SUBMENU_ATTR}="true"] a:hover,
@@ -341,10 +362,14 @@ function wrapParentWithSubmenu(
   submenu.setAttribute(SUBMENU_ATTR, "true");
   submenu.setAttribute("role", "menu");
 
+  const panel = doc.createElement("div");
+  panel.setAttribute(SUBMENU_PANEL_ATTR, "true");
+
   subpages.forEach((child) => {
-    submenu.appendChild(createSubmenuLink(doc, child));
+    panel.appendChild(createSubmenuLink(doc, child));
   });
 
+  submenu.appendChild(panel);
   wrapper.appendChild(submenu);
 }
 

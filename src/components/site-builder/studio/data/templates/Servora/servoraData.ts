@@ -396,7 +396,7 @@ function createHeaderHtml() {
                 const childHref =
                   String(child.href || "").trim() || buttonHref(childPage);
                 return `
-            <a class="servora-nav-link" href="${escapeHtml(childHref)}" role="menuitem">${escapeHtml(
+            <a class="servora-nav-link" href="${escapeHtml(childHref)}" role="menuitem" data-bizuply-public-href="${escapeHtml(childHref)}" data-visual-link-href="${escapeHtml(childHref)}">${escapeHtml(
               String(child.label || childPage),
             )}</a>`;
               })
@@ -404,9 +404,12 @@ function createHeaderHtml() {
 
             return `
           <div data-bizuply-nav-item="html">
-            ${link}
-            <div data-bizuply-nav-submenu="true" role="menu">${submenu}
-            </div>
+            ${link.replace(
+              `>${escapeHtml(item.label)}</a>`,
+              `>${escapeHtml(item.label)}<span data-bizuply-nav-chevron="true" aria-hidden="true"></span></a>`,
+            )}
+            <div data-bizuply-nav-submenu="true" role="menu"><div data-bizuply-nav-submenu-panel="true">${submenu}
+            </div></div>
           </div>`;
           })
           .join("")}

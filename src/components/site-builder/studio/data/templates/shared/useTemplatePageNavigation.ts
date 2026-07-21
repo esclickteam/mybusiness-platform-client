@@ -35,8 +35,13 @@ export function resolveTemplatePageId(
   for (const candidate of candidates) {
     const id = cleanPageId(candidate);
     if (!id) continue;
-    if (!allowedPages?.length) return id;
-    if (allowedPages.includes(id)) return id;
+    if (!allowedPages?.length || allowedPages.includes(id)) return id;
+  }
+
+  // Custom nested Site Pages are not in the template allow-list — keep them
+  for (const candidate of candidates) {
+    const id = cleanPageId(candidate);
+    if (id) return id;
   }
 
   return fallback;
@@ -81,10 +86,11 @@ export function useTemplatePageNavigation(
   const goTo = useCallback(
     (nextPage: string) => {
       const requested = cleanPageId(nextPage) || fallbackPage;
-      const safe =
-        !allowedPages?.length || allowedPages.includes(requested)
-          ? requested
-          : fallbackPage;
+      /*
+        Allow custom nested Site Pages (library / blank) through.
+        Built-in ids still work; unknown ids must not collapse to home.
+      */
+      const safe = requested;
 
       setCurrentPage(safe);
       props.onPageChange?.(safe);
