@@ -631,6 +631,10 @@ export type SiteSeoSettings = {
   defaultOgImage?: string;
   /** Google Search Console HTML-tag verification token (site-wide). */
   googleSiteVerification?: string;
+  /** Google HTML verification filename, e.g. googleabc123.html */
+  googleHtmlVerificationFile?: string;
+  /** Raw contents of the Google HTML verification file */
+  googleHtmlVerificationContent?: string;
 };
 
 export type SitePageSocialSettings = {

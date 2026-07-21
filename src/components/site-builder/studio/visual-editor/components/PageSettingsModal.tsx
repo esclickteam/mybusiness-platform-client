@@ -1350,19 +1350,54 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        באימות בחרו "תג HTML" והעתיקו את הקוד
+                        באימות בחרו "HTML file" (מומלץ אצלנו)
                       </p>
                       <p className="text-xs font-semibold text-slate-500">
-                        גוגל יציג שורה כמו זו. אפשר להדביק כאן את כל השורה —
-                        אנחנו נוציא אוטומטית רק את הקוד מתוך content:
+                        גוגל ייתן קובץ להורדה בשם כמו{" "}
+                        <span className="font-black" dir="ltr">
+                          google….html
+                        </span>
+                        . הורידו אותו, ואז הזינו כאן את שם הקובץ ואת התוכן שלו
+                        (פתחו את הקובץ בפנקס רשימות והעתיקו הכול).
                       </p>
-                      <code
-                        className="block break-all rounded-xl bg-slate-900 px-3 py-2 font-mono text-[11px] leading-5 text-emerald-300"
+                      <input
+                        value={String(
+                          siteSeoDraft.googleHtmlVerificationFile || "",
+                        )}
+                        onChange={(event) =>
+                          setSiteSeoDraft((current) => ({
+                            ...current,
+                            googleHtmlVerificationFile: event.target.value
+                              .trim()
+                              .replace(/^\/+/, ""),
+                          }))
+                        }
+                        className={seoFieldClass}
+                        placeholder="googleXXXXXXXX.html"
                         dir="ltr"
-                      >
-                        &lt;meta name="google-site-verification"
-                        content="AbC123…" /&gt;
-                      </code>
+                      />
+                      <textarea
+                        value={String(
+                          siteSeoDraft.googleHtmlVerificationContent || "",
+                        )}
+                        onChange={(event) =>
+                          setSiteSeoDraft((current) => ({
+                            ...current,
+                            googleHtmlVerificationContent: event.target.value,
+                          }))
+                        }
+                        className={seoTextareaClass}
+                        placeholder="הדביקו כאן את כל תוכן הקובץ מגוגל"
+                        dir="ltr"
+                        rows={3}
+                      />
+                      {siteSeoDraft.googleHtmlVerificationFile &&
+                      siteSeoDraft.googleHtmlVerificationContent ? (
+                        <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
+                          <CheckCircle2 className="h-4 w-4" /> קובץ האימות מוכן —
+                          המשיכו לשמירה ופרסום.
+                        </p>
+                      ) : null}
                     </div>
                   </li>
 
@@ -1372,41 +1407,23 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        הדביקו את הקוד כאן
-                      </p>
-                      <input
-                        value={verificationCode}
-                        onChange={(event) =>
-                          setVerificationCode(event.target.value)
-                        }
-                        className={seoFieldClass}
-                        placeholder="הדביקו את הקוד או את כל שורת ה-meta מגוגל"
-                        dir="ltr"
-                      />
-                      {verificationCode ? (
-                        <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" /> הקוד מוכן —
-                          המשיכו לשלב 5.
-                        </p>
-                      ) : null}
-                    </div>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
-                      5
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                      <p className="text-sm font-black text-slate-900">
-                        שמירה כאן → פרסום האתר → חזרה לגוגל ולחיצה על "אמת"
+                        שמירה כאן → פרסום האתר → חזרה לגוגל ולחיצה על VERIFY
                       </p>
                       <ol className="list-decimal space-y-1 pr-4 text-xs font-semibold text-slate-500">
                         <li>לחצו "שמירה" בתחתית החלון הזה</li>
-                        <li>פרסמו את האתר בעורך (כפתור פרסום)</li>
-                        <li>חזרו ל-Search Console ולחצו "אמת"</li>
+                        <li>פרסמו את האתר בעורך</li>
                         <li>
-                          אחרי שהאימות הצליח: מפות אתר → שלחו{" "}
-                          <span className="font-black text-slate-700" dir="ltr">
+                          בדקו שהקובץ נפתח:{" "}
+                          <span className="font-black" dir="ltr">
+                            {siteBaseUrl}/
+                            {siteSeoDraft.googleHtmlVerificationFile ||
+                              "google….html"}
+                          </span>
+                        </li>
+                        <li>ב-Search Console לחצו VERIFY על HTML file</li>
+                        <li>
+                          שלחו מפת אתר:{" "}
+                          <span className="font-black" dir="ltr">
                             {siteBaseUrl}/sitemap.xml
                           </span>
                         </li>
@@ -1414,6 +1431,28 @@ export default function PageSettingsModal({
                     </div>
                   </li>
                 </ol>
+
+                <details className="group/meta-tag rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
+                    <ChevronDown className="h-4 w-4 transition group-open/meta-tag:rotate-180" />
+                    אפשרות נוספת: אימות עם תג HTML (פחות מומלץ)
+                  </summary>
+                  <div className="space-y-3 border-t border-slate-100 px-3.5 py-3">
+                    <p className="text-xs font-semibold text-slate-500">
+                      מתאים רק אם גוגל מבקש תג meta. אחרי שמירה ופרסום בדקו
+                      בקוד המקור שיש google-site-verification.
+                    </p>
+                    <input
+                      value={verificationCode}
+                      onChange={(event) =>
+                        setVerificationCode(event.target.value)
+                      }
+                      className={seoFieldClass}
+                      placeholder="הדביקו את הקוד או את כל שורת ה-meta מגוגל"
+                      dir="ltr"
+                    />
+                  </div>
+                </details>
 
                 <details className="group/meta rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">

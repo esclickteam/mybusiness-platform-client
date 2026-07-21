@@ -331,7 +331,19 @@ export function normalizeSiteSeoSettings(
       safeString(source.defaultTitleTemplate) || "%page% | %site%",
     defaultOgImage: safeString(source.defaultOgImage || source.ogImage),
     googleSiteVerification,
+    googleHtmlVerificationFile: normalizeGoogleHtmlFileName(
+      source.googleHtmlVerificationFile,
+    ),
+    googleHtmlVerificationContent: safeString(
+      source.googleHtmlVerificationContent,
+    ).slice(0, 2000),
   };
+}
+
+function normalizeGoogleHtmlFileName(value: unknown): string {
+  const clean = safeString(value).replace(/^\/+/, "");
+  if (!/^google[a-z0-9]+\.html$/i.test(clean)) return "";
+  return clean.toLowerCase();
 }
 
 export function normalizeSiteBrandSettings(
