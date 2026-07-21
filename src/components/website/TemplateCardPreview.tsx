@@ -117,6 +117,26 @@ export default function TemplateCardPreview({
               animation-iteration-count: 1 !important;
               animation-fill-mode: both !important;
             }
+            /* Keep continuous motion (ken burns / marquee / float) alive in gallery cards */
+            [data-template-card-live="${key}"] .tpl-ken,
+            [data-template-card-live="${key}"] .tpl-marquee-track,
+            [data-template-card-live="${key}"] .tpl-float,
+            [data-template-card-live="${key}"] .tpl-pulse-line,
+            [data-template-card-live="${key}"] .tpl-sweep::after {
+              animation-delay: 0s !important;
+              animation-duration: revert-layer !important;
+              animation-iteration-count: infinite !important;
+              animation-fill-mode: both !important;
+              transform: none;
+            }
+            [data-template-card-live="${key}"] .tpl-ken {
+              animation-direction: alternate !important;
+              transform: unset !important;
+            }
+            [data-template-card-live="${key}"] .tpl-marquee-track {
+              animation-timing-function: linear !important;
+              transform: unset !important;
+            }
           `}</style>
 
           <div
