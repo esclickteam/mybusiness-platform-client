@@ -923,10 +923,10 @@ export default function PageSettingsModal({
                 </div>
 
                 <p className="text-[11px] font-semibold leading-5 text-slate-500">
-                  לחיבור מלא לגוגל: עברו לטאב{" "}
-                  <span className="font-black text-slate-700">"SEO מתקדם"</span>{" "}
-                  → "אימות מול Google", הדביקו את הקוד, שמרו ופרסמו. הקוד חל על
-                  כל האתר. אחרי האימות שלחו את מפת האתר ב-Search Console.
+                  לחיבור מלא: טאב{" "}
+                  <span className="font-black text-slate-700">"SEO מתקדם"</span>
+                  . אם גוגל כבר אישר אוטומטית — דלגו ישר לשליחת מפת האתר. אחרת
+                  הדביקו קוד אימות, שמרו ופרסמו.
                 </p>
               </SeoSection>
             </div>
@@ -1160,7 +1160,7 @@ export default function PageSettingsModal({
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
                 title="חיבור ל-Google Search Console"
-                description="מדריך מדויק: בחרו קידומת כתובת URL (לא דומיין), הדביקו קוד אימות, שמרו ופרסמו."
+                description="רוב הלקוחות מדביקים קוד אימות. אם גוגל כבר אישר אוטומטית — דלגו ישר למפת האתר."
                 badge={
                   verificationCode
                     ? { label: "קוד שמור", tone: "recommended" }
@@ -1168,6 +1168,52 @@ export default function PageSettingsModal({
                 }
                 defaultOpen
               >
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-semibold leading-6 text-emerald-900">
+                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
+                    אם גוגל כבר אישר אוטומטית
+                  </p>
+                  <p>
+                    לפעמים מופיע{" "}
+                    <span className="font-black">
+                      "הבעלות אושרה באופן אוטומטי"
+                    </span>{" "}
+                    ואז עוברים ישר לנכס — בלי להדביק קוד כאן. זה תקין. במקרה
+                    כזה לחצו{" "}
+                    <span className="font-black">"מעבר לנכס"</span> ושלחו מפת
+                    אתר:
+                  </p>
+                  <div className="mt-2 flex items-center gap-2 rounded-xl border border-emerald-200 bg-white p-1.5">
+                    <input
+                      value={`${siteBaseUrl}/sitemap.xml`}
+                      readOnly
+                      dir="ltr"
+                      className="h-9 min-w-0 flex-1 rounded-lg bg-emerald-50/80 px-3 text-xs font-bold text-slate-700 outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        copyToClipboard(`${siteBaseUrl}/sitemap.xml`)
+                      }
+                      className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-emerald-700 px-3 text-xs font-black text-white transition hover:bg-emerald-800"
+                    >
+                      {copiedHint ? (
+                        <>
+                          <CheckCircle2 className="h-4 w-4" /> הועתק
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-4 w-4" /> העתקה
+                        </>
+                      )}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-[11px] font-bold text-emerald-800">
+                    המדריך למטה מיועד למי שגוגל מבקש ממנו קוד אימות ידנית (רוב
+                    הלקוחות).
+                  </p>
+                </div>
+
                 <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-semibold leading-6 text-amber-900">
                   <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
                     <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
@@ -1211,6 +1257,10 @@ export default function PageSettingsModal({
                     </div>
                   </div>
                 ) : null}
+
+                <p className="text-sm font-black text-slate-900">
+                  אם גוגל מבקש קוד אימות — עקבו אחרי השלבים:
+                </p>
 
                 <ol className="space-y-3">
                   <li className="flex gap-3">
