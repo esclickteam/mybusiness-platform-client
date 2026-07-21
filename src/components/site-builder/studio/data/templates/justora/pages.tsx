@@ -233,6 +233,19 @@ function JustoraButtonTextFix() {
         color: #fff6e9 !important;
       }
 
+      /* Nested Site Menu items sit on a white panel — keep dark readable text */
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"],
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] button,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a:hover,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] button:hover,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a *,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] button * {
+        color: #2b1b1d !important;
+        -webkit-text-fill-color: #2b1b1d !important;
+        opacity: 1 !important;
+      }
+
       [data-template-id^="justora"] header a[class*="bg-[#fff6e9]"],
       [data-template-id^="justora"] header a[class*="bg-white"] {
         color: #2b1b1d !important;

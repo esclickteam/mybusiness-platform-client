@@ -201,7 +201,11 @@ nav,
 }
 
 [data-bizuply-nav-submenu="true"] a,
-[data-bizuply-nav-submenu="true"] button {
+[data-bizuply-nav-submenu="true"] button,
+header [data-bizuply-nav-submenu="true"] a,
+header [data-bizuply-nav-submenu="true"] button,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] a,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] button {
   display: block;
   width: 100%;
   text-align: inherit;
@@ -220,7 +224,11 @@ nav,
 }
 
 [data-bizuply-nav-submenu="true"] a *,
-[data-bizuply-nav-submenu="true"] button * {
+[data-bizuply-nav-submenu="true"] button *,
+header [data-bizuply-nav-submenu="true"] a *,
+header [data-bizuply-nav-submenu="true"] button *,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] a *,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] button * {
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
   opacity: 1 !important;
@@ -229,7 +237,11 @@ nav,
 [data-bizuply-nav-submenu="true"] a:hover,
 [data-bizuply-nav-submenu="true"] button:hover,
 [data-bizuply-nav-submenu="true"] a.is-active,
-[data-bizuply-nav-submenu="true"] button.is-active {
+[data-bizuply-nav-submenu="true"] button.is-active,
+header [data-bizuply-nav-submenu="true"] a:hover,
+header [data-bizuply-nav-submenu="true"] button:hover,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] a:hover,
+[data-template-section-type="header"] [data-bizuply-nav-submenu="true"] button:hover {
   background: rgba(15, 23, 42, 0.08) !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;

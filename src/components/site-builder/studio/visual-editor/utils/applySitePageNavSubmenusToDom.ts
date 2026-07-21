@@ -99,7 +99,11 @@ const NAV_SUBMENU_CSS = `
 }
 
 [${SUBMENU_ATTR}="true"] a,
-[${SUBMENU_ATTR}="true"] button {
+[${SUBMENU_ATTR}="true"] button,
+header [${SUBMENU_ATTR}="true"] a,
+header [${SUBMENU_ATTR}="true"] button,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] a,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] button {
   display: block;
   width: 100%;
   text-align: inherit;
@@ -118,7 +122,11 @@ const NAV_SUBMENU_CSS = `
 }
 
 [${SUBMENU_ATTR}="true"] a *,
-[${SUBMENU_ATTR}="true"] button * {
+[${SUBMENU_ATTR}="true"] button *,
+header [${SUBMENU_ATTR}="true"] a *,
+header [${SUBMENU_ATTR}="true"] button *,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] a *,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] button * {
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
   opacity: 1 !important;
@@ -127,7 +135,11 @@ const NAV_SUBMENU_CSS = `
 [${SUBMENU_ATTR}="true"] a:hover,
 [${SUBMENU_ATTR}="true"] button:hover,
 [${SUBMENU_ATTR}="true"] a.is-active,
-[${SUBMENU_ATTR}="true"] button.is-active {
+[${SUBMENU_ATTR}="true"] button.is-active,
+header [${SUBMENU_ATTR}="true"] a:hover,
+header [${SUBMENU_ATTR}="true"] button:hover,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] a:hover,
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] button:hover {
   background: rgba(15, 23, 42, 0.08) !important;
   color: #0f172a !important;
   -webkit-text-fill-color: #0f172a !important;
@@ -292,6 +304,10 @@ function createSubmenuLink(
   link.setAttribute("data-link-url", link.href);
   link.setAttribute("data-bizuply-public-link", "true");
   link.setAttribute("data-site-page-id", item.id);
+  // Beat template header link colors (e.g. Justora cream-on-dark) on white panels
+  link.style.setProperty("color", "#111827", "important");
+  link.style.setProperty("-webkit-text-fill-color", "#111827", "important");
+  link.style.setProperty("opacity", "1", "important");
   return link;
 }
 
