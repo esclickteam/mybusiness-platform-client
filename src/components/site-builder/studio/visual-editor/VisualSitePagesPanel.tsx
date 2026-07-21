@@ -648,11 +648,6 @@ export default function VisualSitePagesPanel({
     setDisplayRows(pageRows);
   };
 
-  if (!open) return null;
-
-  const menuPosition =
-    menuAnchor && menuPage ? getMenuPosition(menuAnchor) : null;
-
   const draggingRow =
     pageRows.find((row) => row.page.id === draggingPageId) || null;
 
@@ -667,6 +662,11 @@ export default function VisualSitePagesPanel({
     if (dropPlacement === "inside") return targetRow.depth + 1;
     return targetRow.depth;
   }, [draggingPageId, dropTargetId, dropPlacement, draggingRow, pageRows]);
+
+  if (!open) return null;
+
+  const menuPosition =
+    menuAnchor && menuPage ? getMenuPosition(menuAnchor) : null;
 
   const handleMenuAction = (
     action: VisualSitePageMenuAction,
