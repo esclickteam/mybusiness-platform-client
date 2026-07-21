@@ -925,8 +925,12 @@ export default function PageSettingsModal({
                 <p className="text-[11px] font-semibold leading-5 text-slate-500">
                   לחיבור מלא: טאב{" "}
                   <span className="font-black text-slate-700">"SEO מתקדם"</span>
-                  . אם גוגל כבר אישר אוטומטית — דלגו ישר לשליחת מפת האתר. אחרת
-                  הדביקו קוד אימות, שמרו ופרסמו.
+                  — אימות, שליחת{" "}
+                  <span className="font-black" dir="ltr">
+                    sitemap.xml
+                  </span>
+                  , בקשת אינדקס, והסבר למה האתר עדיין לא מופיע בחיפוש (וגם מתי
+                  הפאביקון יופיע שם).
                 </p>
               </SeoSection>
             </div>
@@ -1160,7 +1164,7 @@ export default function PageSettingsModal({
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
                 title="חיבור ל-Google Search Console"
-                description="רוב הלקוחות מדביקים קוד אימות. אם גוגל כבר אישר אוטומטית — דלגו ישר למפת האתר."
+                description="אימות → מפת אתר → בקשת אינדקס. כולל מה עושים כשכתוב שהאתר עדיין לא בגוגל."
                 badge={
                   verificationCode
                     ? { label: "קוד שמור", tone: "recommended" }
@@ -1226,8 +1230,8 @@ export default function PageSettingsModal({
                     </span>{" "}
                     — לא {" "}
                     <span className="font-black">"דומיין"</span>.
-                    דומיין דורש הגדרות DNS ומסובך יותר. אצלנו עובדים רק עם
-                    קידומת URL + תג HTML.
+                    דומיין דורש הגדרות DNS ומסובך יותר. אצלנו עובדים עם קידומת
+                    URL + קובץ HTML (מומלץ).
                   </p>
                 </div>
 
@@ -1236,25 +1240,12 @@ export default function PageSettingsModal({
                     פאביקון ≠ Search Console
                   </p>
                   <p className="mt-1">
-                    הפאביקון מוגדר בטאב {" "}
+                    הפאביקון מוגדר בטאב{" "}
                     <span className="font-black text-slate-800">
                       "הגדרות אתר"
                     </span>
-                    . כאן מחברים רק את האתר לגוגל כדי לעקוב אחרי חיפוש ולשלוח
-                    מפת אתר.
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-3 text-xs font-semibold leading-6 text-violet-900">
-                  <p className="font-black">
-                    אחרי שמירה ופרסום — בדקו שהתג באתר לפני VERIFY
-                  </p>
-                  <p className="mt-1">
-                    פתחו את האתר המפורסם → Ctrl+U → חפשו{" "}
-                    <span className="font-black" dir="ltr">
-                      google-site-verification
-                    </span>
-                    . אם התג מופיע בקוד המקור — רק אז לחצו VERIFY בגוגל.
+                    . כאן מחברים את האתר לגוגל, שולחים מפת אתר ומבקשים אינדקס —
+                    כדי שהאתר (והפאביקון) יופיעו בחיפוש.
                   </p>
                 </div>
 
@@ -1426,13 +1417,87 @@ export default function PageSettingsModal({
                         <li>
                           שלחו מפת אתר:{" "}
                           <span className="font-black" dir="ltr">
-                            {siteBaseUrl}/sitemap.xml
+                            sitemap.xml
                           </span>
                         </li>
                       </ol>
                     </div>
                   </li>
                 </ol>
+
+                <div className="rounded-2xl border border-blue-200 bg-blue-50 px-3.5 py-3 text-xs font-semibold leading-6 text-blue-950">
+                  <p className="mb-2 flex items-center gap-1.5 text-sm font-black text-blue-900">
+                    <Search className="h-4 w-4 shrink-0" />
+                    אחרי האימות — איך מופיעים בגוגל (וגם הפאביקון בחיפוש)
+                  </p>
+                  <ol className="list-decimal space-y-2 pr-4">
+                    <li>
+                      ב-Search Console →{" "}
+                      <span className="font-black">Sitemaps</span> → בשדה
+                      הזינו{" "}
+                      <span className="font-black" dir="ltr">
+                        sitemap.xml
+                      </span>{" "}
+                      → שליחה.
+                    </li>
+                    <li>
+                      למעלה בשורת{" "}
+                      <span className="font-black">בדיקת כתובת URL</span>{" "}
+                      הדביקו את כתובת האתר → Enter → לחצו{" "}
+                      <span className="font-black">
+                        הגש בקשה ליצירת אינדקס
+                      </span>
+                      .
+                    </li>
+                    <li>
+                      אם כתוב{" "}
+                      <span className="font-black">
+                        "כתובת האתר לא נמצאת ב-Google"
+                      </span>{" "}
+                      או{" "}
+                      <span className="font-black">
+                        "נסרק — לא נכלל באינדקס כרגע"
+                      </span>
+                      — זה תקין לאתר חדש. גוגל מצא את האתר, אבל עדיין לא הכניס
+                      אותו לתוצאות. בקשת אינדקס + המתנה (ימים, לפעמים יותר).
+                    </li>
+                    <li>
+                      הפאביקון בתוצאות החיפוש מופיע{" "}
+                      <span className="font-black">רק אחרי</span> שהדף באינדקס.
+                      ודאו שהעליתם פאביקון בטאב{" "}
+                      <span className="font-black">"הגדרות אתר"</span> (ריבועי
+                      וברור, עדיף לפחות 48×48). אי אפשר לכפות את זה מיד.
+                    </li>
+                  </ol>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <a
+                      href="https://search.google.com/search-console"
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-white px-3 py-2 text-[11px] font-black text-blue-700 transition hover:bg-blue-50"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Search Console
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        copyToClipboard(`${siteBaseUrl}/sitemap.xml`)
+                      }
+                      className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-white px-3 py-2 text-[11px] font-black text-blue-700 transition hover:bg-blue-50"
+                    >
+                      {copiedHint ? (
+                        <>
+                          <CheckCircle2 className="h-3.5 w-3.5" /> הועתק
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3.5 w-3.5" /> העתקת מפת אתר
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
 
                 <details className="group/meta-tag rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
