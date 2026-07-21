@@ -150,9 +150,9 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
     {
       action: "addSubpage",
       label: "הוספת עמוד משנה",
-      hint: "יצירת עמוד חדש תחת העמוד הזה",
+      hint: "יצירת עמוד חדש שיופיע תחת העמוד הזה",
       icon: <Plus className="h-4 w-4" />,
-      disabled: false,
+      dividerAfter: true,
     },
     {
       action: "rename",
@@ -189,16 +189,17 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
       icon: <EyeOff className="h-4 w-4" />,
       disabled: isHome,
     },
-    {
-      action: "subpage",
-      label: isSubpage ? "הפוך לעמוד ראשי" : "העברה תחת עמוד אחר",
-      hint: isSubpage
-        ? "הסרת הקינון והחזרה לרשימת העמודים הראשיים"
-        : "קינון העמוד תחת עמוד אב בתפריט",
-      icon: <CornerDownLeft className="h-4 w-4" />,
-      disabled: isHome,
-      dividerAfter: true,
-    },
+    ...(isSubpage
+      ? [
+          {
+            action: "subpage" as const,
+            label: "הפוך לעמוד ראשי",
+            hint: "הסרת הקינון והחזרה לרשימת העמודים הראשיים",
+            icon: <CornerDownLeft className="h-4 w-4" />,
+            dividerAfter: true,
+          },
+        ]
+      : []),
     {
       action: "delete",
       label: "מחיקה",
@@ -372,11 +373,17 @@ function SortablePageRow({
           event.stopPropagation();
           onAddSubpage();
         }}
-        className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-blue-600 opacity-0 transition group-hover:opacity-100 hover:bg-blue-50"
-        title="הוספת עמוד משנה"
+        className={[
+          "flex shrink-0 items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-black transition",
+          page.isHome || isActive
+            ? "bg-blue-600 text-white hover:bg-blue-700"
+            : "border border-blue-200 bg-blue-50 text-blue-700 hover:bg-blue-100",
+        ].join(" ")}
+        title={`הוספת עמוד משנה תחת ${page.title || "עמוד"}`}
         aria-label={`הוספת עמוד משנה תחת ${page.title || "עמוד"}`}
       >
-        <Plus className="h-4 w-4" />
+        <Plus className="h-3 w-3" />
+        עמוד משנה
       </button>
 
       <button
@@ -449,7 +456,6 @@ export default function VisualSitePagesPanel({
 }: VisualSitePagesPanelProps) {
   const [menuPageId, setMenuPageId] = useState("");
   const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
-  const [parentPickerPageId, setParentPickerPageId] = useState("");
   const [draggingPageId, setDraggingPageId] = useState("");
   const [dropTargetId, setDropTargetId] = useState("");
   const [dropPlacement, setDropPlacement] =
@@ -470,24 +476,6 @@ export default function VisualSitePagesPanel({
   );
 
   const menuPage = pages.find((page) => page.id === menuPageId) || null;
-  const parentPickerPage =
-    pages.find((page) => page.id === parentPickerPageId) || null;
-
-  const parentCandidateRows = useMemo(() => {
-    if (!parentPickerPage) return [];
-    return buildPageTreeRows(pages).filter(({ page }) => {
-      if (page.id === parentPickerPage.id) return false;
-
-      let cursor = page.parentPageId;
-      const guard = new Set<string>();
-      while (cursor && !guard.has(cursor)) {
-        if (cursor === parentPickerPage.id) return false;
-        guard.add(cursor);
-        cursor = pages.find((item) => item.id === cursor)?.parentPageId;
-      }
-      return true;
-    });
-  }, [parentPickerPage, pages]);
 
   const syncMenuAnchor = () => {
     if (!menuPageId) {
@@ -516,7 +504,6 @@ export default function VisualSitePagesPanel({
     if (!open) {
       setMenuPageId("");
       setMenuAnchor(null);
-      setParentPickerPageId("");
       setDraggingPageId("");
       setDropTargetId("");
       setDropPlacement(null);
@@ -528,7 +515,7 @@ export default function VisualSitePagesPanel({
   }, [menuPageId, open, pageRows.length]);
 
   useEffect(() => {
-    if (!menuPageId && !parentPickerPageId) return;
+    if (!menuPageId) return;
 
     const onPointerDown = (event: MouseEvent) => {
       const target = event.target as Node | null;
@@ -537,14 +524,12 @@ export default function VisualSitePagesPanel({
       if (button?.contains(target)) return;
       setMenuPageId("");
       setMenuAnchor(null);
-      setParentPickerPageId("");
     };
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setMenuPageId("");
         setMenuAnchor(null);
-        setParentPickerPageId("");
       }
     };
 
@@ -561,7 +546,7 @@ export default function VisualSitePagesPanel({
       window.removeEventListener("resize", onReposition);
       window.removeEventListener("scroll", onReposition, true);
     };
-  }, [menuPageId, parentPickerPageId]);
+  }, [menuPageId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     setDraggingPageId(String(event.active.id || ""));
@@ -627,18 +612,11 @@ export default function VisualSitePagesPanel({
 
     if (action === "subpage") {
       const page = pages.find((item) => item.id === pageId);
-      if (!page || page.isHome) return;
+      if (!page?.parentPageId) return;
 
-      if (page.parentPageId) {
-        onPageAction("subpage", pageId, { parentPageId: "" });
-        setMenuPageId("");
-        setMenuAnchor(null);
-        return;
-      }
-
+      onPageAction("subpage", pageId, { parentPageId: "" });
       setMenuPageId("");
       setMenuAnchor(null);
-      setParentPickerPageId(pageId);
       return;
     }
 
@@ -701,71 +679,6 @@ export default function VisualSitePagesPanel({
         )
       : null;
 
-  const parentPickerPortal =
-    parentPickerPage && typeof document !== "undefined"
-      ? createPortal(
-          <div className="fixed inset-0 z-[2147483646] flex items-center justify-center bg-slate-950/35 p-4">
-            <div
-              dir="rtl"
-              className="w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
-              onMouseDown={(event) => event.stopPropagation()}
-            >
-              <div className="border-b border-slate-100 px-5 py-4">
-                <h3 className="text-base font-black text-slate-950">
-                  בחירת עמוד אב
-                </h3>
-                <p className="mt-1 text-sm font-bold text-slate-500">
-                  "{parentPickerPage.title}" יהיה עמוד משנה תחת העמוד שתבחרו
-                </p>
-              </div>
-
-              <div className="max-h-[50vh] space-y-1 overflow-y-auto p-3">
-                {parentCandidateRows.length === 0 ? (
-                  <p className="px-2 py-6 text-center text-sm font-bold text-slate-400">
-                    אין עמודים זמינים לקינון
-                  </p>
-                ) : (
-                  parentCandidateRows.map(({ page, depth }) => (
-                    <button
-                      key={page.id}
-                      type="button"
-                      onClick={() => {
-                        onPageAction?.("subpage", parentPickerPage.id, {
-                          parentPageId: page.id,
-                        });
-                        setParentPickerPageId("");
-                      }}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-right transition hover:bg-blue-50"
-                      style={{ paddingInlineStart: 12 + depth * 18 }}
-                    >
-                      {page.isHome ? (
-                        <Home className="h-4 w-4 shrink-0 text-blue-600" />
-                      ) : (
-                        <FileText className="h-4 w-4 shrink-0 text-slate-500" />
-                      )}
-                      <span className="min-w-0 flex-1 truncate text-sm font-black text-slate-900">
-                        {page.title || "עמוד"}
-                      </span>
-                    </button>
-                  ))
-                )}
-              </div>
-
-              <div className="flex justify-end border-t border-slate-100 px-4 py-3">
-                <button
-                  type="button"
-                  onClick={() => setParentPickerPageId("")}
-                  className="rounded-xl px-4 py-2 text-sm font-black text-slate-600 transition hover:bg-slate-50"
-                >
-                  ביטול
-                </button>
-              </div>
-            </div>
-          </div>,
-          document.body,
-        )
-      : null;
-
   return (
     <>
       <aside
@@ -776,7 +689,7 @@ export default function VisualSitePagesPanel({
           <div>
             <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
             <p className="text-[11px] font-bold text-slate-400">
-              {pages.length} עמודים · גרירה לסידור וקינון
+              {pages.length} עמודים · + עמוד משנה · גרירה לסידור
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -890,7 +803,6 @@ export default function VisualSitePagesPanel({
       </aside>
 
       {menuPortal}
-      {parentPickerPortal}
     </>
   );
 }

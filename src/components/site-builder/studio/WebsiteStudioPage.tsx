@@ -6198,27 +6198,66 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (!parentId) return;
 
       const parentPage = pages.find((page) => page.id === parentId);
-      const defaultTitle = parentPage
-        ? `${String(parentPage.title || "עמוד").trim()} — משנה`
-        : "עמוד משנה";
-      const nextTitle = window.prompt("שם לעמוד המשנה", defaultTitle);
+      const defaultTitle = "עמוד משנה";
+      const nextTitle = window.prompt(
+        parentPage
+          ? `שם לעמוד משנה תחת "${parentPage.title}"`
+          : "שם לעמוד המשנה",
+        defaultTitle,
+      );
       if (nextTitle == null) return;
-      const cleanTitle = String(nextTitle).trim() || "עמוד משנה";
+      const cleanTitle = String(nextTitle).trim() || defaultTitle;
 
       const newId = uid("page");
       const siblingCount = pages.filter(
         (page) => String((page as any).parentPageId || "") === parentId,
       ).length;
 
+      const slug = normalizePageSlug(cleanTitle, pages);
+      const nextVisualData = {
+        ...materializePageVisualData({
+          id: newId,
+          title: cleanTitle,
+          slug,
+          sections: [],
+        }),
+        __activePageId: newId,
+        __blankVisualPage: true,
+        __libraryPage: false,
+      };
+
+      const templateKey =
+        selectedTemplateRenderer?.key ||
+        selectedTemplateSeed?.id ||
+        "";
+
       const nextPage: StudioSitePageWithPortal = {
         id: newId,
         title: cleanTitle,
-        slug: normalizePageSlug(cleanTitle, pages),
+        slug,
         type: "blank",
         parentPageId: parentId,
         menuOrder: siblingCount,
-        html: createBlankPageHtml(cleanTitle),
-        css: defaultCanvasCss,
+        html: "",
+        css: "",
+        projectData: {
+          editorMode: "visual-react",
+          templateKey,
+          data: nextVisualData,
+          templateData: nextVisualData,
+        },
+        data: nextVisualData,
+        templateData: nextVisualData,
+        visualEditorPayload: {
+          editorMode: "visual-react",
+          templateKey,
+          data: nextVisualData,
+          templateData: nextVisualData,
+          activePageId: newId,
+        },
+        htmlSnapshot: "",
+        snapshotPageId: newId,
+        visualSnapshotVersion: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         clientPortal: createDefaultClientPortalConfig(),
@@ -6229,6 +6268,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           normalizePageMenuOrders([...prev, nextPage]),
         ) as StudioSitePageWithPortal[],
       );
+      setVisualSessionData(nextVisualData);
       setActivePageId(newId);
       return;
     }
