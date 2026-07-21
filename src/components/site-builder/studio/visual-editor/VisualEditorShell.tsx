@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
-  Check,
-  Cloud,
   Eye,
   EyeOff,
   FileStack,
@@ -14,7 +12,6 @@ import {
   Smartphone,
   Tablet,
   Undo2,
-  UploadCloud,
 } from "lucide-react";
 
 
@@ -113,19 +110,6 @@ const DEVICE_OPTIONS: Array<{
   },
 ];
 
-function formatSavedTime(value?: string) {
-  if (!value) return "";
-
-  const date = new Date(value);
-
-  if (Number.isNaN(date.getTime())) return "";
-
-  return date.toLocaleTimeString("he-IL", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
-
 export default function VisualEditorShell({
   editor,
   onBack,
@@ -137,7 +121,6 @@ export default function VisualEditorShell({
   onSitePageAction,
 }: VisualEditorShellProps) {
   const [actionError, setActionError] = useState("");
-  const [savedMessage, setSavedMessage] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
     "add" | "layers" | "code" | "pages" | null
   >(null);
@@ -199,24 +182,6 @@ export default function VisualEditorShell({
     setActionError(editor.saveError);
   }, [editor.saveError]);
 
-  useEffect(() => {
-    if (!editor.lastSavedAt) return;
-
-    const savedTime = formatSavedTime(editor.lastSavedAt);
-
-    if (!savedTime) return;
-
-    setSavedMessage(`נשמר ב־${savedTime}`);
-
-    const timer = window.setTimeout(() => {
-      setSavedMessage("");
-    }, 3500);
-
-    return () => {
-      window.clearTimeout(timer);
-    };
-  }, [editor.lastSavedAt]);
-
   async function runAction(
     action: () => void | Promise<void> | Promise<any>,
   ) {
@@ -243,22 +208,6 @@ export default function VisualEditorShell({
     }
 
     editor.setIsPreviewMode?.((current) => !current);
-  }
-
-  function handleSaveDraft() {
-    void runAction(async () => {
-      if (typeof editor.save === "function") {
-        await editor.save("draft");
-        return;
-      }
-
-      if (typeof editor.saveDraft === "function") {
-        await editor.saveDraft();
-        return;
-      }
-
-      throw new Error("פעולת השמירה אינה מחוברת לעורך.");
-    });
   }
 
   function handlePublish() {
@@ -319,36 +268,6 @@ export default function VisualEditorShell({
             <p className="max-w-[220px] truncate text-sm font-black text-slate-950">
               {templateName}
             </p>
-
-            <button
-              type="button"
-              title="שמירה מהירה (Ctrl+S)"
-              disabled={busy}
-              onClick={handleSaveDraft}
-              className="mt-0.5 flex items-center gap-1.5 text-xs font-bold text-slate-400 transition hover:text-slate-600 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isUploadingMedia ? (
-                <>
-                  <UploadCloud className="h-3.5 w-3.5 animate-pulse text-violet-500" />
-                  מעלה מדיה
-                </>
-              ) : isSaving ? (
-                <>
-                  <Cloud className="h-3.5 w-3.5 animate-pulse text-violet-500" />
-                  שומר...
-                </>
-              ) : savedMessage ? (
-                <>
-                  <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  {savedMessage}
-                </>
-              ) : (
-                <>
-                  <Cloud className="h-3.5 w-3.5" />
-                  נשמר בענן
-                </>
-              )}
-            </button>
           </div>
 
           <div className="hidden items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 xl:flex">
@@ -498,7 +417,7 @@ export default function VisualEditorShell({
             )}
 
             <span className="hidden md:inline">
-              {isPreviewMode ? "חזרה לעריכה" : "תצוגה"}
+              {isPreviewMode ? "חזרה לעריכה" : "תצוגה מקדימה"}
             </span>
           </button>
 

@@ -1,25 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { LayoutTemplate } from "lucide-react";
 
 import type { MySiteSummary } from "../../api/mySitesApi";
 import { getTemplateCoverUrl } from "../../utils/templateCover";
-import TemplateCardPreview, {
-  canRenderTemplatePreview,
-} from "./TemplateCardPreview";
+import { scheduleGalleryPreview } from "../../utils/templatePreviewScheduler";
+import IframeCardPreview from "./IframeCardPreview";
 
 type MySiteCardPreviewProps = {
   site: MySiteSummary;
 };
 
 /**
- * My Sites card preview — same official template look as the gallery
- * (cover still + live scaled template homepage), so cards match the
- * chosen template instead of a divergent saved-site embed.
+ * My Sites card preview — live embed of the saved site so the card
+ * reflects the latest published/draft content (text, media, layout).
+ * Template cover paints instantly as a poster until the embed mounts.
  */
 export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
+  const siteId = String(site._id || "").trim();
   const templateKey = String(site.templateKey || "").trim();
-  const cover = getTemplateCoverUrl(templateKey);
-  const canLiveTemplate = canRenderTemplatePreview(templateKey);
+  const cover =
+    String(site.thumbnailUrl || "").trim() || getTemplateCoverUrl(templateKey);
+  const cacheKey = String(site.updatedAt || site.publishedAt || "").trim();
+
+  const [active, setActive] = useState(false);
+
+  useEffect(() => {
+    if (!siteId) return;
+
+    const subscribe = scheduleGalleryPreview(`site:${siteId}`);
+    return subscribe((isActive) => setActive(isActive));
+  }, [siteId]);
+
+  const embedSrc = siteId
+    ? `/embed/site/${encodeURIComponent(siteId)}${
+        cacheKey ? `?v=${encodeURIComponent(cacheKey)}` : ""
+      }`
+    : "";
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
@@ -43,18 +59,22 @@ export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
               {site.templateName || site.templateKey || "אתר Bizuply"}
             </p>
             <p className="mt-1 text-xs text-slate-400">
-              תצוגה מקדימה של התבנית
+              תצוגה מקדימה תופיע לאחר השמירה
             </p>
           </div>
         </div>
       )}
 
-      {canLiveTemplate && templateKey ? (
+      {!active && cover ? (
+        <div className="pointer-events-none absolute inset-0 animate-pulse bg-white/10" />
+      ) : null}
+
+      {active && embedSrc ? (
         <div className="absolute inset-0 bg-white">
-          <TemplateCardPreview
-            templateKey={templateKey}
-            title={site.name || site.templateName || templateKey}
-            eager
+          <IframeCardPreview
+            src={embedSrc}
+            title={site.name || "תצוגה מקדימה של האתר"}
+            activateOn="immediate"
           />
         </div>
       ) : null}

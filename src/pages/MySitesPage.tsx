@@ -177,14 +177,10 @@ export default function MySitesPage() {
     return () => window.clearTimeout(timer);
   }, [loadAll, query]);
 
-  // Batch-load official template previews (same scheduler keys as TemplateCardPreview)
+  // Batch-load live saved-site previews
   useEffect(() => {
     if (!sites.length) return;
-    prefetchGalleryPreviewKeys(
-      sites
-        .map((site) => String(site.templateKey || "").trim().toLowerCase())
-        .filter(Boolean),
-    );
+    prefetchGalleryPreviewKeys(sites.map((site) => `site:${site._id}`));
   }, [sites]);
 
   useEffect(() => {
