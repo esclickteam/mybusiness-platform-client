@@ -163,6 +163,11 @@ import { citadelEditorCss } from "./citadel/editorCss";
 import { citadelSchema } from "./citadel/schema";
 import { citadelDefaultData } from "./citadel/defaultData";
 
+import SalonixPages, { salonixPages } from "./salonix/pages";
+import { salonixEditorCss } from "./salonix/editorCss";
+import { salonixSchema } from "./salonix/schema";
+import { salonixDefaultData } from "./salonix/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -531,7 +536,7 @@ export const studioTemplateRendererRegistry: Record<
 
   gridline: createRenderer({
     key: "gridline",
-    name: "Gala Nail Salon",
+    name: "Gridline",
     Component: GridlinePages,
     pages: gridlinePages,
     editorMode: "visual-react",
@@ -637,6 +642,17 @@ export const studioTemplateRendererRegistry: Record<
     schema: citadelSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: citadelDefaultData as unknown as Record<string, any>,
     editorCss: citadelEditorCss,
+  }),
+
+  salonix: createRenderer({
+    key: "salonix",
+    name: "Salonix",
+    Component: SalonixPages,
+    pages: salonixPages,
+    editorMode: "visual-react",
+    schema: salonixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: salonixDefaultData as unknown as Record<string, any>,
+    editorCss: salonixEditorCss,
   }),
 };
 
