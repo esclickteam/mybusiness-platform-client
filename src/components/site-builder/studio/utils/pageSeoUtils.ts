@@ -177,6 +177,37 @@ function normalizeCustomMetaTags(value: unknown): SeoCustomMetaTag[] {
     .filter(Boolean) as SeoCustomMetaTag[];
 }
 
+export function extractGoogleSiteVerificationToken(rawValue: unknown): string {
+  const clean = safeString(rawValue);
+  if (!clean) return "";
+  const match = clean.match(/content=["']([^"']+)["']/i);
+  return safeString(match ? match[1] : clean);
+}
+
+/** Ensure site-level GSC verification appears on every public page head. */
+export function mergeGoogleSiteVerificationMeta(
+  customMetaTags: SeoCustomMetaTag[] | unknown,
+  googleSiteVerification?: string | null,
+): SeoCustomMetaTag[] {
+  const tags = normalizeCustomMetaTags(customMetaTags);
+  const token = extractGoogleSiteVerificationToken(googleSiteVerification);
+  const withoutLegacy = tags.filter(
+    (meta) => meta.key !== "google-site-verification",
+  );
+
+  if (!token) return withoutLegacy;
+
+  return [
+    {
+      id: "meta_google_site_verification",
+      attr: "name" as const,
+      key: "google-site-verification",
+      content: token,
+    },
+    ...withoutLegacy,
+  ];
+}
+
 function normalizeHreflang(value: unknown): SeoHreflangEntry[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -267,8 +298,28 @@ export function validateJsonLd(value: string): { valid: boolean; error: string }
 
 export function normalizeSiteSeoSettings(
   rawSettings?: SiteSeoSettings | null,
+  pages?: Array<{ seo?: SitePageSeoSettings | null }> | null,
 ): SiteSeoSettings {
   const source = asPlainObject(rawSettings);
+
+  let googleSiteVerification = extractGoogleSiteVerificationToken(
+    source.googleSiteVerification,
+  );
+
+  if (!googleSiteVerification && Array.isArray(pages)) {
+    for (const page of pages) {
+      const tags = normalizeCustomMetaTags(
+        asPlainObject(page?.seo).customMetaTags,
+      );
+      const token = extractGoogleSiteVerificationToken(
+        tags.find((meta) => meta.key === "google-site-verification")?.content,
+      );
+      if (token) {
+        googleSiteVerification = token;
+        break;
+      }
+    }
+  }
 
   return {
     title: safeString(source.title),
@@ -279,6 +330,7 @@ export function normalizeSiteSeoSettings(
     defaultTitleTemplate:
       safeString(source.defaultTitleTemplate) || "%page% | %site%",
     defaultOgImage: safeString(source.defaultOgImage || source.ogImage),
+    googleSiteVerification,
   };
 }
 
@@ -354,6 +406,14 @@ export function resolvePageSeoMeta(input: {
     maxVideoPreview: pageSeo.maxVideoPreview ?? null,
   });
 
+  const legacyPageVerification = extractGoogleSiteVerificationToken(
+    (pageSeo.customMetaTags || []).find(
+      (meta) => meta.key === "google-site-verification",
+    )?.content,
+  );
+  const googleSiteVerification =
+    siteSeoSettings.googleSiteVerification || legacyPageVerification;
+
   return {
     titleTag,
     metaDescription,
@@ -368,7 +428,10 @@ export function resolvePageSeoMeta(input: {
     maxImagePreview: pageSeo.maxImagePreview || "",
     maxVideoPreview: pageSeo.maxVideoPreview ?? null,
     structuredData: pageSeo.structuredData || [],
-    customMetaTags: pageSeo.customMetaTags || [],
+    customMetaTags: mergeGoogleSiteVerificationMeta(
+      pageSeo.customMetaTags || [],
+      googleSiteVerification,
+    ),
     hreflang: pageSeo.hreflang || [],
     social: {
       ogTitle,

@@ -4961,7 +4961,10 @@ export default function WebsiteStudioPage({
         }
 
         setSiteSeoSettings(
-          normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
+          normalizeSiteSeoSettings(
+            data.site.seoSettings || data.site.seo,
+            data.site.pages,
+          ),
         );
         setSiteBrandSettings(
           normalizeSiteBrandSettings(data.site.brand, String(data.site.name || "")),
@@ -5386,7 +5389,10 @@ export default function WebsiteStudioPage({
           setSiteName(String(data.site.name));
         }
         setSiteSeoSettings(
-          normalizeSiteSeoSettings(data.site.seoSettings || data.site.seo),
+          normalizeSiteSeoSettings(
+            data.site.seoSettings || data.site.seo,
+            data.site.pages,
+          ),
         );
         setSiteBrandSettings(
           normalizeSiteBrandSettings(data.site.brand, String(data.site.name || "")),

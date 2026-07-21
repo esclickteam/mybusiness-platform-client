@@ -2018,10 +2018,16 @@ export default function PublicVisualSiteRenderer({
       ...clientResolved,
       ...site.resolvedSeo,
       structuredData:
-        site.resolvedSeo.structuredData ?? clientResolved.structuredData,
+        site.resolvedSeo.structuredData?.length
+          ? site.resolvedSeo.structuredData
+          : clientResolved.structuredData,
       customMetaTags:
-        site.resolvedSeo.customMetaTags ?? clientResolved.customMetaTags,
-      hreflang: site.resolvedSeo.hreflang ?? clientResolved.hreflang,
+        site.resolvedSeo.customMetaTags?.length
+          ? site.resolvedSeo.customMetaTags
+          : clientResolved.customMetaTags,
+      hreflang: site.resolvedSeo.hreflang?.length
+        ? site.resolvedSeo.hreflang
+        : clientResolved.hreflang,
     };
   }, [site, activePage]);
 

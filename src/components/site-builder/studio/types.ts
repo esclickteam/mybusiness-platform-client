@@ -629,6 +629,8 @@ export type SiteSeoSettings = {
   siteIndexingEnabled?: boolean;
   defaultTitleTemplate?: string;
   defaultOgImage?: string;
+  /** Google Search Console HTML-tag verification token (site-wide). */
+  googleSiteVerification?: string;
 };
 
 export type SitePageSocialSettings = {

@@ -41,6 +41,7 @@ import {
   buildSmartPageSeo,
   createSeoId,
   deriveMetaDescription,
+  extractGoogleSiteVerificationToken,
   extractPlainTextFromHtml,
   normalizePageSeo,
   normalizeSiteBrandSettings,
@@ -186,8 +187,28 @@ export default function PageSettingsModal({
       normalized.metaDescription = deriveMetaDescription(pageText);
     }
 
+    /*
+      Migrate legacy page-level GSC tokens into site settings, and keep the
+      page custom-meta list free of google-site-verification duplicates.
+    */
+    const siteNormalized = normalizeSiteSeoSettings(seoSettings);
+    const legacyPageToken = extractGoogleSiteVerificationToken(
+      (normalized.customMetaTags || []).find(
+        (item) => item.key === "google-site-verification",
+      )?.content,
+    );
+    const googleSiteVerification =
+      siteNormalized.googleSiteVerification || legacyPageToken;
+
+    normalized.customMetaTags = (normalized.customMetaTags || []).filter(
+      (item) => item.key !== "google-site-verification",
+    );
+
     setSeoDraft(normalized);
-    setSiteSeoDraft(normalizeSiteSeoSettings(seoSettings));
+    setSiteSeoDraft({
+      ...siteNormalized,
+      googleSiteVerification,
+    });
     setSiteBrandDraft(normalizeSiteBrandSettings(brandSettings, siteName));
   }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, brandSettings, pageHtml]);
 
@@ -276,8 +297,15 @@ export default function PageSettingsModal({
         label: "פאביקון לאתר",
         done: Boolean(String(siteBrandDraft.faviconUrl || "").trim()),
       },
+      {
+        id: "gsc",
+        label: "חיבור Google Search Console",
+        done: Boolean(
+          String(siteSeoDraft.googleSiteVerification || "").trim(),
+        ),
+      },
     ]);
-  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo, siteBrandDraft]);
+  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo, siteBrandDraft, siteSeoDraft]);
 
   if (!open || !page || typeof document === "undefined") return null;
 
@@ -285,11 +313,23 @@ export default function PageSettingsModal({
     const cleanTitle = String(title || "").trim();
     if (!cleanTitle) return;
 
+    const pageSeo = normalizePageSeo({
+      ...seoDraft,
+      customMetaTags: (seoDraft.customMetaTags || []).filter(
+        (item) => item.key !== "google-site-verification",
+      ),
+    });
+
     onSave({
       title: cleanTitle,
       slug: page.isHome ? "" : String(slug || "").trim(),
-      seo: normalizePageSeo(seoDraft),
-      siteSeo: normalizeSiteSeoSettings(siteSeoDraft),
+      seo: pageSeo,
+      siteSeo: normalizeSiteSeoSettings({
+        ...siteSeoDraft,
+        googleSiteVerification: extractGoogleSiteVerificationToken(
+          siteSeoDraft.googleSiteVerification,
+        ),
+      }),
       siteBrand: normalizeSiteBrandSettings(siteBrandDraft, cleanTitle || siteName),
     });
     onClose();
@@ -466,43 +506,16 @@ export default function PageSettingsModal({
     "",
   );
 
-  const verificationCode =
-    (seoDraft.customMetaTags || []).find(
-      (meta) => meta.key === "google-site-verification",
-    )?.content || "";
+  const verificationCode = String(
+    siteSeoDraft.googleSiteVerification || "",
+  ).trim();
 
   const setVerificationCode = (rawValue: string) => {
-    const match = rawValue.match(/content=["']([^"']+)["']/i);
-    const value = (match ? match[1] : rawValue).trim();
-
-    setSeoDraft((current) => {
-      const list = current.customMetaTags || [];
-      const existing = list.find(
-        (meta) => meta.key === "google-site-verification",
-      );
-
-      let next: SeoCustomMetaTag[];
-      if (!value) {
-        next = list.filter((meta) => meta.key !== "google-site-verification");
-      } else if (existing) {
-        next = list.map((meta) =>
-          meta.key === "google-site-verification"
-            ? { ...meta, content: value }
-            : meta,
-        );
-      } else {
-        next = [
-          ...list,
-          {
-            id: createSeoId("meta"),
-            attr: "name",
-            key: "google-site-verification",
-            content: value,
-          },
-        ];
-      }
-      return { ...current, customMetaTags: next };
-    });
+    const value = extractGoogleSiteVerificationToken(rawValue);
+    setSiteSeoDraft((current) => ({
+      ...current,
+      googleSiteVerification: value,
+    }));
   };
 
   const copyToClipboard = (value: string) => {
@@ -913,8 +926,8 @@ export default function PageSettingsModal({
                 <p className="text-[11px] font-semibold leading-5 text-slate-500">
                   לחיבור מלא לגוגל: עברו לטאב{" "}
                   <span className="font-black text-slate-700">"SEO מתקדם"</span>{" "}
-                  → "אימות מול Google" ועקבו אחרי השלבים. אחרי פרסום האתר, גוגל
-                  יתחיל להציג אותו תוך כמה ימים.
+                  → "אימות מול Google", הדביקו את הקוד, שמרו ופרסמו. הקוד חל על
+                  כל האתר. אחרי האימות שלחו את מפת האתר ב-Search Console.
                 </p>
               </SeoSection>
             </div>
@@ -1148,8 +1161,12 @@ export default function PageSettingsModal({
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
                 title="אימות מול Google ותגי מטא"
-                description="חברו את האתר ל-Google Search Console כדי לעקוב אחרי הביצועים ולשלוח עמודים לגוגל."
-                badge={{ label: "מומלץ", tone: "recommended" }}
+                description="הקוד נשמר ברמת האתר כולו (לא רק העמוד הנוכחי) ומופיע בכל העמודים אחרי פרסום."
+                badge={
+                  verificationCode
+                    ? { label: "קוד שמור", tone: "recommended" }
+                    : { label: "מומלץ", tone: "recommended" }
+                }
                 defaultOpen
               >
                 <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 text-xs font-semibold leading-6 text-slate-700">
@@ -1159,8 +1176,21 @@ export default function PageSettingsModal({
                   </p>
                   זהו קוד קצר ש-Google נותן לך, שמוכיח שהאתר הזה באמת שלך. מדביקים
                   אותו פעם אחת — ומאותו רגע גוגל נותן לך לראות נתונים על האתר
-                  ולבקש ממנו לסרוק עמודים. זה חד-פעמי.
+                  ולבקש ממנו לסרוק עמודים. זה חד-פעמי וחל על כל האתר.
                 </div>
+
+                {verificationCode ? (
+                  <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-bold text-emerald-800">
+                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+                    <div>
+                      <p className="font-black">קוד האימות שמור ברמת האתר</p>
+                      <p className="mt-1 font-semibold text-emerald-700">
+                        אחרי פרסום האתר חזרו ל-Search Console ולחצו "אמת". אחר כך
+                        שלחו את מפת האתר ({siteBaseUrl}/sitemap.xml).
+                      </p>
+                    </div>
+                  </div>
+                ) : null}
 
                 <ol className="space-y-3">
                   <li className="flex gap-3">
@@ -1266,8 +1296,8 @@ export default function PageSettingsModal({
                       />
                       {verificationCode ? (
                         <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" /> הקוד נשמר — יתווסף
-                          לאתר אחרי לחיצה על "שמירה".
+                          <CheckCircle2 className="h-4 w-4" /> הקוד נשמר ברמת
+                          האתר — יתווסף לכל העמודים אחרי "שמירה" ופרסום.
                         </p>
                       ) : null}
                     </div>
