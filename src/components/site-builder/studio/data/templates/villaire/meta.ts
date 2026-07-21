@@ -9,13 +9,13 @@ import { villaireSchema } from "./schema";
 import { villaireDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#E2C7A0", secondary: "#8E7554", accent: "#F4E4C8",
-  background: "#0B0B0B", surface: "#161616", text: "#F5F0E8", muted: "#9C9488", dark: "#050505",
+  primary: "#e2c7a0", secondary: "#a89a86", accent: "#e2c7a0",
+  background: "#0a0a0a", surface: "#141414", text: "#f4efe6", muted: "#a89a86", dark: "#000000",
 };
 
 export const villaireSeed = {
   id: "villaire", key: "villaire", name: "Villaire", title: "Villaire",
-  description: "תבנית וילות יוקרה: שחור ושמפניה, צילום דרמטי מלא מסך, רשימות נכסים אלגנטיות חדות.",
+  description: "תבנית וילות יוקרתית: שחור מלא, כותרת ממורכזת, תמונה קולנועית מתחת, קו שמפניה נמשך.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (villaireDefaultData as any).heroImage,
   heroTitle: (villaireDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const villaireSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "centeredCinema", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const villaireSeed = {
 export const villaireTemplate = {
   id: "villaire", key: "villaire", name: "Villaire", title: "Villaire", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית וילות יוקרה: שחור ושמפניה, צילום דרמטי מלא מסך, רשימות נכסים אלגנטיות חדות.",
+  description: "תבנית וילות יוקרתית: שחור מלא, כותרת ממורכזת, תמונה קולנועית מתחת, קו שמפניה נמשך.",
   thumbnail: React.createElement(VillaireThumbnail),
   preview: React.createElement(VillairePreview),
   component: VillairePages, Component: VillairePages,

@@ -9,13 +9,13 @@ import { loteraSchema } from "./schema";
 import { loteraDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#6EB6FF", secondary: "#1E4D7B", accent: "#B8D9FF",
-  background: "#0C1520", surface: "#132033", text: "#EEF4F8", muted: "#8FA3B5", dark: "#060B12",
+  primary: "#5eb4ff", secondary: "#8fa8bd", accent: "#5eb4ff",
+  background: "#07131f", surface: "#0f2133", text: "#eef5fb", muted: "#8fa8bd", dark: "#030910",
 };
 
 export const loteraSeed = {
   id: "lotera", key: "lotera", name: "Lotera", title: "Lotera",
-  description: "תבנית נדל״ן יוקרתית לנכסי חוף: הירו צילום מלא, נייבי עמוק וכחול בהיר, רשימות נכסים חדות בלי כרטיסיות.",
+  description: "תבנית קולנועית לנכסי חוף: הירו מלא מסך עם זום איטי, נייבי עמוק וכחול בהיר, תנועה ופריסה שונה לגמרי.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (loteraDefaultData as any).heroImage,
   heroTitle: (loteraDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const loteraSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "cinematic", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const loteraSeed = {
 export const loteraTemplate = {
   id: "lotera", key: "lotera", name: "Lotera", title: "Lotera", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית נדל״ן יוקרתית לנכסי חוף: הירו צילום מלא, נייבי עמוק וכחול בהיר, רשימות נכסים חדות בלי כרטיסיות.",
+  description: "תבנית קולנועית לנכסי חוף: הירו מלא מסך עם זום איטי, נייבי עמוק וכחול בהיר, תנועה ופריסה שונה לגמרי.",
   thumbnail: React.createElement(LoteraThumbnail),
   preview: React.createElement(LoteraPreview),
   component: LoteraPages, Component: LoteraPages,

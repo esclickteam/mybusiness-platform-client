@@ -9,13 +9,13 @@ import { estateoSchema } from "./schema";
 import { estateoDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#D4AF6A", secondary: "#8A6E3B", accent: "#F0D9A8",
-  background: "#14110F", surface: "#1E1A16", text: "#F5EFE6", muted: "#A89A86", dark: "#0A0908",
+  primary: "#d4af6a", secondary: "#a89880", accent: "#d4af6a",
+  background: "#100e0c", surface: "#1a1612", text: "#f4ecdf", muted: "#a89880", dark: "#070605",
 };
 
 export const estateoSeed = {
   id: "estateo", key: "estateo", name: "Estateo", title: "Estateo",
-  description: "תבנית נדל״ן קלאסית-יוקרתית: פחם וזהב, פריסת פוסטר אסימטרית, רשימות נכסים חדות.",
+  description: "תבנית יוקרה אסימטרית: כרזה שחורה-זהב, כותרת ענקית, קווים מוזהבים נעים — מראה פרטי ויוקרתי.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (estateoDefaultData as any).heroImage,
   heroTitle: (estateoDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const estateoSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "posterOverlap", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const estateoSeed = {
 export const estateoTemplate = {
   id: "estateo", key: "estateo", name: "Estateo", title: "Estateo", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית נדל״ן קלאסית-יוקרתית: פחם וזהב, פריסת פוסטר אסימטרית, רשימות נכסים חדות.",
+  description: "תבנית יוקרה אסימטרית: כרזה שחורה-זהב, כותרת ענקית, קווים מוזהבים נעים — מראה פרטי ויוקרתי.",
   thumbnail: React.createElement(EstateoThumbnail),
   preview: React.createElement(EstateoPreview),
   component: EstateoPages, Component: EstateoPages,

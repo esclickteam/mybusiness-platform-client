@@ -9,13 +9,13 @@ import { keyoraSchema } from "./schema";
 import { keyoraDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#0B5FFF", secondary: "#163A6B", accent: "#7AA7FF",
-  background: "#F4F7FB", surface: "#E8EEF6", text: "#122033", muted: "#5B6B7C", dark: "#0A1424",
+  primary: "#0b5fff", secondary: "#5b6b7c", accent: "#0b5fff",
+  background: "#f5f8fc", surface: "#ffffff", text: "#0f1b2d", muted: "#5b6b7c", dark: "#0a1424",
 };
 
 export const keyoraSeed = {
   id: "keyora", key: "keyora", name: "Keyora", title: "Keyora",
-  description: "תבנית נדל״ן מודרנית לסוכנים: לבן-כחול חד, פיצול הירו, רשימות נכסים טיפוגרפיות בלי כרטיסים מעוגלים.",
+  description: "תבנית סוכנות חדה: הירו טיפוגרפי בלי תמונה, פס חיפוש, מונים חיים וצבע כחול חשמלי — שונה לגמרי משאר התבניות.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (keyoraDefaultData as any).heroImage,
   heroTitle: (keyoraDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const keyoraSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "typoSearch", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const keyoraSeed = {
 export const keyoraTemplate = {
   id: "keyora", key: "keyora", name: "Keyora", title: "Keyora", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית נדל״ן מודרנית לסוכנים: לבן-כחול חד, פיצול הירו, רשימות נכסים טיפוגרפיות בלי כרטיסים מעוגלים.",
+  description: "תבנית סוכנות חדה: הירו טיפוגרפי בלי תמונה, פס חיפוש, מונים חיים וצבע כחול חשמלי — שונה לגמרי משאר התבניות.",
   thumbnail: React.createElement(KeyoraThumbnail),
   preview: React.createElement(KeyoraPreview),
   component: KeyoraPages, Component: KeyoraPages,

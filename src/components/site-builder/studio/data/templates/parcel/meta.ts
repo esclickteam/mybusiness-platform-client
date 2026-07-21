@@ -9,13 +9,13 @@ import { parcelSchema } from "./schema";
 import { parcelDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#6B5A2E", secondary: "#A8945A", accent: "#3D3418",
-  background: "#F3EFE6", surface: "#E7E1D2", text: "#243018", muted: "#6E684F", dark: "#16140C",
+  primary: "#6b5a2e", secondary: "#6e684f", accent: "#6b5a2e",
+  background: "#efe9da", surface: "#e4dcc8", text: "#243018", muted: "#6e684f", dark: "#16140c",
 };
 
 export const parcelSeed = {
   id: "parcel", key: "parcel", name: "Parcel", title: "Parcel",
-  description: "תבנית קרקעות ומגרשים: פרגמנט וזית, פריסת מגזין דו-טורית, בלי כרטיסים ובלי טבלאות.",
+  description: "תבנית מגרשים: מספר דונמים ענק כהירו, רקע פרגמנט עם רשת, זית — פריסת מגזין שונה לגמרי.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (parcelDefaultData as any).heroImage,
   heroTitle: (parcelDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const parcelSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "bigNumberMap", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const parcelSeed = {
 export const parcelTemplate = {
   id: "parcel", key: "parcel", name: "Parcel", title: "Parcel", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית קרקעות ומגרשים: פרגמנט וזית, פריסת מגזין דו-טורית, בלי כרטיסים ובלי טבלאות.",
+  description: "תבנית מגרשים: מספר דונמים ענק כהירו, רקע פרגמנט עם רשת, זית — פריסת מגזין שונה לגמרי.",
   thumbnail: React.createElement(ParcelThumbnail),
   preview: React.createElement(ParcelPreview),
   component: ParcelPages, Component: ParcelPages,
