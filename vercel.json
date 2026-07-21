@@ -9,7 +9,7 @@
       }
     },
     {
-      "src": "api/google-html.js",
+      "src": "api/google-html.cjs",
       "use": "@vercel/node"
     }
   ],
@@ -40,13 +40,13 @@
   "routes": [
     {
       "src": "^/google([a-z0-9]+)\\.html$",
-      "dest": "/api/google-html?file=google$1.html"
+      "dest": "/api/google-html.cjs?file=google$1.html"
     },
     {
       "src": "^/google([a-z0-9]+)$",
-      "dest": "/api/google-html?file=google$1.html"
+      "dest": "/api/google-html.cjs?file=google$1.html"
     },
-    { "src": "^/api/google-html$", "dest": "/api/google-html.js" },
+    { "src": "^/api/google-html$", "dest": "/api/google-html.cjs" },
     { "src": "^/api/(.*)$", "dest": "https://api.bizuply.com/api/$1" },
     { "src": "^/(.*)$", "dest": "/index.html" }
   ],
