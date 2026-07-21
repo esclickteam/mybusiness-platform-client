@@ -13,12 +13,20 @@ const WRAPPER_DOM_VALUE = "dom";
 const CHEVRON_ATTR = "data-bizuply-nav-chevron";
 
 const NAV_SUBMENU_CSS = `
+/* Keep header row layout intact — dropdown overlays, never expands the bar */
 [${WRAPPER_ATTR}] {
   position: relative;
   display: inline-flex;
-  flex-direction: column;
-  align-items: stretch;
+  align-items: center;
+  vertical-align: middle;
   overflow: visible;
+}
+
+header,
+nav,
+[data-template-section-type="header"],
+[data-section-kind="header"] {
+  overflow: visible !important;
 }
 
 [${WRAPPER_ATTR}] > :first-child {
@@ -47,22 +55,27 @@ const NAV_SUBMENU_CSS = `
   margin-top: 0.15em;
 }
 
-[${SUBMENU_ATTR}="true"] {
+[${SUBMENU_ATTR}="true"],
+header [${SUBMENU_ATTR}="true"],
+[data-template-section-type="header"] [${SUBMENU_ATTR}="true"] {
+  position: absolute;
+  inset-inline-start: 0;
+  top: calc(100% + 0.35rem);
   display: none;
   flex-direction: column;
   align-items: stretch;
   gap: 0.15rem;
-  min-width: max(10rem, 100%);
+  min-width: max(11rem, 100%);
   padding: 0.45rem 0.35rem;
   margin: 0;
   list-style: none;
-  background: #ffffff;
+  background: #ffffff !important;
   color: #111827 !important;
   -webkit-text-fill-color: #111827 !important;
-  border: 1px solid rgba(15, 23, 42, 0.1);
+  border: 1px solid rgba(15, 23, 42, 0.12);
   border-radius: 0.65rem;
-  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
-  z-index: 80;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.18);
+  z-index: 200;
   pointer-events: auto;
 }
 
@@ -70,32 +83,6 @@ const NAV_SUBMENU_CSS = `
 [${WRAPPER_ATTR}]:hover > [${SUBMENU_ATTR}="true"],
 [${WRAPPER_ATTR}]:focus-within > [${SUBMENU_ATTR}="true"] {
   display: flex;
-}
-
-@media (min-width: 768px) {
-  [${WRAPPER_ATTR}] > [${SUBMENU_ATTR}="true"] {
-    position: absolute;
-    inset-inline-start: 0;
-    /* Keep hover bridge: no empty gap between trigger and menu */
-    top: 100%;
-    padding-top: 0.55rem;
-    background: transparent;
-    border: 0;
-    box-shadow: none;
-  }
-
-  [${WRAPPER_ATTR}] > [${SUBMENU_ATTR}="true"]::before {
-    content: "";
-    position: absolute;
-    inset-inline: 0;
-    top: 0.55rem;
-    bottom: 0;
-    background: #ffffff;
-    border: 1px solid rgba(15, 23, 42, 0.1);
-    border-radius: 0.65rem;
-    box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
-    z-index: -1;
-  }
 }
 
 [${SUBMENU_ATTR}="true"] a,

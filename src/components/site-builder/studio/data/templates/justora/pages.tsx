@@ -5,6 +5,10 @@ import {
   useTemplatePageNavigation,
 } from "../shared/useTemplatePageNavigation";
 import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
+import {
+  buildNavTreeFromSitePages,
+  type SiteNavTreeItem,
+} from "../../../visual-editor/utils/syncNavWithSitePages";
 
 export const justoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -157,6 +161,83 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function normalizeJustoraNavKey(value: unknown) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+|\/+$/g, "");
+}
+
+function findJustoraNavTreeItem(
+  tree: SiteNavTreeItem[],
+  pageId: string,
+  label: string,
+): SiteNavTreeItem | null {
+  const idKey = normalizeJustoraNavKey(pageId);
+  const labelKey = String(label || "")
+    .trim()
+    .toLowerCase();
+
+  return (
+    tree.find((item) => {
+      const itemId = normalizeJustoraNavKey(item.id);
+      const itemSlug = normalizeJustoraNavKey(item.slug);
+      const itemTitle = String(item.title || "")
+        .trim()
+        .toLowerCase();
+      return (
+        itemId === idKey ||
+        itemSlug === idKey ||
+        (labelKey && itemTitle === labelKey)
+      );
+    }) || null
+  );
+}
+
+function buildJustoraHeaderNav(data: Record<string, any>) {
+  const builtins: Array<[string, string]> = [
+    ["home", getValue(data, "navHome")],
+    ["about", getValue(data, "navAbout")],
+    ["practice", getValue(data, "navPractice")],
+    ["lawyers", getValue(data, "navLawyers")],
+    ["cases", getValue(data, "navCases")],
+    ["blog", getValue(data, "navBlog")],
+    ["contact", getValue(data, "navContact")],
+  ];
+
+  const tree = Array.isArray(data.__navTree)
+    ? (data.__navTree as SiteNavTreeItem[])
+    : buildNavTreeFromSitePages(data.__sitePages);
+
+  const matchedIds = new Set<string>();
+  const items = builtins.map(([id, label]) => {
+    const treeItem = findJustoraNavTreeItem(tree, id, label);
+    if (treeItem?.id) matchedIds.add(String(treeItem.id));
+    return {
+      id,
+      label: String(treeItem?.title || label || id),
+      href: getJustoraHref(id),
+      isBuiltin: true,
+      subpages: Array.isArray(treeItem?.subpages) ? treeItem.subpages : [],
+    };
+  });
+
+  tree.forEach((item) => {
+    if (matchedIds.has(String(item.id))) return;
+    const slug = normalizeJustoraNavKey(item.slug || item.id);
+    if (justoraAllowedPages.includes(slug)) return;
+    items.push({
+      id: String(item.id),
+      label: String(item.title || item.slug || item.id),
+      href: String(item.href || `/${item.slug || item.id}`),
+      isBuiltin: false,
+      subpages: Array.isArray(item.subpages) ? item.subpages : [],
+    });
+  });
+
+  return items;
+}
+
 function getPageTitle(data: Record<string, any>, type: string) {
   if (type === "about") return getValue(data, "navAbout");
   if (type === "practice") return getValue(data, "navPractice");
@@ -233,8 +314,31 @@ function JustoraButtonTextFix() {
         color: #fff6e9 !important;
       }
 
-      /* Nested Site Menu items sit on a white panel — keep dark readable text */
-      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"],
+      /* Nested Site Menu: cream panel under the header link, dark readable text */
+      [data-template-id^="justora"] header,
+      [data-template-id^="justora"] header nav {
+        overflow: visible !important;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-item] {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] {
+        position: absolute !important;
+        inset-inline-start: 0;
+        top: calc(100% + 0.4rem) !important;
+        z-index: 220 !important;
+        min-width: 12rem;
+        padding: 0.4rem !important;
+        background: #fff6e9 !important;
+        border: 1px solid rgba(43, 27, 29, 0.12) !important;
+        border-radius: 1rem !important;
+        box-shadow: 0 16px 36px rgba(23, 16, 15, 0.22) !important;
+      }
+
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a,
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] button,
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a:hover,
@@ -244,6 +348,11 @@ function JustoraButtonTextFix() {
         color: #2b1b1d !important;
         -webkit-text-fill-color: #2b1b1d !important;
         opacity: 1 !important;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] a:hover,
+      [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] button:hover {
+        background: rgba(43, 27, 29, 0.08) !important;
       }
 
       [data-template-id^="justora"] header a[class*="bg-[#fff6e9]"],
@@ -300,25 +409,103 @@ function Header({
   openConsultation: () => void;
 }) {
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  const nav = [
-    ["home", getValue(data, "navHome")],
-    ["about", getValue(data, "navAbout")],
-    ["practice", getValue(data, "navPractice")],
-    ["lawyers", getValue(data, "navLawyers")],
-    ["cases", getValue(data, "navCases")],
-    ["blog", getValue(data, "navBlog")],
-    ["contact", getValue(data, "navContact")],
-  ];
+  const nav = useMemo(() => buildJustoraHeaderNav(data), [data]);
 
   function handleNavigate(id: string) {
     setCurrentPage(id);
     setMobileOpen(false);
   }
 
+  function renderNavLink(
+    item: {
+      id: string;
+      label: string;
+      href: string;
+      isBuiltin: boolean;
+      subpages: SiteNavTreeItem[];
+    },
+    opts?: { mobile?: boolean },
+  ) {
+    const mobile = Boolean(opts?.mobile);
+    const isActive = currentPage === item.id;
+    const trigger = (
+      <a
+        href={item.href}
+        onClick={(event) => {
+          if (shouldUseNativeJustoraNavigation()) return;
+          if (!item.isBuiltin && item.href && item.href !== "#") {
+            // Custom Site Pages keep real URLs
+            setMobileOpen(false);
+            return;
+          }
+          event.preventDefault();
+          handleNavigate(item.id);
+        }}
+        className={cx(
+          mobile
+            ? "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition"
+            : "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
+          isActive
+            ? mobile
+              ? "bg-[#fff6e9] !text-[#2b1b1d]"
+              : "bg-[#fff6e9] !text-[#2b1b1d] shadow-md"
+            : mobile
+              ? "!text-[#fff6e9] hover:bg-white/10"
+              : "!text-[#fff6e9] hover:bg-white/10 hover:!text-white",
+        )}
+        aria-haspopup={item.subpages.length ? "true" : undefined}
+        data-site-page-id={item.id}
+      >
+        {item.label}
+      </a>
+    );
+
+    if (!item.subpages.length) {
+      return <React.Fragment key={item.id}>{trigger}</React.Fragment>;
+    }
+
+    return (
+      <div
+        key={item.id}
+        data-bizuply-nav-item="react"
+        className={mobile ? "relative" : undefined}
+      >
+        {trigger}
+        <div data-bizuply-nav-submenu="true" role="menu">
+          {item.subpages.map((child) => {
+            const childHref =
+              String(child.href || "").trim() ||
+              `/${child.slug || child.id}`;
+            const childId = String(child.id || child.slug || "");
+            return (
+              <a
+                key={childId}
+                href={childHref}
+                role="menuitem"
+                data-site-page-id={childId}
+                data-visual-link-href={childHref}
+                data-bizuply-public-href={childHref}
+                data-link-url={childHref}
+                data-bizuply-public-link="true"
+                onClick={() => setMobileOpen(false)}
+                style={{
+                  color: "#2b1b1d",
+                  WebkitTextFillColor: "#2b1b1d",
+                  opacity: 1,
+                }}
+              >
+                {child.title || child.slug || child.id}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-white/10 bg-[#2b1b1d]/96 backdrop-blur-2xl">
-      <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 px-5 py-4 lg:px-8">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 overflow-visible border-b border-white/10 bg-[#2b1b1d]/96 backdrop-blur-2xl">
+      <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-4 overflow-visible px-5 py-4 lg:px-8">
         <a
           href={getJustoraHref("home")}
           onClick={(event) => {
@@ -337,26 +524,8 @@ function Header({
           </span>
         </a>
 
-        <nav className="hidden items-center gap-1 rounded-full border border-white/12 bg-white/10 p-1 shadow-sm backdrop-blur-xl lg:flex">
-          {nav.map(([id, label]) => (
-            <a
-              key={id}
-              href={getJustoraHref(id)}
-              onClick={(event) => {
-                if (shouldUseNativeJustoraNavigation()) return;
-                event.preventDefault();
-                handleNavigate(id);
-              }}
-              className={cx(
-                "rounded-full px-4 py-2 text-sm font-semibold transition duration-300",
-                currentPage === id
-                  ? "bg-[#fff6e9] !text-[#2b1b1d] shadow-md"
-                  : "!text-[#fff6e9] hover:bg-white/10 hover:!text-white",
-              )}
-            >
-              {label}
-            </a>
-          ))}
+        <nav className="hidden items-center gap-1 overflow-visible rounded-full border border-white/12 bg-white/10 p-1 shadow-sm backdrop-blur-xl lg:flex">
+          {nav.map((item) => renderNavLink(item))}
         </nav>
 
         <div className="flex items-center gap-2">
@@ -381,25 +550,7 @@ function Header({
       {mobileOpen ? (
         <div className="border-t border-white/10 bg-[#2b1b1d]/98 px-5 pb-5 backdrop-blur-2xl lg:hidden">
           <div className="grid gap-2 rounded-[28px] border border-white/10 bg-white/8 p-2 shadow-xl">
-            {nav.map(([id, label]) => (
-              <a
-                key={id}
-                href={getJustoraHref(id)}
-                onClick={(event) => {
-                  if (shouldUseNativeJustoraNavigation()) return;
-                  event.preventDefault();
-                  handleNavigate(id);
-                }}
-                className={cx(
-                  "rounded-2xl px-4 py-3 text-right text-sm font-semibold transition",
-                  currentPage === id
-                    ? "bg-[#fff6e9] !text-[#2b1b1d]"
-                    : "!text-[#fff6e9] hover:bg-white/10",
-                )}
-              >
-                {label}
-              </a>
-            ))}
+            {nav.map((item) => renderNavLink(item, { mobile: true }))}
 
             <button
               type="button"
