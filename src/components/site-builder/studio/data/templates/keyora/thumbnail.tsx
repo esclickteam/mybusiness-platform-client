@@ -1,13 +1,18 @@
 import React from "react";
 export default function KeyoraThumbnail() {
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden" style={{ background: "#f4f7fb", color: "#122033" }}>
-      <div className="absolute inset-0 opacity-45" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1800&q=85)", backgroundSize: "cover", backgroundPosition: "center" }} />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #f4f7fb 18%, transparent 72%)" }} />
-      <div className="relative z-10 flex h-full min-h-[260px] flex-col justify-end p-5">
-        <p className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: "#0b5fff" }}>סוכנות נדל״ן</p>
-        <h3 className="mt-2 text-3xl font-bold leading-none" style={{ fontFamily: '"Rubik", serif' }}>Keyora</h3>
-        <p className="mt-2 max-w-[230px] text-xs leading-5 opacity-85">קיורה מחברת בין קונים למוכרים עם תהליך ברור, נתונים …</p>
+    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
+      <div className="flex h-full min-h-[260px] flex-col justify-between p-5" style={{ background: "#f5f8fc", color: "#0f1b2d" }}>
+        <div>
+          <p className="text-[10px] tracking-[0.2em]" style={{ color: "#0b5fff" }}>סוכנות נדל״ן מודרנית</p>
+          <h3 className="mt-3 text-4xl font-black leading-none" style={{ fontFamily: '"Rubik"', color: "#0b5fff" }}>Keyora</h3>
+          <p className="mt-3 text-xs opacity-70">חיפוש · תקציב · חדרים</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2 border-t pt-3 text-center" style={{ borderColor: "rgba(15,27,45,0.12)" }}>
+          <div><div className="text-lg font-bold" style={{ color: "#0b5fff" }}>240+</div><div className="text-[10px] opacity-60">נכסים</div></div>
+          <div><div className="text-lg font-bold" style={{ color: "#0b5fff" }}>48ש׳</div><div className="text-[10px] opacity-60">מענה</div></div>
+          <div><div className="text-lg font-bold" style={{ color: "#0b5fff" }}>96%</div><div className="text-[10px] opacity-60">שביעות</div></div>
+        </div>
       </div>
     </div>
   );

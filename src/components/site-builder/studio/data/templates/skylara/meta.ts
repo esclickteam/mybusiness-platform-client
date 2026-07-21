@@ -9,13 +9,13 @@ import { skylaraSchema } from "./schema";
 import { skylaraDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#39D0FF", secondary: "#1A6F8C", accent: "#9AE8FF",
-  background: "#071525", surface: "#0D2136", text: "#E8F1FF", muted: "#7F97B0", dark: "#030A12",
+  primary: "#39d0ff", secondary: "#7f97b0", accent: "#39d0ff",
+  background: "#06101c", surface: "#0c1a2b", text: "#e8f1ff", muted: "#7f97b0", dark: "#02070e",
 };
 
 export const skylaraSeed = {
   id: "skylara", key: "skylara", name: "Skylara", title: "Skylara",
-  description: "תבנית נדל״ן למגדלים וקו רקיע: כחול לילה וציאן, פיצול חד, רשימות דירות במגדלים.",
+  description: "תבנית מגדלים: פס אנכי גבוה, קומות ממוספרות, ציאן על חצות, תנועת עלייה.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (skylaraDefaultData as any).heroImage,
   heroTitle: (skylaraDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const skylaraSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "verticalTower", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const skylaraSeed = {
 export const skylaraTemplate = {
   id: "skylara", key: "skylara", name: "Skylara", title: "Skylara", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית נדל״ן למגדלים וקו רקיע: כחול לילה וציאן, פיצול חד, רשימות דירות במגדלים.",
+  description: "תבנית מגדלים: פס אנכי גבוה, קומות ממוספרות, ציאן על חצות, תנועת עלייה.",
   thumbnail: React.createElement(SkylaraThumbnail),
   preview: React.createElement(SkylaraPreview),
   component: SkylaraPages, Component: SkylaraPages,

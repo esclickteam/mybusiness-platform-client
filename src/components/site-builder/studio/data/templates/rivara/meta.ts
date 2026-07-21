@@ -9,13 +9,13 @@ import { rivaraSchema } from "./schema";
 import { rivaraDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#1F7A78", secondary: "#4EAAA7", accent: "#0F4E4C",
-  background: "#EEF6F5", surface: "#DFECEB", text: "#16323A", muted: "#5F7578", dark: "#0D1E22",
+  primary: "#1f7a78", secondary: "#4f6d72", accent: "#1f7a78",
+  background: "#e8f3f2", surface: "#d9ecea", text: "#12343a", muted: "#4f6d72", dark: "#0b1f24",
 };
 
 export const rivaraSeed = {
   id: "rivara", key: "rivara", name: "Rivara", title: "Rivara",
-  description: "תבנית נדל״ן לנכסי טבע ונהר: טורקיז ערפילי, פסים אופקיים רחבים, עיצוב חד ונקי.",
+  description: "תבנית טבע/מים: פסי תמונה אופקיים רחבים, טורקיז ערפילי, תנועת גלים עדינה.",
   category: "real-estate", categoryLabel: "נדל״ן", niche: "real-estate", layout: "full",
   image: (rivaraDefaultData as any).heroImage,
   heroTitle: (rivaraDefaultData as any).heroTitle,
@@ -23,7 +23,7 @@ export const rivaraSeed = {
   palette,
   blocks: [
     { type: "header", variant: "sharp-nav", title: "Header" },
-    { type: "hero", variant: "full-bleed", title: "Hero" },
+    { type: "hero", variant: "waveBands", title: "Hero" },
     { type: "services", variant: "list", title: "Listings" },
     { type: "contact", variant: "plain-form", title: "Contact" },
     { type: "footer", variant: "minimal", title: "Footer" },
@@ -36,7 +36,7 @@ export const rivaraSeed = {
 export const rivaraTemplate = {
   id: "rivara", key: "rivara", name: "Rivara", title: "Rivara", author: "Bizuply", priceLabel: "כלול",
   category: "real-estate", categoryLabel: "נדל״ן", badge: "חדש",
-  description: "תבנית נדל״ן לנכסי טבע ונהר: טורקיז ערפילי, פסים אופקיים רחבים, עיצוב חד ונקי.",
+  description: "תבנית טבע/מים: פסי תמונה אופקיים רחבים, טורקיז ערפילי, תנועת גלים עדינה.",
   thumbnail: React.createElement(RivaraThumbnail),
   preview: React.createElement(RivaraPreview),
   component: RivaraPages, Component: RivaraPages,

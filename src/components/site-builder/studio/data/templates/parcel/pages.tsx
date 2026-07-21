@@ -30,10 +30,10 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
   const nav = parcelPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
-      style={{ background: "#f3efe6f2", borderColor: "rgba(36,48,24,0.16)", backdropFilter: "blur(12px)" }}>
+      style={{ background: "#efe9daf2", borderColor: "rgba(36,48,24,0.16)", backdropFilter: "blur(12px)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3 text-right">
-          <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#6b5a2e", color: "#16140C" }}>{v(data, "logoText")}</span>
+          <span className="grid h-10 w-10 place-items-center text-sm font-bold" style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "logoText")}</span>
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
         <nav className="hidden items-center gap-6 lg:flex">
@@ -44,7 +44,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         </nav>
         <div className="flex items-center gap-2">
           <button type="button" onClick={onCta} className="hidden px-5 py-2.5 text-sm font-bold sm:inline-flex"
-            style={{ background: "#6b5a2e", color: "#f3efe6" }}>{v(data, "heroPrimary")}</button>
+            style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "heroPrimary")}</button>
           <button type="button" onClick={() => setOpen((x) => !x)} className="grid h-10 w-10 place-items-center border lg:hidden" style={{ borderColor: "rgba(36,48,24,0.16)" }}>{open ? "×" : "☰"}</button>
         </div>
       </div>
@@ -69,134 +69,46 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
       <input className={field} style={{ borderColor: "rgba(36,48,24,0.16)", color: "#243018" }} placeholder="טלפון" />
       <input className={field} style={{ borderColor: "rgba(36,48,24,0.16)", color: "#243018" }} placeholder="אימייל" />
       <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(36,48,24,0.16)", color: "#243018" }} placeholder="מה אתם מחפשים?" />
-      <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#6b5a2e", color: "#f3efe6" }}>{v(data, "cta")}</button>
+      <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "cta")}</button>
     </form>
   );
 }
 
 function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
-  const layout = "magazine";
-  const actions = (
-    <div className="mt-8 flex flex-wrap gap-3">
-      <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#6b5a2e", color: "#f3efe6" }}>{v(data, "heroPrimary")}</button>
-      <button type="button" onClick={() => goTo("plots")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(36,48,24,0.16)" }}>{v(data, "heroSecondary")}</button>
-    </div>
-  );
-
-  if (layout === "type") {
-    return (
-      <section className="relative isolate min-h-[88vh] overflow-hidden">
-        <img src={v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(100deg, #f3efe6f5 0%, #f3efe690 50%, transparent 100%)" }} />
-        <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-end px-5 pb-16 pt-28 lg:px-8">
-          <p className="text-xs font-semibold tracking-[0.26em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
-          <h1 className="tpl-display mt-4 max-w-4xl text-6xl font-extrabold leading-[0.95] md:text-8xl">{v(data, "heroTitle")}</h1>
-          <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
-          {actions}
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === "poster") {
-    return (
-      <section className="mx-auto grid max-w-7xl lg:grid-cols-[0.95fr_1.05fr]">
-        <div className="flex min-h-[70vh] flex-col justify-between border p-8 lg:p-12" style={{ borderColor: "rgba(36,48,24,0.16)", background: "#e7e1d2" }}>
-          <div>
-            <p className="text-xs font-semibold tracking-[0.26em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
-            <h1 className="tpl-display mt-8 text-6xl font-bold leading-[0.95] md:text-7xl">{v(data, "heroTitle")}</h1>
-          </div>
-          <div>
-            <p className="max-w-md text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
-            {actions}
-          </div>
-        </div>
-        <div className="min-h-[50vh] border-t lg:border-t-0 lg:border-r" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
-          <img src={v(data, "heroImage")} alt="" className="h-full w-full object-cover lg:min-h-[70vh]" />
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === "magazine") {
-    return (
-      <section className="mx-auto max-w-7xl px-5 py-14 lg:px-8 lg:py-20">
-        <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
-          <div>
-            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
-            <h1 className="tpl-display mt-4 text-5xl font-bold leading-[1.02] md:text-7xl">{v(data, "heroTitle")}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
-            {actions}
-          </div>
-          <div className="min-h-[340px] border" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
-            <img src={v(data, "heroImage")} alt="" className="h-full w-full object-cover" />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
-  if (layout === "editorial" || layout === "airy" || layout === "bands" || layout === "split") {
-    return (
-      <section className="relative isolate overflow-hidden">
-        <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="flex flex-col justify-center px-5 py-16 lg:px-8 lg:py-24">
-            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
-            <h1 className="tpl-display mt-5 text-5xl font-bold leading-[1.02] md:text-7xl">{v(data, "heroTitle")}</h1>
-            <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
-            {actions}
-          </div>
-          <div className="min-h-[420px]">
-            <img src={v(data, "heroImage")} alt="" className="h-full w-full object-cover" />
-          </div>
-        </div>
-      </section>
-    );
-  }
-
   return (
-    <section className="relative isolate min-h-[86vh] overflow-hidden">
-      <img src={v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(105deg, #f3efe6f2 0%, #f3efe695 46%, transparent 78%)" }} />
-      <div className="relative z-10 mx-auto flex min-h-[86vh] max-w-7xl items-end px-5 pb-16 pt-28 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold tracking-[0.26em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
-          <h1 className="tpl-display mt-4 text-6xl font-bold leading-[0.95] md:text-8xl">{v(data, "heroTitle")}</h1>
-          <p className="mt-6 max-w-lg text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
-          {actions}
+      <section className="relative overflow-hidden px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#efe9da" }}>
+        <div className="pointer-events-none absolute inset-0 opacity-30" style={{ backgroundImage: "linear-gradient(rgba(36,48,24,0.16) 1px, transparent 1px), linear-gradient(90deg, rgba(36,48,24,0.16) 1px, transparent 1px)", backgroundSize: "48px 48px" }} />
+        <div className="relative z-10 mx-auto grid max-w-7xl items-end gap-10 lg:grid-cols-[1.1fr_0.9fr]">
+          <div>
+            <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#6b5a2e" }}>{v(data, "heroEyebrow")}</p>
+            <div className="tpl-display tpl-rise-2 mt-4 text-[7rem] font-bold leading-none md:text-[10rem]" style={{ color: "#6b5a2e" }}>{v(data, "bigStat")}</div>
+            <p className="mt-2 text-sm tracking-[0.2em]" style={{ color: "#6e684f" }}>{v(data, "bigStatLabel")}</p>
+            <h1 className="tpl-display tpl-rise-3 mt-8 text-5xl font-bold leading-[1.05] md:text-6xl">{v(data, "heroTitle")}</h1>
+            <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "heroSubtitle")}</p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "heroPrimary")}</button>
+              <button type="button" onClick={() => goTo("plots")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(36,48,24,0.16)" }}>{v(data, "heroSecondary")}</button>
+            </div>
+          </div>
+          <div className="tpl-float border p-3" style={{ borderColor: "rgba(36,48,24,0.16)", background: "#e4dcc8" }}>
+            <img src={v(data, "heroImage")} alt="" className="aspect-[4/5] w-full object-cover" />
+            <p className="mt-3 px-2 pb-2 text-xs tracking-[0.18em]" style={{ color: "#6e684f" }}>PLOT · SURVEY · PLAN</p>
+          </div>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function ImageBand({ title, text, image, reverse = false }: { title: string; text: string; image: string; reverse?: boolean }) {
-  return (
-    <section className="border-t" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
-      <div className={cx("mx-auto grid max-w-7xl lg:grid-cols-2", reverse && "lg:[&>*:first-child]:order-2")}>
-        <div className="flex flex-col justify-center px-5 py-16 lg:px-12 lg:py-24">
-          <h2 className="tpl-display text-4xl font-bold leading-[1.08] md:text-5xl">{title}</h2>
-          <p className="mt-6 max-w-md text-base leading-8" style={{ color: "#6e684f" }}>{text}</p>
-        </div>
-        <div className="min-h-[320px] lg:min-h-[500px]"><img src={image} alt="" className="h-full w-full object-cover" /></div>
-      </div>
-    </section>
+      </section>
   );
 }
 
 function ItemsList({ data }: { data: Record<string, any> }) {
-  const items = [
-    [v(data, "item1Title"), v(data, "item1Meta"), v(data, "item1Text")],
-    [v(data, "item2Title"), v(data, "item2Meta"), v(data, "item2Text")],
-    [v(data, "item3Title"), v(data, "item3Meta"), v(data, "item3Text")],
-  ];
+  const items = [1, 2, 3].map((i) => [v(data, `item${i}Title`), v(data, `item${i}Meta`), v(data, `item${i}Text`)]);
   return (
-    <section className="border-t px-5 py-20 lg:px-8 lg:py-28" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
       <div className="mx-auto max-w-7xl">
-        <h2 className="tpl-display text-4xl font-bold md:text-5xl">{v(data, "roomsTitle")}</h2>
-        <div className="mt-12">
+        <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#6b5a2e" }}>{v(data, "brandName")}</p>
+        <h2 className="tpl-display mt-3 text-4xl font-bold md:text-5xl">נכסים נבחרים</h2>
+        <div className="mt-10">
           {items.map(([title, meta, text]) => (
-            <div key={title} className="grid gap-3 border-t py-8 md:grid-cols-[1fr_0.55fr_1.2fr] md:items-baseline" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
+            <div key={title} className="grid gap-3 border-t py-8 md:grid-cols-[1.2fr_0.6fr_1.2fr] md:items-baseline" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
               <h3 className="tpl-display text-2xl font-bold">{title}</h3>
               <p className="text-sm font-semibold" style={{ color: "#6b5a2e" }}>{meta}</p>
               <p className="text-base leading-7" style={{ color: "#6e684f" }}>{text}</p>
@@ -212,11 +124,12 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
-        <div className="px-5 py-16 lg:px-12 lg:py-24">
-          <h2 className="tpl-display text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
+        <div className="px-5 py-16 lg:px-8 lg:py-20">
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#6b5a2e" }}>אודות</p>
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "aboutText")}</p>
         </div>
-        <div className="min-h-[360px]"><img src={v(data, "aboutImage")} alt="" className="h-full w-full object-cover" /></div>
+        <div className="min-h-[360px] overflow-hidden"><img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" /></div>
       </div>
     </section>
   );
@@ -224,15 +137,16 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
 
 function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   return (
-    <section className="border-t px-5 py-20 lg:px-8 lg:py-28" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(36,48,24,0.16)", background: "#e4dcc8" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <h2 className="tpl-display text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
-          <p className="mt-5 max-w-md text-base leading-8" style={{ color: "#6e684f" }}>{v(data, "contactText")}</p>
-          <div className="mt-10 space-y-3 text-sm">
-            <p><span style={{ color: "#6e684f" }}>טלפון · </span>{v(data, "phone")}</p>
-            <p><span style={{ color: "#6e684f" }}>אימייל · </span>{v(data, "email")}</p>
-            <p><span style={{ color: "#6e684f" }}>כתובת · </span>{v(data, "address")}</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#6b5a2e" }}>יצירת קשר</p>
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
+          <p className="mt-6 text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "contactText")}</p>
+          <div className="mt-8 space-y-2 text-sm" style={{ color: "#6e684f" }}>
+            <p>{v(data, "phone")}</p>
+            <p>{v(data, "email")}</p>
+            <p>{v(data, "address")}</p>
           </div>
         </div>
         <ContactForm data={data} onCta={onCta} />
@@ -245,8 +159,8 @@ function Footer({ data }: { data: Record<string, any> }) {
   return (
     <footer className="border-t px-5 py-8 lg:px-8" style={{ borderColor: "rgba(36,48,24,0.16)" }}>
       <div className="mx-auto flex max-w-7xl flex-col gap-3 text-sm md:flex-row md:items-center md:justify-between" style={{ color: "#6e684f" }}>
-        <p>© {new Date().getFullYear()} {v(data, "brandName")}</p>
-        <p>תבנית Parcel · Bizuply Studio</p>
+        <span className="tpl-display text-lg font-bold" style={{ color: "#243018" }}>{v(data, "brandName")}</span>
+        <span>{v(data, "email")} · {v(data, "phone")}</span>
       </div>
     </footer>
   );
@@ -256,8 +170,6 @@ function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id:
   return (
     <>
       <Hero data={data} goTo={goTo} onCta={onCta} />
-      <ImageBand title={v(data, "bandOneTitle")} text={v(data, "bandOneText")} image={v(data, "bandOneImage")} />
-      <ImageBand title={v(data, "bandTwoTitle")} text={v(data, "bandTwoText")} image={v(data, "bandTwoImage")} reverse />
       <ItemsList data={data} />
       <AboutBlock data={data} />
       <ContactBlock data={data} onCta={onCta} />
@@ -294,17 +206,17 @@ export default function ParcelPages({
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
-  for (const p of parcelPages) {
-    if (p.id === "home") continue;
-    pageContent[p.id] = (
-      <InnerPage data={merged} title={p.label} onCta={() => goTo("contact")}>
-        {p.id.includes("contact") ? null : (<><ItemsList data={merged} /><AboutBlock data={merged} /></>)}
+  for (const pg of parcelPages) {
+    if (pg.id === "home") continue;
+    pageContent[pg.id] = (
+      <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
+        {pg.id.includes("contact") ? null : <ItemsList data={merged} />}
       </InnerPage>
     );
   }
   return (
     <div dir="rtl" data-template-id={mode === "preview" ? "parcel-preview" : "parcel"} className="min-h-screen w-full overflow-x-hidden"
-      style={{ background: "#f3efe6", color: "#243018" }}>
+      style={{ background: "#efe9da", color: "#243018" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

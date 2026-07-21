@@ -1,13 +1,12 @@
 import React from "react";
 export default function UrbanixThumbnail() {
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden" style={{ background: "#1a1c1e", color: "#f2f2f0" }}>
-      <div className="absolute inset-0 opacity-45" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1800&q=85)", backgroundSize: "cover", backgroundPosition: "center" }} />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(to top, #1a1c1e 18%, transparent 72%)" }} />
-      <div className="relative z-10 flex h-full min-h-[260px] flex-col justify-end p-5">
-        <p className="text-[10px] font-semibold tracking-[0.2em]" style={{ color: "#c8f542" }}>דירות בעיר</p>
-        <h3 className="mt-2 text-3xl font-bold leading-none" style={{ fontFamily: '"Rubik", serif' }}>Urbanix</h3>
-        <p className="mt-2 max-w-[230px] text-xs leading-5 opacity-85">אורבניקס מתמחה בדירות במגדלים, פנטהאוזים עירוניים וה…</p>
+    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
+      <div className="relative h-full min-h-[260px] overflow-hidden p-5" style={{ background: "#141516", color: "#f2f2f0" }}>
+        <div className="absolute inset-y-0 left-0 w-1.5" style={{ background: "#c8f542" }} />
+        <p className="text-[10px] tracking-[0.2em]" style={{ color: "#c8f542" }}>CITY</p>
+        <h3 className="mt-2 text-5xl font-black leading-none" style={{ fontFamily: '"Rubik"', color: "#c8f542" }}>Urbanix</h3>
+        <div className="absolute bottom-0 inset-x-0 border-t px-3 py-2 text-[10px] font-bold tracking-[0.18em]" style={{ borderColor: "rgba(242,242,240,0.12)", background: "#1e2022", color: "#c8f542" }}>פלורנטין · רוטשילד · סיטי · יפו</div>
       </div>
     </div>
   );

@@ -1,0 +1,832 @@
+[
+  {
+    "id": "lotera",
+    "name": "Lotera",
+    "brand": "Lotera",
+    "logo": "L",
+    "niche": "נדל״ן יוקרה · חוף",
+    "desc": "תבנית קולנועית לנכסי חוף: הירו מלא מסך עם זום איטי, נייבי עמוק וכחול בהיר, תנועה ופריסה שונה לגמרי.",
+    "fonts": {
+      "display": "Frank+Ruhl+Libre:wght@500;700",
+      "displayCss": "\"Frank Ruhl Libre\""
+    },
+    "palette": {
+      "bg": "#07131f",
+      "surface": "#0f2133",
+      "text": "#eef5fb",
+      "muted": "#8fa8bd",
+      "primary": "#5eb4ff",
+      "primaryText": "#041018",
+      "line": "rgba(238,245,251,0.16)",
+      "dark": "#030910"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "listings",
+        "נכסים",
+        "/listings"
+      ],
+      [
+        "areas",
+        "אזורים",
+        "/areas"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "cinematic",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "הבית נפתח אל הים.",
+      "subtitle": "לוטרה בוחרת נכסים על קו המים — אור, אוויר, ושקט שעובדים בשבילכם.",
+      "primary": "תיאום סיור",
+      "secondary": "לנכסים",
+      "aboutTitle": "משרד קטן. נכסים מדויקים.",
+      "aboutText": "עובדים עם מספר מצומצם של לקוחות בכל רבעון — ליווי צמוד ואיכות בחירה גבוהה.",
+      "contactTitle": "מוכנים לראות נכס?",
+      "contactText": "ספרו תקציב ואזור — ונחזור עם התאמות ראשונות.",
+      "items": [
+        [
+          "פנטהאוז הרצליה",
+          "5 חד׳ · 180 מ״ר",
+          "מרפסת 360° ונוף פתוח לים."
+        ],
+        [
+          "וילה נתניה",
+          "6 חד׳ · חלקה 500",
+          "גינה פרטית ובריכה."
+        ],
+        [
+          "דירת גן ת״א",
+          "4 חד׳ · קו ראשון",
+          "חצר פרטית וגישה לטיילת."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "keyora",
+    "name": "Keyora",
+    "brand": "Keyora",
+    "logo": "K",
+    "niche": "סוכנות נדל״ן מודרנית",
+    "desc": "תבנית סוכנות חדה: הירו טיפוגרפי בלי תמונה, פס חיפוש, מונים חיים וצבע כחול חשמלי — שונה לגמרי משאר התבניות.",
+    "fonts": {
+      "display": "Rubik:wght@600;800",
+      "displayCss": "\"Rubik\""
+    },
+    "palette": {
+      "bg": "#f5f8fc",
+      "surface": "#ffffff",
+      "text": "#0f1b2d",
+      "muted": "#5b6b7c",
+      "primary": "#0b5fff",
+      "primaryText": "#ffffff",
+      "line": "rgba(15,27,45,0.12)",
+      "dark": "#0a1424"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "listings",
+        "נכסים",
+        "/listings"
+      ],
+      [
+        "process",
+        "תהליך",
+        "/process"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "typoSearch",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "מצאו נכס. בלי רעש.",
+      "subtitle": "קיורה מחברת קונים ומוכרים עם תהליך ברור, נתונים אמיתיים, ותשובה מהירה.",
+      "primary": "התחילו חיפוש",
+      "secondary": "דברו איתנו",
+      "aboutTitle": "סוכנות שבנויה על בהירות.",
+      "aboutText": "פחות סיורים מיותרים. יותר התאמות מדויקות.",
+      "contactTitle": "יש לכם דרישות?",
+      "contactText": "כתבו תקציב, אזור ומספר חדרים — ונחזור תוך יום עסקים.",
+      "items": [
+        [
+          "דירת 4 בלב העיר",
+          "₪3.2M",
+          "משופצת, מרפסת שמש, חניה."
+        ],
+        [
+          "פנטהאוז מגדל",
+          "₪7.8M",
+          "נוף פתוח, ממ״ד, מחסן."
+        ],
+        [
+          "דופלקס שקט",
+          "₪4.1M",
+          "גינה פרטית ושכנים מעטים."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "estateo",
+    "name": "Estateo",
+    "brand": "Estateo",
+    "logo": "E",
+    "niche": "נדל״ן פרטי · יוקרה",
+    "desc": "תבנית יוקרה אסימטרית: כרזה שחורה-זהב, כותרת ענקית, קווים מוזהבים נעים — מראה פרטי ויוקרתי.",
+    "fonts": {
+      "display": "Playfair+Display:wght@500;700",
+      "displayCss": "\"Playfair Display\""
+    },
+    "palette": {
+      "bg": "#100e0c",
+      "surface": "#1a1612",
+      "text": "#f4ecdf",
+      "muted": "#a89880",
+      "primary": "#d4af6a",
+      "primaryText": "#100e0c",
+      "line": "rgba(244,236,223,0.14)",
+      "dark": "#070605"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "estates",
+        "אחוזות",
+        "/estates"
+      ],
+      [
+        "private",
+        "פרטי",
+        "/private"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "posterOverlap",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "נכסים שלא מפרסמים.",
+      "subtitle": "אחוזות, בתים פרטיים ונכסי אספנות — בדיסקרטיות מלאה.",
+      "primary": "בקשת גישה",
+      "secondary": "לתיק הנכסים",
+      "aboutTitle": "שירות פרטי. בלי רשימות ציבוריות.",
+      "aboutText": "התאמה אישית, סיורים סגורים, ומשא ומתן שקט.",
+      "contactTitle": "לשיחה פרטית",
+      "contactText": "השאירו פרטים קצרים — ניצור קשר רק אם יש התאמה.",
+      "items": [
+        [
+          "אחוזת כרמל",
+          "8 חד׳ · 1,200 מ״ר",
+          "נוף פנורמי ובריכת אינפיניטי."
+        ],
+        [
+          "וילה הרצליה פיתוח",
+          "7 חד׳ · מגרש דונם",
+          "חצר מוקפת ופרטיות מלאה."
+        ],
+        [
+          "פנטהאוז רוטשילד",
+          "5 חד׳ · קומה 18",
+          "גג פרטי ומעלית ישירה."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "homara",
+    "name": "Homara",
+    "brand": "Homara",
+    "logo": "H",
+    "niche": "בתים למשפחה",
+    "desc": "תבנית משפחתית רכה: תמונה עגולה במרכז, טקסט מתחת, ירוק אבן חם, אנימציות עדינות.",
+    "fonts": {
+      "display": "Assistant:wght@600;700",
+      "displayCss": "\"Assistant\""
+    },
+    "palette": {
+      "bg": "#f3f0e8",
+      "surface": "#ebe6da",
+      "text": "#243028",
+      "muted": "#6d7568",
+      "primary": "#3f6f5a",
+      "primaryText": "#f3f0e8",
+      "line": "rgba(36,48,40,0.14)",
+      "dark": "#1a221c"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "homes",
+        "בתים",
+        "/homes"
+      ],
+      [
+        "neighborhoods",
+        "שכונות",
+        "/neighborhoods"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "circleCenter",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "בית שהילדים רצים בו החוצה.",
+      "subtitle": "הומרה מחפשת בתים עם חצר, בתי ספר קרובים, ושכונה שאפשר לגדול בה.",
+      "primary": "מצאו בית",
+      "secondary": "שכונות מומלצות",
+      "aboutTitle": "משפחות קודם. עסקאות אחר כך.",
+      "aboutText": "מתחילים מהחיים שלכם — ואז מוצאים את הבית שמתאים להם.",
+      "contactTitle": "ספרו איך נראה הבית שלכם",
+      "contactText": "חדרים, חצר, תקציב ואזור — ונחזור עם הצעות.",
+      "items": [
+        [
+          "בית רמת השרון",
+          "6 חד׳ · גינה",
+          "חצר גדולה וחניה כפולה."
+        ],
+        [
+          "קוטג׳ הוד השרון",
+          "5 חד׳ · מרתף",
+          "פינת משחקים וממ״ד."
+        ],
+        [
+          "בית גן כפר סבא",
+          "5 חד׳ · מגרש",
+          "שקט, עצים, ובית ספר קרוב."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "urbanix",
+    "name": "Urbanix",
+    "brand": "Urbanix",
+    "logo": "U",
+    "niche": "דירות בעיר",
+    "desc": "תבנית אורבנית קיצונית: טיפוגרפיה ענקית, פס שכונות רץ, בטון וליים זוהר.",
+    "fonts": {
+      "display": "Rubik:wght@700;900",
+      "displayCss": "\"Rubik\""
+    },
+    "palette": {
+      "bg": "#141516",
+      "surface": "#1e2022",
+      "text": "#f2f2f0",
+      "muted": "#9a9d98",
+      "primary": "#c8f542",
+      "primaryText": "#101210",
+      "line": "rgba(242,242,240,0.12)",
+      "dark": "#0a0b0c"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "apartments",
+        "דירות",
+        "/apartments"
+      ],
+      [
+        "towers",
+        "מגדלים",
+        "/towers"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "marqueeUrban",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1484154218962-a197022b5858?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "העיר. הדירה. הקצב.",
+      "subtitle": "אורבניקס מתמחה בדירות במגדלים, פנטהאוזים עירוניים ומיקומים עם דופק.",
+      "primary": "דירות פנויות",
+      "secondary": "מגדלים",
+      "aboutTitle": "נדל״ן בקצב העיר.",
+      "aboutText": "סינון לפי קומה, נוף, חניה ומחיר — בלי סיורים מיותרים.",
+      "contactTitle": "מחפשים דירה עכשיו?",
+      "contactText": "תקציב + אזור + מועד כניסה — ונשלח התאמות.",
+      "items": [
+        [
+          "דירת 3 רוטשילד",
+          "₪2.9M",
+          "קומה גבוהה, מרפסת, חניה."
+        ],
+        [
+          "סטודיו פלורנטין",
+          "₪1.7M",
+          "משופץ, תקרה גבוהה."
+        ],
+        [
+          "4 חדרים סיטי",
+          "₪4.4M",
+          "נוף מגדלים וממ״ד."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "rivara",
+    "name": "Rivara",
+    "brand": "Rivara",
+    "logo": "R",
+    "niche": "בתים ליד המים",
+    "desc": "תבנית טבע/מים: פסי תמונה אופקיים רחבים, טורקיז ערפילי, תנועת גלים עדינה.",
+    "fonts": {
+      "display": "Frank+Ruhl+Libre:wght@500;700",
+      "displayCss": "\"Frank Ruhl Libre\""
+    },
+    "palette": {
+      "bg": "#e8f3f2",
+      "surface": "#d9ecea",
+      "text": "#12343a",
+      "muted": "#4f6d72",
+      "primary": "#1f7a78",
+      "primaryText": "#e8f3f2",
+      "line": "rgba(18,52,58,0.12)",
+      "dark": "#0b1f24"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "waterfront",
+        "מול מים",
+        "/waterfront"
+      ],
+      [
+        "nature",
+        "טבע",
+        "/nature"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "waveBands",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1505691938895-1758d7feb511?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1449844908441-8829872d2607?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "לגור קרוב למים.",
+      "subtitle": "ריברה מחברת לבתים ליד נחלים, אגמים ופארקים — שקט טבעי בלי לוותר על נוחות.",
+      "primary": "נכסים ליד מים",
+      "secondary": "תיאום שיחה",
+      "aboutTitle": "טבע קרוב. חיים רגועים.",
+      "aboutText": "כל נכס נבדק לפי קרבה למים, פרטיות, ותחושת מרחב.",
+      "contactTitle": "מחפשים שקט ליד מים?",
+      "contactText": "ספרו איפה ומה חשוב לכם — ונחזור עם אפשרויות.",
+      "items": [
+        [
+          "בית ליד הנחל",
+          "5 חד׳ · גינה",
+          "מרפסת לשקיעה ומסלול הליכה."
+        ],
+        [
+          "וילה אגם",
+          "6 חד׳ · בריכה",
+          "נוף מים ופרטיות."
+        ],
+        [
+          "דירת גן פארק",
+          "4 חד׳ · חצר",
+          "גישה ישירה לשביל ירוק."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "villaire",
+    "name": "Villaire",
+    "brand": "Villaire",
+    "logo": "V",
+    "niche": "וילות פרטיות",
+    "desc": "תבנית וילות יוקרתית: שחור מלא, כותרת ממורכזת, תמונה קולנועית מתחת, קו שמפניה נמשך.",
+    "fonts": {
+      "display": "Cormorant+Garamond:wght@500;700",
+      "displayCss": "\"Cormorant Garamond\""
+    },
+    "palette": {
+      "bg": "#0a0a0a",
+      "surface": "#141414",
+      "text": "#f4efe6",
+      "muted": "#a89a86",
+      "primary": "#e2c7a0",
+      "primaryText": "#0a0a0a",
+      "line": "rgba(244,239,230,0.12)",
+      "dark": "#000000"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "villas",
+        "וילות",
+        "/villas"
+      ],
+      [
+        "architecture",
+        "אדריכלות",
+        "/architecture"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "centeredCinema",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "וילה. לא רק בית.",
+      "subtitle": "וילר מתמחה בוילות אדריכליות, מגרשים נדירים ונכסים שנבחרו בקפידה.",
+      "primary": "בקשת סיור",
+      "secondary": "לתיק הוילות",
+      "aboutTitle": "בחירה צרה. רמה גבוהה.",
+      "aboutText": "רק נכסים עם נוכחות אדריכלית, פרטיות ופוטנציאל ערך.",
+      "contactTitle": "לשיחת התאמה",
+      "contactText": "נשמח להבין מה אתם מחפשים — ולפתוח את התיק המתאים.",
+      "items": [
+        [
+          "וילה אדריכלית",
+          "7 חד׳ · בריכה",
+          "חלונות רצפה-תקרה ואור צפוני."
+        ],
+        [
+          "אחוזת גן",
+          "8 חד׳ · 2 דונם",
+          "פרטיות מלאה ושביל עצים."
+        ],
+        [
+          "וילת גג",
+          "6 חד׳ · נוף",
+          "בריכת גג ומרפסת אירוח."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "parcel",
+    "name": "Parcel",
+    "brand": "Parcel",
+    "logo": "P",
+    "niche": "קרקעות ומגרשים",
+    "desc": "תבנית מגרשים: מספר דונמים ענק כהירו, רקע פרגמנט עם רשת, זית — פריסת מגזין שונה לגמרי.",
+    "fonts": {
+      "display": "IBM+Plex+Sans+Hebrew:wght@600;700",
+      "displayCss": "\"IBM Plex Sans Hebrew\""
+    },
+    "palette": {
+      "bg": "#efe9da",
+      "surface": "#e4dcc8",
+      "text": "#243018",
+      "muted": "#6e684f",
+      "primary": "#6b5a2e",
+      "primaryText": "#efe9da",
+      "line": "rgba(36,48,24,0.16)",
+      "dark": "#16140c"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "plots",
+        "מגרשים",
+        "/plots"
+      ],
+      [
+        "planning",
+        "תכנון",
+        "/planning"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "bigNumberMap",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1464226184884-fa280b87c399?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "מגרש. תכנון. עתיד.",
+      "subtitle": "פארסל מתמחה בקרקעות לבנייה, מגרשים פרטיים ועסקאות קומבינציה.",
+      "primary": "מגרשים זמינים",
+      "secondary": "ייעוץ תכנוני",
+      "aboutTitle": "קרקע זה הסיפור האמיתי.",
+      "aboutText": "בודקים ייעוד, זכויות בנייה ופוטנציאל — לפני שמדברים על מחיר.",
+      "contactTitle": "מחפשים מגרש?",
+      "contactText": "אזור, גודל רצוי ותקציב — ונחזור עם אפשרויות.",
+      "items": [
+        [
+          "מגרש לבנייה פרטית",
+          "1.2 דונם",
+          "ייעוד מגורים · זכויות ברורות."
+        ],
+        [
+          "קרקע להשקעה",
+          "3.5 דונם",
+          "פוטנציאל השבחה באזור מתפתח."
+        ],
+        [
+          "חלקה לבית פרטי",
+          "800 מ״ר",
+          "שקטה, גישה נוחה, תצפית."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "skylara",
+    "name": "Skylara",
+    "brand": "Skylara",
+    "logo": "S",
+    "niche": "מגדלים ודירות גבוהות",
+    "desc": "תבנית מגדלים: פס אנכי גבוה, קומות ממוספרות, ציאן על חצות, תנועת עלייה.",
+    "fonts": {
+      "display": "Space+Grotesk:wght@500;700",
+      "displayCss": "\"Space Grotesk\""
+    },
+    "palette": {
+      "bg": "#06101c",
+      "surface": "#0c1a2b",
+      "text": "#e8f1ff",
+      "muted": "#7f97b0",
+      "primary": "#39d0ff",
+      "primaryText": "#041018",
+      "line": "rgba(232,241,255,0.14)",
+      "dark": "#02070e"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "towers",
+        "מגדלים",
+        "/towers"
+      ],
+      [
+        "floors",
+        "קומות",
+        "/floors"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "verticalTower",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "גבוה יותר. שקט יותר.",
+      "subtitle": "סקיילרה מתמחה בדירות במגדלים, קומות גבוהות ונופים פתוחים מעל העיר.",
+      "primary": "דירות במגדלים",
+      "secondary": "תיאום סיור",
+      "aboutTitle": "הגובה משנה את החיים.",
+      "aboutText": "נבחרים מגדלים לפי נוף, שירותים, נגישות וערך לאורך זמן.",
+      "contactTitle": "רוצים קומה גבוהה?",
+      "contactText": "תקציב, קומה רצויה ואזור — ונמצא התאמות.",
+      "items": [
+        [
+          "קומה 28 · נוף ים",
+          "4 חד׳",
+          "מרפסת רחבה וממ״ד."
+        ],
+        [
+          "פנטהאוז מגדל",
+          "5 חד׳",
+          "גג פרטי ומעלית ישירה."
+        ],
+        [
+          "דירת פינה",
+          "3 חד׳",
+          "אור משני כיוונים."
+        ]
+      ]
+    }
+  },
+  {
+    "id": "nestora",
+    "name": "Nestora",
+    "brand": "Nestora",
+    "logo": "N",
+    "niche": "סוכנות בוטיק",
+    "desc": "תבנית בוטיק אינטימית: ציטוט גדול, נכס אחד בפוקוס, אבן קרה וכחול דיו, תנועה עדינה.",
+    "fonts": {
+      "display": "Cormorant+Garamond:wght@500;700",
+      "displayCss": "\"Cormorant Garamond\""
+    },
+    "palette": {
+      "bg": "#eef1f5",
+      "surface": "#e2e7ee",
+      "text": "#1e2836",
+      "muted": "#6a7585",
+      "primary": "#3d5a80",
+      "primaryText": "#eef1f5",
+      "line": "rgba(30,40,54,0.14)",
+      "dark": "#121820"
+    },
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "featured",
+        "נבחרים",
+        "/featured"
+      ],
+      [
+        "approach",
+        "גישה",
+        "/approach"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "יצירת קשר",
+        "/contact"
+      ]
+    ],
+    "layout": "quoteFeature",
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600210492493-0946911123ea?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "פחות נכסים. יותר התאמה.",
+      "subtitle": "נסטורה היא סוכנות קטנה עם ליווי צמוד — כל לקוח מקבל תשומת לב מלאה.",
+      "primary": "שיחת היכרות",
+      "secondary": "נכס נבחר",
+      "aboutTitle": "בוטיק אמיתי.",
+      "aboutText": "עובדים עם מעט לקוחות במקביל — כדי להישאר מדויקים ואישיים.",
+      "contactTitle": "נשמח להכיר",
+      "contactText": "ספרו בקצרה מה אתם מחפשים — ונתחיל משם.",
+      "items": [
+        [
+          "בית שקט בשכונה ירוקה",
+          "5 חד׳",
+          "אור טבעי וחצר מוקפת."
+        ],
+        [
+          "דירת גן משפחתית",
+          "4 חד׳",
+          "כניסה נפרדת וגינה."
+        ],
+        [
+          "דופלקס בוטיק",
+          "4.5 חד׳",
+          "עיצוב מדויק ומיקום נוח."
+        ]
+      ]
+    }
+  }
+]
