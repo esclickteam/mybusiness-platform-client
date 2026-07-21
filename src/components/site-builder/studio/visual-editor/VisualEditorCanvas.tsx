@@ -354,30 +354,6 @@ function resolveInlineTextEditTarget(
   return null;
 }
 
-function isFlowLockedEditorNode(node: HTMLElement | null) {
-  if (!node) return false;
-
-  if (node.getAttribute("data-visual-inserted-element") === "true") {
-    return false;
-  }
-
-  return Boolean(
-    node.closest(
-      [
-        '[data-visual-flow-lock="true"]',
-        '[data-template-section-type="header"]',
-        '[data-section-kind="header"]',
-        "header",
-        '[role="banner"]',
-        ".servora-header",
-        ".elevora-header",
-        ".lex-header",
-        ".wan-header",
-      ].join(", "),
-    ),
-  );
-}
-
 function getSelectionRect(node: HTMLElement) {
   /*
     מסגרת הבחירה נמדדת תמיד לפי הקופסה האמיתית של האלמנט.
@@ -1447,8 +1423,6 @@ export default function VisualEditorCanvas({
 
       if (!node || !elementId) return;
       if (Boolean(editorAny.locked?.[elementId])) return;
-      // Header/nav stay in flex/grid flow — dragging them stacked overlapping text.
-      if (isFlowLockedEditorNode(node)) return;
 
       const translate = getComputedTranslate(node);
 
@@ -1993,16 +1967,53 @@ export default function VisualEditorCanvas({
             cursor: pointer;
           }
 
+          /* Header / nav: grab cursor so drag affordance matches body elements */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] header [data-visual-edit-id]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [role="banner"] [data-visual-edit-id]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-section-kind="header"] [data-visual-edit-id]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-template-section-type="header"] [data-visual-edit-id]:not([data-visual-inline-editing="true"]),
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-flow-lock="true"] [data-visual-edit-id]:not([data-visual-inline-editing="true"]) {
+            cursor: grab !important;
+            touch-action: none;
+          }
+
           /* Contact/lead forms: keep children draggable outside the card bounds */
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"],
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] {
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="lead-form"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="subscribe-form"] {
+            position: relative !important;
             overflow: visible !important;
           }
 
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"] [data-visual-edit-id],
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] [data-visual-edit-id] {
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] [data-visual-edit-id],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="lead-form"] [data-visual-edit-id],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="subscribe-form"] [data-visual-edit-id],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-form-field-wrapper="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] .ido-form-field-slot {
             cursor: grab;
             touch-action: none;
+          }
+
+          /*
+            Form controls stay non-interactive in edit mode so the field slot /
+            wrapper receives selection + drag (same pattern as Ido FormFieldSlot).
+          */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"] input,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"] textarea,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-builder="true"] select,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] input,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] textarea,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-form-id] select,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="lead-form"] input,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="lead-form"] textarea,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] form[data-bizuply-block="lead-form"] select,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] .ido-form-field-slot input,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] .ido-form-field-slot textarea,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] .ido-form-field-slot select,
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] .ido-form-field-slot button {
+            pointer-events: none;
           }
 
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-section-key]:hover,
@@ -2035,23 +2046,6 @@ export default function VisualEditorCanvas({
           [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [data-visual-inline-editing="true"],
           [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [contenteditable="true"] {
             white-space: nowrap !important;
-          }
-
-          /*
-            All templates: keep native header/nav text in normal flow so editing
-            one label cannot absolutely-stack brand lines or shove siblings.
-            Free-positioned inserted elements inside headers are excluded.
-          */
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] header [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [role="banner"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-section-kind="header"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]),
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-flow-lock="true"] [data-visual-edit-id]:not([data-visual-inserted-element="true"]) {
-            position: static !important;
-            left: auto !important;
-            top: auto !important;
-            right: auto !important;
-            bottom: auto !important;
-            translate: none !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,

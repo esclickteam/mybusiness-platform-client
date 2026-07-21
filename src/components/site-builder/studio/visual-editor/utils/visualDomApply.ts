@@ -532,41 +532,6 @@ function hasNestedEditableTextChildren(node: HTMLElement) {
   ).some((child) => child !== node);
 }
 
-function isFlowLockedNode(node: HTMLElement) {
-  /*
-    All template site headers stay in document flow while editing text.
-    Free-positioned library inserts inside headers are still allowed via
-    data-visual-inserted-element (handled by callers that skip those nodes).
-  */
-  if (node.getAttribute("data-visual-inserted-element") === "true") {
-    return false;
-  }
-
-  if (
-    node.closest(
-      '[data-visual-inserted-element="true"][data-visual-clone-mode="free"], [data-visual-inserted-element="true"][style*="absolute"]',
-    )
-  ) {
-    return false;
-  }
-
-  return Boolean(
-    node.closest(
-      [
-        '[data-visual-flow-lock="true"]',
-        '[data-template-section-type="header"]',
-        '[data-section-kind="header"]',
-        "header",
-        '[role="banner"]',
-        ".servora-header",
-        ".elevora-header",
-        ".lex-header",
-        ".wan-header",
-      ].join(", "),
-    ),
-  );
-}
-
 function shouldApplyTextToNode(node: HTMLElement) {
   if (isEditorOnlyNode(node)) return false;
 
@@ -2004,35 +1969,6 @@ export function applyVisualLayoutToDom(
 
       const style = layoutItemToStyle(item);
 
-      /*
-        Header / flow-locked regions stay in normal document flow.
-        Absolute/translate patches from drag were stacking brand + nav text.
-      */
-      if (isFlowLockedNode(node)) {
-        const freeAbsolute =
-          Boolean((item as VisualLayoutItem)?.freePosition) ||
-          String((item as VisualLayoutItem)?.position || "") === "absolute";
-
-        if (freeAbsolute) {
-          delete style.position;
-          delete style.top;
-          delete style.right;
-          delete style.bottom;
-          delete style.left;
-          delete style.translate;
-          delete style.transform;
-        } else {
-          delete style.translate;
-          if (style.position === "absolute" || style.position === "fixed") {
-            delete style.position;
-            delete style.top;
-            delete style.right;
-            delete style.bottom;
-            delete style.left;
-          }
-        }
-      }
-
       applyStyleRecord(
         node,
         style,
@@ -2040,72 +1976,6 @@ export function applyVisualLayoutToDom(
       );
     });
   });
-
-  // Clear leftover absolute drag styles on header/flow-locked nodes
-  // even when they no longer have a layout map entry.
-  root
-    .querySelectorAll<HTMLElement>(
-      [
-        "header [data-visual-edit-id]",
-        '[role="banner"] [data-visual-edit-id]',
-        '[data-visual-flow-lock="true"] [data-visual-edit-id]',
-        '[data-section-kind="header"] [data-visual-edit-id]',
-        '[data-template-section-type="header"] [data-visual-edit-id]',
-      ].join(", "),
-    )
-    .forEach((node) => {
-      if (!isFlowLockedNode(node)) return;
-
-      const applied = String(
-        node.getAttribute("data-visual-applied-layout-properties") || "",
-      );
-
-      if (
-        !applied &&
-        !node.style.position &&
-        !node.style.translate &&
-        !node.style.left &&
-        !node.style.top
-      ) {
-        return;
-      }
-
-      node.style.removeProperty("position");
-      node.style.removeProperty("left");
-      node.style.removeProperty("top");
-      node.style.removeProperty("right");
-      node.style.removeProperty("bottom");
-      node.style.removeProperty("translate");
-      node.style.removeProperty("transform");
-
-      if (applied) {
-        const kept = applied
-          .split(",")
-          .map((item) => item.trim())
-          .filter(
-            (property) =>
-              property &&
-              ![
-                "position",
-                "left",
-                "top",
-                "right",
-                "bottom",
-                "translate",
-                "transform",
-              ].includes(property),
-          );
-
-        if (kept.length) {
-          node.setAttribute(
-            "data-visual-applied-layout-properties",
-            kept.join(","),
-          );
-        } else {
-          node.removeAttribute("data-visual-applied-layout-properties");
-        }
-      }
-    });
 }
 
 export function applyVisualAttributesToDom(
