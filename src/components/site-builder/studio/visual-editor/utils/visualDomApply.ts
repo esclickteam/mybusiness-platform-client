@@ -1790,6 +1790,36 @@ export function applyVisualStylesToDom(
   });
 }
 
+/**
+ * Live color/style preview while dragging a picker — DOM only, no React
+ * state / history / full visual re-apply (those happen once on commit).
+ */
+export function previewVisualStyleOnDom(
+  root: HTMLElement | null | undefined,
+  elementId: string,
+  style: Record<string, any>,
+) {
+  if (!root || !elementId) return;
+
+  const nodes = findVisualNodes(root, elementId, {
+    allowFallback: false,
+  });
+
+  nodes.forEach((node) => {
+    if (isEditorOnlyNode(node)) return;
+
+    Object.entries(style || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+
+      try {
+        node.style.setProperty(cssPropertyName(key), String(value), "important");
+      } catch {
+        // ignore invalid css values
+      }
+    });
+  });
+}
+
 
 function cssPropertyName(key: string) {
   if (key.startsWith("--")) return key;

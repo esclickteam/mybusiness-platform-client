@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -282,6 +282,77 @@ function normalizeColor(value: unknown, fallback: string) {
   return fallback;
 }
 
+const COLOR_COMMIT_MS = 180;
+
+function InspectorColorInput({
+  value,
+  fallback,
+  disabled,
+  onChange,
+  onPreview,
+}: {
+  value: string;
+  fallback: string;
+  disabled?: boolean;
+  onChange: (value: string) => void;
+  onPreview?: (value: string) => void;
+}) {
+  const safeValue = normalizeColor(value, fallback);
+  const [localValue, setLocalValue] = useState(safeValue);
+  const pendingRef = useRef(safeValue);
+  const commitTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setLocalValue(safeValue);
+    pendingRef.current = safeValue;
+  }, [safeValue]);
+
+  useEffect(() => {
+    return () => {
+      if (commitTimerRef.current != null) {
+        window.clearTimeout(commitTimerRef.current);
+      }
+    };
+  }, []);
+
+  function flushCommit(nextValue: string) {
+    if (commitTimerRef.current != null) {
+      window.clearTimeout(commitTimerRef.current);
+      commitTimerRef.current = null;
+    }
+
+    pendingRef.current = nextValue;
+    onChange(nextValue);
+  }
+
+  function handleLiveColor(nextValue: string) {
+    const next = normalizeColor(nextValue, fallback);
+    setLocalValue(next);
+    pendingRef.current = next;
+    onPreview?.(next);
+
+    if (commitTimerRef.current != null) {
+      window.clearTimeout(commitTimerRef.current);
+    }
+
+    commitTimerRef.current = window.setTimeout(() => {
+      commitTimerRef.current = null;
+      onChange(pendingRef.current);
+    }, COLOR_COMMIT_MS);
+  }
+
+  return (
+    <input
+      type="color"
+      value={localValue}
+      disabled={disabled}
+      onChange={(event) => handleLiveColor(event.currentTarget.value)}
+      onBlur={() => flushCommit(pendingRef.current)}
+      className="h-11 w-full rounded-2xl border border-slate-200 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+    />
+  );
+}
+
 function pxOrEmpty(value: string) {
   const clean = String(value || "").trim();
 
@@ -500,6 +571,11 @@ export default function VisualInspectorPanel({
   const applyStyle = (patch: StylePatch) => {
     if (locked) return;
     editor?.applyStyle?.(elementId, patch);
+  };
+
+  const previewStyle = (patch: StylePatch) => {
+    if (locked) return;
+    editor?.previewStyle?.(elementId, patch);
   };
 
   const applyLayout = (patch: Record<string, any>) => {
@@ -917,27 +993,32 @@ export default function VisualInspectorPanel({
               >
                 <div className="grid grid-cols-2 gap-3">
                   <InspectorField label="צבע טקסט">
-                    <input
-                      type="color"
+                    <InspectorColorInput
                       value={normalizeColor(
                         styleValue(style, "color"),
                         "#0f172a",
                       )}
+                      fallback="#0f172a"
                       disabled={locked}
-                      onChange={(event) =>
-                        applyStyle({
-                          color: event.target.value,
-                          WebkitTextFillColor: event.target.value,
-                          "-webkit-text-fill-color": event.target.value,
+                      onPreview={(color) =>
+                        previewStyle({
+                          color,
+                          WebkitTextFillColor: color,
+                          "-webkit-text-fill-color": color,
                         } as StylePatch)
                       }
-                      className="h-11 w-full rounded-2xl border border-slate-200 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+                      onChange={(color) =>
+                        applyStyle({
+                          color,
+                          WebkitTextFillColor: color,
+                          "-webkit-text-fill-color": color,
+                        } as StylePatch)
+                      }
                     />
                   </InspectorField>
 
                   <InspectorField label="רקע">
-                    <input
-                      type="color"
+                    <InspectorColorInput
                       value={normalizeColor(
                         styleValue(
                           style,
@@ -947,14 +1028,20 @@ export default function VisualInspectorPanel({
                         ),
                         "#ffffff",
                       )}
+                      fallback="#ffffff"
                       disabled={locked}
-                      onChange={(event) =>
-                        applyStyle({
-                          backgroundColor: event.target.value,
-                          "background-color": event.target.value,
+                      onPreview={(backgroundColor) =>
+                        previewStyle({
+                          backgroundColor,
+                          "background-color": backgroundColor,
                         } as StylePatch)
                       }
-                      className="h-11 w-full rounded-2xl border border-slate-200 bg-white p-1 disabled:cursor-not-allowed disabled:opacity-50"
+                      onChange={(backgroundColor) =>
+                        applyStyle({
+                          backgroundColor,
+                          "background-color": backgroundColor,
+                        } as StylePatch)
+                      }
                     />
                   </InspectorField>
                 </div>

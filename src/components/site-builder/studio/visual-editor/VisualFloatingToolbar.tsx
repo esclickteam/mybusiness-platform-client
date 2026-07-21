@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlignCenter,
   AlignLeft,
@@ -563,20 +563,66 @@ function SelectControl({
   );
 }
 
+const COLOR_COMMIT_MS = 180;
+
 function ColorControl({
   title,
   value,
   fallback,
   onChange,
+  onPreview,
   children,
 }: {
   title: string;
   value: string;
   fallback: string;
   onChange: (value: string) => void;
+  onPreview?: (value: string) => void;
   children: React.ReactNode;
 }) {
   const safeValue = normalizeColor(value, fallback);
+  const [localValue, setLocalValue] = useState(safeValue);
+  const pendingRef = useRef(safeValue);
+  const commitTimerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    setLocalValue(safeValue);
+    pendingRef.current = safeValue;
+  }, [safeValue]);
+
+  useEffect(() => {
+    return () => {
+      if (commitTimerRef.current != null) {
+        window.clearTimeout(commitTimerRef.current);
+      }
+    };
+  }, []);
+
+  function flushCommit(nextValue: string) {
+    if (commitTimerRef.current != null) {
+      window.clearTimeout(commitTimerRef.current);
+      commitTimerRef.current = null;
+    }
+
+    pendingRef.current = nextValue;
+    onChange(nextValue);
+  }
+
+  function handleLiveColor(nextValue: string) {
+    const next = normalizeColor(nextValue, fallback);
+    setLocalValue(next);
+    pendingRef.current = next;
+    onPreview?.(next);
+
+    if (commitTimerRef.current != null) {
+      window.clearTimeout(commitTimerRef.current);
+    }
+
+    commitTimerRef.current = window.setTimeout(() => {
+      commitTimerRef.current = null;
+      onChange(pendingRef.current);
+    }, COLOR_COMMIT_MS);
+  }
 
   return (
     <label
@@ -588,13 +634,14 @@ function ColorControl({
 
       <span
         className="absolute bottom-1 h-3.5 w-3.5 rounded-full border border-white shadow"
-        style={{ background: safeValue }}
+        style={{ background: localValue }}
       />
 
       <input
         type="color"
-        value={safeValue}
-        onChange={(event) => onChange(event.target.value)}
+        value={localValue}
+        onChange={(event) => handleLiveColor(event.currentTarget.value)}
+        onBlur={() => flushCommit(pendingRef.current)}
         className="absolute inset-0 cursor-pointer opacity-0"
       />
     </label>
@@ -986,11 +1033,18 @@ export default function VisualFloatingToolbar({
     kind === "section" ||
     kind === "general";
 
+  function styleTargetId() {
+    return resolveStyleTarget(element, elementId);
+  }
+
   function apply(stylePatch: StylePatch) {
     if (!elementId || locked) return;
+    editor?.applyStyle?.(styleTargetId(), stylePatch);
+  }
 
-    const targetId = resolveStyleTarget(element, elementId);
-    editor?.applyStyle?.(targetId, stylePatch);
+  function preview(stylePatch: StylePatch) {
+    if (!elementId || locked) return;
+    editor?.previewStyle?.(styleTargetId(), stylePatch);
   }
 
   function openGradient(target: "text" | "background") {
@@ -1544,6 +1598,15 @@ export default function VisualFloatingToolbar({
               title="צבע טקסט"
               value={currentColor}
               fallback="#111827"
+              onPreview={(value) =>
+                preview({
+                  color: value,
+                  "-webkit-text-fill-color": value,
+                  WebkitTextFillColor: value,
+                  backgroundImage: "none",
+                  "background-image": "none",
+                } as StylePatch)
+              }
               onChange={(value) =>
                 apply({
                   color: value,
@@ -1574,6 +1637,12 @@ export default function VisualFloatingToolbar({
             title="צבע רקע"
             value={currentBackground}
             fallback="#ffffff"
+            onPreview={(value) =>
+              preview({
+                "background-color": value,
+                backgroundColor: value,
+              } as StylePatch)
+            }
             onChange={(value) =>
               apply({
                 "background-color": value,

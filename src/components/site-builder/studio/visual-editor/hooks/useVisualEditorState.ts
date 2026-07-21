@@ -77,7 +77,7 @@ import {
   resolveFormContext,
 } from "../utils/visualForms";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
-import { applyAllVisualDataToDom } from "../utils/visualDomApply";
+import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
 import {
   didSitePageNavSyncChange,
   syncSitePageTitlesIntoVisualData,
@@ -2507,23 +2507,30 @@ export function useVisualEditorState({
     (elementId: string, style: StylePatch) => {
       if (!elementId) return false;
 
+      /*
+        צבעים/סגנון נקודתי: מעדכנים את ה-DOM ישירות במקום
+        applyAllVisualDataToDom המלא (כבד מאוד בזמן גרירת color picker).
+      */
+      previewVisualStyleOnDom(canvasRef.current, elementId, style as any);
       setData((current) => writeVisualStyleItem(current, elementId, style));
 
-      /*
-        הטולבר צריך לקבל מיד את הצבע/פונט/גרדיאנט האמיתי לאחר שינוי.
-        מחילים את ה-style על ה-DOM ואז מרעננים את selectedElement ואת
-        computedStyle שלו, בלי לחכות לקליק נוסף.
-      */
       window.requestAnimationFrame(() => {
-        const latestData = dataRef.current || {};
-
-        applyAllVisualDataToDom(canvasRef.current, latestData);
         selection.refreshSelectedElement?.();
       });
 
       return true;
     },
-    [canvasRef, dataRef, selection, setData],
+    [canvasRef, selection, setData],
+  );
+
+  /** Drag-preview colors without history / React state. */
+  const previewStyle = useCallback(
+    (elementId: string, style: StylePatch) => {
+      if (!elementId) return false;
+      previewVisualStyleOnDom(canvasRef.current, elementId, style as any);
+      return true;
+    },
+    [canvasRef],
   );
 
   const applyMediaEditValues = useCallback(
@@ -4350,6 +4357,7 @@ export function useVisualEditorState({
       bringToFront,
       sendToBack,
       applyStyle,
+      previewStyle,
       resetStyle,
       applyLayout,
       updateLayout,
@@ -4490,6 +4498,7 @@ export function useVisualEditorState({
       bringToFront,
       sendToBack,
       applyStyle,
+      previewStyle,
       resetStyle,
       applyLayout,
       updateLayout,
