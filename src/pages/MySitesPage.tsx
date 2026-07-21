@@ -16,6 +16,7 @@ import {
   Pencil,
   Plus,
   Search,
+  Settings2,
   SlidersHorizontal,
   Sparkles,
   Trash2,
@@ -45,7 +46,7 @@ type MenuState = {
 } | null;
 
 const MENU_WIDTH = 220;
-const MENU_ESTIMATED_HEIGHT = 320;
+const MENU_ESTIMATED_HEIGHT = 360;
 
 function formatUpdatedAt(value?: string) {
   if (!value) return "";
@@ -238,6 +239,11 @@ export default function MySitesPage() {
     }
 
     navigate(`${basePath}/website/sites/${site._id}/edit`);
+  }
+
+  function openSiteManagement(site: MySiteSummary) {
+    setMenu(null);
+    navigate(`${basePath}/website/sites/${site._id}/manage`);
   }
 
   async function handleRename(site: MySiteSummary) {
@@ -683,6 +689,12 @@ export default function MySitesPage() {
                   setMenu(null);
                   openSite(selectedSite);
                 }}
+              />
+
+              <MenuButton
+                icon={Settings2}
+                label="פאנל ניהול"
+                onClick={() => openSiteManagement(selectedSite)}
               />
 
               {selectedSite.access !== "shared" ? (

@@ -22,6 +22,7 @@ const WebsiteStudioPage = lazy(() =>
   import("../../components/site-builder/studio/WebsiteStudioPage")
 );
 const MySitesPage = lazy(() => import("../MySitesPage"));
+const SiteManagementPanelPage = lazy(() => import("../SiteManagementPanelPage"));
 const CreateWebsiteMethodPage = lazy(() =>
   import("../CreateWebsiteMethodPage")
 );
@@ -299,6 +300,10 @@ const BusinessDashboardRoutes = () => {
           <Route
             path="website/sites/:siteId/edit"
             element={<WebsiteStudioRoute businessId={businessId} />}
+          />
+          <Route
+            path="website/sites/:siteId/manage"
+            element={<SiteManagementPanelPage />}
           />
 
           {/* Old route - keep for compatibility only */}

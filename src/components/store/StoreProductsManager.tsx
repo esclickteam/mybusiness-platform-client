@@ -190,6 +190,10 @@ type AuthUserShape = {
 
 type StoreProductsManagerProps = {
   businessId?: string;
+  embedded?: boolean;
+  initialView?: StoreView;
+  allowedViews?: StoreView[];
+  settingsFocus?: "all" | "payments" | "shipping";
 };
 
 const emptySettings: StoreSettingsData = {
@@ -567,13 +571,17 @@ function EmptyBox({
 
 export default function StoreProductsManager({
   businessId: businessIdProp,
+  embedded = false,
+  initialView = "products",
+  allowedViews,
+  settingsFocus = "all",
 }: StoreProductsManagerProps) {
   const { user } = useAuth() as { user: AuthUserShape | null };
 
   const businessId =
     businessIdProp || user?.businessId || user?.business?._id || "";
 
-  const [view, setView] = useState<StoreView>("products");
+  const [view, setView] = useState<StoreView>(initialView);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -1104,7 +1112,7 @@ export default function StoreProductsManager({
     { id: "settings" as StoreView, label: "הגדרות", icon: <Settings size={17} /> },
     { id: "coupons" as StoreView, label: "קופונים", icon: <BadgePercent size={17} /> },
     { id: "orders" as StoreView, label: "הזמנות", icon: <Boxes size={17} /> },
-  ];
+  ].filter((item) => !allowedViews || allowedViews.includes(item.id));
 
   if (!businessId) {
     return (
@@ -1121,37 +1129,39 @@ export default function StoreProductsManager({
 
   return (
     <section dir="rtl" className="w-full text-right">
-      <div className="mb-6 rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_22px_80px_rgba(15,23,42,0.08)] md:p-7">
-        <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-              <ShoppingBag size={15} />
-              ניהול חנות
+      {!embedded ? (
+        <div className="mb-6 rounded-[34px] border border-slate-200 bg-white p-5 shadow-[0_22px_80px_rgba(15,23,42,0.08)] md:p-7">
+          <div className="flex flex-col justify-between gap-5 xl:flex-row xl:items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
+                <ShoppingBag size={15} />
+                ניהול חנות
+              </div>
+
+              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+                מוצרים, קטגוריות והגדרות
+              </h1>
+
+              <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
+                מוסיפים מוצר פעם אחת, משייכים אותו לקטגוריה, והוא מופיע אוטומטית
+                בגריד החנות ובדפי הקטגוריות באתר.
+              </p>
             </div>
 
-            <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
-              מוצרים, קטגוריות והגדרות
-            </h1>
-
-            <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-              מוסיפים מוצר פעם אחת, משייכים אותו לקטגוריה, והוא מופיע אוטומטית
-              בגריד החנות ובדפי הקטגוריות באתר.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 xl:min-w-[620px]">
-            <StatCard title="מוצרים" value={products.length} />
-            <StatCard title="קטגוריות" value={categories.length} />
-            <StatCard title="ללא קטגוריה" value={productsWithoutCategory} />
-            <StatCard title="קופונים" value={coupons.length} />
-            <StatCard title="הזמנות" value={orders.length} />
-            <StatCard
-              title="סטטוס"
-              value={settings.isStoreActive ? "פעיל" : "כבוי"}
-            />
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-6 xl:min-w-[620px]">
+              <StatCard title="מוצרים" value={products.length} />
+              <StatCard title="קטגוריות" value={categories.length} />
+              <StatCard title="ללא קטגוריה" value={productsWithoutCategory} />
+              <StatCard title="קופונים" value={coupons.length} />
+              <StatCard title="הזמנות" value={orders.length} />
+              <StatCard
+                title="סטטוס"
+                value={settings.isStoreActive ? "פעיל" : "כבוי"}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       {message && (
         <div
@@ -1167,6 +1177,7 @@ export default function StoreProductsManager({
         </div>
       )}
 
+      {nav.length > 1 ? (
       <div className="mb-6 rounded-[28px] border border-slate-200 bg-white p-2 shadow-sm">
         <div className="grid grid-cols-2 gap-2 md:grid-cols-6">
           {nav.map((item) => (
@@ -1190,6 +1201,7 @@ export default function StoreProductsManager({
           ))}
         </div>
       </div>
+      ) : null}
 
       <div className="min-h-[520px] rounded-[34px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_22px_80px_rgba(15,23,42,0.06)] md:p-6">
         {loading ? (
@@ -1264,6 +1276,7 @@ export default function StoreProductsManager({
             onEditPaymentProvider={editPaymentProvider}
             onDeletePaymentProvider={deletePaymentProvider}
             onResetPaymentProvider={resetPaymentProviderForm}
+            focus={settingsFocus}
           />
         )}
 
@@ -2037,6 +2050,7 @@ function SettingsView({
   onEditPaymentProvider,
   onDeletePaymentProvider,
   onResetPaymentProvider,
+  focus = "all",
 }: {
   settings: StoreSettingsData;
   setSettings: React.Dispatch<React.SetStateAction<StoreSettingsData>>;
@@ -2050,6 +2064,7 @@ function SettingsView({
   onEditPaymentProvider: (provider: PaymentProvider) => void;
   onDeletePaymentProvider: (provider: PaymentProviderType) => void;
   onResetPaymentProvider: () => void;
+  focus?: "all" | "payments" | "shipping";
 }) {
   const activePaymentProviders = settings.paymentProviders || [];
   const selectedProviderOption = paymentProviderOptions.find(
@@ -2072,11 +2087,16 @@ function SettingsView({
   return (
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
       <div className="space-y-6">
+        {focus !== "payments" ? (
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-black text-slate-950">הגדרות חנות</h2>
+            <h2 className="text-2xl font-black text-slate-950">
+              {focus === "shipping" ? "הגדרות משלוח" : "הגדרות חנות"}
+            </h2>
             <p className="mt-1 text-sm font-bold text-slate-500">
-              מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים.
+              {focus === "shipping"
+                ? "מחיר משלוח, משלוח חינם ומדיניות."
+                : "מטבע, משלוחים, וואטסאפ, מדיניות ותצוגת מחירים."}
             </p>
           </div>
 
@@ -2235,7 +2255,9 @@ function SettingsView({
             </PrimaryButton>
           </div>
         </div>
+        ) : null}
 
+        {focus !== "shipping" ? (
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
             <div>
@@ -2492,8 +2514,10 @@ function SettingsView({
             </SecondaryButton>
           </div>
         </div>
+        ) : null}
       </div>
 
+      {focus !== "shipping" ? (
       <aside className="space-y-5">
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
           <h3 className="text-lg font-black text-slate-950">
@@ -2587,6 +2611,7 @@ function SettingsView({
           </p>
         </div>
       </aside>
+      ) : null}
     </div>
   );
 }
