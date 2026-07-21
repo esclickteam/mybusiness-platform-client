@@ -8,6 +8,7 @@ import {
   syncNavLabelsWithSitePages,
   type SitePageNavSource,
 } from "../../../visual-editor/utils/syncNavWithSitePages";
+import { NavSubmenuChevron } from "../../../visual-editor/utils/NavSubmenuChevron";
 import { servoraEditorCss } from "./editorCss";
 
 import {
@@ -613,9 +614,7 @@ function Header({
                   )}
                 >
                   {label}
-                  {subpages.length ? (
-                    <span data-bizuply-nav-chevron="true" aria-hidden="true" />
-                  ) : null}
+                  {subpages.length ? <NavSubmenuChevron /> : null}
                 </a>
               );
 

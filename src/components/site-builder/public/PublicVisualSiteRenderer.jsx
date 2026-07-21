@@ -128,28 +128,36 @@ nav,
 [data-bizuply-nav-item] > :first-child {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.35em;
 }
 
+/* Thin down "V" chevron (HubSpot / SaaS style) */
 [data-bizuply-nav-chevron="true"] {
-  display: inline-block;
-  width: 0.4em;
-  height: 0.4em;
-  border-inline-end: 1.6px solid currentColor;
-  border-bottom: 1.6px solid currentColor;
-  transform: rotate(45deg);
-  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.7em;
+  height: 0.45em;
   flex: 0 0 auto;
-  margin-top: -0.2em;
-  transition: transform 0.18s ease;
+  margin-inline-start: 0.1em;
+  opacity: 0.95;
   pointer-events: none;
+  transition: transform 0.18s ease;
+  color: inherit;
+}
+
+[data-bizuply-nav-chevron="true"] svg {
+  display: block;
+  width: 0.65em;
+  height: 0.4em;
+  stroke: currentColor;
+  fill: none;
 }
 
 [data-bizuply-nav-item].is-open [data-bizuply-nav-chevron="true"],
 [data-bizuply-nav-item]:hover [data-bizuply-nav-chevron="true"],
 [data-bizuply-nav-item]:focus-within [data-bizuply-nav-chevron="true"] {
-  transform: rotate(-135deg);
-  margin-top: 0.12em;
+  transform: rotate(180deg);
 }
 
 /* Outer = hover bridge; inner panel = visible surface (no dead click gap) */

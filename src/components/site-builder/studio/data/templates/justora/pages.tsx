@@ -9,6 +9,7 @@ import {
   buildNavTreeFromSitePages,
   type SiteNavTreeItem,
 } from "../../../visual-editor/utils/syncNavWithSitePages";
+import { NavSubmenuChevron } from "../../../visual-editor/utils/NavSubmenuChevron";
 
 export const justoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -333,8 +334,12 @@ function JustoraButtonTextFix() {
       }
 
       [data-template-id^="justora"] header [data-bizuply-nav-chevron="true"] {
-        border-color: currentColor;
-        opacity: 0.9;
+        color: inherit;
+        opacity: 0.95;
+      }
+
+      [data-template-id^="justora"] header [data-bizuply-nav-chevron="true"] svg {
+        stroke: currentColor;
       }
 
       [data-template-id^="justora"] header [data-bizuply-nav-submenu="true"] {
@@ -480,9 +485,7 @@ function Header({
         data-site-page-id={item.id}
       >
         <span>{item.label}</span>
-        {hasSubpages ? (
-          <span data-bizuply-nav-chevron="true" aria-hidden="true" />
-        ) : null}
+        {hasSubpages ? <NavSubmenuChevron /> : null}
       </a>
     );
 

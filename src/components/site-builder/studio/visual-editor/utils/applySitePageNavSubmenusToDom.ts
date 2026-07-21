@@ -13,6 +13,17 @@ const WRAPPER_ATTR = "data-bizuply-nav-item";
 const WRAPPER_DOM_VALUE = "dom";
 const CHEVRON_ATTR = "data-bizuply-nav-chevron";
 
+/** Thin down-V SVG used inside `[data-bizuply-nav-chevron]` spans. */
+export const NAV_SUBMENU_CHEVRON_SVG = `<svg viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="M1.5 1.75 L6 6.25 L10.5 1.75" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg>`;
+
+function createNavChevron(doc: Document) {
+  const chevron = doc.createElement("span");
+  chevron.setAttribute(CHEVRON_ATTR, "true");
+  chevron.setAttribute("aria-hidden", "true");
+  chevron.innerHTML = NAV_SUBMENU_CHEVRON_SVG;
+  return chevron;
+}
+
 const NAV_SUBMENU_CSS = `
 /* Keep header row layout intact — dropdown overlays, never expands the bar */
 [${WRAPPER_ATTR}] {
@@ -33,28 +44,36 @@ nav,
 [${WRAPPER_ATTR}] > :first-child {
   display: inline-flex !important;
   align-items: center;
-  gap: 0.4em;
+  gap: 0.35em;
 }
 
+/* Thin down "V" chevron (HubSpot / SaaS style) */
 [${CHEVRON_ATTR}="true"] {
-  display: inline-block;
-  width: 0.4em;
-  height: 0.4em;
-  border-inline-end: 1.6px solid currentColor;
-  border-bottom: 1.6px solid currentColor;
-  transform: rotate(45deg);
-  opacity: 0.85;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 0.7em;
+  height: 0.45em;
   flex: 0 0 auto;
-  margin-top: -0.2em;
-  transition: transform 0.18s ease;
+  margin-inline-start: 0.1em;
+  opacity: 0.95;
   pointer-events: none;
+  transition: transform 0.18s ease;
+  color: inherit;
+}
+
+[${CHEVRON_ATTR}="true"] svg {
+  display: block;
+  width: 0.65em;
+  height: 0.4em;
+  stroke: currentColor;
+  fill: none;
 }
 
 [${WRAPPER_ATTR}].is-open [${CHEVRON_ATTR}="true"],
 [${WRAPPER_ATTR}]:hover [${CHEVRON_ATTR}="true"],
 [${WRAPPER_ATTR}]:focus-within [${CHEVRON_ATTR}="true"] {
-  transform: rotate(-135deg);
-  margin-top: 0.12em;
+  transform: rotate(180deg);
 }
 
 /*
@@ -352,10 +371,7 @@ function wrapParentWithSubmenu(
   parentNode.setAttribute("aria-expanded", "false");
 
   if (!parentNode.querySelector(`[${CHEVRON_ATTR}="true"]`)) {
-    const chevron = doc.createElement("span");
-    chevron.setAttribute(CHEVRON_ATTR, "true");
-    chevron.setAttribute("aria-hidden", "true");
-    parentNode.appendChild(chevron);
+    parentNode.appendChild(createNavChevron(doc));
   }
 
   const submenu = doc.createElement("div");

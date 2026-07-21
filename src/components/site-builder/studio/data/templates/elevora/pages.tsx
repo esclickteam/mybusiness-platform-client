@@ -6,6 +6,7 @@ import {
   syncNavLabelsWithSitePages,
   type SitePageNavSource,
 } from "../../../visual-editor/utils/syncNavWithSitePages";
+import { NavSubmenuChevron } from "../../../visual-editor/utils/NavSubmenuChevron";
 import { elevoraEditorCss } from "./editorCss";
 
 import {
@@ -302,9 +303,7 @@ function Header({
                   aria-haspopup={subpages.length ? "true" : undefined}
                 >
                   {label}
-                  {subpages.length ? (
-                    <span data-bizuply-nav-chevron="true" aria-hidden="true" />
-                  ) : null}
+                  {subpages.length ? <NavSubmenuChevron /> : null}
                 </button>
               );
 

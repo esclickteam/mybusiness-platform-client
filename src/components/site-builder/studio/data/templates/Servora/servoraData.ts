@@ -406,7 +406,7 @@ function createHeaderHtml() {
           <div data-bizuply-nav-item="html">
             ${link.replace(
               `>${escapeHtml(item.label)}</a>`,
-              `>${escapeHtml(item.label)}<span data-bizuply-nav-chevron="true" aria-hidden="true"></span></a>`,
+              `>${escapeHtml(item.label)}<span data-bizuply-nav-chevron="true" aria-hidden="true"><svg viewBox="0 0 12 8" aria-hidden="true" focusable="false"><path d="M1.5 1.75 L6 6.25 L10.5 1.75" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" /></svg></span></a>`,
             )}
             <div data-bizuply-nav-submenu="true" role="menu"><div data-bizuply-nav-submenu-panel="true">${submenu}
             </div></div>

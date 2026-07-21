@@ -5,6 +5,7 @@ import {
   type SitePageNavSource,
   type TemplateNavItem,
 } from "./syncNavWithSitePages";
+import { NavSubmenuChevron } from "./NavSubmenuChevron";
 
 type SiteTemplateNavProps = {
   items: TemplateNavItem[] | null | undefined;
@@ -106,9 +107,7 @@ export function SiteTemplateNav({
               data-site-page-id={String(item.__sitePageId || "")}
             >
               {label}
-              {hasSubpages ? (
-                <span data-bizuply-nav-chevron="true" aria-hidden="true" />
-              ) : null}
+              {hasSubpages ? <NavSubmenuChevron /> : null}
             </a>
           ) : (
             <button
@@ -122,9 +121,7 @@ export function SiteTemplateNav({
               data-site-page-id={String(item.__sitePageId || "")}
             >
               {label}
-              {hasSubpages ? (
-                <span data-bizuply-nav-chevron="true" aria-hidden="true" />
-              ) : null}
+              {hasSubpages ? <NavSubmenuChevron /> : null}
             </button>
           );
 
