@@ -3058,7 +3058,8 @@ export function applyVisualLibraryPageMode(
   if (!root) return;
 
   const runtimeRoot = getVisualRuntimeRoot(root);
-  const blankPage = data?.__blankVisualPage === true;
+  const blankPage =
+    data?.__blankVisualPage === true || data?.__libraryPage === true;
 
   Array.from(runtimeRoot.children).forEach((child) => {
     if (!(child instanceof HTMLElement)) return;
@@ -3068,12 +3069,18 @@ export function applyVisualLibraryPageMode(
     const isInsertHost =
       child.getAttribute("data-visual-insert-host") === "true" ||
       child.getAttribute("data-visual-runtime-host") === "true";
+    const isChrome =
+      child.matches(
+        'header, footer, [data-template-section-type="header"], [data-template-section-type="footer"], [data-section-kind="header"], [data-section-kind="footer"]',
+      ) ||
+      child.getAttribute("data-bizuply-nav-item") !== null;
 
     /*
-      Library / blank pages hide the template's default sections, but the
-      insert host must stay visible — inserted page sections mount inside it.
+      Library / blank pages hide the template's default page bodies, but keep
+      header/footer chrome + insert host so nested Site Pages stay navigable
+      and inserted library sections can mount.
     */
-    if (blankPage && !inserted && !isInsertHost) {
+    if (blankPage && !inserted && !isInsertHost && !isChrome) {
       if (
         !child.hasAttribute(
           "data-bizuply-library-original-display",

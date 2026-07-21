@@ -34,12 +34,53 @@ type SpalcioPagesProps = {
    * ככה כל טאב עובד כדף נפרד בתוך הפריוויו.
    */
   activePageId?: SpalcioPageId | string | null;
+  currentPageId?: SpalcioPageId | string | null;
+  initialPage?: SpalcioPageId | string | null;
+  initialPageId?: SpalcioPageId | string | null;
+
+  /**
+   * Visual data from the studio / public renderer (library pages, nav tree, …).
+   */
+  data?: Record<string, unknown> | null;
+  templateData?: Record<string, unknown> | null;
 
   /**
    * אופציונלי: אם עוטף חיצוני רוצה לשלוט בניווט.
    */
-  onPageChange?: (pageId: SpalcioPageId) => void;
+  onPageChange?: (pageId: SpalcioPageId | string) => void;
 };
+
+const SPALCIO_PAGE_IDS: SpalcioPageId[] = [
+  "home",
+  "about",
+  "services",
+  "projects",
+  "contact",
+];
+
+function isSpalcioTemplatePageId(value: string | null | undefined): value is SpalcioPageId {
+  return Boolean(
+    value && (SPALCIO_PAGE_IDS as readonly string[]).includes(String(value)),
+  );
+}
+
+function isSpalcioLibraryPage(
+  rawPageId: string,
+  visualData: Record<string, unknown> | null | undefined,
+) {
+  const data =
+    visualData && typeof visualData === "object" ? visualData : {};
+
+  return (
+    data.__blankVisualPage === true ||
+    data.__libraryPage === true ||
+    Boolean(data.__libraryPageTemplateId) ||
+    /^page[_-]/i.test(rawPageId) ||
+    (Boolean(rawPageId) &&
+      rawPageId !== "home" &&
+      !isSpalcioTemplatePageId(rawPageId))
+  );
+}
 
 const contactIconMap: Record<SpalcioContactItem["type"], React.ElementType> = {
   phone: Phone,
@@ -205,7 +246,7 @@ function Header({
   activePageId,
   onNavigate,
 }: {
-  activePageId: SpalcioPageId;
+  activePageId: SpalcioPageId | string;
   onNavigate: (pageId: SpalcioPageId) => void;
 }) {
   const navItems: Array<{ label: string; pageId: SpalcioPageId }> = [
@@ -892,21 +933,51 @@ function SpalcioPageBody({
 }
 
 export function SpalcioPages(props: SpalcioPagesProps) {
+  const visualData =
+    (props.data && typeof props.data === "object" ? props.data : null) ||
+    (props.templateData && typeof props.templateData === "object"
+      ? props.templateData
+      : null) ||
+    {};
+
+  const rawPageId = String(
+    props.activePageId ||
+      props.currentPageId ||
+      props.pageId ||
+      props.initialPageId ||
+      props.initialPage ||
+      "home",
+  ).trim();
+
+  const isLibraryPage = isSpalcioLibraryPage(rawPageId, visualData);
   const { activePage, activePageId, navigateToPage } =
     useSpalcioActivePage(props);
+
+  const stackPageId = isLibraryPage ? "__library__" : activePageId;
+  const headerActiveId = isLibraryPage ? "" : activePageId;
+  const publicPageId = isLibraryPage ? rawPageId : activePageId;
 
   return (
     <div
       dir="rtl"
       data-template-id="spalcio"
-      data-active-page-id={activePageId}
-      data-active-page-slug={activePage.slug}
+      data-template-page-id={publicPageId}
+      data-active-page-id={publicPageId}
+      data-active-page-slug={
+        isLibraryPage
+          ? String((visualData as any)?.slug || rawPageId)
+          : activePage.slug
+      }
+      data-bizuply-library-page={isLibraryPage ? "true" : undefined}
       className="min-h-screen bg-white text-right text-slate-950"
     >
-      <Header activePageId={activePageId} onNavigate={navigateToPage} />
+      <Header
+        activePageId={headerActiveId}
+        onNavigate={navigateToPage}
+      />
 
       <VisualPageStack
-        activePageId={activePageId}
+        activePageId={stackPageId}
         pages={spalcioPages.map((page) => ({
           id: page.id,
           content: (
