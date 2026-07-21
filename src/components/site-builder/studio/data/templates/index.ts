@@ -26,6 +26,16 @@ import { nexoraTemplate } from "./nexora/meta";
 import { fortivaTemplate } from "./fortiva/meta";
 import { vitalisTemplate } from "./vitalis/meta";
 import { studioraTemplate } from "./studiora/meta";
+import { gridlineTemplate } from "./gridline/meta";
+import { monolithTemplate } from "./monolith/meta";
+import { vertexTemplate } from "./vertex/meta";
+import { framehausTemplate } from "./framehaus/meta";
+import { steelworksTemplate } from "./steelworks/meta";
+import { prismTemplate } from "./prism/meta";
+import { horizonTemplate } from "./horizon/meta";
+import { ledgerTemplate } from "./ledger/meta";
+import { kineticTemplate } from "./kinetic/meta";
+import { citadelTemplate } from "./citadel/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -53,6 +63,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   fortivaTemplate,
   vitalisTemplate,
   studioraTemplate,
+  gridlineTemplate,
+  monolithTemplate,
+  vertexTemplate,
+  framehausTemplate,
+  steelworksTemplate,
+  prismTemplate,
+  horizonTemplate,
+  ledgerTemplate,
+  kineticTemplate,
+  citadelTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
