@@ -570,32 +570,42 @@ function Header({
                     .__previousSitePageTitles || {}) as Record<string, string>,
                 },
               );
+              const subpages = Array.isArray((item as any).subpages)
+                ? ((item as any).subpages as Array<{
+                    page?: string;
+                    label?: string;
+                    href?: string;
+                    __sitePageId?: string;
+                  }>)
+                : [];
 
-              return (
+              const handleNavClick = (
+                event: React.MouseEvent<HTMLAnchorElement>,
+                targetPage: string,
+              ) => {
+                if (
+                  event.currentTarget.getAttribute(
+                    "data-visual-inline-editing",
+                  ) === "true" ||
+                  event.currentTarget.getAttribute("contenteditable") ===
+                    "true"
+                ) {
+                  return;
+                }
+                if (hasOverrideNavHref(event.currentTarget)) return;
+                event.preventDefault();
+                onNavigate(normalizePage(targetPage));
+              };
+
+              const trigger = (
                 <a
-                  key={`${pageKey}-${index}`}
                   href={href}
                   className={`servora-nav-link ${isActive ? "is-active" : ""}`}
                   aria-current={isActive ? "page" : undefined}
-                  onClick={(event) => {
-                    /*
-                      While inline-editing the label, never hijack the click for SPA nav.
-                      Visual-link overrides must navigate by href on the public site.
-                    */
-                    if (
-                      event.currentTarget.getAttribute(
-                        "data-visual-inline-editing",
-                      ) === "true" ||
-                      event.currentTarget.getAttribute("contenteditable") ===
-                        "true"
-                    ) {
-                      return;
-                    }
-                    if (hasOverrideNavHref(event.currentTarget)) return;
-                    event.preventDefault();
-                    onNavigate(normalizePage(pageKey));
-                  }}
+                  aria-haspopup={subpages.length ? "true" : undefined}
+                  onClick={(event) => handleNavClick(event, pageKey)}
                   data-editable="link"
+                  data-site-page-id={String((item as any).__sitePageId || "")}
                   {...visualProps(
                     `global.header.nav.${index}`,
                     "text",
@@ -604,6 +614,54 @@ function Header({
                 >
                   {label}
                 </a>
+              );
+
+              if (!subpages.length) {
+                return (
+                  <React.Fragment key={`${pageKey}-${index}`}>
+                    {trigger}
+                  </React.Fragment>
+                );
+              }
+
+              return (
+                <div
+                  key={`${pageKey}-${index}`}
+                  data-bizuply-nav-item="react"
+                  className="bizuply-nav-item-with-subpages"
+                >
+                  {trigger}
+                  <div data-bizuply-nav-submenu="true" role="menu">
+                    {subpages.map((child, childIndex) => {
+                      const childPage = String(
+                        child.page || child.__sitePageId || "",
+                      );
+                      const childHref =
+                        String(child.href || "").trim() ||
+                        navHrefForServoraPage(childPage);
+                      const childActive = Boolean(
+                        activeNavPage && activeNavPage === childPage,
+                      );
+                      return (
+                        <a
+                          key={`${childPage}-${childIndex}`}
+                          href={childHref}
+                          role="menuitem"
+                          className={`servora-nav-link ${
+                            childActive ? "is-active" : ""
+                          }`}
+                          aria-current={childActive ? "page" : undefined}
+                          data-site-page-id={String(child.__sitePageId || "")}
+                          onClick={(event) =>
+                            handleNavClick(event, childPage)
+                          }
+                        >
+                          {String(child.label || childPage)}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
               );
             })}
           </nav>

@@ -266,33 +266,98 @@ function Header({
           </button>
 
           <nav className="elevora-nav" aria-label="ניווט ראשי">
-            {data.nav.map((item, index) => (
-              <button
-                key={item.page}
-                type="button"
-                className={`elevora-nav-link ${
-                  currentPage === item.page ? "is-active" : ""
-                }`}
-                onClick={() => onNavigate(item.page)}
-                data-editable="link"
-                data-visual-edit-id={`global.header.nav.${index}`}
-              >
-                {resolveNavLabelFromSitePages(
-                  item,
-                  safeArray(
-                    (data as any).__sitePages,
-                    [],
-                  ) as SitePageNavSource[],
-                  {
-                    previousTitleById: ((data as any)
-                      .__previousSitePageTitles || {}) as Record<
-                      string,
-                      string
-                    >,
-                  },
-                )}
-              </button>
-            ))}
+            {data.nav.map((item, index) => {
+              const label = resolveNavLabelFromSitePages(
+                item,
+                safeArray(
+                  (data as any).__sitePages,
+                  [],
+                ) as SitePageNavSource[],
+                {
+                  previousTitleById: ((data as any)
+                    .__previousSitePageTitles || {}) as Record<
+                    string,
+                    string
+                  >,
+                },
+              );
+              const subpages = Array.isArray((item as any).subpages)
+                ? ((item as any).subpages as Array<{
+                    page?: string;
+                    label?: string;
+                    href?: string;
+                    __sitePageId?: string;
+                  }>)
+                : [];
+              const trigger = (
+                <button
+                  type="button"
+                  className={`elevora-nav-link ${
+                    currentPage === item.page ? "is-active" : ""
+                  }`}
+                  onClick={() => onNavigate(item.page)}
+                  data-editable="link"
+                  data-visual-edit-id={`global.header.nav.${index}`}
+                  data-site-page-id={String((item as any).__sitePageId || "")}
+                  aria-haspopup={subpages.length ? "true" : undefined}
+                >
+                  {label}
+                </button>
+              );
+
+              if (!subpages.length) {
+                return (
+                  <React.Fragment key={item.page || index}>
+                    {trigger}
+                  </React.Fragment>
+                );
+              }
+
+              return (
+                <div
+                  key={item.page || index}
+                  data-bizuply-nav-item="react"
+                  className="bizuply-nav-item-with-subpages"
+                >
+                  {trigger}
+                  <div data-bizuply-nav-submenu="true" role="menu">
+                    {subpages.map((child, childIndex) => {
+                      const childPage = String(
+                        child.page || child.__sitePageId || "",
+                      );
+                      const childHref =
+                        String(child.href || "").trim() ||
+                        (childPage ? `/${childPage}` : "/");
+                      return (
+                        <a
+                          key={`${childPage}-${childIndex}`}
+                          href={childHref}
+                          role="menuitem"
+                          className="elevora-nav-link"
+                          data-site-page-id={String(child.__sitePageId || "")}
+                          data-visual-link-href={childHref}
+                          data-bizuply-public-href={childHref}
+                          data-link-url={childHref}
+                          onClick={(event) => {
+                            /*
+                              Prefer real page URLs for nested Site Pages so custom
+                              slugs navigate correctly on the published site.
+                            */
+                            if (childHref && childHref !== "#") {
+                              return;
+                            }
+                            event.preventDefault();
+                            onNavigate(childPage as ElevoraPageId);
+                          }}
+                        >
+                          {String(child.label || childPage)}
+                        </a>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
           </nav>
 
           <button

@@ -370,8 +370,15 @@ function createHeaderHtml() {
 
       <nav class="servora-nav" aria-label="ניווט ראשי">
         ${data.nav
-          .map(
-            (item, index) => `
+          .map((item, index) => {
+            const subpages = Array.isArray((item as any).subpages)
+              ? ((item as any).subpages as Array<{
+                  page?: string;
+                  label?: string;
+                  href?: string;
+                }>)
+              : [];
+            const link = `
           <a
             class="servora-nav-link"
             href="${buttonHref(item.page)}"
@@ -379,8 +386,29 @@ function createHeaderHtml() {
               `global.header.nav.${index}`,
               `קישור ניווט ${index + 1}`,
             )}
-          >${escapeHtml(item.label)}</a>`,
-          )
+          >${escapeHtml(item.label)}</a>`;
+
+            if (!subpages.length) return link;
+
+            const submenu = subpages
+              .map((child) => {
+                const childPage = String(child.page || "");
+                const childHref =
+                  String(child.href || "").trim() || buttonHref(childPage);
+                return `
+            <a class="servora-nav-link" href="${escapeHtml(childHref)}" role="menuitem">${escapeHtml(
+              String(child.label || childPage),
+            )}</a>`;
+              })
+              .join("");
+
+            return `
+          <div data-bizuply-nav-item="html">
+            ${link}
+            <div data-bizuply-nav-submenu="true" role="menu">${submenu}
+            </div>
+          </div>`;
+          })
           .join("")}
       </nav>
 

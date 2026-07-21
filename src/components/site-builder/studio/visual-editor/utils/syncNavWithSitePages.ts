@@ -12,6 +12,8 @@ export type SitePageNavSource = {
   slug?: string;
   isHome?: boolean;
   hiddenFromMenu?: boolean;
+  /** Wix-style nest under another site page (Site Menu → עמוד משנה). */
+  parentPageId?: string;
 };
 
 export type TemplateNavItem = {
@@ -22,7 +24,21 @@ export type TemplateNavItem = {
   href?: string;
   /** Stable link to a Site Page after the first successful sync. */
   __sitePageId?: string;
+  /**
+   * Nested menu entries (runtime). Prefer `subpages` — never `children`
+   * (blocked from visual-data save as a DOM-like key).
+   */
+  subpages?: TemplateNavItem[];
   [key: string]: any;
+};
+
+export type SiteNavTreeItem = {
+  id: string;
+  title: string;
+  slug: string;
+  href: string;
+  isHome?: boolean;
+  subpages: SiteNavTreeItem[];
 };
 
 const NAV_CONTENT_PREFIXES = [
@@ -58,8 +74,118 @@ export function slimSitePageNavSources(
       slug: String(page?.slug || "").trim(),
       isHome: Boolean(page?.isHome),
       hiddenFromMenu: Boolean(page?.hiddenFromMenu),
+      parentPageId: String(page?.parentPageId || "").trim() || undefined,
     }))
     .filter((page) => page.id);
+}
+
+function pageParentId(page: SitePageNavSource | null | undefined) {
+  return String(page?.parentPageId || "").trim();
+}
+
+/**
+ * Build a menu tree from Site Pages (`parentPageId`), excluding hidden items.
+ * Used by public DOM submenu hydration and optional React headers.
+ */
+export function buildNavTreeFromSitePages(
+  sitePages: SitePageNavSource[] | null | undefined,
+): SiteNavTreeItem[] {
+  const pages = slimSitePageNavSources(sitePages).filter(
+    (page) => !page.hiddenFromMenu,
+  );
+  if (!pages.length) return [];
+
+  const byId = new Map(pages.map((page) => [String(page.id), page]));
+  const childrenByParent = new Map<string, SitePageNavSource[]>();
+
+  pages.forEach((page) => {
+    const parentId = pageParentId(page);
+    if (!parentId || !byId.has(parentId) || parentId === page.id) return;
+    const list = childrenByParent.get(parentId) || [];
+    list.push(page);
+    childrenByParent.set(parentId, list);
+  });
+
+  const toItem = (page: SitePageNavSource): SiteNavTreeItem => {
+    const id = String(page.id || "");
+    const kids = childrenByParent.get(id) || [];
+    return {
+      id,
+      title: pageTitle(page),
+      slug: String(page.slug || page.id || "").trim(),
+      href: sitePageHref(page),
+      isHome: Boolean(page.isHome),
+      subpages: kids.map(toItem),
+    };
+  };
+
+  return pages
+    .filter((page) => {
+      const parentId = pageParentId(page);
+      return !parentId || !byId.has(parentId) || parentId === page.id;
+    })
+    .map(toItem);
+}
+
+/**
+ * Drop top-level nav entries that point at nested Site Pages, and attach
+ * `subpages` on their parents so templates can render dropdowns.
+ */
+export function nestNavItemsWithSitePages<T extends TemplateNavItem>(
+  nav: T[] | null | undefined,
+  sitePages: SitePageNavSource[] | null | undefined,
+): T[] {
+  const items = Array.isArray(nav) ? nav : [];
+  if (!items.length) return items;
+
+  const pages = slimSitePageNavSources(sitePages);
+  if (!pages.length) return items;
+
+  const byId = new Map(pages.map((page) => [String(page.id), page]));
+  const tree = buildNavTreeFromSitePages(pages);
+  const treeById = new Map(tree.map((item) => [item.id, item]));
+
+  const topLevel = items.filter((item) => {
+    const matched = findSitePageForNavItem(item, pages);
+    if (!matched) return true;
+    const parentId = pageParentId(matched);
+    if (!parentId || parentId === matched.id) return true;
+    return !byId.has(parentId);
+  });
+
+  return topLevel.map((item) => {
+    const matched = findSitePageForNavItem(item, pages);
+    const pageId = String(matched?.id || item.__sitePageId || "").trim();
+    const treeItem = pageId ? treeById.get(pageId) : undefined;
+    const subpages = (treeItem?.subpages || []).map(
+      (child) =>
+        ({
+          page: child.slug || child.id,
+          label: child.title,
+          href: child.href,
+          __sitePageId: child.id,
+        }) as TemplateNavItem,
+    );
+
+    const prevSubs = Array.isArray(item.subpages) ? item.subpages : [];
+    const same =
+      prevSubs.length === subpages.length &&
+      prevSubs.every(
+        (entry, index) =>
+          String(entry.__sitePageId || "") ===
+            String(subpages[index]?.__sitePageId || "") &&
+          String(entry.label || "") === String(subpages[index]?.label || ""),
+      );
+
+    if (!subpages.length) {
+      if (!prevSubs.length) return item;
+      const { subpages: _removed, ...rest } = item;
+      return rest as T;
+    }
+
+    if (same) return item;
+    return { ...item, subpages } as T;
+  });
 }
 
 function isHomePage(page: SitePageNavSource) {
@@ -613,6 +739,7 @@ export function syncSitePageTitlesIntoVisualData(
   */
   delete (source as any).__sitePages;
   delete (source as any).__previousSitePageTitles;
+  delete (source as any).__navTree;
 
   if (!pages.length) {
     return source;
@@ -638,12 +765,13 @@ export function syncSitePageTitlesIntoVisualData(
       prefixes,
       repairedNav.length,
     );
+    const syncedNav = syncNavLabelsWithSitePages(repairedNav, pages, {
+      hrefByIndex,
+      previousTitleById,
+    });
     next = {
       ...next,
-      nav: syncNavLabelsWithSitePages(repairedNav, pages, {
-        hrefByIndex,
-        previousTitleById,
-      }),
+      nav: nestNavItemsWithSitePages(syncedNav, pages),
     };
   }
 
@@ -654,16 +782,25 @@ export function syncSitePageTitlesIntoVisualData(
       prefixes,
       repairedNavigation.length,
     );
-    next = {
-      ...next,
-      navigation: syncNavLabelsWithSitePages(repairedNavigation, pages, {
+    const syncedNavigation = syncNavLabelsWithSitePages(
+      repairedNavigation,
+      pages,
+      {
         hrefByIndex,
         previousTitleById,
-      }),
+      },
+    );
+    next = {
+      ...next,
+      navigation: nestNavItemsWithSitePages(syncedNavigation, pages),
     };
   }
 
   next = syncNavStringFields(next, pages);
+  next = {
+    ...next,
+    __navTree: buildNavTreeFromSitePages(pages),
+  };
 
   const navForContent = Array.isArray(next.nav)
     ? next.nav

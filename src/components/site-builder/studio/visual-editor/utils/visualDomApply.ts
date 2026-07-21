@@ -37,6 +37,7 @@ import {
 } from "./visualSelectors";
 
 import { applySavedFormBuildersToDom } from "./visualForms";
+import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
 
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
@@ -3473,6 +3474,7 @@ export function applyAllVisualDataToDom(
   }
 
   applySavedFormBuildersToDom(root, data);
+  applySitePageNavSubmenusToDom(root, data);
 }
 
 export function collectVisualContentFromDom(

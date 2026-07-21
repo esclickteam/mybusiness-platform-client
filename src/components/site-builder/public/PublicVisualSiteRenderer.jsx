@@ -25,6 +25,7 @@ import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
+import { applySitePageNavSubmenusToDom } from "../studio/visual-editor/utils/applySitePageNavSubmenusToDom";
 import {
   applyMediaFitStyles,
   preserveVisualMediaBoxSize,
@@ -105,6 +106,98 @@ body {
   opacity: 1 !important;
   visibility: visible !important;
   transform: none !important;
+}
+
+/* Site Menu sub-pages dropdown (all templates) */
+[data-bizuply-nav-item] {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+[data-bizuply-nav-item] > :first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35em;
+}
+
+[data-bizuply-nav-chevron="true"] {
+  display: inline-block;
+  width: 0.45em;
+  height: 0.45em;
+  border-inline-end: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.75;
+  flex: 0 0 auto;
+  margin-top: -0.15em;
+  transition: transform 0.18s ease;
+}
+
+[data-bizuply-nav-item].is-open [data-bizuply-nav-chevron="true"],
+[data-bizuply-nav-item]:hover [data-bizuply-nav-chevron="true"],
+[data-bizuply-nav-item]:focus-within [data-bizuply-nav-chevron="true"] {
+  transform: rotate(-135deg);
+  margin-top: 0.15em;
+}
+
+[data-bizuply-nav-submenu="true"] {
+  display: none;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.15rem;
+  min-width: max(10rem, 100%);
+  padding: 0.45rem 0.35rem;
+  margin: 0;
+  list-style: none;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 0.65rem;
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
+  z-index: 80;
+}
+
+[data-bizuply-nav-item].is-open > [data-bizuply-nav-submenu="true"],
+[data-bizuply-nav-item]:hover > [data-bizuply-nav-submenu="true"],
+[data-bizuply-nav-item]:focus-within > [data-bizuply-nav-submenu="true"] {
+  display: flex;
+}
+
+@media (min-width: 768px) {
+  [data-bizuply-nav-item] > [data-bizuply-nav-submenu="true"] {
+    position: absolute;
+    inset-inline-start: 0;
+    top: calc(100% + 0.35rem);
+  }
+}
+
+[data-bizuply-nav-submenu="true"] a,
+[data-bizuply-nav-submenu="true"] button {
+  display: block;
+  width: 100%;
+  text-align: inherit;
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: 0.45rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+[data-bizuply-nav-submenu="true"] a:hover,
+[data-bizuply-nav-submenu="true"] button:hover,
+[data-bizuply-nav-submenu="true"] a.is-active,
+[data-bizuply-nav-submenu="true"] button.is-active {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+[data-bizuply-nav-child-hidden="true"] {
+  display: none !important;
 }
 `;
 
@@ -1523,6 +1616,7 @@ function applyPublicVisualData(root, visualData, pathname) {
   // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
   applyPublicLinksToDom(root, data);
+  applySitePageNavSubmenusToDom(root, data);
   syncPublicNavActiveState(root, pathname);
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);

@@ -744,6 +744,7 @@ const BLOCKED_SAVE_KEYS = new Set([
   /* Runtime-only nav sync helpers — must never hit the site save API. */
   "__sitePages",
   "__previousSitePageTitles",
+  "__navTree",
 ]);
 
 function isDomOrBrowserObject(value: any) {
@@ -6060,6 +6061,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           { previousTitleById },
         );
         delete (synced as any).__sitePages;
+        delete (synced as any).__navTree;
         delete (synced as any).__previousSitePageTitles;
         return synced;
       });
@@ -6136,6 +6138,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             { previousTitleById },
           );
           delete (synced as any).__sitePages;
+        delete (synced as any).__navTree;
           delete (synced as any).__previousSitePageTitles;
           return synced;
         });

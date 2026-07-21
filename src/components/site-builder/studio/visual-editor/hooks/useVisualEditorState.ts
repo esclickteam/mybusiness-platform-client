@@ -1294,6 +1294,8 @@ export function useVisualEditorState({
           title: page?.title || page?.name || "",
           slug: page?.slug || "",
           isHome: Boolean(page?.isHome),
+          hiddenFromMenu: Boolean((page as any)?.hiddenFromMenu),
+          parentPageId: String((page as any)?.parentPageId || "").trim(),
         })),
       ),
     [sitePages],
