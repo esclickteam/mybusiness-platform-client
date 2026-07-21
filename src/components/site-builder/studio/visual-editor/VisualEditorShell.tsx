@@ -642,7 +642,6 @@ export default function VisualEditorShell({
               const currentVisualData =
                 ((editor as any).data as Record<string, any>) || {};
               onSelectSitePage(pageId, currentVisualData);
-              setSidePanelMode(null);
             }}
             onAddPage={() => {
               setPreferredAddTab("pages");
