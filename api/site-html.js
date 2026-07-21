@@ -104,16 +104,16 @@ module.exports = async function handler(req, res) {
   let html = "";
   try {
     /*
-      Do not fetch `/` or `/index.html` — cleanUrls rewrites those back into this
-      function and causes an infinite loop. `spa-shell.html` is a build copy of
-      the Vite index and is served as a plain static file.
+      Load the built shell from /assets (real static file). Avoid `/` and
+      `/index.html` which cleanUrls / SPA routes can send back into this function.
     */
-    const indexRes = await fetch(`${proto}://${host}/spa-shell.html`, {
-      headers: { accept: "text/html" },
-    });
+    const indexRes = await fetch(
+      `${proto}://${host}/assets/bizuply-spa-shell.html`,
+      { headers: { accept: "text/html" } },
+    );
     html = await indexRes.text();
     if (!indexRes.ok || !html.includes("<html")) {
-      throw new Error(`spa-shell.html status ${indexRes.status}`);
+      throw new Error(`spa shell status ${indexRes.status}`);
     }
   } catch (error) {
     res.statusCode = 502;
