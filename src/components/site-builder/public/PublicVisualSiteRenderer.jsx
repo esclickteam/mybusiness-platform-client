@@ -1759,61 +1759,116 @@ function readSiteCustomCode(site) {
   );
 }
 
+function isDefaultBizuplyFaviconHref(href) {
+  const value = String(href || "").toLowerCase();
+  if (!value) return false;
+  return (
+    value.includes("favicon-v2") ||
+    value.includes("apple-touch-icon-v3") ||
+    value === "/favicon.ico" ||
+    value.endsWith("/favicon.ico") ||
+    value.includes("bizuply.com/favicon")
+  );
+}
+
+function applyPublicSiteFavicon(faviconUrl) {
+  const url = String(faviconUrl || "").trim();
+  if (!url || typeof document === "undefined") return;
+
+  document
+    .querySelectorAll(
+      'link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]',
+    )
+    .forEach((node) => {
+      const href = node.getAttribute("href") || "";
+      // Drop the shared BizUply shell icons; keep only the site favicon.
+      if (isDefaultBizuplyFaviconHref(href) || href !== url) {
+        node.parentNode?.removeChild(node);
+      }
+    });
+
+  const ensureLink = (rel) => {
+    const existing = Array.from(
+      document.head.querySelectorAll(`link[rel="${rel}"]`),
+    ).find((node) => (node.getAttribute("href") || "") === url);
+    if (existing) return;
+    const link = document.createElement("link");
+    link.setAttribute("rel", rel);
+    link.setAttribute("href", url);
+    document.head.appendChild(link);
+  };
+
+  ensureLink("icon");
+  ensureLink("apple-touch-icon");
+}
+
 function PublicSeoHead({ resolvedSeo, faviconUrl }) {
-  if (!resolvedSeo) return null;
+  const normalizedFaviconUrl = String(faviconUrl || "").trim();
+
+  useLayoutEffect(() => {
+    if (!normalizedFaviconUrl) return undefined;
+    applyPublicSiteFavicon(normalizedFaviconUrl);
+    return undefined;
+  }, [normalizedFaviconUrl]);
+
+  if (!resolvedSeo && !normalizedFaviconUrl) return null;
 
   return (
     <Helmet>
-      {faviconUrl ? (
+      {normalizedFaviconUrl ? (
         <>
-          <link rel="icon" href={faviconUrl} />
-          <link rel="apple-touch-icon" href={faviconUrl} />
+          <link rel="icon" href={normalizedFaviconUrl} />
+          <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
         </>
       ) : null}
-      {resolvedSeo.titleTag ? <title>{resolvedSeo.titleTag}</title> : null}
-      {resolvedSeo.metaDescription ? (
+      {resolvedSeo?.titleTag ? <title>{resolvedSeo.titleTag}</title> : null}
+      {resolvedSeo?.metaDescription ? (
         <meta name="description" content={resolvedSeo.metaDescription} />
       ) : null}
-      {resolvedSeo.keywords ? (
+      {resolvedSeo?.keywords ? (
         <meta name="keywords" content={resolvedSeo.keywords} />
       ) : null}
-      <meta name="robots" content={resolvedSeo.robots || "index, follow"} />
-      {resolvedSeo.canonicalUrl ? (
+      {resolvedSeo ? (
+        <meta name="robots" content={resolvedSeo.robots || "index, follow"} />
+      ) : null}
+      {resolvedSeo?.canonicalUrl ? (
         <link rel="canonical" href={resolvedSeo.canonicalUrl} />
       ) : null}
-      {resolvedSeo.social?.ogTitle ? (
+      {resolvedSeo?.social?.ogTitle ? (
         <meta property="og:title" content={resolvedSeo.social.ogTitle} />
       ) : null}
-      {resolvedSeo.social?.ogDescription ? (
+      {resolvedSeo?.social?.ogDescription ? (
         <meta
           property="og:description"
           content={resolvedSeo.social.ogDescription}
         />
       ) : null}
-      {resolvedSeo.social?.ogImage ? (
+      {resolvedSeo?.social?.ogImage ? (
         <meta property="og:image" content={resolvedSeo.social.ogImage} />
       ) : null}
-      {resolvedSeo.absoluteUrl ? (
+      {resolvedSeo?.absoluteUrl ? (
         <meta property="og:url" content={resolvedSeo.absoluteUrl} />
       ) : null}
-      <meta property="og:type" content="website" />
-      <meta
-        name="twitter:card"
-        content={resolvedSeo.social?.twitterCard || "summary_large_image"}
-      />
-      {resolvedSeo.social?.ogTitle ? (
+      {resolvedSeo ? <meta property="og:type" content="website" /> : null}
+      {resolvedSeo ? (
+        <meta
+          name="twitter:card"
+          content={resolvedSeo.social?.twitterCard || "summary_large_image"}
+        />
+      ) : null}
+      {resolvedSeo?.social?.ogTitle ? (
         <meta name="twitter:title" content={resolvedSeo.social.ogTitle} />
       ) : null}
-      {resolvedSeo.social?.ogDescription ? (
+      {resolvedSeo?.social?.ogDescription ? (
         <meta
           name="twitter:description"
           content={resolvedSeo.social.ogDescription}
         />
       ) : null}
-      {resolvedSeo.social?.ogImage ? (
+      {resolvedSeo?.social?.ogImage ? (
         <meta name="twitter:image" content={resolvedSeo.social.ogImage} />
       ) : null}
-      {Array.isArray(resolvedSeo.hreflang)
+      {Array.isArray(resolvedSeo?.hreflang)
         ? resolvedSeo.hreflang
             .filter((entry) => entry && entry.lang && entry.href)
             .map((entry) => (
@@ -1825,7 +1880,7 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
               />
             ))
         : null}
-      {Array.isArray(resolvedSeo.customMetaTags)
+      {Array.isArray(resolvedSeo?.customMetaTags)
         ? resolvedSeo.customMetaTags
             .filter((meta) => meta && meta.key)
             .map((meta) =>
@@ -1844,7 +1899,7 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
               ),
             )
         : null}
-      {Array.isArray(resolvedSeo.structuredData)
+      {Array.isArray(resolvedSeo?.structuredData)
         ? resolvedSeo.structuredData
             .filter((entry) => entry && entry.json && isValidJson(entry.json))
             .map((entry, index) => (
