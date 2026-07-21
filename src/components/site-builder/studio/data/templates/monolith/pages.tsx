@@ -1,10 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 
-import {
-  TemplateText,
-  VisualPageStack,
-  useTemplatePageNavigation,
-} from "../shared";
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { TemplateText } from "../shared/TemplateText";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { monolithDefaultData } from "./defaultData";
 import { monolithEditorCss } from "./editorCss";
 
