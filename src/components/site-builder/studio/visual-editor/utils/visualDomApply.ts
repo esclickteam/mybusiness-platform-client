@@ -38,6 +38,7 @@ import {
 
 import { applySavedFormBuildersToDom } from "./visualForms";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
+import { shouldApplyLibraryBlankMode } from "../../../runtime/visualLibraryPage";
 
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
@@ -3058,8 +3059,7 @@ export function applyVisualLibraryPageMode(
   if (!root) return;
 
   const runtimeRoot = getVisualRuntimeRoot(root);
-  const blankPage =
-    data?.__blankVisualPage === true || data?.__libraryPage === true;
+  const blankPage = shouldApplyLibraryBlankMode(data, root);
 
   Array.from(runtimeRoot.children).forEach((child) => {
     if (!(child instanceof HTMLElement)) return;

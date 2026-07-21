@@ -68,6 +68,12 @@ function isSpalcioLibraryPage(
   rawPageId: string,
   visualData: Record<string, unknown> | null | undefined,
 ) {
+  const id = String(rawPageId || "").trim();
+  if (!id) return false;
+
+  // Built-in Spalcio pages must never enter blank/library canvas mode.
+  if (isSpalcioTemplatePageId(id) || id === "home") return false;
+
   const data =
     visualData && typeof visualData === "object" ? visualData : {};
 
@@ -75,10 +81,7 @@ function isSpalcioLibraryPage(
     data.__blankVisualPage === true ||
     data.__libraryPage === true ||
     Boolean(data.__libraryPageTemplateId) ||
-    /^page[_-]/i.test(rawPageId) ||
-    (Boolean(rawPageId) &&
-      rawPageId !== "home" &&
-      !isSpalcioTemplatePageId(rawPageId))
+    /^page[_-]/i.test(id)
   );
 }
 
