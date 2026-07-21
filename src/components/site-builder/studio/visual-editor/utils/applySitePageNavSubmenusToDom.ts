@@ -57,7 +57,8 @@ const NAV_SUBMENU_CSS = `
   margin: 0;
   list-style: none;
   background: #ffffff;
-  color: #111827;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
   border: 1px solid rgba(15, 23, 42, 0.1);
   border-radius: 0.65rem;
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.14);
@@ -105,19 +106,31 @@ const NAV_SUBMENU_CSS = `
   padding: 0.55rem 0.75rem;
   border: 0;
   border-radius: 0.45rem;
-  background: transparent;
-  color: inherit;
+  background: transparent !important;
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  opacity: 1 !important;
   font: inherit;
-  text-decoration: none;
+  font-weight: 700;
+  text-decoration: none !important;
   cursor: pointer;
   white-space: nowrap;
+}
+
+[${SUBMENU_ATTR}="true"] a *,
+[${SUBMENU_ATTR}="true"] button * {
+  color: #111827 !important;
+  -webkit-text-fill-color: #111827 !important;
+  opacity: 1 !important;
 }
 
 [${SUBMENU_ATTR}="true"] a:hover,
 [${SUBMENU_ATTR}="true"] button:hover,
 [${SUBMENU_ATTR}="true"] a.is-active,
 [${SUBMENU_ATTR}="true"] button.is-active {
-  background: rgba(15, 23, 42, 0.06);
+  background: rgba(15, 23, 42, 0.08) !important;
+  color: #0f172a !important;
+  -webkit-text-fill-color: #0f172a !important;
 }
 
 [${CHILD_HIDDEN_ATTR}="true"] {
@@ -140,11 +153,13 @@ function normalizeKey(value: unknown) {
 }
 
 function ensureSubmenuStyles(doc: Document) {
-  if (doc.getElementById(STYLE_ID)) return;
-  const style = doc.createElement("style");
-  style.id = STYLE_ID;
+  let style = doc.getElementById(STYLE_ID) as HTMLStyleElement | null;
+  if (!style) {
+    style = doc.createElement("style");
+    style.id = STYLE_ID;
+    doc.head.appendChild(style);
+  }
   style.textContent = NAV_SUBMENU_CSS;
-  doc.head.appendChild(style);
 }
 
 function readNodeHref(node: Element) {
