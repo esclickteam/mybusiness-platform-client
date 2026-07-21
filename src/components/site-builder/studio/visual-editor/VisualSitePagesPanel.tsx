@@ -12,8 +12,10 @@ import {
   PointerSensor,
   TouchSensor,
   closestCenter,
+  pointerWithin,
   useSensor,
   useSensors,
+  type CollisionDetection,
   type DragEndEvent,
   type DragOverEvent,
   type DragStartEvent,
@@ -52,6 +54,7 @@ import {
   applyDragToDisplayRows,
   buildPageTreeRows,
   resolvePageParentId,
+  wouldCreatePageCycle,
   type PageTreeMovePlacement,
   type PageTreeRow,
 } from "./utils/pageHierarchyUtils";
@@ -222,7 +225,16 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
             dividerAfter: true,
           },
         ]
-      : []),
+      : [
+          {
+            action: "subpage" as const,
+            label: "עמוד משנה",
+            hint: "קינון העמוד הקיים תחת עמוד אב בתפריט",
+            icon: <CornerDownLeft className="h-4 w-4" />,
+            dividerAfter: true,
+            disabled: isHome,
+          },
+        ]),
     {
       action: "delete",
       label: "מחיקה",
@@ -257,22 +269,25 @@ function getMenuPosition(anchor: MenuAnchor) {
 }
 
 function getDropPlacement(
-  event: DragOverEvent | DragEndEvent,
+  overRect: { top: number; height: number } | null | undefined,
+  pointerY: number,
 ): PageTreeMovePlacement {
-  const overRect = event.over?.rect;
-  const activeRect =
-    event.active.rect.current.translated || event.active.rect.current.initial;
+  if (!overRect || !Number.isFinite(pointerY)) return "inside";
 
-  if (!overRect || !activeRect) return "after";
-
-  const pointerY = activeRect.top + activeRect.height / 2;
   const relativeY = pointerY - overRect.top;
   const ratio = relativeY / Math.max(overRect.height, 1);
 
-  if (ratio < 0.22) return "before";
-  if (ratio > 0.78) return "after";
+  // Narrow edge bands so nesting (center of the row) is easy to hit.
+  if (ratio < 0.16) return "before";
+  if (ratio > 0.84) return "after";
   return "inside";
 }
+
+const pageListCollisionDetection: CollisionDetection = (args) => {
+  const pointerHits = pointerWithin(args);
+  if (pointerHits.length > 0) return pointerHits;
+  return closestCenter(args);
+};
 
 const DEPTH_INDENT = 28;
 
@@ -604,6 +619,7 @@ export default function VisualSitePagesPanel({
 }: VisualSitePagesPanelProps) {
   const [menuPageId, setMenuPageId] = useState("");
   const [menuAnchor, setMenuAnchor] = useState<MenuAnchor | null>(null);
+  const [parentPickerPageId, setParentPickerPageId] = useState("");
   const [draggingPageId, setDraggingPageId] = useState("");
   const [dropTargetId, setDropTargetId] = useState("");
   const [dropPlacement, setDropPlacement] =
@@ -615,6 +631,8 @@ export default function VisualSitePagesPanel({
   const dropTargetRef = useRef<{ id: string; placement: PageTreeMovePlacement } | null>(
     null,
   );
+  const pointerYRef = useRef(0);
+  const stopPointerTrackingRef = useRef<(() => void) | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRefs = useRef<Record<string, HTMLButtonElement | null>>({});
 
@@ -768,6 +786,19 @@ export default function VisualSitePagesPanel({
     isDraggingRef.current = true;
     setDraggingPageId(String(event.active.id || ""));
     dropTargetRef.current = null;
+
+    stopPointerTrackingRef.current?.();
+    const onPointerMove = (pointerEvent: PointerEvent) => {
+      pointerYRef.current = pointerEvent.clientY;
+    };
+    if (event.activatorEvent instanceof PointerEvent) {
+      pointerYRef.current = event.activatorEvent.clientY;
+    }
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    stopPointerTrackingRef.current = () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      stopPointerTrackingRef.current = null;
+    };
   };
 
   const handleDragOver = (event: DragOverEvent) => {
@@ -784,7 +815,7 @@ export default function VisualSitePagesPanel({
     const activeRow = pageRows.find((row) => row.page.id === activeId);
     if (activeRow?.page.isHome) return;
 
-    const placement = getDropPlacement(event);
+    const placement = getDropPlacement(event.over?.rect, pointerYRef.current);
     setDropTargetId(overId);
     setDropPlacement(placement);
     dropTargetRef.current = { id: overId, placement };
@@ -795,8 +826,12 @@ export default function VisualSitePagesPanel({
     const stored = dropTargetRef.current;
     const overId =
       String(event.over?.id || "") || String(stored?.id || "");
-    const placement = stored?.placement || "after";
+    const placement =
+      stored?.placement ||
+      getDropPlacement(event.over?.rect, pointerYRef.current) ||
+      "after";
 
+    stopPointerTrackingRef.current?.();
     isDraggingRef.current = false;
     setDraggingPageId("");
     setDropTargetId("");
@@ -829,6 +864,7 @@ export default function VisualSitePagesPanel({
   };
 
   const handleDragCancel = () => {
+    stopPointerTrackingRef.current?.();
     isDraggingRef.current = false;
     setDraggingPageId("");
     setDropTargetId("");
@@ -872,9 +908,16 @@ export default function VisualSitePagesPanel({
 
     if (action === "subpage") {
       const page = pages.find((item) => item.id === pageId);
-      if (!page?.parentPageId) return;
+      if (!page) return;
 
-      onPageAction("subpage", pageId, { parentPageId: "" });
+      if (resolvePageParentId(page)) {
+        onPageAction("subpage", pageId, { parentPageId: "" });
+        setMenuPageId("");
+        setMenuAnchor(null);
+        return;
+      }
+
+      setParentPickerPageId(pageId);
       setMenuPageId("");
       setMenuAnchor(null);
       return;
@@ -884,6 +927,87 @@ export default function VisualSitePagesPanel({
     setMenuPageId("");
     setMenuAnchor(null);
   };
+
+  const parentPickerPage =
+    pages.find((page) => page.id === parentPickerPageId) || null;
+  const parentPickerOptions = parentPickerPage
+    ? pages.filter((page) => {
+        if (page.id === parentPickerPage.id) return false;
+        if (wouldCreatePageCycle(pages, parentPickerPage.id, page.id)) {
+          return false;
+        }
+        return true;
+      })
+    : [];
+
+  const parentPickerPortal =
+    parentPickerPage && typeof document !== "undefined"
+      ? createPortal(
+          <div
+            className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/35 p-4"
+            dir="rtl"
+            onClick={() => setParentPickerPageId("")}
+          >
+            <div
+              className="w-full max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_24px_64px_rgba(15,23,42,0.28)]"
+              onClick={(event) => event.stopPropagation()}
+              role="dialog"
+              aria-label="בחירת עמוד אב"
+            >
+              <div className="border-b border-slate-100 px-4 py-3">
+                <h3 className="text-sm font-black text-slate-950">
+                  בחירת עמוד אב
+                </h3>
+                <p className="mt-1 text-[12px] font-bold leading-5 text-slate-500">
+                  "{parentPickerPage.title}" יהיה עמוד משנה תחת העמוד שתבחרו
+                </p>
+              </div>
+              <div className="max-h-[50vh] overflow-y-auto p-2">
+                {parentPickerOptions.length ? (
+                  parentPickerOptions.map((page) => (
+                    <button
+                      key={page.id}
+                      type="button"
+                      onClick={() => {
+                        onPageAction?.("subpage", parentPickerPage.id, {
+                          parentPageId: page.id,
+                        });
+                        setParentPickerPageId("");
+                      }}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-right text-[13px] font-bold text-slate-800 transition hover:bg-violet-50"
+                    >
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+                        {page.isHome ? (
+                          <Home className="h-4 w-4" />
+                        ) : (
+                          <FileText className="h-4 w-4" />
+                        )}
+                      </span>
+                      <span className="min-w-0 flex-1 truncate">
+                        {page.title || "עמוד"}
+                      </span>
+                    </button>
+                  ))
+                ) : (
+                  <p className="px-3 py-4 text-center text-[12px] font-bold text-slate-500">
+                    אין עמודים זמינים לקינון
+                  </p>
+                )}
+              </div>
+              <div className="border-t border-slate-100 p-2">
+                <button
+                  type="button"
+                  onClick={() => setParentPickerPageId("")}
+                  className="flex h-10 w-full items-center justify-center rounded-xl bg-slate-50 text-sm font-black text-slate-600 transition hover:bg-slate-100"
+                >
+                  ביטול
+                </button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
 
   const menuPortal =
     menuPage && menuPosition && typeof document !== "undefined"
@@ -941,6 +1065,8 @@ export default function VisualSitePagesPanel({
 
   return (
     <>
+      {menuPortal}
+      {parentPickerPortal}
       <aside
         className="absolute inset-y-0 right-0 z-[2147483000] flex w-[320px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-white shadow-[-18px_0_50px_rgba(15,23,42,0.12)]"
         dir="rtl"
@@ -953,7 +1079,7 @@ export default function VisualSitePagesPanel({
                 <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
                   {singlePageMode
                     ? "העמוד והסקשנים שלו"
-                    : `${pages.length} עמודים · לחצי על עמוד לסקשנים · גרירה לסידור`}
+                    : `${pages.length} עמודים · גרירה למרכז השורה = עמוד משנה`}
                 </p>
               </div>
               <button
@@ -977,7 +1103,7 @@ export default function VisualSitePagesPanel({
 
           <DndContext
             sensors={sensors}
-            collisionDetection={closestCenter}
+            collisionDetection={pageListCollisionDetection}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
             onDragEnd={handleDragEnd}
@@ -1083,8 +1209,6 @@ export default function VisualSitePagesPanel({
           ) : null}
         </div>
       </aside>
-
-      {menuPortal}
     </>
   );
 }
