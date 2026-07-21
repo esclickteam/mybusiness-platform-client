@@ -878,7 +878,7 @@ export default function PageSettingsModal({
               <SeoSection
                 icon={<Globe className="h-5 w-5" />}
                 title="בדיקה וחיבור לגוגל"
-                subtitle="גוגל סורק את האתר לבד אחרי פרסום — אין צורך בהתחברות"
+                subtitle="מפת אתר + בדיקות. לחיבור מלא ל-Search Console עברו ל־SEO מתקדם"
               >
                 <SeoStatusPill tone={pageIndexingEnabled ? "success" : "danger"}>
                   {pageIndexingEnabled
@@ -1160,8 +1160,8 @@ export default function PageSettingsModal({
 
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
-                title="אימות מול Google ותגי מטא"
-                description="הקוד נשמר ברמת האתר כולו (לא רק העמוד הנוכחי) ומופיע בכל העמודים אחרי פרסום."
+                title="חיבור ל-Google Search Console"
+                description="מדריך מדויק: בחרו קידומת כתובת URL (לא דומיין), הדביקו קוד אימות, שמרו ופרסמו."
                 badge={
                   verificationCode
                     ? { label: "קוד שמור", tone: "recommended" }
@@ -1169,24 +1169,45 @@ export default function PageSettingsModal({
                 }
                 defaultOpen
               >
-                <div className="rounded-2xl border border-blue-100 bg-blue-50/70 p-3.5 text-xs font-semibold leading-6 text-slate-700">
-                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black text-slate-900">
-                    <Lightbulb className="h-4 w-4 text-blue-500" /> מה זה "קוד
-                    אימות" של גוגל?
+                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-semibold leading-6 text-amber-900">
+                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
+                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
+                    חשוב: בחלון של גוגל בחרו בצד שמאל
                   </p>
-                  זהו קוד קצר ש-Google נותן לך, שמוכיח שהאתר הזה באמת שלך. מדביקים
-                  אותו פעם אחת — ומאותו רגע גוגל נותן לך לראות נתונים על האתר
-                  ולבקש ממנו לסרוק עמודים. זה חד-פעמי וחל על כל האתר.
+                  <p>
+                    בחרו{" "}
+                    <span className="font-black">
+                      "קידומת של כתובת URL"
+                    </span>{" "}
+                    — לא {" "}
+                    <span className="font-black">"דומיין"</span>.
+                    דומיין דורש הגדרות DNS ומסובך יותר. אצלנו עובדים רק עם
+                    קידומת URL + תג HTML.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs font-semibold leading-6 text-slate-600">
+                  <p className="font-black text-slate-900">
+                    פאביקון ≠ Search Console
+                  </p>
+                  <p className="mt-1">
+                    הפאביקון מוגדר בטאב {" "}
+                    <span className="font-black text-slate-800">
+                      "הגדרות אתר"
+                    </span>
+                    . כאן מחברים רק את האתר לגוגל כדי לעקוב אחרי חיפוש ולשלוח
+                    מפת אתר.
+                  </p>
                 </div>
 
                 {verificationCode ? (
                   <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-bold text-emerald-800">
                     <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
                     <div>
-                      <p className="font-black">קוד האימות שמור ברמת האתר</p>
+                      <p className="font-black">קוד האימות כבר שמור אצלנו</p>
                       <p className="mt-1 font-semibold text-emerald-700">
-                        אחרי פרסום האתר חזרו ל-Search Console ולחצו "אמת". אחר כך
-                        שלחו את מפת האתר ({siteBaseUrl}/sitemap.xml).
+                        ודאו שפרסמתם את האתר → ב-Search Console לחצו "אמת" → אחר
+                        כך שלחו מפת אתר: {siteBaseUrl}/sitemap.xml
                       </p>
                     </div>
                   </div>
@@ -1199,7 +1220,11 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        היכנסי ל-Google Search Console (בחינם)
+                        פתחו את Google Search Console
+                      </p>
+                      <p className="text-xs font-semibold text-slate-500">
+                        אם מופיע מסך פתיחה — לחצו "הוספת אתר". אם כבר התחלתם —
+                        לחצו "כבר התחלת? כדאי לסיים את האימות".
                       </p>
                       <a
                         href="https://search.google.com/search-console/welcome"
@@ -1218,16 +1243,17 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        בחרי "קידומת כתובת אתר" והדביקי את הכתובת שלך
+                        בחרו "קידומת של כתובת URL" (צד שמאל) והדביקו את הכתובת
                       </p>
                       <p className="text-xs font-semibold text-slate-500">
-                        הכתובת נקלטת אוטומטית מהאתר המפורסם שלך — אין צורך להקליד.
+                        העתיקו את הכתובת המדויקת מכאן → הדביקו בשדה של גוגל →
+                        לחצו "המשך".
                       </p>
                       {publicUrlIsPlaceholder ? (
                         <p className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
                           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                          האתר עדיין לא פורסם, לכן זו כתובת לדוגמה. פרסמי את האתר
-                          והכתובת האמיתית תופיע כאן אוטומטית.
+                          האתר עדיין לא פורסם, לכן זו כתובת לדוגמה. פרסמו את
+                          האתר והכתובת האמיתית תופיע כאן.
                         </p>
                       ) : null}
                       <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
@@ -1262,7 +1288,11 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        בחרי אימות בשיטת "תג HTML" — גוגל יציג שורה כזו:
+                        באימות בחרו "תג HTML" והעתיקו את הקוד
+                      </p>
+                      <p className="text-xs font-semibold text-slate-500">
+                        גוגל יציג שורה כמו זו. אפשר להדביק כאן את כל השורה —
+                        אנחנו נוציא אוטומטית רק את הקוד מתוך content:
                       </p>
                       <code
                         className="block break-all rounded-xl bg-slate-900 px-3 py-2 font-mono text-[11px] leading-5 text-emerald-300"
@@ -1271,10 +1301,6 @@ export default function PageSettingsModal({
                         &lt;meta name="google-site-verification"
                         content="AbC123…" /&gt;
                       </code>
-                      <p className="text-xs font-semibold text-slate-500">
-                        צריך להעתיק <span className="font-black">רק</span> את
-                        הקוד שבתוך content (למשל AbC123…).
-                      </p>
                     </div>
                   </li>
 
@@ -1284,7 +1310,7 @@ export default function PageSettingsModal({
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        הדביקי כאן את קוד האימות
+                        הדביקו את הקוד כאן
                       </p>
                       <input
                         value={verificationCode}
@@ -1292,12 +1318,13 @@ export default function PageSettingsModal({
                           setVerificationCode(event.target.value)
                         }
                         className={seoFieldClass}
-                        placeholder="הדביקי כאן את הקוד או את כל השורה מגוגל"
+                        placeholder="הדביקו את הקוד או את כל שורת ה-meta מגוגל"
+                        dir="ltr"
                       />
                       {verificationCode ? (
                         <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" /> הקוד נשמר ברמת
-                          האתר — יתווסף לכל העמודים אחרי "שמירה" ופרסום.
+                          <CheckCircle2 className="h-4 w-4" /> הקוד מוכן —
+                          המשיכו לשלב 5.
                         </p>
                       ) : null}
                     </div>
@@ -1307,14 +1334,21 @@ export default function PageSettingsModal({
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
                       5
                     </span>
-                    <div className="min-w-0 flex-1 space-y-1 pt-0.5">
+                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
                       <p className="text-sm font-black text-slate-900">
-                        שמרי כאן, פרסמי את האתר, וחזרי ל-Search Console ללחוץ
-                        "אמת"
+                        שמירה כאן → פרסום האתר → חזרה לגוגל ולחיצה על "אמת"
                       </p>
-                      <p className="text-xs font-semibold text-slate-500">
-                        חשוב: האתר צריך להיות מפורסם כדי שגוגל ימצא את הקוד.
-                      </p>
+                      <ol className="list-decimal space-y-1 pr-4 text-xs font-semibold text-slate-500">
+                        <li>לחצו "שמירה" בתחתית החלון הזה</li>
+                        <li>פרסמו את האתר בעורך (כפתור פרסום)</li>
+                        <li>חזרו ל-Search Console ולחצו "אמת"</li>
+                        <li>
+                          אחרי שהאימות הצליח: מפות אתר → שלחו{" "}
+                          <span className="font-black text-slate-700" dir="ltr">
+                            {siteBaseUrl}/sitemap.xml
+                          </span>
+                        </li>
+                      </ol>
                     </div>
                   </li>
                 </ol>
