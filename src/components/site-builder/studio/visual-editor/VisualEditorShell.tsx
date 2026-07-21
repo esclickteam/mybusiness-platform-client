@@ -87,6 +87,7 @@ type VisualEditorShellProps = {
       targetPageId?: string;
       placement?: "before" | "after" | "inside";
       orderedIds?: string[];
+      rowSnapshots?: Array<{ id: string; depth: number }>;
     },
   ) => void;
 };

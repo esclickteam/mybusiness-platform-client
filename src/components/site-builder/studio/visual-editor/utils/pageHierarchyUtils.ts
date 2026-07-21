@@ -145,6 +145,160 @@ export function flattenPagesInTreeOrder(
   return buildPageTreeRows(pages).map((row) => row.page);
 }
 
+export function getSubtreeRowRange(
+  rows: PageTreeRow[],
+  rootIndex: number,
+): [number, number] {
+  if (rootIndex < 0 || rootIndex >= rows.length) return [0, 0];
+
+  const rootDepth = rows[rootIndex].depth;
+  let end = rootIndex + 1;
+
+  while (end < rows.length && rows[end].depth > rootDepth) {
+    end += 1;
+  }
+
+  return [rootIndex, end];
+}
+
+export function applyDragToDisplayRows(
+  rows: PageTreeRow[],
+  activeId: string,
+  overId: string,
+  placement: PageTreeMovePlacement,
+): PageTreeRow[] {
+  const fromIndex = rows.findIndex((row) => row.page.id === activeId);
+  if (fromIndex < 0) return rows;
+  if (rows[fromIndex].page.isHome) return rows;
+  if (!overId || activeId === overId) return rows;
+
+  const [blockStart, blockEnd] = getSubtreeRowRange(rows, fromIndex);
+  const block = rows.slice(blockStart, blockEnd);
+  const blockIds = new Set(block.map((row) => row.page.id));
+
+  if (blockIds.has(overId)) return rows;
+
+  const remaining = rows.filter((row) => !blockIds.has(row.page.id));
+  const targetIndex = remaining.findIndex((row) => row.page.id === overId);
+  if (targetIndex < 0) return remaining;
+
+  const targetRow = remaining[targetIndex];
+  let insertAt = targetIndex;
+  let newRootDepth = targetRow.depth;
+
+  if (placement === "before") {
+    insertAt = targetIndex;
+    newRootDepth = targetRow.depth;
+  } else if (placement === "after") {
+    const [, targetEnd] = getSubtreeRowRange(remaining, targetIndex);
+    insertAt = targetEnd;
+    newRootDepth = targetRow.depth;
+  } else {
+    insertAt = targetIndex + 1;
+    newRootDepth = targetRow.depth + 1;
+  }
+
+  const next = [
+    ...remaining.slice(0, insertAt),
+    ...block,
+    ...remaining.slice(insertAt),
+  ];
+
+  const homeIndex = next.findIndex((row) => row.page.isHome);
+  if (homeIndex > 0) {
+    const [homeRow] = next.splice(homeIndex, 1);
+    next.unshift({ ...homeRow, depth: 0 });
+  }
+
+  const delta = newRootDepth - block[0].depth;
+
+  return next.map((row, index) => {
+    if (index < insertAt || index >= insertAt + block.length) return row;
+    if (row.page.isHome) return { ...row, depth: 0 };
+
+    const relativeDepth = row.depth - block[0].depth;
+    return {
+      ...row,
+      depth: Math.max(newRootDepth + relativeDepth, 0),
+    };
+  });
+}
+
+export function applyDisplayRowsToPages(
+  pages: PageHierarchyItem[],
+  snapshots: Array<{ id: string; depth: number }>,
+): PageHierarchyItem[] | null {
+  const pageById = new Map(pages.map((page) => [page.id, page]));
+  const displayRows: PageTreeRow[] = [];
+
+  snapshots.forEach((snapshot) => {
+    const page = pageById.get(snapshot.id);
+    if (!page) return;
+    displayRows.push({
+      page,
+      depth: Math.max(0, snapshot.depth),
+    });
+  });
+
+  if (!displayRows.length) return null;
+
+  const stack: string[] = [];
+  const updates = new Map<
+    string,
+    { parentPageId?: string; menuOrder: number }
+  >();
+  const siblingCounts = new Map<string, number>();
+
+  displayRows.forEach((row) => {
+    const { page } = row;
+    let depth = row.depth;
+
+    if (page.isHome) {
+      updates.set(page.id, { parentPageId: undefined, menuOrder: 0 });
+      stack.length = 0;
+      stack[0] = page.id;
+      siblingCounts.clear();
+      siblingCounts.set("__root__", 1);
+      return;
+    }
+
+    depth = Math.max(0, Math.min(depth, stack.length));
+
+    while (stack.length > depth) {
+      stack.pop();
+    }
+
+    const parentId = depth > 0 ? stack[depth - 1] : undefined;
+
+    if (parentId && wouldCreatePageCycle(pages, page.id, parentId)) {
+      return;
+    }
+
+    const parentKey = parentId || "__root__";
+    const order = siblingCounts.get(parentKey) || 0;
+    siblingCounts.set(parentKey, order + 1);
+
+    updates.set(page.id, {
+      parentPageId: parentId,
+      menuOrder: order,
+    });
+    stack[depth] = page.id;
+  });
+
+  const nextPages = pages.map((page) => {
+    const update = updates.get(page.id);
+    if (!update) return page;
+
+    return {
+      ...page,
+      parentPageId: update.parentPageId,
+      menuOrder: update.menuOrder,
+    };
+  });
+
+  return flattenPagesInTreeOrder(normalizePageMenuOrders(nextPages));
+}
+
 function getSiblings(
   pages: PageHierarchyItem[],
   parentPageId?: string,

@@ -10,6 +10,7 @@ import {
   DndContext,
   DragOverlay,
   PointerSensor,
+  TouchSensor,
   closestCenter,
   useSensor,
   useSensors,
@@ -19,7 +20,6 @@ import {
 } from "@dnd-kit/core";
 import {
   SortableContext,
-  arrayMove,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
@@ -46,6 +46,7 @@ import {
 
 import type { VisualSitePageItem } from "./SitePageCardPreview";
 import {
+  applyDragToDisplayRows,
   buildPageTreeRows,
   type PageTreeMovePlacement,
   type PageTreeRow,
@@ -84,6 +85,7 @@ type VisualSitePagesPanelProps = {
       targetPageId?: string;
       placement?: PageTreeMovePlacement;
       orderedIds?: string[];
+      rowSnapshots?: Array<{ id: string; depth: number }>;
     },
   ) => void;
 };
@@ -249,8 +251,8 @@ function getDropPlacement(
   const relativeY = pointerY - overRect.top;
   const ratio = relativeY / Math.max(overRect.height, 1);
 
-  if (ratio < 0.28) return "before";
-  if (ratio > 0.72) return "after";
+  if (ratio < 0.22) return "before";
+  if (ratio > 0.78) return "after";
   return "inside";
 }
 
@@ -321,8 +323,9 @@ function SortablePageRow({
         className={[
           "flex h-8 w-5 shrink-0 items-center justify-center touch-none select-none",
           canDrag
-            ? "cursor-grab text-slate-400 opacity-100 hover:text-slate-600 active:cursor-grabbing"
-            : "cursor-default text-slate-200",
+            ? "cursor-grab text-slate-400 opacity-0 transition group-hover:opacity-100 hover:text-slate-600 active:cursor-grabbing"
+            : "cursor-default text-slate-200 opacity-0 group-hover:opacity-100",
+          isActive ? "opacity-100" : "",
         ].join(" ")}
         title={canDrag ? "גרור לשינוי סדר" : "דף הבית קבוע בראש"}
         aria-label={canDrag ? "גרירת עמוד" : "דף הבית"}
@@ -428,7 +431,10 @@ export default function VisualSitePagesPanel({
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 3 },
+      activationConstraint: { distance: 4 },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: { delay: 120, tolerance: 6 },
     }),
   );
 
@@ -528,16 +534,12 @@ export default function VisualSitePagesPanel({
     );
     if (activeRow?.page.isHome) return;
 
-    setDisplayRows((current) => {
-      const from = current.findIndex((row) => row.page.id === activeId);
-      const to = current.findIndex((row) => row.page.id === overId);
-
-      if (from < 0 || to < 0 || from === to) return current;
-
-      return arrayMove(current, from, to);
-    });
-
     const placement = getDropPlacement(event);
+
+    setDisplayRows((current) =>
+      applyDragToDisplayRows(current, activeId, overId, placement),
+    );
+
     setDropTargetId(overId);
     setDropPlacement(placement);
     dropTargetRef.current = { id: overId, placement };
@@ -548,11 +550,10 @@ export default function VisualSitePagesPanel({
     const stored = dropTargetRef.current;
     const overId =
       String(event.over?.id || "") || String(stored?.id || "");
-    const placement =
-      stored?.placement ||
-      (event.over ? getDropPlacement(event) : null) ||
-      "after";
-    const orderedIds = displayRowsRef.current.map((row) => row.page.id);
+    const rowSnapshots = displayRowsRef.current.map((row) => ({
+      id: row.page.id,
+      depth: row.depth,
+    }));
 
     isDraggingRef.current = false;
     setDraggingPageId("");
@@ -567,8 +568,8 @@ export default function VisualSitePagesPanel({
 
     onPageAction?.("reorder", activeId, {
       targetPageId: overId,
-      placement,
-      orderedIds,
+      placement: stored?.placement || "after",
+      rowSnapshots,
     });
   };
 
@@ -681,7 +682,7 @@ export default function VisualSitePagesPanel({
           <div>
             <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
             <p className="text-[11px] font-bold text-slate-400">
-              {pages.length} עמודים · ⋯ לפעולות · גרירה לסידור
+              {pages.length} עמודים · ⋯ לפעולות · גרירה לסידור והיררכיה
             </p>
           </div>
           <div className="flex items-center gap-2">

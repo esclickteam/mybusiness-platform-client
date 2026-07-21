@@ -56,6 +56,7 @@ import {
   syncSitePageTitlesIntoVisualData,
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
+  applyDisplayRowsToPages,
   applyPageTreeMove,
   commitPageOrderFromDrag,
   flattenPagesInTreeOrder,
@@ -6044,6 +6045,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       targetPageId?: string;
       placement?: "before" | "after" | "inside";
       orderedIds?: string[];
+      rowSnapshots?: Array<{ id: string; depth: number }>;
     },
   ) => {
     const id = String(pageId || "").trim();
@@ -6295,35 +6297,42 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (action === "reorder") {
+      const rowSnapshots = Array.isArray(meta?.rowSnapshots)
+        ? meta.rowSnapshots
+            .map((row) => ({
+              id: String(row?.id || "").trim(),
+              depth:
+                typeof row?.depth === "number" && Number.isFinite(row.depth)
+                  ? row.depth
+                  : 0,
+            }))
+            .filter((row) => row.id)
+        : [];
       const targetPageId = String(meta?.targetPageId || "").trim();
       const placement = meta?.placement;
-      const orderedIds = Array.isArray(meta?.orderedIds)
-        ? meta.orderedIds.map((id) => String(id || "").trim()).filter(Boolean)
-        : [];
-      if (!targetPageId || !placement) return;
 
       setPages((prev) => {
         const moved =
-          orderedIds.length > 0
-            ? commitPageOrderFromDrag(
-                prev,
-                orderedIds,
-                id,
-                targetPageId,
-                placement,
-              )
-            : applyPageTreeMove(prev, id, targetPageId, placement);
+          rowSnapshots.length > 0
+            ? applyDisplayRowsToPages(prev, rowSnapshots)
+            : targetPageId && placement
+              ? commitPageOrderFromDrag(
+                  prev,
+                  Array.isArray(meta?.orderedIds) ? meta.orderedIds : [],
+                  id,
+                  targetPageId,
+                  placement,
+                ) || applyPageTreeMove(prev, id, targetPageId, placement)
+              : null;
+
         if (!moved) return prev;
+
         return flattenPagesInTreeOrder(
           normalizePageMenuOrders(
-            moved.map((page) =>
-              page.id === id || page.id === targetPageId
-                ? ({
-                    ...page,
-                    updatedAt: new Date().toISOString(),
-                  } as StudioSitePageWithPortal)
-                : page,
-            ),
+            moved.map((page) => ({
+              ...page,
+              updatedAt: new Date().toISOString(),
+            })),
           ),
         ) as StudioSitePageWithPortal[];
       });
