@@ -1,8 +1,8 @@
 /**
  * Serves the SPA HTML shell with Google Search Console verification meta
- * injected for customer site hosts. GSC reads raw HTML and does not wait for React.
+ * injected for customer site hosts.
  *
- * Mounted outside `/api/*` so Vercel does not proxy it to the Railway backend.
+ * CommonJS on purpose — reliable with @vercel/node + legacy builds.
  */
 
 const SEO_HEAD_URL =
@@ -91,7 +91,7 @@ function injectSeo(html, seo) {
   return next;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method && req.method !== "GET" && req.method !== "HEAD") {
     res.statusCode = 405;
     res.end("Method Not Allowed");
@@ -110,9 +110,10 @@ export default async function handler(req, res) {
     if (!indexRes.ok || !html.includes("<html")) {
       throw new Error(`index.html status ${indexRes.status}`);
     }
-  } catch {
+  } catch (error) {
     res.statusCode = 502;
     res.setHeader("content-type", "text/plain; charset=utf-8");
+    res.setHeader("x-bizuply-seo-inject", "error");
     res.end("Failed to load site HTML shell");
     return;
   }
@@ -123,15 +124,13 @@ export default async function handler(req, res) {
   res.statusCode = 200;
   res.setHeader("content-type", "text/html; charset=utf-8");
   res.setHeader("cache-control", "public, max-age=0, must-revalidate");
-  res.setHeader("x-bizuply-seo-inject", verificationHeader(seo));
+  res.setHeader(
+    "x-bizuply-seo-inject",
+    String(seo?.googleSiteVerification || "").trim() ? "1" : "0",
+  );
   if (req.method === "HEAD") {
     res.end();
     return;
   }
   res.end(html);
-}
-
-function verificationHeader(seo) {
-  const token = String(seo?.googleSiteVerification || "").trim();
-  return token ? "1" : "0";
-}
+};
