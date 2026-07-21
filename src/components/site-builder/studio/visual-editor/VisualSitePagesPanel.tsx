@@ -422,18 +422,24 @@ function DraggablePageRow({
         </button>
       </div>
 
-      <div className="border-t border-slate-100 px-2 pb-2 pt-1">
+      <div className="border-t border-slate-100 px-2 pb-2 pt-1.5">
         <button
           type="button"
           onClick={(event) => {
             event.stopPropagation();
             onAddSubpage();
           }}
-          className="flex h-9 w-full items-center justify-center gap-1.5 rounded-lg bg-blue-600 text-xs font-black text-white transition hover:bg-blue-700"
-          title={`יצירת עמוד חדש תחת "${page.title || "עמוד"}"`}
+          className="flex h-10 w-full flex-col items-center justify-center gap-0.5 rounded-lg bg-blue-600 px-2 text-white transition hover:bg-blue-700"
+          title={`יצירת עמוד חדש שיופיע תחת "${page.title || "עמוד"}"`}
+          aria-label={`הוספת עמוד משנה תחת ${page.title || "עמוד"}`}
         >
-          <Plus className="h-3.5 w-3.5" />
-          הוספת עמוד משנה
+          <span className="flex items-center gap-1 text-xs font-black">
+            <Plus className="h-3.5 w-3.5" />
+            הוספת עמוד משנה
+          </span>
+          <span className="max-w-full truncate text-[10px] font-bold text-blue-100">
+            תחת: {page.title || "עמוד"}
+          </span>
         </button>
       </div>
     </div>
@@ -681,7 +687,7 @@ export default function VisualSitePagesPanel({
           <div>
             <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
             <p className="text-[11px] font-bold text-slate-400">
-              גררו ≡ לסידור · הוספת משנה מתוך כל עמוד
+              בכל עמוד — כפתור משנה · גרירת ≡ לסידור
             </p>
           </div>
           <div className="flex items-center gap-2">
