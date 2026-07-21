@@ -57,6 +57,7 @@ import {
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
   applyPageTreeMove,
+  commitPageOrderFromDrag,
   flattenPagesInTreeOrder,
   normalizePageMenuOrders,
 } from "./visual-editor/utils/pageHierarchyUtils";
@@ -6042,6 +6043,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       parentPageId?: string;
       targetPageId?: string;
       placement?: "before" | "after" | "inside";
+      orderedIds?: string[];
     },
   ) => {
     const id = String(pageId || "").trim();
@@ -6219,7 +6221,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (!parentId) return;
 
       const parentPage = pages.find((page) => page.id === parentId);
-      const defaultTitle = "עמוד משנה";
+      const defaultTitle = `${String(parentPage?.title || "עמוד").trim()} — חדש`;
       const nextTitle = window.prompt(
         parentPage
           ? `שם לעמוד משנה תחת "${parentPage.title}"`
@@ -6289,18 +6291,28 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           normalizePageMenuOrders([...prev, nextPage]),
         ) as StudioSitePageWithPortal[],
       );
-      setVisualSessionData(nextVisualData);
-      setActivePageId(newId);
       return;
     }
 
     if (action === "reorder") {
       const targetPageId = String(meta?.targetPageId || "").trim();
       const placement = meta?.placement;
+      const orderedIds = Array.isArray(meta?.orderedIds)
+        ? meta.orderedIds.map((id) => String(id || "").trim()).filter(Boolean)
+        : [];
       if (!targetPageId || !placement) return;
 
       setPages((prev) => {
-        const moved = applyPageTreeMove(prev, id, targetPageId, placement);
+        const moved =
+          orderedIds.length > 0
+            ? commitPageOrderFromDrag(
+                prev,
+                orderedIds,
+                id,
+                targetPageId,
+                placement,
+              )
+            : applyPageTreeMove(prev, id, targetPageId, placement);
         if (!moved) return prev;
         return flattenPagesInTreeOrder(
           normalizePageMenuOrders(

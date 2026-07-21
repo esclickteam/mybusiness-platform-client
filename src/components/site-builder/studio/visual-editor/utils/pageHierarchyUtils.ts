@@ -197,6 +197,106 @@ export function applyPageTreeMove(
   targetId: string,
   placement: PageTreeMovePlacement,
 ): PageHierarchyItem[] | null {
+  const moved = applyPageTreeMoveInternal(pages, moveId, targetId, placement);
+  if (moved) return moved;
+
+  if (placement === "inside") return null;
+
+  const alternate: PageTreeMovePlacement =
+    placement === "before" ? "after" : "before";
+  return applyPageTreeMoveInternal(pages, moveId, targetId, alternate);
+}
+
+function effectiveParentId(
+  pages: PageHierarchyItem[],
+  page: PageHierarchyItem | undefined,
+) {
+  const parentId = safeString(page?.parentPageId);
+  if (!parentId) return undefined;
+  return pages.some((item) => item.id === parentId) ? parentId : undefined;
+}
+
+export function commitPageOrderFromDrag(
+  pages: PageHierarchyItem[],
+  orderedIds: string[],
+  moveId: string,
+  targetId: string,
+  placement: PageTreeMovePlacement,
+): PageHierarchyItem[] | null {
+  const cleanMoveId = safeString(moveId);
+  const cleanTargetId = safeString(targetId);
+  if (!cleanMoveId || !cleanTargetId || cleanMoveId === cleanTargetId) {
+    return null;
+  }
+
+  const movingPage = pages.find((page) => page.id === cleanMoveId);
+  const targetPage = pages.find((page) => page.id === cleanTargetId);
+  if (!movingPage || !targetPage || movingPage.isHome) return null;
+
+  let newParentId = effectiveParentId(pages, movingPage);
+
+  if (placement === "inside") {
+    if (wouldCreatePageCycle(pages, cleanMoveId, cleanTargetId)) return null;
+    newParentId = cleanTargetId;
+  } else {
+    newParentId = effectiveParentId(pages, targetPage);
+    if (
+      newParentId &&
+      wouldCreatePageCycle(pages, cleanMoveId, newParentId)
+    ) {
+      return null;
+    }
+  }
+
+  let nextPages = pages.map((page) =>
+    page.id === cleanMoveId
+      ? {
+          ...page,
+          parentPageId: newParentId,
+        }
+      : page,
+  );
+
+  const siblingIds = orderedIds.filter((id) => {
+    const page = nextPages.find((item) => item.id === id);
+    if (!page) return false;
+    if (page.isHome) return !newParentId;
+    return effectiveParentId(nextPages, page) === newParentId;
+  });
+
+  if (!siblingIds.includes(cleanMoveId)) {
+    return applyPageTreeMove(pages, cleanMoveId, cleanTargetId, placement);
+  }
+
+  if (!newParentId) {
+    const homeId = nextPages.find((page) => page.isHome)?.id;
+    if (homeId) {
+      const withoutHome = siblingIds.filter((id) => id !== homeId);
+      siblingIds.splice(0, siblingIds.length, homeId, ...withoutHome);
+    }
+  }
+
+  nextPages = nextPages.map((page) => {
+    const siblingIndex = siblingIds.indexOf(page.id);
+    if (siblingIndex < 0) return page;
+    if (effectiveParentId(nextPages, page) !== newParentId) return page;
+
+    return {
+      ...page,
+      parentPageId: newParentId,
+      menuOrder: siblingIndex,
+    };
+  });
+
+  return reindexSiblings(nextPages, newParentId);
+}
+
+function applyPageTreeMoveInternal(
+  pages: PageHierarchyItem[],
+  moveId: string,
+  targetId: string,
+  placement: PageTreeMovePlacement,
+): PageHierarchyItem[] | null {
   const cleanMoveId = safeString(moveId);
   const cleanTargetId = safeString(targetId);
   if (!cleanMoveId || !cleanTargetId || cleanMoveId === cleanTargetId) {
