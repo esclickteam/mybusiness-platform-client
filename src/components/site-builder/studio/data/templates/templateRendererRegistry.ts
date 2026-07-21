@@ -243,6 +243,56 @@ import { citadelEditorCss } from "./citadel/editorCss";
 import { citadelSchema } from "./citadel/schema";
 import { citadelDefaultData } from "./citadel/defaultData";
 
+import DunewavePages, { dunewavePages } from "./dunewave/pages";
+import { dunewaveEditorCss } from "./dunewave/editorCss";
+import { dunewaveSchema } from "./dunewave/schema";
+import { dunewaveDefaultData } from "./dunewave/defaultData";
+
+import CoralinePages, { coralinePages } from "./coraline/pages";
+import { coralineEditorCss } from "./coraline/editorCss";
+import { coralineSchema } from "./coraline/schema";
+import { coralineDefaultData } from "./coraline/defaultData";
+
+import SunriftPages, { sunriftPages } from "./sunrift/pages";
+import { sunriftEditorCss } from "./sunrift/editorCss";
+import { sunriftSchema } from "./sunrift/schema";
+import { sunriftDefaultData } from "./sunrift/defaultData";
+
+import TidehausPages, { tidehausPages } from "./tidehaus/pages";
+import { tidehausEditorCss } from "./tidehaus/editorCss";
+import { tidehausSchema } from "./tidehaus/schema";
+import { tidehausDefaultData } from "./tidehaus/defaultData";
+
+import MiragePages, { miragePages } from "./mirage/pages";
+import { mirageEditorCss } from "./mirage/editorCss";
+import { mirageSchema } from "./mirage/schema";
+import { mirageDefaultData } from "./mirage/defaultData";
+
+import DriftwoodPages, { driftwoodPages } from "./driftwood/pages";
+import { driftwoodEditorCss } from "./driftwood/editorCss";
+import { driftwoodSchema } from "./driftwood/schema";
+import { driftwoodDefaultData } from "./driftwood/defaultData";
+
+import AzurelinePages, { azurelinePages } from "./azureline/pages";
+import { azurelineEditorCss } from "./azureline/editorCss";
+import { azurelineSchema } from "./azureline/schema";
+import { azurelineDefaultData } from "./azureline/defaultData";
+
+import SeabloomPages, { seabloomPages } from "./seabloom/pages";
+import { seabloomEditorCss } from "./seabloom/editorCss";
+import { seabloomSchema } from "./seabloom/schema";
+import { seabloomDefaultData } from "./seabloom/defaultData";
+
+import SaltforgePages, { saltforgePages } from "./saltforge/pages";
+import { saltforgeEditorCss } from "./saltforge/editorCss";
+import { saltforgeSchema } from "./saltforge/schema";
+import { saltforgeDefaultData } from "./saltforge/defaultData";
+
+import HorizonixPages, { horizonixPages } from "./horizonix/pages";
+import { horizonixEditorCss } from "./horizonix/editorCss";
+import { horizonixSchema } from "./horizonix/schema";
+import { horizonixDefaultData } from "./horizonix/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -893,6 +943,116 @@ export const studioTemplateRendererRegistry: Record<
     schema: citadelSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: citadelDefaultData as unknown as Record<string, any>,
     editorCss: citadelEditorCss,
+  }),
+
+  dunewave: createRenderer({
+    key: "dunewave",
+    name: "Dunewave",
+    Component: DunewavePages,
+    pages: dunewavePages,
+    editorMode: "visual-react",
+    schema: dunewaveSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dunewaveDefaultData as unknown as Record<string, any>,
+    editorCss: dunewaveEditorCss,
+  }),
+
+  coraline: createRenderer({
+    key: "coraline",
+    name: "Coraline",
+    Component: CoralinePages,
+    pages: coralinePages,
+    editorMode: "visual-react",
+    schema: coralineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: coralineDefaultData as unknown as Record<string, any>,
+    editorCss: coralineEditorCss,
+  }),
+
+  sunrift: createRenderer({
+    key: "sunrift",
+    name: "Sunrift",
+    Component: SunriftPages,
+    pages: sunriftPages,
+    editorMode: "visual-react",
+    schema: sunriftSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: sunriftDefaultData as unknown as Record<string, any>,
+    editorCss: sunriftEditorCss,
+  }),
+
+  tidehaus: createRenderer({
+    key: "tidehaus",
+    name: "Tidehaus",
+    Component: TidehausPages,
+    pages: tidehausPages,
+    editorMode: "visual-react",
+    schema: tidehausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: tidehausDefaultData as unknown as Record<string, any>,
+    editorCss: tidehausEditorCss,
+  }),
+
+  mirage: createRenderer({
+    key: "mirage",
+    name: "Mirage",
+    Component: MiragePages,
+    pages: miragePages,
+    editorMode: "visual-react",
+    schema: mirageSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: mirageDefaultData as unknown as Record<string, any>,
+    editorCss: mirageEditorCss,
+  }),
+
+  driftwood: createRenderer({
+    key: "driftwood",
+    name: "Driftwood",
+    Component: DriftwoodPages,
+    pages: driftwoodPages,
+    editorMode: "visual-react",
+    schema: driftwoodSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: driftwoodDefaultData as unknown as Record<string, any>,
+    editorCss: driftwoodEditorCss,
+  }),
+
+  azureline: createRenderer({
+    key: "azureline",
+    name: "Azureline",
+    Component: AzurelinePages,
+    pages: azurelinePages,
+    editorMode: "visual-react",
+    schema: azurelineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: azurelineDefaultData as unknown as Record<string, any>,
+    editorCss: azurelineEditorCss,
+  }),
+
+  seabloom: createRenderer({
+    key: "seabloom",
+    name: "Seabloom",
+    Component: SeabloomPages,
+    pages: seabloomPages,
+    editorMode: "visual-react",
+    schema: seabloomSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: seabloomDefaultData as unknown as Record<string, any>,
+    editorCss: seabloomEditorCss,
+  }),
+
+  saltforge: createRenderer({
+    key: "saltforge",
+    name: "Saltforge",
+    Component: SaltforgePages,
+    pages: saltforgePages,
+    editorMode: "visual-react",
+    schema: saltforgeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: saltforgeDefaultData as unknown as Record<string, any>,
+    editorCss: saltforgeEditorCss,
+  }),
+
+  horizonix: createRenderer({
+    key: "horizonix",
+    name: "Horizonix",
+    Component: HorizonixPages,
+    pages: horizonixPages,
+    editorMode: "visual-react",
+    schema: horizonixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: horizonixDefaultData as unknown as Record<string, any>,
+    editorCss: horizonixEditorCss,
   }),
 };
 
