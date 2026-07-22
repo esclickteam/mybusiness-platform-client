@@ -10,6 +10,10 @@ export type SitePluginDefinition = {
   priceMax?: number | null;
   priceLabel?: string;
   accent?: string;
+  billingEnabled?: boolean;
+  installable?: boolean;
+  displayPriceLabel?: string;
+  futurePriceLabel?: string | null;
 };
 
 export type SitePluginsResponse = {
