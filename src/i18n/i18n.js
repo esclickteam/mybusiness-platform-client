@@ -10,45 +10,25 @@ import es from "./locales/es.json";
 import nl from "./locales/nl.json";
 import it from "./locales/it.json";
 import {
-  GEO_LANG_COOKIE,
   applyDocumentLocale,
-  clearLegacyManualLanguageChoice,
-  detectLanguageFromTimezone,
+  clearStoredLanguageOverrides,
+  detectLanguageFromBrowserSignals,
   fetchGeoLanguage,
-  getCookie,
-  getSessionLanguageOverride,
-  hasSessionLanguageOverride,
   normalizeLanguage,
 } from "./localeUtils";
 
 const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
 
-clearLegacyManualLanguageChoice();
-
-const sessionPreferenceDetector = {
-  name: "sessionPreference",
+const browserGeoDetector = {
+  name: "browserGeo",
   lookup() {
-    return getSessionLanguageOverride() || undefined;
-  },
-};
-
-const geoCountryDetector = {
-  name: "geoCountry",
-  lookup() {
-    if (hasSessionLanguageOverride()) return undefined;
-
-    const cookieLang = normalizeLanguage(getCookie(GEO_LANG_COOKIE) || "");
-    if (cookieLang === "he" || cookieLang === "en") {
-      return cookieLang;
-    }
-
-    return detectLanguageFromTimezone();
+    const detected = normalizeLanguage(detectLanguageFromBrowserSignals());
+    return detected === "he" || detected === "en" ? detected : "en";
   },
 };
 
 const languageDetector = new LanguageDetector();
-languageDetector.addDetector(sessionPreferenceDetector);
-languageDetector.addDetector(geoCountryDetector);
+languageDetector.addDetector(browserGeoDetector);
 
 i18n
   .use(languageDetector)
@@ -72,8 +52,8 @@ i18n
     },
 
     detection: {
-      // Session override (current tab) → geo/timezone (IL=he, else=en).
-      order: ["sessionPreference", "geoCountry"],
+      // Location/browser signals first. Geo API sync confirms right after boot.
+      order: ["browserGeo"],
       caches: [],
     },
 
@@ -90,8 +70,8 @@ applyDocumentLocale(i18n.language);
 async function syncLanguageFromGeo() {
   if (typeof window === "undefined") return;
 
-  // Keep an explicit choice only for this browser session/tab.
-  if (hasSessionLanguageOverride()) return;
+  // Every full page load re-detects from location (IL → he, else → en).
+  clearStoredLanguageOverrides();
 
   const geoLanguage = await fetchGeoLanguage();
   if (!geoLanguage) return;

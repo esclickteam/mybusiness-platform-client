@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function AffiliateAutoLogin() {
   const { publicToken } = useParams();
@@ -35,9 +36,5 @@ export default function AffiliateAutoLogin() {
     );
   }
 
-  return (
-    <div style={{ padding: 20, textAlign: "center" }}>
-      <h2>Loading affiliate page…</h2>
-    </div>
-  );
+  return <BizuplyLoader fullScreen label="Loading affiliate page..." />;
 }

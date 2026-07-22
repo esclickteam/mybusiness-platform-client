@@ -9,6 +9,7 @@ import React, {
 import { v4 as uuidv4 } from "uuid";
 
 import API from "../api";
+import BizuplyLoader from "./ui/BizuplyLoader";
 import { useSocket } from "../context/socketContext";
 import { useNotifications } from "../context/NotificationsContext";
 
@@ -388,21 +389,7 @@ export default function BusinessChatTab({
   ===================================================== */
 
   if (!businessId) {
-    return (
-      <div className="flex h-full min-h-[72vh] items-center justify-center bg-slate-50 px-4">
-        <div className="rounded-[2rem] border border-white bg-white px-8 py-7 text-center shadow-2xl">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-          <h2 className="mt-5 text-lg font-black text-slate-950">
-            Loading chat...
-          </h2>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Preparing your conversation.
-          </p>
-        </div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="Loading chat..." />;
   }
 
   /* =====================================================
@@ -453,11 +440,7 @@ export default function BusinessChatTab({
       >
         {isLoadingHistory ? (
           <div className="flex h-full min-h-[45vh] flex-col items-center justify-center text-center">
-            <div className="h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-            <p className="mt-4 text-sm font-bold text-slate-500">
-              Loading messages...
-            </p>
+            <BizuplyLoader size="lg" label="Loading messages..." />
           </div>
         ) : sorted.length > 0 ? (
           sorted.map((message, index) => {

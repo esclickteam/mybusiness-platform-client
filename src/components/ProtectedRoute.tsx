@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
 import TrialExpiredModal from "./TrialExpiredModal";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 type UserRole =
   | "admin"
@@ -82,17 +83,7 @@ export default function ProtectedRoute({
      ⏳ Wait for auth to fully settle
   =========================== */
   if (!initialized || loading) {
-    return (
-      <div className="flex min-h-[45vh] items-center justify-center bg-slate-50 px-6 py-10 text-center">
-        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-6 shadow-sm">
-          <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-          <p className="text-sm font-bold text-slate-600">
-            Loading data...
-          </p>
-        </div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="Loading data..." />;
   }
 
   /* ===========================

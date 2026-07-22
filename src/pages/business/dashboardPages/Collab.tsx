@@ -9,6 +9,7 @@ import UpgradeBanner from "../../../components/UpgradeBanner";
 import { AiProvider } from "../../../context/AiContext";
 import { fetchMyBusinessId } from "./collabtabs/collabUtils";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 type ProfileData = {
   businessName: string;
@@ -148,11 +149,7 @@ export default function Collab() {
   }, []);
 
   if (loading) {
-    return (
-      <div dir={dir} className="p-6 text-center text-sm font-bold text-slate-700">
-        🔄 {t("collab.loading")}
-      </div>
-    );
+    return <BizuplyLoader fullScreen label={t("collab.loading")} />;
   }
 
   if (!user && !devMode) {

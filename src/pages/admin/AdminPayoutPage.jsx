@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { CSVLink } from "react-csv";
 import API from "../../api";
 import "./AdminPayoutPage.css";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 const AdminPayoutPage = () => {
   const [months, setMonths] = useState([]);
@@ -84,7 +85,7 @@ const AdminPayoutPage = () => {
         ))}
       </select>
 
-      {loading && <p>Loading data...</p>}
+      {loading && <BizuplyLoader size="lg" label="Loading data..." />}
       {error && <p className="error">{error}</p>}
 
       {!loading && !error && (

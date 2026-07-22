@@ -4,6 +4,7 @@ import ClientChatTab from "./ClientChatTab";
 import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function ClientChatSection() {
   const { businessId: businessIdFromParams, clientId, threadId } = useParams();
@@ -178,12 +179,7 @@ export default function ClientChatSection() {
      5) UI STATES
   ============================================================ */
   if (loading)
-    return (
-      <div className={styles.loadingWrapper}>
-        <div className={styles.spinner}></div>
-        <p>Loading the conversation...</p>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="Loading the conversation..." />;
 
   if (error)
     return (

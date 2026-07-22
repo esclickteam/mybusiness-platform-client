@@ -12,6 +12,7 @@ import {
   XCircle,
 } from "lucide-react";
 
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
   checkDomainAvailability,
   createOteDomainContact,
@@ -227,7 +228,7 @@ export default function DomainSearch() {
             >
               {isChecking ? (
                 <>
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <BizuplyLoader size="sm" compact />
                   בודק זמינות
                 </>
               ) : (
@@ -538,7 +539,7 @@ export default function DomainSearch() {
               >
                 {isCreatingContact ? (
                   <>
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <BizuplyLoader size="sm" compact />
                     יוצר איש קשר
                   </>
                 ) : (

@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import {
@@ -404,7 +405,7 @@ export function AdvisorActionsPanel({
                   className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-white shadow-md transition hover:bg-[#1fb855] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isLoading ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <BizuplyLoader size="sm" compact />
                   ) : (
                     <MessageCircle className="h-5 w-5" />
                   )}
@@ -447,7 +448,7 @@ export function AdvisorActionsPanel({
                 >
                   <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/80 shadow-sm">
                     {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <BizuplyLoader size="xs" compact />
                     ) : (
                       <Icon className="h-4 w-4" />
                     )}
@@ -513,3 +514,4 @@ export function AdvisorThinkingLoader() {
     </div>
   );
 }
+

@@ -31,6 +31,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 type CustomFieldType =
   | "text"
@@ -1010,7 +1011,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
         {isLoading ? (
           <div className="p-10 text-center">
-            <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
+            <BizuplyLoader size="lg" />
             <p className="text-sm font-bold text-slate-500">{t("crm.clients.loading")}</p>
           </div>
         ) : error ? (

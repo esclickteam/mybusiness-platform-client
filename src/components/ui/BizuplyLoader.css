@@ -1,0 +1,135 @@
+.bizuply-loader-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100vw;
+  background: linear-gradient(to bottom, #f6f7fb 0%, #e8ebf8 100%);
+}
+
+.bizuply-loader-screen--overlay {
+  position: absolute;
+  z-index: 50;
+}
+
+.bizuply-loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.bizuply-loader--inline {
+  padding: 2.5rem 1rem;
+}
+
+/* Logo stage — img sets size, shine is masked to same shape */
+.bizuply-loader__logo-stage {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+.bizuply-loader__logo-base {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.bizuply-loader__logo-base--xs {
+  width: 4.5rem;
+}
+
+.bizuply-loader__logo-base--sm {
+  width: 7rem;
+}
+
+.bizuply-loader__logo-base--md {
+  width: 11rem;
+}
+
+.bizuply-loader__logo-base--lg {
+  width: 16rem;
+}
+
+.bizuply-loader__logo-base--xl {
+  width: min(88vw, 28rem);
+}
+
+.bizuply-loader-screen .bizuply-loader__logo-base--xl,
+.bizuply-loader--hero .bizuply-loader__logo-base--xl {
+  width: min(92vw, 42rem);
+}
+
+/* Shine lives ONLY inside the logo silhouette (mask = logo) */
+.bizuply-loader__logo-shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: var(--bizuply-logo-url);
+  mask-image: var(--bizuply-logo-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  background: linear-gradient(
+    105deg,
+    transparent 0%,
+    transparent 38%,
+    rgba(255, 255, 255, 0.25) 44%,
+    rgba(221, 214, 254, 0.95) 49%,
+    rgba(196, 181, 253, 1) 50%,
+    rgba(147, 197, 253, 0.95) 51%,
+    rgba(255, 255, 255, 0.35) 56%,
+    transparent 62%,
+    transparent 100%
+  );
+  background-size: 280% 100%;
+  animation: bizuply-logo-shine 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.35));
+}
+
+.bizuply-loader__label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #64748b;
+  text-align: center;
+}
+
+@keyframes bizuply-logo-shine {
+  0% {
+    background-position: 160% 50%;
+  }
+
+  100% {
+    background-position: -160% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bizuply-loader__logo-shine {
+    animation: bizuply-logo-shine-pulse 1.8s ease-in-out infinite;
+    background-position: 50% 50%;
+  }
+}
+
+@keyframes bizuply-logo-shine-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}

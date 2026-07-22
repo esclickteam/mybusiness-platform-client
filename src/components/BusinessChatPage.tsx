@@ -8,6 +8,7 @@ import { useSocket } from "../context/socketContext";
 import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import API from "../api";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 /* =====================================================
    TYPES
@@ -307,21 +308,7 @@ export default function BusinessChatPage() {
   ===================================================== */
 
   if (!initialized) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-4">
-        <div className="rounded-[2rem] border border-white bg-white px-8 py-7 text-center shadow-2xl">
-          <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-          <h2 className="mt-5 text-lg font-black text-slate-950">
-            Loading data…
-          </h2>
-
-          <p className="mt-2 text-sm text-slate-500">
-            Preparing your messages center.
-          </p>
-        </div>
-      </main>
-    );
+    return <BizuplyLoader fullScreen label="Loading data…" />;
   }
 
   /* =====================================================
@@ -432,11 +419,7 @@ export default function BusinessChatPage() {
               <div className="h-[calc(72vh-73px)] overflow-y-auto p-3">
                 {isLoadingConvos ? (
                   <div className="flex h-full flex-col items-center justify-center text-center">
-                    <div className="h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-                    <p className="mt-4 text-sm font-bold text-slate-500">
-                      Loading conversations…
-                    </p>
+                    <BizuplyLoader size="lg" label="Loading conversations…" />
                   </div>
                 ) : convos.length > 0 ? (
                   <ConversationsList

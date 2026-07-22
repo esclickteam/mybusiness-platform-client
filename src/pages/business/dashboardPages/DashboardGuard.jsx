@@ -1,6 +1,7 @@
 import React from "react";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 export default function DashboardGuard({ children }) {
   const { user, loading } = useAuth();
@@ -18,7 +19,9 @@ export default function DashboardGuard({ children }) {
     }
   }, [user, loading, navigate, normalizedHasPaid]);
 
-  if (loading || !user || !normalizedHasPaid) return null;
+  if (loading || !user || !normalizedHasPaid) {
+    return <BizuplyLoader fullScreen label="Loading..." />;
+  }
 
   return children;
 }

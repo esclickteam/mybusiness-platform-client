@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import API from "../../../../api";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 type Props = {
   selectedText?: string;
@@ -257,7 +258,7 @@ function ToolBtn({
       }`}
     >
       {busy ? (
-        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        <BizuplyLoader size="xs" compact />
       ) : (
         <Icon className="h-3.5 w-3.5" />
       )}

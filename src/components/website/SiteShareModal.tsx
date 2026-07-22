@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X, UserPlus, ArrowRightLeft, Mail, Loader2 } from "lucide-react";
 import type { MySiteSummary } from "../../api/mySitesApi";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
   listSiteCollaborators,
   removeSiteCollaborator,
@@ -244,7 +245,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
             disabled={sending}
             className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
           >
-            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {sending ? <BizuplyLoader size="xs" compact /> : null}
             {mode === "transfer" ? "שליחת הזמנת העברה" : "שליחת הזמנת שיתוף"}
           </button>
         </form>

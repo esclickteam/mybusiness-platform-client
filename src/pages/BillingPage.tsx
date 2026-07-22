@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 /* =====================================================
    TYPES
@@ -505,7 +506,7 @@ export default function SubscriptionPlanCard() {
             <div className="p-5 sm:p-6">
               {loadingPayments ? (
                 <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.5rem] border border-slate-100 bg-slate-50 text-center">
-                  <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+                  <BizuplyLoader size="xl" label="טוען..." />
 
                   <h3 className="mt-5 text-lg font-black text-slate-950">
                     {t("billing.loadingPayments")}

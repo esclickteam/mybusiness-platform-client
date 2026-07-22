@@ -21,6 +21,7 @@ import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { lockPageScroll } from "@/utils/pageScrollLock";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -538,18 +539,7 @@ export default function BusinessProfileView() {
 
   if (isLoading) {
     return (
-      <main
-        dir={dir}
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
-      >
-        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
-
-          <p className="text-sm font-black text-slate-600">
-            {t("businessProfile.view.loading")}
-          </p>
-        </div>
-      </main>
+      <BizuplyLoader fullScreen label={t("businessProfile.view.loading")} />
     );
   }
 
@@ -689,9 +679,12 @@ export default function BusinessProfileView() {
               />
             )
           ) : (
-            <p className="text-center text-sm font-black text-slate-500">
-              {t("businessProfile.view.loadingGallery")}
-            </p>
+            <div className="flex min-h-[30vh] items-center justify-center py-10">
+              <BizuplyLoader
+                size="lg"
+                label={t("businessProfile.view.loadingGallery")}
+              />
+            </div>
           )}
         </div>
       );
@@ -751,8 +744,11 @@ export default function BusinessProfileView() {
 
                       <Suspense
                         fallback={
-                          <div className="flex flex-1 items-center justify-center p-6 text-sm font-black text-slate-500">
-                            {t("businessProfile.view.loadingReviewForm")}
+                          <div className="flex flex-1 items-center justify-center p-6">
+                            <BizuplyLoader
+                              size="lg"
+                              label={t("businessProfile.view.loadingReviewForm")}
+                            />
                           </div>
                         }
                       >
@@ -806,9 +802,12 @@ export default function BusinessProfileView() {
               )}
             </div>
           ) : (
-            <p className="text-center text-sm font-black text-slate-500">
-              {t("businessProfile.view.loadingReviews")}
-            </p>
+            <div className="flex min-h-[30vh] items-center justify-center py-10">
+              <BizuplyLoader
+                size="lg"
+                label={t("businessProfile.view.loadingReviews")}
+              />
+            </div>
           )}
         </div>
       );

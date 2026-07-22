@@ -14,6 +14,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 type MetaPage = {
   id: string;
@@ -382,7 +383,7 @@ export default function MetaCallbackPage() {
 
                 {loadingPages ? (
                   <div className="flex min-h-[260px] items-center justify-center">
-                    <Loader2 className="h-8 w-8 animate-spin text-sky-700" />
+                    <BizuplyLoader size="lg" />
                   </div>
                 ) : filteredPages.length === 0 ? (
                   <div className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-white p-6 text-center">
@@ -493,7 +494,7 @@ export default function MetaCallbackPage() {
 
                     {loadingForms ? (
                       <div className="flex min-h-[260px] items-center justify-center">
-                        <Loader2 className="h-8 w-8 animate-spin text-sky-700" />
+                        <BizuplyLoader size="lg" />
                       </div>
                     ) : filteredForms.length === 0 ? (
                       <div className="flex min-h-[260px] flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
@@ -556,7 +557,7 @@ export default function MetaCallbackPage() {
                       className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-[0_18px_45px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {connecting ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <BizuplyLoader size="xs" compact />
                       ) : (
                         <BadgeCheck className="h-4 w-4" />
                       )}

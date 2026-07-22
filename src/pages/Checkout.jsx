@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 import "../styles/Checkout.css";
 
 export default function Checkout() {
@@ -32,7 +33,7 @@ export default function Checkout() {
     setPaymentCount(1);
   }, [monthsCount]);
 
-  if (loading) return null;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
 
   if (!user) {
     navigate("/login", { replace: true });
@@ -135,8 +136,8 @@ export default function Checkout() {
         <button className="pay-button" onClick={handlePayment} disabled={processing}>
           {processing ? (
             <>
-              <span className="spinner" />
-              ⏳ Processing payment...
+              <BizuplyLoader size="xs" compact />
+              Processing payment...
             </>
           ) : (
             "💳 Proceed to payment"

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import "./FavoritesPage.css";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 function useFavorites() {
   const { user } = useAuth();
@@ -72,7 +73,7 @@ export default function FavoritesPage() {
     }
   };
 
-  if (loading) return <div className="favorites-loading">Loading favorites…</div>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading favorites..." />;
   if (error) return <div className="favorites-error">{error}</div>;
 
   if (favorites.length === 0)

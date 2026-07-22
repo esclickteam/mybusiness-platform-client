@@ -17,6 +17,7 @@ import {
   Star,
   UserPlus,
 } from "lucide-react";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 import {
   getPermission,
   isIos,
@@ -318,7 +319,7 @@ export function NotificationSettingsPanel({
 
       {loading ? (
         <div className="flex min-h-[200px] flex-1 items-center justify-center">
-          <Loader2 className="h-6 w-6 animate-spin text-amber-500" />
+          <BizuplyLoader size="sm" compact />
         </div>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
@@ -338,7 +339,7 @@ export function NotificationSettingsPanel({
             <div className="flex min-w-0 items-center gap-2">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm ring-1 ring-amber-100">
                 {busy ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <BizuplyLoader size="xs" compact />
                 ) : (
                   <Bell className="h-4 w-4" />
                 )}

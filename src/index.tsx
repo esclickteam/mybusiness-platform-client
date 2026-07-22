@@ -16,6 +16,7 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 /* Styles */
 import "./styles/index.css";
 import { registerServiceWorkerNotificationBridge } from "./utils/notificationNavigation";
+import BizuplyLoader from "./components/ui/BizuplyLoader";
 
 /* ==========================================================
    Types
@@ -76,17 +77,7 @@ const App = lazy(() => import("./App.jsx"));
 ========================================================== */
 
 function AppLoader() {
-  return (
-    <div className="flex min-h-screen items-center justify-center bg-white">
-      <div className="flex flex-col items-center gap-4">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-        <p className="text-sm font-bold text-slate-500">
-          Loading Bizuply...
-        </p>
-      </div>
-    </div>
-  );
+  return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 
 /* ==========================================================

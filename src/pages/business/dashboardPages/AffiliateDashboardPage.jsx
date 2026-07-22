@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import API from "@api";
 import "./AffiliatePage.css";
 import MarketerBankDetailsForm from "./MarketerBankDetailsForm";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function AffiliateDashboardPage() {
   const { user } = useAuth();
@@ -272,7 +273,7 @@ export default function AffiliateDashboardPage() {
 
       {/* 📊 MONTHS */}
       <section className="affiliate-stats">
-        {loadingStats && <p>Loading data...</p>}
+        {loadingStats && <BizuplyLoader size="lg" label="Loading data..." />}
         {errorStats && <p>{errorStats}</p>}
 
         {allStats.length > 0 && (

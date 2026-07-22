@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 type BusinessOwner = {
   _id?: string;
@@ -179,7 +180,7 @@ function AdminBusinesses() {
           <div className="overflow-hidden rounded-[28px] border border-purple-200 bg-white shadow-xl shadow-purple-950/8">
             {loading ? (
               <div className="flex min-h-[240px] items-center justify-center">
-                <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-purple-600" />
+                <BizuplyLoader size="xl" />
               </div>
             ) : filtered.length === 0 ? (
               <div className="px-6 py-16 text-center text-sm font-bold text-slate-500">

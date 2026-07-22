@@ -3,6 +3,7 @@ import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 
 import { uploadMediaToCloudinary } from "../../../utils/uploadMediaToCloudinary";
 import { seoFieldClass } from "./SeoUi";
+import BizuplyLoader from "../../../../../../components/ui/BizuplyLoader";
 
 type Props = {
   label: string;
@@ -95,7 +96,7 @@ export default function SeoImageUploader({
             >
               {uploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin" /> מעלה...
+                  <BizuplyLoader size="xs" compact /> מעלה...
                 </>
               ) : (
                 <>

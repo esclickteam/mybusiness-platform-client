@@ -5,6 +5,7 @@ import React, {
 } from "react";
 import type { ChangeEvent } from "react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
   Check,
@@ -1974,7 +1975,7 @@ export default function LottieAnimationBrowser({
                       className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-xs font-black text-white transition hover:bg-violet-700 disabled:cursor-wait disabled:opacity-70"
                     >
                       {isAdding ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <BizuplyLoader size="xs" compact />
                       ) : playOnHover ? (
                         <MousePointerClick className="h-4 w-4" />
                       ) : (

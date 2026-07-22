@@ -11,6 +11,7 @@ import {
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
 import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 /* ===========================
    🧩 Normalize User
@@ -688,19 +689,7 @@ export function AuthProvider({ children }) {
      Loader while initializing
   =========================== */
   if (loading && !initialized) {
-    return (
-      <div
-        style={{
-          background: "linear-gradient(to bottom, #f6f7fb, #e8ebf8)",
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <div className="spinner"></div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="Loading..." />;
   }
 
   /* ===========================

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 type CityItem = {
   id: number | string;
@@ -148,7 +149,7 @@ export default function CityAutocomplete({
 
       {loading && !disabled && (
         <div className="absolute left-3 top-1/2 -translate-y-1/2">
-          <div className="h-4 w-4 animate-spin rounded-full border-2 border-slate-200 border-t-violet-600" />
+          <BizuplyLoader size="xs" compact />
         </div>
       )}
     </div>

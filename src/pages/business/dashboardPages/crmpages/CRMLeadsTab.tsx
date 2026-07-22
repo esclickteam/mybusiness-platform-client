@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type LeadStatus =
@@ -1078,9 +1079,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               disabled={loading}
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <RefreshCw
-                className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
-              />
+              {loading ? (
+                <BizuplyLoader size="xs" compact />
+              ) : (
+                <RefreshCw className="h-5 w-5" />
+              )}
               {t("crm.leads.refreshLeads")}
             </button>
           </div>

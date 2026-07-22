@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 import type { SiteSavePayload } from "../components/site-builder/studio/types";
 import type {
@@ -593,22 +594,10 @@ export default function BusinessMiniSiteBuilder({
 
   if (templateLoading) {
     return (
-      <div
-        dir="rtl"
-        className="flex min-h-screen items-center justify-center bg-white px-4"
-      >
-        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-7 text-center shadow-xl">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-          <p className="text-base font-black text-slate-950">
-            טוען את התבנית לעורך...
-          </p>
-
-          <p className="mt-2 text-sm font-bold text-slate-400">
-            {selectedTemplateId}
-          </p>
-        </div>
-      </div>
+      <BizuplyLoader
+        fullScreen
+        label={`טוען את התבנית לעורך... ${selectedTemplateId}`}
+      />
     );
   }
 
@@ -645,22 +634,10 @@ export default function BusinessMiniSiteBuilder({
 
   if (selectedTemplateId && !templateSeed) {
     return (
-      <div
-        dir="rtl"
-        className="flex min-h-screen items-center justify-center bg-white px-4"
-      >
-        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-7 text-center shadow-xl">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-
-          <p className="text-base font-black text-slate-950">
-            מכין את התבנית לעורך...
-          </p>
-
-          <p className="mt-2 text-sm font-bold text-slate-400">
-            {selectedTemplateId}
-          </p>
-        </div>
-      </div>
+      <BizuplyLoader
+        fullScreen
+        label={`מכין את התבנית לעורך... ${selectedTemplateId}`}
+      />
     );
   }
 

@@ -25,6 +25,7 @@ import {
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 type StoreView =
   | "products"
@@ -501,7 +502,7 @@ function PrimaryButton({
         props.className
       )}
     >
-      {loading ? <Loader2 size={17} className="animate-spin" /> : null}
+      {loading ? <BizuplyLoader size="xs" compact /> : null}
       {children}
     </button>
   );
@@ -1233,7 +1234,7 @@ export default function StoreProductsManager({
         {loading ? (
           <div className="grid min-h-[420px] place-items-center">
             <div className="flex items-center gap-3 text-sm font-black text-slate-500">
-              <Loader2 size={24} className="animate-spin text-violet-600" />
+              <BizuplyLoader size="sm" compact />
               טוען נתוני חנות...
             </div>
           </div>
