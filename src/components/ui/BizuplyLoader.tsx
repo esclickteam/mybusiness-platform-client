@@ -15,11 +15,11 @@ export type BizuplyLoaderProps = {
 };
 
 const LOGO_SIZE_CLASS: Record<BizuplyLoaderSize, string> = {
-  xs: "bizuply-loader__logo--xs",
-  sm: "bizuply-loader__logo--sm",
-  md: "bizuply-loader__logo--md",
-  lg: "bizuply-loader__logo--lg",
-  xl: "bizuply-loader__logo--xl",
+  xs: "bizuply-loader__logo-base--xs",
+  sm: "bizuply-loader__logo-base--sm",
+  md: "bizuply-loader__logo-base--md",
+  lg: "bizuply-loader__logo-base--lg",
+  xl: "bizuply-loader__logo-base--xl",
 };
 
 export function BizuplyLoader({
@@ -30,23 +30,26 @@ export function BizuplyLoader({
   label,
   className = "",
 }: BizuplyLoaderProps) {
+  const logoMaskStyle = {
+    "--bizuply-logo-url": `url(${logo})`,
+  } as React.CSSProperties;
+
   const loader = (
     <div
-      className={`bizuply-loader ${fullScreen || compact ? "" : "bizuply-loader--inline"} ${className}`.trim()}
+      className={`bizuply-loader ${fullScreen ? "bizuply-loader--hero" : ""} ${fullScreen || compact ? "" : "bizuply-loader--inline"} ${className}`.trim()}
       role="status"
       aria-live="polite"
       aria-busy="true"
       aria-label={label || "Loading"}
     >
-      <div className="bizuply-loader__scan-container">
+      <div className="bizuply-loader__logo-stage" style={logoMaskStyle}>
         <img
           src={logo}
           alt="Bizuply"
-          className={`bizuply-loader__logo ${LOGO_SIZE_CLASS[size]}`}
+          className={`bizuply-loader__logo-base ${LOGO_SIZE_CLASS[size]}`}
           draggable={false}
         />
-        <div className="bizuply-loader__scan-beam" aria-hidden="true" />
-        <div className="bizuply-loader__scan-line" aria-hidden="true" />
+        <div className="bizuply-loader__logo-shine" aria-hidden="true" />
       </div>
 
       {label ? <p className="bizuply-loader__label">{label}</p> : null}
