@@ -12,8 +12,11 @@ import {
   Wrench,
   X,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import API from "@api";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -77,7 +80,26 @@ function extractServicesFromResponse(data: any, fallback: ServiceItem[]) {
   return normalized.length ? normalized : fallback;
 }
 
+function formatDuration(minutes: number, t: TFunction) {
+  if (!minutes) return t("crm.services.durationZero");
+
+  if (minutes < 60) {
+    return t("crm.services.durationMinutes", { count: minutes });
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+
+  if (!rest) {
+    return t("crm.services.durationHours", { count: hours });
+  }
+
+  return t("crm.services.durationHoursMinutes", { hours, minutes: rest });
+}
+
 export default function CRMServicesTab() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [search, setSearch] = useState("");
 
@@ -117,12 +139,12 @@ export default function CRMServicesTab() {
         service.name?.toLowerCase().includes(query) ||
         service.description?.toLowerCase().includes(query) ||
         String(service.price || "").toLowerCase().includes(query) ||
-        formatDuration(Number(service.duration) || 0)
+        formatDuration(Number(service.duration) || 0, t)
           .toLowerCase()
           .includes(query)
       );
     });
-  }, [services, search]);
+  }, [services, search, t]);
 
   const totalRevenuePotential = useMemo(() => {
     return services.reduce((sum, service) => {
@@ -175,7 +197,7 @@ export default function CRMServicesTab() {
 
   const saveService = async () => {
     if (!form.name.trim() || !form.price) {
-      alert("Service name and price are required");
+      alert(t("crm.services.namePriceRequired"));
       return;
     }
 
@@ -203,26 +225,26 @@ export default function CRMServicesTab() {
       closeForm();
     } catch (err) {
       console.error("Save service error:", err);
-      alert("Failed to save service");
+      alert(t("crm.services.saveFailed"));
     } finally {
       setSaving(false);
     }
   };
 
   const deleteService = async (id: string) => {
-    if (!window.confirm("Delete this service?")) return;
+    if (!window.confirm(t("crm.services.deleteConfirm"))) return;
 
     try {
       await API.delete(`/business/my/services/${id}`);
       setServices((prev) => prev.filter((service) => service._id !== id));
     } catch (err) {
       console.error("Delete service error:", err);
-      alert("Failed to delete service");
+      alert(t("crm.services.deleteFailed"));
     }
   };
 
   return (
-    <div dir="ltr" className="space-y-5 text-left">
+    <div dir={dir} className="space-y-5 text-start">
       <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
@@ -232,16 +254,16 @@ export default function CRMServicesTab() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <Wrench className="h-4 w-4" />
-              CRM Services
+              {t("crm.services.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Services, prices, and durations
+              {t("crm.services.title")}
             </h2>
 
 
             <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              Manage your service catalog, prices, appointment durations, descriptions, and images from one clean CRM workspace.
+              {t("crm.services.subtitle")}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -251,7 +273,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-5 w-5" />
-                Add Service
+                {t("crm.services.addService")}
               </button>
 
               <button
@@ -260,7 +282,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Sparkles className="h-5 w-5" />
-                {showForm ? "Close Form" : "Quick Add"}
+                {showForm ? t("crm.services.closeForm") : t("crm.services.quickAdd")}
               </button>
             </div>
           </div>
@@ -271,34 +293,40 @@ export default function CRMServicesTab() {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Total Services"
+          label={t("crm.services.statTotal")}
           value={services.length.toLocaleString()}
           icon={Wrench}
-          helper="Active catalog"
+          helper={t("crm.services.statTotalHelper")}
           tone="sky"
         />
 
         <StatCard
-          label="Average Duration"
-          value={averageDuration ? formatDuration(averageDuration) : "0m"}
+          label={t("crm.services.statAvgDuration")}
+          value={
+            averageDuration
+              ? formatDuration(averageDuration, t)
+              : t("crm.services.durationZero")
+          }
           icon={Clock3}
-          helper="Appointment scheduling"
+          helper={t("crm.services.statAvgDurationHelper")}
           tone="blue"
         />
 
         <StatCard
-          label="Catalog Value"
-          value={`${totalRevenuePotential.toLocaleString()} $`}
+          label={t("crm.services.statCatalogValue")}
+          value={t("crm.services.catalogValue", {
+            value: totalRevenuePotential.toLocaleString(),
+          })}
           icon={DollarSign}
-          helper="Pricing setup"
+          helper={t("crm.services.statCatalogValueHelper")}
           tone="emerald"
         />
 
         <StatCard
-          label="With Image"
+          label={t("crm.services.statWithImage")}
           value={servicesWithImage.toLocaleString()}
           icon={ImageIcon}
-          helper="Visual services"
+          helper={t("crm.services.statWithImageHelper")}
           tone="violet"
         />
       </section>
@@ -307,11 +335,15 @@ export default function CRMServicesTab() {
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">Services</h3>
+              <h3 className="text-2xl font-black text-slate-950">
+                {t("crm.services.listTitle")}
+              </h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {filteredServices.length} shown from {services.length} total
-                services
+                {t("crm.services.listCount", {
+                  shown: filteredServices.length,
+                  total: services.length,
+                })}
               </p>
             </div>
 
@@ -321,7 +353,7 @@ export default function CRMServicesTab() {
 
                 <input
                   type="text"
-                  placeholder="Search services..."
+                  placeholder={t("crm.services.searchPlaceholder")}
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
                   className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
@@ -334,7 +366,7 @@ export default function CRMServicesTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
               >
                 <Plus className="h-5 w-5" />
-                New Service
+                {t("crm.services.newService")}
               </button>
             </div>
           </div>
@@ -387,6 +419,8 @@ function ServiceFormPanel({
   onCancel: () => void;
   onSave: () => void;
 }) {
+  const { t } = useTranslation();
+
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0] || null;
 
@@ -402,15 +436,19 @@ function ServiceFormPanel({
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
-              {editingService ? "Edit Service" : "New Service"}
+              {editingService
+                ? t("crm.services.formBadgeEdit")
+                : t("crm.services.formBadgeNew")}
             </p>
 
             <h3 className="mt-1 text-2xl font-black text-slate-950">
-              {editingService ? "Edit Service" : "Add Service"}
+              {editingService
+                ? t("crm.services.formTitleEdit")
+                : t("crm.services.formTitleNew")}
             </h3>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              Define service details, price, duration, and image.
+              {t("crm.services.formSubtitle")}
             </p>
           </div>
 
@@ -418,16 +456,16 @@ function ServiceFormPanel({
             type="button"
             onClick={onCancel}
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-            aria-label="Close service form"
+            aria-label={t("crm.services.closeFormAria")}
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="grid gap-4 lg:grid-cols-2">
-          <FormField label="Service Name" required>
+          <FormField label={t("crm.services.nameLabel")} required>
             <input
-              placeholder="Service Name"
+              placeholder={t("crm.services.namePlaceholder")}
               value={form.name}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -439,13 +477,13 @@ function ServiceFormPanel({
             />
           </FormField>
 
-          <FormField label="Price" required>
+          <FormField label={t("crm.services.priceLabel")} required>
             <div className="relative">
               <DollarSign className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
 
               <input
                 type="number"
-                placeholder="Price"
+                placeholder={t("crm.services.pricePlaceholder")}
                 value={form.price}
                 onChange={(event) =>
                   setForm((prev) => ({
@@ -458,7 +496,7 @@ function ServiceFormPanel({
             </div>
           </FormField>
 
-          <FormField label="Duration">
+          <FormField label={t("crm.services.durationLabel")}>
             <select
               value={form.duration}
               onChange={(event) =>
@@ -476,7 +514,7 @@ function ServiceFormPanel({
 
                   return (
                     <option key={minutes} value={minutes}>
-                      {formatDuration(minutes)}
+                      {formatDuration(minutes, t)}
                     </option>
                   );
                 }
@@ -484,10 +522,12 @@ function ServiceFormPanel({
             </select>
           </FormField>
 
-          <FormField label="Image">
+          <FormField label={t("crm.services.imageLabel")}>
             <label className="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 text-sm font-bold text-slate-500 transition hover:border-sky-300 hover:bg-sky-50">
               <span className="truncate">
-                {form.imageFile ? form.imageFile.name : "Upload service image"}
+                {form.imageFile
+                  ? form.imageFile.name
+                  : t("crm.services.uploadImage")}
               </span>
 
               <ImageIcon className="h-5 w-5 shrink-0 text-slate-400" />
@@ -502,9 +542,9 @@ function ServiceFormPanel({
           </FormField>
 
           <div className="lg:col-span-2">
-            <FormField label="Description">
+            <FormField label={t("crm.services.descriptionLabel")}>
               <textarea
-                placeholder="Short description"
+                placeholder={t("crm.services.descriptionPlaceholder")}
                 value={form.description}
                 onChange={(event) =>
                   setForm((prev) => ({
@@ -525,7 +565,7 @@ function ServiceFormPanel({
             onClick={onCancel}
             className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
           >
-            Cancel
+            {t("crm.common.cancel")}
           </button>
 
           <button
@@ -535,7 +575,7 @@ function ServiceFormPanel({
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-5 w-5" />
-            {saving ? "Saving..." : "Save Service"}
+            {saving ? t("crm.services.saving") : t("crm.services.saveService")}
           </button>
         </div>
       </div>
@@ -552,6 +592,7 @@ function ServiceCard({
   onEdit: () => void;
   onDelete: () => void;
 }) {
+  const { t } = useTranslation();
   const duration = Number(service.duration) || 0;
   const price = Number(service.price) || 0;
 
@@ -561,7 +602,7 @@ function ServiceCard({
         {service.imageUrl ? (
           <img
             src={service.imageUrl}
-            alt={service.name || "Service"}
+            alt={service.name || t("crm.common.service")}
             className="h-full w-full object-cover"
           />
         ) : (
@@ -575,7 +616,7 @@ function ServiceCard({
             type="button"
             onClick={onEdit}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-950 hover:text-white"
-            aria-label="Edit Service"
+            aria-label={t("crm.services.editAria")}
           >
             <Edit3 className="h-4 w-4" />
           </button>
@@ -584,37 +625,39 @@ function ServiceCard({
             type="button"
             onClick={onDelete}
             className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-rose-700 shadow-sm backdrop-blur transition hover:bg-rose-600 hover:text-white"
-            aria-label="Delete service"
+            aria-label={t("crm.services.deleteAria")}
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
 
         <div className="absolute left-3 top-3 rounded-full border border-white/70 bg-white/90 px-3 py-1 text-xs font-black text-sky-800 shadow-sm backdrop-blur">
-          Service
+          {t("crm.services.serviceBadge")}
         </div>
       </div>
 
       <div className="p-5">
         <h4 className="truncate text-lg font-black text-slate-950">
-          {service.name || "Unnamed service"}
+          {service.name || t("crm.services.unnamedService")}
         </h4>
 
         <p className="mt-2 line-clamp-2 min-h-[40px] text-sm font-semibold leading-5 text-slate-500">
-          {service.description || "No description"}
+          {service.description || t("crm.services.noDescription")}
         </p>
 
         <div className="mt-5 grid grid-cols-2 gap-3">
           <InfoTile
             icon={Clock3}
-            label="Duration"
-            value={duration ? formatDuration(duration) : "-"}
+            label={t("crm.common.duration")}
+            value={duration ? formatDuration(duration, t) : t("crm.common.emDash")}
           />
 
           <InfoTile
             icon={DollarSign}
-            label="Price"
-            value={`${price.toLocaleString()} $`}
+            label={t("crm.common.price")}
+            value={t("crm.services.priceValue", {
+              value: price.toLocaleString(),
+            })}
           />
         </div>
       </div>
@@ -673,6 +716,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "blue" | "emerald" | "violet";
 }) {
+  const { t } = useTranslation();
   const iconClass =
     tone === "emerald"
       ? "bg-emerald-50 text-emerald-600"
@@ -692,7 +736,9 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            ▲ {t("crm.common.active")}
+          </p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">
             {helper}
@@ -734,16 +780,20 @@ function InfoTile({
 }
 
 function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
         <Wrench className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">No services yet</h4>
+      <h4 className="text-xl font-black text-slate-950">
+        {t("crm.services.emptyTitle")}
+      </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Add your first service so clients can book appointments with the correct price and duration.
+        {t("crm.services.emptyText")}
       </p>
 
       <button
@@ -752,19 +802,21 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
-        Create Service
+        {t("crm.services.createService")}
       </button>
     </div>
   );
 }
 
 function LoadingState() {
+  const { t } = useTranslation();
+
   return (
     <div className="p-10 text-center">
       <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
 
       <p className="text-sm font-bold text-slate-500">
-        Loading services...
+        {t("crm.services.loading")}
       </p>
     </div>
   );
@@ -789,21 +841,4 @@ function FormField({
       {children}
     </label>
   );
-}
-
-function formatDuration(minutes: number) {
-  if (!minutes) return "0 min";
-
-  if (minutes < 60) {
-    return `${minutes} min`;
-  }
-
-  const hours = Math.floor(minutes / 60);
-  const rest = minutes % 60;
-
-  if (!rest) {
-    return `${hours} h`;
-  }
-
-  return `${hours}h ${rest}m`;
 }

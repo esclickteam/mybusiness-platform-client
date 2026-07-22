@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
   CreditCard,
@@ -11,13 +12,14 @@ import {
   UsersRound,
   Wrench,
 } from "lucide-react";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type CrmTab = {
   path: string;
-  label: string;
-  description: string;
+  labelKey: string;
+  descriptionKey: string;
   icon: React.ElementType;
-  badge?: string;
+  badgeKey?: string;
 };
 
 const removedTabPaths = new Set([
@@ -30,45 +32,45 @@ const removedTabPaths = new Set([
 const crmTabs: CrmTab[] = [
   {
     path: "leads",
-    label: "Leads",
-    description: "New opportunities",
+    labelKey: "crm.nav.leads",
+    descriptionKey: "crm.nav.leadsDesc",
     icon: Flame,
   },
   {
     path: "clients",
-    label: "Clients",
-    description: "Client database",
+    labelKey: "crm.nav.clients",
+    descriptionKey: "crm.nav.clientsDesc",
     icon: UsersRound,
   },
   {
     path: "appointments",
-    label: "Appointments",
-    description: "Synced calendar and appointments",
+    labelKey: "crm.nav.appointments",
+    descriptionKey: "crm.nav.appointmentsDesc",
     icon: CalendarDays,
   },
   {
     path: "services",
-    label: "Services",
-    description: "Prices and service duration",
+    labelKey: "crm.nav.services",
+    descriptionKey: "crm.nav.servicesDesc",
     icon: Wrench,
   },
   {
     path: "payments",
-    label: "Payments",
-    description: "Revenue tracking",
+    labelKey: "crm.nav.payments",
+    descriptionKey: "crm.nav.paymentsDesc",
     icon: CreditCard,
   },
   {
     path: "mini-saas",
-    label: "Mini SaaS",
-    description: "Client portals",
+    labelKey: "crm.nav.miniSaas",
+    descriptionKey: "crm.nav.miniSaasDesc",
     icon: Sparkles,
-    badge: "New",
+    badgeKey: "crm.nav.newBadge",
   },
   {
     path: "settings",
-    label: "Settings",
-    description: "CRM preferences",
+    labelKey: "crm.nav.settings",
+    descriptionKey: "crm.nav.settingsDesc",
     icon: Settings,
   },
 ];
@@ -122,6 +124,8 @@ async function fetchWorkHours() {
 }
 
 export default function CRMMain() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
@@ -183,8 +187,8 @@ export default function CRMMain() {
 
   return (
     <section
-      dir="ltr"
-      className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-left text-slate-900 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-[calc(100vh-72px)] bg-[#F7FAFC] px-4 py-6 text-start text-slate-900 sm:px-6 lg:px-8"
     >
       <div className="pointer-events-none fixed inset-0 -z-10">
         <div className="absolute -top-32 right-[-120px] h-[360px] w-[360px] rounded-full bg-sky-200/35 blur-3xl" />
@@ -206,16 +210,15 @@ export default function CRMMain() {
 
                 <div className="min-w-0">
                   <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">
-                    Smart CRM
+                    {t("crm.shell.badge")}
                   </p>
 
                   <h1 className="mt-1 truncate text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                    Business Control Center
+                    {t("crm.shell.title")}
                   </h1>
 
                   <p className="mt-1 text-sm font-semibold text-slate-500">
-                    Manage leads, clients, synced appointments, services,
-                    payments, and client portals from one clean workspace.
+                    {t("crm.shell.subtitle")}
                   </p>
                 </div>
               </div>
@@ -223,37 +226,37 @@ export default function CRMMain() {
               <div className="flex flex-wrap items-center gap-3">
                 <div className="rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-600">
-                    Active area
+                    {t("crm.shell.activeArea")}
                   </p>
 
                   <div className="mt-1 flex items-center gap-2">
                     <ActiveIcon className="h-4 w-4 text-sky-700" />
                     <p className="text-sm font-black text-slate-900">
-                      {activeTabData.label}
+                      {t(activeTabData.labelKey)}
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-600">
-                    Status
+                    {t("crm.shell.status")}
                   </p>
 
                   <div className="mt-1 flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                     <p className="text-sm font-black text-slate-900">
-                      CRM Active
+                      {t("crm.shell.crmActive")}
                     </p>
                   </div>
                 </div>
 
                 <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 shadow-sm">
                   <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">
-                    Workspace
+                    {t("crm.shell.workspace")}
                   </p>
 
                   <p className="mt-1 text-sm font-black text-slate-900">
-                    Professional CRM
+                    {t("crm.shell.professionalCrm")}
                   </p>
                 </div>
               </div>
@@ -271,7 +274,7 @@ export default function CRMMain() {
                     to={tab.path}
                     className={({ isActive }) =>
                       [
-                        "group relative flex min-w-[190px] items-center gap-3 rounded-3xl border px-4 py-3 text-left transition-all duration-200",
+                        "group relative flex min-w-[190px] items-center gap-3 rounded-3xl border px-4 py-3 text-start transition-all duration-200",
                         "focus:outline-none focus:ring-2 focus:ring-sky-200 focus:ring-offset-2",
                         isActive
                           ? "border-sky-100 bg-gradient-to-r from-sky-50 via-white to-violet-50 text-slate-950 shadow-[0_14px_34px_rgba(14,165,233,0.13)]"
@@ -302,10 +305,10 @@ export default function CRMMain() {
                                   : "text-slate-700",
                               ].join(" ")}
                             >
-                              {tab.label}
+                              {t(tab.labelKey)}
                             </p>
 
-                            {tab.badge && (
+                            {tab.badgeKey && (
                               <span
                                 className={[
                                   "shrink-0 rounded-full px-2 py-0.5 text-[10px] font-black uppercase tracking-wide",
@@ -314,7 +317,7 @@ export default function CRMMain() {
                                     : "bg-violet-50 text-violet-700",
                                 ].join(" ")}
                               >
-                                {tab.badge}
+                                {t(tab.badgeKey)}
                               </span>
                             )}
                           </div>
@@ -325,7 +328,7 @@ export default function CRMMain() {
                               isActive ? "text-sky-600" : "text-slate-400",
                             ].join(" ")}
                           >
-                            {tab.description}
+                            {t(tab.descriptionKey)}
                           </p>
                         </div>
 
@@ -352,11 +355,11 @@ export default function CRMMain() {
 
                   <div className="min-w-0">
                     <h2 className="truncate text-lg font-black tracking-tight text-slate-950">
-                      {activeTabData.label}
+                      {t(activeTabData.labelKey)}
                     </h2>
 
                     <p className="truncate text-sm font-semibold text-slate-500">
-                      {activeTabData.description}
+                      {t(activeTabData.descriptionKey)}
                     </p>
                   </div>
                 </div>
@@ -364,7 +367,7 @@ export default function CRMMain() {
                 <div className="flex items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-3 py-2">
                   <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   <span className="text-xs font-black text-emerald-700">
-                    CRM Active
+                    {t("crm.shell.crmActive")}
                   </span>
                 </div>
               </div>

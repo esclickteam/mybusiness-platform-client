@@ -23,6 +23,8 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import API from "@api";
 import { useAuth } from "../../../../context/AuthContext";
@@ -31,6 +33,7 @@ import {
   useBusinessWorkHours,
   type ScheduleDay,
 } from "../../../../hooks/useBusinessWorkHours";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { WORK_HOURS_UPDATED_EVENT } from "../../../../utils/workHoursEvents";
 
 const DURATION_STEP = 15;
@@ -172,14 +175,14 @@ function getAppointmentDateTime(appointment: AppointmentItem) {
   return parsed;
 }
 
-function formatDate(date?: string) {
-  if (!date) return "—";
+function formatDate(date?: string, locale = "en-US", emDash = "—") {
+  if (!date) return emDash;
 
   const parsed = new Date(`${date}T00:00`);
 
   if (Number.isNaN(parsed.getTime())) return date;
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     weekday: "short",
     month: "short",
     day: "2-digit",
@@ -187,23 +190,25 @@ function formatDate(date?: string) {
   }).format(parsed);
 }
 
-function formatMonthTitle(date: Date) {
-  return new Intl.DateTimeFormat("en-US", {
+function formatMonthTitle(date: Date, locale = "en-US") {
+  return new Intl.DateTimeFormat(locale, {
     month: "long",
     year: "numeric",
   }).format(date);
 }
 
-function formatDuration(minutes?: number) {
+function formatDuration(minutes: number | undefined, t: TFunction) {
   const value = Number(minutes) || 30;
   const hours = Math.floor(value / 60);
   const rest = value % 60;
 
   if (hours > 0) {
-    return `${hours}h${rest ? ` ${rest}m` : ""}`;
+    return rest
+      ? t("crm.common.durationHoursMinutes", { hours, minutes: rest })
+      : t("crm.common.durationHours", { count: hours });
   }
 
-  return `${value}m`;
+  return t("crm.common.durationMinutes", { count: value });
 }
 
 function cleanPhone(value?: string) {
@@ -470,12 +475,12 @@ function getClientIdFromAppointment(appointment: AppointmentItem) {
   return String(value._id || "");
 }
 
-function getClientName(client?: CRMClient | null) {
+function getClientName(client?: CRMClient | null, unnamed = "Unnamed client") {
   return (
     client?.fullName ||
     client?.name ||
     client?.clientName ||
-    "Unnamed client"
+    unnamed
   );
 }
 
@@ -516,14 +521,15 @@ function getAppointmentClient(
 function getAppointmentClientName(
   appointment: AppointmentItem,
   clientsById: Record<string, CRMClient>,
-  clients: CRMClient[]
+  clients: CRMClient[],
+  unnamed = "Unnamed client"
 ) {
   const client = getAppointmentClient(appointment, clientsById, clients);
 
   return (
     appointment.clientSnapshot?.name ||
-    getClientName(client) ||
-    "Unnamed client"
+    getClientName(client, unnamed) ||
+    unnamed
   );
 }
 
@@ -561,8 +567,8 @@ function getAppointmentClientFileId(
   return client?._id || "";
 }
 
-function getServiceName(appointment: AppointmentItem) {
-  return appointment.serviceName || "Appointment";
+function getServiceName(appointment: AppointmentItem, fallback = "Appointment") {
+  return appointment.serviceName || fallback;
 }
 
 function getMonthCells(monthDate: Date) {
@@ -590,8 +596,13 @@ function getMonthCells(monthDate: Date) {
 }
 
 export default function CRMAppointmentsTab() {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
   const { user, socket } = useAuth() as AuthValue;
   const businessId = user?.businessId || user?.business?._id || "";
+  const unnamedClient = t("crm.common.unnamedClient");
+  const dateLocale = i18n.language || "en-US";
+  const emDash = t("crm.common.emDash");
 
   const queryClient = useQueryClient();
   const navigate = useNavigate();
@@ -781,7 +792,12 @@ export default function CRMAppointmentsTab() {
 
       if (!query) return true;
 
-      const name = getAppointmentClientName(appointment, clientsById, clients);
+      const name = getAppointmentClientName(
+        appointment,
+        clientsById,
+        clients,
+        unnamedClient
+      );
       const phone = getAppointmentClientPhone(appointment, clientsById, clients);
       const email = getAppointmentClientEmail(appointment, clientsById, clients);
       const serviceName = appointment.serviceName || "";
@@ -800,6 +816,7 @@ export default function CRMAppointmentsTab() {
     search,
     selectedDate,
     sortedAppointments,
+    unnamedClient,
   ]);
 
   const totalRevenue = useMemo(() => {
@@ -851,9 +868,7 @@ export default function CRMAppointmentsTab() {
 
   const openCreateModal = () => {
     if (!hasOpenDays) {
-      const go = window.confirm(
-        "לא הוגדרו שעות פעילות. כדי לתאם פגишות צריך להגדיר שעות ב-CRM.\n\nלעבור להגדרת שעות?"
-      );
+      const go = window.confirm(t("crm.appointments.noWorkHoursConfirm"));
 
       if (go) {
         navigate(`/business/${businessId}/dashboard/crm/work-hours`);
@@ -902,7 +917,7 @@ export default function CRMAppointmentsTab() {
     setNewAppointment((prev) => ({
       ...prev,
       crmClientId: clientId,
-      clientName: client ? getClientName(client) : "",
+      clientName: client ? getClientName(client, unnamedClient) : "",
       clientPhone: detectedPhone.phone,
       email: client?.email || "",
       address: client?.address || "",
@@ -941,7 +956,7 @@ export default function CRMAppointmentsTab() {
       crmClientId: clientId,
       clientName:
         appointment.clientSnapshot?.name ||
-        (client ? getClientName(client) : ""),
+        (client ? getClientName(client, unnamedClient) : ""),
       clientPhone: detectedPhone.phone,
       address:
         appointment.clientSnapshot?.address ||
@@ -961,7 +976,7 @@ export default function CRMAppointmentsTab() {
   };
 
   const handleCancelAppointment = async (id: string) => {
-    if (!window.confirm("Cancel this appointment?")) return;
+    if (!window.confirm(t("crm.appointments.cancelConfirm"))) return;
 
     try {
       await API.delete(`/appointments/${id}`);
@@ -971,7 +986,7 @@ export default function CRMAppointmentsTab() {
       });
     } catch (err) {
       console.error("Cancel appointment error:", err);
-      alert("Failed to cancel appointment");
+      alert(t("crm.appointments.cancelFailed"));
     }
   };
 
@@ -983,7 +998,7 @@ export default function CRMAppointmentsTab() {
     );
 
     if (!clientId) {
-      alert("No client file was found for this appointment");
+      alert(t("crm.appointments.noClientFile"));
       return;
     }
 
@@ -1002,7 +1017,7 @@ export default function CRMAppointmentsTab() {
       !newAppointment.date ||
       !newAppointment.time
     ) {
-      alert("Required fields are missing");
+      alert(t("crm.appointments.requiredMissing"));
       return;
     }
 
@@ -1047,7 +1062,7 @@ export default function CRMAppointmentsTab() {
       closeModal();
     } catch (err: any) {
       console.error("Save appointment error:", err);
-      alert(err?.response?.data?.message || "Failed to save appointment");
+      alert(err?.response?.data?.message || t("crm.appointments.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -1074,10 +1089,10 @@ export default function CRMAppointmentsTab() {
 
   if (isLoading) {
     return (
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
+      <div dir={dir} className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
         <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600" />
         <p className="text-sm font-bold text-slate-500">
-          Loading synced appointments…
+          {t("crm.appointments.loading")}
         </p>
       </div>
     );
@@ -1085,19 +1100,29 @@ export default function CRMAppointmentsTab() {
 
   if (isError) {
     return (
-      <div className="rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
+      <div dir={dir} className="rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
         <p className="text-lg font-black text-red-700">
-          Failed to load appointments
+          {t("crm.appointments.loadErrorTitle")}
         </p>
         <p className="mt-2 text-sm text-red-500">
-          Refresh the page and try again.
+          {t("crm.appointments.loadErrorText")}
         </p>
       </div>
     );
   }
 
+  const weekdayLabels = [
+    t("crm.appointments.weekdaySun"),
+    t("crm.appointments.weekdayMon"),
+    t("crm.appointments.weekdayTue"),
+    t("crm.appointments.weekdayWed"),
+    t("crm.appointments.weekdayThu"),
+    t("crm.appointments.weekdayFri"),
+    t("crm.appointments.weekdaySat"),
+  ];
+
   return (
-    <div className="space-y-6 text-slate-950">
+    <div dir={dir} className="space-y-6 text-start text-slate-950">
       <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
         <div className="relative p-5 sm:p-6 lg:p-7">
           <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
@@ -1107,15 +1132,15 @@ export default function CRMAppointmentsTab() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-4 py-2 text-xs font-black text-sky-700 shadow-sm">
                 <CalendarDays className="h-4 w-4" />
-                Synced calendar
+                {t("crm.appointments.badge")}
               </div>
 
               <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                Appointments Calendar
+                {t("crm.appointments.title")}
               </h2>
 
               <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                All appointments are synced from the CRM, services, business hours, and client records. Create, edit, cancel, and open a client file directly from each booking.
+                {t("crm.appointments.subtitle")}
               </p>
             </div>
 
@@ -1131,7 +1156,7 @@ export default function CRMAppointmentsTab() {
                     isFetching ? "animate-spin" : "",
                   ].join(" ")}
                 />
-                Refresh sync
+                {t("crm.appointments.refreshSync")}
               </button>
 
               <button
@@ -1140,34 +1165,34 @@ export default function CRMAppointmentsTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-4 w-4" />
-                Create appointment
+                {t("crm.appointments.createAppointment")}
               </button>
             </div>
           </div>
 
           <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <MetricCard
-              label="Total appointments"
+              label={t("crm.appointments.metricTotal")}
               value={appointments.length}
               icon={CalendarDays}
             />
             <MetricCard
-              label="Today"
+              label={t("crm.appointments.metricToday")}
               value={todayAppointments.length}
               icon={Clock3}
             />
             <MetricCard
-              label="Upcoming"
+              label={t("crm.appointments.metricUpcoming")}
               value={upcomingCount}
               icon={CheckCircle2}
             />
             <MetricCard
-              label="Revenue"
+              label={t("crm.appointments.metricRevenue")}
               value={formatMoney(totalRevenue, user)}
               icon={DollarSign}
             />
             <MetricCard
-              label="Unpaid"
+              label={t("crm.appointments.metricUnpaid")}
               value={unpaidCount}
               icon={CreditCard}
             />
@@ -1180,11 +1205,11 @@ export default function CRMAppointmentsTab() {
           <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                {formatMonthTitle(monthDate)}
+                {formatMonthTitle(monthDate, dateLocale)}
               </h3>
 
               <p className="mt-1 text-sm font-bold text-slate-500">
-                Click a day to filter the synced appointment list.
+                {t("crm.appointments.calendarHint")}
               </p>
             </div>
 
@@ -1207,7 +1232,7 @@ export default function CRMAppointmentsTab() {
                 }}
                 className="h-11 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
               >
-                Today
+                {t("crm.common.today")}
               </button>
 
               <button
@@ -1221,7 +1246,7 @@ export default function CRMAppointmentsTab() {
           </div>
 
           <div className="grid grid-cols-7 gap-2 text-center">
-            {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day) => (
+            {weekdayLabels.map((day) => (
               <div
                 key={day}
                 className="rounded-2xl bg-slate-50 px-2 py-3 text-xs font-black text-slate-400"
@@ -1254,7 +1279,7 @@ export default function CRMAppointmentsTab() {
                     setListMode("selected");
                   }}
                   className={[
-                    "min-h-[116px] rounded-2xl border p-3 text-left transition",
+                    "min-h-[116px] rounded-2xl border p-3 text-start transition",
                     isSelected
                       ? "border-sky-300 bg-sky-50 shadow-[0_16px_36px_rgba(14,165,233,0.12)]"
                       : "border-slate-100 bg-white hover:border-sky-200 hover:bg-sky-50/40",
@@ -1285,18 +1310,21 @@ export default function CRMAppointmentsTab() {
                         key={appointment._id}
                         className="truncate rounded-xl bg-sky-50 px-2 py-1.5 text-[11px] font-black text-sky-700"
                       >
-                        {appointment.time || "—"} ·{" "}
+                        {appointment.time || emDash} ·{" "}
                         {getAppointmentClientName(
                           appointment,
                           clientsById,
-                          clients
+                          clients,
+                          unnamedClient
                         )}
                       </div>
                     ))}
 
                     {dayAppointments.length > 3 && (
                       <div className="text-[11px] font-black text-slate-400">
-                        +{dayAppointments.length - 3} more
+                        {t("crm.appointments.moreCount", {
+                          count: dayAppointments.length - 3,
+                        })}
                       </div>
                     )}
                   </div>
@@ -1311,15 +1339,16 @@ export default function CRMAppointmentsTab() {
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-2xl font-black text-slate-950">
-                  Synced list
+                  {t("crm.appointments.syncedListTitle")}
                 </h3>
 
                 <p className="mt-1 text-sm font-bold text-slate-500">
                   {listMode === "selected"
-                    ? `${selectedDayAppointments.length} appointments on ${formatDate(
-                        selectedDate
-                      )}`
-                    : "All CRM appointments in one place"}
+                    ? t("crm.appointments.syncedListSelected", {
+                        count: selectedDayAppointments.length,
+                        date: formatDate(selectedDate, dateLocale, emDash),
+                      })
+                    : t("crm.appointments.syncedListAll")}
                 </p>
               </div>
 
@@ -1336,7 +1365,7 @@ export default function CRMAppointmentsTab() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by client, phone, email, or service..."
+                placeholder={t("crm.appointments.searchPlaceholder")}
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-11 pr-4 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
               />
             </div>
@@ -1346,25 +1375,25 @@ export default function CRMAppointmentsTab() {
                 active={listMode === "all"}
                 onClick={() => setListMode("all")}
               >
-                All
+                {t("crm.appointments.filterAll")}
               </FilterButton>
               <FilterButton
                 active={listMode === "today"}
                 onClick={() => setListMode("today")}
               >
-                Today
+                {t("crm.appointments.filterToday")}
               </FilterButton>
               <FilterButton
                 active={listMode === "selected"}
                 onClick={() => setListMode("selected")}
               >
-                Day
+                {t("crm.appointments.filterDay")}
               </FilterButton>
               <FilterButton
                 active={listMode === "upcoming"}
                 onClick={() => setListMode("upcoming")}
               >
-                Upcoming
+                {t("crm.appointments.filterUpcoming")}
               </FilterButton>
             </div>
 
@@ -1374,11 +1403,11 @@ export default function CRMAppointmentsTab() {
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
                   <h3 className="mt-3 text-base font-black text-slate-950">
-                    No appointments found
+                    {t("crm.appointments.emptyTitle")}
                   </h3>
 
                   <p className="mt-1 text-sm font-bold text-slate-500">
-                    Create a new appointment or change the filter.
+                    {t("crm.appointments.emptyText")}
                   </p>
                 </div>
               ) : (
@@ -1410,7 +1439,7 @@ export default function CRMAppointmentsTab() {
 
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.16em] text-sky-600">
-                    שעות פעילות
+                    {t("crm.appointments.workHoursLabel")}
                   </p>
                   <p
                     className={`text-sm font-black ${
@@ -1429,14 +1458,14 @@ export default function CRMAppointmentsTab() {
                 }
                 className="rounded-xl border border-sky-200 bg-white px-3 py-2 text-xs font-black text-sky-700 transition hover:bg-sky-50"
               >
-                עדכון שעות
+                {t("crm.appointments.updateHours")}
               </button>
             </div>
 
             <p className="mt-4 text-sm font-bold leading-6 text-slate-500">
               {hasOpenDays
-                ? "משבצות הפגישות מתעדכנות אוטומטית כששומרים שעות ב-CRM."
-                : "הגדר שעות פעילות כדי לאפשר תיאום פגישות ביומן."}
+                ? t("crm.appointments.workHoursSynced")
+                : t("crm.appointments.workHoursNeeded")}
             </p>
           </section>
         </aside>
@@ -1539,7 +1568,17 @@ function AppointmentCard({
   onCancel: () => void;
   onOpenClient: () => void;
 }) {
-  const clientName = getAppointmentClientName(appointment, clientsById, clients);
+  const { t, i18n } = useTranslation();
+  const unnamedClient = t("crm.common.unnamedClient");
+  const emDash = t("crm.common.emDash");
+  const dateLocale = i18n.language || "en-US";
+
+  const clientName = getAppointmentClientName(
+    appointment,
+    clientsById,
+    clients,
+    unnamedClient
+  );
   const clientPhone = getAppointmentClientPhone(
     appointment,
     clientsById,
@@ -1551,13 +1590,11 @@ function AppointmentCard({
     clients
   );
 
-  const reminderBody = `Hi ${clientName},
-
-This is a reminder for your appointment on ${appointment.date || "-"} at ${
-    appointment.time || "-"
-  }.
-
-Thank you.`;
+  const reminderBody = t("crm.appointments.emailReminderBody", {
+    name: clientName,
+    date: appointment.date || emDash,
+    time: appointment.time || emDash,
+  });
 
   return (
     <article className="rounded-[1.6rem] border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
@@ -1565,7 +1602,7 @@ Thank you.`;
         <div className="min-w-0">
           <div className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
             <CheckCircle2 className="h-3 w-3" />
-            Scheduled
+            {t("crm.appointments.scheduled")}
           </div>
 
           <h3 className="mt-2 truncate text-lg font-black text-slate-950">
@@ -1573,7 +1610,7 @@ Thank you.`;
           </h3>
 
           <p className="mt-1 truncate text-sm font-bold text-slate-500">
-            {getServiceName(appointment)}
+            {getServiceName(appointment, t("crm.appointments.defaultServiceName"))}
           </p>
         </div>
 
@@ -1584,24 +1621,26 @@ Thank you.`;
 
       <div className="mt-4 grid gap-2 rounded-2xl bg-slate-50 p-3 text-sm font-bold text-slate-600">
         <div className="flex items-center justify-between gap-3">
-          <span>Date</span>
-          <span className="text-slate-950">{formatDate(appointment.date)}</span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3">
-          <span>Time</span>
-          <span className="text-slate-950">{appointment.time || "—"}</span>
-        </div>
-
-        <div className="flex items-center justify-between gap-3">
-          <span>Duration</span>
+          <span>{t("crm.common.date")}</span>
           <span className="text-slate-950">
-            {formatDuration(appointment.duration)}
+            {formatDate(appointment.date, dateLocale, emDash)}
           </span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
-          <span>Payment</span>
+          <span>{t("crm.common.time")}</span>
+          <span className="text-slate-950">{appointment.time || emDash}</span>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <span>{t("crm.common.duration")}</span>
+          <span className="text-slate-950">
+            {formatDuration(appointment.duration, t)}
+          </span>
+        </div>
+
+        <div className="flex items-center justify-between gap-3">
+          <span>{t("crm.common.payment")}</span>
           <span
             className={[
               "rounded-full px-2.5 py-1 text-xs font-black",
@@ -1610,13 +1649,13 @@ Thank you.`;
                 : "bg-amber-50 text-amber-700",
             ].join(" ")}
           >
-            {appointment.paid ? "Paid" : "Unpaid"}
+            {appointment.paid ? t("crm.common.paid") : t("crm.common.unpaid")}
           </span>
         </div>
 
         {Number(appointment.price) > 0 && (
           <div className="flex items-center justify-between gap-3">
-            <span>Price</span>
+            <span>{t("crm.common.price")}</span>
             <span className="text-slate-950">
               {formatMoney(appointment.price, user)}
             </span>
@@ -1649,7 +1688,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-sky-700"
         >
           <Edit3 className="h-3.5 w-3.5" />
-          Edit
+          {t("crm.common.edit")}
         </button>
 
         <button
@@ -1658,7 +1697,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
         >
           <Eye className="h-3.5 w-3.5" />
-          Client file
+          {t("crm.appointments.clientFile")}
         </button>
 
         <div className="relative">
@@ -1666,7 +1705,7 @@ Thank you.`;
             type="button"
             onClick={() => {
               if (!clientEmail) {
-                alert("This client does not have an email address.");
+                alert(t("crm.appointments.noEmail"));
                 return;
               }
 
@@ -1677,7 +1716,7 @@ Thank you.`;
             className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white text-xs font-black text-slate-700 transition hover:bg-slate-50"
           >
             <Mail className="h-3.5 w-3.5" />
-            Email
+            {t("crm.common.email")}
           </button>
 
           {emailMenuOpenId === appointment._id && clientEmail && (
@@ -1687,12 +1726,12 @@ Thank you.`;
                   onEmail({
                     provider: "gmail",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: t("crm.appointments.emailReminderSubject"),
                     body: reminderBody,
                   })
                 }
               >
-                Gmail
+                {t("crm.appointments.gmail")}
               </EmailOption>
 
               <EmailOption
@@ -1700,12 +1739,12 @@ Thank you.`;
                   onEmail({
                     provider: "outlook",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: t("crm.appointments.emailReminderSubject"),
                     body: reminderBody,
                   })
                 }
               >
-                Outlook
+                {t("crm.appointments.outlook")}
               </EmailOption>
 
               <EmailOption
@@ -1713,12 +1752,12 @@ Thank you.`;
                   onEmail({
                     provider: "default",
                     email: clientEmail,
-                    subject: "Appointment reminder",
+                    subject: t("crm.appointments.emailReminderSubject"),
                     body: reminderBody,
                   })
                 }
               >
-                Default email
+                {t("crm.appointments.defaultEmail")}
               </EmailOption>
             </div>
           )}
@@ -1730,7 +1769,7 @@ Thank you.`;
           className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-rose-50 text-xs font-black text-rose-700 transition hover:bg-rose-100"
         >
           <Trash2 className="h-3.5 w-3.5" />
-          Cancel
+          {t("crm.appointments.cancelAppointment")}
         </button>
       </div>
     </article>
@@ -1748,7 +1787,7 @@ function EmailOption({
     <button
       type="button"
       onClick={onClick}
-      className="block w-full rounded-xl px-3 py-2 text-left text-xs font-black text-slate-700 transition hover:bg-slate-50"
+      className="block w-full rounded-xl px-3 py-2 text-start text-xs font-black text-slate-700 transition hover:bg-slate-50"
     >
       {children}
     </button>
@@ -1786,6 +1825,11 @@ function AppointmentModal({
   onSelectClient: (clientId: string) => void;
   onSelectService: (serviceId: string) => void;
 }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const unnamedClient = t("crm.common.unnamedClient");
+  const emDash = t("crm.common.emDash");
+
   const durationOptions = useMemo(() => {
     return Array.from(
       {
@@ -1801,21 +1845,25 @@ function AppointmentModal({
   );
 
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+    <div dir={dir} className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2.2rem] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-white via-sky-50/50 to-violet-50/50 p-5 md:p-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
               <CalendarDays className="h-3.5 w-3.5" />
-              {editId ? "Edit booking" : "New booking"}
+              {editId
+                ? t("crm.appointments.modalBadgeEdit")
+                : t("crm.appointments.modalBadgeNew")}
             </div>
 
             <h2 className="mt-3 text-2xl font-black text-slate-950">
-              {editId ? "Edit appointment" : "Create appointment"}
+              {editId
+                ? t("crm.appointments.modalTitleEdit")
+                : t("crm.appointments.modalTitleNew")}
             </h2>
 
             <p className="mt-1 text-sm font-bold text-slate-500">
-              Select a client, service, date, and available time.
+              {t("crm.appointments.modalSubtitle")}
             </p>
           </div>
 
@@ -1830,7 +1878,7 @@ function AppointmentModal({
 
         <div className="max-h-[calc(92vh-105px)] overflow-y-auto p-5 md:p-6">
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
-            <div dir="ltr" className="space-y-5 text-left">
+            <div dir={dir} className="space-y-5 text-start">
               <div className="rounded-[1.7rem] border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-700">
@@ -1839,32 +1887,32 @@ function AppointmentModal({
 
                   <div>
                     <h3 className="text-base font-black text-slate-950">
-                      Client details
+                      {t("crm.appointments.clientDetailsTitle")}
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
-                      Select an existing client or enter details manually.
+                      {t("crm.appointments.clientDetailsSubtitle")}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormBlock label="Existing client">
+                  <FormBlock label={t("crm.appointments.existingClient")}>
                     <select
                       value={appointment.crmClientId}
                       onChange={(event) => onSelectClient(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                     >
-                      <option value="">Select client</option>
+                      <option value="">{t("crm.appointments.selectClient")}</option>
                       {clients.map((client) => (
                         <option key={client._id} value={client._id}>
-                          {getClientName(client)}
+                          {getClientName(client, unnamedClient)}
                         </option>
                       ))}
                     </select>
                   </FormBlock>
 
                   <FormInput
-                    label="Client name"
+                    label={t("crm.appointments.clientName")}
                     value={appointment.clientName}
                     onChange={(value) =>
                       setAppointment((prev) => ({
@@ -1872,10 +1920,10 @@ function AppointmentModal({
                         clientName: value,
                       }))
                     }
-                    placeholder="Client name"
+                    placeholder={t("crm.appointments.clientNamePlaceholder")}
                   />
 
-                  <FormBlock label="Phone">
+                  <FormBlock label={t("crm.common.phone")}>
                     <div className="rounded-2xl border border-slate-200 bg-white px-2 py-1 transition focus-within:border-sky-300 focus-within:ring-4 focus-within:ring-sky-100">
                       <PhoneInput
                         country={detectedPhone.country}
@@ -1895,7 +1943,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <FormInput
-                    label="Email"
+                    label={t("crm.common.email")}
                     type="email"
                     value={appointment.email}
                     onChange={(value) =>
@@ -1904,12 +1952,12 @@ function AppointmentModal({
                         email: value,
                       }))
                     }
-                    placeholder="client@email.com"
+                    placeholder={t("crm.appointments.emailPlaceholder")}
                   />
 
                   <div className="md:col-span-2">
                     <FormInput
-                      label="Address"
+                      label={t("crm.common.address")}
                       value={appointment.address}
                       onChange={(value) =>
                         setAppointment((prev) => ({
@@ -1917,7 +1965,7 @@ function AppointmentModal({
                           address: value,
                         }))
                       }
-                      placeholder="Client address"
+                      placeholder={t("crm.appointments.addressPlaceholder")}
                     />
                   </div>
                 </div>
@@ -1931,32 +1979,32 @@ function AppointmentModal({
 
                   <div>
                     <h3 className="text-base font-black text-slate-950">
-                      Appointment details
+                      {t("crm.appointments.appointmentDetailsTitle")}
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
-                      Available times are synced with the business hours.
+                      {t("crm.appointments.appointmentDetailsSubtitle")}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  <FormBlock label="Service">
+                  <FormBlock label={t("crm.common.service")}>
                     <select
                       value={appointment.serviceId}
                       onChange={(event) => onSelectService(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                     >
-                      <option value="">Select service</option>
+                      <option value="">{t("crm.appointments.selectService")}</option>
                       {services.map((service) => (
                         <option key={service._id} value={service._id}>
-                          {service.name || service.title || "Service"}
+                          {service.name || service.title || t("crm.common.service")}
                         </option>
                       ))}
                     </select>
                   </FormBlock>
 
                   <FormInput
-                    label="Date"
+                    label={t("crm.common.date")}
                     type="date"
                     value={appointment.date}
                     onChange={(value) =>
@@ -1968,7 +2016,7 @@ function AppointmentModal({
                     }
                   />
 
-                  <FormBlock label="Available time">
+                  <FormBlock label={t("crm.appointments.availableTime")}>
                     <SelectTimeFromSlots
                       date={appointment.date}
                       selectedTime={appointment.time}
@@ -1985,7 +2033,7 @@ function AppointmentModal({
                     />
                   </FormBlock>
 
-                  <FormBlock label="Duration">
+                  <FormBlock label={t("crm.common.duration")}>
                     <select
                       value={appointment.duration}
                       onChange={(event) =>
@@ -1999,14 +2047,14 @@ function AppointmentModal({
                     >
                       {durationOptions.map((minutes) => (
                         <option key={minutes} value={minutes}>
-                          {formatDuration(minutes)}
+                          {formatDuration(minutes, t)}
                         </option>
                       ))}
                     </select>
                   </FormBlock>
 
                   <FormInput
-                    label="Price"
+                    label={t("crm.common.price")}
                     type="number"
                     value={String(appointment.price)}
                     onChange={(value) =>
@@ -2018,7 +2066,7 @@ function AppointmentModal({
                     placeholder="0"
                   />
 
-                  <FormBlock label="Payment">
+                  <FormBlock label={t("crm.common.payment")}>
                     <button
                       type="button"
                       onClick={() =>
@@ -2034,7 +2082,11 @@ function AppointmentModal({
                           : "border-amber-200 bg-amber-50 text-amber-700",
                       ].join(" ")}
                     >
-                      <span>{appointment.paid ? "Paid" : "Unpaid"}</span>
+                      <span>
+                        {appointment.paid
+                          ? t("crm.common.paid")
+                          : t("crm.common.unpaid")}
+                      </span>
                       <span
                         className={[
                           "grid h-6 w-6 place-items-center rounded-full text-xs",
@@ -2049,7 +2101,7 @@ function AppointmentModal({
                   </FormBlock>
 
                   <div className="md:col-span-2">
-                    <FormBlock label="Note">
+                    <FormBlock label={t("crm.common.note")}>
                       <textarea
                         value={appointment.note}
                         onChange={(event) =>
@@ -2058,7 +2110,7 @@ function AppointmentModal({
                             note: event.target.value,
                           }))
                         }
-                        placeholder="Internal note..."
+                        placeholder={t("crm.appointments.notePlaceholder")}
                         rows={4}
                         className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
                       />
@@ -2071,42 +2123,52 @@ function AppointmentModal({
             <aside className="space-y-4">
               <div className="rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-sm">
                 <h3 className="text-base font-black text-slate-950">
-                  Booking summary
+                  {t("crm.appointments.bookingSummary")}
                 </h3>
 
                 <div className="mt-4 space-y-3 text-sm font-bold text-slate-600">
                   <SummaryRow
-                    label="Client"
-                    value={appointment.clientName || "—"}
+                    label={t("crm.common.client")}
+                    value={appointment.clientName || emDash}
                   />
                   <SummaryRow
-                    label="Service"
-                    value={appointment.serviceName || "—"}
-                  />
-                  <SummaryRow label="Date" value={appointment.date || "—"} />
-                  <SummaryRow label="Time" value={appointment.time || "—"} />
-                  <SummaryRow
-                    label="Duration"
-                    value={formatDuration(appointment.duration)}
+                    label={t("crm.common.service")}
+                    value={appointment.serviceName || emDash}
                   />
                   <SummaryRow
-                    label="Price"
+                    label={t("crm.common.date")}
+                    value={appointment.date || emDash}
+                  />
+                  <SummaryRow
+                    label={t("crm.common.time")}
+                    value={appointment.time || emDash}
+                  />
+                  <SummaryRow
+                    label={t("crm.common.duration")}
+                    value={formatDuration(appointment.duration, t)}
+                  />
+                  <SummaryRow
+                    label={t("crm.common.price")}
                     value={formatMoney(Number(appointment.price) || 0, user)}
                   />
                   <SummaryRow
-                    label="Payment"
-                    value={appointment.paid ? "Paid" : "Unpaid"}
+                    label={t("crm.common.payment")}
+                    value={
+                      appointment.paid
+                        ? t("crm.common.paid")
+                        : t("crm.common.unpaid")
+                    }
                   />
                 </div>
               </div>
 
               <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-                  Required
+                  {t("crm.common.required")}
                 </p>
 
                 <p className="mt-2 text-sm font-bold leading-6 text-slate-500">
-                  Client name, phone, service, date, and time are required before saving.
+                  {t("crm.appointments.requiredHint")}
                 </p>
               </div>
             </aside>
@@ -2131,7 +2193,9 @@ function AppointmentModal({
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}
-              {editId ? "Save changes" : "Save appointment"}
+              {editId
+                ? t("crm.appointments.saveChanges")
+                : t("crm.appointments.saveAppointment")}
             </button>
 
             <button
@@ -2139,7 +2203,7 @@ function AppointmentModal({
               onClick={onClose}
               className="inline-flex h-13 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 py-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              Cancel
+              {t("crm.common.cancel")}
             </button>
           </div>
         </div>
@@ -2201,7 +2265,7 @@ function SummaryRow({
   return (
     <div className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-3 py-2 ring-1 ring-white">
       <span className="text-slate-400">{label}</span>
-      <span className="text-right text-slate-950">{value}</span>
+      <span className="text-end text-slate-950">{value}</span>
     </div>
   );
 }
