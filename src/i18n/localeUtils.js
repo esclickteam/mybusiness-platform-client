@@ -1,5 +1,5 @@
 export const GEO_LANG_COOKIE = "bizuply_geo_lang";
-/** @deprecated permanent override — cleared on load; kept for migration */
+/** @deprecated permanent override — cleared on load */
 export const MANUAL_LANG_FLAG = "bizuply_lang_manual";
 export const SESSION_LANG_KEY = "bizuply_lang_session";
 export const I18N_STORAGE_KEY = "i18nextLng";
@@ -49,15 +49,23 @@ export function applyDocumentLocale(lng) {
   document.documentElement.dir = getTextDirection(language);
 }
 
-/** Clear legacy permanent manual override so geo can win again. */
+export function clearStoredLanguageOverrides() {
+  if (typeof localStorage !== "undefined") {
+    localStorage.removeItem(MANUAL_LANG_FLAG);
+  }
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.removeItem(SESSION_LANG_KEY);
+  }
+}
+
+/** @deprecated */
 export function clearLegacyManualLanguageChoice() {
-  if (typeof localStorage === "undefined") return;
-  localStorage.removeItem(MANUAL_LANG_FLAG);
+  clearStoredLanguageOverrides();
 }
 
 /**
- * Temporary override for the current browser tab/session only.
- * Cleared when the tab/session ends — next visit uses geo again.
+ * Soft override for in-app language switching (SPA only).
+ * Cleared again on the next full page load when geo sync runs.
  */
 export function setSessionLanguageOverride(lng) {
   const language = normalizeLanguage(lng);
@@ -71,7 +79,7 @@ export function setSessionLanguageOverride(lng) {
   applyDocumentLocale(language);
 }
 
-/** @deprecated use setSessionLanguageOverride */
+/** @deprecated */
 export function markManualLanguageChoice(lng) {
   setSessionLanguageOverride(lng);
 }
@@ -99,12 +107,46 @@ export function detectLanguageFromTimezone() {
   } catch {
     // Ignore timezone lookup failures.
   }
-  return "en";
+  return null;
+}
+
+export function detectLanguageFromNavigator() {
+  try {
+    const candidates = [
+      typeof navigator !== "undefined" ? navigator.language : null,
+      ...((typeof navigator !== "undefined" && navigator.languages) || []),
+    ];
+
+    if (
+      candidates.some((value) =>
+        String(value || "")
+          .toLowerCase()
+          .startsWith("he")
+      )
+    ) {
+      return "he";
+    }
+  } catch {
+    // Ignore navigator lookup failures.
+  }
+  return null;
+}
+
+/**
+ * Fast local signal before /api/geo responds.
+ * Prefer Israel signals (timezone / browser language) over a stale geo cookie.
+ */
+export function detectLanguageFromBrowserSignals() {
+  return (
+    detectLanguageFromTimezone() ||
+    detectLanguageFromNavigator() ||
+    normalizeLanguage(getCookie(GEO_LANG_COOKIE) || "") ||
+    "en"
+  );
 }
 
 /**
  * Resolve UI language from geo API: Israel → he, everywhere else → en.
- * Always refreshes the geo cookie when the API returns a known country language.
  */
 export async function fetchGeoLanguage() {
   try {
@@ -116,24 +158,27 @@ export async function fetchGeoLanguage() {
 
     if (response.ok) {
       const data = await response.json();
-      const language = normalizeLanguage(
-        data?.language || languageFromCountry(data?.country)
-      );
+      const country = String(data?.country || "")
+        .trim()
+        .toUpperCase();
 
-      // Only trust API when country was resolved (or language explicitly returned).
-      if (
-        (data?.country || data?.language) &&
-        (language === "he" || language === "en")
-      ) {
+      if (country) {
+        const language = languageFromCountry(country);
         setCookie(GEO_LANG_COOKIE, language);
         return language;
       }
+
+      if (data?.language === "he" || data?.language === "en") {
+        setCookie(GEO_LANG_COOKIE, data.language);
+        return data.language;
+      }
     }
   } catch {
-    // Ignore network failures — fall back to timezone.
+    // Ignore network failures — fall back to browser signals.
   }
 
-  const fallback = detectLanguageFromTimezone();
-  setCookie(GEO_LANG_COOKIE, fallback);
-  return fallback;
+  const fallback = detectLanguageFromBrowserSignals();
+  const language = fallback === "he" ? "he" : "en";
+  setCookie(GEO_LANG_COOKIE, language);
+  return language;
 }

@@ -6,27 +6,44 @@
     <script>
       (function () {
         try {
-          // Clear legacy permanent override so location can win on every visit.
+          // Always re-detect from location on load (not a sticky manual choice).
           localStorage.removeItem("bizuply_lang_manual");
+          sessionStorage.removeItem("bizuply_lang_session");
 
-          var lang = null;
-          var session = sessionStorage.getItem("bizuply_lang_session");
-          if (session === "he" || session === "en") {
-            lang = session;
+          var lang = "en";
+          var tzHe = false;
+          var navHe = false;
+
+          try {
+            tzHe =
+              Intl.DateTimeFormat().resolvedOptions().timeZone ===
+              "Asia/Jerusalem";
+          } catch (e1) {}
+
+          try {
+            var langs = [navigator.language].concat(navigator.languages || []);
+            navHe = langs.some(function (value) {
+              return String(value || "")
+                .toLowerCase()
+                .indexOf("he") === 0;
+            });
+          } catch (e2) {}
+
+          // Israel signals win over a stale English geo cookie from earlier tests.
+          if (tzHe || navHe) {
+            lang = "he";
           } else {
-            var match = document.cookie.match(/(?:^|; )bizuply_geo_lang=([^;]+)/);
-            if (match) {
-              lang = decodeURIComponent(match[1]);
-            } else if (
-              Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Jerusalem"
-            ) {
-              lang = "he";
-            } else {
-              lang = "en";
-            }
+            var match = document.cookie.match(
+              /(?:^|; )bizuply_geo_lang=([^;]+)/
+            );
+            if (match) lang = decodeURIComponent(match[1]);
           }
 
           if (lang !== "he" && lang !== "en") lang = "en";
+          document.cookie =
+            "bizuply_geo_lang=" +
+            lang +
+            "; Path=/; Max-Age=2592000; SameSite=Lax";
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
         } catch (e) {}

@@ -74,11 +74,10 @@ export default function Header() {
       return;
     }
 
-    // Session-only override; next visit re-detects from location (IL=he, else=en).
+    // Apply for this browsing session; the next full page load re-detects from location.
     setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
     setLanguageOpen(false);
-    window.location.reload();
   };
 
   const handleLogout = async () => {

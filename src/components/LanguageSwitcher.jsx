@@ -28,7 +28,6 @@ export default function LanguageSwitcher() {
     setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
     setOpen(false);
-    window.location.reload();
   };
 
   useEffect(() => {
