@@ -29,11 +29,6 @@ const navLinks: NavLink[] = [
 const languages: Language[] = [
   { code: "en", label: "English" },
   { code: "he", label: "עברית" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "es", label: "Español" },
-  { code: "nl", label: "Nederlands" },
-  { code: "it", label: "Italiano" },
 ];
 
 export default function Header() {
@@ -73,10 +68,16 @@ export default function Header() {
     };
   }, []);
 
-  const handleChangeLanguage = async (lng: string) => {
-    await i18n.changeLanguage(lng);
+  const handleChangeLanguage = (lng: string) => {
+    if (normalizeLanguage(lng) === currentLangCode) {
+      setLanguageOpen(false);
+      return;
+    }
+
+    // Persist choice, then reload so every page (including older hardcoded screens) picks up lang/dir.
     markManualLanguageChoice(lng);
     setLanguageOpen(false);
+    window.location.reload();
   };
 
   const handleLogout = async () => {

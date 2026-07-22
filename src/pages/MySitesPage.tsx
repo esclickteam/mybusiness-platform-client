@@ -38,6 +38,7 @@ import {
 import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
 import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type MenuState = {
   siteId: string;
@@ -127,6 +128,7 @@ function dedupeSitesForDisplay(sites: MySiteSummary[]) {
 export default function MySitesPage() {
   const { businessId = "" } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
+  const dir = useLocaleDir();
 
   const [sites, setSites] = useState<MySiteSummary[]>([]);
   const [folders, setFolders] = useState<SiteFolder[]>([]);
@@ -386,7 +388,7 @@ export default function MySitesPage() {
 
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="min-h-screen bg-[#f7f8fc] px-4 py-6 sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-[1480px]">

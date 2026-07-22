@@ -24,6 +24,7 @@ import {
 
 import { useAuth } from "../context/AuthContext";
 import ChatBot from "../components/ChatBot";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type AuthUser = {
   businessId?: string | number;
@@ -118,6 +119,7 @@ function itemMatchesQuery(
 
 export default function HelpCenter() {
   const { user } = useAuth() as AuthContextValue;
+  const dir = useLocaleDir();
   const businessId = user?.businessId;
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -356,8 +358,8 @@ export default function HelpCenter() {
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-right text-slate-950 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-start text-slate-950 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-[1440px]">
         {/* HERO */}

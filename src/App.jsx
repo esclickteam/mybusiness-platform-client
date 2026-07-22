@@ -647,7 +647,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className="app-layout" dir={appDir}>
+      <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "en"}>
         {!isBusinessChatRoute && !isEarlyAccessLanding && <Header />}
 
         <ScrollToTop />

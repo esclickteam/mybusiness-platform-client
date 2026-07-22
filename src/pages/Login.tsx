@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
@@ -47,6 +48,7 @@ export function LoginSkeleton() {
 }
 
 export default function Login() {
+  const { t } = useTranslation();
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
 
@@ -84,7 +86,7 @@ export default function Login() {
     setLoginError("");
 
     if (!form.email.trim() || !form.password) {
-      setLoginError("Please enter email and password");
+      setLoginError(t("login.errors.enterCredentials"));
       return;
     }
 
@@ -135,7 +137,7 @@ export default function Login() {
       const apiError = err as ApiError;
 
       setLoginError(
-        authError || apiError.message || "Incorrect email or password"
+        authError || apiError.message || t("login.errors.incorrectCredentials")
       );
     } finally {
       setLoading(false);
@@ -145,6 +147,12 @@ export default function Login() {
   if (!dashPreloadDone || loading) {
     return <LoginSkeleton />;
   }
+
+  const featureItems = [
+    [t("login.featureCrmTitle"), t("login.featureCrmText")],
+    [t("login.featureAppointmentsTitle"), t("login.featureAppointmentsText")],
+    [t("login.featureAiTitle"), t("login.featureAiText")],
+  ];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
@@ -161,28 +169,23 @@ export default function Login() {
         <section className="hidden lg:block">
           <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            WELCOME BACK
+            {t("login.welcomeBadge")}
           </div>
 
           <h1 className="mt-8 max-w-2xl text-6xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 xl:text-7xl">
-            Sign in to your
+            {t("login.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              business OS.
+              {t("login.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mt-7 max-w-xl text-xl leading-8 text-slate-600">
-            Manage your business page, CRM, clients, appointments,
-            collaborations and AI tools from one premium workspace.
+            {t("login.heroSubtitle")}
           </p>
 
           <div className="mt-10 grid max-w-xl gap-4">
-            {[
-              ["CRM", "Track clients, leads and follow-ups"],
-              ["Appointments", "Manage bookings and availability"],
-              ["AI Tools", "Get insights and next-step recommendations"],
-            ].map(([title, text], index) => (
+            {featureItems.map(([title, text], index) => (
               <div
                 key={title}
                 className="flex items-center gap-4 rounded-3xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -191,7 +194,7 @@ export default function Login() {
                   {index + 1}
                 </div>
 
-                <div>
+                <div className="text-start">
                   <h3 className="text-lg font-black text-slate-950">
                     {title}
                   </h3>
@@ -219,18 +222,17 @@ export default function Login() {
                   <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
                 </div>
 
-                <div className="relative">
+                <div className="relative text-start">
                   <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl font-black shadow-xl shadow-indigo-950/30">
                     B
                   </div>
 
                   <h2 className="text-3xl font-black tracking-[-0.04em]">
-                    Login
+                    {t("login.cardTitle")}
                   </h2>
 
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
-                    Access your BizUply workspace and continue managing your
-                    business.
+                    {t("login.cardSubtitle")}
                   </p>
                 </div>
               </div>
@@ -240,12 +242,13 @@ export default function Login() {
                 noValidate
                 className="bg-gradient-to-br from-white to-indigo-50/60 px-7 py-7"
               >
-                <div>
+                <div className="text-start">
                   <label
                     htmlFor="email"
                     className="mb-2 block text-sm font-black text-slate-700"
                   >
-                    Email <span className="text-rose-500">*</span>
+                    {t("login.emailLabel")}{" "}
+                    <span className="text-rose-500">*</span>
                   </label>
 
                   <input
@@ -257,17 +260,18 @@ export default function Login() {
                     disabled={loading}
                     required
                     autoComplete="email"
-                    placeholder="you@example.com"
+                    placeholder={t("login.emailPlaceholder")}
                     className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                   />
                 </div>
 
-                <div className="mt-5">
+                <div className="mt-5 text-start">
                   <label
                     htmlFor="password"
                     className="mb-2 block text-sm font-black text-slate-700"
                   >
-                    Password <span className="text-rose-500">*</span>
+                    {t("login.passwordLabel")}{" "}
+                    <span className="text-rose-500">*</span>
                   </label>
 
                   <div className="relative">
@@ -280,17 +284,19 @@ export default function Login() {
                       disabled={loading}
                       required
                       autoComplete="current-password"
-                      placeholder="Enter your password"
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 pr-14 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
+                      placeholder={t("login.passwordPlaceholder")}
+                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 pe-14 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
                     />
 
                     <button
                       type="button"
                       onClick={() => setShowPassword((prev) => !prev)}
                       aria-label={
-                        showPassword ? "Hide password" : "Show password"
+                        showPassword
+                          ? t("login.hidePassword")
+                          : t("login.showPassword")
                       }
-                      className={`absolute right-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border transition ${
+                      className={`absolute end-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border transition ${
                         showPassword
                           ? "border-indigo-200 bg-indigo-50 text-indigo-700"
                           : "border-slate-200 bg-white text-slate-500 hover:text-indigo-700"
@@ -303,7 +309,7 @@ export default function Login() {
 
                 {loginError && (
                   <p
-                    className="mt-5 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-600"
+                    className="mt-5 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-600 text-start"
                     role="alert"
                   >
                     {loginError}
@@ -316,10 +322,10 @@ export default function Login() {
                   aria-live="polite"
                   className="group mt-7 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  {loading ? "Logging in..." : "Sign in"}
+                  {loading ? t("login.loggingIn") : t("login.signIn")}
 
                   {!loading && (
-                    <span className="ml-2 transition group-hover:translate-x-1">
+                    <span className="ms-2 transition group-hover:translate-x-1">
                       →
                     </span>
                   )}
@@ -330,7 +336,7 @@ export default function Login() {
                   onClick={() => setShowForgot(true)}
                   className="mt-4 w-full rounded-full px-5 py-3 text-sm font-black text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-700"
                 >
-                  Forgot password?
+                  {t("login.forgotPassword")}
                 </button>
               </form>
             </div>
@@ -343,7 +349,7 @@ export default function Login() {
           fallback={
             <div className="fixed inset-0 z-[9999] grid place-items-center bg-slate-950/40 p-6 backdrop-blur-xl">
               <div className="rounded-2xl bg-white px-6 py-4 text-sm font-black text-slate-700 shadow-xl">
-                Loading reset password form...
+                {t("login.loadingForgot")}
               </div>
             </div>
           }

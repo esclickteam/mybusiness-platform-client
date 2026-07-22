@@ -1,80 +1,63 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-const offers = [
-  {
-    title: "Smart CRM & Communication",
-    text: "Manage customer data, messages and relationships efficiently from one dashboard.",
-    icon: "CRM",
-  },
-  {
-    title: "Interactive Business Page",
-    text: "Showcase your services, reviews and chat directly with clients from one professional page.",
-    icon: "WEB",
-  },
-  {
-    title: "Ratings & Reviews System",
-    text: "Build credibility and trust with verified client feedback.",
-    icon: "★",
-  },
-  {
-    title: "Business Collaborations",
-    text: "Connect with complementary businesses and create new growth opportunities.",
-    icon: "∞",
-  },
-  {
-    title: "AI Business Assistant",
-    text: "Automate tasks, analyze activity and get smart recommendations to boost performance.",
-    icon: "AI",
-  },
-];
-
-const values = [
-  {
-    title: "Transparency & Simplicity",
-    text: "Intuitive tools that empower you to focus on what truly matters.",
-  },
-  {
-    title: "Innovation with Purpose",
-    text: "Practical solutions inspired by real business challenges.",
-  },
-  {
-    title: "Community & Collaboration",
-    text: "A growing network of professionals dedicated to shared success.",
-  },
+const offerMeta = [
+  { key: "offer1", icon: "CRM" },
+  { key: "offer2", icon: "WEB" },
+  { key: "offer3", icon: "★" },
+  { key: "offer4", icon: "∞" },
+  { key: "offer5", icon: "AI" },
 ];
 
 function About() {
+  const { t } = useTranslation();
+
+  const storyStats = [
+    [t("about.storyStat1"), t("about.storyStat1Label")],
+    [t("about.storyStat2"), t("about.storyStat2Label")],
+    [t("about.storyStat3"), t("about.storyStat3Label")],
+  ];
+
+  const storyItems = [
+    [t("about.storyItem1Title"), t("about.storyItem1Text")],
+    [t("about.storyItem2Title"), t("about.storyItem2Text")],
+    [t("about.storyItem3Title"), t("about.storyItem3Text")],
+    [t("about.storyItem4Title"), t("about.storyItem4Text")],
+  ];
+
+  const offers = offerMeta.map((meta) => ({
+    ...meta,
+    title: t(`about.${meta.key}Title`),
+    text: t(`about.${meta.key}Text`),
+  }));
+
+  const values = [1, 2, 3].map((n) => ({
+    title: t(`about.value${n}Title`),
+    text: t(`about.value${n}Text`),
+  }));
+
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
       <Helmet>
-        <title>About BizUply | All-in-One Business Management Platform</title>
-        <meta
-          name="description"
-          content="Learn about BizUply — an all-in-one SaaS platform that helps business owners manage clients, communication, scheduling, and growth efficiently."
-        />
-        <meta
-          name="keywords"
-          content="BizUply, business management, SaaS platform, CRM, automation, AI tools, small business software, business collaboration"
-        />
+        <title>{t("about.seoTitle")}</title>
+        <meta name="description" content={t("about.seoDescription")} />
+        <meta name="keywords" content={t("about.seoKeywords")} />
         <link rel="canonical" href="https://bizuply.com/about" />
         <meta name="robots" content="index, follow" />
 
-        <meta property="og:title" content="About BizUply" />
-        <meta
-          property="og:description"
-          content="Discover BizUply — the smart business management platform that simplifies communication, collaboration, and growth."
-        />
+        <meta property="og:title" content={t("about.ogTitle")} />
+        <meta property="og:description" content={t("about.ogDescription")} />
         <meta property="og:url" content="https://bizuply.com/about" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="About BizUply" />
+        <meta name="twitter:title" content={t("about.twitterTitle")} />
         <meta
           name="twitter:description"
-          content="BizUply helps small and medium businesses manage clients, automation, and communication — all in one platform."
+          content={t("about.twitterDescription")}
         />
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
@@ -92,21 +75,19 @@ function About() {
         <section className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            ABOUT BIZUPLY
+            {t("about.badge")}
           </div>
 
           <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            A smarter way
+            {t("about.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              to run a business.
+              {t("about.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            BizUply is a modern SaaS platform built to help business owners
-            manage clients, communication, scheduling, collaborations,
-            automation and growth — all from one connected workspace.
+            {t("about.heroSubtitle")}
           </p>
         </section>
 
@@ -119,25 +100,19 @@ function About() {
 
               <div className="relative">
                 <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  Built from real business needs
+                  {t("about.storyBadge")}
                 </div>
 
                 <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  One platform for the work that usually lives everywhere.
+                  {t("about.storyTitle")}
                 </h2>
 
                 <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  Founded by entrepreneurs who understand real business
-                  challenges, BizUply was created to simplify management,
-                  strengthen client connections and support long-term growth.
+                  {t("about.storyText")}
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {[
-                    ["CRM", "Clients"],
-                    ["AI", "Insights"],
-                    ["360°", "Business view"],
-                  ].map(([value, label]) => (
+                  {storyStats.map(([value, label]) => (
                     <div
                       key={label}
                       className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
@@ -154,24 +129,7 @@ function About() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
               <div className="grid gap-4">
-                {[
-                  [
-                    "Our Vision",
-                    "Technology should work for business owners — not the other way around.",
-                  ],
-                  [
-                    "Our Journey",
-                    "BizUply brings essential tools under one roof: CRM, scheduling, messaging, reviews, partnerships and AI.",
-                  ],
-                  [
-                    "Looking Ahead",
-                    "We’re building a reliable digital workspace for small and medium businesses.",
-                  ],
-                  [
-                    "In a Few Words",
-                    "A smarter way to stay organized, connected and future-ready.",
-                  ],
-                ].map(([title, text], index) => (
+                {storyItems.map(([title, text], index) => (
                   <div
                     key={title}
                     className="group flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -180,7 +138,7 @@ function About() {
                       {index + 1}
                     </div>
 
-                    <div className="text-left">
+                    <div className="text-start">
                       <h3 className="text-lg font-black text-slate-950">
                         {title}
                       </h3>
@@ -189,7 +147,7 @@ function About() {
                       </p>
                     </div>
 
-                    <div className="ml-auto hidden h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
+                    <div className="ms-auto hidden h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
                       →
                     </div>
                   </div>
@@ -202,15 +160,15 @@ function About() {
         {/* Vision / Journey */}
         <section className="mt-20 grid gap-7 lg:grid-cols-2">
           <InfoCard
-            label="OUR VISION"
-            title="Powerful business tools should feel simple."
-            text="We believe technology should be accessible, practical and effective for every small and medium-sized business. BizUply empowers entrepreneurs to grow smarter by combining usability, innovation and real human connection."
+            label={t("about.visionLabel")}
+            title={t("about.visionTitle")}
+            text={t("about.visionText")}
           />
 
           <InfoCard
-            label="OUR JOURNEY"
-            title="Built to replace scattered tools."
-            text="BizUply was founded with one goal — to bring essential business tools under one roof. Instead of managing separate systems for CRM, scheduling, messaging, reviews and partnerships, we created one unified platform."
+            label={t("about.journeyLabel")}
+            title={t("about.journeyTitle")}
+            text={t("about.journeyText")}
           />
         </section>
 
@@ -219,14 +177,14 @@ function About() {
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-              WHAT BIZUPLY OFFERS
+              {t("about.offersBadge")}
             </div>
 
             <h2 className="mt-7 text-4xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-5xl">
-              Everything your business needs
+              {t("about.offersTitleTop")}
               <br />
               <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                in one beautiful system.
+                {t("about.offersTitleHighlight")}
               </span>
             </h2>
           </div>
@@ -234,7 +192,7 @@ function About() {
           <div className="grid gap-6 lg:grid-cols-3">
             {offers.map((item, index) => (
               <article
-                key={item.title}
+                key={item.key}
                 className={`group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] ${
                   index === 4 ? "lg:col-span-2" : ""
                 }`}
@@ -265,18 +223,17 @@ function About() {
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
                 <div className="mb-6 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-                  OUR VALUES
+                  {t("about.valuesBadge")}
                 </div>
 
                 <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-5xl">
-                  Built with clarity,
+                  {t("about.valuesTitleTop")}
                   <br />
-                  purpose and collaboration.
+                  {t("about.valuesTitleBottom")}
                 </h2>
 
                 <p className="mt-5 text-lg leading-8 text-slate-600">
-                  BizUply is built on principles that make the platform useful,
-                  practical and focused on real business growth.
+                  {t("about.valuesText")}
                 </p>
               </div>
 
@@ -309,14 +266,13 @@ function About() {
         <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
-              Ready to run your business
+              {t("about.ctaTitleTop")}
               <br />
-              from one smart workspace?
+              {t("about.ctaTitleBottom")}
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              BizUply helps businesses stay organized, connected and
-              future-ready — so you can focus on leading, creating and growing.
+              {t("about.ctaText")}
             </p>
           </div>
         </section>

@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Plans() {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState(null);
 
@@ -13,7 +15,7 @@ export default function Plans() {
       setLoadingPlan(plan);
 
       if (!userId) {
-        alert("User data not loaded yet.");
+        alert(t("pricing.alertUserNotLoaded"));
         setLoadingPlan(null);
         return;
       }
@@ -30,7 +32,7 @@ export default function Plans() {
       const data = await res.json();
 
       if (!data.url) {
-        alert("Failed to start Stripe Checkout");
+        alert(t("pricing.alertCheckoutFailed"));
         setLoadingPlan(null);
         return;
       }
@@ -38,48 +40,46 @@ export default function Plans() {
       window.location.href = data.url;
     } catch (err) {
       console.error(err);
-      alert("Error, please try again.");
+      alert(t("pricing.alertGenericError"));
       setLoadingPlan(null);
     }
   };
 
   const features = [
-    "Professional Business Page",
-    "Smart CRM for Clients & Appointments",
-    "Built-in Messaging System",
-    "Ratings & Reviews Management",
-    "Business Collaboration Network",
-    "AI Business Advisor & Smart Insights",
-    "Create and Track Client Tasks",
-    "Log and Document Client Calls",
-    "Automated Notifications",
-    "Predictive Analytics",
+    t("pricing.feature1"),
+    t("pricing.feature2"),
+    t("pricing.feature3"),
+    t("pricing.feature4"),
+    t("pricing.feature5"),
+    t("pricing.feature6"),
+    t("pricing.feature7"),
+    t("pricing.feature8"),
+    t("pricing.feature9"),
+    t("pricing.feature10"),
   ];
 
   const plans = [
     {
       type: "monthly",
-      name: "Monthly Plan",
-      price: "$149",
-      duration: "/month",
-      description:
-        "Full access to all BizUply features. Flexible monthly billing.",
-      button: "Start Monthly",
+      name: t("pricing.monthlyName"),
+      price: t("pricing.monthlyPrice"),
+      duration: t("pricing.monthlyDuration"),
+      description: t("pricing.monthlyDescription"),
+      button: t("pricing.monthlyButton"),
       highlighted: false,
-      badge: "Flexible",
-      note: "Best for testing and growing month by month.",
+      badge: t("pricing.monthlyBadge"),
+      note: t("pricing.monthlyNote"),
     },
     {
       type: "yearly",
-      name: "Yearly Plan",
-      price: "$1490",
-      duration: "/year",
-      description:
-        "Best value for serious businesses. Save money and grow faster.",
-      button: "Start Yearly",
+      name: t("pricing.yearlyName"),
+      price: t("pricing.yearlyPrice"),
+      duration: t("pricing.yearlyDuration"),
+      description: t("pricing.yearlyDescription"),
+      button: t("pricing.yearlyButton"),
       highlighted: true,
-      badge: "Best Value",
-      note: "$124/month · Save $298",
+      badge: t("pricing.yearlyBadge"),
+      note: t("pricing.yearlyNote"),
     },
   ];
 
@@ -98,9 +98,9 @@ export default function Plans() {
             : "border border-slate-200 bg-white text-slate-950 shadow-slate-100 hover:border-indigo-200 hover:text-indigo-700"
         }`}
       >
-        {isLoading ? "Processing..." : label}
+        {isLoading ? t("pricing.processing") : label}
         {!isLoading && (
-          <span className="ml-2 transition group-hover:translate-x-1">→</span>
+          <span className="ms-2 transition group-hover:translate-x-1">→</span>
         )}
       </button>
     );
@@ -121,21 +121,19 @@ export default function Plans() {
         <header className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            BIZUPLY PRICING
+            {t("pricing.badge")}
           </div>
 
           <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Choose your
+            {t("pricing.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              business plan.
+              {t("pricing.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            All the tools your business needs — CRM, business page, messaging,
-            reviews, collaborations, automations and AI insights — in one smart
-            platform.
+            {t("pricing.heroSubtitle")}
           </p>
         </header>
 
@@ -151,8 +149,8 @@ export default function Plans() {
               }`}
             >
               {plan.highlighted && (
-                <div className="absolute right-8 top-8 z-20 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-700 shadow-xl">
-                  Most Popular
+                <div className="absolute end-8 top-8 z-20 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-700 shadow-xl">
+                  {t("pricing.mostPopular")}
                 </div>
               )}
 
@@ -170,7 +168,7 @@ export default function Plans() {
                   </div>
                 )}
 
-                <div className="relative">
+                <div className="relative text-start">
                   <div
                     className={`mb-6 inline-flex rounded-full px-4 py-2 text-sm font-black ${
                       plan.highlighted

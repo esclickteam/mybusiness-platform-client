@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 function Contact() {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -13,6 +16,12 @@ function Contact() {
 
   const [status, setStatus] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  const highlights = [
+    [t("contact.highlight1Title"), t("contact.highlight1Text")],
+    [t("contact.highlight2Title"), t("contact.highlight2Text")],
+    [t("contact.highlight3Title"), t("contact.highlight3Text")],
+  ];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,7 +39,7 @@ function Contact() {
     const { name, phone, email, message } = formData;
 
     if (!name || !phone || !email || !message) {
-      setStatus({ type: "error", message: "Please fill in all fields" });
+      setStatus({ type: "error", messageKey: "fillAllFields" });
       return;
     }
 
@@ -58,7 +67,7 @@ function Contact() {
 
       setStatus({
         type: "success",
-        message: "Form submitted successfully! We’ll get back to you shortly.",
+        messageKey: "success",
       });
 
       setFormData({
@@ -70,7 +79,7 @@ function Contact() {
     } catch (error) {
       setStatus({
         type: "error",
-        message: "An error occurred. Please try again later.",
+        messageKey: "error",
       });
     } finally {
       setLoading(false);
@@ -80,19 +89,13 @@ function Contact() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-950">
       <Helmet>
-        <title>Contact Us - Bizuply | We're Here to Help</title>
-        <meta
-          name="description"
-          content="Contact the Bizuply team for questions, support, and business inquiries."
-        />
+        <title>{t("contact.seoTitle")}</title>
+        <meta name="description" content={t("contact.seoDescription")} />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://bizuply.com/contact" />
 
-        <meta property="og:title" content="Contact Bizuply – We're Here to Help" />
-        <meta
-          property="og:description"
-          content="Reach out to the Bizuply team for support or questions."
-        />
+        <meta property="og:title" content={t("contact.ogTitle")} />
+        <meta property="og:description" content={t("contact.ogDescription")} />
         <meta property="og:url" content="https://bizuply.com/contact" />
         <meta property="og:type" content="website" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
@@ -108,24 +111,19 @@ function Contact() {
         <div className="flex flex-col justify-center">
           <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            Bizuply Support
+            {t("contact.badge")}
           </div>
 
           <h1 className="max-w-4xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Let’s talk about your business growth.
+            {t("contact.heroTitle")}
           </h1>
 
           <p className="mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-            Have a question, need support, or want to learn how Bizuply can help
-            your business? Send us a message and we’ll get back to you shortly.
+            {t("contact.heroSubtitle")}
           </p>
 
           <div className="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
-            {[
-              ["Fast", "Support response"],
-              ["Smart", "Business tools"],
-              ["Simple", "One platform"],
-            ].map(([title, text]) => (
+            {highlights.map(([title, text]) => (
               <div
                 key={title}
                 className="rounded-3xl border border-white/80 bg-white/65 p-5 shadow-sm backdrop-blur"
@@ -138,14 +136,13 @@ function Contact() {
 
           <div className="mt-8 rounded-[2rem] border border-white/80 bg-white/65 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
             <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-700">
-              Direct email
+              {t("contact.directEmailLabel")}
             </p>
             <p className="mt-3 text-lg font-black text-slate-950">
-              support@bizuply.com
+              {t("contact.directEmail")}
             </p>
             <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-              You can also email us directly for support, questions or business
-              inquiries.
+              {t("contact.directEmailText")}
             </p>
           </div>
         </div>
@@ -157,20 +154,20 @@ function Contact() {
           <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/10 backdrop-blur-xl sm:p-7">
             <div className="mb-7">
               <p className="text-sm font-black uppercase tracking-[0.2em] text-amber-700">
-                Contact form
+                {t("contact.formLabel")}
               </p>
               <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-4xl">
-                Send us a message
+                {t("contact.formTitle")}
               </h2>
               <p className="mt-3 text-base font-medium leading-7 text-slate-600">
-                Fill out the details below and our team will contact you.
+                {t("contact.formSubtitle")}
               </p>
             </div>
 
             <form className="space-y-5" onSubmit={onSubmit}>
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-800">
-                  Full Name
+                  {t("contact.nameLabel")}
                 </label>
                 <input
                   type="text"
@@ -179,14 +176,14 @@ function Contact() {
                   onChange={handleChange}
                   disabled={loading}
                   required
-                  placeholder="Enter your full name"
+                  placeholder={t("contact.namePlaceholder")}
                   className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-800">
-                  Phone
+                  {t("contact.phoneLabel")}
                 </label>
 
                 <div className="bizuply-phone-wrapper">
@@ -203,8 +200,8 @@ function Contact() {
                       disabled: loading,
                     }}
                     containerClass="!w-full"
-                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !pl-14 !pr-5 !text-base !font-semibold !text-slate-950 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
-                    buttonClass="!rounded-l-2xl !border-slate-200 !bg-white"
+                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-950 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
+                    buttonClass="!rounded-s-2xl !border-slate-200 !bg-white"
                     dropdownClass="!rounded-2xl !border-slate-200 !shadow-xl"
                     searchClass="!rounded-xl !border-slate-200"
                   />
@@ -213,7 +210,7 @@ function Contact() {
 
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-800">
-                  Email
+                  {t("contact.emailLabel")}
                 </label>
                 <input
                   type="email"
@@ -222,14 +219,14 @@ function Contact() {
                   onChange={handleChange}
                   disabled={loading}
                   required
-                  placeholder="Enter your email address"
+                  placeholder={t("contact.emailPlaceholder")}
                   className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
 
               <div>
                 <label className="mb-2 block text-sm font-black text-slate-800">
-                  Message
+                  {t("contact.messageLabel")}
                 </label>
                 <textarea
                   name="message"
@@ -238,7 +235,7 @@ function Contact() {
                   disabled={loading}
                   required
                   rows={6}
-                  placeholder="How can we help you?"
+                  placeholder={t("contact.messagePlaceholder")}
                   className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
@@ -248,9 +245,9 @@ function Contact() {
                 disabled={loading}
                 className="group flex h-14 w-full items-center justify-center rounded-2xl bg-slate-950 px-8 text-base font-black text-white shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
-                {loading ? "Sending..." : "Send Message"}
+                {loading ? t("contact.sendingButton") : t("contact.sendButton")}
                 {!loading && (
-                  <span className="ml-2 transition group-hover:translate-x-1">
+                  <span className="ms-2 transition group-hover:translate-x-1">
                     →
                   </span>
                 )}
@@ -265,7 +262,7 @@ function Contact() {
                     : "border-rose-200 bg-rose-50 text-rose-700"
                 }`}
               >
-                {status.message}
+                {t(`contact.${status.messageKey}`)}
               </div>
             )}
           </div>
