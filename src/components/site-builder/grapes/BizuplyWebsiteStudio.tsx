@@ -441,19 +441,19 @@ export default function BizuplyWebsiteStudio({
   return (
     <div
       dir="rtl"
-      className="h-screen w-full overflow-hidden bg-[#f6f4ff] text-slate-950"
+      className="h-screen w-full overflow-hidden bg-[#f6f4ff] text-slate-800"
     >
       <style>{studioPolishCss}</style>
 
       <div className="flex h-screen flex-col">
         <header className="z-50 flex h-[72px] shrink-0 items-center justify-between border-b border-slate-200/70 bg-white/90 px-5 shadow-[0_12px_40px_rgba(15,23,42,0.06)] backdrop-blur-2xl">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-fuchsia-600 text-base font-black text-white shadow-xl shadow-violet-200">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-white shadow-xl shadow-violet-200">
               B
             </div>
 
             <div>
-              <p className="text-base font-black leading-none text-slate-950">
+              <p className="text-base font-black leading-none text-slate-800">
                 Bizuply Website Studio
               </p>
               <p className="mt-1 text-xs font-bold leading-none text-slate-400">
@@ -529,7 +529,7 @@ export default function BizuplyWebsiteStudio({
               type="button"
               onClick={() => handleSave(true)}
               disabled={!ready || !slugValid}
-              className="rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-5 py-3 text-xs font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:opacity-40"
+              className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-xs font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:opacity-40"
             >
               פרסום 🚀
             </button>
@@ -588,7 +588,7 @@ export default function BizuplyWebsiteStudio({
                           alt=""
                           className="mb-3 h-24 w-full rounded-2xl object-cover"
                         />
-                        <p className="text-sm font-black text-slate-950">
+                        <p className="text-sm font-black text-slate-800">
                           {template.name}
                         </p>
                         <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-4 text-slate-400">
@@ -848,7 +848,7 @@ function DeviceButton({
       className={[
         "rounded-2xl px-4 py-3 text-xs font-black transition",
         active
-          ? "bg-slate-950 text-white"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
           : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -891,7 +891,7 @@ function PanelTitle({
 }) {
   return (
     <div className="mb-4 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {subtitle}
       </p>
@@ -911,7 +911,7 @@ function PanelBox({
   return (
     <section>
       <div className="mb-5">
-        <h2 className="text-2xl font-black tracking-tight text-slate-950">
+        <h2 className="text-2xl font-black tracking-tight text-slate-800">
           {title}
         </h2>
         <p className="mt-1 text-sm font-bold leading-6 text-slate-400">
@@ -939,7 +939,7 @@ function SmartBlock({
       onClick={onClick}
       className="mb-3 w-full rounded-3xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
     >
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">{text}</p>
     </button>
   );

@@ -94,7 +94,7 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
               Pending Collaborations
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               Collaborations waiting for approval
             </h2>
 
@@ -150,7 +150,7 @@ export default function CollabPendingTab({ token }: CollabPendingTabProps) {
         <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 Pending Requests
               </h3>
               <p className="mt-1 text-sm font-semibold text-slate-500">
@@ -188,7 +188,7 @@ function PendingCollabCard({ collab }: { collab: PendingCollab }) {
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-lg font-black text-slate-950">
+            <h4 className="truncate text-lg font-black text-slate-800">
               {collab.subject || "Pending collaboration"}
             </h4>
 
@@ -262,7 +262,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
           <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
@@ -297,7 +297,7 @@ function InfoTile({
         </p>
       </div>
 
-      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -366,7 +366,7 @@ function EmptyState() {
         <Clock3 className="h-7 w-7" />
       </div>
 
-      <h4 className="mt-4 text-xl font-black text-slate-950">
+      <h4 className="mt-4 text-xl font-black text-slate-800">
         No pending collaborations
       </h4>
 

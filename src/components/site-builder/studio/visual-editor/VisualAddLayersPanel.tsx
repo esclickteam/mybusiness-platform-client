@@ -284,7 +284,7 @@ function CodeField({
         }
         placeholder={placeholder}
         spellCheck={false}
-        className="w-full resize-y rounded-2xl border border-slate-200 bg-slate-950 p-3 font-mono text-xs leading-6 text-emerald-300 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+        className="w-full resize-y rounded-2xl border border-slate-200 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-3 font-mono text-xs leading-6 text-emerald-300 outline-none transition focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
       />
     </label>
   );
@@ -299,7 +299,7 @@ function ElementPreview({
     return (
       <div className="flex h-full items-center justify-center bg-white px-6">
         <div className="w-full text-center">
-          <div className="mx-auto h-3 w-24 rounded-full bg-slate-900" />
+          <div className="mx-auto h-3 w-24 rounded-full bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800" />
           <div className="mx-auto mt-3 h-2 w-40 rounded-full bg-slate-300" />
         </div>
       </div>
@@ -321,7 +321,7 @@ function ElementPreview({
   if (kind === "button") {
     return (
       <div className="flex h-full items-center justify-center bg-white">
-        <div className="rounded-full bg-violet-600 px-8 py-3 text-xs font-black text-white shadow-lg shadow-violet-200">
+        <div className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 py-3 text-xs font-black text-white shadow-lg shadow-violet-200">
           לחצו כאן
         </div>
       </div>
@@ -340,10 +340,10 @@ function ElementPreview({
 
   if (kind === "video") {
     return (
-      <div className="relative flex h-full items-center justify-center overflow-hidden bg-slate-900">
+      <div className="relative flex h-full items-center justify-center overflow-hidden bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800">
         <div className="absolute inset-0 bg-gradient-to-br from-violet-700/70 to-sky-500/30" />
         <div className="relative flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-xl">
-          <Video className="h-5 w-5 text-slate-950" />
+          <Video className="h-5 w-5 text-slate-800" />
         </div>
       </div>
     );
@@ -359,7 +359,7 @@ function ElementPreview({
 
   return (
     <div className="flex h-full items-center justify-center bg-white px-8">
-      <div className="h-1 w-full rounded-full bg-slate-900" />
+      <div className="h-1 w-full rounded-full bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800" />
     </div>
   );
 }
@@ -382,15 +382,15 @@ function NavigationButton({
       className={[
         "group flex w-full flex-col items-center gap-2 rounded-xl px-2 py-3 text-[11px] font-bold transition",
         active
-          ? "bg-slate-100 text-slate-950"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-950",
+          ? "bg-slate-100 text-slate-800"
+          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
       ].join(" ")}
     >
       <span
         className={[
           "flex h-9 w-9 items-center justify-center rounded-lg border transition",
           active
-            ? "border-slate-200 bg-white text-slate-950 shadow-sm"
+            ? "border-slate-200 bg-white text-slate-800 shadow-sm"
             : "border-transparent bg-slate-50 text-slate-500 group-hover:border-slate-200 group-hover:bg-white",
         ].join(" ")}
       >
@@ -933,7 +933,7 @@ export default function VisualAddLayersPanel({
     <div
       className={
         mode === "add"
-          ? "fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-950/45 p-5 backdrop-blur-[2px]"
+          ? "fixed inset-0 z-[2147483200] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-5 backdrop-blur-[2px]"
           : "contents"
       }
       onMouseDown={(event) => {
@@ -1043,7 +1043,7 @@ export default function VisualAddLayersPanel({
           <div className="flex min-w-0 flex-1 flex-col">
             <header className="flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 px-6">
               <div>
-                <h2 className="text-xl font-black text-slate-950">
+                <h2 className="text-xl font-black text-slate-800">
                   {title}
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-400">
@@ -1144,7 +1144,7 @@ export default function VisualAddLayersPanel({
                         className={[
                           "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
                           pageCategory === categoryItem.id
-                            ? "bg-slate-100 text-slate-950"
+                            ? "bg-slate-100 text-slate-800"
                             : "text-slate-600 hover:bg-slate-50",
                         ].join(" ")}
                       >
@@ -1165,7 +1165,7 @@ export default function VisualAddLayersPanel({
                   <div className="min-h-0 flex-1 overflow-y-auto bg-[#f7f8fb] p-5">
                     <div className="mb-4 flex items-center justify-between gap-3">
                       <div>
-                        <h3 className="text-base font-black text-slate-950">
+                        <h3 className="text-base font-black text-slate-800">
                           ספריית עמודים · {activePageCategoryLabel}
                         </h3>
                         <p className="mt-1 text-xs font-bold text-slate-400">
@@ -1200,7 +1200,7 @@ export default function VisualAddLayersPanel({
 
                           <div className="flex items-start justify-between gap-3 p-4">
                             <div className="min-w-0">
-                              <h4 className="truncate text-sm font-black text-slate-950">
+                              <h4 className="truncate text-sm font-black text-slate-800">
                                 {page.title}
                               </h4>
                               <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-400">
@@ -1267,7 +1267,7 @@ export default function VisualAddLayersPanel({
                               "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
                               elementCategory ===
                               categoryItem.id
-                                ? "bg-slate-950 text-white"
+                                ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                                 : "bg-slate-100 text-slate-600 hover:bg-slate-200",
                             ].join(" ")}
                           >
@@ -1290,7 +1290,7 @@ export default function VisualAddLayersPanel({
                     <>
                       <div className="mb-4 flex items-center justify-between">
                         <div>
-                          <h3 className="text-base font-black text-slate-950">
+                          <h3 className="text-base font-black text-slate-800">
                             אלמנטים
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
@@ -1327,7 +1327,7 @@ export default function VisualAddLayersPanel({
                               </div>
 
                               <div className="p-4">
-                                <h4 className="text-sm font-black text-slate-950">
+                                <h4 className="text-sm font-black text-slate-800">
                                   {item.title}
                                 </h4>
                                 <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
@@ -1366,7 +1366,7 @@ export default function VisualAddLayersPanel({
                               className={[
                                 "flex w-full items-center justify-between rounded-lg px-3 py-2 text-right text-xs font-bold transition",
                                 sectionQuickFilter === id
-                                  ? "bg-slate-950 text-white"
+                                  ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                                   : "text-slate-600 hover:bg-slate-50",
                               ].join(" ")}
                             >
@@ -1399,7 +1399,7 @@ export default function VisualAddLayersPanel({
                             className={[
                               "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
                               sectionCategory === categoryItem.id
-                                ? "bg-slate-100 text-slate-950"
+                                ? "bg-slate-100 text-slate-800"
                                 : "text-slate-600 hover:bg-slate-50",
                               categoryItem.id === "blank"
                                 ? "text-violet-700"
@@ -1439,7 +1439,7 @@ export default function VisualAddLayersPanel({
                       >
                         <div className="mb-4 flex items-center justify-between gap-3">
                           <div>
-                            <h3 className="text-base font-black text-slate-950">
+                            <h3 className="text-base font-black text-slate-800">
                               ספריית סקשנים · {activeSectionCategoryLabel}
                             </h3>
                             <p className="mt-1 text-xs font-bold text-slate-400">
@@ -1486,8 +1486,8 @@ export default function VisualAddLayersPanel({
                                   />
                                 </div>
 
-                                <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-200 group-hover:bg-slate-950/10 group-hover:opacity-100">
-                                  <span className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-xs font-black text-slate-950 shadow-xl">
+                                <div className="absolute inset-0 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/0 opacity-0 transition duration-200 group-hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 group-hover:opacity-100">
+                                  <span className="inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-xs font-black text-slate-800 shadow-xl">
                                     <Eye className="h-4 w-4" />
                                     תצוגה מקדימה
                                   </span>
@@ -1496,7 +1496,7 @@ export default function VisualAddLayersPanel({
 
                               <div className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3">
                                 <div className="min-w-0">
-                                  <h4 className="truncate text-sm font-black text-slate-950">
+                                  <h4 className="truncate text-sm font-black text-slate-800">
                                     {item.title}
                                   </h4>
                                   <p className="mt-0.5 truncate text-[11px] font-bold text-slate-400">
@@ -1504,7 +1504,7 @@ export default function VisualAddLayersPanel({
                                   </p>
                                 </div>
 
-                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition group-hover:border-slate-950 group-hover:bg-slate-950 group-hover:text-white">
+                                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 transition group-hover:border-slate-950 group-hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 group-hover:text-white">
                                   <Eye className="h-4 w-4" />
                                 </span>
                               </div>
@@ -1568,7 +1568,7 @@ export default function VisualAddLayersPanel({
                 )}
               </span>
 
-              <h2 className="text-base font-black text-slate-950">
+              <h2 className="text-base font-black text-slate-800">
                 {title}
               </h2>
             </div>
@@ -1939,7 +1939,7 @@ export default function VisualAddLayersPanel({
                   }
                   onClose();
                 }}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-sm font-black text-white"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-white"
               >
                 <Save className="h-4 w-4" />
                 {codeScope === "site"
@@ -1958,7 +1958,7 @@ export default function VisualAddLayersPanel({
               <p className="text-[11px] font-bold text-slate-400">
                 תצוגה מקדימה
               </p>
-              <h3 className="truncate text-lg font-black text-slate-950">
+              <h3 className="truncate text-lg font-black text-slate-800">
                 {previewSection.title}
               </h3>
             </div>
@@ -1971,7 +1971,7 @@ export default function VisualAddLayersPanel({
                   className={[
                     "flex h-9 items-center gap-2 rounded-md px-3 text-xs font-bold transition",
                     previewDevice === "desktop"
-                      ? "bg-white text-slate-950 shadow-sm"
+                      ? "bg-white text-slate-800 shadow-sm"
                       : "text-slate-500",
                   ].join(" ")}
                 >
@@ -1984,7 +1984,7 @@ export default function VisualAddLayersPanel({
                   className={[
                     "flex h-9 items-center gap-2 rounded-md px-3 text-xs font-bold transition",
                     previewDevice === "mobile"
-                      ? "bg-white text-slate-950 shadow-sm"
+                      ? "bg-white text-slate-800 shadow-sm"
                       : "text-slate-500",
                   ].join(" ")}
                 >
@@ -2059,7 +2059,7 @@ export default function VisualAddLayersPanel({
               <button
                 type="button"
                 onClick={() => handleAddLibrarySection(previewSection)}
-                className="inline-flex h-11 items-center gap-2 rounded-md bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-slate-800"
+                className="inline-flex h-11 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
               >
                 <Plus className="h-4 w-4" />
                 הוספה לעמוד
@@ -2070,7 +2070,7 @@ export default function VisualAddLayersPanel({
       ) : null}
 
       {mode === "add" && lastAddedTitle ? (
-        <div className="absolute bottom-5 left-1/2 z-[110] flex -translate-x-1/2 items-center gap-4 rounded-xl bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-2xl">
+        <div className="absolute bottom-5 left-1/2 z-[110] flex -translate-x-1/2 items-center gap-4 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-2xl">
           <span>{lastAddedTitle}</span>
           <button
             type="button"

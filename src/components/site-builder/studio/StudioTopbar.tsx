@@ -74,13 +74,13 @@ export default function StudioTopbar({
     <header className="z-50 flex h-[78px] shrink-0 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-4 shadow-[0_14px_55px_rgba(15,23,42,0.08)] backdrop-blur-2xl lg:px-5">
       {/* BRAND */}
       <div className="flex min-w-[210px] items-center gap-3 lg:min-w-[270px]">
-        <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[1.15rem] bg-gradient-to-br from-violet-700 via-fuchsia-600 to-pink-500 text-base font-black text-white shadow-xl shadow-violet-200">
+        <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-[1.15rem] bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-base font-black text-white shadow-xl shadow-violet-200">
           B
           <span className="absolute -bottom-1 -left-1 h-4 w-4 rounded-full border-2 border-white bg-emerald-400 shadow-sm" />
         </div>
 
         <div className="min-w-0">
-          <p className="truncate text-base font-black leading-none tracking-[-0.03em] text-slate-950">
+          <p className="truncate text-base font-black leading-none tracking-[-0.03em] text-slate-800">
             Bizuply Studio
           </p>
           <p className="mt-1 truncate text-xs font-bold leading-none text-slate-400">
@@ -191,7 +191,7 @@ export default function StudioTopbar({
           className={[
             "shrink-0 rounded-2xl px-5 py-3 text-xs font-black text-white shadow-xl transition",
             canSave
-              ? "bg-gradient-to-l from-violet-700 via-fuchsia-600 to-pink-500 shadow-violet-200 hover:-translate-y-0.5 hover:shadow-violet-300"
+              ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 shadow-violet-200 hover:-translate-y-0.5 hover:shadow-violet-300"
               : "cursor-not-allowed bg-slate-300 shadow-none",
           ].join(" ")}
         >
@@ -249,8 +249,8 @@ function DeviceButton({
       className={[
         "shrink-0 rounded-xl px-3 py-2.5 text-xs font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
-          : "text-slate-500 hover:bg-white hover:text-slate-950 hover:shadow-sm",
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200"
+          : "text-slate-500 hover:bg-white hover:text-slate-800 hover:shadow-sm",
       ].join(" ")}
     >
       <span className="ml-1">{icon}</span>

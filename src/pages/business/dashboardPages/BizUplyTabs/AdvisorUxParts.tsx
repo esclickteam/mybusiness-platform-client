@@ -490,7 +490,7 @@ export function AdvisorThinkingLoader() {
   return (
     <div className="flex justify-start">
       <div className="flex max-w-md gap-3 rounded-[22px] border border-violet-100 bg-white px-4 py-4 shadow-sm">
-        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800">
           <Sparkles className="h-5 w-5 animate-pulse" />
         </span>
         <div>

@@ -200,7 +200,7 @@ function ReviewCard({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <strong className="block truncate text-sm font-black text-slate-950">
+          <strong className="block truncate text-sm font-black text-slate-800">
             {getReviewUser(review)}
           </strong>
 
@@ -217,7 +217,7 @@ function ReviewCard({
       </div>
 
       <div className="mt-4 flex flex-col gap-2 rounded-2xl bg-slate-50 p-3 sm:flex-row sm:items-center sm:justify-between">
-        <span className="text-sm font-black text-slate-950">
+        <span className="text-sm font-black text-slate-800">
           ⭐ {avg !== null ? avg.toFixed(1) : "—"} / 5
         </span>
 
@@ -346,7 +346,7 @@ export default function ReviewsModule({
       {!isPreview && (
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h2 className="m-0 text-2xl font-black tracking-tight text-slate-950">
+            <h2 className="m-0 text-2xl font-black tracking-tight text-slate-800">
               ⭐ ביקורות לקוחות
             </h2>
 
@@ -359,7 +359,7 @@ export default function ReviewsModule({
             <button
               type="button"
               onClick={() => setShowForm(true)}
-              className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl sm:w-auto"
+              className="inline-flex h-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl sm:w-auto"
             >
               💬 כתיבת ביקורת
             </button>
@@ -392,7 +392,7 @@ export default function ReviewsModule({
             💬
           </div>
 
-          <h3 className="mt-4 text-lg font-black text-slate-950">
+          <h3 className="mt-4 text-lg font-black text-slate-800">
             עדיין אין ביקורות
           </h3>
 

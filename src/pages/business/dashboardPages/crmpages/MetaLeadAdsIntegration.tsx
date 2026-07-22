@@ -341,7 +341,7 @@ export default function MetaLeadAdsIntegration() {
                   Meta Lead Ads Integration
                 </div>
 
-                <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
                   Connect Facebook Leads to Bizuply
                 </h1>
 
@@ -429,7 +429,7 @@ export default function MetaLeadAdsIntegration() {
           <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-slate-950">
+                <h2 className="text-2xl font-black text-slate-800">
                   Connection setup
                 </h2>
 
@@ -503,7 +503,7 @@ export default function MetaLeadAdsIntegration() {
                     type="button"
                     onClick={connectPage}
                     disabled={busy || !selectedPageId}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
                   >
                     <Webhook className="h-4 w-4" />
                     Connect Page
@@ -571,7 +571,7 @@ export default function MetaLeadAdsIntegration() {
           <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-slate-950">
+                <h2 className="text-2xl font-black text-slate-800">
                   Connected Page
                 </h2>
 
@@ -628,7 +628,7 @@ export default function MetaLeadAdsIntegration() {
                     Active Lead Form
                   </p>
 
-                  <p className="mt-1 text-sm font-black text-violet-950">
+                  <p className="mt-1 text-sm font-black text-slate-800">
                     {selectedForm?.formName || "No form selected yet"}
                   </p>
 
@@ -659,7 +659,7 @@ export default function MetaLeadAdsIntegration() {
           <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-slate-950">
+                <h2 className="text-2xl font-black text-slate-800">
                   Lead Forms
                 </h2>
 
@@ -684,7 +684,7 @@ export default function MetaLeadAdsIntegration() {
               <div className="flex items-start gap-3">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-violet-700" />
                 <div className="min-w-0">
-                  <p className="text-sm font-black text-violet-950">
+                  <p className="text-sm font-black text-slate-800">
                     {selectedForm?.formName
                       ? `Active form: ${selectedForm.formName}`
                       : "No active form selected"}
@@ -717,7 +717,7 @@ export default function MetaLeadAdsIntegration() {
                         className={[
                           "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
                           selectedForm?.formId === form.id
-                            ? "bg-violet-600 text-white"
+                            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                             : "bg-white text-sky-600 ring-1 ring-slate-200",
                         ].join(" ")}
                       >
@@ -753,7 +753,7 @@ export default function MetaLeadAdsIntegration() {
                         "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-70",
                         selectedForm?.formId === form.id
                           ? "bg-violet-100 text-violet-700 ring-1 ring-violet-200"
-                          : "bg-slate-950 text-white hover:bg-slate-800",
+                          : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50",
                       ].join(" ")}
                     >
                       {busy ? (
@@ -782,7 +782,7 @@ export default function MetaLeadAdsIntegration() {
           <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
-                <h2 className="text-2xl font-black text-slate-950">
+                <h2 className="text-2xl font-black text-slate-800">
                   Recent Leads
                 </h2>
 

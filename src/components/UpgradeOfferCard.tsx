@@ -158,7 +158,7 @@ export default function UpgradeOfferCard({
           🎁 Limited-time offer
         </div>
 
-        <h2 className="mb-2 text-3xl font-black tracking-tight text-slate-950">
+        <h2 className="mb-2 text-3xl font-black tracking-tight text-slate-800">
           First Month Only{" "}
           <span className="text-violet-700">$119</span>
           <span className="ml-2 align-middle text-lg font-black text-slate-400 line-through">
@@ -177,7 +177,7 @@ export default function UpgradeOfferCard({
         )}
 
         <p className="mb-4 text-[15px] leading-7 text-slate-600">
-          Unlock <strong className="text-slate-950">BizUply</strong>{" "}
+          Unlock <strong className="text-slate-800">BizUply</strong>{" "}
           automations, CRM, messaging and AI tools.
           <br />
           Special early access pricing — no commitment.

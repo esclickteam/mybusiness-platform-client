@@ -66,7 +66,7 @@ export default function ProfileContactBlock({
 
                   <p
                     dir="ltr"
-                    className="mt-0.5 text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                    className="mt-0.5 text-sm font-black text-slate-800 sm:mt-1 sm:text-lg"
                   >
                     {phoneValue}
                   </p>
@@ -94,7 +94,7 @@ export default function ProfileContactBlock({
 
                   <p
                     dir="ltr"
-                    className="mt-0.5 truncate text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                    className="mt-0.5 truncate text-sm font-black text-slate-800 sm:mt-1 sm:text-lg"
                   >
                     {emailValue}
                   </p>
@@ -112,7 +112,7 @@ export default function ProfileContactBlock({
               href={normalizedWebsiteUrl}
               target="_blank"
               rel="noreferrer"
-              className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
+              className="profile-contact-action group flex h-[52px] min-w-[200px] flex-1 items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 sm:max-w-xs sm:flex-none"
             >
               <span
                 className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-white"

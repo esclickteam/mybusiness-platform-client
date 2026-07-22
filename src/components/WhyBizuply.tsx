@@ -95,7 +95,7 @@ export default function WhyBizuply() {
         </svg>
       ),
       badge: t("why.feature3Badge"),
-      gradient: "from-violet-600 to-fuchsia-500",
+      gradient: "from-violet-200 via-sky-200 to-cyan-200",
       glow: "bg-violet-300/35",
     },
   ];
@@ -114,7 +114,7 @@ export default function WhyBizuply() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
+    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-800">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-40 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -129,7 +129,7 @@ export default function WhyBizuply() {
             {t("why.eyebrow")}
           </div>
 
-          <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
+          <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-800 sm:text-6xl">
             {t("why.titleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
@@ -144,7 +144,7 @@ export default function WhyBizuply() {
 
         <div className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_28px_90px_rgba(79,70,229,0.16)] backdrop-blur-xl">
           <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative overflow-hidden bg-slate-950 p-8 text-white sm:p-10">
+            <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:p-10">
               <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
               <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
 
@@ -189,7 +189,7 @@ export default function WhyBizuply() {
                     </div>
 
                     <div className="text-start">
-                      <h4 className="text-lg font-black text-slate-950">
+                      <h4 className="text-lg font-black text-slate-800">
                         {title}
                       </h4>
                       <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
@@ -228,7 +228,7 @@ export default function WhyBizuply() {
                   {feature.badge}
                 </div>
 
-                <h3 className="text-2xl font-black leading-tight tracking-[-0.03em] text-slate-950">
+                <h3 className="text-2xl font-black leading-tight tracking-[-0.03em] text-slate-800">
                   {feature.title}
                 </h3>
 
@@ -251,7 +251,7 @@ export default function WhyBizuply() {
         </div>
 
         <div className="mx-auto mt-14 max-w-4xl rounded-[2rem] border border-indigo-100 bg-white/85 px-8 py-8 text-center shadow-xl shadow-indigo-100/60 backdrop-blur">
-          <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl">
+          <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-800 sm:text-3xl">
             {t("why.bottomTitle")}
           </h3>
 

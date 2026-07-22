@@ -516,10 +516,10 @@ function ToolbarButton({
       className={[
         "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-sm font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-sm"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm"
           : danger
             ? "text-rose-600 hover:bg-rose-50"
-            : "text-slate-700 hover:bg-slate-100 hover:text-slate-950",
+            : "text-slate-700 hover:bg-slate-100 hover:text-slate-800",
         disabled ? "cursor-not-allowed opacity-40" : "",
       ].join(" ")}
     >
@@ -699,7 +699,7 @@ function GradientColorPicker({
     >
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-black text-slate-950">
+          <p className="text-sm font-black text-slate-800">
             {target === "text" ? "מיקס צבעים לטקסט" : "מיקס צבעים לרקע"}
           </p>
           <p className="mt-1 text-xs font-bold text-slate-500">
@@ -799,7 +799,7 @@ function GradientColorPicker({
           type="button"
           onClick={onApply}
           disabled={!gradient}
-          className="h-11 rounded-2xl bg-violet-600 px-6 text-sm font-black text-white shadow-sm hover:bg-violet-700 disabled:opacity-40"
+          className="h-11 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-white shadow-sm hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-40"
         >
           החלת המיקס
         </button>
@@ -1380,7 +1380,7 @@ export default function VisualFloatingToolbar({
       onClick={(event) => event.stopPropagation()}
       className="pointer-events-none fixed inset-x-0 top-[72px] z-[2147483000] flex justify-center overflow-visible border-b border-slate-200 bg-white/95 px-3 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl"
     >
-      <div className="pointer-events-auto relative flex h-14 w-full max-w-[1720px] items-center gap-1.5 overflow-x-auto overflow-y-visible whitespace-nowrap px-1 text-slate-950">
+      <div className="pointer-events-auto relative flex h-14 w-full max-w-[1720px] items-center gap-1.5 overflow-x-auto overflow-y-visible whitespace-nowrap px-1 text-slate-800">
         <div className="flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-50 px-3 text-xs font-black text-violet-700">
           <Sparkles className="h-4 w-4" />
           {element?.label || getTagName(element) || "אלמנט"}
@@ -1736,7 +1736,7 @@ export default function VisualFloatingToolbar({
                 event.stopPropagation();
                 openMediaPicker();
               }}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
               שינוי
@@ -1956,7 +1956,7 @@ export default function VisualFloatingToolbar({
               event.stopPropagation();
               openMediaPicker();
             }}
-            className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             העלאה מהמחשב
           </button>
@@ -2007,7 +2007,7 @@ export default function VisualFloatingToolbar({
               event.stopPropagation();
               submitMediaUrl();
             }}
-            className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             החלפה
           </button>

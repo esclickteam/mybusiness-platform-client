@@ -219,7 +219,7 @@ function KpiCard({
         </p>
         <div className="mt-2 flex items-end justify-between gap-3">
           <div>
-            <p className="text-[2rem] font-black leading-none tracking-tight text-slate-950">
+            <p className="text-[2rem] font-black leading-none tracking-tight text-slate-800">
               {value}
             </p>
             <p className="mt-2 text-sm font-medium text-slate-500">{subtitle}</p>
@@ -338,7 +338,7 @@ export default function DashboardOverview({
       <div className="space-y-4">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
-            <h1 className="text-[2rem] font-black tracking-tight text-slate-950">
+            <h1 className="text-[2rem] font-black tracking-tight text-slate-800">
               {t("overview.greeting", {
                 name: (businessName || t("overview.yourBusiness")).trim(),
               })}
@@ -367,7 +367,7 @@ export default function DashboardOverview({
                   onClick={() => onFiltersChange({ preset })}
                   className={`rounded-full px-4 py-2 text-sm font-bold capitalize transition ${
                     filters.preset === preset
-                      ? "bg-violet-600 text-white shadow-[0_10px_24px_rgba(124,58,237,0.22)]"
+                      ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-[0_10px_24px_rgba(124,58,237,0.22)]"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
@@ -585,7 +585,7 @@ export default function DashboardOverview({
       <Panel className="p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-black text-slate-950">
+            <h2 className="text-xl font-black text-slate-800">
               {t("overview.performanceOverview")}
             </h2>
           </div>
@@ -598,7 +598,7 @@ export default function DashboardOverview({
                 onClick={() => onFiltersChange({ performanceMetric: metric })}
                 className={`rounded-full px-4 py-2 text-sm font-bold capitalize ${
                   filters.performanceMetric === metric
-                    ? "bg-violet-600 text-white"
+                    ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                     : "bg-slate-100 text-slate-600"
                 }`}
               >
@@ -667,7 +667,7 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">
+              <h3 className="text-lg font-black text-slate-800">
                 {t("overview.latestLeads")}
               </h3>
             </div>
@@ -723,7 +723,7 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">
+              <h3 className="text-lg font-black text-slate-800">
                 {t("overview.upcomingAppointments")}
               </h3>
               <p className="text-sm font-medium text-slate-500">
@@ -760,7 +760,7 @@ export default function DashboardOverview({
                     </div>
 
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-base font-black text-slate-950">
+                      <p className="truncate text-base font-black text-slate-800">
                         {appointment.clientName
                           ? t("overview.withClient", {
                               title: appointment.title,
@@ -800,7 +800,7 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">
+              <h3 className="text-lg font-black text-slate-800">
                 {t("overview.collabOverview")}
               </h3>
             </div>
@@ -867,7 +867,7 @@ export default function DashboardOverview({
 
         <Panel>
           <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-950">
+            <h3 className="text-lg font-black text-slate-800">
               {t("overview.topPages")}
             </h3>
           </div>
@@ -896,7 +896,7 @@ export default function DashboardOverview({
 
         <Panel>
           <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-950">
+            <h3 className="text-lg font-black text-slate-800">
               {t("overview.trafficSources")}
             </h3>
           </div>

@@ -278,19 +278,19 @@ export default function MetaCallbackPage() {
   };
 
   return (
-    <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top_left,#eef6ff_0%,#f8fbff_38%,#ffffff_100%)] px-4 py-8 text-slate-950 sm:px-6 lg:px-8">
+    <main className="min-h-[calc(100vh-72px)] bg-[radial-gradient(circle_at_top_left,#eef6ff_0%,#f8fbff_38%,#ffffff_100%)] px-4 py-8 text-slate-800 sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
         <button
           type="button"
           onClick={goBackToLeads}
-          className="mb-5 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-950"
+          className="mb-5 inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-black text-slate-600 shadow-sm transition hover:bg-slate-50 hover:text-slate-800"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Leads
         </button>
 
         <section className="overflow-hidden rounded-[2.3rem] border border-white/80 bg-white/90 shadow-[0_30px_90px_rgba(15,23,42,0.09)] backdrop-blur-xl">
-          <div className="bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white sm:p-8">
+          <div className="bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-6 text-white sm:p-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-sky-100">
@@ -310,7 +310,7 @@ export default function MetaCallbackPage() {
 
               <div className="rounded-[1.5rem] border border-white/10 bg-white/10 p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-950">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-slate-800">
                     <Sparkles className="h-5 w-5" />
                   </div>
 
@@ -344,7 +344,7 @@ export default function MetaCallbackPage() {
                 <CheckCircle2 className="h-10 w-10" />
               </div>
 
-              <h2 className="text-2xl font-black text-slate-950">
+              <h2 className="text-2xl font-black text-slate-800">
                 Facebook form connected successfully
               </h2>
 
@@ -361,7 +361,7 @@ export default function MetaCallbackPage() {
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
                       Step 1
                     </p>
-                    <h2 className="mt-1 text-xl font-black text-slate-950">
+                    <h2 className="mt-1 text-xl font-black text-slate-800">
                       Select Facebook Page
                     </h2>
                   </div>
@@ -398,7 +398,7 @@ export default function MetaCallbackPage() {
                     <button
                       type="button"
                       onClick={loadPages}
-                      className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-slate-950 px-4 py-2.5 text-sm font-black text-white hover:bg-sky-950"
+                      className="mt-4 inline-flex items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:bg-sky-950"
                     >
                       <RefreshCw className="h-4 w-4" />
                       Retry
@@ -423,7 +423,7 @@ export default function MetaCallbackPage() {
                         >
                           <div className="flex items-center justify-between gap-3">
                             <div className="min-w-0">
-                              <p className="truncate text-sm font-black text-slate-950">
+                              <p className="truncate text-sm font-black text-slate-800">
                                 {page.name}
                               </p>
                               <p className="mt-1 truncate text-xs font-bold text-slate-400">
@@ -450,7 +450,7 @@ export default function MetaCallbackPage() {
                     <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
                       Step 2
                     </p>
-                    <h2 className="mt-1 text-xl font-black text-slate-950">
+                    <h2 className="mt-1 text-xl font-black text-slate-800">
                       Select Lead Form
                     </h2>
                   </div>
@@ -477,7 +477,7 @@ export default function MetaCallbackPage() {
                       <p className="text-xs font-black uppercase tracking-[0.14em] text-sky-700">
                         Selected page
                       </p>
-                      <p className="mt-1 text-sm font-black text-slate-950">
+                      <p className="mt-1 text-sm font-black text-slate-800">
                         {selectedPage.name}
                       </p>
                     </div>
@@ -525,7 +525,7 @@ export default function MetaCallbackPage() {
                             >
                               <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                  <p className="truncate text-sm font-black text-slate-950">
+                                  <p className="truncate text-sm font-black text-slate-800">
                                     {form.name}
                                   </p>
 
@@ -554,7 +554,7 @@ export default function MetaCallbackPage() {
                       type="button"
                       onClick={handleConnectForm}
                       disabled={!selectedForm || connecting}
-                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-[0_18px_45px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_45px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {connecting ? (
                         <BizuplyLoader size="xs" compact />

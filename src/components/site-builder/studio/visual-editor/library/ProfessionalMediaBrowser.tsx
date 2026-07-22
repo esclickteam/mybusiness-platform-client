@@ -159,7 +159,7 @@ export default function ProfessionalMediaBrowser({
             className={[
               "inline-flex h-11 items-center justify-center gap-2 rounded-2xl text-sm font-black transition",
               mediaType === "photos"
-                ? "bg-slate-950 text-white shadow-sm"
+                ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200",
             ].join(" ")}
           >
@@ -176,7 +176,7 @@ export default function ProfessionalMediaBrowser({
             className={[
               "inline-flex h-11 items-center justify-center gap-2 rounded-2xl text-sm font-black transition",
               mediaType === "videos"
-                ? "bg-slate-950 text-white shadow-sm"
+                ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200",
             ].join(" ")}
           >
@@ -227,7 +227,7 @@ export default function ProfessionalMediaBrowser({
               className={[
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
                 category === item.id && !query.trim()
-                  ? "bg-violet-600 text-white shadow-sm shadow-violet-200"
+                  ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-sm shadow-violet-200"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
@@ -314,8 +314,8 @@ export default function ProfessionalMediaBrowser({
                       />
 
                       {item.mediaType === "video" ? (
-                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-slate-950/10">
-                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/92 text-slate-950 shadow-lg">
+                        <div className="pointer-events-none absolute inset-0 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/92 text-slate-800 shadow-lg">
                             <Film className="h-5 w-5" />
                           </div>
                         </div>
@@ -340,7 +340,7 @@ export default function ProfessionalMediaBrowser({
                         "inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-xl text-xs font-black transition",
                         isAdded || isSelected
                           ? "bg-emerald-50 text-emerald-700"
-                          : "bg-violet-600 text-white hover:bg-violet-700",
+                          : "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100",
                       ].join(" ")}
                     >
                       {isAdded || isSelected ? (

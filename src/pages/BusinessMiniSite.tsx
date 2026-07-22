@@ -104,7 +104,7 @@ export default function BusinessMiniSiteClub() {
   };
 
   return (
-    <main dir="rtl" className="min-h-screen bg-[#f7f4ff] text-slate-950">
+    <main dir="rtl" className="min-h-screen bg-[#f7f4ff] text-slate-800">
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,#d8c7ff_0%,transparent_35%),radial-gradient(circle_at_bottom_right,#ffe0ec_0%,transparent_30%)]" />
 
@@ -112,13 +112,13 @@ export default function BusinessMiniSiteClub() {
           {/* Header */}
           <header className="mb-8 flex items-center justify-between rounded-3xl border border-white/70 bg-white/75 px-5 py-4 shadow-[0_18px_60px_rgba(91,33,182,0.08)] backdrop-blur-xl">
             <div className="flex items-center gap-3">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-fuchsia-500 text-lg font-black text-white shadow-lg shadow-violet-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-lg font-black text-white shadow-lg shadow-violet-200">
                 B
               </div>
 
               <div>
                 <p className="text-sm font-semibold text-violet-700">Bizuply Mini Site</p>
-                <h1 className="text-lg font-black tracking-tight text-slate-950">
+                <h1 className="text-lg font-black tracking-tight text-slate-800">
                   הדר עשת ביוטי
                 </h1>
               </div>
@@ -141,7 +141,7 @@ export default function BusinessMiniSiteClub() {
 
             <a
               href="#club"
-              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-bold text-white shadow-xl shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-violet-800"
+              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-violet-800"
             >
               הצטרפות למועדון
             </a>
@@ -155,7 +155,7 @@ export default function BusinessMiniSiteClub() {
                 אתר עסקי חכם + מועדון לקוחות
               </div>
 
-              <h2 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-slate-950 md:text-6xl">
+              <h2 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-slate-800 md:text-6xl">
                 הצטרפי למועדון הלקוחות וקבלי הטבות אישיות, קופונים ועדכונים לפני כולם
               </h2>
 
@@ -168,7 +168,7 @@ export default function BusinessMiniSiteClub() {
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <a
                   href="#club"
-                  className="rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-500 px-7 py-4 text-center text-base font-black text-white shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5"
+                  className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 py-4 text-center text-base font-black text-white shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5"
                 >
                   הצטרפות חינם למועדון
                 </a>
@@ -183,17 +183,17 @@ export default function BusinessMiniSiteClub() {
 
               <div className="mt-8 grid max-w-xl grid-cols-3 gap-3">
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
-                  <p className="text-2xl font-black text-slate-950">320+</p>
+                  <p className="text-2xl font-black text-slate-800">320+</p>
                   <p className="mt-1 text-xs font-bold text-slate-500">חברי מועדון</p>
                 </div>
 
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
-                  <p className="text-2xl font-black text-slate-950">12</p>
+                  <p className="text-2xl font-black text-slate-800">12</p>
                   <p className="mt-1 text-xs font-bold text-slate-500">הטבות פעילות</p>
                 </div>
 
                 <div className="rounded-3xl border border-white/80 bg-white/75 p-4 shadow-sm">
-                  <p className="text-2xl font-black text-slate-950">VIP</p>
+                  <p className="text-2xl font-black text-slate-800">VIP</p>
                   <p className="mt-1 text-xs font-bold text-slate-500">לקוחות קבועים</p>
                 </div>
               </div>
@@ -211,7 +211,7 @@ export default function BusinessMiniSiteClub() {
                         <div className="mb-4 flex items-center justify-between">
                           <div>
                             <p className="text-xs font-bold text-violet-600">כרטיס מועדון</p>
-                            <h3 className="text-2xl font-black text-slate-950">
+                            <h3 className="text-2xl font-black text-slate-800">
                               הדר עשת ביוטי
                             </h3>
                           </div>
@@ -221,7 +221,7 @@ export default function BusinessMiniSiteClub() {
                           </div>
                         </div>
 
-                        <div className="rounded-2xl bg-slate-950 p-4 text-white">
+                        <div className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
                           <p className="text-sm text-white/70">הטבת הצטרפות</p>
                           <p className="mt-1 text-3xl font-black">10% הנחה</p>
                           <p className="mt-2 text-xs text-white/60">
@@ -235,12 +235,12 @@ export default function BusinessMiniSiteClub() {
                   <div className="mt-5 grid grid-cols-2 gap-3">
                     <div className="rounded-3xl bg-violet-50 p-4">
                       <p className="text-sm font-bold text-violet-700">הטבה פעילה</p>
-                      <p className="mt-1 text-xl font-black text-slate-950">WELCOME10</p>
+                      <p className="mt-1 text-xl font-black text-slate-800">WELCOME10</p>
                     </div>
 
                     <div className="rounded-3xl bg-fuchsia-50 p-4">
                       <p className="text-sm font-bold text-fuchsia-700">סטטוס לקוח</p>
-                      <p className="mt-1 text-xl font-black text-slate-950">חבר מועדון</p>
+                      <p className="mt-1 text-xl font-black text-slate-800">חבר מועדון</p>
                     </div>
                   </div>
                 </div>
@@ -255,7 +255,7 @@ export default function BusinessMiniSiteClub() {
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
             <p className="text-sm font-black text-violet-700">מה הלקוח מקבל?</p>
-            <h2 className="mt-2 text-3xl font-black text-slate-950 md:text-4xl">
+            <h2 className="mt-2 text-3xl font-black text-slate-800 md:text-4xl">
               מועדון לקוחות שמייצר חזרה לעסק
             </h2>
           </div>
@@ -276,7 +276,7 @@ export default function BusinessMiniSiteClub() {
                 {benefit.tag}
               </div>
 
-              <h3 className="text-xl font-black text-slate-950">{benefit.title}</h3>
+              <h3 className="text-xl font-black text-slate-800">{benefit.title}</h3>
 
               <p className="mt-3 leading-7 text-slate-600">{benefit.description}</p>
             </article>
@@ -292,7 +292,7 @@ export default function BusinessMiniSiteClub() {
         <div className="rounded-[2rem] border border-white/80 bg-white p-6 shadow-[0_25px_90px_rgba(15,23,42,0.07)] md:p-8">
           <p className="text-sm font-black text-violet-700">הרשמת לקוח</p>
 
-          <h2 className="mt-2 text-3xl font-black text-slate-950">
+          <h2 className="mt-2 text-3xl font-black text-slate-800">
             הצטרפות למועדון הלקוחות
           </h2>
 
@@ -386,7 +386,7 @@ export default function BusinessMiniSiteClub() {
               <button
                 type="submit"
                 disabled={!isValid}
-                className="w-full rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-500 px-6 py-4 text-base font-black text-white shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300 disabled:shadow-none"
+                className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-4 text-base font-black text-white shadow-2xl shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:from-slate-300 disabled:to-slate-300 disabled:shadow-none"
               >
                 הצטרפות למועדון וקבלת הטבה
               </button>
@@ -394,7 +394,7 @@ export default function BusinessMiniSiteClub() {
           )}
         </div>
 
-        <div id="coupons" className="rounded-[2rem] border border-white/80 bg-slate-950 p-6 text-white shadow-[0_25px_90px_rgba(15,23,42,0.18)] md:p-8">
+        <div id="coupons" className="rounded-[2rem] border border-white/80 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_25px_90px_rgba(15,23,42,0.18)] md:p-8">
           <div className="mb-7 flex items-start justify-between gap-4">
             <div>
               <p className="text-sm font-black text-violet-300">הטבות פעילות</p>
@@ -459,12 +459,12 @@ export default function BusinessMiniSiteClub() {
           <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
               <p className="text-sm font-black text-violet-700">איך זה נראה לבעל העסק?</p>
-              <h2 className="mt-2 text-3xl font-black text-slate-950">
+              <h2 className="mt-2 text-3xl font-black text-slate-800">
                 ניהול מועדון לקוחות מתוך ביזאפלי
               </h2>
             </div>
 
-            <button className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white">
+            <button className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               + יצירת הטבה חדשה
             </button>
           </div>
@@ -481,7 +481,7 @@ export default function BusinessMiniSiteClub() {
                 className="rounded-[1.5rem] border border-slate-100 bg-slate-50 p-5"
               >
                 <p className="text-sm font-bold text-slate-500">{label}</p>
-                <p className="mt-2 text-3xl font-black text-slate-950">{value}</p>
+                <p className="mt-2 text-3xl font-black text-slate-800">{value}</p>
               </div>
             ))}
           </div>
@@ -519,7 +519,7 @@ export default function BusinessMiniSiteClub() {
 
       {/* Contact */}
       <section id="contact" className="mx-auto max-w-7xl px-5 pb-16 lg:px-8">
-        <div className="rounded-[2rem] bg-gradient-to-l from-violet-700 to-fuchsia-500 p-8 text-center text-white shadow-2xl shadow-violet-200">
+        <div className="rounded-[2rem] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-8 text-center text-white shadow-2xl shadow-violet-200">
           <h2 className="text-3xl font-black">רוצה לקבוע תור?</h2>
           <p className="mx-auto mt-3 max-w-2xl leading-7 text-white/80">
             אפשר לשלב כאן קביעת תור, וואטסאפ, טופס ליד או מעבר ישיר לשירותים של העסק.

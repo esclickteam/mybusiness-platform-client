@@ -95,7 +95,7 @@ export default function Plans() {
         className={`group mt-8 inline-flex w-full items-center justify-center rounded-full px-7 py-4 text-base font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 ${
           highlighted
             ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-indigo-200"
-            : "border border-slate-200 bg-white text-slate-950 shadow-slate-100 hover:border-indigo-200 hover:text-indigo-700"
+            : "border border-slate-200 bg-white text-slate-800 shadow-slate-100 hover:border-indigo-200 hover:text-indigo-700"
         }`}
       >
         {isLoading ? t("pricing.processing") : label}
@@ -107,7 +107,7 @@ export default function Plans() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
@@ -124,7 +124,7 @@ export default function Plans() {
             {t("pricing.badge")}
           </div>
 
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
             {t("pricing.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
@@ -157,8 +157,8 @@ export default function Plans() {
               <div
                 className={`relative h-full rounded-[2rem] border p-7 sm:p-8 ${
                   plan.highlighted
-                    ? "border-white/20 bg-slate-950 text-white"
-                    : "border-slate-100 bg-white text-slate-950"
+                    ? "border-white/20 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+                    : "border-slate-100 bg-white text-slate-800"
                 }`}
               >
                 {plan.highlighted && (

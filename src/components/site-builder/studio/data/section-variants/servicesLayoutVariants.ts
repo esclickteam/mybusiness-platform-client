@@ -62,7 +62,7 @@ function serviceCard(
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -77,7 +77,7 @@ function serviceCard(
 
     <a
       href="#booking"
-      class="rounded-2xl bg-slate-950 px-5 py-3 text-xs font-black text-white shadow-lg"
+      class="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg"
       data-editable-link="true"
     >
       לתיאום
@@ -95,7 +95,7 @@ function horizontalServiceCard(title: string, text: string, icon = "✓") {
   </div>
 
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -111,7 +111,7 @@ function serviceRow(title: string, text: string, price: string) {
   return `
 <div class="flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:flex-row sm:items-center sm:justify-between" data-editable-card="true">
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 
@@ -229,7 +229,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="mx-auto max-w-[880px] text-center">
           <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
             Premium Services
@@ -382,7 +382,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             שעות פנויות
           </h3>
 
@@ -428,7 +428,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             קבלת פרטים
           </h3>
 
@@ -629,7 +629,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -699,7 +699,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Preview
               </p>

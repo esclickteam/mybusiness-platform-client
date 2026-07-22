@@ -303,7 +303,7 @@ function createBlankPageHtml(pageTitle: string) {
   >
     <div class="mx-auto max-w-xl rounded-[32px] border border-dashed border-slate-200 bg-slate-50 px-8 py-10">
       <p class="mb-3 text-sm font-black text-violet-700">עמוד חדש</p>
-      <h1 class="text-4xl font-black tracking-[-0.04em] text-slate-950">${pageTitle}</h1>
+      <h1 class="text-4xl font-black tracking-[-0.04em] text-slate-800">${pageTitle}</h1>
       <p class="mt-4 text-base font-bold leading-8 text-slate-500">
         התחילי להוסיף סקשנים מהתפריט בצד.
       </p>
@@ -1164,18 +1164,18 @@ function createVelmoraShellHtml(content: string, activeLabel: string) {
 <main data-studio-page="true" data-bizuply-site="true" data-template-id="velmora" dir="rtl" class="bizuply-template-site min-h-screen bg-[#f6f2ea] text-[#27231f]">
   <header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-[#f6f2ea]/90 px-4 py-4 backdrop-blur-xl">
     <div class="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center rounded-[10px] border border-black/10 bg-white/90 px-5 py-3 shadow-[0_18px_55px_rgba(0,0,0,0.12)]">
-      <nav class="hidden items-center gap-8 text-sm font-bold text-black/55 lg:flex">
-        <a data-editable-link="true" href="#about" class="hover:text-black">אודות</a>
-        <a data-editable-link="true" href="#shop" class="hover:text-black">חנות</a>
-        <a data-editable-link="true" href="#collections" class="hover:text-black">קולקציות</a>
+      <nav class="hidden items-center gap-8 text-sm font-bold text-slate-600 lg:flex">
+        <a data-editable-link="true" href="#about" class="hover:text-slate-900">אודות</a>
+        <a data-editable-link="true" href="#shop" class="hover:text-slate-900">חנות</a>
+        <a data-editable-link="true" href="#collections" class="hover:text-slate-900">קולקציות</a>
       </nav>
       <div class="text-center">
         <div class="serif-title text-[28px] uppercase tracking-[0.08em] text-[#27231f]">ATELIER NOA</div>
-        <div class="mt-1 text-[10px] font-black uppercase tracking-[0.28em] text-black/45">Boutique</div>
+        <div class="mt-1 text-[10px] font-black uppercase tracking-[0.28em] text-slate-500">Boutique</div>
       </div>
-      <nav class="hidden items-center justify-end gap-8 text-sm font-bold text-black/55 lg:flex">
-        <a data-editable-link="true" href="#styling" class="hover:text-black">סטיילינג</a>
-        <a data-editable-link="true" href="#contact" class="hover:text-black">צור קשר</a>
+      <nav class="hidden items-center justify-end gap-8 text-sm font-bold text-slate-600 lg:flex">
+        <a data-editable-link="true" href="#styling" class="hover:text-slate-900">סטיילינג</a>
+        <a data-editable-link="true" href="#contact" class="hover:text-slate-900">צור קשר</a>
         <a data-editable-link="true" href="#cart" class="rounded-[5px] bg-[#292318] px-5 py-3 text-white hover:bg-black">סל קניות</a>
       </nav>
     </div>
@@ -1187,12 +1187,12 @@ function createVelmoraShellHtml(content: string, activeLabel: string) {
     <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
       <section>
         <div class="serif-title text-4xl uppercase tracking-[0.08em]">ATELIER NOA</div>
-        <p class="mt-5 max-w-md text-sm leading-8 text-black/55">אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.</p>
-        <div class="mt-7 flex flex-wrap gap-2"><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45">Fashion Store</span><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-black/45">RTL</span></div>
+        <p class="mt-5 max-w-md text-sm leading-8 text-slate-600">אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.</p>
+        <div class="mt-7 flex flex-wrap gap-2"><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">Fashion Store</span><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">RTL</span></div>
       </section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">עמודי האתר</h3><div class="grid gap-3 text-sm text-black/55"><a>בית</a><a>אודות</a><a>חנות</a><a>קולקציות</a><a>סטיילינג</a><a>צור קשר</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">מידע חשוב</h3><div class="grid gap-3 text-sm text-black/55"><a>תקנון אתר</a><a>מדיניות פרטיות</a><a>נגישות</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">שירות לקוחות</h3><div class="grid gap-3 text-sm text-black/55"><a>שאלות נפוצות</a><a>משלוחים והחזרות</a><a>שירות והזמנות</a></div><a data-editable-link="true" href="#contact" class="mt-6 inline-flex rounded-[4px] bg-[#292318] px-5 py-3 text-sm font-bold text-white">יצירת קשר</a></section>
+      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">עמודי האתר</h3><div class="grid gap-3 text-sm text-slate-600"><a>בית</a><a>אודות</a><a>חנות</a><a>קולקציות</a><a>סטיילינג</a><a>צור קשר</a></div></section>
+      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">מידע חשוב</h3><div class="grid gap-3 text-sm text-slate-600"><a>תקנון אתר</a><a>מדיניות פרטיות</a><a>נגישות</a></div></section>
+      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">שירות לקוחות</h3><div class="grid gap-3 text-sm text-slate-600"><a>שאלות נפוצות</a><a>משלוחים והחזרות</a><a>שירות והזמנות</a></div><a data-editable-link="true" href="#contact" class="mt-6 inline-flex rounded-[4px] bg-[#292318] px-5 py-3 text-sm font-bold text-white">יצירת קשר</a></section>
     </div>
   </footer>
 </main>`;
@@ -1227,9 +1227,9 @@ function createVelmoraHomeContent(seed: ReadyWebsiteTemplateSeed) {
 
   return `
   <section id="hero" data-section-kind="hero" data-section-title="Hero" class="overflow-hidden px-6 pb-24 pt-24 text-center">
-    <p class="bizuply-reveal-up mx-auto max-w-3xl text-sm font-bold tracking-[0.28em] text-black/40">בוטיק אופנה · סטיילינג אישי · קולקציות נבחרות</p>
+    <p class="bizuply-reveal-up mx-auto max-w-3xl text-sm font-bold tracking-[0.28em] text-slate-500">בוטיק אופנה · סטיילינג אישי · קולקציות נבחרות</p>
     <h1 class="serif-title bizuply-reveal-up mx-auto mt-8 max-w-5xl text-[64px] leading-[0.95] text-[#2f241b] md:text-[92px]">${heroTitle}</h1>
-    <p class="bizuply-reveal-up mx-auto mt-7 max-w-3xl text-lg leading-9 text-black/55">${heroSubtitle}</p>
+    <p class="bizuply-reveal-up mx-auto mt-7 max-w-3xl text-lg leading-9 text-slate-600">${heroSubtitle}</p>
     <a data-editable-link="true" href="#shop" class="bizuply-reveal-up mt-9 inline-flex rounded-[4px] bg-[#292318] px-9 py-4 text-sm font-black text-white">לכל הקולקציות</a>
     <div class="mx-auto mt-20 flex max-w-6xl items-end justify-center gap-4 overflow-hidden">
       ${galleryImages.map((image, index) => `<img data-section-kind="gallery" data-section-title="Hero card ${index + 1}" class="bizuply-float-soft h-[${index === 2 ? "360" : index === 1 || index === 3 ? "300" : "240"}px] w-[${index === 2 ? "190" : "155"}px] rounded-t-3xl object-cover shadow-2xl" src="${image}" />`).join("")}
@@ -1237,21 +1237,21 @@ function createVelmoraHomeContent(seed: ReadyWebsiteTemplateSeed) {
   </section>
 
   <section id="about" data-section-kind="about" data-section-title="About" class="grid min-h-[760px] bg-white lg:grid-cols-2">
-    <div class="flex flex-col justify-between px-8 py-20 lg:px-16"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">About</p><h2 class="serif-title mt-8 max-w-xl text-6xl leading-tight text-[#2f241b]">סגנון שמתחיל בפרטים הקטנים</h2></div><div class="grid gap-8 text-base leading-8 text-black/55 md:grid-cols-2"><p>כאן אפשר לערוך את סיפור המותג, החזון והסגנון של העסק.</p><p>העמוד בנוי מבלוקים שניתנים לבחירה, שינוי, מחיקה ושכפול.</p></div></div>
+    <div class="flex flex-col justify-between px-8 py-20 lg:px-16"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">About</p><h2 class="serif-title mt-8 max-w-xl text-6xl leading-tight text-[#2f241b]">סגנון שמתחיל בפרטים הקטנים</h2></div><div class="grid gap-8 text-base leading-8 text-slate-600 md:grid-cols-2"><p>כאן אפשר לערוך את סיפור המותג, החזון והסגנון של העסק.</p><p>העמוד בנוי מבלוקים שניתנים לבחירה, שינוי, מחיקה ושכפול.</p></div></div>
     <img class="h-full min-h-[620px] w-full object-cover" src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1400&q=90" />
   </section>
 
-  <section id="shop" data-section-kind="store" data-section-title="Shop Products" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><div class="mb-12 flex items-end justify-between gap-6"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Shop</p><h2 class="serif-title mt-4 text-6xl">מוצרים נבחרים</h2></div><a data-editable-link="true" href="#shop" class="rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black">מעבר לחנות</a></div><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${productCards.map(([title, price, image]) => `<article data-section-kind="product" data-section-title="${title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105" src="${image}" /><div class="p-5"><p class="text-xs font-black uppercase tracking-[0.18em] text-black/35">REF. VLM</p><h3 class="mt-2 text-2xl font-black">${title}</h3><p class="mt-3 text-lg font-black">${price}</p></div></article>`).join("")}</div></div></section>
+  <section id="shop" data-section-kind="store" data-section-title="Shop Products" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><div class="mb-12 flex items-end justify-between gap-6"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Shop</p><h2 class="serif-title mt-4 text-6xl">מוצרים נבחרים</h2></div><a data-editable-link="true" href="#shop" class="rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black">מעבר לחנות</a></div><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${productCards.map(([title, price, image]) => `<article data-section-kind="product" data-section-title="${title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105" src="${image}" /><div class="p-5"><p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">REF. VLM</p><h3 class="mt-2 text-2xl font-black">${title}</h3><p class="mt-3 text-lg font-black">${price}</p></div></article>`).join("")}</div></div></section>
 
   <section id="collections" data-section-kind="gallery" data-section-title="Moving Gallery" class="overflow-hidden bg-white py-24"><div class="px-6"><h2 class="serif-title text-6xl">קולקציות שנבחרו בקפידה</h2></div><div class="mt-12 overflow-hidden"><div class="bizuply-marquee-track flex w-max gap-5 px-6">${[...galleryImages, ...galleryImages].map((image) => `<img class="h-[360px] w-[260px] shrink-0 object-cover shadow-lg" src="${image}" />`).join("")}</div></div></section>
 
-  <section id="styling" data-section-kind="services" data-section-title="Personal Styling" class="bg-[#f6f2ea] px-6 py-28"><div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Custom</p><h2 class="serif-title mt-5 text-6xl leading-tight">סטיילינג אישי שמותאם לקהל שלך</h2><p class="mt-6 max-w-xl text-lg leading-9 text-black/55">בלוק שירותים לעריכה מלאה: תהליך עבודה, המלצות, התאמה אישית וטופס פנייה.</p></div><div class="grid grid-cols-2 gap-5"><img class="h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90" /><img class="mt-16 h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90" /></div></div></section>
+  <section id="styling" data-section-kind="services" data-section-title="Personal Styling" class="bg-[#f6f2ea] px-6 py-28"><div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Custom</p><h2 class="serif-title mt-5 text-6xl leading-tight">סטיילינג אישי שמותאם לקהל שלך</h2><p class="mt-6 max-w-xl text-lg leading-9 text-slate-600">בלוק שירותים לעריכה מלאה: תהליך עבודה, המלצות, התאמה אישית וטופס פנייה.</p></div><div class="grid grid-cols-2 gap-5"><img class="h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90" /><img class="mt-16 h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90" /></div></div></section>
 
-  <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-white px-6 py-24"><div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Contact</p><h2 class="serif-title mt-5 text-6xl">יצירת קשר</h2><p class="mt-6 text-lg leading-9 text-black/55">אפשר לערוך כאן פרטי עסק, טופס, שעות פעילות וקישורים.</p></div><form class="grid gap-4 rounded-xl border border-black/10 bg-[#f6f2ea] p-7"><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="שם מלא" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="טלפון" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="אימייל" /><textarea class="min-h-[140px] rounded-md border border-black/10 bg-white p-4 text-sm" placeholder="הודעה"></textarea><button class="h-14 rounded-md bg-[#292318] font-black text-white">שליחה</button></form></div></section>`;
+  <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-white px-6 py-24"><div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Contact</p><h2 class="serif-title mt-5 text-6xl">יצירת קשר</h2><p class="mt-6 text-lg leading-9 text-slate-600">אפשר לערוך כאן פרטי עסק, טופס, שעות פעילות וקישורים.</p></div><form class="grid gap-4 rounded-xl border border-black/10 bg-[#f6f2ea] p-7"><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="שם מלא" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="טלפון" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="אימייל" /><textarea class="min-h-[140px] rounded-md border border-black/10 bg-white p-4 text-sm" placeholder="הודעה"></textarea><button class="h-14 rounded-md bg-[#292318] font-black text-white">שליחה</button></form></div></section>`;
 }
 
 function createVelmoraInfoContent(title: string, eyebrow: string) {
-  return `<section data-section-kind="info" data-section-title="${escapeHtml(title)}" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[320px_1fr]"><aside class="h-fit rounded-xl border border-black/10 bg-white/70 p-6 shadow-xl"><p class="text-xs font-black uppercase tracking-[0.22em] text-black/35">${escapeHtml(eyebrow)}</p><h1 class="serif-title mt-4 text-5xl text-[#2f241b]">${escapeHtml(title)}</h1><p class="mt-4 text-sm leading-7 text-black/55">עמוד דוגמה לעריכה מלאה בעורך.</p></aside><article class="rounded-xl border border-black/10 bg-white p-10 shadow-xl"><p class="text-sm tracking-[0.26em] text-black/40">${escapeHtml(eyebrow)}</p><h2 class="serif-title mt-5 text-6xl text-[#2f241b]">${escapeHtml(title)}</h2><p class="mt-8 max-w-3xl text-lg leading-9 text-black/60">כאן מחליפים את התוכן לטקסט אמיתי של העסק. המבנה כולל כותרת, פתיח, סעיפים, כרטיסים וכפתורי מעבר.</p>${["כללי", "פרטים חשובים", "יצירת קשר", "עדכון אחרון"].map((item, i) => `<section data-section-kind="basic" data-section-title="${item}" class="mt-8 border-t border-black/10 pt-7"><h3 class="serif-title text-4xl">${i + 1}. ${item}</h3><p class="mt-4 leading-8 text-black/55">טקסט דוגמה בלבד. ניתן לערוך, למחוק, לשכפל ולהוסיף בלוקים נוספים.</p></section>`).join("")}</article></div></section>`;
+  return `<section data-section-kind="info" data-section-title="${escapeHtml(title)}" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[320px_1fr]"><aside class="h-fit rounded-xl border border-black/10 bg-white/70 p-6 shadow-xl"><p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">${escapeHtml(eyebrow)}</p><h1 class="serif-title mt-4 text-5xl text-[#2f241b]">${escapeHtml(title)}</h1><p class="mt-4 text-sm leading-7 text-slate-600">עמוד דוגמה לעריכה מלאה בעורך.</p></aside><article class="rounded-xl border border-black/10 bg-white p-10 shadow-xl"><p class="text-sm tracking-[0.26em] text-slate-500">${escapeHtml(eyebrow)}</p><h2 class="serif-title mt-5 text-6xl text-[#2f241b]">${escapeHtml(title)}</h2><p class="mt-8 max-w-3xl text-lg leading-9 text-slate-800/60">כאן מחליפים את התוכן לטקסט אמיתי של העסק. המבנה כולל כותרת, פתיח, סעיפים, כרטיסים וכפתורי מעבר.</p>${["כללי", "פרטים חשובים", "יצירת קשר", "עדכון אחרון"].map((item, i) => `<section data-section-kind="basic" data-section-title="${item}" class="mt-8 border-t border-black/10 pt-7"><h3 class="serif-title text-4xl">${i + 1}. ${item}</h3><p class="mt-4 leading-8 text-slate-600">טקסט דוגמה בלבד. ניתן לערוך, למחוק, לשכפל ולהוסיף בלוקים נוספים.</p></section>`).join("")}</article></div></section>`;
 }
 
 function createVelmoraShopContent() {
@@ -1267,7 +1267,7 @@ function createVelmoraShopContent() {
     price: `₪${169 + index * 10}`,
     image: images[index % images.length],
   }));
-  return `<section id="shop" data-section-kind="store" data-section-title="Shop Page" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><p class="text-sm font-black uppercase tracking-[0.22em] text-black/40">Shop</p><h1 class="serif-title mt-5 text-7xl text-[#2f241b]">חנות</h1><p class="mt-6 max-w-2xl text-lg leading-9 text-black/55">עמוד חנות מלא לדוגמה עם מוצרים, מחירים ותמונות להחלפה.</p><div class="mt-12 grid gap-6 md:grid-cols-3 xl:grid-cols-4">${products.map((product) => `<article data-section-kind="product" data-section-title="${product.title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105" src="${product.image}" /><div class="p-5"><h3 class="text-xl font-black">${product.title}</h3><p class="mt-2 font-black">${product.price}</p><a data-editable-link="true" href="#product" class="mt-4 inline-flex rounded-md bg-[#292318] px-4 py-2 text-xs font-black text-white">צפייה במוצר</a></div></article>`).join("")}</div></div></section>`;
+  return `<section id="shop" data-section-kind="store" data-section-title="Shop Page" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Shop</p><h1 class="serif-title mt-5 text-7xl text-[#2f241b]">חנות</h1><p class="mt-6 max-w-2xl text-lg leading-9 text-slate-600">עמוד חנות מלא לדוגמה עם מוצרים, מחירים ותמונות להחלפה.</p><div class="mt-12 grid gap-6 md:grid-cols-3 xl:grid-cols-4">${products.map((product) => `<article data-section-kind="product" data-section-title="${product.title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105" src="${product.image}" /><div class="p-5"><h3 class="text-xl font-black">${product.title}</h3><p class="mt-2 font-black">${product.price}</p><a data-editable-link="true" href="#product" class="mt-4 inline-flex rounded-md bg-[#292318] px-4 py-2 text-xs font-black text-white">צפייה במוצר</a></div></article>`).join("")}</div></div></section>`;
 }
 
 
@@ -7834,12 +7834,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     return (
       <div
         dir="rtl"
-        className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
+        className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-800"
       >
         {publishSuccessOpen && publishedSiteUrl ? (
           <div
             dir="rtl"
-            className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm"
+            className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 px-4 backdrop-blur-sm"
           >
             <div className="w-full max-w-[640px] overflow-hidden rounded-[34px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
               <div className="border-b border-slate-100 bg-gradient-to-br from-violet-50 via-white to-emerald-50 px-7 py-8">
@@ -7847,7 +7847,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   ✓
                 </div>
 
-                <h2 className="text-center text-3xl font-black tracking-[-0.04em] text-slate-950">
+                <h2 className="text-center text-3xl font-black tracking-[-0.04em] text-slate-800">
                   האתר פורסם בהצלחה
                 </h2>
 
@@ -7867,7 +7867,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       href={publishedSiteUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="min-w-0 flex-1 truncate text-left text-sm font-black text-slate-950 underline decoration-violet-300 underline-offset-4"
+                      className="min-w-0 flex-1 truncate text-left text-sm font-black text-slate-800 underline decoration-violet-300 underline-offset-4"
                       dir="ltr"
                     >
                       {publishedSiteUrl}
@@ -7896,7 +7896,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={() => {
                       window.open(publishedSiteUrl, "_blank", "noopener,noreferrer");
                     }}
-                    className="h-12 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:bg-violet-700"
+                    className="h-12 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
                     פתיחת האתר
                   </button>
@@ -7934,13 +7934,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         ) : null}
 
         {publishSlugModalOpen ? (
-          <div className="fixed inset-0 z-[2147483600] flex items-center justify-center bg-slate-950/45 px-4 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[2147483600] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 px-4 backdrop-blur-sm">
             <div className="w-full max-w-[560px] overflow-hidden rounded-[32px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">
               <div className="border-b border-slate-100 px-7 py-6">
                 <div className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
                   פרסום האתר
                 </div>
-                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-950">
+                <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-800">
                   בחרי כתובת לאתר שלך
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
@@ -7968,7 +7968,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     }}
                     dir="ltr"
                     placeholder="beneshet"
-                    className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-950 outline-none"
+                    className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-800 outline-none"
                     autoFocus
                   />
                   <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
@@ -8009,7 +8009,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   type="button"
                   disabled={publishSlugChecking || saving || !publishSlugDraft}
                   onClick={() => void handleConfirmVisualPublishSlug()}
-                  className="rounded-2xl bg-violet-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 py-3 text-sm font-black text-white shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {publishSlugChecking ? "בודק..." : "בדיקת זמינות ופרסום"}
                 </button>
@@ -8138,7 +8138,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   return (
     <div
       dir="rtl"
-      className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-950"
+      className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-800"
     >
       <div className="flex h-full w-full flex-col">
         <StudioTopbar
@@ -8231,7 +8231,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 type="button"
                 aria-label="סגירת פאנל"
                 onClick={() => setActivePanel(null)}
-                className="pointer-events-auto absolute inset-0 bg-slate-950/10 backdrop-blur-[1px]"
+                className="pointer-events-auto absolute inset-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
               />
 
               <div
@@ -8248,7 +8248,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       <p className="truncate text-xs font-black uppercase tracking-[0.18em] text-violet-600">
                         BizUply Studio
                       </p>
-                      <p className="truncate text-sm font-black text-slate-950">
+                      <p className="truncate text-sm font-black text-slate-800">
                         {activePanel === "pages" ? "דפים וניהול אתר" : "הוספת סקשנים ובלוקים"}
                       </p>
                     </div>
@@ -8363,7 +8363,7 @@ function StudioWixRail({
 
   return (
     <aside className="absolute left-4 top-4 z-30 flex w-[82px] flex-col items-center gap-3 rounded-[28px] border border-white/80 bg-white/95 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
-      <div className="mb-1 w-full rounded-[22px] bg-slate-950 px-2 py-3 text-center text-white">
+      <div className="mb-1 w-full rounded-[22px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
         <p className="truncate text-[10px] font-black text-white/55">PAGE</p>
         <p className="mt-1 truncate text-xs font-black">{activePageTitle}</p>
       </div>
@@ -8376,7 +8376,7 @@ function StudioWixRail({
           className={[
             "group flex w-full flex-col items-center justify-center rounded-[22px] px-2 py-3 text-center transition",
             item.active
-              ? "bg-violet-600 text-white shadow-[0_14px_32px_rgba(124,58,237,0.25)]"
+              ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-[0_14px_32px_rgba(124,58,237,0.25)]"
               : "bg-white text-slate-600 hover:bg-violet-50 hover:text-violet-700",
           ].join(" ")}
         >
@@ -8418,12 +8418,12 @@ function ClientPortalSettingsModal({
   onInsertVariable: (variable: ClientPortalVariable) => void;
 }) {
   return (
-    <div className="fixed inset-0 z-[999999] grid place-items-center bg-slate-950/55 p-4 backdrop-blur-md">
+    <div className="fixed inset-0 z-[999999] grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-md">
       <div
         dir="rtl"
         className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
       >
-        <aside className="hidden w-[320px] shrink-0 bg-slate-950 p-6 text-white lg:block">
+        <aside className="hidden w-[320px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 lg:block">
           <div className="rounded-[26px] bg-white/10 p-5">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-white/45">
               Client Portal Page
@@ -8460,7 +8460,7 @@ function ClientPortalSettingsModal({
               <div className="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
                 עמוד אזור אישי
               </div>
-              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950">
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
                 הגדרת עמוד דינמי ללקוחות
               </h2>
               <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
@@ -8549,7 +8549,7 @@ function ClientPortalSettingsModal({
             <section className="mt-5 rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
-                  <h3 className="text-2xl font-black text-slate-950">
+                  <h3 className="text-2xl font-black text-slate-800">
                     משתנים דינמיים בעמוד
                   </h3>
                   <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
@@ -8562,7 +8562,7 @@ function ClientPortalSettingsModal({
                 <button
                   type="button"
                   onClick={onAddVariable}
-                  className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+                  className="inline-flex h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   + הוספת משתנה
                 </button>
@@ -8570,7 +8570,7 @@ function ClientPortalSettingsModal({
 
               {config.variables.length === 0 ? (
                 <div className="rounded-[26px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
-                  <h4 className="text-xl font-black text-slate-950">
+                  <h4 className="text-xl font-black text-slate-800">
                     עדיין אין משתנים בעמוד
                   </h4>
                   <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
@@ -8768,7 +8768,7 @@ function ToggleCard({
     >
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="text-sm font-black text-slate-800">{title}</p>
           <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
             {text}
           </p>
@@ -8778,7 +8778,7 @@ function ToggleCard({
           className={[
             "mt-0.5 grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
             checked
-              ? "border-violet-700 bg-violet-700 text-white"
+              ? "border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
               : "border-slate-300 bg-white text-transparent",
           ].join(" ")}
         >
@@ -8809,7 +8809,7 @@ function SelectBlock({
       <select
         value={value}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
       >
         {options.map((option) => (
           <option key={option.value} value={option.value}>
@@ -8842,7 +8842,7 @@ function InputBlock({
         value={value}
         type={type}
         onChange={(event) => onChange(event.target.value)}
-        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none transition placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
       />
     </div>
   );

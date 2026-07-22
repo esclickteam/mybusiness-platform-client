@@ -87,7 +87,7 @@ function Contact() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-950">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
         <title>{t("contact.seoTitle")}</title>
         <meta name="description" content={t("contact.seoDescription")} />
@@ -114,7 +114,7 @@ function Contact() {
             {t("contact.badge")}
           </div>
 
-          <h1 className="max-w-4xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 className="max-w-4xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
             {t("contact.heroTitle")}
           </h1>
 
@@ -128,7 +128,7 @@ function Contact() {
                 key={title}
                 className="rounded-3xl border border-white/80 bg-white/65 p-5 shadow-sm backdrop-blur"
               >
-                <p className="text-2xl font-black text-slate-950">{title}</p>
+                <p className="text-2xl font-black text-slate-800">{title}</p>
                 <p className="mt-1 text-sm font-bold text-slate-500">{text}</p>
               </div>
             ))}
@@ -138,7 +138,7 @@ function Contact() {
             <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-700">
               {t("contact.directEmailLabel")}
             </p>
-            <p className="mt-3 text-lg font-black text-slate-950">
+            <p className="mt-3 text-lg font-black text-slate-800">
               {t("contact.directEmail")}
             </p>
             <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
@@ -156,7 +156,7 @@ function Contact() {
               <p className="text-sm font-black uppercase tracking-[0.2em] text-amber-700">
                 {t("contact.formLabel")}
               </p>
-              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-950 sm:text-4xl">
+              <h2 className="mt-3 text-3xl font-black tracking-[-0.04em] text-slate-800 sm:text-4xl">
                 {t("contact.formTitle")}
               </h2>
               <p className="mt-3 text-base font-medium leading-7 text-slate-600">
@@ -177,7 +177,7 @@ function Contact() {
                   disabled={loading}
                   required
                   placeholder={t("contact.namePlaceholder")}
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100/80 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
 
@@ -200,7 +200,7 @@ function Contact() {
                       disabled: loading,
                     }}
                     containerClass="!w-full"
-                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-950 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
+                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
                     buttonClass="!rounded-s-2xl !border-slate-200 !bg-white"
                     dropdownClass="!rounded-2xl !border-slate-200 !shadow-xl"
                     searchClass="!rounded-xl !border-slate-200"
@@ -220,7 +220,7 @@ function Contact() {
                   disabled={loading}
                   required
                   placeholder={t("contact.emailPlaceholder")}
-                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100/80 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
 
@@ -236,14 +236,14 @@ function Contact() {
                   required
                   rows={6}
                   placeholder={t("contact.messagePlaceholder")}
-                  className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-slate-950 focus:ring-4 focus:ring-slate-950/10 disabled:cursor-not-allowed disabled:bg-slate-100"
+                  className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100/80 disabled:cursor-not-allowed disabled:bg-slate-100"
                 />
               </div>
 
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex h-14 w-full items-center justify-center rounded-2xl bg-slate-950 px-8 text-base font-black text-white shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
+                className="group flex h-14 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
                 {loading ? t("contact.sendingButton") : t("contact.sendButton")}
                 {!loading && (

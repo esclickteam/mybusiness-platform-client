@@ -818,7 +818,7 @@ export default function AnimatedIconBrowser({
               className={[
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
                 category === item.id
-                  ? "bg-slate-950 text-white"
+                  ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
@@ -897,7 +897,7 @@ export default function AnimatedIconBrowser({
                       <div className="min-w-0">
                         <h4
                           dir="ltr"
-                          className="truncate text-left text-xs font-black text-slate-950"
+                          className="truncate text-left text-xs font-black text-slate-800"
                         >
                           {icon.title}
                         </h4>
@@ -906,7 +906,7 @@ export default function AnimatedIconBrowser({
                         </p>
                       </div>
 
-                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+                      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-violet-50 text-violet-700 transition group-hover:border-violet-200/80 group-hover:from-violet-200/80 group-hover:via-sky-100 group-hover:to-cyan-100 group-hover:text-slate-800">
                         <Sparkles className="h-4 w-4" />
                       </span>
                     </div>

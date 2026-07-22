@@ -55,7 +55,7 @@ function subscribeCard(
 ) {
   return `
 <div class="${softCardClass}" data-editable-card="true">
-  <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -90,7 +90,7 @@ function subscribeBenefit(title: string, text: string, icon = "✓") {
   </div>
 
   <div>
-    <h3 class="text-base font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-base font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -112,7 +112,7 @@ function darkSubscribeForm(buttonText = "Join now") {
   />
 
   <button
-    class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white px-8 text-sm font-black text-slate-950 shadow-xl"
+    class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white px-8 text-sm font-black text-slate-800 shadow-xl"
     type="button"
   >
     ${buttonText}
@@ -135,11 +135,11 @@ function couponBox(text = "WELCOME10") {
 function waitlistStep(number: string, title: string, text: string) {
   return `
 <div class="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white">
+  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
     ${number}
   </div>
 
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -312,7 +312,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="relative overflow-hidden rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/24 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/24 blur-3xl"></div>
 
@@ -593,7 +593,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">

@@ -121,8 +121,8 @@ function QuickAction({
       onClick={onClick}
       className={`group flex w-full flex-row items-center gap-4 rounded-[26px] border p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${
         primary
-          ? "border-purple-700 bg-gradient-to-l from-purple-700 to-fuchsia-600 text-white"
-          : "border-slate-200 bg-white text-slate-950 hover:border-purple-200 hover:bg-purple-50"
+          ? "border-purple-700 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white"
+          : "border-slate-200 bg-white text-slate-800 hover:border-purple-200 hover:bg-purple-50"
       }`}
     >
       <span
@@ -233,7 +233,7 @@ function AdminDashboard() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-950 md:px-8"
+        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
       >
         <section dir="rtl" className="mx-auto max-w-[1480px] text-right">
           <div className="relative overflow-hidden rounded-[34px] border border-purple-200 bg-gradient-to-l from-purple-950 via-purple-900 to-fuchsia-800 p-6 text-white shadow-2xl shadow-purple-950/20 md:p-8">

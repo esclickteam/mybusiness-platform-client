@@ -57,7 +57,7 @@ function teamMemberCard(
   return `
 <article class="${cardClass} text-center" data-editable-card="true">
   ${imageBlock(imageUrl, "min-h-[300px]", "rounded-[30px]")}
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">${name}</h3>
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">${name}</h3>
   <p class="mt-2 text-sm font-black text-[var(--biz-primary,#7C3AED)]" data-editable-text="true">${role}</p>
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </article>
@@ -71,7 +71,7 @@ function compactMemberCard(name: string, role: string, initials: string) {
     ${initials}
   </div>
   <div>
-    <h3 class="text-lg font-black text-slate-950" data-editable-text="true">${name}</h3>
+    <h3 class="text-lg font-black text-slate-800" data-editable-text="true">${name}</h3>
     <p class="mt-1 text-sm font-bold text-slate-500" data-editable-text="true">${role}</p>
   </div>
 </article>
@@ -192,7 +192,7 @@ export const teamLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="mx-auto max-w-[880px] text-center">
           <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
             Professional Team
@@ -300,7 +300,7 @@ export const teamLayoutVariants: SectionLayoutVariant[] = [
           <div>
             <p class="${pillClass}" data-editable-text="true">הצוות</p>
 
-            <h2 class="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-950 md:text-5xl" data-editable-text="true">
+            <h2 class="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-800 md:text-5xl" data-editable-text="true">
               צוות מקצועי, זמין ושירותי
             </h2>
 
@@ -498,7 +498,7 @@ export const teamLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -647,7 +647,7 @@ export const teamLayoutVariants: SectionLayoutVariant[] = [
           <div class="mt-7">
             <p class="${pillClass}" data-editable-text="true">Founder / Owner</p>
 
-            <h3 class="text-4xl font-black text-slate-950" data-editable-text="true">
+            <h3 class="text-4xl font-black text-slate-800" data-editable-text="true">
               שם בעל/ת העסק
             </h3>
 

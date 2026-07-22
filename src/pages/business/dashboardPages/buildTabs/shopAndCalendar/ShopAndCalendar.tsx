@@ -102,7 +102,7 @@ export default function ShopAndCalendar({
             הגדרות יומן
           </div>
 
-          <h3 className="mt-4 text-xl font-black tracking-tight text-slate-950">
+          <h3 className="mt-4 text-xl font-black tracking-tight text-slate-800">
             ניהול יומן ושירותים
           </h3>
 
@@ -117,12 +117,12 @@ export default function ShopAndCalendar({
             to={`/business/${businessId}/dashboard/crm/work-hours`}
             className="group flex min-h-[92px] items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50"
           >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white transition group-hover:bg-violet-700">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition group-hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100">
               <CalendarClock size={21} />
             </div>
 
             <div>
-              <p className="text-sm font-black text-slate-950">
+              <p className="text-sm font-black text-slate-800">
                 עריכת שעות פעילות
               </p>
               <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
@@ -135,12 +135,12 @@ export default function ShopAndCalendar({
             to={`/business/${businessId}/dashboard/crm/services`}
             className="group flex min-h-[92px] items-center gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:bg-violet-50"
           >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-white transition group-hover:bg-violet-700">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition group-hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100">
               <Settings size={21} />
             </div>
 
             <div>
-              <p className="text-sm font-black text-slate-950">
+              <p className="text-sm font-black text-slate-800">
                 עריכת שירותים
               </p>
               <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">

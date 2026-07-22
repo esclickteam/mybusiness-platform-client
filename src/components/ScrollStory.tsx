@@ -62,7 +62,7 @@ function FeatureText({
         {feature.label}
       </div>
 
-      <h3 className="max-w-xl text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-5xl">
+      <h3 className="max-w-xl text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-800 sm:text-5xl">
         {feature.title}
       </h3>
 
@@ -148,7 +148,7 @@ export default function ScrollStory() {
   const [intro, ...steps] = features;
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
+    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-800">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute right-[-180px] top-[520px] h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -163,7 +163,7 @@ export default function ScrollStory() {
             {intro.label}
           </div>
 
-          <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
+          <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-800 sm:text-6xl">
             {t("scrollStory.introTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">

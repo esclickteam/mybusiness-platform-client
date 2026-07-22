@@ -197,7 +197,7 @@ export default function CollabActiveTab({
               Build. Partner. Grow.
             </div>
 
-            <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               Collaboration Center
             </h2>
 
@@ -209,7 +209,7 @@ export default function CollabActiveTab({
             <div className="mt-6 flex flex-wrap gap-3">
               <button
                 type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.28)] transition hover:-translate-y-0.5"
               >
                 <Search className="h-4 w-4" />
                 Find Partners
@@ -293,7 +293,7 @@ export default function CollabActiveTab({
                   Proposal pipeline
                 </div>
 
-                <h3 className="mt-3 text-2xl font-black text-slate-950">
+                <h3 className="mt-3 text-2xl font-black text-slate-800">
                   Collaboration Proposals
                 </h3>
 
@@ -390,7 +390,7 @@ function ProposalCard({
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-lg font-black text-slate-950">
+            <h4 className="truncate text-lg font-black text-slate-800">
               {proposal.title || "Untitled proposal"}
             </h4>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-semibold text-slate-500">
@@ -461,7 +461,7 @@ function ProposalCard({
               <button
                 type="button"
                 onClick={onAccept}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
               >
                 <CheckCircle2 className="h-4 w-4" />
                 Accept
@@ -494,7 +494,7 @@ function TabButton({
       className={[
         "inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
         active
-          ? "bg-gradient-to-r from-violet-700 to-fuchsia-600 text-white shadow-lg shadow-violet-100"
+          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-lg shadow-violet-100"
           : "border border-slate-100 bg-white text-slate-600 shadow-sm hover:-translate-y-0.5 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -537,7 +537,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
           <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
@@ -566,7 +566,7 @@ function InfoTile({
       <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 truncate text-sm font-black text-slate-950">
+      <p className="mt-1 truncate text-sm font-black text-slate-800">
         {value}
       </p>
     </div>
@@ -596,7 +596,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function HumanUpsellCard() {
   return (
-    <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-violet-600 via-fuchsia-600 to-sky-500 p-5 text-white shadow-[0_20px_70px_rgba(124,58,237,0.22)]">
+    <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-5 text-white shadow-[0_20px_70px_rgba(124,58,237,0.22)]">
       <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-white/20 blur-3xl" />
 
       <div className="relative">
@@ -664,7 +664,7 @@ function QuickActionsCard() {
 
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <h3 className="text-lg font-black text-slate-950">Quick Actions</h3>
+      <h3 className="text-lg font-black text-slate-800">Quick Actions</h3>
 
       <div className="mt-4 space-y-3">
         {actions.map((action) => (
@@ -681,7 +681,7 @@ function QuickActionsCard() {
               </span>
 
               <span className="min-w-0">
-                <span className="block truncate text-sm font-black text-slate-950">
+                <span className="block truncate text-sm font-black text-slate-800">
                   {action.label}
                 </span>
                 <span className="block truncate text-xs font-semibold text-slate-500">
@@ -739,7 +739,7 @@ function ReadinessCard({
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="flex items-center justify-between gap-4">
         <div>
-          <h3 className="text-lg font-black text-slate-950">
+          <h3 className="text-lg font-black text-slate-800">
             Collaboration Readiness
           </h3>
           <p className="mt-1 text-xs font-semibold text-slate-500">
@@ -814,7 +814,7 @@ function EmptyState({ view }: { view: ProposalView }) {
         <Handshake className="h-7 w-7" />
       </div>
 
-      <h4 className="mt-4 text-xl font-black text-slate-950">
+      <h4 className="mt-4 text-xl font-black text-slate-800">
         No proposals to display
       </h4>
 
@@ -824,7 +824,7 @@ function EmptyState({ view }: { view: ProposalView }) {
 
       <button
         type="button"
-        className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
+        className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-100 transition hover:-translate-y-0.5"
       >
         <Plus className="h-4 w-4" />
         Create First Proposal

@@ -52,7 +52,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[99999] grid place-items-center bg-slate-950/40 p-4 backdrop-blur-xl"
+      className="fixed inset-0 z-[99999] grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-xl"
       role="dialog"
       aria-modal="true"
       aria-labelledby="forgot-password-title"
@@ -68,7 +68,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
       <div className="relative w-full max-w-[440px] overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-2 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl sm:rounded-[2.5rem] sm:p-3">
         <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]">
           {/* Header */}
-          <div className="relative overflow-hidden bg-slate-950 px-7 py-8 text-white">
+          <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
               <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />

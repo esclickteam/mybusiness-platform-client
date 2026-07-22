@@ -289,7 +289,7 @@ function ToolbarButton({
       className={[
         "inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-sm font-black transition",
         active
-          ? "bg-slate-950 text-white"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
           : danger
             ? "text-rose-600 hover:bg-rose-50"
             : "text-slate-800 hover:bg-slate-100",
@@ -550,7 +550,7 @@ export default function StudioFloatingToolbar({
         className="
           pointer-events-auto relative flex h-14 w-full max-w-[1680px]
           items-center justify-center gap-2 overflow-visible whitespace-nowrap
-          text-slate-950
+          text-slate-800
         "
       >
         <button
@@ -758,7 +758,7 @@ export default function StudioFloatingToolbar({
               type="button"
               title="העלאת תמונה מהמחשב"
               onClick={() => imageFileInputRef.current?.click()}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-violet-600 px-3 text-sm font-black text-white transition hover:bg-violet-700"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               <Upload className="h-4 w-4" />
               החלפת תמונה
@@ -895,7 +895,7 @@ export default function StudioFloatingToolbar({
           <button
             type="button"
             onClick={submitHref}
-            className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             שמור
           </button>
@@ -927,7 +927,7 @@ export default function StudioFloatingToolbar({
           <button
             type="button"
             onClick={() => imageFileInputRef.current?.click()}
-            className="h-11 shrink-0 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             העלאת תמונה
           </button>
@@ -964,7 +964,7 @@ export default function StudioFloatingToolbar({
           <button
             type="button"
             onClick={submitImage}
-            className="h-11 shrink-0 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="h-11 shrink-0 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             החלף
           </button>

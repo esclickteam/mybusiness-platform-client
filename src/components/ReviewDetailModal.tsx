@@ -93,7 +93,7 @@ export default function ReviewDetailModal({
     <AnimatePresence>
       {open && (
         <div
-          className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden bg-slate-950/45 p-4 backdrop-blur-sm sm:p-6"
+          className="fixed inset-0 z-[10050] flex items-center justify-center overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm sm:p-6"
           onClick={onClose}
           role="presentation"
         >
@@ -135,7 +135,7 @@ export default function ReviewDetailModal({
                 <div className="min-w-0 flex-1">
                   <h2
                     id="review-detail-title"
-                    className="text-2xl font-black text-slate-950"
+                    className="text-2xl font-black text-slate-800"
                   >
                     {clientName}
                   </h2>
@@ -221,7 +221,7 @@ export default function ReviewDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-violet-600 text-sm font-black text-white transition hover:bg-violet-700"
+                className="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 סגירה
               </button>

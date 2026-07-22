@@ -213,7 +213,7 @@ export default function CRMMain() {
                     {t("crm.shell.badge")}
                   </p>
 
-                  <h1 className="mt-1 truncate text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                  <h1 className="mt-1 truncate text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
                     {t("crm.shell.title")}
                   </h1>
 
@@ -277,8 +277,8 @@ export default function CRMMain() {
                         "group relative flex min-w-[190px] items-center gap-3 rounded-3xl border px-4 py-3 text-start transition-all duration-200",
                         "focus:outline-none focus:ring-2 focus:ring-sky-200 focus:ring-offset-2",
                         isActive
-                          ? "border-sky-100 bg-gradient-to-r from-sky-50 via-white to-violet-50 text-slate-950 shadow-[0_14px_34px_rgba(14,165,233,0.13)]"
-                          : "border-slate-100 bg-slate-50/70 text-slate-600 hover:border-sky-100 hover:bg-sky-50/70 hover:text-slate-950",
+                          ? "border-sky-100 bg-gradient-to-r from-sky-50 via-white to-violet-50 text-slate-800 shadow-[0_14px_34px_rgba(14,165,233,0.13)]"
+                          : "border-slate-100 bg-slate-50/70 text-slate-600 hover:border-sky-100 hover:bg-sky-50/70 hover:text-slate-800",
                       ].join(" ")
                     }
                   >
@@ -288,7 +288,7 @@ export default function CRMMain() {
                           className={[
                             "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl transition-all duration-200",
                             isActive
-                              ? "bg-slate-950 text-white shadow-[0_10px_24px_rgba(15,23,42,0.16)]"
+                              ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_10px_24px_rgba(15,23,42,0.16)]"
                               : "bg-white text-slate-500 group-hover:text-sky-700",
                           ].join(" ")}
                         >
@@ -301,7 +301,7 @@ export default function CRMMain() {
                               className={[
                                 "truncate text-sm font-black leading-5 tracking-tight",
                                 isActive
-                                  ? "text-slate-950"
+                                  ? "text-slate-800"
                                   : "text-slate-700",
                               ].join(" ")}
                             >
@@ -354,7 +354,7 @@ export default function CRMMain() {
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-lg font-black tracking-tight text-slate-950">
+                    <h2 className="truncate text-lg font-black tracking-tight text-slate-800">
                       {t(activeTabData.labelKey)}
                     </h2>
 

@@ -227,7 +227,7 @@ export default function CRMCustomerFile({
           <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
             New customer file
           </p>
-          <h2 className="mt-1 text-2xl font-black text-slate-950">
+          <h2 className="mt-1 text-2xl font-black text-slate-800">
             Create Client
           </h2>
           <p className="mt-1 text-sm text-slate-500">
@@ -318,24 +318,24 @@ export default function CRMCustomerFile({
 
   return (
     <section className="space-y-6">
-      <div className="overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-slate-950 via-violet-950 to-violet-700 p-6 text-white shadow-[0_24px_80px_rgba(88,28,135,0.20)]">
+      <div className="overflow-hidden rounded-[2rem] border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-[0_16px_48px_rgba(99,102,241,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 gap-4">
-            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] bg-white/15 text-2xl font-black text-white shadow-xl shadow-violet-950/20">
+            <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] border border-violet-100/80 bg-white/80 text-2xl font-black text-violet-700 shadow-sm">
               {clientInitials || <UserRound className="h-8 w-8" />}
             </div>
 
             <div className="min-w-0">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-100">
+              <div className="inline-flex items-center gap-2 rounded-full border border-violet-100/80 bg-white/70 px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-violet-700">
                 <Sparkles className="h-4 w-4" />
                 Customer File
               </div>
 
-              <h2 className="mt-4 truncate text-3xl font-black tracking-tight sm:text-4xl">
+              <h2 className="mt-4 truncate text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
                 {client?.fullName || "Unnamed Client"}
               </h2>
 
-              <div className="mt-4 grid gap-2 text-sm font-semibold text-violet-100 sm:grid-cols-2">
+              <div className="mt-4 grid gap-2 text-sm font-semibold text-slate-600 sm:grid-cols-2">
                 <ClientInfoLine icon={Phone} value={client?.phone || "-"} />
                 <ClientInfoLine icon={Mail} value={client?.email || "-"} />
                 <ClientInfoLine icon={MapPin} value={client?.address || "-"} />
@@ -434,7 +434,7 @@ function AppointmentsPanel({
           <CalendarDays className="h-7 w-7" />
         </div>
 
-        <h3 className="text-xl font-black text-slate-950">
+        <h3 className="text-xl font-black text-slate-800">
           No appointments for this client
         </h3>
 
@@ -471,7 +471,7 @@ function AppointmentsPanel({
       </div>
 
       <div>
-        <h3 className="mb-4 text-xl font-black text-slate-950">
+        <h3 className="mb-4 text-xl font-black text-slate-800">
           Appointment History
         </h3>
 
@@ -514,7 +514,7 @@ function AppointmentHistoryCard({
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-base font-black text-slate-950">
+            <h4 className="truncate text-base font-black text-slate-800">
               {appointment.serviceName || "Unknown service"}
             </h4>
 
@@ -603,7 +603,7 @@ function TabButton({
       className={[
         "inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition",
         active
-          ? "bg-violet-600 text-white shadow-lg shadow-violet-200"
+          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-lg shadow-violet-200"
           : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700",
       ].join(" ")}
     >
@@ -633,7 +633,7 @@ function MiniInsight({
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
             {label}
           </p>
-          <p className="mt-1 truncate text-sm font-black text-slate-950">
+          <p className="mt-1 truncate text-sm font-black text-slate-800">
             {value}
           </p>
         </div>
@@ -654,7 +654,7 @@ function SmallTile({
       <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 truncate text-sm font-black text-slate-950">
+      <p className="mt-1 truncate text-sm font-black text-slate-800">
         {value}
       </p>
     </div>

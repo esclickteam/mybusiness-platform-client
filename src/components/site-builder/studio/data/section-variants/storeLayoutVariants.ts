@@ -85,7 +85,7 @@ function productShopifyCard(
 >
   <div class="relative overflow-hidden rounded-[28px] bg-slate-50" data-media-replaceable="true">
     <span
-      class="absolute right-4 top-4 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-950 shadow-lg"
+      class="absolute right-4 top-4 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-lg"
       data-editable-text="true"
     >
       ${badge}
@@ -101,7 +101,7 @@ function productShopifyCard(
     <div class="absolute inset-x-4 bottom-4 translate-y-4 opacity-0 transition duration-300 group-hover:translate-y-0 group-hover:opacity-100">
       <a
         href="#store"
-        class="flex min-h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 text-xs font-black text-white shadow-xl"
+        class="flex min-h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl"
         data-editable-link="true"
       >
         הוספה לסל
@@ -110,7 +110,7 @@ function productShopifyCard(
   </div>
 
   <div class="px-2 pb-2 pt-5">
-    <h3 class="text-xl font-black tracking-[-0.02em] text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black tracking-[-0.02em] text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -150,7 +150,7 @@ function productLuxuryCard(
     ${
       oldPrice
         ? `<span class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-white shadow-xl" data-editable-text="true">מבצע</span>`
-        : `<span class="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-950 shadow-xl" data-editable-text="true">Premium</span>`
+        : `<span class="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-xl" data-editable-text="true">Premium</span>`
     }
 
     <img
@@ -162,7 +162,7 @@ function productLuxuryCard(
   </div>
 
   <div class="p-7">
-    <h3 class="text-2xl font-black tracking-[-0.03em] text-slate-950" data-editable-text="true">
+    <h3 class="text-2xl font-black tracking-[-0.03em] text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -185,7 +185,7 @@ function productLuxuryCard(
 
       <a
         href="#store"
-        class="inline-flex min-h-12 items-center rounded-2xl bg-slate-950 px-6 text-xs font-black text-white shadow-xl"
+        class="inline-flex min-h-12 items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl"
         data-editable-link="true"
       >
         קנייה
@@ -200,7 +200,7 @@ function categoryTile(title: string, imageUrl: string, count = "12 מוצרים"
   return `
 <a
   href="#store"
-  class="group relative min-h-[360px] overflow-hidden rounded-[38px] bg-slate-950 p-7 shadow-[0_30px_100px_rgba(15,23,42,0.14)]"
+  class="group relative min-h-[360px] overflow-hidden rounded-[38px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-7 shadow-[0_30px_100px_rgba(15,23,42,0.14)]"
   data-editable-card="true"
   data-media-replaceable="true"
 >
@@ -244,7 +244,7 @@ function miniCartItem(title: string, price: string, imageUrl: string) {
   />
 
   <div class="min-w-0 flex-1">
-    <h4 class="truncate text-sm font-black text-slate-950" data-editable-text="true">${title}</h4>
+    <h4 class="truncate text-sm font-black text-slate-800" data-editable-text="true">${title}</h4>
     <p class="mt-1 text-xs font-bold text-slate-400" data-editable-text="true">כמות: 1</p>
   </div>
 
@@ -261,7 +261,7 @@ function filterChip(text: string, active = false) {
   type="button"
   class="rounded-full px-5 py-3 text-xs font-black transition ${
     active
-      ? "bg-slate-950 text-white shadow-xl"
+      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl"
       : "border border-slate-200 bg-white text-slate-600 shadow-sm"
   }"
   data-editable-text="true"
@@ -279,7 +279,7 @@ function storeTrustItem(title: string, text: string, icon = "✓") {
   </div>
 
   <div>
-    <h3 class="text-base font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-base font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-1 text-sm font-bold leading-6 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 </div>
@@ -288,7 +288,7 @@ function storeTrustItem(title: string, text: string, icon = "✓") {
 
 function lookbookImage(src: string, title: string, height = "h-[520px]") {
   return `
-<div class="group relative overflow-hidden rounded-[38px] bg-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.14)]" data-editable-card="true" data-media-replaceable="true">
+<div class="group relative overflow-hidden rounded-[38px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.14)]" data-editable-card="true" data-media-replaceable="true">
   <img
     src="${src}"
     alt=""
@@ -303,7 +303,7 @@ function lookbookImage(src: string, title: string, height = "h-[520px]") {
 
     <a
       href="#store"
-      class="mt-4 inline-flex rounded-full bg-white px-5 py-3 text-xs font-black text-slate-950 shadow-xl"
+      class="mt-4 inline-flex rounded-full bg-white px-5 py-3 text-xs font-black text-slate-800 shadow-xl"
       data-editable-link="true"
     >
       קנייה מהמראה
@@ -488,7 +488,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -673,8 +673,8 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
 
         <aside class="rounded-[38px] border border-slate-200 bg-slate-50 p-6 shadow-[0_30px_100px_rgba(15,23,42,0.10)]" data-editable-card="true">
           <div class="mb-6 flex items-center justify-between">
-            <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">הסל שלך</h3>
-            <span class="rounded-full bg-slate-950 px-4 py-2 text-xs font-black text-white" data-editable-text="true">3 פריטים</span>
+            <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">הסל שלך</h3>
+            <span class="rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" data-editable-text="true">3 פריטים</span>
           </div>
 
           <div class="grid gap-4">
@@ -686,7 +686,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
           <div class="mt-6 rounded-[28px] bg-white p-5">
             <div class="flex items-center justify-between">
               <span class="text-sm font-black text-slate-500" data-editable-text="true">סה״כ</span>
-              <strong class="text-3xl font-black text-slate-950" data-editable-text="true">₪567</strong>
+              <strong class="text-3xl font-black text-slate-800" data-editable-text="true">₪567</strong>
             </div>
 
             <a href="#checkout" class="mt-5 flex min-h-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl" data-editable-link="true">
@@ -779,7 +779,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Order
               </p>
@@ -834,7 +834,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
           <div class="${softCardClass}">
             <p class="${pillClass}" data-editable-text="true">מחיר חבילה</p>
 
-            <h3 class="text-5xl font-black tracking-[-0.06em] text-slate-950" data-editable-text="true">
+            <h3 class="text-5xl font-black tracking-[-0.06em] text-slate-800" data-editable-text="true">
               ₪399
             </h3>
 

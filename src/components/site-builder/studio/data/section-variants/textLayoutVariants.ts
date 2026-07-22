@@ -52,7 +52,7 @@ const kind = "text" as const;
 function paragraphBlock(title: string, text: string) {
   return `
 <div class="rounded-[34px] border border-slate-200 bg-white p-7 shadow-[0_22px_70px_rgba(15,23,42,0.07)]" data-editable-card="true">
-  <h3 class="text-2xl font-black tracking-[-0.03em] text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black tracking-[-0.03em] text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -70,7 +70,7 @@ function textColumn(title: string, text: string, icon = "✦") {
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -88,7 +88,7 @@ function quoteBlock(quote: string, author = "שם הכותב") {
     ”
   </div>
 
-  <p class="text-2xl font-black leading-10 tracking-[-0.03em] text-slate-950 md:text-4xl md:leading-[1.25]" data-editable-text="true">
+  <p class="text-2xl font-black leading-10 tracking-[-0.03em] text-slate-800 md:text-4xl md:leading-[1.25]" data-editable-text="true">
     ${quote}
   </p>
 
@@ -103,7 +103,7 @@ function articleMeta(label: string, value: string) {
   return `
 <div class="rounded-[24px] bg-slate-50 px-5 py-4" data-editable-card="true">
   <p class="text-xs font-black text-slate-400" data-editable-text="true">${label}</p>
-  <p class="mt-1 text-sm font-black text-slate-950" data-editable-text="true">${value}</p>
+  <p class="mt-1 text-sm font-black text-slate-800" data-editable-text="true">${value}</p>
 </div>
 `;
 }
@@ -113,7 +113,7 @@ function textHighlightBox(title: string, text: string) {
 <div class="rounded-[38px] bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-8 shadow-[0_26px_90px_rgba(15,23,42,0.08)]" data-editable-card="true">
   <p class="${pillClass}" data-editable-text="true">חשוב לדעת</p>
 
-  <h3 class="text-3xl font-black tracking-[-0.04em] text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black tracking-[-0.04em] text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -336,7 +336,7 @@ export const textLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -592,7 +592,7 @@ export const textLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             השאירו פרטים
           </h3>
 

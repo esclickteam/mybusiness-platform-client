@@ -63,7 +63,7 @@ export default function LanguageSwitcher() {
         <div className="absolute right-1/2 top-[74px] z-[9999] w-[260px] translate-x-1/2 rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
           <div className="absolute -top-2.5 right-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white" />
 
-          <div className="relative border-b border-slate-100 px-4 pb-4 pt-3 text-lg font-black text-slate-950">
+          <div className="relative border-b border-slate-100 px-4 pb-4 pt-3 text-lg font-black text-slate-800">
             Change language
           </div>
 

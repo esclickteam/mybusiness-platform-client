@@ -667,7 +667,7 @@ export default function PartnershipAgreementView({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl"
+              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl"
             >
               סגור
             </button>
@@ -900,7 +900,7 @@ export default function PartnershipAgreementView({
                 setShowSign(true);
               }}
               disabled={saving}
-              className="rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
             >
               חתום על ההסכם
             </button>
@@ -988,7 +988,7 @@ export default function PartnershipAgreementView({
               type="button"
               onClick={handleSaveSignature}
               disabled={saving}
-              className="rounded-2xl bg-gradient-to-r from-purple-600 to-fuchsia-600 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
+              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-slate-800 shadow-lg transition hover:scale-[1.02] hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-60"
             >
               {saving ? "שומר..." : "שמור חתימה"}
             </button>

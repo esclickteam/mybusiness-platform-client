@@ -471,7 +471,7 @@ function ErrorShell({
   message: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#f7f4ff] px-5 py-10 text-slate-950">
+    <div className="min-h-screen bg-[#f7f4ff] px-5 py-10 text-slate-800">
       <div className="mx-auto max-w-3xl rounded-[36px] border border-red-100 bg-white p-8 text-center shadow-[0_25px_80px_rgba(127,29,29,0.10)]">
         <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-3xl bg-red-50 text-2xl font-black text-red-600">
           !
@@ -522,7 +522,7 @@ function SectionHeader({
         )}
 
         <div className="min-w-0">
-          <h2 className="truncate text-base font-black tracking-tight text-slate-950 md:text-lg">
+          <h2 className="truncate text-base font-black tracking-tight text-slate-800 md:text-lg">
             {title}
           </h2>
 
@@ -617,7 +617,7 @@ function MetricCard({
       <div className="relative z-10 mt-5">
         <p className="text-xs font-bold text-slate-500">{title}</p>
         <div className="mt-2 flex items-end justify-between gap-3">
-          <p className="text-3xl font-black tracking-tight text-slate-950">
+          <p className="text-3xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -745,7 +745,7 @@ function AppointmentOverview({
       <div className="grid grid-cols-2 gap-3">
         <div className="rounded-[24px] border border-violet-100 bg-violet-50/70 p-4">
           <p className="text-xs font-black text-slate-500">Total appointments</p>
-          <p className="mt-3 text-3xl font-black text-slate-950">{total}</p>
+          <p className="mt-3 text-3xl font-black text-slate-800">{total}</p>
           <p className="mt-1 text-xs font-black text-emerald-600">
             From all system appointments
           </p>
@@ -753,7 +753,7 @@ function AppointmentOverview({
 
         <div className="rounded-[24px] border border-slate-200 bg-white p-4">
           <p className="text-xs font-black text-slate-500">Average appointments per day</p>
-          <p className="mt-3 text-3xl font-black text-slate-950">
+          <p className="mt-3 text-3xl font-black text-slate-800">
             {averagePerDay}
           </p>
           <p className="mt-1 text-xs font-black text-emerald-600">
@@ -796,7 +796,7 @@ function AppointmentOverview({
 
                   <div className="flex h-full w-4 items-end">
                     <div
-                      className="w-full rounded-t-full bg-gradient-to-t from-violet-600 to-violet-300 shadow-[0_8px_18px_rgba(124,58,237,0.25)] transition-all"
+                      className="w-full rounded-t-full bg-gradient-to-t from-violet-300 via-sky-200 to-cyan-100 shadow-[0_8px_18px_rgba(124,58,237,0.25)] transition-all"
                       style={{ height: `${thisWeekHeight}%` }}
                       title={`This week: ${thisWeek[index]}`}
                     />
@@ -889,7 +889,7 @@ function UpcomingAppointmentsPanel({
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-black text-slate-950">
+                <p className="truncate text-sm font-black text-slate-800">
                   {appt.clientName}
                 </p>
                 <p className="mt-1 truncate text-xs font-semibold text-slate-500">
@@ -898,7 +898,7 @@ function UpcomingAppointmentsPanel({
               </div>
 
               <div className="shrink-0 text-left">
-                <p className="text-xs font-black text-slate-950">{appt.time || ""}</p>
+                <p className="text-xs font-black text-slate-800">{appt.time || ""}</p>
                 <p className="mt-1 text-[10px] font-bold text-slate-400">
                   {new Intl.DateTimeFormat(locale, {
                     month: "short",
@@ -968,7 +968,7 @@ function RecentActivityPanel({
               </div>
 
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-black text-slate-950">{item.title}</p>
+                <p className="text-sm font-black text-slate-800">{item.title}</p>
                 <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
                   {item.body}
                 </p>
@@ -1015,10 +1015,10 @@ function AiRecommendationPanel({
           >
             <div className="space-y-2">
               <p className="text-sm leading-6 text-slate-700">
-                <span className="font-black text-slate-950">Client:</span> {message}
+                <span className="font-black text-slate-800">Client:</span> {message}
               </p>
               <p className="text-sm leading-6 text-amber-800">
-                <span className="font-black text-slate-950">AI suggestion:</span>{" "}
+                <span className="font-black text-slate-800">AI suggestion:</span>{" "}
                 {recommendation}
               </p>
             </div>
@@ -1026,7 +1026,7 @@ function AiRecommendationPanel({
             <button
               type="button"
               onClick={() => onApprove(recommendationId)}
-              className="rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+              className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.22)] transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               Approve and send
             </button>
@@ -1054,7 +1054,7 @@ function Header({
           {getReadableDate(locale)}
         </div>
 
-        <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+        <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
           {getGreeting()}, {displayName}! <span className="inline-block">👋</span>
         </h1>
 
@@ -1076,19 +1076,19 @@ function Header({
           className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white bg-white/85 text-slate-500 shadow-sm backdrop-blur-xl transition hover:text-violet-700"
         >
           <Bell size={18} />
-          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-violet-600 ring-2 ring-white" />
+          <span className="absolute right-3 top-3 h-2 w-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 ring-2 ring-white" />
         </button>
 
         <button
           type="button"
           className="flex items-center gap-3 rounded-[22px] border border-white bg-white/85 px-3 py-2 shadow-sm backdrop-blur-xl"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-fuchsia-500 text-sm font-black text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-sm font-black text-slate-800">
             {getInitials(displayName)}
           </div>
 
           <div className="hidden text-left sm:block">
-            <p className="text-sm font-black text-slate-950">{displayName}</p>
+            <p className="text-sm font-black text-slate-800">{displayName}</p>
             <p className="text-[11px] font-bold text-slate-400">Business owner</p>
           </div>
 
@@ -1779,7 +1779,7 @@ export default function DashboardPage() {
   return (
     <div
       dir={pageDir}
-      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-950"
+      className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-800"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">
         <main className="min-w-0 pb-10">

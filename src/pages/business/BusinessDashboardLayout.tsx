@@ -486,7 +486,7 @@ export default function BusinessDashboardLayout() {
       <AiProvider>
         <div
           dir={layoutDir}
-          className="min-h-screen w-full bg-[#f5f6fb] text-slate-950"
+          className="min-h-screen w-full bg-[#f5f6fb] text-slate-800"
         >
           {isImpersonating ? (
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
@@ -518,7 +518,7 @@ export default function BusinessDashboardLayout() {
               type="button"
               aria-label="Close menu"
               onClick={() => setShowSidebar(false)}
-              className="fixed inset-0 z-40 bg-slate-950/35 backdrop-blur-sm"
+              className="fixed inset-0 z-40 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 backdrop-blur-sm"
             />
           )}
 
@@ -572,7 +572,7 @@ export default function BusinessDashboardLayout() {
                       ${
                         sidebarCollapsed && !isMobile
                           ? "h-10 w-10"
-                          : "h-[52px] w-auto max-w-full origin-center scale-[1.85]"
+                          : "h-10 w-auto max-w-full origin-center scale-[2]"
                       }
                     `}
                   />
@@ -647,7 +647,7 @@ export default function BusinessDashboardLayout() {
             <div
               className="
                 fixed top-0 z-[35] flex h-10 items-center justify-between
-                gap-3 bg-slate-900 px-4 text-sm text-white
+                gap-3 border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-4 text-sm text-white
               "
               style={{
                 left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
@@ -700,7 +700,7 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                  <span className="font-black text-slate-950">
+                  <span className="font-black text-slate-800">
                     {t("common.hello", {
                       name: user?.businessName || user?.name || "",
                     })}
@@ -736,9 +736,9 @@ export default function BusinessDashboardLayout() {
                         type="button"
                         onClick={() => navigate("/pricing")}
                         className="
-                          ml-2 rounded-full bg-violet-600 px-4 py-1.5
+                          ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-1.5
                           text-xs font-black text-white shadow-sm transition
-                          hover:bg-violet-700
+                          hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
                         "
                       >
                         Upgrade
@@ -766,7 +766,7 @@ export default function BusinessDashboardLayout() {
                     )}
 
                     <div className="min-w-0 truncate text-slate-700">
-                      <span className="ml-2 rounded-full bg-violet-600 px-2.5 py-1 text-xs font-black text-white">
+                      <span className="ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-1 text-xs font-black text-white">
                         🎁 Early Bird
                       </span>
 
@@ -785,9 +785,9 @@ export default function BusinessDashboardLayout() {
                       type="button"
                       onClick={handleEarlyBirdUpgrade}
                       className="
-                        shrink-0 rounded-full bg-violet-600 px-4 py-2
+                        shrink-0 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2
                         text-xs font-black text-white shadow-sm
-                        transition hover:bg-violet-700
+                        transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
                       "
                     >
                       Upgrade

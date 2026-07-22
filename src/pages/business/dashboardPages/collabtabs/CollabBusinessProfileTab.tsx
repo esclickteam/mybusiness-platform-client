@@ -348,7 +348,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   {t("collab.profile.badge")}
                 </div>
 
-                <h1 className="mt-4 truncate text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                <h1 className="mt-4 truncate text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                   {safeProfile.businessName}
                 </h1>
 
@@ -372,7 +372,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   setPhone(profileData?.phone || "");
                   setShowEditProfile(true);
                 }}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
               >
                 <Edit3 className="h-5 w-5" />
                 {t("collab.profile.editProfile")}
@@ -461,7 +461,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 </div>
 
                 <div>
-                  <h3 className="text-base font-black text-slate-950">
+                  <h3 className="text-base font-black text-slate-800">
                     {t("collab.profile.preferredCollabs")}
                   </h3>
 
@@ -504,7 +504,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 </div>
 
                 <div>
-                  <h3 className="text-base font-black text-slate-950">
+                  <h3 className="text-base font-black text-slate-800">
                     {t("collab.profile.contactDetails")}
                   </h3>
 
@@ -536,7 +536,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
             </section>
 
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-              <h3 className="text-base font-black text-slate-950">
+              <h3 className="text-base font-black text-slate-800">
                 {t("collab.profile.quickActions")}
               </h3>
 
@@ -544,7 +544,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 <button
                   type="button"
                   onClick={() => setShowBusinessChat(true)}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
                 >
                   <MessageCircle className="h-5 w-5" />
                   {t("collab.profile.openMessages")}
@@ -576,7 +576,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   {t("collab.profile.editBadge")}
                 </p>
 
-                <h2 className="mt-1 text-2xl font-black text-slate-950">
+                <h2 className="mt-1 text-2xl font-black text-slate-800">
                   {t("collab.profile.editTitle")}
                 </h2>
 
@@ -698,7 +698,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 <button
                   type="submit"
                   disabled={saving}
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
                     <BizuplyLoader size="sm" compact />
@@ -801,7 +801,7 @@ function StatCard({
         <div className="min-w-0">
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 truncate text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 truncate text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -838,7 +838,7 @@ function InfoSection({
         </div>
 
         <div>
-          <h3 className="text-base font-black text-slate-950">{title}</h3>
+          <h3 className="text-base font-black text-slate-800">{title}</h3>
 
           <p className="text-xs font-semibold text-slate-500">
             {t("collab.profile.fromProfile")}
@@ -911,7 +911,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-violet-900/10 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div

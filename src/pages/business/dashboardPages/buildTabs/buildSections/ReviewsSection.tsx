@@ -137,7 +137,7 @@ export default function ReviewsSection({
   return (
     <section
       dir="rtl"
-      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[1.02fr_0.98fr]">
         {/* ניהול ביקורות */}
@@ -160,7 +160,7 @@ export default function ReviewsSection({
 
               <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                  <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                     ניהול ביקורות
                   </h1>
 
@@ -176,7 +176,7 @@ export default function ReviewsSection({
                       ביקורות
                     </p>
 
-                    <p className="mt-1 text-3xl font-black text-slate-950">
+                    <p className="mt-1 text-3xl font-black text-slate-800">
                       {totalReviews}
                     </p>
                   </div>
@@ -187,7 +187,7 @@ export default function ReviewsSection({
                     </p>
 
                     <div className="mt-1 flex items-center gap-2">
-                      <p className="text-3xl font-black text-slate-950">
+                      <p className="text-3xl font-black text-slate-800">
                         {averageRating || "—"}
                       </p>
 
@@ -212,7 +212,7 @@ export default function ReviewsSection({
                   סה״כ ביקורות
                 </p>
 
-                <p className="mt-1 text-2xl font-black text-slate-950">
+                <p className="mt-1 text-2xl font-black text-slate-800">
                   {totalReviews}
                 </p>
               </div>
@@ -226,7 +226,7 @@ export default function ReviewsSection({
                   דירוג ממוצע
                 </p>
 
-                <p className="mt-1 text-2xl font-black text-slate-950">
+                <p className="mt-1 text-2xl font-black text-slate-800">
                   {averageRating || "—"}
                 </p>
               </div>
@@ -240,7 +240,7 @@ export default function ReviewsSection({
                   סטטוס
                 </p>
 
-                <p className="mt-1 text-2xl font-black text-slate-950">
+                <p className="mt-1 text-2xl font-black text-slate-800">
                   {hasReviews ? ratingLabel : "ריק"}
                 </p>
               </div>
@@ -249,7 +249,7 @@ export default function ReviewsSection({
             <div className="rounded-[1.75rem] border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-black text-slate-950">
+                  <h2 className="text-lg font-black text-slate-800">
                     כל הביקורות
                   </h2>
 
@@ -296,18 +296,18 @@ export default function ReviewsSection({
                       תצוגה מקדימה של הפרופיל הציבורי
                     </p>
 
-                    <h2 className="mt-1 text-xl font-black text-slate-950">
+                    <h2 className="mt-1 text-xl font-black text-slate-800">
                       ביקורות לקוחות
                     </h2>
                   </div>
 
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-xl text-white shadow-lg shadow-violet-500/20">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-xl text-slate-800 shadow-lg shadow-violet-500/20">
                     ⭐
                   </div>
                 </div>
 
                 <div className="overflow-hidden rounded-[1.7rem] border border-white/80 bg-white shadow-2xl">
-                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50 px-5 py-7 text-slate-950">
+                  <div className="relative overflow-hidden bg-gradient-to-br from-violet-50 via-white to-blue-50 px-5 py-7 text-slate-800">
                     <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-violet-300/30 blur-3xl" />
                     <div className="absolute -bottom-20 right-12 h-52 w-52 rounded-full bg-blue-300/25 blur-3xl" />
 
@@ -316,7 +316,7 @@ export default function ReviewsSection({
                         תצוגה מקדימה חיה
                       </div>
 
-                      <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-950">
+                      <h3 className="mt-4 text-3xl font-black tracking-tight text-slate-800">
                         הביקורות האחרונות
                       </h3>
 
@@ -330,7 +330,7 @@ export default function ReviewsSection({
                             סה״כ
                           </p>
 
-                          <p className="mt-1 text-2xl font-black text-slate-950">
+                          <p className="mt-1 text-2xl font-black text-slate-800">
                             {totalReviews}
                           </p>
                         </div>
@@ -341,7 +341,7 @@ export default function ReviewsSection({
                           </p>
 
                           <div className="mt-1 flex items-center gap-2">
-                            <p className="text-2xl font-black text-slate-950">
+                            <p className="text-2xl font-black text-slate-800">
                               {averageRating || "—"}
                             </p>
 
@@ -359,7 +359,7 @@ export default function ReviewsSection({
                   <div className="p-5">
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-2xl font-black text-slate-950">
+                        <h3 className="text-2xl font-black text-slate-800">
                           מה לקוחות אומרים
                         </h3>
 
@@ -395,7 +395,7 @@ export default function ReviewsSection({
                             💬
                           </div>
 
-                          <h4 className="mt-4 text-lg font-black text-slate-950">
+                          <h4 className="mt-4 text-lg font-black text-slate-800">
                             עדיין אין ביקורות
                           </h4>
 
@@ -413,7 +413,7 @@ export default function ReviewsSection({
                           ביקורות
                         </p>
 
-                        <p className="mt-1 text-2xl font-black text-slate-950">
+                        <p className="mt-1 text-2xl font-black text-slate-800">
                           {totalReviews}
                         </p>
                       </div>
@@ -423,7 +423,7 @@ export default function ReviewsSection({
                           דירוג
                         </p>
 
-                        <p className="mt-1 text-2xl font-black text-slate-950">
+                        <p className="mt-1 text-2xl font-black text-slate-800">
                           {averageRating || "—"}
                         </p>
                       </div>

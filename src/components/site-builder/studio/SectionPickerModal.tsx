@@ -67,7 +67,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
   return (
     <div
       dir="rtl"
-      className="fixed inset-0 z-[999999] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[999999] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-sm"
     >
       <div className="relative flex h-[92vh] w-full max-w-[1680px] overflow-hidden rounded-[36px] border border-white/70 bg-white shadow-[0_50px_180px_rgba(15,23,42,0.28)]">
         <aside className="hidden w-[290px] shrink-0 border-l border-slate-200 bg-slate-50/80 p-5 lg:block">
@@ -76,7 +76,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
               <p className="text-xs font-black tracking-[0.32em] text-violet-600">
                 SECTIONS
               </p>
-              <h2 className="mt-2 text-2xl font-black text-slate-950">
+              <h2 className="mt-2 text-2xl font-black text-slate-800">
                 הוספת סקשן
               </h2>
             </div>
@@ -84,7 +84,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
             <button
               type="button"
               onClick={onClose}
-              className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-xl font-black text-slate-400 shadow-sm transition hover:text-slate-950"
+              className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-xl font-black text-slate-400 shadow-sm transition hover:text-slate-800"
             >
               ×
             </button>
@@ -107,7 +107,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                   onClick={() => setActiveKind(tab.kind)}
                   className={`flex min-h-14 items-center justify-between gap-3 rounded-2xl px-4 text-right text-sm font-black transition ${
                     active
-                      ? "bg-gradient-to-l from-violet-700 to-fuchsia-600 text-white shadow-xl shadow-violet-200"
+                      ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-xl shadow-violet-200"
                       : "bg-white text-slate-600 shadow-sm hover:bg-violet-50 hover:text-violet-700"
                   }`}
                 >
@@ -146,7 +146,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                 <p className="text-xs font-black tracking-[0.32em] text-violet-600">
                   {activeLabel}
                 </p>
-                <h3 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-950">
+                <h3 className="mt-1 text-3xl font-black tracking-[-0.04em] text-slate-800">
                   בחרי מבנה מקצועי להוספה לעמוד
                 </h3>
                 <p className="mt-1 text-sm font-bold text-slate-400">
@@ -165,7 +165,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                 <button
                   type="button"
                   onClick={onClose}
-                  className="lg:hidden min-h-12 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white"
+                  className="lg:hidden min-h-12 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                 >
                   סגירה
                 </button>
@@ -207,7 +207,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                   <div className="mx-auto grid h-16 w-16 place-items-center rounded-3xl bg-violet-50 text-2xl font-black text-violet-700">
                     +
                   </div>
-                  <h4 className="mt-5 text-2xl font-black text-slate-950">
+                  <h4 className="mt-5 text-2xl font-black text-slate-800">
                     אין מבנים בקטגוריה הזו
                   </h4>
                   <p className="mt-2 text-sm font-bold text-slate-400">
@@ -223,7 +223,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                     className="group overflow-hidden rounded-[30px] border border-white bg-white shadow-[0_20px_70px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_30px_110px_rgba(124,58,237,0.18)]"
                   >
                     <div className="relative h-[260px] overflow-hidden bg-slate-50">
-                      <div className="absolute right-4 top-4 z-10 rounded-full bg-slate-950 px-4 py-2 text-xs font-black text-white shadow-xl">
+                      <div className="absolute right-4 top-4 z-10 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl">
                         {index + 1}/{variants.length}
                       </div>
 
@@ -242,7 +242,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                     </div>
 
                     <div className="border-t border-slate-100 p-5">
-                      <h4 className="text-xl font-black text-slate-950">
+                      <h4 className="text-xl font-black text-slate-800">
                         {variant.title}
                       </h4>
 
@@ -265,7 +265,7 @@ export default function SectionPickerModal({ open, onClose, onSelect }: Props) {
                         <button
                           type="button"
                           onClick={() => onSelect(variant)}
-                          className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-xl transition group-hover:bg-violet-700"
+                          className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition group-hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                         >
                           הוספה לעמוד
                         </button>

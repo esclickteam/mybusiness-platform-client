@@ -469,7 +469,7 @@ export default function VisualLinkModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-md sm:p-6"
+      className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
       dir="rtl"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -486,12 +486,12 @@ export default function VisualLinkModal({
 
         <header className="relative flex shrink-0 items-start justify-between border-b border-slate-100 px-5 py-5 sm:px-7 sm:py-6">
           <div className="flex min-w-0 items-start gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-200">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-lg shadow-violet-200">
               <Link2 className="h-6 w-6" />
             </div>
 
             <div className="min-w-0">
-              <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-[30px]">
+              <h2 className="text-2xl font-black tracking-tight text-slate-800 sm:text-[30px]">
                 הוספת קישור
               </h2>
               <p className="mt-1 truncate text-sm font-semibold text-slate-500">
@@ -547,14 +547,14 @@ export default function VisualLinkModal({
                       "group flex min-h-[76px] items-center gap-3 rounded-2xl border px-3 py-3 text-right transition duration-200",
                       isActive
                         ? "border-violet-300 bg-white text-violet-700 shadow-[0_10px_28px_rgba(124,58,237,0.12)]"
-                        : "border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-950",
+                        : "border-transparent bg-transparent text-slate-600 hover:border-slate-200 hover:bg-white hover:text-slate-800",
                     ].join(" ")}
                   >
                     <span
                       className={[
                         "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition",
                         isActive
-                          ? "bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-md shadow-violet-200"
+                          ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-md shadow-violet-200"
                           : "bg-white text-slate-500 shadow-sm ring-1 ring-slate-200 group-hover:text-violet-600",
                       ].join(" ")}
                     >
@@ -581,7 +581,7 @@ export default function VisualLinkModal({
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
                   {activeTab.label}
                 </p>
-                <h3 className="mt-1 text-xl font-black text-slate-950">
+                <h3 className="mt-1 text-xl font-black text-slate-800">
                   {activeTab.description}
                 </h3>
               </div>
@@ -616,7 +616,7 @@ export default function VisualLinkModal({
                             className={[
                               "flex w-full items-center gap-3 border-b border-slate-100 px-4 py-3 text-right transition last:border-b-0",
                               selected
-                                ? "bg-violet-50 text-violet-950"
+                                ? "bg-violet-50 text-slate-800"
                                 : "hover:bg-slate-50",
                             ].join(" ")}
                             style={{ paddingInlineStart: 16 + depth * 20 }}
@@ -625,7 +625,7 @@ export default function VisualLinkModal({
                               className={[
                                 "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
                                 selected
-                                  ? "bg-violet-600 text-white"
+                                  ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                                   : "bg-slate-100 text-slate-600",
                               ].join(" ")}
                             >
@@ -925,7 +925,7 @@ export default function VisualLinkModal({
               type="button"
               disabled={!canApply}
               onClick={handleApply}
-              className="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-7 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 sm:flex-none"
+              className="inline-flex h-12 flex-[1.4] items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:shadow-xl hover:shadow-violet-200 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 sm:flex-none"
             >
               <Link2 className="h-4 w-4" />
               שמירת קישור

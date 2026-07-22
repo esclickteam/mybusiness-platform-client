@@ -222,7 +222,7 @@ export default function SelectTimeFromSlots({
                 key={time}
                 type="button"
                 onClick={() => handleSelectTime(time)}
-                className="rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-600 hover:text-white"
+                className="rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-sm font-black text-violet-700 transition hover:border-violet-200 hover:bg-gradient-to-l hover:from-violet-100 hover:via-sky-100 hover:to-cyan-100 hover:text-slate-800"
               >
                 {time}
               </button>

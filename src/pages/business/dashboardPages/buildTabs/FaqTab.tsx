@@ -182,7 +182,7 @@ export default function FaqTab({
         <div className="mb-6 rounded-[1.5rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-blue-50 p-4 shadow-sm sm:p-5">
           <div className="mb-4 flex items-start justify-between gap-4">
             <div>
-              <h2 className="text-xl font-black tracking-tight text-slate-950">
+              <h2 className="text-xl font-black tracking-tight text-slate-800">
                 הוספת שאלה חדשה
               </h2>
 
@@ -244,7 +244,7 @@ export default function FaqTab({
                 !newFaq.question.trim() ||
                 !newFaq.answer.trim()
               }
-              className="inline-flex h-[48px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50 sm:w-auto"
+              className="inline-flex h-[48px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:shadow-xl disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50 sm:w-auto"
             >
               {isSubmitting ? "מוסיף שאלה..." : "➕ הוספת שאלה"}
             </button>
@@ -254,7 +254,7 @@ export default function FaqTab({
 
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h3 className="text-lg font-black text-slate-950">
+          <h3 className="text-lg font-black text-slate-800">
             שאלות ותשובות
           </h3>
 
@@ -276,7 +276,7 @@ export default function FaqTab({
             💬
           </div>
 
-          <h4 className="mt-4 text-base font-black text-slate-950">
+          <h4 className="mt-4 text-base font-black text-slate-800">
             עדיין אין שאלות נפוצות
           </h4>
 
@@ -374,7 +374,7 @@ export default function FaqTab({
                           !editedFaq.answer.trim()
                         }
                         onClick={() => handleSaveEdit(id)}
-                        className="flex h-11 flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
+                        className="flex h-11 flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
                       >
                         {isSavingEdit ? "שומר..." : "💾 שמירה"}
                       </button>
@@ -396,7 +396,7 @@ export default function FaqTab({
                       onClick={() => toggleAnswer(id)}
                       className="flex w-full items-center justify-between gap-4 px-4 py-4 text-right transition hover:bg-violet-50/50"
                     >
-                      <span className="text-sm font-black leading-7 text-slate-950 sm:text-base">
+                      <span className="text-sm font-black leading-7 text-slate-800 sm:text-base">
                         {faq.question || "שאלה ללא כותרת"}
                       </span>
 

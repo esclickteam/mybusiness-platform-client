@@ -245,7 +245,7 @@ const DashboardCards = React.memo(
                 </p>
 
                 <div className="mt-1 flex items-end justify-between gap-3">
-                  <h3 className="text-2xl font-bold tracking-tight text-slate-950">
+                  <h3 className="text-2xl font-bold tracking-tight text-slate-800">
                     {card.value}
                   </h3>
 

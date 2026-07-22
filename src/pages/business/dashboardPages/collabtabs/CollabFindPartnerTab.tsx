@@ -107,7 +107,7 @@ function PartnerCard({
         </div>
 
         <div className="relative mt-5">
-          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
+          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-800">
             {business.businessName || t("collab.findPartner.unnamedBusiness")}
           </h3>
 
@@ -174,7 +174,7 @@ function PartnerCard({
             <button
               type="button"
               onClick={() => onSendProposal(business)}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
             >
               <Send className="h-5 w-5" />
               {t("collab.findPartner.sendProposal")}
@@ -408,7 +408,7 @@ export default function CollabFindPartnerTab({
               {t("collab.findPartner.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("collab.findPartner.title")}
             </h2>
 
@@ -467,7 +467,7 @@ export default function CollabFindPartnerTab({
         <div className="border-b border-slate-100 bg-gradient-to-l from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {t("collab.findPartner.listTitle")}
               </h3>
 
@@ -541,7 +541,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -579,7 +579,7 @@ function InfoTile({
         </p>
       </div>
 
-      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -596,7 +596,7 @@ function EmptyPartnersState() {
         <Handshake className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">
+      <h4 className="text-xl font-black text-slate-800">
         {t("collab.findPartner.emptyTitle")}
       </h4>
 

@@ -75,7 +75,7 @@ function galleryCaptionCard(
 <article class="${cardClass}" data-editable-card="true">
   ${galleryImage(src, height)}
 
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -110,7 +110,7 @@ function carouselImage(src: string, title: string) {
   return `
 <div class="min-w-[320px] md:min-w-[380px]" data-editable-card="true">
   ${galleryImage(src, "h-80")}
-  <h3 class="mt-5 text-xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-5 text-xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 </div>
@@ -292,7 +292,7 @@ export const galleryLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="mx-auto max-w-[880px] text-center">
           <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
             Premium Gallery

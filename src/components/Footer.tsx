@@ -46,7 +46,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
+    <footer className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[360px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-24 h-[320px] w-[320px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -63,7 +63,7 @@ export default function Footer() {
                     B
                   </span>
 
-                  <span className="text-2xl font-black tracking-[-0.04em] text-slate-950">
+                  <span className="text-2xl font-black tracking-[-0.04em] text-slate-800">
                     Bizuply
                   </span>
                 </Link>
@@ -90,8 +90,8 @@ export default function Footer() {
               <FooterColumn title={t("footer.company")} links={companyLinks} />
               <FooterColumn title={t("footer.support")} links={supportLinks} />
 
-              <div className="rounded-[1.75rem] border border-slate-100 bg-gradient-to-br from-slate-950 to-indigo-950 p-6 text-white shadow-xl shadow-indigo-100">
-                <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl">
+              <div className="rounded-[1.75rem] border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-xl shadow-violet-100/40">
+                <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-violet-100/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-xl text-violet-700">
                   ✦
                 </div>
 
@@ -99,7 +99,7 @@ export default function Footer() {
                   {t("footer.ctaTitle")}
                 </h4>
 
-                <p className="mt-3 text-sm font-semibold leading-6 text-slate-300">
+                <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
                   {t("footer.ctaText")}
                 </p>
 

@@ -398,7 +398,7 @@ export default function MainSection({
                       ⭐
                     </div>
 
-                    <h4 className="mt-3 text-base font-black text-slate-950">
+                    <h4 className="mt-3 text-base font-black text-slate-800">
                       {getReviewName(review, t("businessProfile.view.anonymousClient"))}
                     </h4>
 
@@ -437,7 +437,7 @@ export default function MainSection({
                 🌐
               </div>
 
-              <h3 className="mt-5 text-2xl font-black text-slate-950">
+              <h3 className="mt-5 text-2xl font-black text-slate-800">
                 {t("businessProfile.mainSection.previewWebsiteTitle")}
               </h3>
 
@@ -449,7 +449,7 @@ export default function MainSection({
                 href={normalizedWebsiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
                 {t("businessProfile.contact.websiteCta")}
               </a>
@@ -473,7 +473,7 @@ export default function MainSection({
               key={faq._id || faq.id || index}
               className="rounded-2xl border border-violet-100 bg-white/90 p-5 text-center shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
             >
-              <h4 className="text-base font-black text-slate-950">
+              <h4 className="text-base font-black text-slate-800">
                 {faq.question || t("businessProfile.mainSection.faqQuestion")}
               </h4>
 
@@ -496,7 +496,7 @@ export default function MainSection({
   return (
     <section
       dir={dir}
-      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[0.95fr_1.05fr]">
         <aside className="order-2 xl:order-1">
@@ -534,7 +534,7 @@ export default function MainSection({
                       ✨
                     </div>
 
-                    <p className="mt-4 text-lg font-black text-slate-950">
+                    <p className="mt-4 text-lg font-black text-slate-800">
                       {t("businessProfile.mainSection.addCoverImage")}
                     </p>
                   </div>
@@ -561,7 +561,7 @@ export default function MainSection({
                   )}
                 </div>
 
-                <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950">
+                <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-800">
                   {businessName || t("businessProfile.mainSection.defaultBusinessName")}
                 </h2>
 
@@ -594,7 +594,7 @@ export default function MainSection({
 
                       <p
                         dir="ltr"
-                        className="mt-1 text-center text-lg font-black text-slate-950"
+                        className="mt-1 text-center text-lg font-black text-slate-800"
                       >
                         {previewPhone || t("businessProfile.contact.notAdded")}
                       </p>
@@ -609,7 +609,7 @@ export default function MainSection({
 
                       <p
                         dir="ltr"
-                        className="mt-1 truncate text-center text-lg font-black text-slate-950"
+                        className="mt-1 truncate text-center text-lg font-black text-slate-800"
                       >
                         {email || t("businessProfile.contact.notAdded")}
                       </p>
@@ -629,7 +629,7 @@ export default function MainSection({
                     href={normalizedWebsiteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                   >
                     {t("businessProfile.contact.websiteCta")}
                   </a>
@@ -665,7 +665,7 @@ export default function MainSection({
                           className={[
                             "flex min-w-[118px] cursor-pointer items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                             active
-                              ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                              ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
                               : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
                           ].join(" ")}
                         >
@@ -700,7 +700,7 @@ export default function MainSection({
                 </div>
               </div>
 
-              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                 {t("businessProfile.mainSection.pageTitle")}
               </h1>
 
@@ -714,7 +714,7 @@ export default function MainSection({
             <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-4 shadow-[0_18px_50px_rgba(79,70,229,0.10)] sm:p-5">
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
-                  <h2 className="text-lg font-black text-slate-950">
+                  <h2 className="text-lg font-black text-slate-800">
                     {t("businessProfile.mainSection.basicDetails")}
                   </h2>
 
@@ -985,7 +985,7 @@ export default function MainSection({
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
                   {isSaving
                     ? t("businessProfile.mainSection.saving")
@@ -1039,7 +1039,7 @@ function PreviewEmptyState({
         {icon}
       </div>
 
-      <h3 className="text-lg font-black text-slate-950">{title}</h3>
+      <h3 className="text-lg font-black text-slate-800">{title}</h3>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {text}

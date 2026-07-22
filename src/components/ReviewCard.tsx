@@ -86,7 +86,7 @@ export default function ReviewCard({
             </div>
 
             <div className="min-w-0">
-              <h3 className="truncate text-base font-black text-slate-950">
+              <h3 className="truncate text-base font-black text-slate-800">
                 {clientName}
               </h3>
 

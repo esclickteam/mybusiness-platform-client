@@ -293,7 +293,7 @@ function HtmlTemplatePreview({
 function PlaceholderPreview({ page }: { page: VisualSitePageItem }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-slate-50 via-white to-slate-100 px-4">
-      <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-900 text-white shadow-lg">
+      <span className="flex h-12 w-12 items-center justify-center rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-white shadow-lg">
         {page.isHome ? (
           <Home className="h-5 w-5" />
         ) : (

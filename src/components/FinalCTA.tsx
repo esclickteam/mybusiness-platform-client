@@ -12,7 +12,7 @@ export default function FinalCTA() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] px-6 py-24 text-slate-950 lg:px-8">
+    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] px-6 py-24 text-slate-800 lg:px-8">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-24 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -22,7 +22,7 @@ export default function FinalCTA() {
 
       <div className="relative mx-auto max-w-7xl">
         <div className="overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.18)] backdrop-blur-xl">
-          <div className="relative overflow-hidden rounded-[2rem] bg-slate-950 px-6 py-16 text-center text-white sm:px-10 lg:px-16 lg:py-20">
+          <div className="relative overflow-hidden rounded-[2rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:px-10 lg:px-16 lg:py-20">
             <div className="pointer-events-none absolute inset-0">
               <div className="absolute left-1/2 top-[-220px] h-[500px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-500/35 blur-3xl" />
               <div className="absolute right-[-120px] top-20 h-[360px] w-[360px] rounded-full bg-cyan-400/25 blur-3xl" />

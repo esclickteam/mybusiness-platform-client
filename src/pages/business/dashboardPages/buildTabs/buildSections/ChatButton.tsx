@@ -20,7 +20,7 @@ export default function ChatButton({
     <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
       {/* EDIT / ACTION */}
       <div className="order-2 overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-1">
-        <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-8 text-white sm:px-8">
+        <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-white sm:px-8">
           <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -45,12 +45,12 @@ export default function ChatButton({
           <div className="rounded-[1.75rem] border border-slate-100 bg-gradient-to-br from-slate-50 to-white p-5 shadow-sm sm:p-6">
             <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex items-start gap-4">
-                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-3xl shadow-xl shadow-slate-950/20">
+                <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-3xl shadow-xl shadow-violet-200/20">
                   💬
                 </div>
 
                 <div>
-                  <h2 className="text-2xl font-black tracking-tight text-slate-950">
+                  <h2 className="text-2xl font-black tracking-tight text-slate-800">
                     Chat with Clients
                   </h2>
 
@@ -69,7 +69,7 @@ export default function ChatButton({
                     "hover:-translate-y-0.5 active:translate-y-0",
                     isActive
                       ? "bg-violet-700 text-white shadow-violet-500/25"
-                      : "bg-slate-950 text-white shadow-slate-950/20 hover:bg-violet-700",
+                      : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-violet-200/20 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100",
                   ].join(" ")
                 }
               >
@@ -130,7 +130,7 @@ export default function ChatButton({
                       Live preview
                     </div>
 
-                    <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+                    <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-800">
                       Client Chat Preview
                     </h3>
 
@@ -140,7 +140,7 @@ export default function ChatButton({
                     </p>
                   </div>
 
-                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-2xl shadow-xl shadow-slate-950/20">
+                  <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-xl shadow-violet-200/20">
                     💬
                   </div>
                 </div>
@@ -155,7 +155,7 @@ export default function ChatButton({
                       💭
                     </div>
 
-                    <h4 className="mt-4 text-lg font-black text-slate-950">
+                    <h4 className="mt-4 text-lg font-black text-slate-800">
                       No preview available
                     </h4>
 

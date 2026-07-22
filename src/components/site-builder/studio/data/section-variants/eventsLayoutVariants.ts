@@ -52,7 +52,7 @@ const kind = "events" as const;
 
 function eventDateBadge(day: string, month: string) {
   return `
-<div class="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] bg-slate-950 text-center text-white shadow-xl">
+<div class="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl">
   <div>
     <strong class="block text-3xl font-black leading-none" data-editable-text="true">${day}</strong>
     <span class="mt-1 block text-xs font-black text-white/60" data-editable-text="true">${month}</span>
@@ -71,7 +71,7 @@ function eventCard(
   return `
 <article class="${cardClass}" data-editable-card="true">
   <div class="relative overflow-hidden rounded-[30px]" data-media-replaceable="true">
-    <span class="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-950 shadow-lg" data-editable-text="true">
+    <span class="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-lg" data-editable-text="true">
       ${badge}
     </span>
 
@@ -87,7 +87,7 @@ function eventCard(
     ${eventDateBadge("24", "יוני")}
 
     <div>
-      <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+      <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
         ${title}
       </h3>
 
@@ -113,7 +113,7 @@ function eventScheduleItem(time: string, title: string, text: string) {
   </div>
 
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 </div>
@@ -127,7 +127,7 @@ function ticketCard(title: string, price: string, text: string, highlighted = fa
     ${highlighted ? "פופולרי" : "כרטיס"}
   </p>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
 
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">
     ${text}
@@ -150,7 +150,7 @@ function speakerCard(name: string, role: string, imageUrl = sectionImages.people
 <article class="${cardClass} text-center" data-editable-card="true">
   ${imageBlock(imageUrl, "min-h-[300px]", "rounded-[30px]")}
 
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">
     ${name}
   </h3>
 
@@ -168,7 +168,7 @@ function speakerCard(name: string, role: string, imageUrl = sectionImages.people
 function rsvpCard(buttonText = "אישור הגעה") {
   return `
 <div class="${softCardClass}" data-bizuply-block="event-rsvp" data-editable-card="true">
-  <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
     אישור הגעה
   </h3>
 
@@ -237,7 +237,7 @@ function eventInfoRow(label: string, value: string, icon = "✦") {
 
   <div>
     <p class="text-xs font-black text-slate-400" data-editable-text="true">${label}</p>
-    <p class="mt-1 text-sm font-black text-slate-950" data-editable-text="true">${value}</p>
+    <p class="mt-1 text-sm font-black text-slate-800" data-editable-text="true">${value}</p>
   </div>
 </div>
 `;
@@ -387,7 +387,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.42)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.42)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/22 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/22 blur-3xl"></div>
 
@@ -528,7 +528,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
       <div class="mx-auto max-w-[1040px] rounded-[64px] border border-slate-200 bg-gradient-to-br from-stone-50 via-white to-violet-50 p-8 text-center shadow-[0_44px_150px_rgba(15,23,42,0.10)] md:p-16">
         <p class="${pillClass}" data-editable-text="true">הזמנה לאירוע</p>
 
-        <h2 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h2 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-800 md:text-7xl" data-editable-text="true">
           שמחים להזמין אתכם לחגוג איתנו
         </h2>
 
@@ -621,7 +621,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}" data-editable-card="true">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             הרשמה מהירה
           </h3>
 
@@ -670,7 +670,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Event
               </p>

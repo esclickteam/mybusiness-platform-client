@@ -113,7 +113,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
   return (
     <div
       dir="rtl"
-      className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-[2px]"
+      className="fixed inset-0 z-[90] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-[2px]"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
@@ -208,7 +208,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                   onClick={() => setRole("editor")}
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                     role === "editor"
-                      ? "bg-slate-900 text-white"
+                      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                       : "bg-slate-100 text-slate-600"
                   }`}
                 >
@@ -219,7 +219,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
                   onClick={() => setRole("viewer")}
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                     role === "viewer"
-                      ? "bg-slate-900 text-white"
+                      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                       : "bg-slate-100 text-slate-600"
                   }`}
                 >
@@ -243,7 +243,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
           <button
             type="submit"
             disabled={sending}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
           >
             {sending ? <BizuplyLoader size="xs" compact /> : null}
             {mode === "transfer" ? "שליחת הזמנת העברה" : "שליחת הזמנת שיתוף"}

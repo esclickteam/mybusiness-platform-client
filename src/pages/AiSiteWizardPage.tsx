@@ -390,7 +390,7 @@ export default function AiSiteWizardPage() {
           </div>
           <div className="h-2 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-violet-600 transition-all"
+              className="h-full rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 transition-all"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -485,7 +485,7 @@ export default function AiSiteWizardPage() {
                       onClick={() => setAnswers((a) => ({ ...a, tone: id }))}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
                         answers.tone === id
-                          ? "bg-slate-900 text-white"
+                          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >
@@ -547,7 +547,7 @@ export default function AiSiteWizardPage() {
                       onClick={() => togglePage(page)}
                       className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-semibold ${
                         active
-                          ? "bg-violet-600 text-white"
+                          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >
@@ -620,7 +620,7 @@ export default function AiSiteWizardPage() {
                 type="button"
                 disabled={!canContinue()}
                 onClick={() => setStep((s) => s + 1)}
-                className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-40"
+                className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-40"
               >
                 {t("aiSiteWizard.buttons.continue")}
               </button>
@@ -629,7 +629,7 @@ export default function AiSiteWizardPage() {
                 type="button"
                 disabled={submitting || !canContinue()}
                 onClick={handleGenerate}
-                className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
               >
                 {submitting ? (
                   <BizuplyLoader size="xs" compact />

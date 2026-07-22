@@ -59,7 +59,7 @@ function socialButton(
 ) {
   const classes =
     style === "dark"
-      ? "bg-slate-950 text-white shadow-[0_18px_60px_rgba(15,23,42,0.18)] hover:-translate-y-0.5"
+      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_60px_rgba(15,23,42,0.18)] hover:-translate-y-0.5"
       : style === "brand"
         ? "bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-white shadow-[0_18px_60px_rgba(124,58,237,0.22)] hover:-translate-y-0.5"
         : style === "glass"
@@ -89,7 +89,7 @@ function socialIconButton(
 ) {
   const classes =
     style === "dark"
-      ? "bg-slate-950 text-white"
+      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
       : style === "brand"
         ? "bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-white"
         : style === "glass"
@@ -124,7 +124,7 @@ function socialCard(
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -154,13 +154,13 @@ function socialFeedPost(
       data-editable-image="true"
     />
 
-    <div class="absolute right-4 top-4 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-950 shadow-lg" data-editable-text="true">
+    <div class="absolute right-4 top-4 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-lg" data-editable-text="true">
       Social
     </div>
   </div>
 
   <div class="px-2 pb-2 pt-5">
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -196,7 +196,7 @@ function socialProfileCard(
     </span>
   </div>
 
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">
     ${platform}
   </h3>
 
@@ -236,7 +236,7 @@ function darkSocialCard(
 function socialMetric(value: string, label: string) {
   return `
 <div class="rounded-[28px] border border-slate-200 bg-white p-6 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <strong class="block text-4xl font-black tracking-[-0.05em] text-slate-950" data-editable-text="true">
+  <strong class="block text-4xl font-black tracking-[-0.05em] text-slate-800" data-editable-text="true">
     ${value}
   </strong>
   <span class="mt-2 block text-xs font-black text-slate-400" data-editable-text="true">
@@ -326,7 +326,7 @@ export const socialLayoutVariants: SectionLayoutVariant[] = [
       kind,
       `
       <div class="mx-auto max-w-[900px] rounded-[44px] border border-slate-200 bg-white p-8 text-center shadow-[0_30px_100px_rgba(15,23,42,0.08)]">
-        <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-950" data-editable-text="true">
+        <h2 class="text-4xl font-black tracking-[-0.05em] text-slate-800" data-editable-text="true">
           בואו נישאר בקשר
         </h2>
 
@@ -461,7 +461,7 @@ export const socialLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -564,7 +564,7 @@ export const socialLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 Social Message
               </p>
@@ -742,7 +742,7 @@ export const socialLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -802,7 +802,7 @@ export const socialLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             הצטרפות לעדכונים
           </h3>
 

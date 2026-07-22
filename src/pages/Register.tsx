@@ -182,7 +182,7 @@ export default function Register() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
+    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
@@ -199,7 +199,7 @@ export default function Register() {
             START YOUR 14-DAY FREE TRIAL
           </div>
 
-          <h1 className="mt-8 max-w-2xl text-6xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 xl:text-7xl">
+          <h1 className="mt-8 max-w-2xl text-6xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 xl:text-7xl">
             Build your
             <br />
             business OS.
@@ -230,7 +230,7 @@ export default function Register() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-black text-slate-950">
+                  <h3 className="text-lg font-black text-slate-800">
                     {title}
                   </h3>
                   <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
@@ -262,7 +262,7 @@ export default function Register() {
           <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
             <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]">
               {/* Header */}
-              <div className="relative overflow-hidden bg-slate-950 px-7 py-8 text-white">
+              <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
                 <div className="pointer-events-none absolute inset-0">
                   <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
                   <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
@@ -301,7 +301,7 @@ export default function Register() {
                       value="business"
                     />
 
-                    <span className="block text-sm font-black text-slate-950">
+                    <span className="block text-sm font-black text-slate-800">
                       Business Owner
                     </span>
 

@@ -180,12 +180,12 @@ export default function DomainSearch() {
           <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.14),transparent_56%),radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_52%)]" />
 
           <div className="relative flex items-start gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-200">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-lg shadow-violet-200">
               <Globe2 className="h-7 w-7" />
             </div>
 
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-slate-950">
+              <h2 className="text-3xl font-black tracking-tight text-slate-800">
                 מציאת דומיין לעסק
               </h2>
 
@@ -224,7 +224,7 @@ export default function DomainSearch() {
             <button
               type="submit"
               disabled={isChecking || !domain.trim()}
-              className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-7 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+              className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
             >
               {isChecking ? (
                 <>
@@ -272,7 +272,7 @@ export default function DomainSearch() {
 
                   <div>
                     <p
-                      className="text-xl font-black text-slate-950"
+                      className="text-xl font-black text-slate-800"
                       dir="ltr"
                     >
                       {result.domain}
@@ -301,7 +301,7 @@ export default function DomainSearch() {
                       setContactError("");
                       setContactResult(null);
                     }}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-black"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:-translate-y-0.5 hover:bg-black"
                   >
                     <UserRound className="h-4 w-4" />
                     המשך לרישום ניסיוני
@@ -328,7 +328,7 @@ export default function DomainSearch() {
               </div>
 
               <div>
-                <h3 className="text-xl font-black text-slate-950">
+                <h3 className="text-xl font-black text-slate-800">
                   פרטי איש קשר לניסוי
                 </h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">
@@ -535,7 +535,7 @@ export default function DomainSearch() {
               <button
                 type="submit"
                 disabled={!canSubmitContact || isCreatingContact}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-600 to-blue-600 px-7 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
               >
                 {isCreatingContact ? (
                   <>

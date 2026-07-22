@@ -413,7 +413,7 @@ function SortablePageRow({
         {dropHint === "before" ? (
           <div className="pointer-events-none absolute inset-x-0 -top-1 z-10 flex items-center gap-2">
             <div className="h-0.5 flex-1 rounded-full bg-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.8)]" />
-            <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-black text-white">
+            <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2 py-0.5 text-[10px] font-black text-white">
               {getDropPlacementLabel("before")}
             </span>
           </div>
@@ -421,7 +421,7 @@ function SortablePageRow({
         {dropHint === "after" ? (
           <div className="pointer-events-none absolute inset-x-0 -bottom-1 z-10 flex items-center gap-2">
             <div className="h-0.5 flex-1 rounded-full bg-violet-500 shadow-[0_0_0_1px_rgba(255,255,255,0.8)]" />
-            <span className="rounded-full bg-violet-600 px-2 py-0.5 text-[10px] font-black text-white">
+            <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2 py-0.5 text-[10px] font-black text-white">
               {getDropPlacementLabel("after")}
             </span>
           </div>
@@ -443,7 +443,7 @@ function SortablePageRow({
         >
           {dropHint === "inside" ? (
             <div className="pointer-events-none absolute inset-x-3 top-2 flex justify-center">
-              <span className="rounded-full bg-violet-600 px-2.5 py-0.5 text-[10px] font-black text-white shadow-sm">
+              <span className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-0.5 text-[10px] font-black text-white shadow-sm">
                 {getDropPlacementLabel("inside")}
               </span>
             </div>
@@ -492,7 +492,7 @@ function SortablePageRow({
               className={[
                 "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
                 isActive
-                  ? "bg-violet-600 text-white shadow-sm"
+                  ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-sm"
                   : isSubpage
                     ? "bg-violet-100 text-violet-700"
                     : "bg-slate-100 text-slate-600",
@@ -507,7 +507,7 @@ function SortablePageRow({
 
             <span className="min-w-0 flex-1">
               <span className="flex items-center gap-1.5">
-                <span className="truncate text-sm font-black text-slate-950">
+                <span className="truncate text-sm font-black text-slate-800">
                   {page.title || "עמוד"}
                 </span>
                 {page.hiddenFromMenu ? (
@@ -536,7 +536,7 @@ function SortablePageRow({
             className={[
               "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition",
               menuOpen
-                ? "border-violet-500 bg-violet-600 text-white shadow-sm"
+                ? "border-violet-500 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-sm"
                 : "border-transparent text-slate-500 opacity-100 hover:border-slate-200 hover:bg-white",
             ].join(" ")}
           >
@@ -944,7 +944,7 @@ export default function VisualSitePagesPanel({
     parentPickerPage && typeof document !== "undefined"
       ? createPortal(
           <div
-            className="fixed inset-0 z-[2147483647] flex items-center justify-center bg-slate-950/35 p-4"
+            className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 p-4"
             dir="rtl"
             onClick={() => setParentPickerPageId("")}
           >
@@ -955,7 +955,7 @@ export default function VisualSitePagesPanel({
               aria-label="בחירת עמוד אב"
             >
               <div className="border-b border-slate-100 px-4 py-3">
-                <h3 className="text-sm font-black text-slate-950">
+                <h3 className="text-sm font-black text-slate-800">
                   בחירת עמוד אב
                 </h3>
                 <p className="mt-1 text-[12px] font-bold leading-5 text-slate-500">
@@ -1075,7 +1075,7 @@ export default function VisualSitePagesPanel({
           <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div className="min-w-0">
-                <h2 className="text-sm font-black text-slate-950">תפריט האתר</h2>
+                <h2 className="text-sm font-black text-slate-800">תפריט האתר</h2>
                 <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
                   {singlePageMode
                     ? "העמוד והסקשנים שלו"
@@ -1185,7 +1185,7 @@ export default function VisualSitePagesPanel({
                 >
                   <GripVertical className="h-4 w-4 text-violet-500" />
                   <div className="min-w-0">
-                    <span className="block truncate text-sm font-black text-slate-950">
+                    <span className="block truncate text-sm font-black text-slate-800">
                       {draggingRow.page.title || "עמוד"}
                     </span>
                     {dropPlacement ? (

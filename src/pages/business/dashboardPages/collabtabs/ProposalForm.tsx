@@ -352,7 +352,7 @@ export default function ProposalForm({
                 בונה הסכם עסקי
               </div>
 
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                 הצעת שיתוף פעולה עסקי
               </h2>
 
@@ -758,7 +758,7 @@ export default function ProposalForm({
             <button
               type="button"
               onClick={() => setShowPreviewModal(true)}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-black"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg transition hover:-translate-y-0.5 hover:bg-black"
             >
               <FileSignature className="h-5 w-5" />
               צפייה בתצוגה מקדימה
@@ -773,7 +773,7 @@ export default function ProposalForm({
             </div>
 
             <div>
-              <p className="text-sm font-black text-slate-950">
+              <p className="text-sm font-black text-slate-800">
                 ההצעה מוכנה לשליחה
               </p>
               <p className="text-xs font-semibold text-slate-500">
@@ -785,7 +785,7 @@ export default function ProposalForm({
           <button
             type="submit"
             disabled={loading}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
               <BizuplyLoader size="sm" compact />
@@ -857,7 +857,7 @@ function SectionTitle({
       </div>
 
       <div>
-        <h3 className="text-xl font-black text-slate-950">{title}</h3>
+        <h3 className="text-xl font-black text-slate-800">{title}</h3>
         <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
           {subtitle}
         </p>
@@ -902,7 +902,7 @@ function AgreementSideCard({
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
-          <h3 className="text-xl font-black text-slate-950">{title}</h3>
+          <h3 className="text-xl font-black text-slate-800">{title}</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
             {subtitle}
           </p>
@@ -985,7 +985,7 @@ function ProposalPreviewModal({
   const previewAmount = formData.amount ? `₪${Number(formData.amount).toLocaleString("he-IL")}` : "—";
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-[90] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/60 p-4 backdrop-blur-sm">
       <div
         dir="rtl"
         className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2rem] bg-white text-right shadow-2xl"
@@ -997,7 +997,7 @@ function ProposalPreviewModal({
               תצוגה מקדימה
             </div>
 
-            <h3 className="mt-4 text-2xl font-black text-slate-950">
+            <h3 className="mt-4 text-2xl font-black text-slate-800">
               הסכם שיתוף פעולה
             </h3>
 
@@ -1018,7 +1018,7 @@ function ProposalPreviewModal({
         <div className="max-h-[calc(92vh-140px)] overflow-y-auto p-5 sm:p-7">
           <div className="rounded-[2rem] border border-slate-100 bg-slate-50 p-5">
             <div className="rounded-[1.5rem] bg-white p-5 shadow-sm">
-              <h4 className="text-xl font-black text-slate-950">
+              <h4 className="text-xl font-black text-slate-800">
                 פרטי ההסכם
               </h4>
 
@@ -1133,7 +1133,7 @@ function ProposalPreviewModal({
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white transition hover:bg-black"
+            className="inline-flex h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-black"
           >
             סגירה
           </button>
@@ -1149,7 +1149,7 @@ function PreviewInfo({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-black uppercase tracking-wide text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-sm font-black text-slate-950">{value}</p>
+      <p className="mt-2 text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -1157,7 +1157,7 @@ function PreviewInfo({ label, value }: { label: string; value: string }) {
 function PreviewTextBlock({ title, value }: { title: string; value: string }) {
   return (
     <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-4">
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-2 whitespace-pre-wrap text-sm font-semibold leading-7 text-slate-600">
         {value}
       </p>
@@ -1176,7 +1176,7 @@ function PreviewListBlock({
 }) {
   return (
     <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-4">
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
 
       {items.length ? (
         <ul className="mt-3 space-y-2">

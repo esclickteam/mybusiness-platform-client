@@ -72,7 +72,7 @@ export default function CollabCollaborationsTab({
               Collaboration Workspace
             </div>
 
-            <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               Business Collaborations
             </h2>
 
@@ -92,7 +92,7 @@ export default function CollabCollaborationsTab({
                 <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
                   Current view
                 </p>
-                <p className="mt-1 text-base font-black text-slate-950">
+                <p className="mt-1 text-base font-black text-slate-800">
                   {activeTab.label}
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function CollabCollaborationsTab({
                   className={[
                     "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
                     isActive
-                      ? "bg-gradient-to-br from-violet-700 to-fuchsia-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.20)]"
+                      ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-[0_12px_28px_rgba(124,58,237,0.20)]"
                       : "bg-white text-sky-700 shadow-sm group-hover:bg-sky-50",
                   ].join(" ")}
                 >
@@ -134,7 +134,7 @@ export default function CollabCollaborationsTab({
                   <span
                     className={[
                       "block truncate text-sm font-black",
-                      isActive ? "text-violet-800" : "text-slate-950",
+                      isActive ? "text-violet-800" : "text-slate-800",
                     ].join(" ")}
                   >
                     {tab.label}
@@ -158,7 +158,7 @@ export default function CollabCollaborationsTab({
             </div>
 
             <div>
-              <h3 className="text-lg font-black text-slate-950">
+              <h3 className="text-lg font-black text-slate-800">
                 {activeTab.label}
               </h3>
               <p className="text-xs font-semibold text-slate-500">

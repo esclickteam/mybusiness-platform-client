@@ -82,7 +82,7 @@ export default function FAQMini() {
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
+    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-800">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-36 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -98,7 +98,7 @@ export default function FAQMini() {
               {t("faqMini.eyebrow")}
             </div>
 
-            <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
+            <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-800 sm:text-6xl">
               {t("faqMini.titleTop")}
               <br />
               <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
@@ -111,7 +111,7 @@ export default function FAQMini() {
             </p>
 
             <div className="mt-10 overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-3 shadow-[0_24px_70px_rgba(79,70,229,0.14)] backdrop-blur-xl">
-              <div className="relative overflow-hidden rounded-[1.5rem] bg-slate-950 p-7 text-white">
+              <div className="relative overflow-hidden rounded-[1.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
                 <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
                 <div className="absolute -bottom-24 left-8 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
 
@@ -177,7 +177,7 @@ export default function FAQMini() {
                           {String(i + 1).padStart(2, "0")}
                         </span>
 
-                        <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-950 sm:text-xl">
+                        <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-xl">
                           {item.q}
                         </span>
                       </div>
@@ -186,7 +186,7 @@ export default function FAQMini() {
                         className={[
                           "grid h-10 w-10 shrink-0 place-items-center rounded-full text-2xl font-black transition",
                           isOpen
-                            ? "rotate-180 bg-slate-950 text-white"
+                            ? "rotate-180 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                             : "bg-slate-50 text-indigo-700",
                         ].join(" ")}
                       >
@@ -219,7 +219,7 @@ export default function FAQMini() {
                                     <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xs text-white">
                                       ✓
                                     </span>
-                                    <strong className="text-sm font-black text-slate-950">
+                                    <strong className="text-sm font-black text-slate-800">
                                       {bullet.title}
                                     </strong>
                                   </div>

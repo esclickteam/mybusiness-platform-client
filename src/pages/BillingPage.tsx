@@ -311,11 +311,11 @@ export default function SubscriptionPlanCard() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-slate-50 px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-slate-50 px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-8 text-white sm:px-8 lg:px-10">
+          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-white sm:px-8 lg:px-10">
             <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -365,7 +365,7 @@ export default function SubscriptionPlanCard() {
                 {t("billing.subscription")}
               </div>
 
-              <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
+              <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-800">
                 {t("billing.yourPlan")}
               </h2>
 
@@ -379,7 +379,7 @@ export default function SubscriptionPlanCard() {
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                   {t("billing.plan")}
                 </p>
-                <p className="mt-2 text-2xl font-black text-slate-950">
+                <p className="mt-2 text-2xl font-black text-slate-800">
                   {planName}
                 </p>
               </div>
@@ -407,7 +407,7 @@ export default function SubscriptionPlanCard() {
                       : t("billing.validUntil")}
                   </p>
 
-                  <p className="mt-3 text-lg font-black text-slate-950">
+                  <p className="mt-3 text-lg font-black text-slate-800">
                     {endDate}
                   </p>
                 </div>
@@ -454,7 +454,7 @@ export default function SubscriptionPlanCard() {
                     type="button"
                     onClick={handleResume}
                     disabled={loadingResume || !userId}
-                    className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
                     {loadingResume
                       ? t("billing.resuming")
@@ -466,7 +466,7 @@ export default function SubscriptionPlanCard() {
                   <button
                     type="button"
                     onClick={() => navigate("/pricing")}
-                    className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
+                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
                     {t("billing.renewUpgrade")}
                   </button>
@@ -483,7 +483,7 @@ export default function SubscriptionPlanCard() {
                     {t("billing.payments")}
                   </div>
 
-                  <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
+                  <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-800">
                     {t("billing.paymentHistory")}
                   </h2>
 
@@ -496,7 +496,7 @@ export default function SubscriptionPlanCard() {
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                     {t("billing.records")}
                   </p>
-                  <p className="mt-1 text-2xl font-black text-slate-950">
+                  <p className="mt-1 text-2xl font-black text-slate-800">
                     {payments.length}
                   </p>
                 </div>
@@ -508,7 +508,7 @@ export default function SubscriptionPlanCard() {
                 <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.5rem] border border-slate-100 bg-slate-50 text-center">
                   <BizuplyLoader size="xl" label="טוען..." />
 
-                  <h3 className="mt-5 text-lg font-black text-slate-950">
+                  <h3 className="mt-5 text-lg font-black text-slate-800">
                     {t("billing.loadingPayments")}
                   </h3>
 
@@ -522,7 +522,7 @@ export default function SubscriptionPlanCard() {
                     💳
                   </div>
 
-                  <h3 className="mt-4 text-lg font-black text-slate-950">
+                  <h3 className="mt-4 text-lg font-black text-slate-800">
                     {t("billing.noPayments")}
                   </h3>
 
@@ -561,11 +561,11 @@ export default function SubscriptionPlanCard() {
                                 {formatDate(payment.createdAt, dateLocale)}
                               </td>
 
-                              <td className="px-5 py-4 font-black text-slate-950">
+                              <td className="px-5 py-4 font-black text-slate-800">
                                 {getPlanLabel(payment.plan)}
                               </td>
 
-                              <td className="px-5 py-4 font-black text-slate-950">
+                              <td className="px-5 py-4 font-black text-slate-800">
                                 {formatMoney(payment.amount, dateLocale)}
                               </td>
 
@@ -601,7 +601,7 @@ export default function SubscriptionPlanCard() {
                                 {t("billing.plan")}
                               </p>
 
-                              <p className="mt-1 text-base font-black text-slate-950">
+                              <p className="mt-1 text-base font-black text-slate-800">
                                 {getPlanLabel(payment.plan)}
                               </p>
                             </div>
@@ -630,7 +630,7 @@ export default function SubscriptionPlanCard() {
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                                 {t("billing.amount")}
                               </p>
-                              <p className="mt-1 text-sm font-black text-slate-950">
+                              <p className="mt-1 text-sm font-black text-slate-800">
                                 {formatMoney(payment.amount, dateLocale)}
                               </p>
                             </div>

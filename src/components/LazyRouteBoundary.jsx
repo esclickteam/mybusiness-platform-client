@@ -42,7 +42,7 @@ class LazyRouteBoundary extends React.Component {
         className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center px-6 py-16 text-center"
       >
         <div className="rounded-[24px] border border-slate-200 bg-white p-8 shadow-sm">
-          <h2 className="text-lg font-black text-slate-950">
+          <h2 className="text-lg font-black text-slate-800">
             {chunkError ? "גרסה חדשה של האתר זמינה" : "שגיאה בטעינת העמוד"}
           </h2>
           <p className="mt-2 text-sm font-bold text-slate-500">
@@ -53,7 +53,7 @@ class LazyRouteBoundary extends React.Component {
           <button
             type="button"
             onClick={this.handleReload}
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
           >
             <RefreshCw size={16} />
             רענון הדף

@@ -934,10 +934,10 @@ export default function MiniSaaSManager() {
   return (
     <section
       dir="ltr"
-      className="min-h-screen bg-[#F4F7FB] p-4 text-slate-950 md:p-7"
+      className="min-h-screen bg-[#F4F7FB] p-4 text-slate-800 md:p-7"
     >
       {toast && (
-        <div className="fixed left-1/2 top-5 z-[80] -translate-x-1/2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-2xl">
+        <div className="fixed left-1/2 top-5 z-[80] -translate-x-1/2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-2xl">
           {toast}
         </div>
       )}
@@ -955,9 +955,9 @@ export default function MiniSaaSManager() {
                   Client Portal / Mini SaaS
                 </div>
 
-                <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-slate-950 md:text-4xl">
+                <h1 className="mt-4 text-3xl font-black leading-tight tracking-tight text-slate-800 md:text-4xl">
                   Client area connected to the website
-                  <span className="block bg-gradient-to-r from-violet-700 via-fuchsia-600 to-sky-600 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-violet-500 via-sky-500 to-cyan-500 bg-clip-text text-transparent">
                     with personal data for every client.
                   </span>
                 </h1>
@@ -973,7 +973,7 @@ export default function MiniSaaSManager() {
                 <button
                   type="button"
                   onClick={() => setShowInviteModal(true)}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_14px_36px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_14px_36px_rgba(15,23,42,0.18)] transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   <UserPlus size={17} />
                   Add client to personal area
@@ -1038,7 +1038,7 @@ export default function MiniSaaSManager() {
                   <button
                     type="button"
                     onClick={openSiteBuilder}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-violet-700"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
                     <Plus size={17} />
                     Add page in site builder
@@ -1126,7 +1126,7 @@ export default function MiniSaaSManager() {
                         {clientStatusLabel(selectedClient.status)}
                       </div>
 
-                      <h2 className="mt-3 text-2xl font-black text-slate-950">
+                      <h2 className="mt-3 text-2xl font-black text-slate-800">
                         {selectedClient.clientName}
                       </h2>
 
@@ -1200,7 +1200,7 @@ export default function MiniSaaSManager() {
                   </div>
 
                   <div className="mt-6 rounded-[28px] border border-slate-200 bg-slate-50 p-4">
-                    <h3 className="text-sm font-black text-slate-950">
+                    <h3 className="text-sm font-black text-slate-800">
                       Pages open to the client
                     </h3>
 
@@ -1212,7 +1212,7 @@ export default function MiniSaaSManager() {
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div>
-                              <p className="text-sm font-black text-slate-950">
+                              <p className="text-sm font-black text-slate-800">
                                 {page.title}
                               </p>
 
@@ -1233,7 +1233,7 @@ export default function MiniSaaSManager() {
                               onClick={() =>
                                 openPageEditor(selectedClient.id, page.id)
                               }
-                              className="inline-flex h-10 items-center justify-center gap-1 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-violet-700"
+                              className="inline-flex h-10 items-center justify-center gap-1 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                             >
                               <PencilLine size={14} />
                               Edit data
@@ -1265,7 +1265,7 @@ export default function MiniSaaSManager() {
                         <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
                           Client login
                         </p>
-                        <p className="truncate text-sm font-black text-slate-950">
+                        <p className="truncate text-sm font-black text-slate-800">
                           {portalSystem.websitePath}/login
                         </p>
                       </div>
@@ -1284,7 +1284,7 @@ export default function MiniSaaSManager() {
               ) : (
                 <div className="py-16 text-center">
                   <Users size={34} className="mx-auto text-slate-300" />
-                  <h3 className="mt-4 text-lg font-black text-slate-950">
+                  <h3 className="mt-4 text-lg font-black text-slate-800">
                     No client selected
                   </h3>
                   <p className="mt-2 text-sm font-bold text-slate-500">
@@ -1372,7 +1372,7 @@ function ClientDataFieldsManager({
               Client Data Fields
             </div>
 
-            <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+            <h2 className="mt-3 text-2xl font-black tracking-tight text-slate-800">
               Automatic fields in the client profile
             </h2>
 
@@ -1385,7 +1385,7 @@ function ClientDataFieldsManager({
           <button
             type="button"
             onClick={onAdd}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 hover:bg-violet-700"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_12px_30px_rgba(15,23,42,0.16)] transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             <Plus size={16} />
             Add field
@@ -1405,7 +1405,7 @@ function ClientDataFieldsManager({
           <div className="rounded-[24px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
             <Settings2 className="mx-auto h-9 w-9 text-violet-700" />
 
-            <h3 className="mt-3 text-xl font-black text-slate-950">
+            <h3 className="mt-3 text-xl font-black text-slate-800">
               No custom fields yet
             </h3>
 
@@ -1417,7 +1417,7 @@ function ClientDataFieldsManager({
             <button
               type="button"
               onClick={onAdd}
-              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+              className="mt-4 inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               <Plus size={16} />
               Create first field
@@ -1659,7 +1659,7 @@ function ClientFieldMetric({
       <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
+      <p className="mt-1 text-xl font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -1688,7 +1688,7 @@ function FieldToggle({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="text-sm font-black text-slate-800">{title}</p>
           <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
             {text}
           </p>
@@ -1698,7 +1698,7 @@ function FieldToggle({
           className={[
             "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
             checked
-              ? "border-violet-700 bg-violet-700 text-white"
+              ? "border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
               : "border-slate-300 bg-white text-transparent",
           ].join(" ")}
         >
@@ -1741,11 +1741,11 @@ function InviteClientModal({
   onCreate: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
           <div>
-            <h2 className="text-2xl font-black text-slate-950">
+            <h2 className="text-2xl font-black text-slate-800">
               Add client to personal area
             </h2>
 
@@ -1818,7 +1818,7 @@ function InviteClientModal({
           </div>
 
           <div className="mt-6">
-            <h3 className="text-sm font-black text-slate-950">
+            <h3 className="text-sm font-black text-slate-800">
               Which pages should be opened for the client?
             </h3>
 
@@ -1844,7 +1844,7 @@ function InviteClientModal({
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <p className="text-sm font-black text-slate-950">
+                        <p className="text-sm font-black text-slate-800">
                           {page.title}
                         </p>
 
@@ -1858,7 +1858,7 @@ function InviteClientModal({
                         className={[
                           "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
                           checked
-                            ? "border-violet-600 bg-violet-600 text-white"
+                            ? "border-violet-600 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                             : "border-slate-300 bg-white text-transparent",
                         ].join(" ")}
                       >
@@ -1886,7 +1886,7 @@ function InviteClientModal({
               type="button"
               onClick={onCreate}
               disabled={!clientName.trim() || !clientEmail.trim()}
-              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Send size={17} />
               Save and send invitation
@@ -1922,7 +1922,7 @@ function DataEditorModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-4xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
           <div>
@@ -1931,7 +1931,7 @@ function DataEditorModal({
               Edit personal data
             </div>
 
-            <h2 className="mt-3 text-2xl font-black text-slate-950">
+            <h2 className="mt-3 text-2xl font-black text-slate-800">
               {page.title}
             </h2>
 
@@ -1965,7 +1965,7 @@ function DataEditorModal({
             <button
               type="button"
               onClick={onSave}
-              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-violet-700"
+              className="inline-flex h-14 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               <Save size={17} />
               Save data for client
@@ -2142,7 +2142,7 @@ function ClientPreviewModal({
   onClose: () => void;
 }) {
   return (
-    <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-3xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
           <div>
@@ -2151,7 +2151,7 @@ function ClientPreviewModal({
               Client view
             </div>
 
-            <h2 className="mt-3 text-2xl font-black text-slate-950">
+            <h2 className="mt-3 text-2xl font-black text-slate-800">
               {page.title}
             </h2>
 
@@ -2171,7 +2171,7 @@ function ClientPreviewModal({
 
         <div className="max-h-[calc(92vh-92px)] overflow-y-auto bg-slate-50 p-5 md:p-6">
           <div className="rounded-[28px] bg-white p-6 shadow-sm">
-            <h3 className="text-2xl font-black text-slate-950">
+            <h3 className="text-2xl font-black text-slate-800">
               {page.title}
             </h3>
 
@@ -2267,7 +2267,7 @@ function SectionHeader({
           {badge}
         </div>
 
-        <h2 className="text-xl font-black text-slate-950 md:text-2xl">{title}</h2>
+        <h2 className="text-xl font-black text-slate-800 md:text-2xl">{title}</h2>
 
         <p className="mt-1 max-w-3xl text-sm font-bold leading-6 text-slate-500">
           {text}
@@ -2297,7 +2297,7 @@ function StatCard({
           {icon}
         </div>
 
-        <p className="text-2xl font-black text-slate-950">{value}</p>
+        <p className="text-2xl font-black text-slate-800">{value}</p>
       </div>
 
       <p className="mt-3 text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
@@ -2328,7 +2328,7 @@ function PortalPageCard({
 
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-base font-black text-slate-950">{page.title}</h3>
+              <h3 className="text-base font-black text-slate-800">{page.title}</h3>
               <span
                 className={[
                   "rounded-full px-2.5 py-1 text-[10px] font-black",
@@ -2366,7 +2366,7 @@ function PortalPageCard({
           <button
             type="button"
             onClick={onEdit}
-            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-slate-950 px-4 text-xs font-black text-white transition hover:bg-violet-700"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             <PencilLine size={14} />
             Edit data
@@ -2424,7 +2424,7 @@ function ClientRow({
           </div>
 
           <div className="min-w-0">
-            <p className="truncate text-sm font-black text-slate-950">
+            <p className="truncate text-sm font-black text-slate-800">
               {client.clientName}
             </p>
             <p className="mt-1 truncate text-xs font-bold text-slate-500">
@@ -2492,7 +2492,7 @@ function SmallMetric({
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 text-sm font-black text-slate-950">{value}</p>
+      <p className="mt-1 text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -2509,7 +2509,7 @@ function ClientMiniMetric({
       <p className="text-[9px] font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-0.5 truncate text-xs font-black text-slate-950">{value}</p>
+      <p className="mt-0.5 truncate text-xs font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -2526,7 +2526,7 @@ function SideMetric({
       <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
         {label}
       </p>
-      <p className="mt-1 truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="mt-1 truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }

@@ -183,7 +183,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -423,7 +423,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
             <div class="flex gap-5">
               <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">1</div>
               <div>
-                <h3 class="text-xl font-black text-slate-950" data-editable-text="true">שיחת היכרות</h3>
+                <h3 class="text-xl font-black text-slate-800" data-editable-text="true">שיחת היכרות</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">מבינים את הצורך, המטרה והציפיות.</p>
               </div>
             </div>
@@ -431,7 +431,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
             <div class="flex gap-5">
               <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">2</div>
               <div>
-                <h3 class="text-xl font-black text-slate-950" data-editable-text="true">התאמה אישית</h3>
+                <h3 class="text-xl font-black text-slate-800" data-editable-text="true">התאמה אישית</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">בונים פתרון שמתאים ללקוח ולמטרה.</p>
               </div>
             </div>
@@ -439,7 +439,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
             <div class="flex gap-5">
               <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">3</div>
               <div>
-                <h3 class="text-xl font-black text-slate-950" data-editable-text="true">ביצוע וליווי</h3>
+                <h3 class="text-xl font-black text-slate-800" data-editable-text="true">ביצוע וליווי</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">מוציאים לפועל בצורה מקצועית וברורה.</p>
               </div>
             </div>
@@ -470,7 +470,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
       <div class="mt-12 grid gap-6 md:grid-cols-2">
         <article class="${softCardClass}" data-editable-card="true">
           <p class="${pillClass}" data-editable-text="true">החזון שלנו</p>
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             להפוך כל חוויה למקצועית, ברורה ונעימה
           </h3>
           <p class="mt-4 text-base font-bold leading-8 text-slate-500" data-editable-text="true">
@@ -628,7 +628,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -676,7 +676,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
           <div class="max-w-[720px]">
             <p class="${pillClass}" data-editable-text="true">בקצרה</p>
 
-            <h2 class="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-950 md:text-5xl" data-editable-text="true">
+            <h2 class="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-800 md:text-5xl" data-editable-text="true">
               עסק מקצועי, ברור ונגיש ללקוחות
             </h2>
 

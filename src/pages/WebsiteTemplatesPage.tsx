@@ -792,7 +792,7 @@ export default function WebsiteTemplatesPage() {
                   {t("websiteTemplates.badge")}
                 </div>
 
-                <h1 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl">
+                <h1 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-800 md:text-4xl">
                   {t("websiteTemplates.title")}
                 </h1>
 
@@ -816,7 +816,7 @@ export default function WebsiteTemplatesPage() {
                     className={[
                       "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl transition",
                       activeWebsiteView === "domains"
-                        ? "bg-gradient-to-br from-violet-600 to-blue-600 text-white shadow-lg shadow-violet-200"
+                        ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-lg shadow-violet-200"
                         : "bg-slate-100 text-slate-500 group-hover:bg-violet-50 group-hover:text-violet-600",
                     ].join(" ")}
                   >
@@ -964,7 +964,7 @@ export default function WebsiteTemplatesPage() {
                     className="
                       mt-5 inline-flex items-center justify-center rounded-xl
                       bg-black px-5 py-3 text-sm font-bold text-white
-                      transition hover:bg-slate-800 disabled:cursor-not-allowed
+                      transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed
                       disabled:opacity-50
                     "
                   >

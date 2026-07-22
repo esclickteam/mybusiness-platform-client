@@ -1801,7 +1801,7 @@ export default function VisualEditorCanvas({
             לא נמצא Component לתבנית
           </p>
 
-          <h2 className="mt-3 text-2xl font-black text-slate-950">
+          <h2 className="mt-3 text-2xl font-black text-slate-800">
             צריך לבדוק את renderer
           </h2>
         </div>

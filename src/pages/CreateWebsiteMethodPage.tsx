@@ -46,7 +46,7 @@ export default function CreateWebsiteMethodPage() {
             onClick={() => navigate(`${base}/templates`)}
             className="group rounded-2xl border border-slate-200 bg-white p-6 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md"
           >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition group-hover:bg-slate-900 group-hover:text-white">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-700 transition group-hover:bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800 group-hover:text-white">
               <LayoutTemplate className="h-6 w-6" />
             </div>
             <h2 className="text-lg font-bold text-slate-900">
@@ -65,7 +65,7 @@ export default function CreateWebsiteMethodPage() {
             onClick={() => navigate(`${base}/create/ai`)}
             className="group rounded-2xl border border-violet-200 bg-gradient-to-br from-white via-white to-violet-50 p-6 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
           >
-            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:bg-violet-600 group-hover:text-white">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700 transition group-hover:border-violet-200/80 group-hover:from-violet-200/80 group-hover:via-sky-100 group-hover:to-cyan-100 group-hover:text-slate-800">
               <Sparkles className="h-6 w-6" />
             </div>
             <h2 className="text-lg font-bold text-slate-900">

@@ -163,7 +163,7 @@ export default function Collab() {
   if (!hasCollabAccess && !devMode) {
     return (
       <div dir={dir} className="p-6 text-center">
-        <h2 className="text-xl font-black text-slate-950">
+        <h2 className="text-xl font-black text-slate-800">
           {t("collab.upgradeOnly")}
         </h2>
 
@@ -178,7 +178,7 @@ export default function Collab() {
     <AiProvider>
       <section
         dir={dir}
-        className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-white via-sky-50/40 to-cyan-50/60 px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
+        className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-white via-sky-50/40 to-cyan-50/60 px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
       >
         <div className="mx-auto w-full max-w-7xl">
           <nav

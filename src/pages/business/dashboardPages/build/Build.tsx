@@ -988,7 +988,7 @@ export default function Build() {
               className={[
                 "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                 active
-                  ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                  ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
                   : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
               ].join(" ")}
             >
@@ -1005,7 +1005,7 @@ export default function Build() {
       return (
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)]">
-            <h2 className="text-lg font-black text-slate-950">
+            <h2 className="text-lg font-black text-slate-800">
               {t("buildPage.main.title")}
             </h2>
 
@@ -1196,7 +1196,7 @@ export default function Build() {
                 </div>
 
                 <div>
-                  <h3 className="text-base font-black text-slate-950">
+                  <h3 className="text-base font-black text-slate-800">
                     {t("buildPage.main.logoTitle")}
                   </h3>
 
@@ -1210,7 +1210,7 @@ export default function Build() {
                 <button
                   type="button"
                   onClick={() => logoInputRef.current?.click()}
-                  className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20"
+                  className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20"
                 >
                   {t("buildPage.main.uploadLogo")}
                 </button>
@@ -1238,7 +1238,7 @@ export default function Build() {
           <div className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]">
             <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-start">
               <div>
-                <h2 className="text-lg font-black text-slate-950">
+                <h2 className="text-lg font-black text-slate-800">
                   {t("buildPage.gallery.mainImagesTitle")}
                 </h2>
 
@@ -1305,7 +1305,7 @@ export default function Build() {
           <div className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]">
             <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-start">
               <div>
-                <h2 className="text-lg font-black text-slate-950">
+                <h2 className="text-lg font-black text-slate-800">
                   {t("buildPage.gallery.galleryTitle")}
                 </h2>
 
@@ -1317,7 +1317,7 @@ export default function Build() {
               <button
                 type="button"
                 onClick={() => galleryInputRef.current?.click()}
-                className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20"
+                className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20"
               >
                 {t("buildPage.gallery.addGalleryImages")}
               </button>
@@ -1370,7 +1370,7 @@ export default function Build() {
       return (
         <div className="mx-auto max-w-3xl space-y-6 text-start">
           <div>
-            <h2 className="text-2xl font-black text-slate-950">{t("buildPage.reviews.title")}</h2>
+            <h2 className="text-2xl font-black text-slate-800">{t("buildPage.reviews.title")}</h2>
 
             <p className="mt-2 text-sm leading-7 text-slate-600">
               {t("buildPage.reviews.editorIntro")}
@@ -1381,7 +1381,7 @@ export default function Build() {
           </div>
 
           <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)] sm:p-6">
-            <h3 className="text-lg font-black text-slate-950">{t("buildPage.reviews.parametersTitle")}</h3>
+            <h3 className="text-lg font-black text-slate-800">{t("buildPage.reviews.parametersTitle")}</h3>
 
             <p className="mt-2 text-sm leading-7 text-slate-600">
               {t("buildPage.reviews.parametersIntro")}
@@ -1420,7 +1420,7 @@ export default function Build() {
                 href={publicReviewsUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 sm:w-auto"
+                className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 sm:w-auto"
               >
                 {t("buildPage.reviews.viewPublic")}
               </a>
@@ -1442,7 +1442,7 @@ export default function Build() {
               🌐
             </div>
 
-            <h2 className="mt-5 text-2xl font-black text-slate-950">
+            <h2 className="mt-5 text-2xl font-black text-slate-800">
               {t("buildPage.website.title")}
             </h2>
 
@@ -1516,7 +1516,7 @@ export default function Build() {
           onSubmit={handleAddFaq}
           className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]"
         >
-          <h2 className="text-lg font-black text-slate-950">
+          <h2 className="text-lg font-black text-slate-800">
             {t("buildPage.faqs.addTitle")}
           </h2>
 
@@ -1549,7 +1549,7 @@ export default function Build() {
 
             <button
               type="submit"
-              className="h-[48px] w-full rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 text-sm font-black text-white shadow-lg shadow-violet-500/20"
+              className="h-[48px] w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-sm font-black text-slate-800 shadow-lg shadow-violet-500/20"
             >
               {t("buildPage.faqs.addButton")}
             </button>
@@ -1595,7 +1595,7 @@ export default function Build() {
                       <button
                         type="button"
                         onClick={() => handleSaveFaqEdit(id)}
-                        className="h-11 flex-1 rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 text-sm font-black text-white"
+                        className="h-11 flex-1 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-sm font-black text-slate-800"
                       >
                         {t("buildPage.actions.save")}
                       </button>
@@ -1611,7 +1611,7 @@ export default function Build() {
                   </div>
                 ) : (
                   <>
-                    <h3 className="text-base font-black text-slate-950">
+                    <h3 className="text-base font-black text-slate-800">
                       {faq.question}
                     </h3>
 
@@ -1683,7 +1683,7 @@ export default function Build() {
 
           <div className="mx-auto max-w-4xl text-start">
             <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
-              <h2 className="text-xl font-black text-slate-950">
+              <h2 className="text-xl font-black text-slate-800">
                 {t("buildPage.reviews.recentTitle")}
               </h2>
             </div>
@@ -1735,7 +1735,7 @@ export default function Build() {
       return (
         <div className="mx-auto max-w-5xl text-start">
           <div className="mb-5 text-center sm:text-start">
-            <h2 className="text-2xl font-black text-slate-950">{t("buildPage.reviews.title")}</h2>
+            <h2 className="text-2xl font-black text-slate-800">{t("buildPage.reviews.title")}</h2>
             <p className="mt-1 text-sm text-slate-500">{t("buildPage.reviews.countLabel", { count: reviewsCount })}</p>
           </div>
 
@@ -1776,7 +1776,7 @@ export default function Build() {
                 🌐
               </div>
 
-              <h3 className="mt-5 text-2xl font-black text-slate-950">
+              <h3 className="mt-5 text-2xl font-black text-slate-800">
                 {t("buildPage.website.title")}
               </h3>
 
@@ -1788,7 +1788,7 @@ export default function Build() {
                 href={normalizedWebsiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
                 {t("buildPage.website.enterSite")}
               </a>
@@ -1818,7 +1818,7 @@ export default function Build() {
                 <button
                   type="button"
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-center text-sm font-black text-slate-950 hover:bg-violet-50"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-center text-sm font-black text-slate-800 hover:bg-violet-50"
                 >
                   <span className="flex-1 text-center">
                     {faq.question || t("buildPage.faqs.questionFallback")}
@@ -1856,7 +1856,7 @@ export default function Build() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <input
         type="file"
@@ -1901,7 +1901,7 @@ export default function Build() {
                 </div>
               </div>
 
-              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                 {t("buildPage.header.title")}
               </h1>
 
@@ -1922,7 +1922,7 @@ export default function Build() {
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
                   {isSaving ? t("buildPage.actions.saving") : t("buildPage.actions.saveChanges")}
                 </button>
@@ -1977,7 +1977,7 @@ export default function Build() {
                       ✨
                     </div>
 
-                    <p className="mt-4 text-lg font-black text-slate-950">
+                    <p className="mt-4 text-lg font-black text-slate-800">
                       {t("buildPage.preview.addCover")}
                     </p>
                   </div>
@@ -1999,7 +1999,7 @@ export default function Build() {
                   )}
                 </div>
 
-                <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950">
+                <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-800">
                   {businessDetails.businessName || t("buildPage.preview.businessNameFallback")}
                 </h2>
 
@@ -2065,7 +2065,7 @@ export default function Build() {
                           className={[
                             "flex min-w-[118px] cursor-pointer items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                             active
-                              ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                              ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
                               : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
                           ].join(" ")}
                         >
@@ -2103,7 +2103,7 @@ function PreviewEmptyState({
         {icon}
       </div>
 
-      <h3 className="text-lg font-black text-slate-950">{title}</h3>
+      <h3 className="text-lg font-black text-slate-800">{title}</h3>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {text}
@@ -2127,7 +2127,7 @@ function EditorEmptyState({
         {icon}
       </div>
 
-      <h3 className="text-lg font-black text-slate-950">{title}</h3>
+      <h3 className="text-lg font-black text-slate-800">{title}</h3>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {text}

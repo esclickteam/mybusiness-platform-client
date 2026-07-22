@@ -67,7 +67,7 @@ function couponBadge(text = "SAVE 20%") {
 function countdownBox(value: string, label: string) {
   return `
 <div class="rounded-[26px] border border-slate-200 bg-white p-5 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <strong class="block text-4xl font-black text-slate-950" data-editable-text="true">${value}</strong>
+  <strong class="block text-4xl font-black text-slate-800" data-editable-text="true">${value}</strong>
   <span class="mt-2 block text-xs font-black text-slate-400" data-editable-text="true">${label}</span>
 </div>
 `;
@@ -80,7 +80,7 @@ function promoFeature(title: string, text: string, icon = "✓") {
     ${icon}
   </div>
   <div>
-    <h3 class="text-base font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-base font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-1 text-sm font-bold leading-6 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 </div>
@@ -105,7 +105,7 @@ function dealCard(title: string, oldPrice: string, newPrice: string, imageUrl = 
     מבצע מוגבל
   </p>
 
-  <h3 class="mt-4 text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-4 text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -139,7 +139,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
           <div>
             <p class="${pillClass}" data-editable-text="true">מבצע החודש</p>
 
-            <h2 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-950 md:text-7xl" data-editable-text="true">
+            <h2 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-800 md:text-7xl" data-editable-text="true">
               הטבה מיוחדת לזמן מוגבל
             </h2>
 
@@ -177,7 +177,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
       <div class="mx-auto max-w-[1040px] rounded-[58px] border border-slate-200 bg-white p-8 text-center shadow-[0_44px_150px_rgba(15,23,42,0.10)] md:p-16">
         <p class="${pillClass}" data-editable-text="true">קופון מיוחד</p>
 
-        <h2 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h2 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-slate-800 md:text-7xl" data-editable-text="true">
           קבלו הטבה בלעדית
         </h2>
 
@@ -208,7 +208,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="relative overflow-hidden rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-fuchsia-500/25 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/25 blur-3xl"></div>
 
@@ -285,7 +285,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
         <div class="${softCardClass}">
           <p class="${pillClass}" data-editable-text="true">הטבה מוגבלת</p>
 
-          <h3 class="text-4xl font-black leading-tight text-slate-950" data-editable-text="true">
+          <h3 class="text-4xl font-black leading-tight text-slate-800" data-editable-text="true">
             30% הנחה למצטרפים היום
           </h3>
 
@@ -380,7 +380,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
           <div>
             <p class="${pillClass}" data-editable-text="true">שירות במבצע</p>
 
-            <h2 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-slate-950 md:text-7xl" data-editable-text="true">
+            <h2 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-slate-800 md:text-7xl" data-editable-text="true">
               טיפול / שירות ראשון במחיר מיוחד
             </h2>
 
@@ -436,7 +436,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             קבלת הטבה
           </h3>
 
@@ -489,7 +489,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Promo
               </p>
@@ -557,7 +557,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
       <div class="mx-auto max-w-[980px] rounded-[58px] bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-8 text-center shadow-[0_40px_140px_rgba(15,23,42,0.10)] md:p-14">
         <p class="${pillClass}" data-editable-text="true">הטבה לנרשמים</p>
 
-        <h2 class="text-4xl font-black leading-[1.02] tracking-[-0.05em] text-slate-950 md:text-6xl" data-editable-text="true">
+        <h2 class="text-4xl font-black leading-[1.02] tracking-[-0.05em] text-slate-800 md:text-6xl" data-editable-text="true">
           הצטרפו וקבלו הטבה ראשונה
         </h2>
 
@@ -625,7 +625,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">

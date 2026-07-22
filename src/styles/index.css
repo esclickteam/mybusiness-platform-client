@@ -8,17 +8,23 @@
 =========================== */
 
 :root {
-  --bg-start: #fdfcff;
-  --bg-end: #e4e8ff;
-  --text-color: #0f172a;
+  --bg-start: #faf7ff;
+  --bg-end: #eefcff;
+  --text-color: #1e293b;
+  --brand-from: #faf7ff;
+  --brand-via: #f3f8ff;
+  --brand-to: #eefcff;
+  --brand-accent: #6366f1;
+  --brand-accent-soft: rgba(99, 102, 241, 0.1);
+  --brand-border: rgba(196, 181, 253, 0.55);
 }
 
 /* Business / dashboard theme */
 [data-theme="business"],
 [data-theme="dark"] {
-  --bg-start: #f6f7fb;
-  --bg-end: #e8ebf8;
-  --text-color: #0f172a;
+  --bg-start: #faf7ff;
+  --bg-end: #eefcff;
+  --text-color: #1e293b;
 }
 
 /* ===========================
@@ -213,7 +219,7 @@ button:disabled {
   }
 
   .crm-hero {
-    @apply overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-slate-950 via-violet-950 to-violet-700 p-6 text-white shadow-[0_24px_80px_rgba(88,28,135,0.20)];
+    @apply overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-6 text-white shadow-[0_24px_80px_rgba(88,28,135,0.20)];
   }
 
   .crm-panel {
@@ -225,7 +231,7 @@ button:disabled {
   }
 
   .crm-primary-btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60;
+    @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .crm-secondary-btn {

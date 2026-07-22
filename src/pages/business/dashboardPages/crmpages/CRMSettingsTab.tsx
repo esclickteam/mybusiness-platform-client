@@ -250,7 +250,7 @@ export default function CRMSettingsTab() {
               {t("crm.settings.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("crm.settings.heroTitle")}
             </h2>
 
@@ -324,7 +324,7 @@ export default function CRMSettingsTab() {
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {t("crm.settings.setupTitle")}
               </h3>
 
@@ -354,7 +354,7 @@ export default function CRMSettingsTab() {
                   className={[
                     "flex min-w-fit items-center gap-3 rounded-2xl border px-4 py-3 text-start transition",
                     isActive
-                      ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-200"
+                      ? "border-slate-950 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
                   ].join(" ")}
                 >
@@ -1107,7 +1107,7 @@ function SettingsPanel({
                 {eyebrow}
               </div>
 
-              <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+              <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-800">
                 {title}
               </h3>
 
@@ -1122,7 +1122,7 @@ function SettingsPanel({
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : actionLabel}
@@ -1134,7 +1134,7 @@ function SettingsPanel({
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <div className="border-b border-slate-100 p-5">
-            <h3 className="text-2xl font-black text-slate-950">{title}</h3>
+            <h3 className="text-2xl font-black text-slate-800">{title}</h3>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
               {description}
@@ -1172,7 +1172,7 @@ function SettingsAside({ settings }: { settings: CRMSettingsState }) {
           </div>
 
           <div>
-            <h3 className="text-base font-black text-slate-950">
+            <h3 className="text-base font-black text-slate-800">
               {t("crm.settings.general.overviewTitle")}
             </h3>
 
@@ -1216,7 +1216,7 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
 
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <h3 className="text-base font-black text-slate-950">
+      <h3 className="text-base font-black text-slate-800">
         {t("crm.settings.branding.previewTitle")}
       </h3>
 
@@ -1230,7 +1230,7 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
           </div>
 
           <div className="min-w-0">
-            <p className="truncate text-sm font-black text-slate-950">
+            <p className="truncate text-sm font-black text-slate-800">
               {settings.businessName ||
                 t("crm.settings.branding.previewFallbackName")}
             </p>
@@ -1273,7 +1273,7 @@ function SettingsTipCard({
         </div>
 
         <div>
-          <h3 className="text-base font-black text-slate-950">{title}</h3>
+          <h3 className="text-base font-black text-slate-800">{title}</h3>
 
           <p className="text-xs font-semibold text-slate-500">
             {t("crm.settings.tipSectionLabel")}
@@ -1397,7 +1397,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -1456,7 +1456,7 @@ function ToggleBox({
     >
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-sm font-black text-slate-950">{title}</p>
+          <p className="text-sm font-black text-slate-800">{title}</p>
 
           <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
             {text}
@@ -1494,7 +1494,7 @@ function SaveButton({
       type="button"
       onClick={onClick}
       disabled={saving}
-      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Save className="h-5 w-5" />
       {saving ? t("crm.common.saving") : label}
@@ -1517,7 +1517,7 @@ function SecurityCard({
         <Icon className="h-5 w-5" />
       </div>
 
-      <h3 className="mt-4 text-lg font-black text-slate-950">{title}</h3>
+      <h3 className="mt-4 text-lg font-black text-slate-800">{title}</h3>
 
       <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
         {text}
