@@ -11,45 +11,6 @@ import type {
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
 
-export const ink = "#111318";
-export const muted = "#5a5f66";
-export const hairline = "rgba(17,19,24,.12)";
-export const cream = "#faf9f7";
-export const dark = "#0f1115";
-
-export const body = {
-  color: muted,
-  fontSize: "16px",
-  lineHeight: "1.7",
-};
-
-export const darkButton = {
-  color: "#ffffff",
-  backgroundColor: ink,
-  borderRadius: "999px",
-  padding: "12px 22px",
-  fontSize: "14px",
-  fontWeight: "700",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  textDecoration: "none",
-};
-
-export const lightButton = {
-  color: ink,
-  backgroundColor: "#ffffff",
-  border: "1px solid rgba(17,19,24,.14)",
-  borderRadius: "999px",
-  padding: "12px 22px",
-  fontSize: "14px",
-  fontWeight: "700",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  textDecoration: "none",
-};
-
 export type PageLayoutKind =
   | "split"
   | "center"
@@ -72,6 +33,22 @@ export type PageContent = {
   imageAlt?: string;
   items?: Array<{ title: string; copy: string; meta?: string }>;
   stats?: Array<{ value: string; label: string }>;
+};
+
+export const LAYOUT_META: Record<
+  PageLayoutKind,
+  { backgroundColor: string; minHeight: string }
+> = {
+  split: { backgroundColor: "#ffffff", minHeight: "1600px" },
+  center: { backgroundColor: "#f7f1ea", minHeight: "1500px" },
+  magazine: { backgroundColor: "#ffffff", minHeight: "1550px" },
+  cards: { backgroundColor: "#eef6ff", minHeight: "1500px" },
+  timeline: { backgroundColor: "#f6f4ff", minHeight: "1580px" },
+  stats: { backgroundColor: "#111827", minHeight: "1480px" },
+  dark: { backgroundColor: "#09090b", minHeight: "1500px" },
+  lifestyle: { backgroundColor: "#fde8e4", minHeight: "1520px" },
+  listMedia: { backgroundColor: "#f0faf4", minHeight: "1450px" },
+  ctaForm: { backgroundColor: "#fff7ed", minHeight: "1450px" },
 };
 
 export function makePageSection(options: {
@@ -101,6 +78,30 @@ export function makePageSection(options: {
   };
 }
 
+function btn(
+  bg: string,
+  color: string,
+  radius = "999px",
+  border?: string,
+) {
+  return {
+    color,
+    backgroundColor: bg,
+    border: border || "none",
+    borderRadius: radius,
+    padding: "13px 24px",
+    fontSize: "14px",
+    fontWeight: "700",
+    display: "inline-flex",
+    alignItems: "center",
+    justifyContent: "center",
+    textDecoration: "none",
+  };
+}
+
+/**
+ * Ten visually unrelated recipes — different palette, type, shapes, and structure.
+ */
 export function buildLayoutNodes(
   kind: PageLayoutKind,
   content: PageContent,
@@ -110,59 +111,67 @@ export function buildLayoutNodes(
   const stats = content.stats || [];
 
   switch (kind) {
-    case "split":
+    /* 1 — Corporate navy split */
+    case "split": {
+      const navy = "#0b1f3a";
+      const accent = "#2563eb";
       return [
+        boxNode(
+          "rail",
+          { backgroundColor: accent },
+          absoluteLayout(0, 0, "14px", "1600px", 2),
+        ),
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.16em",
+            color: accent,
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.22em",
           },
-          absoluteLayout(60, 70, "360px", "24px", 20),
+          absoluteLayout(60, 70, "420px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: ink,
-            fontSize: "64px",
-            fontWeight: "600",
-            letterSpacing: "-0.055em",
-            lineHeight: "1.02",
+            color: navy,
+            fontSize: "68px",
+            fontWeight: "800",
+            letterSpacing: "-0.06em",
+            lineHeight: "0.98",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 110, "520px", "170px", 20),
+          absoluteLayout(55, 110, "520px", "180px", 20),
         ),
         textNode(
           "subtitle",
           content.subtitle,
-          { ...body, fontSize: "17px" },
-          absoluteLayout(60, 300, "480px", "90px", 20),
+          { color: "#475569", fontSize: "17px", lineHeight: "1.7" },
+          absoluteLayout(60, 310, "480px", "90px", 20),
         ),
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 410, "180px", "48px", 20),
+          btn(accent, "#ffffff", "8px"),
+          absoluteLayout(60, 420, "190px", "50px", 20),
         ),
         ...(content.secondaryCta
           ? [
               buttonNode(
                 "cta2",
                 content.secondaryCta,
-                lightButton,
-                absoluteLayout(260, 410, "180px", "48px", 20),
+                btn("#ffffff", navy, "8px", "2px solid #0b1f3a"),
+                absoluteLayout(270, 420, "180px", "50px", 20),
               ),
             ]
           : []),
         imageNode(
           "hero",
           img,
-          { borderRadius: "4px", objectFit: "cover" },
-          absoluteLayout(580, 70, "480px", "520px", 8),
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(600, 0, "500px", "620px", 8),
           content.imageAlt || content.title,
         ),
         ...items.slice(0, 3).flatMap((item, index) => {
@@ -171,37 +180,33 @@ export function buildLayoutNodes(
             boxNode(
               `card-${index}`,
               {
-                backgroundColor: "#ffffff",
-                border: `1px solid ${hairline}`,
-                borderRadius: "16px",
+                backgroundColor: index === 0 ? navy : "#f1f5f9",
+                borderRadius: "0px",
               },
-              absoluteLayout(x, 640, "320px", "220px", 5),
+              absoluteLayout(x, 680, "320px", "240px", 5),
             ),
             textNode(
               `card-title-${index}`,
               item.title,
-              { color: ink, fontSize: "22px", fontWeight: "700" },
-              absoluteLayout(x + 24, 670, "270px", "40px", 20),
+              {
+                color: index === 0 ? "#ffffff" : navy,
+                fontSize: "22px",
+                fontWeight: "800",
+              },
+              absoluteLayout(x + 24, 720, "270px", "40px", 20),
             ),
             textNode(
               `card-copy-${index}`,
               item.copy,
-              { color: muted, fontSize: "14px", lineHeight: "1.6" },
-              absoluteLayout(x + 24, 725, "270px", "90px", 20),
+              {
+                color: index === 0 ? "rgba(255,255,255,.78)" : "#64748b",
+                fontSize: "14px",
+                lineHeight: "1.6",
+              },
+              absoluteLayout(x + 24, 780, "270px", "90px", 20),
             ),
           ];
         }),
-        textNode(
-          "band-title",
-          "למה לבחור בנו",
-          {
-            color: ink,
-            fontSize: "36px",
-            fontWeight: "600",
-            letterSpacing: "-0.04em",
-          },
-          absoluteLayout(60, 920, "600px", "50px", 20),
-        ),
         ...stats.slice(0, 3).flatMap((stat, index) => {
           const x = 60 + index * 340;
           return [
@@ -209,107 +214,111 @@ export function buildLayoutNodes(
               `stat-v-${index}`,
               stat.value,
               {
-                color: ink,
-                fontSize: "48px",
-                fontWeight: "700",
-                letterSpacing: "-0.04em",
+                color: accent,
+                fontSize: "52px",
+                fontWeight: "900",
+                letterSpacing: "-0.05em",
               },
-              absoluteLayout(x, 1000, "300px", "60px", 20),
+              absoluteLayout(x, 980, "300px", "60px", 20),
             ),
             textNode(
               `stat-l-${index}`,
               stat.label,
-              { color: muted, fontSize: "15px", fontWeight: "600" },
-              absoluteLayout(x, 1070, "300px", "30px", 20),
+              { color: navy, fontSize: "15px", fontWeight: "700" },
+              absoluteLayout(x, 1050, "300px", "30px", 20),
             ),
           ];
         }),
         boxNode(
-          "bottom-band",
-          { backgroundColor: cream },
-          absoluteLayout(0, 1160, "1100px", "280px", 1),
+          "bottom",
+          { backgroundColor: navy },
+          absoluteLayout(0, 1160, "1100px", "320px", 1),
         ),
         textNode(
           "bottom-title",
           "מוכנים להתחיל?",
           {
-            color: ink,
-            fontSize: "34px",
-            fontWeight: "600",
-            letterSpacing: "-0.03em",
+            color: "#ffffff",
+            fontSize: "36px",
+            fontWeight: "800",
           },
-          absoluteLayout(60, 1230, "500px", "48px", 20),
-        ),
-        textNode(
-          "bottom-copy",
-          "צרו קשר עוד היום ונבנה יחד את הצעד הבא של העסק.",
-          { ...body, fontSize: "16px" },
-          absoluteLayout(60, 1290, "520px", "50px", 20),
+          absoluteLayout(60, 1240, "520px", "50px", 20),
         ),
         buttonNode(
           "bottom-cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 1360, "200px", "48px", 20),
+          btn(accent, "#ffffff", "8px"),
+          absoluteLayout(60, 1320, "200px", "50px", 20),
         ),
         imageNode(
           "bottom-img",
           img,
-          { borderRadius: "4px", objectFit: "cover" },
-          absoluteLayout(640, 1210, "400px", "200px", 8),
-          content.imageAlt || "תצוגה",
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(640, 1210, "400px", "220px", 8),
+          "תצוגה",
         ),
       ];
+    }
 
-    case "center":
+    /* 2 — Warm editorial center */
+    case "center": {
+      const ink = "#2a2118";
+      const terracotta = "#c2410c";
       return [
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
+            color: terracotta,
             fontSize: "13px",
             fontWeight: "700",
-            letterSpacing: "0.18em",
+            letterSpacing: "0.28em",
             textAlign: "center",
           },
-          absoluteLayout(300, 80, "500px", "24px", 20),
+          absoluteLayout(300, 90, "500px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
             color: ink,
-            fontSize: "68px",
-            fontWeight: "600",
-            letterSpacing: "-0.055em",
+            fontSize: "72px",
+            fontWeight: "500",
+            letterSpacing: "-0.04em",
             lineHeight: "1.02",
             textAlign: "center",
             whiteSpace: "pre-line",
+            fontFamily: "Georgia, 'Times New Roman', serif",
           },
-          absoluteLayout(160, 130, "780px", "160px", 20),
+          absoluteLayout(140, 140, "820px", "170px", 20),
+        ),
+        boxNode(
+          "rule",
+          { backgroundColor: terracotta },
+          absoluteLayout(480, 340, "140px", "3px", 5),
         ),
         textNode(
           "subtitle",
           content.subtitle,
           {
-            ...body,
+            color: "#6b5e52",
             fontSize: "18px",
+            lineHeight: "1.75",
             textAlign: "center",
           },
-          absoluteLayout(250, 310, "600px", "70px", 20),
+          absoluteLayout(250, 370, "600px", "70px", 20),
         ),
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(460, 400, "180px", "48px", 20),
+          btn(terracotta, "#ffffff", "999px"),
+          absoluteLayout(450, 460, "200px", "50px", 20),
         ),
         imageNode(
           "hero",
           img,
-          { borderRadius: "6px", objectFit: "cover" },
-          absoluteLayout(140, 490, "820px", "380px", 8),
+          { borderRadius: "200px 200px 8px 8px", objectFit: "cover" },
+          absoluteLayout(220, 550, "660px", "420px", 8),
           content.imageAlt || content.title,
         ),
         ...items.slice(0, 3).flatMap((item, index) => {
@@ -323,120 +332,125 @@ export function buildLayoutNodes(
                 fontSize: "22px",
                 fontWeight: "700",
                 textAlign: "center",
+                fontFamily: "Georgia, serif",
               },
-              absoluteLayout(x, 920, "300px", "36px", 20),
+              absoluteLayout(x, 1020, "300px", "36px", 20),
             ),
             textNode(
               `i-copy-${index}`,
               item.copy,
               {
-                color: muted,
+                color: "#6b5e52",
                 fontSize: "14px",
                 lineHeight: "1.6",
                 textAlign: "center",
               },
-              absoluteLayout(x, 970, "300px", "80px", 20),
+              absoluteLayout(x, 1070, "300px", "80px", 20),
             ),
           ];
         }),
-        boxNode(
-          "cta-band",
-          { backgroundColor: ink },
-          absoluteLayout(60, 1120, "980px", "200px", 5),
-        ),
-        textNode(
-          "cta-band-title",
-          "הצעד הבא מתחיל כאן",
-          {
-            color: "#ffffff",
-            fontSize: "32px",
-            fontWeight: "600",
-            textAlign: "center",
-          },
-          absoluteLayout(180, 1170, "740px", "48px", 20),
-        ),
         buttonNode(
-          "cta-band-btn",
-          content.cta,
-          {
-            ...lightButton,
-            backgroundColor: "#ffffff",
-          },
-          absoluteLayout(460, 1240, "180px", "48px", 20),
+          "cta2",
+          content.secondaryCta || content.cta,
+          btn("transparent", terracotta, "999px", `2px solid ${terracotta}`),
+          absoluteLayout(450, 1220, "200px", "50px", 20),
         ),
       ];
+    }
 
-    case "magazine":
+    /* 3 — Black/white magazine collage */
+    case "magazine": {
       return [
         imageNode(
           "img-a",
           img,
-          { borderRadius: "2px", objectFit: "cover" },
-          absoluteLayout(60, 60, "420px", "520px", 8),
-          "תמונה ראשית",
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(0, 0, "520px", "640px", 8),
+          "A",
         ),
         imageNode(
           "img-b",
           img,
-          { borderRadius: "2px", objectFit: "cover", opacity: "0.92" },
-          absoluteLayout(520, 120, "280px", "220px", 7),
-          "תמונה משנית",
+          { borderRadius: "0px", objectFit: "cover", opacity: "0.85" },
+          absoluteLayout(540, 80, "260px", "260px", 7),
+          "B",
         ),
         imageNode(
           "img-c",
           img,
-          { borderRadius: "2px", objectFit: "cover", opacity: "0.88" },
-          absoluteLayout(820, 180, "220px", "280px", 6),
-          "תמונה שלישית",
+          { borderRadius: "0px", objectFit: "cover" },
+          absoluteLayout(820, 40, "260px", "360px", 6),
+          "C",
         ),
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
-            fontSize: "12px",
-            fontWeight: "700",
-            letterSpacing: "0.18em",
+            color: "#111111",
+            fontSize: "11px",
+            fontWeight: "900",
+            letterSpacing: "0.3em",
           },
-          absoluteLayout(520, 380, "400px", "22px", 20),
+          absoluteLayout(540, 380, "420px", "22px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: ink,
-            fontSize: "56px",
-            fontWeight: "600",
-            letterSpacing: "-0.05em",
-            lineHeight: "1.05",
+            color: "#111111",
+            fontSize: "64px",
+            fontWeight: "900",
+            letterSpacing: "-0.07em",
+            lineHeight: "0.95",
             whiteSpace: "pre-line",
+            textTransform: "uppercase",
           },
-          absoluteLayout(520, 420, "520px", "140px", 20),
+          absoluteLayout(540, 420, "520px", "160px", 20),
+        ),
+        boxNode(
+          "bar",
+          { backgroundColor: "#111111" },
+          absoluteLayout(0, 680, "1100px", "120px", 5),
         ),
         textNode(
-          "subtitle",
+          "bar-copy",
           content.subtitle,
-          { ...body, fontSize: "15px" },
-          absoluteLayout(60, 640, "980px", "60px", 20),
+          {
+            color: "#ffffff",
+            fontSize: "20px",
+            fontWeight: "600",
+            textAlign: "center",
+          },
+          absoluteLayout(80, 720, "940px", "40px", 20),
         ),
         ...items.slice(0, 4).flatMap((item, index) => {
-          const y = 740 + index * 100;
+          const y = 860 + index * 100;
           return [
             textNode(
-              `row-t-${index}`,
-              item.title,
-              { color: ink, fontSize: "20px", fontWeight: "700" },
-              absoluteLayout(60, y, "320px", "30px", 20),
+              `n-${index}`,
+              String(index + 1).padStart(2, "0"),
+              {
+                color: "#111111",
+                fontSize: "28px",
+                fontWeight: "900",
+              },
+              absoluteLayout(60, y, "80px", "36px", 20),
             ),
             textNode(
-              `row-c-${index}`,
+              `t-${index}`,
+              item.title,
+              { color: "#111111", fontSize: "22px", fontWeight: "800" },
+              absoluteLayout(160, y, "300px", "32px", 20),
+            ),
+            textNode(
+              `c-${index}`,
               item.copy,
-              { color: muted, fontSize: "14px", lineHeight: "1.55" },
-              absoluteLayout(400, y, "640px", "50px", 20),
+              { color: "#525252", fontSize: "15px", lineHeight: "1.5" },
+              absoluteLayout(480, y, "560px", "50px", 20),
             ),
             boxNode(
-              `row-line-${index}`,
-              { backgroundColor: hairline },
+              `line-${index}`,
+              { backgroundColor: "#e5e5e5" },
               absoluteLayout(60, y + 70, "980px", "1px", 5),
             ),
           ];
@@ -444,188 +458,120 @@ export function buildLayoutNodes(
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 1180, "200px", "48px", 20),
+          btn("#111111", "#ffffff", "0px"),
+          absoluteLayout(60, 1300, "220px", "52px", 20),
         ),
       ];
+    }
 
-    case "cards":
+    /* 4 — Colorful product-style cards */
+    case "cards": {
+      const accents = ["#0ea5e9", "#f43f5e", "#a855f7", "#10b981", "#f59e0b", "#6366f1"];
       return [
-        boxNode(
-          "top",
-          { backgroundColor: cream },
-          absoluteLayout(0, 0, "1100px", "320px", 1),
-        ),
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
+            color: "#0369a1",
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "800",
             letterSpacing: "0.16em",
           },
-          absoluteLayout(60, 70, "400px", "24px", 20),
+          absoluteLayout(60, 60, "400px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: ink,
-            fontSize: "56px",
-            fontWeight: "600",
+            color: "#0f172a",
+            fontSize: "58px",
+            fontWeight: "900",
             letterSpacing: "-0.05em",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 110, "700px", "120px", 20),
+          absoluteLayout(55, 100, "900px", "130px", 20),
         ),
         textNode(
           "subtitle",
           content.subtitle,
-          { ...body },
-          absoluteLayout(60, 240, "640px", "50px", 20),
+          { color: "#475569", fontSize: "17px", lineHeight: "1.6" },
+          absoluteLayout(60, 250, "700px", "50px", 20),
         ),
         ...items.slice(0, 6).flatMap((item, index) => {
           const col = index % 3;
           const row = Math.floor(index / 3);
-          const x = 60 + col * 340;
-          const y = 360 + row * 280;
+          const x = 50 + col * 350;
+          const y = 340 + row * 340;
+          const accent = accents[index % accents.length];
           return [
             boxNode(
               `c-${index}`,
               {
                 backgroundColor: "#ffffff",
-                border: `1px solid ${hairline}`,
-                borderRadius: "18px",
+                borderRadius: "28px",
+                boxShadow: "0 18px 40px rgba(15,23,42,0.08)",
               },
-              absoluteLayout(x, y, "320px", "250px", 5),
+              absoluteLayout(x, y, "330px", "310px", 5),
+            ),
+            boxNode(
+              `c-chip-${index}`,
+              { backgroundColor: accent, borderRadius: "999px" },
+              absoluteLayout(x + 22, y + 22, "72px", "10px", 8),
             ),
             imageNode(
               `c-img-${index}`,
               img,
-              { borderRadius: "12px", objectFit: "cover" },
-              absoluteLayout(x + 18, y + 18, "284px", "110px", 8),
+              { borderRadius: "18px", objectFit: "cover" },
+              absoluteLayout(x + 22, y + 50, "286px", "120px", 8),
               item.title,
             ),
             textNode(
               `c-t-${index}`,
               item.title,
-              { color: ink, fontSize: "18px", fontWeight: "700" },
-              absoluteLayout(x + 22, y + 145, "270px", "30px", 20),
+              { color: "#0f172a", fontSize: "20px", fontWeight: "800" },
+              absoluteLayout(x + 22, y + 190, "286px", "34px", 20),
             ),
             textNode(
               `c-c-${index}`,
               item.copy,
-              { color: muted, fontSize: "13px", lineHeight: "1.5" },
-              absoluteLayout(x + 22, y + 180, "270px", "50px", 20),
+              { color: "#64748b", fontSize: "13px", lineHeight: "1.5" },
+              absoluteLayout(x + 22, y + 230, "286px", "50px", 20),
             ),
           ];
         }),
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 980, "200px", "48px", 20),
+          btn("#0ea5e9", "#ffffff", "18px"),
+          absoluteLayout(50, 1080, "220px", "52px", 20),
         ),
       ];
+    }
 
-    case "timeline":
+    /* 5 — Purple timeline */
+    case "timeline": {
+      const purple = "#6d28d9";
       return [
-        textNode(
-          "eyebrow",
-          content.eyebrow,
-          {
-            color: "#8a8f96",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.16em",
-          },
-          absoluteLayout(60, 70, "360px", "24px", 20),
-        ),
-        textNode(
-          "title",
-          content.title,
-          {
-            color: ink,
-            fontSize: "58px",
-            fontWeight: "600",
-            letterSpacing: "-0.05em",
-            whiteSpace: "pre-line",
-          },
-          absoluteLayout(55, 110, "640px", "140px", 20),
-        ),
-        textNode(
-          "subtitle",
-          content.subtitle,
-          { ...body },
-          absoluteLayout(60, 270, "520px", "70px", 20),
+        boxNode(
+          "side",
+          { backgroundColor: "#ede9fe" },
+          absoluteLayout(700, 0, "400px", "1580px", 1),
         ),
         imageNode(
-          "side",
+          "side-img",
           img,
-          { borderRadius: "4px", objectFit: "cover" },
-          absoluteLayout(640, 70, "420px", "320px", 8),
+          { borderRadius: "24px", objectFit: "cover" },
+          absoluteLayout(740, 80, "320px", "420px", 8),
           content.imageAlt || content.title,
         ),
-        boxNode(
-          "line",
-          { backgroundColor: ink },
-          absoluteLayout(88, 420, "2px", "700px", 5),
-        ),
-        ...items.slice(0, 5).flatMap((item, index) => {
-          const y = 420 + index * 130;
-          return [
-            boxNode(
-              `dot-${index}`,
-              {
-                backgroundColor: ink,
-                borderRadius: "999px",
-              },
-              absoluteLayout(78, y + 8, "22px", "22px", 10),
-            ),
-            textNode(
-              `tl-meta-${index}`,
-              item.meta || `שלב ${index + 1}`,
-              {
-                color: "#8a8f96",
-                fontSize: "12px",
-                fontWeight: "700",
-                letterSpacing: "0.12em",
-              },
-              absoluteLayout(140, y, "200px", "22px", 20),
-            ),
-            textNode(
-              `tl-t-${index}`,
-              item.title,
-              { color: ink, fontSize: "24px", fontWeight: "700" },
-              absoluteLayout(140, y + 28, "700px", "36px", 20),
-            ),
-            textNode(
-              `tl-c-${index}`,
-              item.copy,
-              { color: muted, fontSize: "15px", lineHeight: "1.55" },
-              absoluteLayout(140, y + 70, "800px", "40px", 20),
-            ),
-          ];
-        }),
-        buttonNode(
-          "cta",
-          content.cta,
-          darkButton,
-          absoluteLayout(140, 1120, "200px", "48px", 20),
-        ),
-      ];
-
-    case "stats":
-      return [
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.16em",
+            color: purple,
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.2em",
           },
           absoluteLayout(60, 70, "400px", "24px", 20),
         ),
@@ -633,163 +579,248 @@ export function buildLayoutNodes(
           "title",
           content.title,
           {
-            color: ink,
-            fontSize: "60px",
-            fontWeight: "600",
+            color: "#1e1b4b",
+            fontSize: "56px",
+            fontWeight: "800",
             letterSpacing: "-0.05em",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 110, "980px", "130px", 20),
-        ),
-        ...stats.slice(0, 4).flatMap((stat, index) => {
-          const x = 60 + index * 260;
-          return [
-            boxNode(
-              `s-box-${index}`,
-              {
-                backgroundColor: cream,
-                borderRadius: "18px",
-              },
-              absoluteLayout(x, 280, "240px", "160px", 5),
-            ),
-            textNode(
-              `s-v-${index}`,
-              stat.value,
-              {
-                color: ink,
-                fontSize: "42px",
-                fontWeight: "700",
-                letterSpacing: "-0.04em",
-              },
-              absoluteLayout(x + 20, 315, "200px", "55px", 20),
-            ),
-            textNode(
-              `s-l-${index}`,
-              stat.label,
-              { color: muted, fontSize: "14px", fontWeight: "600" },
-              absoluteLayout(x + 20, 380, "200px", "40px", 20),
-            ),
-          ];
-        }),
-        imageNode(
-          "wide",
-          img,
-          { borderRadius: "6px", objectFit: "cover" },
-          absoluteLayout(60, 490, "980px", "320px", 8),
-          content.imageAlt || content.title,
+          absoluteLayout(55, 110, "600px", "140px", 20),
         ),
         textNode(
-          "story",
+          "subtitle",
           content.subtitle,
-          { ...body, fontSize: "18px" },
-          absoluteLayout(60, 860, "700px", "70px", 20),
+          { color: "#5b5675", fontSize: "16px", lineHeight: "1.7" },
+          absoluteLayout(60, 270, "560px", "70px", 20),
         ),
-        ...items.slice(0, 3).flatMap((item, index) => {
-          const x = 60 + index * 340;
+        boxNode(
+          "line",
+          { backgroundColor: purple },
+          absoluteLayout(88, 390, "4px", "900px", 5),
+        ),
+        ...items.slice(0, 5).flatMap((item, index) => {
+          const y = 390 + index * 150;
           return [
-            textNode(
-              `f-t-${index}`,
-              item.title,
-              { color: ink, fontSize: "20px", fontWeight: "700" },
-              absoluteLayout(x, 960, "300px", "34px", 20),
+            boxNode(
+              `dot-${index}`,
+              {
+                backgroundColor: index % 2 === 0 ? purple : "#ffffff",
+                border: `4px solid ${purple}`,
+                borderRadius: "999px",
+              },
+              absoluteLayout(74, y + 8, "32px", "32px", 10),
             ),
             textNode(
-              `f-c-${index}`,
+              `meta-${index}`,
+              item.meta || `שלב ${index + 1}`,
+              {
+                color: purple,
+                fontSize: "12px",
+                fontWeight: "800",
+                letterSpacing: "0.14em",
+              },
+              absoluteLayout(140, y, "220px", "22px", 20),
+            ),
+            textNode(
+              `t-${index}`,
+              item.title,
+              { color: "#1e1b4b", fontSize: "26px", fontWeight: "800" },
+              absoluteLayout(140, y + 30, "500px", "36px", 20),
+            ),
+            textNode(
+              `c-${index}`,
               item.copy,
-              { color: muted, fontSize: "14px", lineHeight: "1.55" },
-              absoluteLayout(x, 1005, "300px", "70px", 20),
+              { color: "#5b5675", fontSize: "15px", lineHeight: "1.55" },
+              absoluteLayout(140, y + 75, "500px", "45px", 20),
             ),
           ];
         }),
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 1140, "200px", "48px", 20),
+          btn(purple, "#ffffff", "999px"),
+          absoluteLayout(140, 1220, "210px", "52px", 20),
         ),
       ];
+    }
 
-    case "dark":
+    /* 6 — Dark stats board */
+    case "stats": {
       return [
-        boxNode(
-          "bg",
-          { backgroundColor: dark },
-          absoluteLayout(0, 0, "1100px", "1450px", 1),
-        ),
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "rgba(255,255,255,.55)",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.18em",
+            color: "#fbbf24",
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.24em",
           },
-          absoluteLayout(60, 80, "400px", "24px", 20),
+          absoluteLayout(60, 70, "400px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
             color: "#ffffff",
-            fontSize: "66px",
-            fontWeight: "600",
-            letterSpacing: "-0.055em",
-            lineHeight: "1.02",
+            fontSize: "60px",
+            fontWeight: "900",
+            letterSpacing: "-0.05em",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 130, "700px", "170px", 20),
+          absoluteLayout(55, 110, "980px", "130px", 20),
+        ),
+        ...stats.slice(0, 4).flatMap((stat, index) => {
+          const x = 50 + index * 260;
+          const hues = ["#fbbf24", "#34d399", "#60a5fa", "#f472b6"];
+          return [
+            boxNode(
+              `s-box-${index}`,
+              {
+                backgroundColor: "#1f2937",
+                borderRadius: "20px",
+                border: `1px solid ${hues[index]}55`,
+              },
+              absoluteLayout(x, 280, "240px", "170px", 5),
+            ),
+            textNode(
+              `s-v-${index}`,
+              stat.value,
+              {
+                color: hues[index],
+                fontSize: "46px",
+                fontWeight: "900",
+              },
+              absoluteLayout(x + 20, 315, "200px", "55px", 20),
+            ),
+            textNode(
+              `s-l-${index}`,
+              stat.label,
+              { color: "#d1d5db", fontSize: "14px", fontWeight: "700" },
+              absoluteLayout(x + 20, 385, "200px", "40px", 20),
+            ),
+          ];
+        }),
+        imageNode(
+          "wide",
+          img,
+          { borderRadius: "18px", objectFit: "cover", opacity: "0.92" },
+          absoluteLayout(50, 500, "1000px", "340px", 8),
+          content.imageAlt || content.title,
+        ),
+        ...items.slice(0, 3).flatMap((item, index) => {
+          const x = 50 + index * 340;
+          return [
+            textNode(
+              `f-t-${index}`,
+              item.title,
+              { color: "#ffffff", fontSize: "20px", fontWeight: "800" },
+              absoluteLayout(x, 900, "300px", "34px", 20),
+            ),
+            textNode(
+              `f-c-${index}`,
+              item.copy,
+              {
+                color: "#9ca3af",
+                fontSize: "14px",
+                lineHeight: "1.55",
+              },
+              absoluteLayout(x, 945, "300px", "70px", 20),
+            ),
+          ];
+        }),
+        buttonNode(
+          "cta",
+          content.cta,
+          btn("#fbbf24", "#111827", "12px"),
+          absoluteLayout(50, 1080, "220px", "52px", 20),
+        ),
+      ];
+    }
+
+    /* 7 — Cinematic gold on black */
+    case "dark": {
+      return [
+        imageNode(
+          "bg",
+          img,
+          {
+            borderRadius: "0px",
+            objectFit: "cover",
+            opacity: "0.35",
+          },
+          absoluteLayout(0, 0, "1100px", "700px", 2),
+          "bg",
+        ),
+        boxNode(
+          "veil",
+          { backgroundColor: "rgba(9,9,11,0.55)" },
+          absoluteLayout(0, 0, "1100px", "700px", 3),
+        ),
+        textNode(
+          "eyebrow",
+          content.eyebrow,
+          {
+            color: "#d4af37",
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.32em",
+          },
+          absoluteLayout(60, 120, "500px", "24px", 20),
+        ),
+        textNode(
+          "title",
+          content.title,
+          {
+            color: "#ffffff",
+            fontSize: "70px",
+            fontWeight: "500",
+            letterSpacing: "-0.04em",
+            lineHeight: "1",
+            whiteSpace: "pre-line",
+            fontFamily: "Georgia, serif",
+          },
+          absoluteLayout(55, 170, "780px", "180px", 20),
         ),
         textNode(
           "subtitle",
           content.subtitle,
           {
             color: "rgba(255,255,255,.72)",
-            fontSize: "17px",
+            fontSize: "18px",
             lineHeight: "1.7",
           },
-          absoluteLayout(60, 330, "520px", "80px", 20),
+          absoluteLayout(60, 380, "560px", "80px", 20),
         ),
         buttonNode(
           "cta",
           content.cta,
-          {
-            ...darkButton,
-            backgroundColor: "#ffffff",
-            color: dark,
-          },
-          absoluteLayout(60, 430, "190px", "48px", 20),
-        ),
-        imageNode(
-          "hero",
-          img,
-          { borderRadius: "4px", objectFit: "cover", opacity: "0.9" },
-          absoluteLayout(620, 90, "420px", "480px", 8),
-          content.imageAlt || content.title,
+          btn("#d4af37", "#09090b", "0px"),
+          absoluteLayout(60, 490, "210px", "52px", 20),
         ),
         ...items.slice(0, 3).flatMap((item, index) => {
-          const y = 640 + index * 130;
+          const y = 760 + index * 140;
           return [
-            textNode(
-              `d-t-${index}`,
-              item.title,
-              { color: "#ffffff", fontSize: "24px", fontWeight: "700" },
-              absoluteLayout(60, y, "500px", "36px", 20),
+            boxNode(
+              `line-${index}`,
+              { backgroundColor: "#d4af37" },
+              absoluteLayout(60, y, "40px", "2px", 5),
             ),
             textNode(
-              `d-c-${index}`,
+              `t-${index}`,
+              item.title,
+              { color: "#ffffff", fontSize: "26px", fontWeight: "700" },
+              absoluteLayout(60, y + 20, "700px", "36px", 20),
+            ),
+            textNode(
+              `c-${index}`,
               item.copy,
               {
-                color: "rgba(255,255,255,.65)",
+                color: "rgba(255,255,255,.6)",
                 fontSize: "15px",
                 lineHeight: "1.55",
               },
-              absoluteLayout(60, y + 42, "700px", "50px", 20),
-            ),
-            boxNode(
-              `d-line-${index}`,
-              { backgroundColor: "rgba(255,255,255,.12)" },
-              absoluteLayout(60, y + 105, "980px", "1px", 5),
+              absoluteLayout(60, y + 65, "800px", "45px", 20),
             ),
           ];
         }),
@@ -797,340 +828,360 @@ export function buildLayoutNodes(
           const x = 60 + index * 340;
           return [
             textNode(
-              `ds-v-${index}`,
+              `sv-${index}`,
               stat.value,
               {
-                color: "#ffffff",
-                fontSize: "44px",
-                fontWeight: "700",
+                color: "#d4af37",
+                fontSize: "42px",
+                fontWeight: "800",
               },
-              absoluteLayout(x, 1100, "300px", "55px", 20),
+              absoluteLayout(x, 1220, "300px", "50px", 20),
             ),
             textNode(
-              `ds-l-${index}`,
+              `sl-${index}`,
               stat.label,
               {
                 color: "rgba(255,255,255,.55)",
                 fontSize: "14px",
                 fontWeight: "600",
               },
-              absoluteLayout(x, 1165, "300px", "30px", 20),
+              absoluteLayout(x, 1280, "300px", "30px", 20),
             ),
           ];
         }),
       ];
+    }
 
-    case "lifestyle":
+    /* 8 — Soft blush lifestyle */
+    case "lifestyle": {
+      const blush = "#be185d";
       return [
-        boxNode(
-          "bg",
-          { backgroundColor: cream },
-          absoluteLayout(0, 0, "1100px", "1450px", 1),
-        ),
         imageNode(
           "hero",
           img,
-          { borderRadius: "28px", objectFit: "cover" },
-          absoluteLayout(60, 60, "980px", "420px", 8),
+          { borderRadius: "40px", objectFit: "cover" },
+          absoluteLayout(40, 40, "1020px", "460px", 8),
           content.imageAlt || content.title,
         ),
+        boxNode(
+          "pill",
+          {
+            backgroundColor: "#ffffff",
+            borderRadius: "999px",
+          },
+          absoluteLayout(380, 430, "340px", "54px", 12),
+        ),
         textNode(
-          "eyebrow",
+          "pill-text",
           content.eyebrow,
           {
-            color: "#8a847c",
+            color: blush,
             fontSize: "13px",
-            fontWeight: "700",
+            fontWeight: "800",
             letterSpacing: "0.16em",
             textAlign: "center",
           },
-          absoluteLayout(300, 520, "500px", "24px", 20),
+          absoluteLayout(380, 445, "340px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: "#1b1917",
+            color: "#831843",
             fontSize: "58px",
-            fontWeight: "600",
-            letterSpacing: "-0.05em",
+            fontWeight: "700",
+            letterSpacing: "-0.045em",
             textAlign: "center",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(160, 560, "780px", "130px", 20),
+          absoluteLayout(160, 540, "780px", "130px", 20),
         ),
         textNode(
           "subtitle",
           content.subtitle,
           {
-            color: "#5d574f",
+            color: "#9d174d",
             fontSize: "17px",
             lineHeight: "1.7",
             textAlign: "center",
           },
-          absoluteLayout(240, 710, "620px", "70px", 20),
+          absoluteLayout(240, 690, "620px", "70px", 20),
         ),
         ...items.slice(0, 3).flatMap((item, index) => {
-          const x = 80 + index * 340;
+          const x = 70 + index * 340;
           return [
             boxNode(
-              `l-card-${index}`,
+              `card-${index}`,
               {
                 backgroundColor: "#ffffff",
-                borderRadius: "22px",
+                borderRadius: "32px",
               },
-              absoluteLayout(x, 820, "310px", "240px", 5),
+              absoluteLayout(x, 800, "320px", "260px", 5),
             ),
             textNode(
-              `l-t-${index}`,
+              `t-${index}`,
               item.title,
               {
-                color: "#1b1917",
+                color: "#831843",
                 fontSize: "22px",
-                fontWeight: "700",
+                fontWeight: "800",
                 textAlign: "center",
               },
-              absoluteLayout(x + 20, 870, "270px", "40px", 20),
+              absoluteLayout(x + 20, 860, "280px", "40px", 20),
             ),
             textNode(
-              `l-c-${index}`,
+              `c-${index}`,
               item.copy,
               {
-                color: "#655f58",
+                color: "#9d174d",
                 fontSize: "14px",
                 lineHeight: "1.6",
                 textAlign: "center",
               },
-              absoluteLayout(x + 20, 930, "270px", "80px", 20),
+              absoluteLayout(x + 20, 920, "280px", "80px", 20),
             ),
           ];
         }),
         buttonNode(
           "cta",
           content.cta,
-          {
-            ...darkButton,
-            backgroundColor: "#1b1917",
-          },
-          absoluteLayout(460, 1120, "180px", "48px", 20),
+          btn(blush, "#ffffff", "999px"),
+          absoluteLayout(440, 1120, "220px", "52px", 20),
         ),
       ];
+    }
 
-    case "listMedia":
+    /* 9 — Sage list + media */
+    case "listMedia": {
+      const sage = "#047857";
       return [
+        boxNode(
+          "media-bg",
+          { backgroundColor: "#d1fae5" },
+          absoluteLayout(560, 0, "540px", "1450px", 1),
+        ),
+        imageNode(
+          "media",
+          img,
+          { borderRadius: "28px", objectFit: "cover" },
+          absoluteLayout(600, 80, "460px", "700px", 8),
+          content.imageAlt || content.title,
+        ),
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.16em",
+            color: sage,
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.2em",
           },
-          absoluteLayout(60, 70, "360px", "24px", 20),
+          absoluteLayout(50, 70, "400px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: ink,
-            fontSize: "56px",
-            fontWeight: "600",
+            color: "#064e3b",
+            fontSize: "54px",
+            fontWeight: "900",
             letterSpacing: "-0.05em",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 110, "520px", "140px", 20),
+          absoluteLayout(45, 110, "480px", "140px", 20),
         ),
         ...items.slice(0, 5).flatMap((item, index) => {
-          const y = 280 + index * 100;
+          const y = 290 + index * 110;
           return [
-            textNode(
-              `lm-n-${index}`,
-              String(index + 1).padStart(2, "0"),
+            boxNode(
+              `num-${index}`,
               {
-                color: "#c5c8ce",
-                fontSize: "18px",
-                fontWeight: "700",
+                backgroundColor: index % 2 === 0 ? sage : "#34d399",
+                borderRadius: "16px",
               },
-              absoluteLayout(60, y, "60px", "28px", 20),
+              absoluteLayout(50, y, "54px", "54px", 8),
             ),
             textNode(
-              `lm-t-${index}`,
+              `n-${index}`,
+              String(index + 1),
+              {
+                color: "#ffffff",
+                fontSize: "22px",
+                fontWeight: "900",
+                textAlign: "center",
+              },
+              absoluteLayout(50, y + 12, "54px", "30px", 20),
+            ),
+            textNode(
+              `t-${index}`,
               item.title,
-              { color: ink, fontSize: "22px", fontWeight: "700" },
-              absoluteLayout(130, y, "400px", "32px", 20),
+              { color: "#064e3b", fontSize: "20px", fontWeight: "800" },
+              absoluteLayout(120, y, "400px", "30px", 20),
             ),
             textNode(
-              `lm-c-${index}`,
+              `c-${index}`,
               item.copy,
-              { color: muted, fontSize: "14px", lineHeight: "1.5" },
-              absoluteLayout(130, y + 36, "400px", "40px", 20),
+              { color: "#047857", fontSize: "14px", lineHeight: "1.5" },
+              absoluteLayout(120, y + 36, "400px", "40px", 20),
             ),
           ];
         }),
-        imageNode(
-          "media",
-          img,
-          { borderRadius: "6px", objectFit: "cover" },
-          absoluteLayout(600, 110, "460px", "640px", 8),
-          content.imageAlt || content.title,
-        ),
         buttonNode(
           "cta",
           content.cta,
-          darkButton,
-          absoluteLayout(60, 820, "200px", "48px", 20),
+          btn(sage, "#ffffff", "16px"),
+          absoluteLayout(50, 900, "220px", "52px", 20),
         ),
         textNode(
           "note",
           content.subtitle,
-          { ...body, fontSize: "15px" },
-          absoluteLayout(60, 900, "500px", "70px", 20),
+          { color: "#065f46", fontSize: "15px", lineHeight: "1.6" },
+          absoluteLayout(50, 980, "460px", "70px", 20),
         ),
         ...stats.slice(0, 3).flatMap((stat, index) => {
-          const x = 60 + index * 180;
+          const x = 50 + index * 160;
           return [
             textNode(
-              `lm-s-${index}`,
+              `sv-${index}`,
               stat.value,
-              { color: ink, fontSize: "36px", fontWeight: "700" },
-              absoluteLayout(x, 1020, "160px", "45px", 20),
+              { color: sage, fontSize: "34px", fontWeight: "900" },
+              absoluteLayout(x, 1100, "140px", "40px", 20),
             ),
             textNode(
-              `lm-sl-${index}`,
+              `sl-${index}`,
               stat.label,
-              { color: muted, fontSize: "13px", fontWeight: "600" },
-              absoluteLayout(x, 1070, "160px", "30px", 20),
+              { color: "#065f46", fontSize: "12px", fontWeight: "700" },
+              absoluteLayout(x, 1150, "140px", "30px", 20),
             ),
           ];
         }),
       ];
+    }
 
-    case "ctaForm":
+    /* 10 — Orange conversion / form */
+    case "ctaForm": {
+      const orange = "#ea580c";
       return [
         textNode(
           "eyebrow",
           content.eyebrow,
           {
-            color: "#8a8f96",
-            fontSize: "13px",
-            fontWeight: "700",
-            letterSpacing: "0.16em",
+            color: orange,
+            fontSize: "12px",
+            fontWeight: "800",
+            letterSpacing: "0.22em",
           },
-          absoluteLayout(60, 70, "360px", "24px", 20),
+          absoluteLayout(50, 70, "400px", "24px", 20),
         ),
         textNode(
           "title",
           content.title,
           {
-            color: ink,
+            color: "#7c2d12",
             fontSize: "58px",
-            fontWeight: "600",
+            fontWeight: "900",
             letterSpacing: "-0.05em",
             whiteSpace: "pre-line",
           },
-          absoluteLayout(55, 110, "560px", "140px", 20),
+          absoluteLayout(45, 110, "560px", "150px", 20),
         ),
         textNode(
           "subtitle",
           content.subtitle,
-          { ...body },
-          absoluteLayout(60, 270, "520px", "70px", 20),
+          { color: "#9a3412", fontSize: "16px", lineHeight: "1.7" },
+          absoluteLayout(50, 290, "520px", "70px", 20),
         ),
         boxNode(
           "form",
           {
             backgroundColor: "#ffffff",
-            border: `1px solid ${hairline}`,
-            borderRadius: "22px",
+            borderRadius: "28px",
+            border: `3px solid ${orange}`,
           },
-          absoluteLayout(620, 70, "420px", "420px", 5),
+          absoluteLayout(620, 60, "430px", "460px", 5),
         ),
         textNode(
           "form-title",
           "השאירו פרטים",
-          { color: ink, fontSize: "24px", fontWeight: "700" },
-          absoluteLayout(650, 100, "360px", "36px", 20),
+          { color: "#7c2d12", fontSize: "26px", fontWeight: "900" },
+          absoluteLayout(650, 95, "370px", "40px", 20),
         ),
         boxNode(
-          "field1",
-          {
-            backgroundColor: cream,
-            borderRadius: "12px",
-          },
-          absoluteLayout(650, 160, "360px", "48px", 6),
+          "f1",
+          { backgroundColor: "#ffedd5", borderRadius: "14px" },
+          absoluteLayout(650, 160, "370px", "52px", 6),
         ),
         textNode(
-          "field1-label",
+          "f1l",
           "שם מלא",
-          { color: "#8a8f96", fontSize: "14px", fontWeight: "600" },
-          absoluteLayout(670, 172, "300px", "24px", 20),
+          { color: "#c2410c", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(670, 174, "300px", "24px", 20),
         ),
         boxNode(
-          "field2",
-          {
-            backgroundColor: cream,
-            borderRadius: "12px",
-          },
-          absoluteLayout(650, 230, "360px", "48px", 6),
+          "f2",
+          { backgroundColor: "#ffedd5", borderRadius: "14px" },
+          absoluteLayout(650, 230, "370px", "52px", 6),
         ),
         textNode(
-          "field2-label",
+          "f2l",
           "טלפון / אימייל",
-          { color: "#8a8f96", fontSize: "14px", fontWeight: "600" },
-          absoluteLayout(670, 242, "300px", "24px", 20),
+          { color: "#c2410c", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(670, 244, "300px", "24px", 20),
         ),
         boxNode(
-          "field3",
-          {
-            backgroundColor: cream,
-            borderRadius: "12px",
-          },
-          absoluteLayout(650, 300, "360px", "80px", 6),
+          "f3",
+          { backgroundColor: "#ffedd5", borderRadius: "14px" },
+          absoluteLayout(650, 300, "370px", "90px", 6),
         ),
         textNode(
-          "field3-label",
+          "f3l",
           "איך נוכל לעזור?",
-          { color: "#8a8f96", fontSize: "14px", fontWeight: "600" },
-          absoluteLayout(670, 312, "300px", "24px", 20),
+          { color: "#c2410c", fontSize: "14px", fontWeight: "700" },
+          absoluteLayout(670, 320, "300px", "24px", 20),
         ),
         buttonNode(
           "form-cta",
           content.cta,
-          darkButton,
-          absoluteLayout(650, 405, "360px", "48px", 20),
+          btn(orange, "#ffffff", "14px"),
+          absoluteLayout(650, 420, "370px", "54px", 20),
         ),
         imageNode(
           "wide",
           img,
-          { borderRadius: "6px", objectFit: "cover" },
-          absoluteLayout(60, 540, "980px", "280px", 8),
+          { borderRadius: "24px", objectFit: "cover" },
+          absoluteLayout(50, 560, "1000px", "300px", 8),
           content.imageAlt || content.title,
         ),
         ...items.slice(0, 3).flatMap((item, index) => {
-          const x = 60 + index * 340;
+          const x = 50 + index * 340;
           return [
-            textNode(
-              `cf-t-${index}`,
-              item.title,
-              { color: ink, fontSize: "20px", fontWeight: "700" },
-              absoluteLayout(x, 870, "300px", "34px", 20),
+            boxNode(
+              `chip-${index}`,
+              { backgroundColor: orange, borderRadius: "999px" },
+              absoluteLayout(x, 910, "48px", "8px", 5),
             ),
             textNode(
-              `cf-c-${index}`,
+              `t-${index}`,
+              item.title,
+              { color: "#7c2d12", fontSize: "20px", fontWeight: "800" },
+              absoluteLayout(x, 935, "300px", "34px", 20),
+            ),
+            textNode(
+              `c-${index}`,
               item.copy,
-              { color: muted, fontSize: "14px", lineHeight: "1.55" },
-              absoluteLayout(x, 915, "300px", "70px", 20),
+              { color: "#9a3412", fontSize: "14px", lineHeight: "1.55" },
+              absoluteLayout(x, 980, "300px", "70px", 20),
             ),
           ];
         }),
         buttonNode(
-          "cta",
+          "cta2",
           content.secondaryCta || content.cta,
-          lightButton,
-          absoluteLayout(60, 1040, "200px", "48px", 20),
+          btn("#ffffff", orange, "14px", `2px solid ${orange}`),
+          absoluteLayout(50, 1100, "220px", "52px", 20),
         ),
       ];
+    }
 
     default:
       return [];
