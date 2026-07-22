@@ -1599,7 +1599,333 @@
     "dismissAria": "Dismiss recommendation",
     "priorityUrgent": "Urgent",
     "priorityRecommended": "Recommended",
-    "priorityInfo": "Info"
+    "priorityInfo": "Info",
+    "loadError": "Could not load smart recommendations.",
+    "cards": {
+      "followup_needed": {
+        "title": "Customer follow-up needed",
+        "description": "You messaged customers more than 48 hours ago and still have no reply.",
+        "actionLabel": "Send follow-up",
+        "metricOne": "conversation",
+        "metricOther": "conversations"
+      },
+      "unanswered_client_messages": {
+        "title": "Customers are waiting for a reply",
+        "description": "Customers sent messages and have not received a business reply yet.",
+        "actionLabel": "Reply now",
+        "metricOne": "conversation",
+        "metricOther": "conversations"
+      },
+      "untreated_leads": {
+        "title": "Untreated leads",
+        "description": "New leads are waiting in CRM — reach out soon.",
+        "actionLabel": "View leads",
+        "metricOne": "new lead",
+        "metricOther": "new leads"
+      },
+      "clients_without_appointments": {
+        "title": "Customers without an appointment",
+        "description": "Some customers were added more than {{days}} days ago and still have no upcoming appointment.",
+        "actionLabel": "Invite to book"
+      },
+      "missing_work_hours": {
+        "title": "Set business hours",
+        "description": "Business hours are not set — customers will not be able to book appointments.",
+        "actionLabel": "Set hours"
+      },
+      "no_published_website": {
+        "title": "Publish your website",
+        "description": "No published site yet — building a site helps you get leads and expose your business.",
+        "actionLabel": "Build website"
+      },
+      "missing_seo": {
+        "title": "Complete SEO settings",
+        "description": "Site \"{{name}}\" is missing SEO settings — title, description, or share image.",
+        "actionLabel": "Edit SEO"
+      }
+    }
+  },
+  "advisor": {
+    "title": "BizUply Advisor",
+    "activeAgent": "Active Agent",
+    "subtitle": "An advisor that takes real actions — appointments, tasks, leads, and WhatsApp messages ready for you to send.",
+    "currentMode": "Current mode",
+    "freeQuestion": "Free question",
+    "aiBalance": "AI balance",
+    "balanceLoading": "Loading...",
+    "balanceNone": "Monthly questions used up",
+    "balanceOne": "1 question left",
+    "balanceMany": "{{count}} questions left",
+    "newChat": "New chat",
+    "historyTitle": "Daily history",
+    "historySubtitle": "Conversations are saved by day.",
+    "historyEmpty": "No saved conversations yet.",
+    "refresh": "Refresh",
+    "defaultConversationTitle": "Advisory chat",
+    "chatTitle": "Chat with BizUply Advisor",
+    "chatSubtitle": "New messages appear at the bottom. Only the chat area scrolls.",
+    "messagesCount": "{{count}} messages",
+    "limitReached": "You have reached your monthly AI question limit.",
+    "inputPlaceholder": "For example: schedule a meeting for Tuesday, prepare a WhatsApp message for leads...",
+    "send": "Send",
+    "thinking": "Thinking...",
+    "quickActionsTitle": "Quick actions",
+    "quickActionsSubtitle": "Smart scan of your business and the platform.",
+    "tipTitle": "Usage tip",
+    "tipBody": "The advisor takes real actions: scheduling meetings, creating tasks, updating leads, finding partners, and preparing WhatsApp messages for you to send.",
+    "welcome": "Hi 👋 I'm your **BizUply Advisor** — a business assistant that takes real actions.\n\nI can schedule meetings, create tasks, update leads, find business partners, and prepare WhatsApp messages ready for you to send.\n\nAsk a short question, or click **Find business partner** for a smart scan.",
+    "capabilityPills": {
+      "meetings": "Meetings",
+      "tasks": "Tasks",
+      "leads": "Leads",
+      "whatsapp": "WhatsApp ready",
+      "partners": "Partners"
+    },
+    "modes": {
+      "find_business_partner": "Find business partner",
+      "weekly_plan": "Weekly plan",
+      "monthly_plan": "Monthly plan",
+      "yearly_plan": "Yearly plan",
+      "marketing": "Marketing",
+      "actions": "Urgent actions",
+      "profitability": "Profitability",
+      "customer_retention": "Customer retention"
+    },
+    "modeShortLabels": {
+      "find_business_partner": "Partner",
+      "weekly_plan": "Week",
+      "monthly_plan": "Month",
+      "yearly_plan": "Year",
+      "marketing": "Marketing",
+      "actions": "Urgent",
+      "profitability": "Profit",
+      "customer_retention": "Retention"
+    },
+    "modePrompts": {
+      "find_business_partner": "Find me a suitable business partner from businesses in the system. Review existing businesses, check fit by field, services, area, target audience, business potential, and whether they are complementary or competing. Return a list of recommended businesses with match percentage, why each fits, what value they can give me, what value I can give them, and finish with a ready outreach message.",
+      "weekly_plan": "Build me a business advisory plan for the coming week based on my business data. Include goals, daily actions, tasks, ready templates, and success metrics.",
+      "monthly_plan": "Build me a monthly business growth plan. Include weekly breakdown, marketing, sales, customer retention, operations, goals, and metrics.",
+      "yearly_plan": "Build me a structured annual business plan. Include goals, quarterly breakdown, actions per quarter, success metrics, and what to start doing now.",
+      "marketing": "Build me a focused marketing plan for the business based on my data. Recommend what to promote, who to reach, which offer to run, and provide ready WhatsApp messages and posts.",
+      "actions": "Analyze my business and give me a list of urgent actions to take now in priority order. Write what to do, why it matters, and how to execute.",
+      "profitability": "Analyze my business profitability and pricing. Recommend which services to promote, where to increase value, which packages to create, and what to check before changing prices.",
+      "customer_retention": "Build me a customer retention and win-back plan. Write who to contact, when, which messages to send, and how to turn one-time customers into repeat customers."
+    },
+    "modeInstructions": {
+      "general": "Mode: general advisory. Answer only the question asked. For short questions, do not build a full plan.",
+      "weekly_plan": "Mode: weekly plan. Include a weekly goal, daily actions, tasks, templates, and success metrics.",
+      "monthly_plan": "Mode: monthly plan. Include 4 weeks, marketing, sales, retention, operations, and metrics.",
+      "yearly_plan": "Mode: yearly plan. Include vision, goals, quarters, actions, and metrics.",
+      "marketing": "Mode: marketing. Include a service to promote, target audience, offer, WhatsApp message, and post.",
+      "actions": "Mode: urgent actions. Give a short, clear priority list to execute now.",
+      "profitability": "Mode: profitability and pricing. Analyze services, value, packages, and profit improvement.",
+      "customer_retention": "Mode: customer retention. Provide a win-back process and ready messages.",
+      "find_business_partner": "Mode: find business partner. Review businesses in the system, find business matches, rank by match percentage, explain why each fits, and provide a ready outreach message."
+    },
+    "promptRules": "You are BizUply Advisor — a smart business, marketing, and operations advisor for small and medium businesses.\n\nRules:\n- Answer in English only.\n- If the question is short, answer briefly and to the point.\n- If a plan was requested, build a structured, professional plan.\n- Do not invent data that is not in the system.\n- Every recommendation must become a clear action.\n- Write what to do, when, why, and how to measure success.",
+    "promptRequest": "Business owner request:",
+    "starters": {
+      "partner": "Find me a business partner",
+      "improveWeek": "What should I improve this week?",
+      "promoteService": "Which service should I promote now?",
+      "closeLeads": "How do I close more leads?"
+    },
+    "errors": {
+      "loadHistory": "Could not load conversation history.",
+      "openConversation": "Could not open the previous conversation.",
+      "noAnswer": "No answer received from the server.",
+      "monthlyLimit": "You have reached your monthly AI question limit.",
+      "analysisFailed": "Something went wrong while analyzing the business. Try again.",
+      "invalidConversationId": "The conversation ID is invalid and cannot be opened.",
+      "actionFailed": "The action failed",
+      "actionRetry": "Could not complete the action. Try again."
+    },
+    "confirmTitle": "Confirm action?",
+    "confirmSubtitle": "The action will be executed in BizUply",
+    "cancel": "Cancel",
+    "confirmExecute": "Confirm and run",
+    "whatsappReady": "WhatsApp message ready",
+    "executedFallback": "Done: {{label}}",
+    "thinkingTitle": "Advisor is working...",
+    "thinkingSteps": {
+      "data": "Reading business data...",
+      "analyze": "Analyzing leads and appointments...",
+      "prepare": "Preparing answer and actions..."
+    },
+    "whatsappCard": {
+      "title": "WhatsApp message ready",
+      "subtitle": "You open and send — nothing is sent automatically",
+      "to": "To:",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "send": "Send message on WhatsApp"
+    },
+    "executedLabel": "✓ Executed in the system",
+    "actionsPanel": {
+      "readyMessages": "Messages ready for you to send",
+      "sendPrefix": "Send:",
+      "nextSteps": "Next steps",
+      "nextStepsHint": "Click to execute — sensitive actions will ask for confirmation"
+    },
+    "actionHints": {
+      "CREATE_TASK": "Creates a task in CRM",
+      "CREATE_TASKS": "Multiple tasks to complete",
+      "CREATE_APPOINTMENT": "New calendar appointment",
+      "CREATE_WEEKLY_PLAN": "Save as plan + tasks",
+      "CREATE_MONTHLY_PLAN": "Save as plan + tasks",
+      "CREATE_MARKETING_MESSAGE": "Ready message — you send it",
+      "CREATE_POST": "Content for the business page",
+      "OPEN_LEADS": "Go to leads screen",
+      "OPEN_CLIENTS": "Go to clients",
+      "OPEN_COLLABORATIONS": "Go to collaborations",
+      "OPEN_APPOINTMENTS": "Go to calendar",
+      "CUSTOM": "Custom action",
+      "fallback": "Click to execute"
+    }
+  },
+  "categoryAutocomplete": {
+    "otherLabel": "Other / custom category",
+    "customPrefix": "Use custom category:",
+    "placeholder": "Choose or search a category",
+    "writeCategory": "Enter your category",
+    "customPlaceholder": "For example: content strategist for small businesses",
+    "helper": "Type letters to get matches from categories. If there is no match — the custom category will be saved and shown on the business profile.",
+    "selected": "Selected",
+    "customBadge": "Custom",
+    "noResults": "No matching categories found",
+    "useCustom": "Use \"{{value}}\""
+  },
+  "businessProfile": {
+    "contact": {
+      "phone": "Phone",
+      "email": "Email",
+      "notAdded": "Not added",
+      "websiteCta": "Visit business website",
+      "whatsappCta": "Send WhatsApp message"
+    },
+    "view": {
+      "loading": "Loading business page...",
+      "loadErrorTitle": "Could not load the page",
+      "loadErrorText": "Try refreshing the page in a moment.",
+      "notFound": "Business not found",
+      "welcome": "Welcome",
+      "defaultBusinessName": "Business name",
+      "editLink": "Edit",
+      "tabs": {
+        "main": "Main",
+        "gallery": "Gallery",
+        "reviews": "Reviews",
+        "website": "Website",
+        "faqs": "FAQs"
+      },
+      "tabListAria": "Business page tabs",
+      "coverAlt": "Cover photo of {{name}}",
+      "logoAlt": "Logo of {{name}}",
+      "mainImageAlt": "Main image {{index}}",
+      "galleryImageAlt": "Gallery image {{index}}",
+      "reviewsCount": "{{count}} reviews",
+      "recentReviews": "Recent reviews",
+      "viewAllReviews": "View all reviews",
+      "customerReviews": "Customer reviews",
+      "addReview": "Add review",
+      "writeFirstReview": "Write the first review",
+      "closeReviewForm": "Close review form",
+      "loadingReviewForm": "Loading review form...",
+      "loadingGallery": "Loading gallery...",
+      "loadingReviews": "Loading reviews...",
+      "anonymousClient": "Anonymous customer",
+      "websiteTitle": "Business website",
+      "websiteDesc": "Visit the business website for more information, services, content, and updates.",
+      "empty": {
+        "mainImagesTitle": "No main images yet",
+        "mainImagesText": "Main images the business adds will appear here.",
+        "reviewsTitle": "No reviews yet",
+        "reviewsText": "Customer reviews will appear here.",
+        "galleryTitle": "No gallery images",
+        "galleryText": "Images the business uploads will appear here.",
+        "websiteTitle": "No website connected yet",
+        "websiteText": "When the business connects a website, the link will appear here.",
+        "faqsTitle": "No FAQs yet",
+        "faqsText": "Business questions and answers will appear here."
+      }
+    },
+    "mainSection": {
+      "livePreview": "Live preview",
+      "editLogo": "Edit logo",
+      "addCoverImage": "Add cover image",
+      "editProfileBadge": "Edit business profile",
+      "livePreviewBadge": "Real-time preview",
+      "pageTitle": "Edit business page",
+      "pageSubtitle": "Update business details, logo, images, and website link built through the platform. Every change here directly affects the public profile.",
+      "basicDetails": "Basic details",
+      "basicDetailsSubtitle": "Information shown at the top of the business profile.",
+      "labels": {
+        "businessName": "Business name",
+        "description": "Description",
+        "phone": "Phone",
+        "email": "Email",
+        "category": "Category",
+        "city": "City",
+        "website": "Business website",
+        "whatsapp": "WhatsApp link",
+        "mainImages": "Main images"
+      },
+      "placeholders": {
+        "businessName": "For example: Bella Beauty Studio",
+        "description": "Tell customers what the business does, what makes it unique, and which services you offer...",
+        "website": "For example: https://www.example.com",
+        "whatsapp": "For example: https://wa.me/972526850711 or 0526850711"
+      },
+      "helpers": {
+        "website": "Enter a link to the business website. It will update immediately in the preview and public profile after saving.",
+        "whatsapp": "Paste a full WhatsApp link or phone number. The button will appear in the preview and public profile.",
+        "mainImages": "You can add up to 6 images. The first image will be the cover."
+      },
+      "uploadedCount": "{{count}}/6 uploaded",
+      "cover": "Cover",
+      "deleteImage": "Delete image",
+      "addImages": "Add images",
+      "noWebsiteLink": "No business website link added yet.",
+      "previewTabsAria": "Profile preview tabs",
+      "coverAlt": "Cover image",
+      "logoAlt": "Business logo",
+      "mainImageAlt": "Business main image {{index}}",
+      "galleryImageAlt": "Gallery image {{index}}",
+      "defaultBusinessName": "Business name",
+      "reviewLabel": "Review",
+      "faqQuestion": "FAQ",
+      "faqAnswer": "Answer will appear here.",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "viewProfile": "View profile",
+      "deleteLogo": "Delete logo",
+      "deletingLogo": "Deleting logo...",
+      "confirmDeleteLogo": "Delete the logo?",
+      "deleteLogoError": "Error deleting logo: {{error}}",
+      "deleteLogoSuccess": "Logo deleted successfully",
+      "deleteLogoFailed": "Error deleting logo",
+      "previewEmpty": {
+        "mainImagesTitle": "No main images",
+        "mainImagesText": "Main images the business uploads will appear here.",
+        "galleryTitle": "No gallery images",
+        "galleryText": "Gallery images the business uploads will appear here.",
+        "reviewsTitle": "No reviews yet",
+        "reviewsText": "Customer reviews will appear here.",
+        "websiteTitle": "No website connected",
+        "websiteText": "When a business website is added, it will appear here.",
+        "faqsTitle": "No FAQs",
+        "faqsText": "Business questions and answers will appear here."
+      },
+      "previewTabs": {
+        "main": "Main",
+        "gallery": "Gallery",
+        "reviews": "Reviews",
+        "website": "Website",
+        "faqs": "FAQs"
+      },
+      "previewWebsiteTitle": "Business website",
+      "previewWebsiteDesc": "Customers can visit the website the business built through the platform."
+    }
   },
   "mySites": {
     "badge": "Website builder",

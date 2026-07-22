@@ -1599,7 +1599,333 @@
     "dismissAria": "סגירת המלצה",
     "priorityUrgent": "דחוף",
     "priorityRecommended": "מומלץ",
-    "priorityInfo": "מידע"
+    "priorityInfo": "מידע",
+    "loadError": "לא ניתן לטעון המלצות חכמות.",
+    "cards": {
+      "followup_needed": {
+        "title": "נדרש מעקב אחרי לקוחות",
+        "description": "שלחתם הודעות ללקוחות לפני יותר מ-48 שעות ועדיין לא קיבלתם תשובה.",
+        "actionLabel": "שליחת מעקב",
+        "metricOne": "שיחה",
+        "metricOther": "שיחות"
+      },
+      "unanswered_client_messages": {
+        "title": "לקוחות מחכים לתשובה",
+        "description": "יש לקוחות ששלחו הודעות ועדיין לא קיבלו מענה מהעסק.",
+        "actionLabel": "מענה עכשיו",
+        "metricOne": "שיחה",
+        "metricOther": "שיחות"
+      },
+      "untreated_leads": {
+        "title": "יש לידים שלא טופלו",
+        "description": "לידים חדשים ממתינים ב-CRM — כדאי ליצור קשר בהקדם.",
+        "actionLabel": "צפייה בלידים",
+        "metricOne": "ליד חדש",
+        "metricOther": "לידים חדשים"
+      },
+      "clients_without_appointments": {
+        "title": "לקוחות שעדיין לא קבעו תור",
+        "description": "יש לקוחות שנוספו לפני יותר מ-{{days}} ימים ועדיין אין להם תור קרוב.",
+        "actionLabel": "הזמנה לקביעת תור"
+      },
+      "missing_work_hours": {
+        "title": "הגדירו שעות פעילות",
+        "description": "לא הוגדרו שעות פעילות לעסק — לקוחות לא יוכלו לקבוע תורים.",
+        "actionLabel": "הגדרת שעות"
+      },
+      "no_published_website": {
+        "title": "פרסמו את האתר שלכם",
+        "description": "עדיין אין אתר מפורסם — בניית אתר תעזור לקבל לידים ולחשוף את העסק.",
+        "actionLabel": "בניית אתר"
+      },
+      "missing_seo": {
+        "title": "השלימו הגדרות SEO",
+        "description": "לאתר \"{{name}}\" חסרות הגדרות SEO — כותרת, תיאור או תמונה לשיתוף.",
+        "actionLabel": "עריכת SEO"
+      }
+    }
+  },
+  "advisor": {
+    "title": "יועץ BizUply",
+    "activeAgent": "Agent פעיל",
+    "subtitle": "יועץ שמבצע פעולות אמיתיות — פגישות, משימות, לידים והודעות WhatsApp מוכנות לשליחה שלך.",
+    "currentMode": "מצב נוכחי",
+    "freeQuestion": "שאלה חופשית",
+    "aiBalance": "מאזן AI",
+    "balanceLoading": "טוען...",
+    "balanceNone": "נגמרו שאלות החודש",
+    "balanceOne": "נשארה שאלה אחת",
+    "balanceMany": "{{count}} שאלות נשארו",
+    "newChat": "שיחה חדשה",
+    "historyTitle": "היסטוריה יומית",
+    "historySubtitle": "השיחות נשמרות לפי יום.",
+    "historyEmpty": "עדיין אין שיחות שמורות.",
+    "refresh": "רענון",
+    "defaultConversationTitle": "שיחת ייעוץ",
+    "chatTitle": "צ׳אט עם יועץ BizUply",
+    "chatSubtitle": "הודעות חדשות מופיעות למטה. יש סקרול פנימי רק לשיחה.",
+    "messagesCount": "{{count}} הודעות",
+    "limitReached": "הגעת למגבלת שאלות ה-AI החודשית שלך.",
+    "inputPlaceholder": "לדוגמה: קבע פגישה ליום שלישי, הכן הודעת WhatsApp ללידים...",
+    "send": "שלח",
+    "thinking": "חושב...",
+    "quickActionsTitle": "פעולות מהירות",
+    "quickActionsSubtitle": "סריקה חכמה של העסק והמערכת.",
+    "tipTitle": "טיפ שימוש",
+    "tipBody": "היועץ מבצע פעולות אמיתיות: תיאום פגישות, יצירת משימות, עדכון לידים, מציאת שותפים והכנת הודעות WhatsApp מוכנות לשליחה שלך.",
+    "welcome": "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ולהכין הודעות WhatsApp מוכנות לשליחה שלך.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
+    "capabilityPills": {
+      "meetings": "פגישות",
+      "tasks": "משימות",
+      "leads": "לידים",
+      "whatsapp": "WhatsApp מוכן",
+      "partners": "שותפים"
+    },
+    "modes": {
+      "find_business_partner": "מציאת שותף עסקי",
+      "weekly_plan": "תכנית שבועית",
+      "monthly_plan": "תכנית חודשית",
+      "yearly_plan": "תכנית שנתית",
+      "marketing": "שיווק",
+      "actions": "פעולות דחופות",
+      "profitability": "רווחיות",
+      "customer_retention": "שימור לקוחות"
+    },
+    "modeShortLabels": {
+      "find_business_partner": "שותף",
+      "weekly_plan": "שבוע",
+      "monthly_plan": "חודש",
+      "yearly_plan": "שנה",
+      "marketing": "שיווק",
+      "actions": "דחוף",
+      "profitability": "רווח",
+      "customer_retention": "שימור"
+    },
+    "modePrompts": {
+      "find_business_partner": "מצא לי שותף עסקי מתאים מתוך העסקים במערכת. עבור על העסקים הקיימים, בדוק התאמה לפי תחום, שירותים, אזור, קהל יעד, פוטנציאל עסקי והאם מדובר בעסק משלים או מתחרה. החזר לי רשימת עסקים מומלצים עם אחוז התאמה, למה כל עסק מתאים, איזה ערך הוא יכול לתת לי, איזה ערך אני יכול לתת לו, וסיים עם הודעת פנייה מוכנה לשליחה.",
+      "weekly_plan": "בנה לי תכנית ייעוץ עסקי לשבוע הקרוב לפי נתוני העסק שלי. תכלול יעדים, פעולות לפי ימים, משימות, נוסחים מוכנים ומדדי הצלחה.",
+      "monthly_plan": "בנה לי תכנית ייעוץ עסקי חודשית לצמיחה. תכלול חלוקה לשבועות, שיווק, מכירות, שימור לקוחות, תפעול, יעדים ומדדים.",
+      "yearly_plan": "בנה לי תכנית עסקית שנתית מסודרת לעסק. תכלול מטרות, חלוקה לרבעונים, פעולות לכל רבעון, מדדי הצלחה ומה להתחיל לבצע עכשיו.",
+      "marketing": "בנה לי תכנית שיווקית ממוקדת לעסק לפי הנתונים שלי. תמליץ מה לקדם, למי לפנות, איזה מבצע לעשות, ותן הודעות וואטסאפ ופוסטים מוכנים.",
+      "actions": "נתח את העסק שלי ותן לי רשימת פעולות דחופות לביצוע עכשיו לפי סדר עדיפויות. תכתוב מה לעשות, למה זה חשוב ואיך לבצע.",
+      "profitability": "נתח את הרווחיות והתמחור של העסק שלי. תמליץ אילו שירותים לקדם, איפה אפשר להעלות ערך, אילו חבילות ליצור ומה לבדוק לפני שינוי מחירים.",
+      "customer_retention": "בנה לי תכנית שימור והחזרת לקוחות. תכתוב למי כדאי לפנות, מתי, איזה הודעות לשלוח, ואיך להפוך לקוחות חד פעמיים ללקוחות חוזרים."
+    },
+    "modeInstructions": {
+      "general": "מצב: ייעוץ כללי. ענה לפי השאלה בלבד. אם זו שאלה קצרה, לא לבנות תכנית מלאה.",
+      "weekly_plan": "מצב: תכנית שבועית. כלול יעד שבועי, פעולות לפי ימים, משימות, נוסחים ומדדי הצלחה.",
+      "monthly_plan": "מצב: תכנית חודשית. כלול 4 שבועות, שיווק, מכירות, שימור, תפעול ומדדים.",
+      "yearly_plan": "מצב: תכנית שנתית. כלול חזון, מטרות, רבעונים, פעולות ומדדים.",
+      "marketing": "מצב: שיווק. כלול שירות לקידום, קהל יעד, הצעה, הודעת וואטסאפ ופוסט.",
+      "actions": "מצב: פעולות דחופות. תן סדר עדיפויות קצר וברור לביצוע עכשיו.",
+      "profitability": "מצב: רווחיות ותמחור. נתח שירותים, ערך, חבילות ושיפור רווחיות.",
+      "customer_retention": "מצב: שימור לקוחות. תן תהליך החזרת לקוחות והודעות מוכנות.",
+      "find_business_partner": "מצב: מציאת שותף עסקי. עבור על העסקים במערכת, מצא התאמות עסקיות, דרג לפי אחוז התאמה, הסבר למה כל עסק מתאים ותן הודעת פנייה מוכנה."
+    },
+    "promptRules": "אתה יועץ BizUply — יועץ עסקי, שיווקי ותפעולי חכם לעסקים קטנים ובינוניים.\n\nחוקים:\n- ענה בעברית בלבד.\n- אם השאלה קצרה, ענה קצר וענייני.\n- אם ביקשו תכנית, בנה תכנית מסודרת ומקצועית.\n- אל תמציא נתונים שאין במערכת.\n- כל המלצה חייבת להפוך לפעולה ברורה.\n- כתוב מה לבצע, מתי, למה ואיך למדוד הצלחה.",
+    "promptRequest": "בקשת בעל העסק:",
+    "starters": {
+      "partner": "מצא לי שותף עסקי",
+      "improveWeek": "מה הכי חשוב לשפר השבוע?",
+      "promoteService": "איזה שירות כדאי לקדם עכשיו?",
+      "closeLeads": "איך לסגור יותר לידים?"
+    },
+    "errors": {
+      "loadHistory": "לא הצלחתי לטעון את היסטוריית השיחות.",
+      "openConversation": "לא הצלחתי לפתוח את השיחה הישנה.",
+      "noAnswer": "לא התקבלה תשובה מהשרת.",
+      "monthlyLimit": "הגעת למגבלת שאלות ה-AI החודשית שלך.",
+      "analysisFailed": "משהו השתבש בזמן ניתוח העסק. נסה שוב.",
+      "invalidConversationId": "מזהה השיחה לא תקין ולכן לא ניתן לפתוח אותה.",
+      "actionFailed": "הפעולה נכשלה",
+      "actionRetry": "לא הצלחתי לבצע את הפעולה. נסה שוב."
+    },
+    "confirmTitle": "לאשר פעולה?",
+    "confirmSubtitle": "הפעולה תבוצע במערכת BizUply",
+    "cancel": "ביטול",
+    "confirmExecute": "אשר ובצע",
+    "whatsappReady": "הודעת WhatsApp מוכנה",
+    "executedFallback": "בוצע: {{label}}",
+    "thinkingTitle": "היועץ עובד...",
+    "thinkingSteps": {
+      "data": "קורא נתוני עסק...",
+      "analyze": "מנתח לידים ופגישות...",
+      "prepare": "מכין תשובה ופעולות..."
+    },
+    "whatsappCard": {
+      "title": "הודעת WhatsApp מוכנה",
+      "subtitle": "אתה פותח ושולח — אין שליחה אוטומטית",
+      "to": "אל:",
+      "copy": "העתק",
+      "copied": "הועתק!",
+      "send": "שלח הודעה ב-WhatsApp"
+    },
+    "executedLabel": "✓ בוצע במערכת",
+    "actionsPanel": {
+      "readyMessages": "הודעות מוכנות לשליחה שלך",
+      "sendPrefix": "שלח:",
+      "nextSteps": "הצעדים הבאים",
+      "nextStepsHint": "לחץ לביצוע — פעולות רגישות יבקשו אישור"
+    },
+    "actionHints": {
+      "CREATE_TASK": "נוצרת משימה ב-CRM",
+      "CREATE_TASKS": "מספר משימות לביצוע",
+      "CREATE_APPOINTMENT": "פגישה חדשה ביומן",
+      "CREATE_WEEKLY_PLAN": "שמירה כתכנית + משימות",
+      "CREATE_MONTHLY_PLAN": "שמירה כתכנית + משימות",
+      "CREATE_MARKETING_MESSAGE": "הודעה מוכנה — אתה שולח",
+      "CREATE_POST": "תוכן לעמוד העסק",
+      "OPEN_LEADS": "מעבר למסך לידים",
+      "OPEN_CLIENTS": "מעבר ללקוחות",
+      "OPEN_COLLABORATIONS": "מעבר לשיתופי פעולה",
+      "OPEN_APPOINTMENTS": "מעבר ליומן",
+      "CUSTOM": "פעולה מותאמת",
+      "fallback": "לחץ לביצוע"
+    }
+  },
+  "categoryAutocomplete": {
+    "otherLabel": "אחר / קטגוריה מותאמת",
+    "customPrefix": "השתמש בקטגוריה מותאמת:",
+    "placeholder": "בחר או חפש קטגוריה",
+    "writeCategory": "כתוב את הקטגוריה שלך",
+    "customPlaceholder": "לדוגמה: מומחית תוכן לעסקים קטנים",
+    "helper": "אפשר להקליד אות כמו א, ב, ג ולקבל התאמות מתוך הקטגוריות. אם אין התאמה — הקטגוריה המותאמת תישמר ותופיע בפרופיל העסק.",
+    "selected": "נבחר",
+    "customBadge": "מותאם",
+    "noResults": "לא נמצאו קטגוריות מתאימות",
+    "useCustom": "השתמש ב־\"{{value}}\""
+  },
+  "businessProfile": {
+    "contact": {
+      "phone": "טלפון",
+      "email": "אימייל",
+      "notAdded": "לא נוסף",
+      "websiteCta": "כניסה לאתר העסק",
+      "whatsappCta": "שליחת הודעה בוואטסאפ"
+    },
+    "view": {
+      "loading": "טוען את עמוד העסק...",
+      "loadErrorTitle": "לא הצלחנו לטעון את העמוד",
+      "loadErrorText": "נסה לרענן את הדף בעוד רגע.",
+      "notFound": "העסק לא נמצא",
+      "welcome": "ברוכים הבאים",
+      "defaultBusinessName": "שם העסק",
+      "editLink": "עריכה",
+      "tabs": {
+        "main": "ראשי",
+        "gallery": "גלריה",
+        "reviews": "ביקורות",
+        "website": "אתר",
+        "faqs": "שאלות נפוצות"
+      },
+      "tabListAria": "טאבים של עמוד העסק",
+      "coverAlt": "תמונת קאבר של {{name}}",
+      "logoAlt": "לוגו {{name}}",
+      "mainImageAlt": "תמונה ראשית {{index}}",
+      "galleryImageAlt": "תמונת גלריה {{index}}",
+      "reviewsCount": "{{count}} ביקורות",
+      "recentReviews": "ביקורות אחרונות",
+      "viewAllReviews": "צפייה בכל הביקורות",
+      "customerReviews": "ביקורות לקוחות",
+      "addReview": "הוספת ביקורת",
+      "writeFirstReview": "כתיבת הביקורת הראשונה",
+      "closeReviewForm": "סגירת טופס ביקורת",
+      "loadingReviewForm": "טוען טופס ביקורת...",
+      "loadingGallery": "טוען גלריה...",
+      "loadingReviews": "טוען ביקורות...",
+      "anonymousClient": "לקוח אנונימי",
+      "websiteTitle": "אתר העסק",
+      "websiteDesc": "אפשר להיכנס לאתר העסק ולראות מידע נוסף, שירותים, תכנים ועדכונים.",
+      "empty": {
+        "mainImagesTitle": "עדיין אין תמונות ראשיות",
+        "mainImagesText": "התמונות שהעסק יוסיף יופיעו כאן.",
+        "reviewsTitle": "עדיין אין ביקורות",
+        "reviewsText": "ביקורות של לקוחות יופיעו כאן.",
+        "galleryTitle": "אין תמונות בגלריה",
+        "galleryText": "התמונות שהעסק יעלה יופיעו כאן.",
+        "websiteTitle": "עדיין אין אתר מחובר",
+        "websiteText": "כאשר העסק יחבר אתר, הקישור יופיע כאן.",
+        "faqsTitle": "עדיין אין שאלות נפוצות",
+        "faqsText": "שאלות ותשובות של העסק יופיעו כאן."
+      }
+    },
+    "mainSection": {
+      "livePreview": "תצוגה מקדימה חיה",
+      "editLogo": "עריכת לוגו",
+      "addCoverImage": "הוסף תמונת קאבר",
+      "editProfileBadge": "עריכת פרופיל עסקי",
+      "livePreviewBadge": "תצוגה חיה בזמן אמת",
+      "pageTitle": "עריכת עמוד עסקי",
+      "pageSubtitle": "עדכן את פרטי העסק, הלוגו, התמונות והקישור לאתר שנבנה דרך המערכת. כל שינוי כאן משפיע ישירות על הפרופיל הציבורי.",
+      "basicDetails": "פרטים בסיסיים",
+      "basicDetailsSubtitle": "מידע שיופיע בראש הפרופיל העסקי.",
+      "labels": {
+        "businessName": "שם העסק",
+        "description": "תיאור",
+        "phone": "טלפון",
+        "email": "אימייל",
+        "category": "קטגוריה",
+        "city": "עיר",
+        "website": "אתר העסק",
+        "whatsapp": "קישור לוואטסאפ",
+        "mainImages": "תמונות ראשיות"
+      },
+      "placeholders": {
+        "businessName": "לדוגמה: Bella Beauty Studio",
+        "description": "כתוב ללקוחות מה העסק עושה, מה מייחד אותו ואילו שירותים אתה מציע...",
+        "website": "לדוגמה: https://www.example.com",
+        "whatsapp": "לדוגמה: https://wa.me/972526850711 או 0526850711"
+      },
+      "helpers": {
+        "website": "כאן מכניסים קישור לאתר העסק. הקישור יתעדכן מיד בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.",
+        "whatsapp": "אפשר להדביק קישור WhatsApp מלא או מספר טלפון. הכפתור יופיע בתצוגה ובפרופיל הציבורי.",
+        "mainImages": "אפשר להוסיף עד 6 תמונות. התמונה הראשונה תהיה תמונת הקאבר."
+      },
+      "uploadedCount": "{{count}}/6 הועלו",
+      "cover": "קאבר",
+      "deleteImage": "מחיקת תמונה",
+      "addImages": "הוספת תמונות",
+      "noWebsiteLink": "עדיין לא נוסף קישור לאתר העסק.",
+      "previewTabsAria": "טאבים של תצוגת הפרופיל",
+      "coverAlt": "תמונת קאבר",
+      "logoAlt": "לוגו העסק",
+      "mainImageAlt": "תמונה ראשית של העסק {{index}}",
+      "galleryImageAlt": "תמונת גלריה {{index}}",
+      "defaultBusinessName": "שם העסק",
+      "reviewLabel": "ביקורת",
+      "faqQuestion": "שאלה נפוצה",
+      "faqAnswer": "תשובה תופיע כאן.",
+      "saving": "שומר...",
+      "saveChanges": "שמירת שינויים",
+      "viewProfile": "צפייה בפרופיל",
+      "deleteLogo": "מחיקת לוגו",
+      "deletingLogo": "מוחק לוגו...",
+      "confirmDeleteLogo": "האם למחוק את הלוגו?",
+      "deleteLogoError": "שגיאה במחיקת הלוגו: {{error}}",
+      "deleteLogoSuccess": "הלוגו נמחק בהצלחה",
+      "deleteLogoFailed": "שגיאה במחיקת הלוגו",
+      "previewEmpty": {
+        "mainImagesTitle": "אין תמונות ראשיות",
+        "mainImagesText": "התמונות הראשיות שהעסק יעלה יופיעו כאן.",
+        "galleryTitle": "אין תמונות בגלריה",
+        "galleryText": "תמונות הגלריה שהעסק יעלה יופיעו כאן.",
+        "reviewsTitle": "אין ביקורות עדיין",
+        "reviewsText": "ביקורות של לקוחות יופיעו כאן.",
+        "websiteTitle": "אין אתר מחובר",
+        "websiteText": "כאשר יתווסף אתר עסק, הוא יופיע כאן.",
+        "faqsTitle": "אין שאלות נפוצות",
+        "faqsText": "שאלות ותשובות של העסק יופיעו כאן."
+      },
+      "previewTabs": {
+        "main": "ראשי",
+        "gallery": "גלריה",
+        "reviews": "ביקורות",
+        "website": "אתר",
+        "faqs": "שאלות נפוצות"
+      },
+      "previewWebsiteTitle": "אתר העסק",
+      "previewWebsiteDesc": "כאן הלקוחות יכולים להיכנס לאתר שהעסק בנה דרך המערכת."
+    }
   },
   "mySites": {
     "badge": "בניית אתרים",

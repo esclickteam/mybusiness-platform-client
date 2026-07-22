@@ -8,8 +8,11 @@ import React, {
   useState,
 } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import Markdown from "markdown-to-jsx";
 import API from "@api";
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 import {
   ArrowUp,
   BarChart3,
@@ -32,7 +35,7 @@ import {
   AdvisorActionsPanel,
   AdvisorExecutedStrip,
   AdvisorThinkingLoader,
-  CAPABILITY_PILLS,
+  getCapabilityPills,
   extractWhatsAppFromAnswer,
   getActionMeta,
   stripExecutedSummaryFromAnswer,
@@ -152,130 +155,50 @@ type QuickCommand = {
   highlighted?: boolean;
 };
 
-const quickCommands: QuickCommand[] = [
-  {
-    id: "find_business_partner",
-    label: "מציאת שותף עסקי",
-    shortLabel: "שותף",
-    icon: Search,
-    highlighted: true,
-    prompt:
-      "מצא לי שותף עסקי מתאים מתוך העסקים במערכת. עבור על העסקים הקיימים, בדוק התאמה לפי תחום, שירותים, אזור, קהל יעד, פוטנציאל עסקי והאם מדובר בעסק משלים או מתחרה. החזר לי רשימת עסקים מומלצים עם אחוז התאמה, למה כל עסק מתאים, איזה ערך הוא יכול לתת לי, איזה ערך אני יכול לתת לו, וסיים עם הודעת פנייה מוכנה לשליחה.",
-  },
-
-  {
-    id: "weekly_plan",
-    label: "תכנית שבועית",
-    shortLabel: "שבוע",
-    icon: CalendarDays,
-    prompt:
-      "בנה לי תכנית ייעוץ עסקי לשבוע הקרוב לפי נתוני העסק שלי. תכלול יעדים, פעולות לפי ימים, משימות, נוסחים מוכנים ומדדי הצלחה.",
-  },
-  {
-    id: "monthly_plan",
-    label: "תכנית חודשית",
-    shortLabel: "חודש",
-    icon: BarChart3,
-    prompt:
-      "בנה לי תכנית ייעוץ עסקי חודשית לצמיחה. תכלול חלוקה לשבועות, שיווק, מכירות, שימור לקוחות, תפעול, יעדים ומדדים.",
-  },
-  {
-    id: "yearly_plan",
-    label: "תכנית שנתית",
-    shortLabel: "שנה",
-    icon: FileText,
-    prompt:
-      "בנה לי תכנית עסקית שנתית מסודרת לעסק. תכלול מטרות, חלוקה לרבעונים, פעולות לכל רבעון, מדדי הצלחה ומה להתחיל לבצע עכשיו.",
-  },
-  {
-    id: "marketing",
-    label: "שיווק",
-    shortLabel: "שיווק",
-    icon: Megaphone,
-    prompt:
-      "בנה לי תכנית שיווקית ממוקדת לעסק לפי הנתונים שלי. תמליץ מה לקדם, למי לפנות, איזה מבצע לעשות, ותן הודעות וואטסאפ ופוסטים מוכנים.",
-  },
-  {
-    id: "actions",
-    label: "פעולות דחופות",
-    shortLabel: "דחוף",
-    icon: Clock3,
-    prompt:
-      "נתח את העסק שלי ותן לי רשימת פעולות דחופות לביצוע עכשיו לפי סדר עדיפויות. תכתוב מה לעשות, למה זה חשוב ואיך לבצע.",
-  },
-  {
-    id: "profitability",
-    label: "רווחיות",
-    shortLabel: "רווח",
-    icon: TrendingUp,
-    prompt:
-      "נתח את הרווחיות והתמחור של העסק שלי. תמליץ אילו שירותים לקדם, איפה אפשר להעלות ערך, אילו חבילות ליצור ומה לבדוק לפני שינוי מחירים.",
-  },
-  {
-    id: "customer_retention",
-    label: "שימור לקוחות",
-    shortLabel: "שימור",
-    icon: Users,
-    prompt:
-      "בנה לי תכנית שימור והחזרת לקוחות. תכתוב למי כדאי לפנות, מתי, איזה הודעות לשלוח, ואיך להפוך לקוחות חד פעמיים ללקוחות חוזרים.",
-  },
+const QUICK_COMMAND_MODES: Array<{
+  id: AdvisorMode;
+  icon: React.ElementType;
+  highlighted?: boolean;
+}> = [
+  { id: "find_business_partner", icon: Search, highlighted: true },
+  { id: "weekly_plan", icon: CalendarDays },
+  { id: "monthly_plan", icon: BarChart3 },
+  { id: "yearly_plan", icon: FileText },
+  { id: "marketing", icon: Megaphone },
+  { id: "actions", icon: Clock3 },
+  { id: "profitability", icon: TrendingUp },
+  { id: "customer_retention", icon: Users },
 ];
 
 type StarterQuestion = {
   label: string;
+  prompt: string;
   mode: AdvisorMode;
 };
 
-const starterQuestions: StarterQuestion[] = [
-  { label: "מצא לי שותף עסקי", mode: "find_business_partner" },
-  { label: "מה הכי חשוב לשפר השבוע?", mode: "actions" },
-  { label: "איזה שירות כדאי לקדם עכשיו?", mode: "marketing" },
-  { label: "איך לסגור יותר לידים?", mode: "customer_retention" },
+const STARTER_KEYS: Array<{ key: "partner" | "improveWeek" | "promoteService" | "closeLeads"; mode: AdvisorMode }> = [
+  { key: "partner", mode: "find_business_partner" },
+  { key: "improveWeek", mode: "actions" },
+  { key: "promoteService", mode: "marketing" },
+  { key: "closeLeads", mode: "customer_retention" },
 ];
 
 const isMongoObjectId = (value?: string | null) => {
   return typeof value === "string" && /^[a-fA-F0-9]{24}$/.test(value);
 };
 
-const buildAdvisorPrompt = (userPrompt: string, mode: AdvisorMode) => {
-  const base = `
-אתה יועץ BizUply — יועץ עסקי, שיווקי ותפעולי חכם לעסקים קטנים ובינוניים.
+const buildAdvisorPrompt = (
+  userPrompt: string,
+  mode: AdvisorMode,
+  t: TFunction
+) => {
+  const modeKey = mode === "general" ? "general" : mode;
 
-חוקים:
-- ענה בעברית בלבד.
-- אם השאלה קצרה, ענה קצר וענייני.
-- אם ביקשו תכנית, בנה תכנית מסודרת ומקצועית.
-- אל תמציא נתונים שאין במערכת.
-- כל המלצה חייבת להפוך לפעולה ברורה.
-- כתוב מה לבצע, מתי, למה ואיך למדוד הצלחה.
-`.trim();
+  return `${t("advisor.promptRules")}
 
-  const modeText: Record<AdvisorMode, string> = {
-    general:
-      "מצב: ייעוץ כללי. ענה לפי השאלה בלבד. אם זו שאלה קצרה, לא לבנות תכנית מלאה.",
-    weekly_plan:
-      "מצב: תכנית שבועית. כלול יעד שבועי, פעולות לפי ימים, משימות, נוסחים ומדדי הצלחה.",
-    monthly_plan:
-      "מצב: תכנית חודשית. כלול 4 שבועות, שיווק, מכירות, שימור, תפעול ומדדים.",
-    yearly_plan:
-      "מצב: תכנית שנתית. כלול חזון, מטרות, רבעונים, פעולות ומדדים.",
-    marketing:
-      "מצב: שיווק. כלול שירות לקידום, קהל יעד, הצעה, הודעת וואטסאפ ופוסט.",
-    actions:
-      "מצב: פעולות דחופות. תן סדר עדיפויות קצר וברור לביצוע עכשיו.",
-    profitability:
-      "מצב: רווחיות ותמחור. נתח שירותים, ערך, חבילות ושיפור רווחיות.",
-    customer_retention:
-      "מצב: שימור לקוחות. תן תהליך החזרת לקוחות והודעות מוכנות.",
-    find_business_partner:
-      "מצב: מציאת שותף עסקי. עבור על העסקים במערכת, מצא התאמות עסקיות, דרג לפי אחוז התאמה, הסבר למה כל עסק מתאים ותן הודעת פנייה מוכנה.",
-  };
+${t(`advisor.modeInstructions.${modeKey}`)}
 
-  return `${base}
-
-${modeText[mode]}
-
-בקשת בעל העסק:
+${t("advisor.promptRequest")}
 ${userPrompt}`;
 };
 
@@ -285,7 +208,10 @@ export default function BusinessAdvisorTab({
   userId,
   businessDetails,
 }: BusinessAdvisorTabProps) {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
   const navigate = useNavigate();
+  const advisorLanguage = i18n.language?.startsWith("en") ? "en" : "he";
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
@@ -315,19 +241,44 @@ export default function BusinessAdvisorTab({
   const isLimitReached =
     remainingQuestions !== null && remainingQuestions <= 0;
 
+  const capabilityPills = useMemo(() => getCapabilityPills(t), [t]);
+
+  const quickCommands = useMemo<QuickCommand[]>(
+    () =>
+      QUICK_COMMAND_MODES.map((command) => ({
+        id: command.id,
+        label: t(`advisor.modes.${command.id}`),
+        shortLabel: t(`advisor.modeShortLabels.${command.id}`),
+        prompt: t(`advisor.modePrompts.${command.id}`),
+        icon: command.icon,
+        highlighted: command.highlighted,
+      })),
+    [t]
+  );
+
+  const starterQuestions = useMemo<StarterQuestion[]>(
+    () =>
+      STARTER_KEYS.map(({ key, mode }) => ({
+        label: t(`advisor.starters.${key}`),
+        prompt: t(`advisor.starters.${key}`),
+        mode,
+      })),
+    [t]
+  );
+
   const balanceLabel = useMemo(() => {
-    if (remainingQuestions === null) return "טוען...";
-    if (remainingQuestions === 0) return "נגמרו שאלות החודש";
-    if (remainingQuestions === 1) return "נשארה שאלה אחת";
-    return `${remainingQuestions} שאלות נשארו`;
-  }, [remainingQuestions]);
+    if (remainingQuestions === null) return t("advisor.balanceLoading");
+    if (remainingQuestions === 0) return t("advisor.balanceNone");
+    if (remainingQuestions === 1) return t("advisor.balanceOne");
+    return t("advisor.balanceMany", { count: remainingQuestions });
+  }, [remainingQuestions, t]);
 
   const activeModeLabel = useMemo(() => {
-    return (
-      quickCommands.find((command) => command.id === activeMode)?.label ||
-      "שאלה חופשית"
-    );
-  }, [activeMode]);
+    if (activeMode === "general") return t("advisor.freeQuestion");
+    return t(`advisor.modes.${activeMode}`, {
+      defaultValue: t("advisor.freeQuestion"),
+    });
+  }, [activeMode, t]);
 
   const scrollChatToBottom = useCallback(
     (behavior: ScrollBehavior = "smooth") => {
@@ -396,7 +347,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "⚠️ מזהה השיחה לא תקין ולכן לא ניתן לפתוח אותה.",
+            content: `⚠️ ${t("advisor.errors.invalidConversationId")}`,
           },
         ]);
         scrollChatToBottom();
@@ -424,28 +375,27 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "⚠️ לא הצלחתי לפתוח את השיחה הישנה.",
+            content: `⚠️ ${t("advisor.errors.openConversation")}`,
           },
         ]);
         scrollChatToBottom();
       }
     },
-    [scrollChatToBottom]
+    [scrollChatToBottom, t]
   );
 
   const startNewConversation = useCallback(() => {
     setMessages([
       {
         role: "assistant",
-        content:
-          "היי 👋 אני **יועץ BizUply** שלך — עוזר עסקי שמבצע פעולות אמיתיות.\n\nאני יכול לקבוע פגישות, ליצור משימות, לעדכן לידים, למצוא שותפים עסקיים ולהכין הודעות WhatsApp מוכנות לשליחה שלך.\n\nשאל שאלה קצרה, או לחץ על **מציאת שותף עסקי** לסריקה חכמה.",
+        content: t("advisor.welcome"),
       },
     ]);
     setActiveConversationId(null);
     setActiveMode("general");
     setUserInput("");
     scrollChatToBottom("auto");
-  }, [scrollChatToBottom]);
+  }, [scrollChatToBottom, t]);
 
   useEffect(() => {
     void refreshRemainingQuestions();
@@ -483,7 +433,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: `✅ ${response.message || "הודעת WhatsApp מוכנה"}`,
+            content: `✅ ${response.message || t("advisor.whatsappReady")}`,
             whatsappPrepared: {
               content,
               phone,
@@ -495,7 +445,8 @@ export default function BusinessAdvisorTab({
         return;
       }
 
-      const successMessage = response.message || `בוצע: ${action.label}`;
+      const successMessage =
+        response.message || t("advisor.executedFallback", { label: action.label });
 
       setMessages((prev) => [
         ...prev,
@@ -506,7 +457,7 @@ export default function BusinessAdvisorTab({
       ]);
       scrollChatToBottom();
     },
-    [navigate, scrollChatToBottom]
+    [navigate, scrollChatToBottom, t]
   );
 
   const executeAction = useCallback(
@@ -540,7 +491,7 @@ export default function BusinessAdvisorTab({
             ...prev,
             {
               role: "assistant",
-              content: `⚠️ ${response.data.error || "הפעולה נכשלה"}`,
+              content: `⚠️ ${response.data.error || t("advisor.errors.actionFailed")}`,
             },
           ]);
           scrollChatToBottom();
@@ -550,7 +501,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "⚠️ לא הצלחתי לבצע את הפעולה. נסה שוב.",
+            content: `⚠️ ${t("advisor.errors.actionRetry")}`,
           },
         ]);
         scrollChatToBottom();
@@ -566,6 +517,7 @@ export default function BusinessAdvisorTab({
       lastAnswer,
       handleActionResult,
       scrollChatToBottom,
+      t,
     ]
   );
 
@@ -592,7 +544,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "❗ הגעת למגבלת שאלות ה-AI החודשית שלך.",
+            content: `❗ ${t("advisor.errors.monthlyLimit")}`,
           },
         ]);
         scrollChatToBottom();
@@ -612,7 +564,7 @@ export default function BusinessAdvisorTab({
       const controller = new AbortController();
       abortControllerRef.current = controller;
 
-      const finalPrompt = buildAdvisorPrompt(cleanPrompt, mode);
+      const finalPrompt = buildAdvisorPrompt(cleanPrompt, mode, t);
 
       try {
         const response = await API.post<AdvisorResponse>(
@@ -622,6 +574,7 @@ export default function BusinessAdvisorTab({
             prompt: finalPrompt,
             rawPrompt: cleanPrompt,
             advisorMode: mode,
+            language: advisorLanguage,
             businessDetails,
             profile: {
               conversationId: isMongoObjectId(activeConversationId)
@@ -638,7 +591,7 @@ export default function BusinessAdvisorTab({
           return;
         }
 
-        const answer = response.data.answer || "❌ לא התקבלה תשובה מהשרת.";
+        const answer = response.data.answer || `❌ ${t("advisor.errors.noAnswer")}`;
 
         setLastAnswer(answer);
 
@@ -683,7 +636,7 @@ export default function BusinessAdvisorTab({
           ...prev,
           {
             role: "assistant",
-            content: "⚠️ משהו השתבש בזמן ניתוח העסק. נסה שוב.",
+            content: `⚠️ ${t("advisor.errors.analysisFailed")}`,
           },
         ]);
         scrollChatToBottom();
@@ -703,6 +656,8 @@ export default function BusinessAdvisorTab({
       refreshRemainingQuestions,
       loadHistory,
       scrollChatToBottom,
+      t,
+      advisorLanguage,
     ]
   );
 
@@ -752,8 +707,8 @@ export default function BusinessAdvisorTab({
 
   return (
     <section
-      dir="rtl"
-      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-right text-slate-950 sm:p-5"
+      dir={dir}
+      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-950 sm:p-5"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
         <header className="shrink-0 rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
@@ -766,16 +721,16 @@ export default function BusinessAdvisorTab({
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                    יועץ BizUply
+                    {t("advisor.title")}
                   </h1>
 
                   <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                    Agent פעיל
+                    {t("advisor.activeAgent")}
                   </span>
                 </div>
 
                 <div className="mt-2 flex flex-wrap gap-1.5">
-                  {CAPABILITY_PILLS.map((pill) => (
+                  {capabilityPills.map((pill) => (
                     <span
                       key={pill}
                       className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600"
@@ -786,8 +741,7 @@ export default function BusinessAdvisorTab({
                 </div>
 
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                  יועץ שמבצע פעולות אמיתיות — פגישות, משימות, לידים והודעות
-                  WhatsApp מוכנות לשליחה שלך.
+                  {t("advisor.subtitle")}
                 </p>
               </div>
             </div>
@@ -795,7 +749,7 @@ export default function BusinessAdvisorTab({
             <div className="flex flex-wrap items-center gap-2">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-2">
                 <p className="text-[11px] font-black text-slate-400">
-                  מצב נוכחי
+                  {t("advisor.currentMode")}
                 </p>
                 <p className="text-base font-black leading-6 text-slate-900">
                   {activeModeLabel}
@@ -804,7 +758,7 @@ export default function BusinessAdvisorTab({
 
               <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-2">
                 <p className="text-[11px] font-black text-violet-400">
-                  מאזן AI
+                  {t("advisor.aiBalance")}
                 </p>
                 <p className="text-sm font-black text-violet-800">
                   {balanceLabel}
@@ -817,7 +771,7 @@ export default function BusinessAdvisorTab({
                 className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-violet-700"
               >
                 <Plus className="h-5 w-5" />
-                שיחה חדשה
+                {t("advisor.newChat")}
               </button>
             </div>
           </div>
@@ -828,10 +782,10 @@ export default function BusinessAdvisorTab({
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
                 <h2 className="text-sm font-black text-slate-950">
-                  היסטוריה יומית
+                  {t("advisor.historyTitle")}
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-500">
-                  השיחות נשמרות לפי יום.
+                  {t("advisor.historySubtitle")}
                 </p>
               </div>
 
@@ -839,7 +793,7 @@ export default function BusinessAdvisorTab({
                 type="button"
                 onClick={() => loadHistory()}
                 className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition hover:bg-slate-50"
-                title="רענון"
+                title={t("advisor.refresh")}
               >
                 {historyLoading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
@@ -854,7 +808,7 @@ export default function BusinessAdvisorTab({
                 <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                   <History className="mx-auto h-5 w-5 text-slate-400" />
                   <p className="mt-2 text-xs font-bold text-slate-500">
-                    עדיין אין שיחות שמורות.
+                    {t("advisor.historyEmpty")}
                   </p>
                 </div>
               )}
@@ -867,7 +821,7 @@ export default function BusinessAdvisorTab({
                     key={item.id}
                     type="button"
                     onClick={() => loadConversation(item.id)}
-                    className={`w-full rounded-2xl border p-3 text-right transition ${
+                    className={`w-full rounded-2xl border p-3 text-start transition ${
                       isActive
                         ? "border-violet-300 bg-violet-50"
                         : "border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50/60"
@@ -884,7 +838,7 @@ export default function BusinessAdvisorTab({
                     </div>
 
                     <p className="mt-1 line-clamp-1 text-sm font-black text-slate-900">
-                      {item.title || "שיחת ייעוץ"}
+                      {item.title || t("advisor.defaultConversationTitle")}
                     </p>
 
                     {item.preview && (
@@ -903,16 +857,16 @@ export default function BusinessAdvisorTab({
               <div className="flex items-center justify-between gap-4">
                 <div>
                   <p className="text-base font-black text-slate-950">
-                    צ׳אט עם יועץ BizUply
+                    {t("advisor.chatTitle")}
                   </p>
                   <p className="mt-1 text-xs font-bold text-slate-500">
-                    הודעות חדשות מופיעות למטה. יש סקרול פנימי רק לשיחה.
+                    {t("advisor.chatSubtitle")}
                   </p>
                 </div>
 
                 <div className="hidden items-center gap-2 sm:flex">
                   <span className="rounded-full bg-white px-3 py-1.5 text-xs font-black text-violet-700 shadow-sm ring-1 ring-violet-100">
-                    {messages.length} הודעות
+                    {t("advisor.messagesCount", { count: messages.length })}
                   </span>
                 </div>
               </div>
@@ -1014,7 +968,7 @@ export default function BusinessAdvisorTab({
             <div className="sticky bottom-0 z-30 shrink-0 border-t border-slate-100 bg-white/95 p-3 shadow-[0_-18px_50px_rgba(15,23,42,0.08)] backdrop-blur">
               {isLimitReached && (
                 <div className="mb-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
-                  הגעת למגבלת שאלות ה-AI החודשית שלך.
+                  {t("advisor.limitReached")}
                 </div>
               )}
 
@@ -1024,7 +978,7 @@ export default function BusinessAdvisorTab({
                     key={question.label}
                     type="button"
                     onClick={() =>
-                      submitPrompt(question.label, question.mode, question.label)
+                      submitPrompt(question.prompt, question.mode, question.label)
                     }
                     disabled={loading || isLimitReached}
                     className="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -1040,7 +994,7 @@ export default function BusinessAdvisorTab({
                   value={userInput}
                   disabled={loading || isLimitReached}
                   rows={1}
-                  placeholder="לדוגמה: קבע פגישה ליום שלישי, הכן הודעת WhatsApp ללידים..."
+                  placeholder={t("advisor.inputPlaceholder")}
                   onChange={(e) => {
                     setUserInput(e.target.value);
                     e.currentTarget.style.height = "44px";
@@ -1064,7 +1018,7 @@ export default function BusinessAdvisorTab({
                   disabled={loading || !userInput.trim() || isLimitReached}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                 >
-                  {loading ? "חושב..." : "שלח"}
+                  {loading ? t("advisor.thinking") : t("advisor.send")}
                   <ArrowUp className="h-5 w-5" />
                 </button>
               </div>
@@ -1074,10 +1028,10 @@ export default function BusinessAdvisorTab({
           <aside className="order-3 min-h-0 min-w-0 overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4">
               <h2 className="text-sm font-black text-slate-950">
-                פעולות מהירות
+                {t("advisor.quickActionsTitle")}
               </h2>
               <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                סריקה חכמה של העסק והמערכת.
+                {t("advisor.quickActionsSubtitle")}
               </p>
             </div>
 
@@ -1093,7 +1047,7 @@ export default function BusinessAdvisorTab({
                       submitPrompt(command.prompt, command.id, command.label)
                     }
                     disabled={loading || isLimitReached}
-                    className={`group flex min-h-[92px] w-full items-center justify-between gap-3 rounded-[24px] border p-4 text-right transition disabled:cursor-not-allowed disabled:opacity-50 ${
+                    className={`group flex min-h-[92px] w-full items-center justify-between gap-3 rounded-[24px] border p-4 text-start transition disabled:cursor-not-allowed disabled:opacity-50 ${
                       command.highlighted
                         ? "border-violet-200 bg-violet-50 hover:bg-violet-100"
                         : "border-slate-200 bg-white hover:border-violet-200 hover:bg-violet-50"
@@ -1128,13 +1082,12 @@ export default function BusinessAdvisorTab({
               <div className="flex items-center gap-2">
                 <Target className="h-4 w-4 text-violet-700" />
                 <p className="text-xs font-black text-violet-800">
-                  טיפ שימוש
+                  {t("advisor.tipTitle")}
                 </p>
               </div>
 
               <p className="mt-2 text-xs font-bold leading-5 text-slate-600">
-                היועץ מבצע פעולות אמיתיות: תיאום פגישות, יצירת משימות, עדכון לידים,
-                מציאת שותפים והכנת הודעות WhatsApp מוכנות לשליחה שלך.
+                {t("advisor.tipBody")}
               </p>
             </div>
           </aside>
@@ -1144,13 +1097,13 @@ export default function BusinessAdvisorTab({
       {pendingAction && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
           <div
-            dir="rtl"
+            dir={dir}
             className="w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl"
           >
             <div className="border-b border-slate-100 bg-violet-50 px-6 py-4">
               <div className="flex items-center gap-3">
                 {(() => {
-                  const MetaIcon = getActionMeta(pendingAction.type).icon;
+                  const MetaIcon = getActionMeta(pendingAction.type, t).icon;
                   return (
                     <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white">
                       <MetaIcon className="h-5 w-5" />
@@ -1159,10 +1112,10 @@ export default function BusinessAdvisorTab({
                 })()}
                 <div>
                   <h3 className="text-lg font-black text-slate-950">
-                    לאשר פעולה?
+                    {t("advisor.confirmTitle")}
                   </h3>
                   <p className="text-xs font-bold text-slate-500">
-                    הפעולה תבוצע במערכת BizUply
+                    {t("advisor.confirmSubtitle")}
                   </p>
                 </div>
               </div>
@@ -1174,7 +1127,7 @@ export default function BusinessAdvisorTab({
               </p>
               <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
                 {pendingAction.description ||
-                  getActionMeta(pendingAction.type).hint}
+                  getActionMeta(pendingAction.type, t).hint}
               </p>
 
               <div className="mt-6 flex gap-3">
@@ -1183,7 +1136,7 @@ export default function BusinessAdvisorTab({
                   onClick={() => setPendingAction(null)}
                   className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
                 >
-                  ביטול
+                  {t("advisor.cancel")}
                 </button>
                 <button
                   type="button"
@@ -1196,7 +1149,7 @@ export default function BusinessAdvisorTab({
                   ) : (
                     <Sparkles className="h-4 w-4" />
                   )}
-                  אשר ובצע
+                  {t("advisor.confirmExecute")}
                 </button>
               </div>
             </div>

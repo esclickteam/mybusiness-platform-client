@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FaEnvelope, FaGlobe, FaPhoneAlt, FaWhatsapp } from "react-icons/fa";
 
 type ProfileContactBlockProps = {
@@ -25,13 +26,18 @@ export default function ProfileContactBlock({
   normalizedWebsiteUrl = "",
   normalizedWhatsappUrl = "",
   showEmptyPlaceholders = false,
-  phonePlaceholder = "לא נוסף",
-  emailPlaceholder = "לא נוסף",
+  phonePlaceholder,
+  emailPlaceholder,
 }: ProfileContactBlockProps) {
+  const { t } = useTranslation();
+  const notAdded = t("businessProfile.contact.notAdded");
+  const resolvedPhonePlaceholder = phonePlaceholder || notAdded;
+  const resolvedEmailPlaceholder = emailPlaceholder || notAdded;
+
   const showPhone = Boolean(phone) || showEmptyPlaceholders;
   const showEmail = Boolean(email) || showEmptyPlaceholders;
-  const phoneValue = formattedPhone || phone || phonePlaceholder;
-  const emailValue = email || emailPlaceholder;
+  const phoneValue = formattedPhone || phone || resolvedPhonePlaceholder;
+  const emailValue = email || resolvedEmailPlaceholder;
 
   if (!showPhone && !showEmail && !websiteUrl && !whatsappUrl) {
     return null;
@@ -43,58 +49,58 @@ export default function ProfileContactBlock({
         <div className="mx-auto mt-6 grid w-full max-w-3xl grid-cols-2 gap-3">
           {showPhone && (
             <div className="profile-contact-card group w-full min-w-0 rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-3 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:p-4">
-                    <div className="flex items-center justify-center gap-2 sm:gap-3">
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                        style={{ animationDelay: "0s" }}
-                        aria-hidden
-                      >
-                        <FaPhoneAlt size={16} className="sm:hidden" />
-                        <FaPhoneAlt size={18} className="hidden sm:block" />
-                      </span>
+              <div className="flex items-center justify-center gap-2 sm:gap-3">
+                <span
+                  className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
+                  style={{ animationDelay: "0s" }}
+                  aria-hidden
+                >
+                  <FaPhoneAlt size={16} className="sm:hidden" />
+                  <FaPhoneAlt size={18} className="hidden sm:block" />
+                </span>
 
-                      <div className="min-w-0 flex-1 text-right">
-                        <p className="text-[11px] font-black text-slate-400 sm:text-xs">
-                          טלפון
-                        </p>
+                <div className="min-w-0 flex-1 text-start">
+                  <p className="text-[11px] font-black text-slate-400 sm:text-xs">
+                    {t("businessProfile.contact.phone")}
+                  </p>
 
-                        <p
-                          dir="ltr"
-                          className="mt-0.5 text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
-                        >
-                          {phoneValue}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <p
+                    dir="ltr"
+                    className="mt-0.5 text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                  >
+                    {phoneValue}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
 
           {showEmail && (
             <div className="profile-contact-card group w-full min-w-0 rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-3 shadow-[0_12px_32px_rgba(79,70,229,0.08)] backdrop-blur transition hover:-translate-y-0.5 hover:shadow-[0_18px_44px_rgba(79,70,229,0.14)] sm:p-4">
               <div className="flex items-center justify-center gap-2 sm:gap-3">
-                      <span
-                        className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
-                        style={{ animationDelay: "0.35s" }}
-                        aria-hidden
-                      >
-                        <FaEnvelope size={16} className="sm:hidden" />
-                        <FaEnvelope size={18} className="hidden sm:block" />
-                      </span>
+                <span
+                  className="profile-contact-icon inline-flex shrink-0 items-center justify-center text-violet-600"
+                  style={{ animationDelay: "0.35s" }}
+                  aria-hidden
+                >
+                  <FaEnvelope size={16} className="sm:hidden" />
+                  <FaEnvelope size={18} className="hidden sm:block" />
+                </span>
 
-                      <div className="min-w-0 flex-1 text-right">
-                        <p className="text-[11px] font-black text-slate-400 sm:text-xs">
-                          אימייל
-                        </p>
+                <div className="min-w-0 flex-1 text-start">
+                  <p className="text-[11px] font-black text-slate-400 sm:text-xs">
+                    {t("businessProfile.contact.email")}
+                  </p>
 
-                        <p
-                          dir="ltr"
-                          className="mt-0.5 truncate text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
-                        >
-                          {emailValue}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
+                  <p
+                    dir="ltr"
+                    className="mt-0.5 truncate text-sm font-black text-slate-950 sm:mt-1 sm:text-lg"
+                  >
+                    {emailValue}
+                  </p>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       )}
@@ -115,7 +121,7 @@ export default function ProfileContactBlock({
               >
                 <FaGlobe size={17} />
               </span>
-              כניסה לאתר העסק
+              {t("businessProfile.contact.websiteCta")}
             </a>
           )}
 
@@ -133,7 +139,7 @@ export default function ProfileContactBlock({
               >
                 <FaWhatsapp size={19} />
               </span>
-              שליחת הודעה בוואטסאפ
+              {t("businessProfile.contact.whatsappCta")}
             </a>
           )}
         </div>

@@ -1,12 +1,14 @@
 "use client";
 
 import React, { useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import ImageLoader from "@components/ImageLoader";
 import CityAutocomplete from "@components/CityAutocomplete";
 import CategoryAutocomplete from "@components/CategoryAutocomplete";
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 
 type BusinessAddress = {
   city?: string;
@@ -111,12 +113,12 @@ type MainImageItem = {
 
 type PreviewTab = "main" | "gallery" | "reviews" | "website" | "faqs";
 
-const PREVIEW_TABS: Array<{ key: PreviewTab; label: string }> = [
-  { key: "main", label: "ראשי" },
-  { key: "gallery", label: "גלריה" },
-  { key: "reviews", label: "ביקורות" },
-  { key: "website", label: "אתר" },
-  { key: "faqs", label: "שאלות נפוצות" },
+const PREVIEW_TAB_KEYS: PreviewTab[] = [
+  "main",
+  "gallery",
+  "reviews",
+  "website",
+  "faqs",
 ];
 
 function getLogoPreview(logo: LogoValue) {
@@ -207,12 +209,12 @@ function isMeaningfulCategory(category?: string) {
   return clean !== "" && clean !== "כללי" && clean.toLowerCase() !== "general";
 }
 
-function getReviewName(review: ReviewItem) {
+function getReviewName(review: ReviewItem, anonymousLabel: string) {
   return (
     review.userName ||
     review.client?.name ||
     String(review.name || "") ||
-    "לקוח אנונימי"
+    anonymousLabel
   );
 }
 
@@ -239,6 +241,8 @@ export default function MainSection({
   mainImagesInputRef,
   isSaving = false,
 }: MainSectionProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const fallbackLogoInputRef = useRef<HTMLInputElement | null>(null);
   const fallbackMainImagesInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -288,7 +292,7 @@ export default function MainSection({
   async function handleDeleteLogo() {
     if (isSaving || isDeletingLogo) return;
 
-    const approved = window.confirm("האם למחוק את הלוגו?");
+    const approved = window.confirm(t("businessProfile.mainSection.confirmDeleteLogo"));
     if (!approved) return;
 
     try {
@@ -304,15 +308,19 @@ export default function MainSection({
 
       if (!response.ok) {
         const error = await response.json().catch(() => null);
-        alert("שגיאה במחיקת הלוגו: " + (error?.error || response.statusText));
+        alert(
+          t("businessProfile.mainSection.deleteLogoError", {
+            error: error?.error || response.statusText,
+          })
+        );
         return;
       }
 
       handleInputChange({ target: { name: "logo", value: "" } });
-      alert("הלוגו נמחק בהצלחה");
+      alert(t("businessProfile.mainSection.deleteLogoSuccess"));
     } catch (err) {
       console.error(err);
-      alert("שגיאה במחיקת הלוגו");
+      alert(t("businessProfile.mainSection.deleteLogoFailed"));
     } finally {
       setIsDeletingLogo(false);
     }
@@ -328,7 +336,9 @@ export default function MainSection({
                 <ImageLoader
                   key={`${preview}-${index}`}
                   src={preview}
-                  alt={`תמונה ראשית ${index + 1}`}
+                  alt={t("businessProfile.mainSection.mainImageAlt", {
+                    index: index + 1,
+                  })}
                   className="h-52 w-full max-w-xs rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
               ))}
@@ -336,8 +346,8 @@ export default function MainSection({
           ) : (
             <PreviewEmptyState
               icon="🖼️"
-              title="אין תמונות ראשיות"
-              text="התמונות הראשיות שהעסק יעלה יופיעו כאן."
+              title={t("businessProfile.mainSection.previewEmpty.mainImagesTitle")}
+              text={t("businessProfile.mainSection.previewEmpty.mainImagesText")}
             />
           )}
         </div>
@@ -353,7 +363,9 @@ export default function MainSection({
                 <ImageLoader
                   key={`${url}-${index}`}
                   src={url}
-                  alt={`תמונת גלריה ${index + 1}`}
+                  alt={t("businessProfile.mainSection.galleryImageAlt", {
+                    index: index + 1,
+                  })}
                   className="h-52 w-full max-w-xs rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
               ))}
@@ -361,8 +373,8 @@ export default function MainSection({
           ) : (
             <PreviewEmptyState
               icon="📸"
-              title="אין תמונות בגלריה"
-              text="תמונות הגלריה שהעסק יעלה יופיעו כאן."
+              title={t("businessProfile.mainSection.previewEmpty.galleryTitle")}
+              text={t("businessProfile.mainSection.previewEmpty.galleryText")}
             />
           )}
         </div>
@@ -387,11 +399,13 @@ export default function MainSection({
                     </div>
 
                     <h4 className="mt-3 text-base font-black text-slate-950">
-                      {getReviewName(review)}
+                      {getReviewName(review, t("businessProfile.view.anonymousClient"))}
                     </h4>
 
                     <p className="mt-1 text-sm font-black text-amber-500">
-                      {rating ? `${rating.toFixed(1)} / 5` : "ביקורת"}
+                      {rating
+                        ? `${rating.toFixed(1)} / 5`
+                        : t("businessProfile.mainSection.reviewLabel")}
                     </p>
 
                     {getReviewText(review) && (
@@ -406,8 +420,8 @@ export default function MainSection({
           ) : (
             <PreviewEmptyState
               icon="⭐"
-              title="אין ביקורות עדיין"
-              text="ביקורות של לקוחות יופיעו כאן."
+              title={t("businessProfile.mainSection.previewEmpty.reviewsTitle")}
+              text={t("businessProfile.mainSection.previewEmpty.reviewsText")}
             />
           )}
         </div>
@@ -424,11 +438,11 @@ export default function MainSection({
               </div>
 
               <h3 className="mt-5 text-2xl font-black text-slate-950">
-                אתר העסק
+                {t("businessProfile.mainSection.previewWebsiteTitle")}
               </h3>
 
               <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                כאן הלקוחות יכולים להיכנס לאתר שהעסק בנה דרך המערכת.
+                {t("businessProfile.mainSection.previewWebsiteDesc")}
               </p>
 
               <a
@@ -437,14 +451,14 @@ export default function MainSection({
                 rel="noreferrer"
                 className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
-                כניסה לאתר העסק
+                {t("businessProfile.contact.websiteCta")}
               </a>
             </div>
           ) : (
             <PreviewEmptyState
               icon="🌐"
-              title="אין אתר מחובר"
-              text="כאשר יתווסף אתר עסק, הוא יופיע כאן."
+              title={t("businessProfile.mainSection.previewEmpty.websiteTitle")}
+              text={t("businessProfile.mainSection.previewEmpty.websiteText")}
             />
           )}
         </div>
@@ -460,19 +474,19 @@ export default function MainSection({
               className="rounded-2xl border border-violet-100 bg-white/90 p-5 text-center shadow-[0_10px_28px_rgba(79,70,229,0.08)]"
             >
               <h4 className="text-base font-black text-slate-950">
-                {faq.question || "שאלה נפוצה"}
+                {faq.question || t("businessProfile.mainSection.faqQuestion")}
               </h4>
 
               <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-500">
-                {faq.answer || "תשובה תופיע כאן."}
+                {faq.answer || t("businessProfile.mainSection.faqAnswer")}
               </p>
             </div>
           ))
         ) : (
           <PreviewEmptyState
             icon="❔"
-            title="אין שאלות נפוצות"
-            text="שאלות ותשובות של העסק יופיעו כאן."
+            title={t("businessProfile.mainSection.previewEmpty.faqsTitle")}
+            text={t("businessProfile.mainSection.previewEmpty.faqsText")}
           />
         )}
       </div>
@@ -481,19 +495,19 @@ export default function MainSection({
 
   return (
     <section
-      dir="rtl"
-      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[0.95fr_1.05fr]">
         <aside className="order-2 xl:order-1">
-          <div className="overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-right shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+          <div className="overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-start shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
             <div className="relative p-5 sm:p-7">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
               <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
               <div className="relative mb-5 flex items-center justify-between gap-3">
                 <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  תצוגה מקדימה חיה
+                  {t("businessProfile.mainSection.livePreview")}
                 </div>
 
                 <button
@@ -501,7 +515,7 @@ export default function MainSection({
                   onClick={() => activeLogoInputRef.current?.click()}
                   className="inline-flex h-10 items-center justify-center rounded-full border border-violet-100 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
                 >
-                  ✏️ עריכת לוגו
+                  ✏️ {t("businessProfile.mainSection.editLogo")}
                 </button>
               </div>
 
@@ -509,7 +523,7 @@ export default function MainSection({
                 <div className="relative overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
                   <ImageLoader
                     src={coverImage}
-                    alt="תמונת קאבר"
+                    alt={t("businessProfile.mainSection.coverAlt")}
                     className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
                   />
                 </div>
@@ -521,7 +535,7 @@ export default function MainSection({
                     </div>
 
                     <p className="mt-4 text-lg font-black text-slate-950">
-                      הוסף תמונת קאבר
+                      {t("businessProfile.mainSection.addCoverImage")}
                     </p>
                   </div>
                 </div>
@@ -537,7 +551,7 @@ export default function MainSection({
                   {logoPreview ? (
                     <ImageLoader
                       src={logoPreview}
-                      alt="לוגו העסק"
+                      alt={t("businessProfile.mainSection.logoAlt")}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -548,7 +562,7 @@ export default function MainSection({
                 </div>
 
                 <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950">
-                  {businessName || "שם העסק"}
+                  {businessName || t("businessProfile.mainSection.defaultBusinessName")}
                 </h2>
 
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -575,14 +589,14 @@ export default function MainSection({
                   {phone && (
                     <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
                       <p className="text-xs font-black text-slate-400">
-                        טלפון
+                        {t("businessProfile.contact.phone")}
                       </p>
 
                       <p
                         dir="ltr"
                         className="mt-1 text-center text-lg font-black text-slate-950"
                       >
-                        {previewPhone || "לא נוסף"}
+                        {previewPhone || t("businessProfile.contact.notAdded")}
                       </p>
                     </div>
                   )}
@@ -590,14 +604,14 @@ export default function MainSection({
                   {email && (
                     <div className="w-full max-w-sm rounded-2xl border border-violet-100/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(245,243,255,0.78)_100%)] p-4 text-center shadow-[0_12px_32px_rgba(79,70,229,0.08)]">
                       <p className="text-xs font-black text-slate-400">
-                        אימייל
+                        {t("businessProfile.contact.email")}
                       </p>
 
                       <p
                         dir="ltr"
                         className="mt-1 truncate text-center text-lg font-black text-slate-950"
                       >
-                        {email || "לא נוסף"}
+                        {email || t("businessProfile.contact.notAdded")}
                       </p>
                     </div>
                   )}
@@ -606,7 +620,7 @@ export default function MainSection({
 
                 {!businessWebsiteUrl && (
                   <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
-                    עדיין לא נוסף קישור לאתר העסק.
+                    {t("businessProfile.mainSection.noWebsiteLink")}
                   </div>
                 )}
 
@@ -617,7 +631,7 @@ export default function MainSection({
                     rel="noreferrer"
                     className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                   >
-                    כניסה לאתר העסק
+                    {t("businessProfile.contact.websiteCta")}
                   </a>
                 )}
 
@@ -628,7 +642,7 @@ export default function MainSection({
                     rel="noreferrer"
                     className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
                   >
-                    שליחת הודעה בוואטסאפ
+                    {t("businessProfile.contact.whatsappCta")}
                   </a>
                 )}
 
@@ -636,16 +650,16 @@ export default function MainSection({
                   <div
                     className="flex flex-wrap items-center justify-center gap-3 text-center"
                     role="tablist"
-                    aria-label="טאבים של תצוגת הפרופיל"
+                    aria-label={t("businessProfile.mainSection.previewTabsAria")}
                   >
-                    {PREVIEW_TABS.map((tab) => {
-                      const active = tab.key === previewTab;
+                    {PREVIEW_TAB_KEYS.map((tabKey) => {
+                      const active = tabKey === previewTab;
 
                       return (
                         <button
-                          key={tab.key}
+                          key={tabKey}
                           type="button"
-                          onClick={() => setPreviewTab(tab.key)}
+                          onClick={() => setPreviewTab(tabKey)}
                           role="tab"
                           aria-selected={active}
                           className={[
@@ -655,7 +669,7 @@ export default function MainSection({
                               : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
                           ].join(" ")}
                         >
-                          {tab.label}
+                          {t(`businessProfile.mainSection.previewTabs.${tabKey}`)}
                         </button>
                       );
                     })}
@@ -678,21 +692,20 @@ export default function MainSection({
             <div className="relative">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  עריכת פרופיל עסקי
+                  {t("businessProfile.mainSection.editProfileBadge")}
                 </div>
 
                 <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm">
-                  תצוגה חיה בזמן אמת
+                  {t("businessProfile.mainSection.livePreviewBadge")}
                 </div>
               </div>
 
               <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                עריכת עמוד עסקי
+                {t("businessProfile.mainSection.pageTitle")}
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                עדכן את פרטי העסק, הלוגו, התמונות והקישור לאתר שנבנה דרך
-                המערכת. כל שינוי כאן משפיע ישירות על הפרופיל הציבורי.
+                {t("businessProfile.mainSection.pageSubtitle")}
               </p>
             </div>
           </div>
@@ -702,11 +715,11 @@ export default function MainSection({
               <div className="mb-5 flex items-center justify-between gap-4">
                 <div>
                   <h2 className="text-lg font-black text-slate-950">
-                    פרטים בסיסיים
+                    {t("businessProfile.mainSection.basicDetails")}
                   </h2>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    מידע שיופיע בראש הפרופיל העסקי.
+                    {t("businessProfile.mainSection.basicDetailsSubtitle")}
                   </p>
                 </div>
 
@@ -718,7 +731,8 @@ export default function MainSection({
               <div className="grid gap-5 md:grid-cols-2">
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    שם העסק <span className="text-violet-600">*</span>
+                    {t("businessProfile.mainSection.labels.businessName")}{" "}
+                    <span className="text-violet-600">*</span>
                   </label>
 
                   <input
@@ -727,14 +741,14 @@ export default function MainSection({
                     value={businessName}
                     onChange={handleInputChange}
                     disabled={isSaving}
-                    placeholder="לדוגמה: Bella Beauty Studio"
+                    placeholder={t("businessProfile.mainSection.placeholders.businessName")}
                     className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                   />
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    תיאור
+                    {t("businessProfile.mainSection.labels.description")}
                   </label>
 
                   <textarea
@@ -743,14 +757,14 @@ export default function MainSection({
                     onChange={handleInputChange}
                     rows={4}
                     disabled={isSaving}
-                    placeholder="כתוב ללקוחות מה העסק עושה, מה מייחד אותו ואילו שירותים אתה מציע..."
+                    placeholder={t("businessProfile.mainSection.placeholders.description")}
                     className="w-full resize-none rounded-2xl border border-violet-100 bg-white/90 px-4 py-3 text-sm font-medium leading-6 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                   />
                 </div>
 
                 <div>
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    טלפון
+                    {t("businessProfile.mainSection.labels.phone")}
                   </label>
 
                   <div
@@ -784,7 +798,7 @@ export default function MainSection({
 
                 <div>
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    אימייל
+                    {t("businessProfile.mainSection.labels.email")}
                   </label>
 
                   <input
@@ -801,7 +815,8 @@ export default function MainSection({
 
                 <div>
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    קטגוריה <span className="text-violet-600">*</span>
+                    {t("businessProfile.mainSection.labels.category")}{" "}
+                    <span className="text-violet-600">*</span>
                   </label>
 
                   <div className="rounded-2xl border border-violet-100 bg-white/90 px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -818,7 +833,7 @@ export default function MainSection({
 
                 <div>
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    עיר
+                    {t("businessProfile.mainSection.labels.city")}
                   </label>
 
                   <div className="rounded-2xl border border-violet-100 bg-white/90 px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -835,7 +850,7 @@ export default function MainSection({
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    אתר העסק
+                    {t("businessProfile.mainSection.labels.website")}
                   </label>
 
                   <input
@@ -844,19 +859,19 @@ export default function MainSection({
                     value={businessWebsiteUrl}
                     onChange={handleInputChange}
                     disabled={isSaving}
-                    placeholder="לדוגמה: https://www.example.com"
+                    placeholder={t("businessProfile.mainSection.placeholders.website")}
                     dir="ltr"
                     className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                   />
 
                   <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-                    כאן מכניסים קישור לאתר העסק. הקישור יתעדכן מיד בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.
+                    {t("businessProfile.mainSection.helpers.website")}
                   </p>
                 </div>
 
                 <div className="md:col-span-2">
                   <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                    קישור לוואטסאפ
+                    {t("businessProfile.mainSection.labels.whatsapp")}
                   </label>
 
                   <input
@@ -865,13 +880,13 @@ export default function MainSection({
                     value={String(businessDetails.whatsappUrl || "")}
                     onChange={handleInputChange}
                     disabled={isSaving}
-                    placeholder="לדוגמה: https://wa.me/972526850711 או 0526850711"
+                    placeholder={t("businessProfile.mainSection.placeholders.whatsapp")}
                     dir="ltr"
                     className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                   />
 
                   <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-                    אפשר להדביק קישור WhatsApp מלא או מספר טלפון. הכפתור יופיע בתצוגה ובפרופיל הציבורי.
+                    {t("businessProfile.mainSection.helpers.whatsapp")}
                   </p>
                 </div>
               </div>
@@ -881,16 +896,18 @@ export default function MainSection({
               <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <h3 className="text-base font-black text-slate-900">
-                    תמונות ראשיות
+                    {t("businessProfile.mainSection.labels.mainImages")}
                   </h3>
 
                   <p className="mt-1 text-sm leading-6 text-slate-500">
-                    אפשר להוסיף עד 6 תמונות. התמונה הראשונה תהיה תמונת הקאבר.
+                    {t("businessProfile.mainSection.helpers.mainImages")}
                   </p>
                 </div>
 
                 <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                  {limitedMainImgs.length}/6 הועלו
+                  {t("businessProfile.mainSection.uploadedCount", {
+                    count: limitedMainImgs.length,
+                  })}
                 </span>
               </div>
 
@@ -919,13 +936,15 @@ export default function MainSection({
                   >
                     <ImageLoader
                       src={preview}
-                      alt={`תמונה ראשית של העסק ${i + 1}`}
+                      alt={t("businessProfile.mainSection.mainImageAlt", {
+                        index: i + 1,
+                      })}
                       className="h-36 w-full object-cover transition duration-500 group-hover:scale-105"
                     />
 
                     {i === 0 && (
                       <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-violet-700 shadow-sm backdrop-blur">
-                        קאבר
+                        {t("businessProfile.mainSection.cover")}
                       </div>
                     )}
 
@@ -934,7 +953,7 @@ export default function MainSection({
                       onClick={() => handleDeleteImage(publicId)}
                       disabled={isSaving}
                       className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/95 text-sm shadow-lg transition hover:scale-105 hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
-                      aria-label="מחיקת תמונה"
+                      aria-label={t("businessProfile.mainSection.deleteImage")}
                     >
                       🗑️
                     </button>
@@ -953,7 +972,7 @@ export default function MainSection({
                     </span>
 
                     <span className="mt-3 text-sm font-black">
-                      הוספת תמונות
+                      {t("businessProfile.mainSection.addImages")}
                     </span>
                   </button>
                 )}
@@ -968,7 +987,9 @@ export default function MainSection({
                   disabled={isSaving}
                   className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
-                  {isSaving ? "שומר..." : "שמירת שינויים"}
+                  {isSaving
+                    ? t("businessProfile.mainSection.saving")
+                    : t("businessProfile.mainSection.saveChanges")}
                 </button>
 
                 {showViewProfile && businessDetails._id && (
@@ -978,7 +999,7 @@ export default function MainSection({
                     disabled={isSaving}
                     className="flex h-[56px] items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    צפייה בפרופיל
+                    {t("businessProfile.mainSection.viewProfile")}
                   </button>
                 )}
               </div>
@@ -991,7 +1012,9 @@ export default function MainSection({
                 disabled={isSaving || isDeletingLogo}
                 className="w-full rounded-2xl border border-rose-200 bg-white px-5 py-3 text-sm font-black text-rose-600 shadow-sm transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isDeletingLogo ? "מוחק לוגו..." : "מחיקת לוגו"}
+                {isDeletingLogo
+                  ? t("businessProfile.mainSection.deletingLogo")
+                  : t("businessProfile.mainSection.deleteLogo")}
               </button>
             )}
           </div>

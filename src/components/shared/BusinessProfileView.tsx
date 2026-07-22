@@ -12,9 +12,11 @@ import { createPortal } from "react-dom";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
+import { useTranslation } from "react-i18next";
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
@@ -121,12 +123,12 @@ const TAB_MAP: Record<string, ProfileTab> = {
   faqs: "FAQs",
 };
 
-const TAB_LABELS: Record<ProfileTab, string> = {
-  Main: "ראשי",
-  Gallery: "גלריה",
-  Reviews: "ביקורות",
-  Website: "אתר",
-  FAQs: "שאלות נפוצות",
+const TAB_KEYS: Record<ProfileTab, string> = {
+  Main: "main",
+  Gallery: "gallery",
+  Reviews: "reviews",
+  Website: "website",
+  FAQs: "faqs",
 };
 
 function useOnScreen(ref: React.RefObject<HTMLElement | null>) {
@@ -225,6 +227,8 @@ function isMeaningfulCategory(category?: string) {
 }
 
 export default function BusinessProfileView() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { user } = useAuth() as {
     user: AuthUser | null;
   };
@@ -381,7 +385,7 @@ export default function BusinessProfileView() {
           name:
             review.client?.name ||
             (review as ReviewItem & { clientName?: string }).clientName ||
-            "לקוח אנונימי",
+            t("businessProfile.view.anonymousClient"),
         },
         ratings: review.ratings || {},
       };
@@ -535,14 +539,14 @@ export default function BusinessProfileView() {
   if (isLoading) {
     return (
       <main
-        dir="rtl"
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-right"
+        dir={dir}
+        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur">
           <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
 
           <p className="text-sm font-black text-slate-600">
-            טוען את עמוד העסק...
+            {t("businessProfile.view.loading")}
           </p>
         </div>
       </main>
@@ -552,16 +556,16 @@ export default function BusinessProfileView() {
   if (error) {
     return (
       <main
-        dir="rtl"
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-right"
+        dir={dir}
+        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-rose-100 bg-white p-10 text-center shadow-sm">
           <p className="text-lg font-black text-rose-600">
-            לא הצלחנו לטעון את העמוד
+            {t("businessProfile.view.loadErrorTitle")}
           </p>
 
           <p className="mt-2 text-sm text-slate-500">
-            נסה לרענן את הדף בעוד רגע.
+            {t("businessProfile.view.loadErrorText")}
           </p>
         </div>
       </main>
@@ -571,11 +575,13 @@ export default function BusinessProfileView() {
   if (!data) {
     return (
       <main
-        dir="rtl"
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-right"
+        dir={dir}
+        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-start"
       >
         <div className="mx-auto max-w-5xl rounded-[2rem] border border-slate-200 bg-white p-10 text-center shadow-sm">
-          <p className="text-lg font-black text-slate-800">העסק לא נמצא</p>
+          <p className="text-lg font-black text-slate-800">
+            {t("businessProfile.view.notFound")}
+          </p>
         </div>
       </main>
     );
@@ -610,7 +616,7 @@ export default function BusinessProfileView() {
                 <img
                   key={`${url}-${index}`}
                   src={url}
-                  alt={`תמונה ראשית ${index + 1}`}
+                  alt={t("businessProfile.view.mainImageAlt", { index: index + 1 })}
                   loading="lazy"
                   className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
@@ -618,8 +624,8 @@ export default function BusinessProfileView() {
             </div>
           ) : (
             <EmptyState
-              title="עדיין אין תמונות ראשיות"
-              text="התמונות שהעסק יוסיף יופיעו כאן."
+              title={t("businessProfile.view.empty.mainImagesTitle")}
+              text={t("businessProfile.view.empty.mainImagesText")}
               icon="🖼️"
             />
           )}
@@ -627,7 +633,7 @@ export default function BusinessProfileView() {
           <div className="mx-auto max-w-4xl">
             <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
               <h2 className="text-xl font-black text-slate-950">
-                ביקורות אחרונות
+                {t("businessProfile.view.recentReviews")}
               </h2>
 
               <button
@@ -635,7 +641,7 @@ export default function BusinessProfileView() {
                 onClick={() => handleTabChange("Reviews")}
                 className="rounded-full bg-violet-50 px-4 py-2 text-sm font-black text-violet-700 transition hover:bg-violet-100"
               >
-                צפייה בכל הביקורות
+                {t("businessProfile.view.viewAllReviews")}
               </button>
             </div>
 
@@ -647,8 +653,8 @@ export default function BusinessProfileView() {
               </div>
             ) : (
               <EmptyState
-                title="עדיין אין ביקורות"
-                text="ביקורות של לקוחות יופיעו כאן."
+                title={t("businessProfile.view.empty.reviewsTitle")}
+                text={t("businessProfile.view.empty.reviewsText")}
                 icon="⭐"
               />
             )}
@@ -667,7 +673,9 @@ export default function BusinessProfileView() {
                   <img
                     key={`${url}-${index}`}
                     src={url}
-                    alt={`תמונת גלריה ${index + 1}`}
+                    alt={t("businessProfile.view.galleryImageAlt", {
+                      index: index + 1,
+                    })}
                     loading="lazy"
                     className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                   />
@@ -675,14 +683,14 @@ export default function BusinessProfileView() {
               </div>
             ) : (
               <EmptyState
-                title="אין תמונות בגלריה"
-                text="התמונות שהעסק יעלה יופיעו כאן."
+                title={t("businessProfile.view.empty.galleryTitle")}
+                text={t("businessProfile.view.empty.galleryText")}
                 icon="🖼️"
               />
             )
           ) : (
             <p className="text-center text-sm font-black text-slate-500">
-              טוען גלריה...
+              {t("businessProfile.view.loadingGallery")}
             </p>
           )}
         </div>
@@ -697,11 +705,13 @@ export default function BusinessProfileView() {
               <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
                 <div>
                   <h2 className="text-2xl font-black text-slate-950">
-                    ביקורות לקוחות
+                    {t("businessProfile.view.customerReviews")}
                   </h2>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    {reviewsCount} ביקורות
+                    {t("businessProfile.view.reviewsCount", {
+                      count: reviewsCount,
+                    })}
                   </p>
                 </div>
 
@@ -711,7 +721,7 @@ export default function BusinessProfileView() {
                     className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     onClick={() => setShowReviewModal(true)}
                   >
-                    הוספת ביקורת
+                    {t("businessProfile.view.addReview")}
                   </button>
                 )}
               </div>
@@ -732,7 +742,7 @@ export default function BusinessProfileView() {
                     >
                       <button
                         type="button"
-                        aria-label="סגירת טופס ביקורת"
+                        aria-label={t("businessProfile.view.closeReviewForm")}
                         className="absolute left-5 top-5 z-20 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/95 text-xl font-black text-slate-500 shadow-sm ring-1 ring-slate-200 transition hover:bg-slate-100 hover:text-slate-800"
                         onClick={() => setShowReviewModal(false)}
                       >
@@ -742,7 +752,7 @@ export default function BusinessProfileView() {
                       <Suspense
                         fallback={
                           <div className="flex flex-1 items-center justify-center p-6 text-sm font-black text-slate-500">
-                            טוען טופס ביקורת...
+                            {t("businessProfile.view.loadingReviewForm")}
                           </div>
                         }
                       >
@@ -779,8 +789,8 @@ export default function BusinessProfileView() {
                 </div>
               ) : (
                 <EmptyState
-                  title="עדיין אין ביקורות"
-                  text="ביקורות של לקוחות יופיעו כאן."
+                  title={t("businessProfile.view.empty.reviewsTitle")}
+                  text={t("businessProfile.view.empty.reviewsText")}
                   icon="⭐"
                 >
                   {!isOwner && (
@@ -789,7 +799,7 @@ export default function BusinessProfileView() {
                       onClick={() => setShowReviewModal(true)}
                       className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     >
-                      כתיבת הביקורת הראשונה
+                      {t("businessProfile.view.writeFirstReview")}
                     </button>
                   )}
                 </EmptyState>
@@ -797,7 +807,7 @@ export default function BusinessProfileView() {
             </div>
           ) : (
             <p className="text-center text-sm font-black text-slate-500">
-              טוען ביקורות...
+              {t("businessProfile.view.loadingReviews")}
             </p>
           )}
         </div>
@@ -814,12 +824,11 @@ export default function BusinessProfileView() {
               </div>
 
               <h2 className="mt-5 text-3xl font-black text-slate-950">
-                אתר העסק
+                {t("businessProfile.view.websiteTitle")}
               </h2>
 
               <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-600">
-                אפשר להיכנס לאתר העסק ולראות מידע נוסף, שירותים, תכנים
-                ועדכונים.
+                {t("businessProfile.view.websiteDesc")}
               </p>
 
               {businessWebsiteUrl && (
@@ -830,7 +839,7 @@ export default function BusinessProfileView() {
                   dir="ltr"
                   className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
-                  כניסה לאתר העסק
+                  {t("businessProfile.contact.websiteCta")}
                 </a>
               )}
 
@@ -841,14 +850,14 @@ export default function BusinessProfileView() {
                   rel="noreferrer"
                   className="mx-auto mt-3 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-6 text-sm font-black !text-white shadow-xl shadow-emerald-500/20 transition hover:-translate-y-0.5"
                 >
-                  שליחת הודעה בוואטסאפ
+                  {t("businessProfile.contact.whatsappCta")}
                 </a>
               )}
             </div>
           ) : (
             <EmptyState
-              title="עדיין אין אתר מחובר"
-              text="כאשר העסק יחבר אתר, הקישור יופיע כאן."
+              title={t("businessProfile.view.empty.websiteTitle")}
+              text={t("businessProfile.view.empty.websiteText")}
               icon="🌐"
             />
           )}
@@ -869,7 +878,7 @@ export default function BusinessProfileView() {
               >
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-sm font-black text-slate-950 transition hover:bg-violet-50"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-sm font-black text-slate-950 transition hover:bg-violet-50"
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
                 >
                   <span>{faq.question}</span>
@@ -894,8 +903,8 @@ export default function BusinessProfileView() {
           })
         ) : (
           <EmptyState
-            title="עדיין אין שאלות נפוצות"
-            text="שאלות ותשובות של העסק יופיעו כאן."
+            title={t("businessProfile.view.empty.faqsTitle")}
+            text={t("businessProfile.view.empty.faqsText")}
             icon="❔"
           />
         )}
@@ -905,8 +914,8 @@ export default function BusinessProfileView() {
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
     >
       <section className="mx-auto max-w-7xl">
         <div className="relative overflow-visible rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
@@ -919,7 +928,7 @@ export default function BusinessProfileView() {
               to={`/business/${bizId}/dashboard/edit`}
               className="absolute left-5 top-5 z-20 inline-flex h-10 items-center justify-center rounded-full border border-white/80 bg-white/85 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
             >
-              ✏️ עריכה
+              ✏️ {t("businessProfile.view.editLink")}
             </Link>
           )}
 
@@ -928,7 +937,7 @@ export default function BusinessProfileView() {
               <div className="overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
                 <img
                   src={coverImage}
-                  alt={`תמונת קאבר של ${businessName}`}
+                  alt={t("businessProfile.view.coverAlt", { name: businessName })}
                   loading="lazy"
                   className="h-72 w-full object-cover sm:h-96 lg:h-[430px]"
                 />
@@ -941,7 +950,7 @@ export default function BusinessProfileView() {
                   </div>
 
                   <p className="mt-4 text-lg font-black text-slate-950">
-                    ברוכים הבאים
+                    {t("businessProfile.view.welcome")}
                   </p>
                 </div>
               </div>
@@ -952,7 +961,7 @@ export default function BusinessProfileView() {
                 {logoUrl ? (
                   <img
                     src={logoUrl}
-                    alt={`לוגו ${businessName}`}
+                    alt={t("businessProfile.view.logoAlt", { name: businessName })}
                     loading="lazy"
                     className="h-full w-full object-cover"
                   />
@@ -964,7 +973,7 @@ export default function BusinessProfileView() {
               </div>
 
               <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
-                {businessName || "שם העסק"}
+                {businessName || t("businessProfile.view.defaultBusinessName")}
               </h1>
 
               <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -986,7 +995,7 @@ export default function BusinessProfileView() {
                   <span className="inline-flex items-center gap-2 rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
                     ⭐ {roundedAvg.toFixed(1)}
                     <span className="text-amber-600/80">
-                      ({reviewsCount} ביקורות)
+                      ({t("businessProfile.view.reviewsCount", { count: reviewsCount })})
                     </span>
                   </span>
                 )}
@@ -1012,7 +1021,7 @@ export default function BusinessProfileView() {
                 <div
                   className="flex flex-wrap items-center justify-center gap-3 text-center"
                   role="tablist"
-                  aria-label="טאבים של עמוד העסק"
+                  aria-label={t("businessProfile.view.tabListAria")}
                 >
                   {TABS.map((tab) => {
                     const isActive = tab === currentTab;
@@ -1031,7 +1040,7 @@ export default function BusinessProfileView() {
                         role="tab"
                         aria-selected={isActive}
                       >
-                        {TAB_LABELS[tab]}
+                        {t(`businessProfile.view.tabs.${TAB_KEYS[tab]}`)}
                       </button>
                     );
                   })}
