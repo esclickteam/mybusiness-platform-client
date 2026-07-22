@@ -55,4 +55,43 @@ export const brokeriaEditorCss = `
 @keyframes brokeria-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 [data-template-id="brokeria"] .tpl-prop-ticker, [data-template-id="brokeria-preview"] .tpl-prop-ticker { display:flex;width:max-content;animation:brokeria-ticker 35s linear infinite; }
 [data-template-id="brokeria"] .tpl-zoom-card:hover img, [data-template-id="brokeria-preview"] .tpl-zoom-card:hover img { transform:scale(1.1); }
+
+@keyframes brokeria-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes brokeria-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes brokeria-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="brokeria"] .tpl-glass, [data-template-id="brokeria-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="brokeria"] .tpl-glow, [data-template-id="brokeria-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #c9a96244, transparent 70%);
+  animation: brokeria-glow 3s ease-in-out infinite;
+}}
+[data-template-id="brokeria"] .tpl-shimmer, [data-template-id="brokeria-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #c9a96218 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: brokeria-shimmer 4s linear infinite;
+}}
+[data-template-id="brokeria"] .tpl-parallax, [data-template-id="brokeria-preview"] .tpl-parallax {{
+  animation: brokeria-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="brokeria"] .tpl-magnetic, [data-template-id="brokeria-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="brokeria"] .tpl-magnetic:hover, [data-template-id="brokeria-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="brokeria"] details[open] summary, [data-template-id="brokeria-preview"] details[open] summary {{
+  color: #c9a962;
+}}
+@keyframes brokeria-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes brokeria-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="brokeria"] .tpl-testi-track, [data-template-id="brokeria-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:brokeria-testi 28s linear infinite;
+}}
+[data-template-id="brokeria"] .tpl-line-draw, [data-template-id="brokeria-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:brokeria-draw 1.2s both;
+}}
+
 `;

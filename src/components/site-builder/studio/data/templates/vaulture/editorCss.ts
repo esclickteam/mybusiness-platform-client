@@ -56,4 +56,43 @@ export const vaultureEditorCss = `
 [data-template-id="vaulture"] .tpl-curtain img, [data-template-id="vaulture-preview"] .tpl-curtain img { animation:vaulture-curtain 1.8s both; }
 @keyframes vaulture-testi { to { transform:translateX(-50%); } }
 [data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track { display:flex;width:max-content;animation:vaulture-testi 24s linear infinite; }
+
+@keyframes vaulture-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes vaulture-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes vaulture-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="vaulture"] .tpl-glass, [data-template-id="vaulture-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="vaulture"] .tpl-glow, [data-template-id="vaulture-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #d4af3744, transparent 70%);
+  animation: vaulture-glow 3s ease-in-out infinite;
+}}
+[data-template-id="vaulture"] .tpl-shimmer, [data-template-id="vaulture-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #d4af3718 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: vaulture-shimmer 4s linear infinite;
+}}
+[data-template-id="vaulture"] .tpl-parallax, [data-template-id="vaulture-preview"] .tpl-parallax {{
+  animation: vaulture-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="vaulture"] .tpl-magnetic, [data-template-id="vaulture-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="vaulture"] .tpl-magnetic:hover, [data-template-id="vaulture-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="vaulture"] details[open] summary, [data-template-id="vaulture-preview"] details[open] summary {{
+  color: #d4af37;
+}}
+@keyframes vaulture-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes vaulture-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:vaulture-testi 28s linear infinite;
+}}
+[data-template-id="vaulture"] .tpl-line-draw, [data-template-id="vaulture-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:vaulture-draw 1.2s both;
+}}
+
 `;

@@ -54,4 +54,43 @@ export const signetEditorCss = `
 }
 @keyframes signet-stamp { 0%{transform:scale(2) rotate(-12deg);opacity:0} 100%{transform:scale(1);opacity:1} }
 [data-template-id="signet"] .tpl-stamp, [data-template-id="signet-preview"] .tpl-stamp { animation:signet-stamp .9s both; }
+
+@keyframes signet-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes signet-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes signet-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="signet"] .tpl-glass, [data-template-id="signet-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="signet"] .tpl-glow, [data-template-id="signet-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #b8860b44, transparent 70%);
+  animation: signet-glow 3s ease-in-out infinite;
+}}
+[data-template-id="signet"] .tpl-shimmer, [data-template-id="signet-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #b8860b18 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: signet-shimmer 4s linear infinite;
+}}
+[data-template-id="signet"] .tpl-parallax, [data-template-id="signet-preview"] .tpl-parallax {{
+  animation: signet-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="signet"] .tpl-magnetic, [data-template-id="signet-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="signet"] .tpl-magnetic:hover, [data-template-id="signet-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="signet"] details[open] summary, [data-template-id="signet-preview"] details[open] summary {{
+  color: #b8860b;
+}}
+@keyframes signet-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes signet-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="signet"] .tpl-testi-track, [data-template-id="signet-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:signet-testi 28s linear infinite;
+}}
+[data-template-id="signet"] .tpl-line-draw, [data-template-id="signet-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:signet-draw 1.2s both;
+}}
+
 `;

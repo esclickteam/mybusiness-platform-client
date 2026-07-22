@@ -13,6 +13,10 @@ META_BLOCKS = {'bentoGrid': [('header', 'bento-nav', 'Nav'),
                ('listings', 'bento-showcase', 'Showcase'),
                ('marquee', 'neighborhood-tags', 'Marquee'),
                ('process', 'line-draw-steps', 'Process'),
+               ('team', 'agent-grid', 'Agents'),
+               ('testimonials', 'premium-carousel', 'Testimonials'),
+               ('stats', 'trust-badges', 'Stats'),
+               ('insights', 'market-cards', 'Insights'),
                ('about', 'agency-story', 'About'),
                ('contact', 'inquiry-form', 'Contact'),
                ('footer', 'minimal', 'Footer')],
@@ -20,35 +24,60 @@ META_BLOCKS = {'bentoGrid': [('header', 'bento-nav', 'Nav'),
               ('hero', 'city-silhouette', 'Hero'),
               ('areas', 'area-guides', 'Areas'),
               ('listings', 'location-rows', 'Rows'),
+              ('gallery', 'parallax-showcase', 'Gallery'),
+              ('team', 'agent-grid', 'Agents'),
+              ('testimonials', 'premium-carousel', 'Testimonials'),
+              ('stats', 'trust-badges', 'Stats'),
               ('about', 'local-story', 'About'),
+              ('faq', 'accordion-premium', 'FAQ'),
               ('contact', 'area-form', 'Contact'),
               ('footer', 'minimal', 'Footer')],
  'compareSlider': [('header', 'compare-nav', 'Nav'),
                    ('hero', 'split-slider', 'Hero'),
                    ('showcase', 'before-after', 'Showcase'),
                    ('bands', 'value-props', 'Bands'),
+                   ('gallery', 'parallax-showcase', 'Gallery'),
+                   ('team', 'agent-grid', 'Agents'),
+                   ('testimonials', 'premium-carousel', 'Testimonials'),
+                   ('stats', 'trust-badges', 'Stats'),
                    ('about', 'transform-story', 'About'),
+                   ('faq', 'accordion-premium', 'FAQ'),
                    ('contact', 'estimate-form', 'Contact'),
                    ('footer', 'minimal', 'Footer')],
  'curtainReveal': [('header', 'vault-nav', 'Nav'),
                    ('hero', 'curtain-gold', 'Hero'),
                    ('listings', 'vault-cards', 'Cards'),
                    ('testimonials', 'carousel-strip', 'Testimonials'),
+                   ('gallery', 'parallax-showcase', 'Gallery'),
+                   ('team', 'agent-grid', 'Agents'),
+                   ('stats', 'trust-badges', 'Stats'),
+                   ('insights', 'market-cards', 'Insights'),
                    ('about', 'luxury-story', 'About'),
+                   ('faq', 'accordion-premium', 'FAQ'),
                    ('contact', 'vip-form', 'Contact'),
                    ('footer', 'minimal', 'Footer')],
  'diagonalAxis': [('header', 'axis-nav', 'Nav'),
                   ('hero', 'diagonal-split', 'Hero'),
                   ('listings', 'skewed-grid', 'Grid'),
                   ('contact-panel', 'angled-form', 'Panel'),
+                  ('gallery', 'parallax-showcase', 'Gallery'),
+                  ('team', 'agent-grid', 'Agents'),
+                  ('testimonials', 'premium-carousel', 'Testimonials'),
+                  ('stats', 'trust-badges', 'Stats'),
                   ('about', 'geometry-story', 'About'),
+                  ('faq', 'accordion-premium', 'FAQ'),
                   ('contact', 'axis-form', 'Contact'),
                   ('footer', 'minimal', 'Footer')],
  'elevatorTower': [('header', 'tower-nav', 'Nav'),
                    ('hero', 'elevator-floors', 'Hero'),
                    ('penthouses', 'stacked-cards', 'Penthouses'),
                    ('stats', 'skyline-stats', 'Stats'),
+                   ('gallery', 'parallax-showcase', 'Gallery'),
+                   ('team', 'agent-grid', 'Agents'),
+                   ('testimonials', 'premium-carousel', 'Testimonials'),
+                   ('awards', 'marquee-strip', 'Awards'),
                    ('about', 'height-story', 'About'),
+                   ('faq', 'accordion-premium', 'FAQ'),
                    ('contact', 'view-form', 'Contact'),
                    ('footer', 'minimal', 'Footer')],
  'floorPlan': [('header', 'plan-nav', 'Nav'),
@@ -56,13 +85,23 @@ META_BLOCKS = {'bentoGrid': [('header', 'bento-nav', 'Nav'),
                ('rooms', 'hotspot-cards', 'Hotspots'),
                ('compare', 'property-compare', 'Compare'),
                ('mortgage', 'calc-visual', 'Mortgage'),
+               ('gallery', 'parallax-showcase', 'Gallery'),
+               ('team', 'agent-grid', 'Agents'),
+               ('testimonials', 'premium-carousel', 'Testimonials'),
+               ('stats', 'trust-badges', 'Stats'),
                ('about', 'dwell-story', 'About'),
+               ('faq', 'accordion-premium', 'FAQ'),
                ('contact', 'plan-form', 'Contact'),
                ('footer', 'minimal', 'Footer')],
  'liveCounters': [('header', 'counter-nav', 'Nav'),
                   ('hero', 'live-stats', 'Hero'),
                   ('listings', 'badge-cards', 'Cards'),
                   ('faq', 'accordion-visual', 'FAQ'),
+                  ('gallery', 'parallax-showcase', 'Gallery'),
+                  ('team', 'agent-grid', 'Agents'),
+                  ('testimonials', 'premium-carousel', 'Testimonials'),
+                  ('stats', 'trust-badges', 'Stats'),
+                  ('insights', 'market-cards', 'Insights'),
                   ('about', 'data-story', 'About'),
                   ('contact', 'smart-form', 'Contact'),
                   ('footer', 'minimal', 'Footer')],
@@ -71,28 +110,48 @@ META_BLOCKS = {'bentoGrid': [('header', 'bento-nav', 'Nav'),
                     ('listings', 'featured-zoom-cards', 'Cards'),
                     ('team', 'agent-strip', 'Agents'),
                     ('stats', 'animated-stats', 'Stats'),
+                    ('testimonials', 'premium-carousel', 'Testimonials'),
+                    ('gallery', 'parallax-showcase', 'Gallery'),
+                    ('insights', 'market-cards', 'Insights'),
                     ('about', 'broker-story', 'About'),
+                    ('faq', 'accordion-premium', 'FAQ'),
                     ('contact', 'broker-form', 'Contact'),
                     ('footer', 'minimal', 'Footer')],
  'rotatingPanels': [('header', 'openhaus-nav', 'Nav'),
                     ('hero', 'rotate-3d', 'Hero'),
                     ('schedule', 'open-house-timeline', 'Timeline'),
                     ('gallery', 'masonry-grid', 'Gallery'),
+                    ('team', 'agent-grid', 'Agents'),
+                    ('testimonials', 'premium-carousel', 'Testimonials'),
+                    ('stats', 'trust-badges', 'Stats'),
+                    ('awards', 'marquee-strip', 'Awards'),
                     ('about', 'tour-story', 'About'),
+                    ('faq', 'accordion-premium', 'FAQ'),
                     ('contact', 'tour-form', 'Contact'),
                     ('footer', 'minimal', 'Footer')],
  'stackingBlocks': [('header', 'block-nav', 'Nav'),
                     ('hero', 'stack-climb', 'Hero'),
                     ('index', 'numbered-rows', 'Index'),
                     ('contact-band', 'bold-type', 'Band'),
+                    ('gallery', 'parallax-showcase', 'Gallery'),
+                    ('team', 'agent-grid', 'Agents'),
+                    ('testimonials', 'premium-carousel', 'Testimonials'),
+                    ('stats', 'trust-badges', 'Stats'),
                     ('about', 'brutalist-story', 'About'),
+                    ('faq', 'accordion-premium', 'FAQ'),
                     ('contact', 'direct-form', 'Contact'),
                     ('footer', 'minimal', 'Footer')],
  'stampProcess': [('header', 'signet-nav', 'Nav'),
                   ('hero', 'stamp-seal', 'Hero'),
                   ('process', 'stamp-steps', 'Steps'),
                   ('spotlight', 'listing-spotlight', 'Spotlight'),
+                  ('gallery', 'parallax-showcase', 'Gallery'),
+                  ('team', 'agent-grid', 'Agents'),
+                  ('testimonials', 'premium-carousel', 'Testimonials'),
+                  ('stats', 'trust-badges', 'Stats'),
+                  ('insights', 'market-cards', 'Insights'),
                   ('about', 'trust-story', 'About'),
+                  ('faq', 'accordion-premium', 'FAQ'),
                   ('contact', 'deal-form', 'Contact'),
                   ('footer', 'minimal', 'Footer')]}
 
@@ -174,25 +233,114 @@ EXTRA_CSS = {'bentoGrid': '[data-template-id="{tid}"] .tpl-bento, [data-template
                  '[data-template-id="{tid}"] .tpl-stamp, [data-template-id="{tid}-preview"] '
                  '.tpl-stamp {{ animation:{tid}-stamp .9s both; }}'}
 
-HOME_SECTION_USE = {'bentoGrid': ['<BentoShowcase data={data} />',
-               '<NeighborhoodMarquee data={data} />',
-               '<ProcessSteps data={data} />'],
- 'cityPins': ['<AreaGuides data={data} />', '<LocationRows data={data} />'],
- 'compareSlider': ['<BeforeAfterShowcase data={data} />', '<ValueBands data={data} />'],
- 'curtainReveal': ['<VaultCards data={data} />', '<TestimonialStrip data={data} />'],
- 'diagonalAxis': ['<SkewedGrid data={data} />', '<AngledContactPanel data={data} onCta={onCta} />'],
- 'elevatorTower': ['<PenthouseStack data={data} />', '<SkylineStats data={data} />'],
- 'floorPlan': ['<HotspotCards data={data} />',
-               '<CompareStrip data={data} />',
-               '<MortgageVisual data={data} />'],
- 'liveCounters': ['<BadgeCards data={data} />', '<FaqVisual data={data} />'],
- 'propertyTicker': ['<FeaturedCards data={data} />',
-                    '<AgentStrip data={data} />',
-                    '<AnimatedStats data={data} />'],
- 'rotatingPanels': ['<OpenHouseTimeline data={data} />', '<MasonryGallery data={data} />'],
- 'stackingBlocks': ['<NumberedIndex data={data} />',
-                    '<BoldContactBand data={data} onCta={onCta} />'],
- 'stampProcess': ['<StampSteps data={data} />', '<ListingSpotlight data={data} />']}
+HOME_LAYOUT_SECTIONS = {
+ 'bentoGrid': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps', 'ParallaxShowcase'],
+ 'cityPins': ['AreaGuides', 'LocationRows', 'ParallaxShowcase', 'StatsRow'],
+ 'compareSlider': ['BeforeAfterShowcase', 'ValueBands', 'ParallaxShowcase', 'TrustBadges'],
+ 'curtainReveal': ['VaultCards', 'TestimonialStrip', 'ParallaxShowcase', 'FeaturedListings'],
+ 'diagonalAxis': ['SkewedGrid', 'ParallaxShowcase', 'TrustBadges', 'ProcessTimeline'],
+ 'elevatorTower': ['PenthouseStack', 'SkylineStats', 'ParallaxShowcase', 'AgentGrid'],
+ 'floorPlan': ['HotspotCards', 'CompareStrip', 'MortgageVisual', 'ParallaxShowcase'],
+ 'liveCounters': ['BadgeCards', 'FaqVisual', 'MarketInsights', 'ParallaxShowcase'],
+ 'propertyTicker': ['FeaturedCards', 'AgentStrip', 'AnimatedStats', 'ParallaxShowcase'],
+ 'rotatingPanels': ['OpenHouseTimeline', 'MasonryGallery', 'ParallaxShowcase', 'TrustBadges'],
+ 'stackingBlocks': ['NumberedIndex', 'ParallaxShowcase', 'TrustBadges', 'ProcessTimeline'],
+ 'stampProcess': ['StampSteps', 'ListingSpotlight', 'ParallaxShowcase', 'MarketInsights'],
+}
+
+HOME_SHARED_TAIL = ['AwardsStrip', 'TestimonialsBlock', 'CtaBand']
+
+CONTACT_SECTIONS = ['OfficeMap', 'AgentGrid', 'FaqBlock', 'TrustBadges', 'AwardsStrip']
+
+PAGE_SECTION_MAP = {
+ 'propertyTicker': {
+  '_default': ['FeaturedCards', 'ParallaxShowcase', 'AnimatedStats', 'AgentGrid', 'FaqBlock'],
+  'listings': ['FeaturedCards', 'ParallaxShowcase', 'AnimatedStats', 'TrustBadges', 'CtaBand'],
+  'agents': ['AgentGrid', 'AwardsStrip', 'TestimonialsBlock', 'AnimatedStats', 'CtaBand'],
+  'about': ['AboutBlock', 'ProcessTimeline', 'TrustBadges', 'TestimonialsBlock', 'AwardsStrip'],
+  'insights': ['MarketInsights', 'FaqBlock', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'bentoGrid': {
+  '_default': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps', 'ParallaxShowcase', 'FaqBlock'],
+  'listings': ['BentoShowcase', 'ParallaxShowcase', 'StatsRow', 'TrustBadges', 'CtaBand'],
+  'neighborhoods': ['NeighborhoodMarquee', 'ParallaxShowcase', 'MarketInsights', 'StatsRow', 'CtaBand'],
+  'process': ['ProcessSteps', 'ProcessTimeline', 'FaqBlock', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'floorPlan': {
+  '_default': ['HotspotCards', 'CompareStrip', 'MortgageVisual', 'ParallaxShowcase', 'FaqBlock'],
+  'listings': ['FeaturedListings', 'HotspotCards', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
+  'compare': ['CompareStrip', 'ParallaxShowcase', 'FaqBlock', 'TrustBadges', 'CtaBand'],
+  'mortgage': ['MortgageVisual', 'StatsRow', 'FaqBlock', 'MarketInsights', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'curtainReveal': {
+  '_default': ['VaultCards', 'ParallaxShowcase', 'TestimonialStrip', 'TrustBadges', 'FaqBlock'],
+  'collection': ['VaultCards', 'ParallaxShowcase', 'FeaturedListings', 'StatsRow', 'CtaBand'],
+  'exclusive': ['VaultCards', 'FeaturedListings', 'TestimonialsBlock', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'stackingBlocks': {
+  '_default': ['NumberedIndex', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock', 'CtaBand'],
+  'listings': ['FeaturedListings', 'NumberedIndex', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
+  'index': ['NumberedIndex', 'ParallaxShowcase', 'MarketInsights', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ProcessTimeline', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'elevatorTower': {
+  '_default': ['PenthouseStack', 'SkylineStats', 'ParallaxShowcase', 'AgentGrid', 'FaqBlock'],
+  'listings': ['PenthouseStack', 'ParallaxShowcase', 'StatsRow', 'TrustBadges', 'CtaBand'],
+  'penthouses': ['PenthouseStack', 'FeaturedListings', 'ParallaxShowcase', 'TestimonialsBlock', 'CtaBand'],
+  'about': ['AboutBlock', 'SkylineStats', 'AgentGrid', 'TestimonialsBlock', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'cityPins': {
+  '_default': ['AreaGuides', 'LocationRows', 'ParallaxShowcase', 'StatsRow', 'FaqBlock'],
+  'listings': ['LocationRows', 'FeaturedListings', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
+  'areas': ['AreaGuides', 'ParallaxShowcase', 'MarketInsights', 'StatsRow', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'rotatingPanels': {
+  '_default': ['OpenHouseTimeline', 'MasonryGallery', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
+  'schedule': ['OpenHouseTimeline', 'ParallaxShowcase', 'AgentGrid', 'TestimonialsBlock', 'CtaBand'],
+  'gallery': ['MasonryGallery', 'ParallaxShowcase', 'FeaturedListings', 'StatsRow', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'compareSlider': {
+  '_default': ['BeforeAfterShowcase', 'ValueBands', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
+  'listings': ['BeforeAfterShowcase', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
+  'showcase': ['BeforeAfterShowcase', 'ParallaxShowcase', 'FeaturedListings', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ValueBands', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'liveCounters': {
+  '_default': ['BadgeCards', 'FaqVisual', 'MarketInsights', 'ParallaxShowcase', 'TrustBadges'],
+  'listings': ['BadgeCards', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
+  'data': ['MarketInsights', 'StatsRow', 'FaqBlock', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'stampProcess': {
+  '_default': ['StampSteps', 'ListingSpotlight', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
+  'process': ['StampSteps', 'ProcessTimeline', 'FaqBlock', 'StatsRow', 'CtaBand'],
+  'listings': ['ListingSpotlight', 'FeaturedListings', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'StampSteps', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+ 'diagonalAxis': {
+  '_default': ['SkewedGrid', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock', 'CtaBand'],
+  'listings': ['SkewedGrid', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
+  'grid': ['SkewedGrid', 'ParallaxShowcase', 'FeaturedListings', 'TrustBadges', 'CtaBand'],
+  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ProcessTimeline', 'AwardsStrip'],
+  'contact': CONTACT_SECTIONS,
+ },
+}
 
 import importlib.util
 
@@ -204,6 +352,38 @@ _snip_spec.loader.exec_module(_snip)
 HERO_JSX = _snip.HERO_JSX
 SECTIONS_JSX = _snip.SECTIONS_JSX
 THUMBNAIL_JSX = _snip.THUMBNAIL_JSX
+
+_prem_path = Path(__file__).parent / "_broker_premium_sections.py"
+_prem_spec = importlib.util.spec_from_file_location("_broker_premium_sections", _prem_path)
+_prem = importlib.util.module_from_spec(_prem_spec)
+assert _prem_spec.loader is not None
+_prem_spec.loader.exec_module(_prem)
+SHARED_SECTIONS_JSX = _prem.SHARED_SECTIONS_JSX
+SHARED_EXTRA_CSS = _prem.SHARED_EXTRA_CSS
+CTA_SECTIONS = _prem.CTA_SECTIONS
+
+
+def sections_to_jsx(section_names: list[str], data_var: str = "data", on_cta_expr: str = "onCta") -> str:
+    lines: list[str] = []
+    for name in section_names:
+        if name == "AboutBlock":
+            lines.append(f"<AboutBlock data={{{data_var}}} />")
+        elif name in CTA_SECTIONS:
+            lines.append(f"<{name} data={{{data_var}}} onCta={{{on_cta_expr}}} />")
+        else:
+            lines.append(f"<{name} data={{{data_var}}} />")
+    return "\n      ".join(lines)
+
+
+def page_sections_for(layout: str, page_id: str) -> list[str]:
+    layout_map = PAGE_SECTION_MAP.get(layout, {})
+    if page_id == "contact":
+        return layout_map.get("contact", CONTACT_SECTIONS)
+    return layout_map.get(page_id, layout_map.get("_default", HOME_LAYOUT_SECTIONS.get(layout, [])[:5]))
+
+
+def home_sections_for(layout: str) -> list[str]:
+    return HOME_LAYOUT_SECTIONS.get(layout, []) + HOME_SHARED_TAIL
 
 
 def _apply_palette(s: str, p: dict, extra: dict | None = None) -> str:
@@ -220,7 +400,9 @@ def hero_jsx(t):
     return _apply_palette(HERO_JSX[t["layout"]], p, {"secondary": secondary})
 
 def home_sections_jsx(t):
-    return _apply_palette(SECTIONS_JSX[t["layout"]], t["palette"])
+    layout = t["layout"]
+    combined = SECTIONS_JSX[layout] + "\n" + SHARED_SECTIONS_JSX
+    return _apply_palette(combined, t["palette"])
 
 def thumbnail_body(t):
     p = t["palette"]
@@ -229,6 +411,61 @@ def thumbnail_body(t):
         "hero": t["images"]["hero"], "a": t["images"]["a"],
     }
     return _apply_palette(THUMBNAIL_JSX[t["layout"]], p, extra)
+
+def gen_extras(t: dict) -> str:
+    brand = t["brand"]
+    imgs = t["images"]
+    agents = [
+        ("דנה כהן", "מכירות פרימיום", "127 עסקאות", imgs["a"]),
+        ("יוסי מזרחi", "השקעות וייעוץ", "89 עסקאות", imgs["b"]),
+        ("מיכal רוזן", "נדל״ן יוקרה", "64 עסקאות", imgs["c"]),
+        ("עמית שרון", "השכרה וניהול", "112 עסקאות", imgs["d"]),
+    ]
+    agent_lines = "\n".join(
+        f'  agent{i}Name: "{n}",\n  agent{i}Role: "{r}",\n  agent{i}Deals: "{d}",\n  agent{i}Image: "{img}",'
+        for i, (n, r, d, img) in enumerate(agents, 1)
+    )
+    return f'''  testimonial2: "הליווי היה מדויק, שקוף ומהיר — מצאנו נכס מעולה תוך שבועיים.",
+  testimonial2Author: "רoni ושירה מ.",
+  testimonial2Role: "קונים — {brand}",
+  testimonial3: "צוות מקצועי שמבין גם את השוק וגם את האנשים מאחורי העסקה.",
+  testimonial3Author: "אבי נחmias",
+  testimonial3Role: "משקיע — {brand}",
+  ctaTitle: "מוכנים לצעד הבא?",
+  ctaText: "השאירו פרטים ונחזור עם התאמות מדויקות לדרישות שלכם — בלי רעש, בלי לחץ.",
+  officeTitle: "בואו לפגוש אותנו",
+  officeText: "המשרד שלנו פתוח לפגישות, סיורים וייעוץ — בתיאום מראש ובאווירה נעימה.",
+  step1: "מיפוי דרישות",
+  step1Desc: "מבינים תקציב, אזור, סגנון חיים ומטרות השקעה.",
+  step2: "סינון חכם",
+  step2Desc: "מציגים רק נכסים שעוברים את הסינון שלנו — איכות לפני כמות.",
+  step3: "סיורים ממוקדים",
+  step3Desc: "יוצאים לשטח עם ליווי מלא, תמונות ונתונים בזמן אמת.",
+  step4: "סגירה מקצועית",
+  step4Desc: "מלווים במו״מ, בדיקות, משכנתא וחתימה — עד המפתח.",
+  faq1Q: "איך מתחילים לעבוד יחד?",
+  faq1A: "משאירים פרטים בטופס — נחזור תוך 24 שעות עם 3 התאמות ראשוניות.",
+  faq2Q: "מה העמלה?",
+  faq2A: "שקופה ומוסכמת מראש — בלי הפתעות ובלי אותיות קטנות.",
+  faq3Q: "כמה זמן לוקחת עסקה?",
+  faq3A: "בממוצע 30–45 יום מרגע מציאת הנכס, תלוי במורכבות.",
+  faq4Q: "האם אתם עובדים עם משקיעים?",
+  faq4A: "כן — יש ליווי מלא לתשואה, שיפוץ, השכרה וניהול נכס.",
+  insight1Title: "מגמות מחירים ברבעון",
+  insight1Text: "ניתוח עדכני של עליות, ירידות ונקודות כניסה מומלצות לשוק.",
+  insight1Tag: "שוק",
+  insight2Title: "שכונות עולות",
+  insight2Text: "אילו אזורים מציגים ביקוש גבוה, תשתיות חדשות ופוטנציאל עליית ערך.",
+  insight2Tag: "מיקום",
+  insight3Title: "טיפים לקונים ראשונים",
+  insight3Text: "מה לבדוק לפני חתימה — משכנתא, בדק, חלוקה ותכנון עתידי.",
+  insight3Tag: "מדריך",
+  award1: "סוכנות מובילה 2025",
+  award2: "שקיפות מלאה",
+  award3: "ליווי VIP",
+  award4: "98% שביעות רצון",
+{agent_lines}'''
+
 
 def gen_default_data(t, index):
     nav = "\n".join(
@@ -270,6 +507,7 @@ def gen_default_data(t, index):
   email: "hello@{t["id"]}.co.il",
   address: "ישראל",
 {stats}
+{gen_extras(t)}
 {items}
 }};
 '''
@@ -279,6 +517,7 @@ def gen_editor_css(t):
     p = t["palette"]
     tid = t["id"]
     extra = EXTRA_CSS[t["layout"]].format(tid=tid)
+    shared = _apply_palette(SHARED_EXTRA_CSS.replace("{tid}", tid), p)
     return f'''export const {tid}EditorCss = `
 @import url("https://fonts.googleapis.com/css2?family={t["fonts"]["display"]}&family=Heebo:wght@400;500;700&display=swap");
 
@@ -334,6 +573,7 @@ def gen_editor_css(t):
   animation: {tid}-climb .85s cubic-bezier(.22,1,.36,1) both;
 }}
 {extra}
+{shared}
 `;
 '''
 
@@ -349,14 +589,22 @@ def gen_pages(t):
     )
     hero = hero_jsx(t)
     sections = home_sections_jsx(t)
-    home_bits = "\n      ".join(HOME_SECTION_USE[layout])
-    inner_bits = "\n        ".join(
-        s.replace("{data}", "{merged}").replace(
-            "onCta={onCta}", "onCta={() => goTo(\"contact\")}"
+    home_bits = sections_to_jsx(home_sections_for(layout), "data", "onCta")
+    contact_bits = sections_to_jsx(page_sections_for(layout, "contact"), "merged", "() => goTo(\"contact\")")
+
+    inner_page_blocks = []
+    for pid, label, _slug in t["pages"]:
+        if pid in ("home", "contact"):
+            continue
+        page_bits = sections_to_jsx(page_sections_for(layout, pid), "merged", "() => goTo(\"contact\")")
+        inner_page_blocks.append(
+            f'    pageContent["{pid}"] = (\n'
+            f'      <InnerPage data={{merged}} title="{label}" onCta={{() => goTo("contact")}}>\n'
+            f"        <>\n          {page_bits}\n        </>\n"
+            f"      </InnerPage>\n"
+            f"    );"
         )
-        for s in HOME_SECTION_USE[layout]
-    )
-    inner_jsx = "{pg.id.includes(\"contact\") ? null : (<>\n        " + inner_bits + "\n        </>)}"
+    inner_pages_jsx = "\n".join(inner_page_blocks)
     return f'''import React, {{ useMemo, useState }} from "react";
 import {{ VisualPageStack }} from "../../../../runtime/VisualPageStack";
 import {{ {tid}DefaultData }} from "./defaultData";
@@ -521,15 +769,22 @@ export default function {name}Pages({{
   );
   const pageContent: Record<string, React.ReactNode> = {{
     home: <HomePage data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,
+    contact: (
+      <>
+        <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+          <div className="mx-auto max-w-7xl">
+            <p className="text-xs font-semibold tracking-[0.28em]" style={{{{ color: "{p['primary']}" }}}}>{{v(merged, "brandName")}}</p>
+            <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{{v(merged, "contactTitle")}}</h1>
+            <p className="mt-4 max-w-2xl text-lg leading-8" style={{{{ color: "{p['muted']}" }}}}>{{v(merged, "contactText")}}</p>
+          </div>
+        </section>
+        <ContactBlock data={{merged}} onCta={{() => goTo("contact")}} />
+        {contact_bits}
+        <Footer data={{merged}} />
+      </>
+    ),
   }};
-  for (const pg of {tid}Pages) {{
-    if (pg.id === "home") continue;
-    pageContent[pg.id] = (
-      <InnerPage data={{merged}} title={{pg.label}} onCta={{() => goTo("contact")}}>
-        {inner_jsx}
-      </InnerPage>
-    );
-  }}
+{inner_pages_jsx}
   return (
     <div dir="rtl" data-template-id={{mode === "preview" ? "{tid}-preview" : "{tid}"}} className="min-h-screen w-full overflow-x-hidden"
       style={{{{ background: "{p['bg']}", color: "{p['text']}" }}}}>

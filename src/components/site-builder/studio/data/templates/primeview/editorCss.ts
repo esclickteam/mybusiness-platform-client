@@ -54,4 +54,43 @@ export const primeviewEditorCss = `
 }
 @keyframes primeview-handle { 0%,100%{left:35%} 50%{left:65%} }
 [data-template-id="primeview"] .tpl-compare-handle, [data-template-id="primeview-preview"] .tpl-compare-handle { animation:primeview-handle 5s infinite; }
+
+@keyframes primeview-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes primeview-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes primeview-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="primeview"] .tpl-glass, [data-template-id="primeview-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="primeview"] .tpl-glow, [data-template-id="primeview-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #05966944, transparent 70%);
+  animation: primeview-glow 3s ease-in-out infinite;
+}}
+[data-template-id="primeview"] .tpl-shimmer, [data-template-id="primeview-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #05966918 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: primeview-shimmer 4s linear infinite;
+}}
+[data-template-id="primeview"] .tpl-parallax, [data-template-id="primeview-preview"] .tpl-parallax {{
+  animation: primeview-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="primeview"] .tpl-magnetic, [data-template-id="primeview-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="primeview"] .tpl-magnetic:hover, [data-template-id="primeview-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="primeview"] details[open] summary, [data-template-id="primeview-preview"] details[open] summary {{
+  color: #059669;
+}}
+@keyframes primeview-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes primeview-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="primeview"] .tpl-testi-track, [data-template-id="primeview-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:primeview-testi 28s linear infinite;
+}}
+[data-template-id="primeview"] .tpl-line-draw, [data-template-id="primeview-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:primeview-draw 1.2s both;
+}}
+
 `;

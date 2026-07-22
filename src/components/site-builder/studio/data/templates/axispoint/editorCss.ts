@@ -56,4 +56,43 @@ export const axispointEditorCss = `
 [data-template-id="axispoint"] .tpl-axis-line, [data-template-id="axispoint-preview"] .tpl-axis-line { animation:axispoint-axis 1.4s both; }
 [data-template-id="axispoint"] .tpl-skew-grid, [data-template-id="axispoint-preview"] .tpl-skew-grid { transform:skewY(-2deg); }
 [data-template-id="axispoint"] .tpl-skew-grid > *, [data-template-id="axispoint-preview"] .tpl-skew-grid > * { transform:skewY(2deg); }
+
+@keyframes axispoint-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes axispoint-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes axispoint-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="axispoint"] .tpl-glass, [data-template-id="axispoint-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="axispoint"] .tpl-glow, [data-template-id="axispoint-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #f43f5e44, transparent 70%);
+  animation: axispoint-glow 3s ease-in-out infinite;
+}}
+[data-template-id="axispoint"] .tpl-shimmer, [data-template-id="axispoint-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #f43f5e18 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: axispoint-shimmer 4s linear infinite;
+}}
+[data-template-id="axispoint"] .tpl-parallax, [data-template-id="axispoint-preview"] .tpl-parallax {{
+  animation: axispoint-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="axispoint"] .tpl-magnetic, [data-template-id="axispoint-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="axispoint"] .tpl-magnetic:hover, [data-template-id="axispoint-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="axispoint"] details[open] summary, [data-template-id="axispoint-preview"] details[open] summary {{
+  color: #f43f5e;
+}}
+@keyframes axispoint-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes axispoint-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="axispoint"] .tpl-testi-track, [data-template-id="axispoint-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:axispoint-testi 28s linear infinite;
+}}
+[data-template-id="axispoint"] .tpl-line-draw, [data-template-id="axispoint-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:axispoint-draw 1.2s both;
+}}
+
 `;

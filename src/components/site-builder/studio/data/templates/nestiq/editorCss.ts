@@ -54,4 +54,43 @@ export const nestiqEditorCss = `
 }
 @keyframes nestiq-count { from{opacity:.3;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 [data-template-id="nestiq"] .tpl-counter, [data-template-id="nestiq-preview"] .tpl-counter { animation:nestiq-count 1s both; }
+
+@keyframes nestiq-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
+@keyframes nestiq-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
+@keyframes nestiq-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
+
+[data-template-id="nestiq"] .tpl-glass, [data-template-id="nestiq-preview"] .tpl-glass {{
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.04);
+}}
+[data-template-id="nestiq"] .tpl-glow, [data-template-id="nestiq-preview"] .tpl-glow {{
+  background: radial-gradient(circle, #7c3aed44, transparent 70%);
+  animation: nestiq-glow 3s ease-in-out infinite;
+}}
+[data-template-id="nestiq"] .tpl-shimmer, [data-template-id="nestiq-preview"] .tpl-shimmer {{
+  background: linear-gradient(110deg, transparent 30%, #7c3aed18 50%, transparent 70%);
+  background-size: 200% 100%;
+  animation: nestiq-shimmer 4s linear infinite;
+}}
+[data-template-id="nestiq"] .tpl-parallax, [data-template-id="nestiq-preview"] .tpl-parallax {{
+  animation: nestiq-parallax 8s ease-in-out infinite;
+}}
+[data-template-id="nestiq"] .tpl-magnetic, [data-template-id="nestiq-preview"] .tpl-magnetic {{
+  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
+}}
+[data-template-id="nestiq"] .tpl-magnetic:hover, [data-template-id="nestiq-preview"] .tpl-magnetic:hover {{
+  transform: scale(1.04);
+}}
+[data-template-id="nestiq"] details[open] summary, [data-template-id="nestiq-preview"] details[open] summary {{
+  color: #7c3aed;
+}}
+@keyframes nestiq-testi {{ to {{ transform:translateX(-50%); }} }}
+@keyframes nestiq-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
+[data-template-id="nestiq"] .tpl-testi-track, [data-template-id="nestiq-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:nestiq-testi 28s linear infinite;
+}}
+[data-template-id="nestiq"] .tpl-line-draw, [data-template-id="nestiq-preview"] .tpl-line-draw {{
+  transform-origin:right;animation:nestiq-draw 1.2s both;
+}}
+
 `;
