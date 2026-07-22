@@ -40,7 +40,7 @@ export const brokeriaDefaultData = {
   item2Meta: "4 חד׳ · 145 מ״ר",
   item2Text: "חצר פרטית, תקרות גבוהות ושקט של שכונה היסטורית.",
   item2Price: "₪8.7M",
-  item2Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+  item2Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
   item3Title: "לופט יפו העתיקה",
   item3Meta: "3 חד׳ · 120 מ״ר",
   item3Text: "תקרה גבוהה, אבן ירושלמית ואור מערבי.",

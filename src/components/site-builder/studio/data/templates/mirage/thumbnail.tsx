@@ -3,7 +3,7 @@ export default function MirageThumbnail() {
   return (
     <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
       <div className="relative h-full min-h-[260px] overflow-hidden" style={{ background: "#f7f0e4" }}>
-        <div className="absolute inset-0 opacity-80" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1509316785579-021411973673?auto=format&fit=crop&w=2000&q=85)", backgroundSize: "cover" }} />
+        <div className="absolute inset-0 opacity-80" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=2000&q=85)", backgroundSize: "cover" }} />
         <div className="absolute inset-0" style={{ background: "#f7f0e4aa" }} />
         <div className="relative p-4">
           <p className="text-[10px]" style={{ color: "#d4a574" }}>מדבר · ים</p>

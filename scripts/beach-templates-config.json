@@ -42,7 +42,7 @@
     "images": {
       "hero": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1583212292453-520c8517a5f8?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
@@ -69,7 +69,7 @@
     "layout": "splitSunset",
     "pages": [["home","בית","/"],["events","אירועים","/events"],["menu","תפריט","/menu"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1473496165774-b890209ef8aa?auto=format&fit=crop&w=2000&q=85",
+      "hero": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85"
@@ -98,10 +98,10 @@
     "layout": "surfRail",
     "pages": [["home","בית","/"],["boards","גלשנים","/boards"],["forecast","תחזית","/forecast"],["about","אודות","/about"],["contact","חנות","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1502680390469-be749cc1450a?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1531722561916-eece3f6e08b5?auto=format&fit=crop&w=1400&q=85",
+      "hero": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1400&q=85",
-      "c": "https://images.unsplash.com/photo-1519046909924-da07ba867437?auto=format&fit=crop&w=1400&q=85"
+      "c": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "תפסו את הגאות.",
@@ -127,9 +127,9 @@
     "layout": "heatShimmer",
     "pages": [["home","בית","/"],["suites","סוויטות","/suites"],["wellness","Wellness","/wellness"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1509316785579-021411973673?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1611892440504-42a784e683f9?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1571003116317-e140c16e8d9c?auto=format&fit=crop&w=1400&q=85",
+      "hero": "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1571896349842-33c89424de2d?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
@@ -156,7 +156,7 @@
     "layout": "organicWood",
     "pages": [["home","בית","/"],["menu","תפריט","/menu"],["chef","השף","/chef"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1519046909924-da07ba867437?auto=format&fit=crop&w=2000&q=85",
+      "hero": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1400&q=85"
@@ -186,9 +186,9 @@
     "pages": [["home","בית","/"],["fleet","צי","/fleet"],["routes","מסלולים","/routes"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1567899378494-47b0509d2c5e?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1605281317010-76c67852005e?auto=format&fit=crop&w=1400&q=85",
-      "c": "https://images.unsplash.com/photo-1540946485063-a16731b5d0b7?auto=format&fit=crop&w=1400&q=85"
+      "a": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "קו אופק. ים פתוח.",
@@ -214,7 +214,7 @@
     "layout": "tropicalPetal",
     "pages": [["home","בית","/"],["treatments","טיפולים","/treatments"],["garden","הגן","/garden"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1506929562872-bb421503efea?auto=format&fit=crop&w=2000&q=85",
+      "hero": "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1600334089648-b0d9d3028eb2?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=85"
@@ -243,7 +243,7 @@
     "layout": "coastalIndustrial",
     "pages": [["home","בית","/"],["shop","חנות","/shop"],["craft","מלאכה","/craft"],["about","אודות","/about"],["contact","סיטונאות","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-156916313939-606684352ba8?auto=format&fit=crop&w=2000&q=85",
+      "hero": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1606787366850-de6330128bfc?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=85"
@@ -272,9 +272,9 @@
     "layout": "panoramaCarousel",
     "pages": [["home","בית","/"],["gallery","גלריה","/gallery"],["tours","סיורים","/tours"],["about","אודות","/about"],["contact","הזמנה","/contact"]],
     "images": {
-      "hero": "https://images.unsplash.com/photo-1499793983690-29daaa814980?auto=format&fit=crop&w=2000&q=85",
+      "hero": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1505142468610-359e7d316be0?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1473496165774-b890209ef8aa?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {

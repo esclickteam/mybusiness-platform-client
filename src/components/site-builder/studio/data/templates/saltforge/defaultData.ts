@@ -13,7 +13,7 @@ export const saltforgeDefaultData = {
   heroSubtitle: "Saltforge — מלח ים artisan, תבלינים חוף ומוצרי מלאכה מחומרים טבעיים.",
   heroPrimary: "לחנות",
   heroSecondary: "סיטונאות",
-  heroImage: "https://images.unsplash.com/photo-156916313939-606684352ba8?auto=format&fit=crop&w=2000&q=85",
+  heroImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=2000&q=85",
   aboutTitle: "מייצרים על החוף.",
   aboutText: "כל batch נאסף, מיובש ונארז ידנית בבוטיק שלנו על הטיילת.",
   aboutImage: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=1400&q=85",

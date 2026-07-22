@@ -38,7 +38,7 @@ export const loteraDefaultData = {
   item4Title: "בית חוף שדות ים",
   item4Meta: "7 חד׳ · 1,050 מ״ר · לפי דרישה",
   item4Text: "בית נמוך עם פטיו פנימי, שביל חול פרטי וחדר אירוח נפרד.",
-  item4Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+  item4Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
   aboutTitle: "אנחנו מודדים נכס לפי האור שנכנס אליו.",
   aboutText: "הסטודיו מלווה מספר קטן של עסקאות חוף בכל רבעון: בדיקת כיווני רוח, פרטיות, רעש טיילת, תכנון עתידי ומחיר אמיתי למטר.",
   aboutImage: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=1800&q=85",

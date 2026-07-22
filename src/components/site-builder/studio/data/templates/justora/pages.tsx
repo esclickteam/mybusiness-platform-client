@@ -1526,7 +1526,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
     getHeroImage(data),
     getValue(data, "aboutImage"),
     "https://images.unsplash.com/photo-1589578527966-fdac0f44566c?auto=format&fit=crop&w=900&q=85",
-    "https://images.unsplash.com/photo-1528747008803-f9f5ccbc0852?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=900&q=85",
     "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=900&q=85",
   ];
 

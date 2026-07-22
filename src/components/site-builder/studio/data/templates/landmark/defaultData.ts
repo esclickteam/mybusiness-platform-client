@@ -35,7 +35,7 @@ export const landmarkDefaultData = {
   item1Meta: "נווה צדק · 4 חד׳",
   item1Text: "שכונה היסטורית, בתי קפה ושקט.",
   item1Price: "₪6.2M",
-  item1Image: "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85",
+  item1Image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
   item2Title: "דירה פlorian",
   item2Meta: "פlorian · 3 חד׳",
   item2Text: "מרכז תל אביב, הליכה לים.",
@@ -50,5 +50,5 @@ export const landmarkDefaultData = {
   item4Meta: "יפו · 4 חד׳",
   item4Text: "אווירה, נמל ואמנות.",
   item4Price: "₪4.1M",
-  item4Image: "https://images.unsplash.com/photo-1496442226666-8d0d0ae62ca6?auto=format&fit=crop&w=1400&q=85",
+  item4Image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
 };

@@ -13,7 +13,7 @@
     "images": {
       "hero": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85"
     },
@@ -51,7 +51,7 @@
     "pages": [["home","בית","/"],["listings","נכסים","/listings"],["neighborhoods","שכונות","/neighborhoods"],["process","תהליך","/process"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=85"
@@ -132,7 +132,7 @@
       "a": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
-      "d": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85"
+      "d": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "יוקרה ששומרת על ערך.",
@@ -169,7 +169,7 @@
     "images": {
       "hero": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=85"
     },
@@ -207,10 +207,10 @@
     "pages": [["home","בית","/"],["penthouses","פנטהאוזים","/penthouses"],["towers","מגדלים","/towers"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "a": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1400&q=85",
-      "d": "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85"
+      "d": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "עולים. רואים. קונים.",
@@ -246,10 +246,10 @@
     "pages": [["home","בית","/"],["areas","אזורים","/areas"],["listings","נכסים","/listings"],["guide","מדריך","/guide"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85",
+      "a": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1400&q=85",
-      "d": "https://images.unsplash.com/photo-1496442226666-8d0d0ae62ca6?auto=format&fit=crop&w=1400&q=85"
+      "d": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "כל שכונה. סיפור משלה.",
@@ -285,7 +285,7 @@
     "pages": [["home","בית","/"],["openhouses","בתים פתוחים","/openhouses"],["gallery","גלריה","/gallery"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+      "a": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1400&q=85"
@@ -363,7 +363,7 @@
     "pages": [["home","בית","/"],["listings","נכסים","/listings"],["insights","תובנות","/insights"],["faq","שאלות","/faq"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
     "images": {
       "hero": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=2000&q=85",
-      "a": "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=85"
@@ -405,7 +405,7 @@
       "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
       "b": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1400&q=85",
-      "d": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85"
+      "d": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85"
     },
     "copy": {
       "title": "עסקה חתומה. ביטחון מלא.",
@@ -442,7 +442,7 @@
     "images": {
       "hero": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85",
       "a": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
-      "b": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
       "c": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=85",
       "d": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=85"
     },

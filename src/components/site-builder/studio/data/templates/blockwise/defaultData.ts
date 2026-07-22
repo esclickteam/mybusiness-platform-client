@@ -39,7 +39,7 @@ export const blockwiseDefaultData = {
   item2Meta: "4 חד׳ · קומה 12",
   item2Text: "נוף לים, ממ״ד וחניה.",
   item2Price: "₪4.8M",
-  item2Image: "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+  item2Image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
   item3Title: "דירה 03 / Levontin",
   item3Meta: "2 חד׳ · קומה 2",
   item3Text: "לופט תעשייתי, תקרה גבוהה.",

@@ -19,7 +19,7 @@ export const nestoraDefaultData = {
   featuredMeta: "5 חדרים · חצר פנימית",
   property1Title: "בית אבן ברחוב שקט",
   property1Text: "בית משפחתי עם חצר פנימית, אור רך ושכנים שמכירים אחד את השני בשם.",
-  property1Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1800&q=85",
+  property1Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1800&q=85",
   property2Title: "דירת גן עם כניסה משלה",
   property2Text: "קומה נמוכה, חלונות רחבים, גינה פשוטה ותחושה של בית פרטי בתוך העיר.",
   property2Image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1800&q=85",

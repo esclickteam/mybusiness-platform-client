@@ -164,7 +164,7 @@ export const wantravelSeed: WantravelSeed = {
         country: "מרוקו",
         tag: "תרבות",
         image:
-          "https://images.unsplash.com/photo-1548018560-c7196548e84d?auto=format&fit=crop&w=900&q=85",
+          "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=85",
       },
     ],
   },

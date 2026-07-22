@@ -35,7 +35,7 @@ export const propnexDefaultData = {
   item1Meta: "מרפסת · חניה · קומה 8",
   item1Text: "בניין מחודש, חלוקה יעילה וכניסה מיידית.",
   item1Price: "₪3.8M",
-  item1Image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+  item1Image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
   item2Title: "פנטהאוז מגדל צפון",
   item2Meta: "נוף פתוח · ממ״ד",
   item2Text: "חלל אירוח רחב ושתי מרפסות.",

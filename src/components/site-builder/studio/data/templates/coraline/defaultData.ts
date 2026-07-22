@@ -30,7 +30,7 @@ export const coralineDefaultData = {
   item2Title: "Advanced",
   item2Meta: "2 ימים · 4 צלילות",
   item2Text: "ניווט, ציפה ועומק מבוקר.",
-  item2Image: "https://images.unsplash.com/photo-1583212292453-520c8517a5f8?auto=format&fit=crop&w=1400&q=85",
+  item2Image: "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=1400&q=85",
   item3Title: "Night Dive",
   item3Meta: "ערב · מדריך",
   item3Text: "צלילת לילה לשונית עם פנסים.",

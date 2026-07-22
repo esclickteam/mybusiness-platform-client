@@ -13,7 +13,7 @@ export const driftwoodDefaultData = {
   heroSubtitle: "Driftwood — מסעדת חוף עם דגים טריים, יין מקומי ושולחנות ממש על המים.",
   heroPrimary: "הזמינו שולחן",
   heroSecondary: "לתפריט",
-  heroImage: "https://images.unsplash.com/photo-1519046909924-da07ba867437?auto=format&fit=crop&w=2000&q=85",
+  heroImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85",
   aboutTitle: "כל מנה סיפור.",
   aboutText: "השף בוחר דגים בבוקר, מבשל על גחלים, מגיש עם ירקות מהגינה.",
   aboutImage: "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1400&q=85",

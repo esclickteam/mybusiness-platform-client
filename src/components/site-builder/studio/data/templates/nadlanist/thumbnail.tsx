@@ -34,7 +34,7 @@ export default function NadlanistThumbnail() {
           {[
             "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=300&q=70",
             "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=300&q=70",
-            "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=300&q=70",
+            "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=70",
           ].map((src, index) => (
             <div
               key={src}

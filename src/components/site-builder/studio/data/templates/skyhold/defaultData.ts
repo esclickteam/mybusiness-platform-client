@@ -34,7 +34,7 @@ export const skyholdDefaultData = {
   item1Meta: "קומה 45 · 280 מ״ר",
   item1Text: "360° נוף, מעלית פרטית וטרסה.",
   item1Price: "₪24M",
-  item1Image: "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+  item1Image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
   item2Title: "דירת 5 Midtown",
   item2Meta: "קומה 28 · 165 מ״ר",
   item2Text: "נוף לים, בריכה וחדר כושר.",
@@ -49,5 +49,5 @@ export const skyholdDefaultData = {
   item4Meta: "קומה 38 · 85 מ״ר",
   item4Text: "נוף עיר, מעלית מהירה.",
   item4Price: "₪3.4M",
-  item4Image: "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85",
+  item4Image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
 };

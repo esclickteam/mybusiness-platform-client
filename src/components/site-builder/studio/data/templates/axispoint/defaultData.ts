@@ -39,7 +39,7 @@ export const axispointDefaultData = {
   item2Meta: "3 חד׳ · צפון",
   item2Text: "זווית שונה, אותה איכות.",
   item2Price: "₪3.2M",
-  item2Image: "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+  item2Image: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?auto=format&fit=crop&w=1400&q=85",
   item3Title: "דירה ציר C",
   item3Meta: "5 חד׳ · דרום",
   item3Text: "משפחות, גינה, שקט.",

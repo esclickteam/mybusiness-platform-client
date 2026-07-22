@@ -5,8 +5,8 @@ const activated = new Set<string>();
 const queue: string[] = [];
 let pumping = false;
 
-const BATCH_SIZE = 4;
-const BATCH_DELAY_MS = 24;
+const BATCH_SIZE = 12;
+const BATCH_DELAY_MS = 0;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
