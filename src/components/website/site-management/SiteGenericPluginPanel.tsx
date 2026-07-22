@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
+import { btnPrimary } from "./siteManagementUi";
 
 type SiteGenericPluginPanelProps = {
   plugin: SitePluginDefinition;
@@ -22,32 +23,29 @@ export default function SiteGenericPluginPanel({
       ? plugin.priceMax
         ? `₪${plugin.priceMonthly}–${plugin.priceMax}/חודש`
         : `₪${plugin.priceMonthly}/חודש`
-      : "כלול");
+      : "כלול בחבילה");
 
   return (
-    <div className="mx-auto max-w-2xl rounded-[22px] border border-slate-200 bg-white p-6 text-center shadow-sm">
+    <div className="mx-auto max-w-lg rounded-2xl border border-violet-100 bg-gradient-to-b from-violet-50/50 to-white p-8 text-center shadow-sm">
       <div
-        className="mx-auto grid h-14 w-14 place-items-center rounded-[16px] text-white shadow-md"
-        style={{ background: accent }}
+        className="mx-auto grid h-16 w-16 place-items-center rounded-2xl text-white shadow-lg"
+        style={{ background: `linear-gradient(135deg, ${accent}, ${accent}bb)` }}
       >
-        <Icon size={26} />
+        <Icon size={30} />
       </div>
 
-      <h2 className="mt-4 text-xl font-black text-slate-950">{plugin.name}</h2>
-      <p className="mt-2 text-sm font-bold text-violet-700">{price}</p>
-      <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
+      <h2 className="mt-5 text-xl font-bold text-slate-900">{plugin.name}</h2>
+      <p className="mt-1 text-sm font-semibold text-violet-600">{price}</p>
+      <p className="mt-3 text-sm leading-relaxed text-slate-500">
         {plugin.description}
       </p>
 
-      <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
-        <Settings2 size={13} />
+      <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
+        <Settings2 size={14} />
         התוסף מותקן — הגדרה בעורך בקרוב
       </div>
 
-      <Link
-        to={editorHref}
-        className="mt-6 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-violet-700"
-      >
+      <Link to={editorHref} className={`mt-6 ${btnPrimary}`}>
         <ExternalLink size={15} />
         פתיחה בעורך
       </Link>

@@ -496,8 +496,8 @@ function PrimaryButton({
       {...props}
       disabled={props.disabled || loading}
       className={cx(
-        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(15,23,42,0.18)] transition",
-        "hover:-translate-y-0.5 hover:bg-violet-700 active:translate-y-0",
+        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200/50 transition",
+        "hover:-translate-y-0.5 hover:from-violet-700 hover:to-indigo-700 hover:shadow-lg active:translate-y-0",
         "disabled:cursor-not-allowed disabled:opacity-60",
         props.className
       )}
@@ -1209,8 +1209,8 @@ export default function StoreProductsManager({
                     ? "text-violet-700"
                     : "text-slate-500 hover:text-slate-800"
                   : view === item.id
-                    ? "bg-slate-950 text-white shadow-lg"
-                    : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700"
+                    ? "bg-gradient-to-l from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-200/40"
+                    : "bg-violet-50 text-violet-700 hover:bg-violet-100"
               )}
             >
               {item.icon}
