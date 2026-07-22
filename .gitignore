@@ -25,3 +25,4 @@ ehthumbs.db
 .cache/
 .next/
 dist/
+scripts/__pycache__/

@@ -21,7 +21,7 @@ HERO_JSX = {
         </div>
         <div className="absolute inset-x-0 bottom-0 z-20 border-t py-3" style={{ borderColor: "{line}", background: "{surface}ee" }}>
           <div className="tpl-prop-ticker gap-10 px-4 text-sm font-bold" style={{ color: "{primary}" }}>
-            {[1,2,3,4,1,2,3,4].map((i) => (<span key={i} className="whitespace-nowrap">{v(data, `item${i}Title`)} · {v(data, `item${i}Price`)} ·</span>))}
+            {[1,2,3,4,1,2,3,4].map((i, idx) => (<span key={`ticker-${idx}`} className="whitespace-nowrap">{v(data, `item${i}Title`)} · {v(data, `item${i}Price`)} ·</span>))}
           </div>
         </div>
       </section>''',
@@ -188,7 +188,7 @@ function AgentStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="tpl-sweep overflow-hidden border-y py-4" style={{ borderColor: "{line}" }}>
       <div className="tpl-marquee-track gap-10 px-4 text-sm font-bold" style={{ color: "{text}" }}>
-        {agents.concat(agents).map((a, i) => <span key={i} className="whitespace-nowrap">{a} ·</span>)}
+        {agents.concat(agents).map((a, i) => <span key={`agent-${i}`} className="whitespace-nowrap">{a} ·</span>)}
       </div>
     </section>
   );
@@ -232,7 +232,7 @@ function NeighborhoodMarquee({ data }: { data: Record<string, any> }) {
   return (
     <section className="tpl-sweep overflow-hidden border-y py-3" style={{ borderColor:"{line}", background:"{surface}" }}>
       <div className="tpl-marquee-track gap-8 px-4 text-sm font-bold tracking-[0.2em]" style={{ color:"{primary}" }}>
-        {tags.concat(tags).map((t,i)=><span key={i} className="whitespace-nowrap">{t} ·</span>)}
+        {tags.concat(tags).map((t,i)=><span key={`tag-${i}`} className="whitespace-nowrap">{t} ·</span>)}
       </div>
     </section>
   );
@@ -304,7 +304,7 @@ function TestimonialStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="overflow-hidden border-t py-6" style={{ borderColor:"{line}" }}>
       <div className="tpl-testi-track gap-8 px-4">
-        {quotes.concat(quotes).map((q,i)=>(<blockquote key={i} className="whitespace-nowrap border px-6 py-3 text-lg" style={{ borderColor:"{line}", color:"{muted}" }}>{q}</blockquote>))}
+        {quotes.concat(quotes).map((q,i)=>(<blockquote key={`quote-${i}`} className="whitespace-nowrap border px-6 py-3 text-lg" style={{ borderColor:"{line}", color:"{muted}" }}>{q}</blockquote>))}
       </div>
     </section>
   );

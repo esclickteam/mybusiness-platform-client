@@ -1136,12 +1136,22 @@ export default function WebsiteTemplatesPage() {
                                 group-hover:shadow-[0_18px_40px_rgba(15,23,42,0.12)]
                               "
                             >
-                              <button
-                                type="button"
+                              <div
+                                role="button"
+                                tabIndex={0}
                                 onClick={() =>
                                   handlePreviewTemplate(template.key)
                                 }
-                                className="block w-full text-right"
+                                onKeyDown={(event) => {
+                                  if (
+                                    event.key === "Enter" ||
+                                    event.key === " "
+                                  ) {
+                                    event.preventDefault();
+                                    handlePreviewTemplate(template.key);
+                                  }
+                                }}
+                                className="block w-full cursor-pointer text-right"
                                 aria-label={`צפייה בתבנית ${template.name}`}
                               >
                                 <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
@@ -1159,7 +1169,7 @@ export default function WebsiteTemplatesPage() {
                                     </div>
                                   )}
                                 </div>
-                              </button>
+                              </div>
 
                               {badge && (
                                 <div className="absolute right-3 top-3 rounded-md border border-[#bfdbfe] bg-[#dbeafe] px-2.5 py-1 text-xs font-bold text-[#2563eb]">

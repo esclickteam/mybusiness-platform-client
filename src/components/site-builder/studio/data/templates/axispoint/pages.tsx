@@ -215,7 +215,7 @@ export default function AxispointPages({
       <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
         {pg.id.includes("contact") ? null : (<>
         <SkewedGrid data={merged} />
-        <AngledContactPanel data={merged} onCta={onCta} />
+        <AngledContactPanel data={merged} onCta={() => goTo("contact")} />
         </>)}
       </InnerPage>
     );

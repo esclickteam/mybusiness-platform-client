@@ -210,7 +210,7 @@ export default function BlockwisePages({
       <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
         {pg.id.includes("contact") ? null : (<>
         <NumberedIndex data={merged} />
-        <BoldContactBand data={merged} onCta={onCta} />
+        <BoldContactBand data={merged} onCta={() => goTo("contact")} />
         </>)}
       </InnerPage>
     );

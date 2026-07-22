@@ -932,12 +932,13 @@ function Booking({
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
-              <button
-                type="button"
-                className="h-14 w-full rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+              <div
+                role="button"
+                tabIndex={0}
+                className="flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
               >
                 שליחת בקשה לשיחה
-              </button>
+              </div>
             </FormFieldSlot>
           </div>
         </form>
