@@ -1139,7 +1139,7 @@ function RadiusControl({
           </p>
         </div>
 
-        <span className="shrink-0 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-white">
+        <span className="shrink-0 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-black">
           {value}px
         </span>
       </div>

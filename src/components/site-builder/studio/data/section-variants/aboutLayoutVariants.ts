@@ -186,7 +186,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium About
             </p>
 
@@ -287,7 +287,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
       `
       <div class="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
         <div class="${darkCardClass}">
-          <p class="text-sm font-black text-white/60" data-editable-text="true">הסיפור שלנו</p>
+          <p class="text-sm font-black text-black/60" data-editable-text="true">הסיפור שלנו</p>
 
           <h3 class="mt-4 text-4xl font-black leading-tight text-white" data-editable-text="true">
             הכל התחיל מהרצון לתת ללקוחות חוויה טובה יותר
@@ -421,7 +421,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
         <div class="${softCardClass}">
           <div class="grid gap-6">
             <div class="flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">1</div>
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black">1</div>
               <div>
                 <h3 class="text-xl font-black text-slate-800" data-editable-text="true">שיחת היכרות</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">מבינים את הצורך, המטרה והציפיות.</p>
@@ -429,7 +429,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
             </div>
 
             <div class="flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">2</div>
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black">2</div>
               <div>
                 <h3 class="text-xl font-black text-slate-800" data-editable-text="true">התאמה אישית</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">בונים פתרון שמתאים ללקוח ולמטרה.</p>
@@ -437,7 +437,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
             </div>
 
             <div class="flex gap-5">
-              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">3</div>
+              <div class="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black">3</div>
               <div>
                 <h3 class="text-xl font-black text-slate-800" data-editable-text="true">ביצוע וליווי</h3>
                 <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">מוציאים לפועל בצורה מקצועית וברורה.</p>
@@ -479,8 +479,8 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
         </article>
 
         <article class="${darkCardClass}" data-editable-card="true">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white" data-editable-text="true">המשימה שלנו</p>
-          <h3 class="text-3xl font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black" data-editable-text="true">המשימה שלנו</p>
+          <h3 class="text-3xl font-black text-black" data-editable-text="true">
             לתת שירות מדויק שמוביל לתוצאה
           </h3>
           <p class="mt-4 text-base font-bold leading-8 text-white/70" data-editable-text="true">
@@ -631,7 +631,7 @@ export const aboutLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               About the platform
             </p>
 

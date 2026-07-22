@@ -494,7 +494,7 @@ export default function ReviewForm({
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-7 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+          className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-7 py-3 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
           {isSubmitting ? "שולח..." : "שליחת ביקורת"}
         </button>

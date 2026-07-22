@@ -318,7 +318,7 @@ export default function MetaCallbackPage() {
                     <p className="text-xs font-black uppercase tracking-[0.14em] text-sky-100">
                       Status
                     </p>
-                    <p className="text-sm font-black text-white">
+                    <p className="text-sm font-black text-black">
                       {connected
                         ? "Connected"
                         : sessionId

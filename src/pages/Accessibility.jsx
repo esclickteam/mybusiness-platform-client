@@ -95,7 +95,7 @@ export default function Accessibility() {
             </p>
             <a
               href="mailto:support@bizuply.com"
-              className="mt-2 block break-all text-sm font-bold text-white/80 transition hover:text-white"
+              className="mt-2 block break-all text-sm font-bold text-black/80 transition hover:text-white"
             >
               support@bizuply.com
             </a>

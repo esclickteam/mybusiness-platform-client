@@ -963,7 +963,7 @@ export default function WebsiteTemplatesPage() {
                     disabled={syncingTemplates}
                     className="
                       mt-5 inline-flex items-center justify-center rounded-xl
-                      bg-black px-5 py-3 text-sm font-bold text-white
+                      border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black
                       transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed
                       disabled:opacity-50
                     "
@@ -1066,7 +1066,7 @@ export default function WebsiteTemplatesPage() {
                   <button
                     type="button"
                     onClick={handleRetry}
-                    className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
+                    className="mt-6 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black transition hover:bg-black"
                   >
                     {t("websiteTemplates.retry")}
                   </button>
@@ -1183,7 +1183,7 @@ export default function WebsiteTemplatesPage() {
                             <div className="mt-4 flex items-start justify-between gap-4">
                               <div className="min-w-0">
                                 <div className="flex items-center gap-2">
-                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#111827] text-white">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-white">
                                     <BadgeCheck className="h-4 w-4" />
                                   </div>
 
@@ -1222,7 +1222,7 @@ export default function WebsiteTemplatesPage() {
                                   }
                                   className="
                                     rounded-lg border border-[#111827] bg-[#111827]
-                                    px-3 py-2 text-xs font-bold text-white
+                                    px-3 py-2 text-xs font-bold text-black
                                     transition hover:bg-black active:scale-[0.98]
                                   "
                                 >
@@ -1254,7 +1254,7 @@ export default function WebsiteTemplatesPage() {
                           setSearch("");
                           setActiveCategory("all");
                         }}
-                        className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
+                        className="mt-6 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black transition hover:bg-black"
                       >
                         {t("websiteTemplates.showAll")}
                       </button>

@@ -451,7 +451,7 @@ export default function DashboardOverview({
             <button
               type="button"
               onClick={onRetry}
-              className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white"
+              className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-black"
             >
               {t("common.retry")}
             </button>

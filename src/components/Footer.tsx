@@ -59,7 +59,7 @@ export default function Footer() {
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.75fr_0.75fr_0.8fr_1.1fr]">
               <div>
                 <Link to="/" className="inline-flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-white shadow-xl shadow-indigo-100">
+                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-black shadow-xl shadow-indigo-100">
                     B
                   </span>
 

@@ -69,7 +69,7 @@ export default function TemplateCard({
           <button
             type="button"
             onClick={onApply}
-            className="inline-flex h-12 flex-1 items-center justify-center rounded-[20px] bg-gradient-to-r from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] px-4 text-[15px] font-black text-white shadow-[0_16px_38px_rgba(15,23,42,0.20)] transition hover:scale-[1.01] hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+            className="inline-flex h-12 flex-1 items-center justify-center rounded-[20px] bg-gradient-to-r from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] px-4 text-[15px] font-black text-black shadow-[0_16px_38px_rgba(15,23,42,0.20)] transition hover:scale-[1.01] hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             החל אתר מוכן
           </button>

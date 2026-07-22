@@ -51,7 +51,7 @@ function AdminHeader() {
 
           <span>
             <strong className="block text-lg font-black">פאנל ניהול</strong>
-            <small className="block text-xs font-bold text-white/50">
+            <small className="block text-xs font-bold text-black/50">
               Bizuply Admin
             </small>
           </span>
@@ -109,10 +109,10 @@ function AdminHeader() {
 
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center xl:justify-end">
           <div className="text-right">
-            <span className="block text-sm font-black text-white">
+            <span className="block text-sm font-black text-black">
               שלום, {displayName}
             </span>
-            <small className="block text-xs font-bold text-white/45">
+            <small className="block text-xs font-bold text-black/45">
               מנהל מערכת
             </small>
           </div>
@@ -120,7 +120,7 @@ function AdminHeader() {
           <button
             type="button"
             onClick={handleLogout}
-            className="rounded-2xl bg-gradient-to-l from-purple-600 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-xl shadow-purple-950/40 transition hover:-translate-y-0.5"
+            className="rounded-2xl bg-gradient-to-l from-purple-600 to-fuchsia-600 px-5 py-3 text-sm font-black text-black shadow-xl shadow-purple-950/40 transition hover:-translate-y-0.5"
           >
             התנתקות
           </button>

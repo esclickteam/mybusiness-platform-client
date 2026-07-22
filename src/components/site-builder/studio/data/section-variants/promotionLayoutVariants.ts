@@ -89,7 +89,7 @@ function promoFeature(title: string, text: string, icon = "✓") {
 
 function promoStripItem(text: string) {
   return `
-<span class="inline-flex items-center gap-2 rounded-full bg-white/14 px-5 py-3 text-sm font-black text-white ring-1 ring-white/15" data-editable-text="true">
+<span class="inline-flex items-center gap-2 rounded-full bg-white/14 px-5 py-3 text-sm font-black text-black ring-1 ring-white/15" data-editable-text="true">
   <span>✦</span>
   <span>${text}</span>
 </span>
@@ -214,7 +214,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Limited Offer
             </p>
 
@@ -317,7 +317,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative flex flex-col items-start justify-between gap-6 lg:flex-row lg:items-center">
           <div>
-            <p class="text-sm font-black text-white/75" data-editable-text="true">מבצע מיוחד</p>
+            <p class="text-sm font-black text-black/75" data-editable-text="true">מבצע מיוחד</p>
 
             <h2 class="mt-2 text-3xl font-black leading-tight tracking-[-0.04em] text-white md:text-5xl" data-editable-text="true">
               מקבלים הטבה בלעדית בהזמנה הקרובה
@@ -329,7 +329,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
               מימוש הטבה
             </a>
 
-            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20" data-editable-link="true">
+            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20" data-editable-link="true">
               וואטסאפ
             </a>
           </div>
@@ -490,7 +490,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp Promo
               </p>
 
@@ -628,7 +628,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               SaaS Offer
             </p>
 
@@ -824,7 +824,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div class="max-w-[780px]">
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               הזדמנות אחרונה
             </p>
 
@@ -842,7 +842,7 @@ export const promotionLayoutVariants: SectionLayoutVariant[] = [
               קבלת הטבה
             </a>
 
-            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20" data-editable-link="true">
+            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20" data-editable-link="true">
               וואטסאפ
             </a>
           </div>

@@ -38,7 +38,7 @@ export default function WebsiteTemplatePreviewPage() {
         <button
           type="button"
           onClick={handleBackToTemplates}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 text-sm font-black text-white shadow-2xl backdrop-blur-xl transition hover:bg-black"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 text-sm font-black text-black shadow-2xl backdrop-blur-xl transition hover:bg-black"
         >
           <ArrowLeft className="h-4 w-4" />
           חזרה
@@ -76,7 +76,7 @@ export default function WebsiteTemplatePreviewPage() {
             <button
               type="button"
               onClick={handleBackToTemplates}
-              className="mt-7 rounded-xl bg-[#111827] px-6 py-3 text-sm font-bold text-white transition hover:bg-black"
+              className="mt-7 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-black transition hover:bg-black"
             >
               חזרה לתבניות
             </button>
@@ -147,7 +147,7 @@ export default function WebsiteTemplatePreviewPage() {
           <button
             type="button"
             onClick={handleUseTemplate}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#111827] px-5 text-sm font-black text-white shadow-sm transition hover:bg-black"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 text-sm font-black text-black shadow-sm transition hover:bg-black"
           >
             <Wand2 className="h-4 w-4" />
             שימוש בתבנית
@@ -184,7 +184,7 @@ export default function WebsiteTemplatePreviewPage() {
                 <button
                   type="button"
                   onClick={handleUseTemplate}
-                  className="rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
+                  className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black transition hover:bg-black"
                 >
                   שימוש בתבנית
                 </button>

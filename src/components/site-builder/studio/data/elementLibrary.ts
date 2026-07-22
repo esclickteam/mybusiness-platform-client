@@ -79,7 +79,7 @@ const text =
 const pill =
   "mb-4 inline-flex rounded-full bg-violet-50 px-5 py-2 text-xs font-black text-violet-700";
 const primaryBtn =
-  "inline-flex min-h-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-white shadow-xl shadow-violet-200 transition hover:-translate-y-0.5";
+  "inline-flex min-h-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-black shadow-xl shadow-violet-200 transition hover:-translate-y-0.5";
 const secondaryBtn =
   "inline-flex min-h-12 items-center justify-center rounded-2xl border border-slate-200 bg-white px-7 text-sm font-black text-slate-800 shadow-lg transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700";
 const input =
@@ -227,7 +227,7 @@ export const studioElements: StudioElement[] = [
     "כרטיס עם תמונה כרקע וטקסט",
     "▧",
     "image",
-    `<div class="relative min-h-[480px] overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-10 shadow-[0_30px_110px_rgba(15,23,42,0.18)]" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.25)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-white">תמונת רקע</p><h2 class="text-5xl font-black leading-tight tracking-[-0.04em] text-white">כותרת על תמונת רקע</h2><p class="mt-5 text-lg font-bold leading-8 text-white/75">אפשר להחליף תמונה, צבע, טקסט וכפתורים.</p>${actionRow("פעולה ראשית", "מידע נוסף")}</div></div>`
+    `<div class="relative min-h-[480px] overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-10 shadow-[0_30px_110px_rgba(15,23,42,0.18)]" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.25)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-black">תמונת רקע</p><h2 class="text-5xl font-black leading-tight tracking-[-0.04em] text-white">כותרת על תמונת רקע</h2><p class="mt-5 text-lg font-bold leading-8 text-white/75">אפשר להחליף תמונה, צבע, טקסט וכפתורים.</p>${actionRow("פעולה ראשית", "מידע נוסף")}</div></div>`
   ),
 
   element(
@@ -334,7 +334,7 @@ export const studioElements: StudioElement[] = [
     "סקציה כהה יוקרתית",
     "◼",
     "strip",
-    `<section class="${section}" data-section-kind="basic"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,0.22)]"><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">Premium</p><h2 class="${h2} text-white">סקציה כהה ויוקרתית</h2><p class="${text} text-white/70">מתאים להצגת שירות יוקרתי, מבצע או מסר חשוב.</p></div></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,0.22)]"><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">Premium</p><h2 class="${h2} text-white">סקציה כהה ויוקרתית</h2><p class="${text} text-white/70">מתאים להצגת שירות יוקרתי, מבצע או מסר חשוב.</p></div></section>`
   ),
 
   element(
@@ -343,7 +343,7 @@ export const studioElements: StudioElement[] = [
     "סקציה עם Overlay",
     "▧",
     "strip",
-    `<section class="${section}" data-section-kind="basic"><div class="relative min-h-[560px] overflow-hidden rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-12" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.24)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-2xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-white">תמונת רקע</p><h2 class="${h2} text-white">סקציה עם תמונת רקע</h2><p class="${text} text-white/80">אפשר להחליף תמונה, צבעים, כפתורים וטקסטים.</p>${actionRow()}</div></div></section>`
+    `<section class="${section}" data-section-kind="basic"><div class="relative min-h-[560px] overflow-hidden rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-12" style="background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.24)),url('${images.beautySoft}');background-size:cover;background-position:center;" data-background-editable="true"><div class="max-w-2xl"><p class="mb-4 inline-flex rounded-full bg-white/15 px-5 py-2 text-xs font-black text-black">תמונת רקע</p><h2 class="${h2} text-white">סקציה עם תמונת רקע</h2><p class="${text} text-white/80">אפשר להחליף תמונה, צבעים, כפתורים וטקסטים.</p>${actionRow()}</div></div></section>`
   ),
 
   element(
@@ -530,7 +530,7 @@ export const studioElements: StudioElement[] = [
     "לוגו, שם עסק ותפריט",
     "▤",
     "menu",
-    `<header class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 rounded-[2rem] border border-slate-200 bg-white px-6 py-5 shadow-lg"><div class="flex items-center gap-3"><div class="grid h-12 w-12 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">B</div><div><p class="text-base font-black text-slate-800">שם העסק</p><p class="text-xs font-bold text-slate-400">תחום העסק</p></div></div><nav class="hidden items-center gap-7 text-sm font-black text-slate-600 md:flex"><a>בית</a><a>אודות</a><a>שירותים</a><a>צור קשר</a></nav><a class="${primaryBtn}">קביעת תור</a></header>`
+    `<header class="mx-auto flex w-full max-w-7xl items-center justify-between gap-6 rounded-[2rem] border border-slate-200 bg-white px-6 py-5 shadow-lg"><div class="flex items-center gap-3"><div class="grid h-12 w-12 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-black">B</div><div><p class="text-base font-black text-slate-800">שם העסק</p><p class="text-xs font-bold text-slate-400">תחום העסק</p></div></div><nav class="hidden items-center gap-7 text-sm font-black text-slate-600 md:flex"><a>בית</a><a>אודות</a><a>שירותים</a><a>צור קשר</a></nav><a class="${primaryBtn}">קביעת תור</a></header>`
   ),
 
   element(
@@ -539,7 +539,7 @@ export const studioElements: StudioElement[] = [
     "פוטר מלא לאתר",
     "▤",
     "menu",
-    `<footer class="mx-auto w-full max-w-7xl rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid gap-10 md:grid-cols-3"><div><h3 class="text-2xl font-black">שם העסק</h3><p class="mt-3 text-sm font-bold leading-7 text-white/60">תיאור קצר על העסק והערך שלו.</p></div><div><p class="font-black">ניווט</p><div class="mt-4 grid gap-2 text-sm font-bold text-white/60"><a>בית</a><a>אודות</a><a>שירותים</a></div></div><div><p class="font-black">יצירת קשר</p><p class="mt-4 text-sm font-bold text-white/60">050-0000000</p></div></div></footer>`
+    `<footer class="mx-auto w-full max-w-7xl rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid gap-10 md:grid-cols-3"><div><h3 class="text-2xl font-black">שם העסק</h3><p class="mt-3 text-sm font-bold leading-7 text-white/60">תיאור קצר על העסק והערך שלו.</p></div><div><p class="font-black">ניווט</p><div class="mt-4 grid gap-2 text-sm font-bold text-black/60"><a>בית</a><a>אודות</a><a>שירותים</a></div></div><div><p class="font-black">יצירת קשר</p><p class="mt-4 text-sm font-bold text-black/60">050-0000000</p></div></div></footer>`
   ),
 
   /* =====================================================
@@ -654,7 +654,7 @@ export const studioElements: StudioElement[] = [
     "3 שלבים ברורים",
     "1",
     "list",
-    `<section class="${section}"><h2 class="${h2} text-center">איך זה עובד?</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">1</div><h3 class="text-2xl font-black text-slate-800">שיחה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">מכירים את הצורך.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">2</div><h3 class="text-2xl font-black text-slate-800">התאמה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">בונים פתרון מתאים.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-white">3</div><h3 class="text-2xl font-black text-slate-800">ביצוע</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">יוצאים לדרך.</p></article></div></section>`
+    `<section class="${section}"><h2 class="${h2} text-center">איך זה עובד?</h2><div class="mt-10 grid gap-5 md:grid-cols-3"><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-black">1</div><h3 class="text-2xl font-black text-slate-800">שיחה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">מכירים את הצורך.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-black">2</div><h3 class="text-2xl font-black text-slate-800">התאמה</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">בונים פתרון מתאים.</p></article><article class="${card}"><div class="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-violet-700 text-lg font-black text-black">3</div><h3 class="text-2xl font-black text-slate-800">ביצוע</h3><p class="mt-3 text-sm font-bold leading-7 text-slate-500">יוצאים לדרך.</p></article></div></section>`
   ),
 
   element(
@@ -800,7 +800,7 @@ export const studioElements: StudioElement[] = [
     "תיאום תורים בעיצוב כהה",
     "◷",
     "bookings",
-    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,.22)]"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,.22)]"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
   ),
 
   element(
@@ -831,7 +831,7 @@ export const studioElements: StudioElement[] = [
     "בלוק תורים חכם",
     "◷",
     "bizuply",
-    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-white">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
   ),
 
   element(

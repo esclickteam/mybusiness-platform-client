@@ -129,7 +129,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                   onClick={onClose}
                   className={`group flex items-center justify-between rounded-2xl px-4 py-4 text-base font-black transition ${
                     active
-                      ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-lg shadow-indigo-100"
+                      ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-lg shadow-indigo-100"
                       : "border border-slate-100 bg-white text-slate-800 shadow-sm hover:border-indigo-100 hover:bg-indigo-50/70 hover:text-indigo-700"
                   }`}
                 >
@@ -156,7 +156,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
               <Link
                 to="/register"
                 onClick={onClose}
-                className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-6 py-4 text-base font-black text-white shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
+                className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-4 text-base font-black text-black shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
               >
                 {t("home.startTrial")}
                 <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
@@ -181,7 +181,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
               <Link
                 to="/dashboard"
                 onClick={onClose}
-                className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-6 py-4 text-base font-black text-white shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
+                className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-4 text-base font-black text-black shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
               >
                 {t("common.myAccount")}
                 <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">

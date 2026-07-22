@@ -90,7 +90,7 @@ function formButton(text = "שליחת פרטים") {
   return `
 <button
   type="button"
-  class="inline-flex min-h-[56px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5"
+  class="inline-flex min-h-[56px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl transition hover:-translate-y-0.5"
   data-editable-text="true"
 >
   ${text}
@@ -124,7 +124,7 @@ function darkInputField(placeholder: string, type = "text") {
   return `
 <input
   type="${type}"
-  class="min-h-14 w-full rounded-2xl border border-white/10 bg-white/10 px-5 text-sm font-bold text-white outline-none placeholder:text-white/45 focus:border-white/30"
+  class="min-h-14 w-full rounded-2xl border border-white/10 bg-white/10 px-5 text-sm font-bold text-black outline-none placeholder:text-white/45 focus:border-white/30"
   placeholder="${placeholder}"
   data-editable-input="true"
 />
@@ -134,7 +134,7 @@ function darkInputField(placeholder: string, type = "text") {
 function darkTextareaField(placeholder: string) {
   return `
 <textarea
-  class="min-h-[130px] w-full resize-none rounded-2xl border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white outline-none placeholder:text-white/45 focus:border-white/30"
+  class="min-h-[130px] w-full resize-none rounded-2xl border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-black outline-none placeholder:text-white/45 focus:border-white/30"
   placeholder="${placeholder}"
   data-editable-input="true"
 ></textarea>
@@ -144,7 +144,7 @@ function darkTextareaField(placeholder: string) {
 function darkFormCard(title = "דברו איתנו", buttonText = "שליחה") {
   return `
 <div class="rounded-[42px] border border-white/12 bg-white/10 p-7 text-white shadow-[0_30px_110px_rgba(0,0,0,0.18)] backdrop-blur-2xl" data-bizuply-block="form" data-editable-card="true">
-  <h3 class="text-3xl font-black text-white" data-editable-text="true">
+  <h3 class="text-3xl font-black text-black" data-editable-text="true">
     ${title}
   </h3>
 
@@ -268,7 +268,7 @@ export const formLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[1fr_0.95fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium Form
             </p>
 
@@ -515,7 +515,7 @@ export const formLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Contact Form
             </p>
 
@@ -698,7 +698,7 @@ export const formLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Book a Demo
             </p>
 
@@ -915,7 +915,7 @@ export const formLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               מוכנים להתחיל?
             </p>
 
@@ -944,7 +944,7 @@ export const formLayoutVariants: SectionLayoutVariant[] = [
             <div class="mt-4">
               <a
                 href="https://wa.me/972500000000"
-                class="inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+                class="inline-flex min-h-14 w-full items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
                 data-editable-link="true"
               >
                 או שלחו וואטסאפ

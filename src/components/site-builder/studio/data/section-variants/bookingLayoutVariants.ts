@@ -153,7 +153,7 @@ function calendarMock() {
 
   <a
     href="#booking"
-    class="mt-7 flex min-h-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl"
+    class="mt-7 flex min-h-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl"
     data-editable-link="true"
   >
     אישור תור
@@ -184,7 +184,7 @@ function bookingFormCard(buttonText = "קביעת תור") {
     </select>
     <input class="min-h-14 w-full rounded-2xl border border-slate-200 bg-slate-50 px-5 text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-[var(--biz-primary,#7C3AED)] focus:bg-white" placeholder="יום ושעה מועדפים" data-editable-input="true" />
 
-    <button class="inline-flex min-h-[56px] items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl" type="button">
+    <button class="inline-flex min-h-[56px] items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="button">
       ${buttonText}
     </button>
   </form>
@@ -319,7 +319,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Online Booking
             </p>
 
@@ -428,7 +428,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[900px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium Booking
           </p>
 
@@ -656,7 +656,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp Booking
               </p>
 
@@ -813,7 +813,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Booking SaaS
             </p>
 
@@ -937,7 +937,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.82fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Ready to book?
             </p>
 
@@ -969,7 +969,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
 
               <a
                 href="https://wa.me/972500000000"
-                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
                 data-editable-link="true"
               >
                 וואטסאפ

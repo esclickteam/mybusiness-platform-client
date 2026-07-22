@@ -1017,7 +1017,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading || !userInput.trim() || isLimitReached}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                 >
                   {loading ? t("advisor.thinking") : t("advisor.send")}
                   <ArrowUp className="h-5 w-5" />
@@ -1143,7 +1143,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={confirmPendingAction}
                   disabled={!!actionLoading}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-black shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
                 >
                   {actionLoading ? (
                     <BizuplyLoader size="xs" compact />

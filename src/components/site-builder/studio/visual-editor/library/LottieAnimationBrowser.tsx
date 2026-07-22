@@ -1972,7 +1972,7 @@ export default function LottieAnimationBrowser({
                       onClick={() =>
                         void addAnimationToCanvas(animation)
                       }
-                      className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-xs font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-wait disabled:opacity-70"
+                      className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-xs font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-wait disabled:opacity-70"
                     >
                       {isAdding ? (
                         <BizuplyLoader size="xs" compact />

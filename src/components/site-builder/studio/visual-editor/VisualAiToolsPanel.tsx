@@ -127,7 +127,7 @@ export default function VisualAiToolsPanel({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-600/30 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100"
+          className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-violet-600/30 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100"
         >
           <Sparkles className="h-4 w-4" />
           AI בעורך

@@ -321,7 +321,7 @@ function ElementPreview({
   if (kind === "button") {
     return (
       <div className="flex h-full items-center justify-center bg-white">
-        <div className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 py-3 text-xs font-black text-white shadow-lg shadow-violet-200">
+        <div className="rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 py-3 text-xs font-black text-black shadow-lg shadow-violet-200">
           לחצו כאן
         </div>
       </div>
@@ -1939,7 +1939,7 @@ export default function VisualAddLayersPanel({
                   }
                   onClose();
                 }}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-white"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-black"
               >
                 <Save className="h-4 w-4" />
                 {codeScope === "site"

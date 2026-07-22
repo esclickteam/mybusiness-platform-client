@@ -94,7 +94,7 @@ export default function Plans() {
         disabled={isLoading}
         className={`group mt-8 inline-flex w-full items-center justify-center rounded-full px-7 py-4 text-base font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 ${
           highlighted
-            ? "bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 text-white shadow-indigo-200"
+            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-indigo-200"
             : "border border-slate-200 bg-white text-slate-800 shadow-slate-100 hover:border-indigo-200 hover:text-indigo-700"
         }`}
       >
@@ -144,7 +144,7 @@ export default function Plans() {
               key={plan.type}
               className={`relative overflow-hidden rounded-[2.5rem] border p-3 backdrop-blur-xl transition duration-300 hover:-translate-y-2 ${
                 plan.highlighted
-                  ? "border-indigo-200 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 shadow-[0_30px_100px_rgba(79,70,229,0.26)]"
+                  ? "border-indigo-200 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 shadow-[0_30px_100px_rgba(79,70,229,0.26)]"
                   : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.14)]"
               }`}
             >
@@ -223,7 +223,7 @@ export default function Plans() {
                           className={`mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full text-xs ${
                             plan.highlighted
                               ? "bg-white text-indigo-700"
-                              : "bg-gradient-to-br from-indigo-600 to-cyan-500 text-white"
+                              : "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white"
                           }`}
                         >
                           ✓

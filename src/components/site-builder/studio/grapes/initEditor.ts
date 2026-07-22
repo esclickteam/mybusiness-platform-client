@@ -1190,7 +1190,7 @@ function findHeaderLogoSlot(header: any) {
 function createHeaderLogoSlot(header: any) {
   const logoHtml = `
     <div
-      class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white shadow-lg"
+      class="grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black shadow-lg"
       data-header-logo-slot="true"
       data-editable-card="true"
       data-media-replaceable="true"

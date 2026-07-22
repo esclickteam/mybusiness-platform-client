@@ -300,7 +300,7 @@ export function WhatsAppPreparedCard({
           href={prepared.whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-white shadow-lg shadow-emerald-300/40 transition hover:bg-[#1fb855]"
+          className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-black shadow-lg shadow-emerald-300/40 transition hover:bg-[#1fb855]"
         >
           <MessageCircle className="h-5 w-5" />
           {t("advisor.whatsappCard.send")}
@@ -402,7 +402,7 @@ export function AdvisorActionsPanel({
                   type="button"
                   disabled={disabled || !!actionLoading}
                   onClick={() => onAction(action)}
-                  className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-white shadow-md transition hover:bg-[#1fb855] disabled:cursor-not-allowed disabled:opacity-50"
+                  className="flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#25D366] px-4 py-3.5 text-sm font-black text-black shadow-md transition hover:bg-[#1fb855] disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {isLoading ? (
                     <BizuplyLoader size="sm" compact />

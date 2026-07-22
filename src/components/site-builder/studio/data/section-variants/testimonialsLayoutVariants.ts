@@ -64,7 +64,7 @@ function testimonialAvatarCard(
   </p>
 
   <div class="mt-7 flex items-center gap-4">
-    <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-white">
+    <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-black">
       ${initials}
     </div>
 
@@ -94,8 +94,8 @@ function darkTestimonialCard(
     <div class="h-12 w-12 rounded-2xl bg-white/12"></div>
 
     <div>
-      <p class="text-sm font-black text-white" data-editable-text="true">${name}</p>
-      <p class="mt-1 text-xs font-bold text-white/45" data-editable-text="true">${role}</p>
+      <p class="text-sm font-black text-black" data-editable-text="true">${name}</p>
+      <p class="mt-1 text-xs font-bold text-black/45" data-editable-text="true">${role}</p>
     </div>
   </div>
 </article>
@@ -144,7 +144,7 @@ function bigQuoteCard(
   </p>
 
   <div class="mt-8 flex items-center gap-4">
-    <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-white">
+    <div class="grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-black">
       ★
     </div>
 
@@ -313,7 +313,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[880px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium Reviews
           </p>
 
@@ -669,7 +669,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Customer Stories
             </p>
 
@@ -959,7 +959,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div class="max-w-[780px]">
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               גם אתם יכולים להצטרף ללקוחות המרוצים
             </p>
 
@@ -977,7 +977,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
               השארת פרטים
             </a>
 
-            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20" data-editable-link="true">
+            <a href="https://wa.me/972500000000" class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20" data-editable-link="true">
               וואטסאפ
             </a>
           </div>

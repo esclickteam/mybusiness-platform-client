@@ -428,7 +428,7 @@ export default function VisualEditorShell({
             type="button"
             disabled={busy}
             onClick={handlePublish}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 text-sm font-black text-white shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
             {isSaving ? "מפרסם..." : "פרסום"}
           </button>

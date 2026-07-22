@@ -55,11 +55,11 @@ export default function FinalCTA() {
                   key={title}
                   className="rounded-3xl border border-white/10 bg-white/10 p-5 text-start backdrop-blur transition hover:bg-white/[0.14]"
                 >
-                  <div className="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-black text-white">
+                  <div className="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-black text-black">
                     ✓
                   </div>
 
-                  <h3 className="text-lg font-black text-white">{title}</h3>
+                  <h3 className="text-lg font-black text-black">{title}</h3>
 
                   <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
                     {text}

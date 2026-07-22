@@ -574,7 +574,7 @@ function CustomerMetric({
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-100">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-black text-white">{value}</p>
+          <p className="mt-2 text-2xl font-black text-black">{value}</p>
         </div>
 
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15">

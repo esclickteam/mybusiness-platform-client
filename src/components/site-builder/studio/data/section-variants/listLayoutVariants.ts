@@ -88,7 +88,7 @@ function numberedListItem(number: string, title: string, text: string) {
 function featureListCard(title: string, items: string[], icon = "✦") {
   return `
 <article class="${cardClass}" data-editable-card="true">
-  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black">
     ${icon}
   </div>
 
@@ -154,7 +154,7 @@ function faqListItem(question: string, answer: string) {
 function darkListItem(text: string) {
   return `
 <li class="flex items-start gap-4 rounded-[24px] border border-white/10 bg-white/8 p-5" data-editable-card="true">
-  <span class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-white/12 text-sm font-black text-white">
+  <span class="grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-white/12 text-sm font-black text-black">
     ✓
   </span>
 
@@ -409,7 +409,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium List
             </p>
 
@@ -554,7 +554,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               SaaS Features
             </p>
 
@@ -792,7 +792,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               בקצרה
             </p>
 
@@ -823,7 +823,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
 
               <a
                 href="https://wa.me/972500000000"
-                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
                 data-editable-link="true"
               >
                 וואטסאפ

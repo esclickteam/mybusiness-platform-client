@@ -108,7 +108,7 @@ function PrivacyPolicy() {
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
             <p className="text-sm font-black text-amber-300">Privacy Contact</p>
-            <p className="mt-2 break-all text-sm font-bold text-white/80">
+            <p className="mt-2 break-all text-sm font-bold text-black/80">
               privacy@bizuply.com
             </p>
           </div>

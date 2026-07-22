@@ -221,7 +221,7 @@ export default function ReviewDetailModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+                className="inline-flex h-11 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 סגירה
               </button>

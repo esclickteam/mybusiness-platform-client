@@ -1025,7 +1025,7 @@ export default function FormBuilderModal({
             <button
               type="button"
               onClick={onClose}
-              className="h-14 rounded-[20px] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 text-sm font-black text-white shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
+              className="h-14 rounded-[20px] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-8 text-sm font-black text-black shadow-[0_18px_45px_rgba(37,99,235,0.24)] transition hover:bg-blue-700"
             >
               <span className="inline-flex items-center gap-2">
                 <Save className="h-4 w-4" />

@@ -456,7 +456,7 @@ function AdminEarlyAccess() {
                   type="button"
                   onClick={loadRegistrations}
                   disabled={loading}
-                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? "טוען..." : "רענון רשימה"}
                 </button>

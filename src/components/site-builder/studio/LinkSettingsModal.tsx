@@ -793,7 +793,7 @@ export default function LinkSettingsModal({
               onClick={saveLink}
               disabled={!buildHref()}
               className={[
-                "h-12 rounded-2xl px-8 text-sm font-black text-white transition",
+                "h-12 rounded-2xl px-8 text-sm font-black text-black transition",
                 buildHref()
                   ? "bg-blue-600 hover:bg-blue-700"
                   : "cursor-not-allowed bg-slate-300",

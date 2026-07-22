@@ -251,7 +251,7 @@ export default function BusinessSupport() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
               >
                 {loading ? "שולח..." : "שליחת פנייה"}
                 <Send size={17} />

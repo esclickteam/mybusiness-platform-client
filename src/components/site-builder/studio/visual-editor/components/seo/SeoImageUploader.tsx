@@ -92,7 +92,7 @@ export default function SeoImageUploader({
               type="button"
               disabled={uploading}
               onClick={() => inputRef.current?.click()}
-              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-blue-600 to-sky-500 px-4 text-sm font-black text-white shadow-sm transition hover:from-blue-700 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
+              className="flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-blue-600 to-sky-500 px-4 text-sm font-black text-black shadow-sm transition hover:from-blue-700 hover:to-sky-600 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {uploading ? (
                 <>

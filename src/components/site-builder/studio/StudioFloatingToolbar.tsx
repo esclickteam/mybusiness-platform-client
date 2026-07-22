@@ -758,7 +758,7 @@ export default function StudioFloatingToolbar({
               type="button"
               title="העלאת תמונה מהמחשב"
               onClick={() => imageFileInputRef.current?.click()}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-lg bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               <Upload className="h-4 w-4" />
               החלפת תמונה
@@ -927,7 +927,7 @@ export default function StudioFloatingToolbar({
           <button
             type="button"
             onClick={() => imageFileInputRef.current?.click()}
-            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             העלאת תמונה
           </button>

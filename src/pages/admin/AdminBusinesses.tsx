@@ -248,7 +248,7 @@ function AdminBusinesses() {
                             type="button"
                             disabled={enteringId === biz._id}
                             onClick={() => handleEnterBusiness(biz)}
-                            className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                            className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                           >
                             {enteringId === biz._id
                               ? "נכנס..."

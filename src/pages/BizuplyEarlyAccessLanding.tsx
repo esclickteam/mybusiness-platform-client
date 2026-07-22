@@ -565,7 +565,7 @@ function ProblemToSolutionSection() {
                       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
                         <Check className="h-4 w-4" />
                       </span>
-                      <p className="text-sm font-black text-white">{item}</p>
+                      <p className="text-sm font-black text-black">{item}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -619,7 +619,7 @@ function ConversionMachineSection() {
       dir={dir}
       className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
     >
-      <div className="pointer-events-none absolute left-[-10%] top-[-18%] -z-10 h-[560px] w-[560px] rounded-full bg-[#7b2ee8]/22 blur-3xl" />
+      <div className="pointer-events-none absolute left-[-10%] top-[-18%] -z-10 h-[560px] w-[560px] rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100/22 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-24%] right-[-8%] -z-10 h-[600px] w-[600px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
       <div className="mx-auto max-w-[1440px]">
@@ -1253,7 +1253,7 @@ function HologramHumanSection() {
       dir={dir}
       className="biz-human-hologram relative isolate overflow-hidden px-5 py-24 text-white lg:px-8"
     >
-      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-22%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/12 blur-3xl" />
 
       <div
@@ -1286,7 +1286,7 @@ function HologramHumanSection() {
                   <div className="mb-4 grid h-12 w-12 place-items-center rounded-full border border-[#f3dda5]/35 bg-[#f3dda5]/15 text-[#f3dda5]">
                     <Icon className="h-6 w-6" />
                   </div>
-                  <h3 className="text-xl font-black text-white">
+                  <h3 className="text-xl font-black text-black">
                     {card.title}
                   </h3>
                   <p className="mt-2 text-sm font-semibold leading-7 text-[#d8c9ef]">
@@ -1440,7 +1440,7 @@ function LaunchValueSection() {
                   className="group relative h-full overflow-hidden rounded-[38px] border border-[#2a103c]/15 bg-[#16091f] p-7 text-start text-white shadow-[0_28px_90px_rgba(42,16,60,0.18)]"
                 >
                   <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
-                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
+                  <div className="absolute -left-12 -top-12 h-32 w-32 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
 
                   <div className="relative">
                     <div className="mb-6 flex items-start justify-between gap-4">
@@ -1469,7 +1469,7 @@ function LaunchValueSection() {
                           className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.06] px-4 py-3"
                         >
                           <Check className="h-5 w-5 shrink-0 text-[#f3dda5]" />
-                          <span className="text-sm font-black text-white">
+                          <span className="text-sm font-black text-black">
                             {point}
                           </span>
                         </div>
@@ -1517,7 +1517,7 @@ function LaunchStepsSection() {
       dir={dir}
       className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
     >
-      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+      <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-18%] right-[-12%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
       <div className="mx-auto max-w-[1440px]">
@@ -1586,7 +1586,7 @@ function LaunchStepsSection() {
                     </motion.div>
                   ))}
 
-                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-full bg-[#7b2ee8] text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)]">
+                  <div className="biz-holo-check mx-auto mt-5 grid h-14 w-14 place-items-center rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-white shadow-[0_18px_45px_rgba(123,46,232,0.24)]">
                     <Check className="h-7 w-7" />
                   </div>
                 </div>
@@ -1636,7 +1636,7 @@ function LaunchStepsSection() {
                             <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-[#f3dda5] text-[#2a103c]">
                               <BellRing className="h-4 w-4" />
                             </span>
-                            <p className="text-sm font-black text-white">
+                            <p className="text-sm font-black text-black">
                               {item}
                             </p>
                           </div>
@@ -2885,7 +2885,7 @@ export default function BizuplyEarlyAccessLanding() {
                     <button
                       type="button"
                       onClick={() => setSent(false)}
-                      className="mt-8 rounded-full bg-[#7b2ee8] px-7 py-4 text-sm font-black text-white transition hover:bg-[#6724c9]"
+                      className="mt-8 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-7 py-4 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                     >
                       {t("earlyAccess.form.successAgain")}
                     </button>
@@ -3063,7 +3063,7 @@ export default function BizuplyEarlyAccessLanding() {
       </section>
 
       <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
-        <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
+        <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100/20 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
         <div className="mx-auto grid max-w-[1440px] gap-10 lg:grid-cols-[0.8fr_1.2fr]">

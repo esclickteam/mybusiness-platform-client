@@ -462,7 +462,7 @@ export default function MetaLeadAdsIntegration() {
                     type="button"
                     onClick={connectFacebook}
                     disabled={busy}
-                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-4 text-sm font-black text-white transition hover:bg-sky-700 disabled:opacity-60"
+                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:opacity-60"
                   >
                     {busy ? (
                       <BizuplyLoader size="xs" compact />

@@ -350,7 +350,7 @@ export default function BusinessChatPage() {
 
             <div className="relative flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-black/80 backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
                   Business Inbox
                 </div>
@@ -410,7 +410,7 @@ export default function BusinessChatPage() {
                 </div>
 
                 {totalUnread > 0 && (
-                  <div className="flex h-9 min-w-9 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white shadow-lg shadow-violet-500/25">
+                  <div className="flex h-9 min-w-9 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black shadow-lg shadow-violet-500/25">
                     {totalUnread}
                   </div>
                 )}

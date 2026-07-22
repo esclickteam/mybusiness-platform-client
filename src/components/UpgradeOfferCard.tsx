@@ -201,7 +201,7 @@ export default function UpgradeOfferCard({
             w-full rounded-2xl
             bg-gradient-to-r from-[#6D28D9] to-[#DB2777]
             px-5 py-4
-            text-base font-black text-white
+            text-base font-black text-black
             shadow-[0_16px_36px_rgba(109,40,217,0.28)]
             transition
             hover:scale-[1.01]
