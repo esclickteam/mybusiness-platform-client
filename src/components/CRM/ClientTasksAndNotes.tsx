@@ -14,6 +14,7 @@ import {
   XCircle,
 } from "lucide-react";
 import API from "@api";
+import { BizuplyLoader } from "../ui/BizuplyLoader";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
@@ -972,8 +973,7 @@ function EmptyBox({
 function LoadingBox({ text }: { text: string }) {
   return (
     <div className="rounded-[1.5rem] border border-slate-100 bg-slate-50 px-5 py-10 text-center">
-      <div className="mx-auto mb-4 h-9 w-9 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-      <p className="text-sm font-bold text-slate-500">{text}</p>
+      <BizuplyLoader size="lg" label={text} />
     </div>
   );
 }

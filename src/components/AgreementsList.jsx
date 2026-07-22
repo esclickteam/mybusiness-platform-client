@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "@api";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function AgreementsList() {
   const [agreements, setAgreements] = useState([]);
@@ -53,7 +54,7 @@ export default function AgreementsList() {
       }}
     >
       <h2>Agreements List</h2>
-      {loading && <p>Loading...</p>}
+      {loading && <BizuplyLoader size="lg" label="Loading..." />}
       {error && <p style={{ color: "red" }}>{error}</p>}
       {!loading && agreements.length === 0 && <p>No agreements to display.</p>}
 

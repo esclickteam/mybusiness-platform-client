@@ -31,6 +31,7 @@ import {
   TrendingUp,
   Users,
 } from "lucide-react";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AdvisorActionsPanel,
   AdvisorExecutedStrip,
@@ -796,7 +797,7 @@ export default function BusinessAdvisorTab({
                 title={t("advisor.refresh")}
               >
                 {historyLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <BizuplyLoader size="xs" compact />
                 ) : (
                   <RefreshCw className="h-5 w-5" />
                 )}
@@ -1145,7 +1146,7 @@ export default function BusinessAdvisorTab({
                   className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:opacity-60"
                 >
                   {actionLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <BizuplyLoader size="xs" compact />
                   ) : (
                     <Sparkles className="h-4 w-4" />
                   )}

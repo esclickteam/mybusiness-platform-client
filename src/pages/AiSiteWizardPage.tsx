@@ -18,6 +18,7 @@ import {
   type AiSitePlan,
 } from "../utils/materializeAiSitePlan";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 type WizardAnswers = {
   businessName: string;
@@ -631,7 +632,7 @@ export default function AiSiteWizardPage() {
                 className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-violet-500 disabled:opacity-60"
               >
                 {submitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <BizuplyLoader size="xs" compact />
                 ) : (
                   <Sparkles className="h-4 w-4" />
                 )}

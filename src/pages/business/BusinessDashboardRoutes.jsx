@@ -8,6 +8,7 @@ import API from "../../api";
 
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import LazyRouteBoundary from "../../components/LazyRouteBoundary";
 
 /* Dashboard pages */
@@ -247,12 +248,12 @@ const BusinessDashboardRoutes = () => {
   }, [businessId, queryClient]);
 
   if (!businessId) {
-    return <div>Loading business info...</div>;
+    return <BizuplyLoader fullScreen label="Loading business info..." />;
   }
 
   return (
     <LazyRouteBoundary>
-      <Suspense fallback={<div>🔄 Loading dashboard...</div>}>
+      <Suspense fallback={<BizuplyLoader fullScreen label="Loading dashboard..." />}>
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
           <Route index element={<DashboardIndexRedirect businessId={businessId} />} />

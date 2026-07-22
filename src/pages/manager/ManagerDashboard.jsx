@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // Make sure the path is correct
 import "./ManagerDashboard.css";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 function ManagerDashboard() {
   const { user, loading } = useAuth();
@@ -28,7 +29,7 @@ function ManagerDashboard() {
     { id: 3, name: "Ori", calls: 40, sales: 9, goals: 12, status: "Active" },
   ];
 
-  if (loading) return <div className="loading-screen">🔄 Loading data…</div>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading data..." />;
 
   return (
     <div className="manager-dashboard">

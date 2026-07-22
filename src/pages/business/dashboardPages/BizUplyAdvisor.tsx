@@ -3,6 +3,7 @@ import { useAuth } from "../../../context/AuthContext";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 type Appointment = {
   _id?: string;
@@ -142,20 +143,7 @@ const BizUplyAdvisor: React.FC = () => {
   }, [businessId]);
 
   if (loading) {
-    return (
-      <div
-        dir={dir}
-        className="flex min-h-[60vh] items-center justify-center px-4"
-      >
-        <div className="rounded-3xl border border-slate-200 bg-white px-8 py-6 text-center shadow-xl">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-
-          <p className="text-sm font-black text-slate-800">
-            טוען את יועץ BizUply...
-          </p>
-        </div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="טוען את יועץ BizUply..." />;
   }
 
   if (!businessId) {

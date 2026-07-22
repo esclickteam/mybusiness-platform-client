@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../../../api";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function PartnershipAgreement({ agreementId, userBusinessId, onSigned }) {
   const [agreement, setAgreement] = useState(null);
@@ -75,7 +76,7 @@ export default function PartnershipAgreement({ agreementId, userBusinessId, onSi
     }
   };
 
-  if (loading) return <p>Loading agreement...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!agreement) return <p>Agreement not found.</p>;
   if (!side) return <p>You do not have permission to view or sign this agreement.</p>;

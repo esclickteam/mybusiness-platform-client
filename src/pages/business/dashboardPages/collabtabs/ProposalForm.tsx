@@ -16,6 +16,7 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import API from "../../../../api";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 type BusinessTarget = {
   _id?: string;
@@ -787,7 +788,7 @@ export default function ProposalForm({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <BizuplyLoader size="sm" compact />
             ) : (
               <Send className="h-5 w-5" />
             )}

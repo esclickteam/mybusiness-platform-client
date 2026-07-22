@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import API from "@api";
 import "./AffiliatePage.css";
 import BankDetailsForm from "./BankDetailsForm";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 const AffiliatePage = () => {
 
@@ -241,7 +242,7 @@ const AffiliatePage = () => {
 
         <h2>Statistics</h2>
 
-        {loadingStats && <p>Loading...</p>}
+        {loadingStats && <BizuplyLoader size="lg" label="Loading..." />}
         {errorStats && <p>{errorStats}</p>}
 
         {!loadingStats && allStats.length > 0 && (

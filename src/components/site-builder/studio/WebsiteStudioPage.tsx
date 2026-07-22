@@ -21,6 +21,7 @@ import type { ReadyWebsiteTemplateSeed } from "./data/readyWebsiteTypes";
 import StudioTopbar from "./StudioTopbar";
 import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
+import BizuplyLoader from "../../ui/BizuplyLoader";
 import TemplateVisualEditor from "./TemplateVisualEditor";
 import PageSettingsModal, {
   type PageSettingsModalTab,
@@ -7822,15 +7823,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
-      <div
-        dir="rtl"
-        className="fixed inset-0 z-[999999] grid h-screen w-screen place-items-center bg-[#f6f4ff] text-slate-950"
-      >
-        <div className="rounded-[28px] border border-slate-200 bg-white px-8 py-6 text-center shadow-xl">
-          <div className="text-sm font-black text-violet-700">טוען את האתר השמור...</div>
-          <div className="mt-2 text-xs font-bold text-slate-500">מכין את העורך עם הנתונים האחרונים</div>
-        </div>
-      </div>
+      <BizuplyLoader
+        fullScreen
+        label="טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים"
+      />
     );
   }
 
@@ -8198,11 +8194,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             </div>
           )}
 
-        {loadingSite && (
-          <div className="z-40 border-b border-sky-100 bg-sky-50 px-4 py-2 text-center text-xs font-black text-sky-700">
-            טוען אתר מהשרת...
-          </div>
-        )}
+        {loadingSite && <BizuplyLoader fullScreen overlay label="טוען אתר מהשרת..." />}
 
         {saving && (
           <div className="z-40 border-b border-violet-100 bg-violet-50 px-4 py-2 text-center text-xs font-black text-violet-700">

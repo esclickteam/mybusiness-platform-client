@@ -13,6 +13,7 @@ import {
 import { useLocation } from "react-router-dom";
 
 import API from "../../../../api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import CollabChat from "./CollabChat";
 import { useCollabOutletContext } from "./useCollabOutletContext";
@@ -919,19 +920,7 @@ function StatusBadge({ status }: { status: string }) {
 
 function LoadingState() {
   const { t } = useTranslation();
-  const dir = useLocaleDir();
-  return (
-    <div
-      dir={dir}
-      className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
-    >
-      <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
-
-      <p className="mt-4 text-sm font-black text-slate-500">
-        {t("collab.messages.loading")}
-      </p>
-    </div>
-  );
+  return <BizuplyLoadingState label={t("collab.messages.loading")} />;
 }
 
 function ErrorState({ text }: { text: string }) {

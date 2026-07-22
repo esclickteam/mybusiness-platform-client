@@ -3,6 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext"; // ← Make sure the path is correct
 import StaffTopBar from "./StaffTopBar";
 import "./StaffDashboard.css";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 function StaffDashboard() {
   const { user, loading } = useAuth();
@@ -22,7 +23,7 @@ function StaffDashboard() {
     backOfficeTasks: 2,
   };
 
-  if (loading) return <div className="loading-screen">🔄 Loading data…</div>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading data..." />;
 
   return (
     <div className="staff-dashboard">

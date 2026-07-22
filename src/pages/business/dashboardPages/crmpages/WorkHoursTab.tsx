@@ -10,6 +10,7 @@ import {
   Save,
   Sparkles,
 } from "lucide-react";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
@@ -808,15 +809,7 @@ function TipItem({ text }: { text: string }) {
 function LoadingState() {
   const { t } = useTranslation();
 
-  return (
-    <div className="p-10 text-center">
-      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
-
-      <p className="text-sm font-bold text-slate-500">
-        {t("crm.workHours.loading")}
-      </p>
-    </div>
-  );
+  return <BizuplyLoadingState label={t("crm.workHours.loading")} />;
 }
 
 function timeToMinutes(value: string) {

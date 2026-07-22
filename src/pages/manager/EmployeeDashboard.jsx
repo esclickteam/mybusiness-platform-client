@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../api"; // נניח שזו הספרייה שלך לשליחת בקשות ל-API
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 export default function EmployeeDashboard() {
   const [employees, setEmployees] = useState([]);
@@ -54,7 +55,7 @@ export default function EmployeeDashboard() {
   }, [employees]);
 
   if (loading) {
-    return <div>🔄 טוען נתונים...</div>;
+    return <BizuplyLoader fullScreen label="טוען נתונים..." />;
   }
 
   return (

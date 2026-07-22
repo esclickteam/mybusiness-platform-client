@@ -39,6 +39,7 @@ import {
 } from "@/utils/lazyWithPreload";
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import BizuplyLoader from "@/components/ui/BizuplyLoader";
 import UpgradeOfferCard from "@/components/UpgradeOfferCard";
 import DashboardOverview from "@/components/dashboard/overview/DashboardOverview";
 import { useDashboardOverview } from "@/hooks/useDashboardOverview";
@@ -455,14 +456,10 @@ export function preloadDashboardComponents() {
 
 function LoadingShell({ text }: { text: React.ReactNode }) {
   return (
-    <div className="min-h-screen bg-[#f7f4ff] px-5 py-10 text-slate-950">
-      <div className="mx-auto flex max-w-7xl items-center justify-center rounded-[36px] border border-white/80 bg-white/80 p-10 shadow-[0_30px_100px_rgba(109,40,217,0.14)] backdrop-blur-xl">
-        <div className="flex items-center gap-3">
-          <span className="h-3 w-3 animate-pulse rounded-full bg-violet-600" />
-          <p className="text-sm font-black text-slate-700">{text}</p>
-        </div>
-      </div>
-    </div>
+    <BizuplyLoader
+      fullScreen
+      label={typeof text === "string" ? text : undefined}
+    />
   );
 }
 
@@ -1720,7 +1717,7 @@ export default function DashboardPage() {
   }
 
   if (overviewLoading && !overviewData && !stats) {
-    return <DashboardSkeleton />;
+    return <BizuplyLoader fullScreen label="Loading dashboard..." />;
   }
 
   if (error && !overviewData && !stats) {

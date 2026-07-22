@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useAuth } from "../context/AuthContext";
 import createSocket from "../socket";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function BusinessConversationsList({ onSelectConversation }) {
   const { user, initialized, getValidAccessToken, logout } = useAuth();
@@ -51,7 +52,7 @@ export default function BusinessConversationsList({ onSelectConversation }) {
     };
   }, [initialized, businessId, getValidAccessToken, logout]);
 
-  if (loading) return <p>Loading conversations...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (conversations.length === 0) return <p>No active conversations</p>;
 

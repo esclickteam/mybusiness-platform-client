@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 
 import API from "../../../../api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
@@ -187,7 +188,7 @@ function PartnerCard({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-3 text-sm font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
               >
                 {chatLoadingId === business._id ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
+                  <BizuplyLoader size="xs" compact />
                 ) : (
                   <Handshake className="h-4 w-4" />
                 )}
@@ -376,18 +377,7 @@ export default function CollabFindPartnerTab({
   );
 
   if (loading) {
-    return (
-      <div
-        dir={dir}
-        className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
-      >
-        <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
-
-        <p className="mt-4 text-sm font-black text-slate-500">
-          {t("collab.findPartner.loading")}
-        </p>
-      </div>
-    );
+    return <BizuplyLoadingState label={t("collab.findPartner.loading")} />;
   }
 
   if (error) {

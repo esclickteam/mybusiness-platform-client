@@ -3,6 +3,7 @@ import { useSocket } from "../context/socketContext";
 import { useAuth } from "../context/AuthContext";
 import BusinessChatTab from "./BusinessChatTab";
 import ClientChatTab from "./ClientChatTab";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function ChatComponent({
   partnerId,
@@ -103,8 +104,8 @@ export default function ChatComponent({
   }, [conversationId, isBusiness, conversations, businessId]);
 
   // Loading states
-  if (!initialized) return <p>⏳ Loading user details…</p>;
-  if (isBusiness && loadingConvs) return <p>⏳ Loading conversations…</p>;
+  if (!initialized) return <BizuplyLoader fullScreen label="Loading user details…" />;
+  if (isBusiness && loadingConvs) return <BizuplyLoader fullScreen label="Loading conversations…" />;
   if (!conversationId) return <p>⏳ No available conversation</p>;
 
   return isBusiness ? (

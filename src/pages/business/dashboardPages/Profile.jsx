@@ -10,6 +10,7 @@ import ShopAndCalendar from "./buildTabs/shopAndCalendar/ShopAndCalendar";
 import ReviewsModule from "./buildTabs/ReviewsModule";
 import FaqTab from "./buildTabs/FaqTab";
 import ChatTab from "./buildTabs/ChatTab";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 const TABS = [
   "Main",
@@ -80,7 +81,7 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <div className="p-6 text-center">🔄 Loading profile...</div>;
+    return <BizuplyLoader fullScreen label="טוען..." />;
   }
 
   return (

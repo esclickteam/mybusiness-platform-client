@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 const ForgotPassword = lazy(() => import("./ForgotPassword"));
 
@@ -33,18 +34,7 @@ type ApiError = {
 };
 
 export function LoginSkeleton() {
-  return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] px-6 py-20">
-      <div className="mx-auto max-w-md overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-3 shadow-[0_28px_90px_rgba(79,70,229,0.14)] backdrop-blur-xl">
-        <div className="rounded-[1.5rem] border border-slate-100 bg-white p-8">
-          <div className="mb-8 h-8 w-40 animate-pulse rounded-full bg-slate-100" />
-          <div className="mb-4 h-12 animate-pulse rounded-2xl bg-slate-100" />
-          <div className="mb-4 h-12 animate-pulse rounded-2xl bg-slate-100" />
-          <div className="h-12 animate-pulse rounded-full bg-indigo-100" />
-        </div>
-      </div>
-    </div>
-  );
+  return <BizuplyLoader fullScreen label="Loading..." />;
 }
 
 export default function Login() {
@@ -347,11 +337,7 @@ export default function Login() {
       {showForgot && (
         <Suspense
           fallback={
-            <div className="fixed inset-0 z-[9999] grid place-items-center bg-slate-950/40 p-6 backdrop-blur-xl">
-              <div className="rounded-2xl bg-white px-6 py-4 text-sm font-black text-slate-700 shadow-xl">
-                {t("login.loadingForgot")}
-              </div>
-            </div>
+            <BizuplyLoader fullScreen label={t("login.loadingForgot")} />
           }
         >
           <ForgotPassword closePopup={() => setShowForgot(false)} />

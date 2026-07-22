@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { Loader2, CheckCircle2, XCircle } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { acceptSiteInvite, getSiteInvite } from "../api/mySitesApi";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function WebsiteInviteAcceptPage() {
   const { token = "" } = useParams<{ token: string }>();
@@ -85,7 +86,7 @@ export default function WebsiteInviteAcceptPage() {
 
         {loading ? (
           <div className="mt-8 flex items-center justify-center gap-2 text-slate-500">
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <BizuplyLoader size="sm" compact />
             טוען הזמנה...
           </div>
         ) : error && !invite ? (
@@ -146,7 +147,7 @@ export default function WebsiteInviteAcceptPage() {
               disabled={accepting}
               className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-60"
             >
-              {accepting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {accepting ? <BizuplyLoader size="xs" compact /> : null}
               אישור ההזמנה
             </button>
           </div>

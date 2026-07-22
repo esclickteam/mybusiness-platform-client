@@ -4,6 +4,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "@api";
 import FaqTab from "../FaqTab";
+import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 
 type FaqItem = {
   _id?: string;
@@ -137,7 +138,7 @@ export default function FaqSection({
           <div className="space-y-6 p-5 sm:p-8">
             {isLoading ? (
               <div className="flex min-h-80 flex-col items-center justify-center rounded-[1.75rem] border border-slate-100 bg-white text-center shadow-sm">
-                <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+                <BizuplyLoader size="lg" />
 
                 <h3 className="mt-5 text-lg font-black text-slate-950">
                   טוען שאלות נפוצות…
@@ -307,7 +308,7 @@ export default function FaqSection({
                     <div className="rounded-[1.5rem] border border-slate-100 bg-slate-50/70 p-4">
                       {isLoading ? (
                         <div className="flex min-h-64 flex-col items-center justify-center text-center">
-                          <div className="h-9 w-9 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+                          <BizuplyLoader size="lg" />
 
                           <p className="mt-4 text-sm font-bold text-slate-500">
                             טוען שאלות נפוצות…

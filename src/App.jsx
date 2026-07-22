@@ -27,6 +27,7 @@ import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDas
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
+import BizuplyLoader from "./components/ui/BizuplyLoader";
 
 const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
@@ -506,14 +507,7 @@ function PublicMiniSitePage() {
   }
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-white">
-        <div className="flex flex-col items-center gap-4">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-          <p className="text-sm font-bold text-slate-500">Loading site...</p>
-        </div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="Loading site..." />;
   }
 
   if (error || !site) {
@@ -584,8 +578,10 @@ function PageLoader() {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="pointer-events-none fixed inset-0 z-[9999] h-screen overflow-hidden bg-gradient-to-b from-[#f6f7fb] to-[#e8ebf8]"
-    />
+      className="fixed inset-0 z-[9999]"
+    >
+      <BizuplyLoader fullScreen />
+    </motion.div>
   );
 }
 
@@ -627,7 +623,7 @@ export default function App() {
   if (location.pathname.startsWith("/embed/")) {
     return (
       <Suspense
-        fallback={<div style={{ minHeight: "100vh", background: "#fff" }} />}
+        fallback={<BizuplyLoader fullScreen />}
       >
         <Routes location={location}>
           <Route

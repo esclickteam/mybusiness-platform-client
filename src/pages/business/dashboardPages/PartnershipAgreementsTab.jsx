@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import API from "@api";
 import PartnershipAgreement from "./SignAgreement";
 import "./PartnershipAgreementsTab.css";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 export default function PartnershipAgreementsTab({ userBusinessId }) {
   const [agreements, setAgreements] = useState([]);
@@ -27,7 +28,7 @@ export default function PartnershipAgreementsTab({ userBusinessId }) {
     fetchAgreements();
   }, []);
 
-  if (loading) return <p>Loading agreements...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
   if (error) return <p className="error">{error}</p>;
 
   if (selectedId)

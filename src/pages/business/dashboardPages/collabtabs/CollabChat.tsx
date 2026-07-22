@@ -22,7 +22,9 @@ import {
 import { useLocation, useSearchParams } from "react-router-dom";
 
 import API from "../../../../api";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
@@ -1194,7 +1196,9 @@ export default function CollabChat({
 
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {loadingConversations ? (
-            <ConversationSkeleton />
+            <div className="flex min-h-[40vh] items-center justify-center py-8">
+              <BizuplyLoader size="lg" label="Loading conversations..." />
+            </div>
           ) : filteredConversations.length === 0 ? (
             <EmptySidebar onRefresh={fetchConversations} />
           ) : (
@@ -1441,7 +1445,7 @@ function MessageBubble({
         >
           <span>{formatMessageTime(message)}</span>
 
-          {message.sending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {message.sending && <BizuplyLoader size="xs" compact />}
           {message.failed && <span className="text-rose-500">נכשל</span>}
 
           {!message.sending && !message.failed && isMine && (

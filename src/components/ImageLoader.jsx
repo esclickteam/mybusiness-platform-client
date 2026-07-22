@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 const ImageLoader = ({ src, alt, className }) => {
   const [loading, setLoading] = useState(true);
@@ -29,15 +30,16 @@ const ImageLoader = ({ src, alt, className }) => {
     <div className={`image-container ${className}`} style={{ position: "relative" }}>
       {loading && (
         <div
-          className="spinner"
           style={{
             position: "absolute",
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)"
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            background: "rgba(255,255,255,0.85)",
           }}
         >
-          🔄
+          <BizuplyLoader size="sm" compact />
         </div>
       )}
       {!loading && !error && (
