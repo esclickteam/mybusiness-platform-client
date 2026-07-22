@@ -55,7 +55,7 @@ function eventDateBadge(day: string, month: string) {
 <div class="grid h-20 w-20 shrink-0 place-items-center rounded-[24px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl">
   <div>
     <strong class="block text-3xl font-black leading-none" data-editable-text="true">${day}</strong>
-    <span class="mt-1 block text-xs font-black text-white/60" data-editable-text="true">${month}</span>
+    <span class="mt-1 block text-xs font-black text-black/60" data-editable-text="true">${month}</span>
   </div>
 </div>
 `;
@@ -205,7 +205,7 @@ function rsvpCard(buttonText = "אישור הגעה") {
     />
 
     <button
-      class="inline-flex min-h-[56px] items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl"
+      class="inline-flex min-h-[56px] items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl"
       type="button"
     >
       ${buttonText}
@@ -218,11 +218,11 @@ function rsvpCard(buttonText = "אישור הגעה") {
 function darkEventFeature(title: string, text: string, icon = "✦") {
   return `
 <div class="rounded-[30px] border border-white/10 bg-white/8 p-6 text-white" data-editable-card="true">
-  <div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black text-white">
+  <div class="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black text-black">
     ${icon}
   </div>
 
-  <h3 class="text-xl font-black text-white" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-black" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-white/65" data-editable-text="true">${text}</p>
 </div>
 `;
@@ -294,13 +294,13 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
         </p>
 
         <div class="mt-8 flex flex-wrap gap-4">
-          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-white backdrop-blur-xl" data-editable-text="true">
+          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-black backdrop-blur-xl" data-editable-text="true">
             24.06.2026
           </span>
-          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-white backdrop-blur-xl" data-editable-text="true">
+          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-black backdrop-blur-xl" data-editable-text="true">
             20:30
           </span>
-          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-white backdrop-blur-xl" data-editable-text="true">
+          <span class="rounded-full bg-white/18 px-5 py-3 text-sm font-black text-black backdrop-blur-xl" data-editable-text="true">
             אולם / אונליין / מיקום
           </span>
         </div>
@@ -393,7 +393,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium Event
             </p>
 
@@ -671,7 +671,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp Event
               </p>
 
@@ -895,7 +895,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div class="max-w-[780px]">
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               מוכנים להירשם?
             </p>
 
@@ -919,7 +919,7 @@ export const eventsLayoutVariants: SectionLayoutVariant[] = [
 
             <a
               href="https://wa.me/972500000000"
-              class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+              class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
               data-editable-link="true"
             >
               וואטסאפ

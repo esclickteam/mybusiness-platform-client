@@ -497,24 +497,24 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="flex h-full flex-col gap-1 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-2" dir="rtl">
           {badge ? <span className="text-[7px] font-black text-violet-300">{badge}</span> : null}
-          <p className="text-[11px] font-black text-white">{title}</p>
+          <p className="text-[11px] font-black text-black">{title}</p>
           <p className="line-clamp-1 text-[7px] font-bold text-slate-400">{copy}</p>
           <div className="grid min-h-0 flex-1 grid-cols-3 grid-rows-2 gap-1">
             <div className="relative row-span-2 overflow-hidden rounded-lg">
               <img src={images[0]} alt="" className="h-full w-full object-cover" />
-              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-white">
+              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-black">
                 {pTitles[0]}
               </p>
             </div>
             <div className="relative overflow-hidden rounded-lg">
               <img src={images[1]} alt="" className="h-full w-full object-cover" />
-              <p className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[6px] font-black text-white">
+              <p className="absolute bottom-0.5 right-0.5 rounded bg-black/60 px-1 text-[6px] font-black text-black">
                 {pTitles[1]}
               </p>
             </div>
             <div className="relative row-span-2 overflow-hidden rounded-lg">
               <img src={images[2]} alt="" className="h-full w-full object-cover" />
-              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-white">
+              <p className="absolute bottom-1 right-1 rounded bg-black/60 px-1 text-[7px] font-black text-black">
                 {pTitles[2]}
               </p>
             </div>
@@ -556,7 +556,7 @@ export default function SectionLibraryCardPreview({
           <div className="flex min-h-0 flex-1 items-center gap-1">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-[8px] font-black text-white">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-[8px] font-black text-black">
                   {i}
                 </div>
                 <p className="text-center text-[7px] font-bold text-slate-600">שלב {i}</p>
@@ -654,8 +654,8 @@ export default function SectionLibraryCardPreview({
         style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
         dir="rtl"
       >
-        <p className="line-clamp-2 text-[12px] font-black text-white">{title}</p>
-        <p className="line-clamp-2 text-[8px] font-bold text-white/70">{copy}</p>
+        <p className="line-clamp-2 text-[12px] font-black text-black">{title}</p>
+        <p className="line-clamp-2 text-[8px] font-bold text-black/70">{copy}</p>
         <Btn label={cta} />
       </div>
     );
@@ -772,7 +772,7 @@ export default function SectionLibraryCardPreview({
               <div key={i} className="relative overflow-hidden rounded-lg">
                 <img src={src} alt="" className="h-full w-full object-cover" />
                 <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-950/80 to-transparent p-1 text-right">
-                  <p className="truncate text-[7px] font-black text-white">כותרת {i + 1}</p>
+                  <p className="truncate text-[7px] font-black text-black">כותרת {i + 1}</p>
                 </div>
               </div>
             ))}
@@ -913,7 +913,7 @@ export default function SectionLibraryCardPreview({
             <span className="text-[7px] font-black tracking-[0.2em] text-stone-400">ABOUT</span>
             <p className="line-clamp-3 text-[15px] font-black leading-[0.95] tracking-tight text-stone-900">{title}</p>
             <p className="line-clamp-2 text-[7px] font-bold text-stone-500">{copy}</p>
-            <span className="mt-1 inline-flex w-fit rounded-none bg-stone-900 px-2 py-0.5 text-[8px] font-black text-white">
+            <span className="mt-1 inline-flex w-fit rounded-none bg-stone-900 px-2 py-0.5 text-[8px] font-black text-black">
               {cta}
             </span>
           </div>
@@ -1015,12 +1015,12 @@ export default function SectionLibraryCardPreview({
         dir="rtl"
       >
         {badge ? <p className="text-center text-[7px] font-black text-violet-300">{badge}</p> : null}
-        <p className="text-center text-[11px] font-black text-white">{title}</p>
+        <p className="text-center text-[11px] font-black text-black">{title}</p>
         <p className="line-clamp-1 text-center text-[7px] font-bold text-slate-400">{copy}</p>
         <div className="grid grid-cols-4 gap-1">
           {values.map((v, i) => (
             <div key={i} className="text-center">
-              <p className="text-[12px] font-black text-white">{v}</p>
+              <p className="text-[12px] font-black text-black">{v}</p>
               <p className="text-[6px] font-bold text-slate-400">{labels[i]}</p>
             </div>
           ))}
@@ -1050,9 +1050,9 @@ export default function SectionLibraryCardPreview({
         style={{ backgroundColor: bg === "#ffffff" ? "#0f172a" : bg }}
         dir="rtl"
       >
-        <p className="text-[10px] font-black text-white">העסק</p>
-        <p className="text-[8px] font-bold text-white/60">קישורים</p>
-        <p className="text-[8px] font-bold text-white/60">יצירת קשר</p>
+        <p className="text-[10px] font-black text-black">העסק</p>
+        <p className="text-[8px] font-bold text-black/60">קישורים</p>
+        <p className="text-[8px] font-bold text-black/60">יצירת קשר</p>
       </div>
     );
   }

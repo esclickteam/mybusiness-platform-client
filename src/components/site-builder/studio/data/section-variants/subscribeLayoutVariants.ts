@@ -106,7 +106,7 @@ function darkSubscribeForm(buttonText = "Join now") {
   return `
 <form class="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="subscribe-form">
   <input
-    class="min-h-14 flex-1 rounded-2xl border border-white/10 bg-white/10 px-5 text-sm font-bold text-white outline-none placeholder:text-white/45 focus:border-white/30"
+    class="min-h-14 flex-1 rounded-2xl border border-white/10 bg-white/10 px-5 text-sm font-bold text-black outline-none placeholder:text-white/45 focus:border-white/30"
     placeholder="כתובת אימייל"
     data-editable-input="true"
   />
@@ -242,7 +242,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-violet-400/30 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[980px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             VIP Updates
           </p>
 
@@ -318,7 +318,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium Club
             </p>
 
@@ -337,7 +337,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="rounded-[42px] border border-white/12 bg-white/8 p-7 backdrop-blur-2xl" data-editable-card="true">
-            <h3 class="text-3xl font-black text-white" data-editable-text="true">
+            <h3 class="text-3xl font-black text-black" data-editable-text="true">
               הצטרפות מהירה
             </h3>
 
@@ -596,7 +596,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               SaaS Waitlist
             </p>
 
@@ -756,7 +756,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
                 מדריך חינמי
               </h3>
 
-              <p class="mt-2 text-sm font-bold text-white/60" data-editable-text="true">
+              <p class="mt-2 text-sm font-bold text-black/60" data-editable-text="true">
                 קובץ להורדה לאחר הרשמה
               </p>
             </div>
@@ -850,7 +850,7 @@ export const subscribeLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               הצטרפו עכשיו
             </p>
 

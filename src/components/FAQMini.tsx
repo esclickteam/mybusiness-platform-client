@@ -170,7 +170,7 @@ export default function FAQMini() {
                           className={[
                             "mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-2xl text-sm font-black transition",
                             isOpen
-                              ? "bg-gradient-to-br from-indigo-600 to-cyan-500 text-white shadow-lg shadow-indigo-100"
+                              ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-lg shadow-indigo-100"
                               : "bg-indigo-50 text-indigo-700",
                           ].join(" ")}
                         >
@@ -216,7 +216,7 @@ export default function FAQMini() {
                                   className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4"
                                 >
                                   <div className="mb-2 flex items-center gap-2">
-                                    <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xs text-white">
+                                    <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-xs text-white">
                                       ✓
                                     </span>
                                     <strong className="text-sm font-black text-slate-800">
@@ -232,7 +232,7 @@ export default function FAQMini() {
                             </div>
 
                             {item.a.footer && (
-                              <div className="mt-5 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px]">
+                              <div className="mt-5 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px]">
                                 <p className="rounded-2xl bg-white px-5 py-4 text-sm font-black leading-6 text-slate-800">
                                   {item.a.footer}
                                 </p>
@@ -249,7 +249,7 @@ export default function FAQMini() {
           </div>
         </div>
 
-        <div className="mt-14 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
+        <div className="mt-14 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2rem] bg-white/10 px-8 py-9 text-center backdrop-blur-xl sm:px-12">
             <h3 className="text-3xl font-black tracking-[-0.03em] text-white">
               {t("faqMini.ctaTitle")}

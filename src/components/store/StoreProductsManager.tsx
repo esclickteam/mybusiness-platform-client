@@ -1464,7 +1464,7 @@ function ProductsView({
                   </div>
 
                   {product.isFeatured ? (
-                    <span className="absolute left-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-white">
+                    <span className="absolute left-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-black">
                       מומלץ
                     </span>
                   ) : null}

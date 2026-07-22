@@ -581,7 +581,7 @@ export default function StudioSidebar({
                 <button
                   type="button"
                   onClick={onOpenMedia}
-                  className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+                  className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-black shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                 >
                   פתיחת מנהל מדיה
                 </button>
@@ -609,7 +609,7 @@ export default function StudioSidebar({
                     <button
                       type="button"
                       onClick={openStoreManagementPage}
-                      className="mt-4 w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+                      className="mt-4 w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-black shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                     >
                       פתיחת ניהול חנות
                     </button>
@@ -784,7 +784,7 @@ function PagesHierarchyPanel({
         <button
           type="button"
           onClick={onAddPage}
-          className="h-11 rounded-xl bg-violet-700 px-4 text-xs font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-800"
+          className="h-11 rounded-xl bg-violet-700 px-4 text-xs font-black text-black shadow-lg shadow-violet-100 transition hover:bg-violet-800"
         >
           + עמוד
         </button>
@@ -957,7 +957,7 @@ function LightPageRow({
                 <button
                   type="button"
                   onClick={onAddSection}
-                  className="h-8 rounded-lg bg-violet-700 px-3 text-[11px] font-black text-white transition hover:bg-violet-800"
+                  className="h-8 rounded-lg bg-violet-700 px-3 text-[11px] font-black text-black transition hover:bg-violet-800"
                 >
                   + סקשן
                 </button>
@@ -989,7 +989,7 @@ function LightPageRow({
                       <button
                         type="button"
                         onClick={onAddSection}
-                        className="mt-3 rounded-lg bg-violet-700 px-4 py-2 text-xs font-black text-white"
+                        className="mt-3 rounded-lg bg-violet-700 px-4 py-2 text-xs font-black text-black"
                       >
                         הוסף סקשן ראשון
                       </button>

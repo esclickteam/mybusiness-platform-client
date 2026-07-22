@@ -243,7 +243,7 @@ export default function SiteShareModal({ site, open, onClose }: Props) {
           <button
             type="submit"
             disabled={sending}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-sm font-semibold text-black hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
           >
             {sending ? <BizuplyLoader size="xs" compact /> : null}
             {mode === "transfer" ? "שליחת הזמנת העברה" : "שליחת הזמנת שיתוף"}

@@ -799,7 +799,7 @@ function GradientColorPicker({
           type="button"
           onClick={onApply}
           disabled={!gradient}
-          className="h-11 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-white shadow-sm hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-40"
+          className="h-11 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-black shadow-sm hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-40"
         >
           החלת המיקס
         </button>
@@ -1403,7 +1403,7 @@ export default function VisualFloatingToolbar({
                 event.stopPropagation();
                 editor?.openFormBuilder?.();
               }}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-[#111827] px-4 text-sm font-black text-white transition hover:bg-[#333] disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black transition hover:bg-[#333] disabled:cursor-not-allowed disabled:opacity-50"
             >
               <ClipboardList className="h-4 w-4" />
               עריכת טופס
@@ -1736,7 +1736,7 @@ export default function VisualFloatingToolbar({
                 event.stopPropagation();
                 openMediaPicker();
               }}
-              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
+              className="inline-flex h-9 shrink-0 items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Upload className="h-4 w-4" />
               שינוי
@@ -1956,7 +1956,7 @@ export default function VisualFloatingToolbar({
               event.stopPropagation();
               openMediaPicker();
             }}
-            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+            className="h-11 shrink-0 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             העלאה מהמחשב
           </button>

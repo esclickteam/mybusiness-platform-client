@@ -187,7 +187,7 @@ function FAQ() {
 
             <a
               href="/contact"
-              className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-8 py-4 text-base font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+              className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-8 py-4 text-base font-black text-black backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
             >
               Contact Support
             </a>

@@ -431,7 +431,7 @@ export default function MySitesPage() {
             <button
               type="button"
               onClick={handleCreateSite}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-black shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
             >
               <Plus className="h-4 w-4" />
               {t("mySites.newSite")}
@@ -549,7 +549,7 @@ export default function MySitesPage() {
               <button
                 type="button"
                 onClick={handleCreateSite}
-                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
+                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-black shadow-lg transition hover:-translate-y-0.5"
               >
                 <Plus className="h-4 w-4" />
                 {t("mySites.createFirstSite")}

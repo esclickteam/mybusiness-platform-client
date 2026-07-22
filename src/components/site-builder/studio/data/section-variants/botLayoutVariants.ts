@@ -73,11 +73,11 @@ function botChatWindow(title = "AI Assistant") {
       </div>
 
       <div>
-        <h3 class="text-lg font-black text-white" data-editable-text="true">
+        <h3 class="text-lg font-black text-black" data-editable-text="true">
           ${title}
         </h3>
 
-        <p class="mt-1 text-xs font-bold text-white/55" data-editable-text="true">
+        <p class="mt-1 text-xs font-bold text-black/55" data-editable-text="true">
           מחובר · עונה ללקוחות בזמן אמת
         </p>
       </div>
@@ -105,7 +105,7 @@ function botChatWindow(title = "AI Assistant") {
 
     <button
       type="button"
-      class="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white shadow-xl"
+      class="grid h-12 w-12 place-items-center rounded-2xl bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black shadow-xl"
     >
       ↗
     </button>
@@ -117,7 +117,7 @@ function botChatWindow(title = "AI Assistant") {
 function botFeature(title: string, text: string, icon = "AI") {
   return `
 <article class="${cardClass}" data-editable-card="true">
-  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-sm font-black text-black">
     ${icon}
   </div>
 
@@ -182,11 +182,11 @@ function darkBotWindow() {
       </div>
 
       <div>
-        <h3 class="text-lg font-black text-white" data-editable-text="true">
+        <h3 class="text-lg font-black text-black" data-editable-text="true">
           Smart Bot
         </h3>
 
-        <p class="mt-1 text-xs font-bold text-white/50" data-editable-text="true">
+        <p class="mt-1 text-xs font-bold text-black/50" data-editable-text="true">
           עוזר חכם לעסק
         </p>
       </div>
@@ -277,7 +277,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               AI Business Assistant
             </p>
 
@@ -451,7 +451,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp AI Preview
               </p>
 
@@ -554,7 +554,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[900px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium AI Bot
           </p>
 
@@ -696,7 +696,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               AI SaaS
             </p>
 
@@ -904,7 +904,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               AI באתר שלכם
             </p>
 
@@ -934,7 +934,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
 
               <a
                 href="https://wa.me/972500000000"
-                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
                 data-editable-link="true"
               >
                 וואטסאפ

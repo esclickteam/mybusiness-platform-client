@@ -613,7 +613,7 @@ function HumanUpsellCard() {
           and manage the collaboration process for this business.
         </p>
 
-        <div className="mt-4 space-y-2 text-sm font-bold text-white/90">
+        <div className="mt-4 space-y-2 text-sm font-bold text-black/90">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="h-4 w-4" />
             Partner research and outreach

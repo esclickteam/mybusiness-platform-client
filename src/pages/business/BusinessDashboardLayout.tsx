@@ -505,7 +505,7 @@ export default function BusinessDashboardLayout() {
                 type="button"
                 disabled={exitingImpersonation}
                 onClick={handleExitImpersonation}
-                className="rounded-2xl bg-amber-900 px-4 py-2.5 text-xs font-black text-white transition hover:bg-amber-800 disabled:opacity-60"
+                className="rounded-md border border-amber-200/80 bg-gradient-to-l from-amber-100 via-orange-50 to-white px-4 py-2.5 text-xs font-black text-black transition hover:from-amber-200/80 hover:via-orange-50 hover:to-white disabled:opacity-60"
               >
                 {exitingImpersonation
                   ? t("layout.returning")
@@ -737,7 +737,7 @@ export default function BusinessDashboardLayout() {
                         onClick={() => navigate("/pricing")}
                         className="
                           ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-1.5
-                          text-xs font-black text-white shadow-sm transition
+                          text-xs font-black text-black shadow-sm transition
                           hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
                         "
                       >
@@ -766,7 +766,7 @@ export default function BusinessDashboardLayout() {
                     )}
 
                     <div className="min-w-0 truncate text-slate-700">
-                      <span className="ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-1 text-xs font-black text-white">
+                      <span className="ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-1 text-xs font-black text-black">
                         🎁 Early Bird
                       </span>
 
@@ -786,7 +786,7 @@ export default function BusinessDashboardLayout() {
                       onClick={handleEarlyBirdUpgrade}
                       className="
                         shrink-0 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2
-                        text-xs font-black text-white shadow-sm
+                        text-xs font-black text-black shadow-sm
                         transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
                       "
                     >

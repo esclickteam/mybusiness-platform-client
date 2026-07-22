@@ -910,7 +910,7 @@ export default function PartnershipAgreementView({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-black"
+              className="rounded-2xl bg-gray-900 px-5 py-3 text-sm font-bold text-black shadow-lg transition hover:bg-black"
             >
               סגור
             </button>

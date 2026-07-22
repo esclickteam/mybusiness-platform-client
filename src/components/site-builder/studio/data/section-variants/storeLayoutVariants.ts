@@ -63,7 +63,7 @@ function moneyBadge(price: string) {
 function saleBadge(text = "SALE") {
   return `
 <span
-  class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-white shadow-xl"
+  class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-black shadow-xl"
   data-editable-text="true"
 >
   ${text}
@@ -149,7 +149,7 @@ function productLuxuryCard(
   <div class="relative overflow-hidden bg-slate-100" data-media-replaceable="true">
     ${
       oldPrice
-        ? `<span class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-white shadow-xl" data-editable-text="true">מבצע</span>`
+        ? `<span class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-black shadow-xl" data-editable-text="true">מבצע</span>`
         : `<span class="absolute right-5 top-5 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-xl" data-editable-text="true">Premium</span>`
     }
 
@@ -215,7 +215,7 @@ function categoryTile(title: string, imageUrl: string, count = "12 מוצרים"
 
   <div class="relative flex h-full min-h-[300px] flex-col justify-end">
     <span
-      class="mb-3 inline-flex w-fit rounded-full bg-white/18 px-4 py-2 text-xs font-black text-white backdrop-blur-xl"
+      class="mb-3 inline-flex w-fit rounded-full bg-white/18 px-4 py-2 text-xs font-black text-black backdrop-blur-xl"
       data-editable-text="true"
     >
       ${count}
@@ -225,7 +225,7 @@ function categoryTile(title: string, imageUrl: string, count = "12 מוצרים"
       ${title}
     </h3>
 
-    <span class="mt-4 inline-flex text-sm font-black text-white/80" data-editable-text="true">
+    <span class="mt-4 inline-flex text-sm font-black text-black/80" data-editable-text="true">
       צפייה בקולקציה ←
     </span>
   </div>
@@ -299,7 +299,7 @@ function lookbookImage(src: string, title: string, height = "h-[520px]") {
   <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent"></div>
 
   <div class="absolute bottom-6 right-6 left-6">
-    <p class="text-2xl font-black text-white" data-editable-text="true">${title}</p>
+    <p class="text-2xl font-black text-black" data-editable-text="true">${title}</p>
 
     <a
       href="#store"
@@ -367,7 +367,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.92fr_1.08fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               New Collection
             </p>
 
@@ -493,7 +493,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[900px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium Store
           </p>
 
@@ -689,7 +689,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
               <strong class="text-3xl font-black text-slate-800" data-editable-text="true">₪567</strong>
             </div>
 
-            <a href="#checkout" class="mt-5 flex min-h-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl" data-editable-link="true">
+            <a href="#checkout" class="mt-5 flex min-h-14 items-center justify-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" data-editable-link="true">
               מעבר לתשלום
             </a>
           </div>
@@ -780,7 +780,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp Order
               </p>
 
@@ -912,7 +912,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[58px] bg-gradient-to-br from-slate-950 via-violet-950 to-fuchsia-900 p-8 text-white shadow-[0_54px_180px_rgba(76,29,149,0.32)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Store Club
             </p>
 
@@ -1071,7 +1071,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Ready to shop?
             </p>
 
@@ -1100,7 +1100,7 @@ export const storeLayoutVariants: SectionLayoutVariant[] = [
 
               <a
                 href="https://wa.me/972500000000"
-                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+                class="inline-flex min-h-14 flex-1 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
                 data-editable-link="true"
               >
                 וואטסאפ

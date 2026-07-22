@@ -626,7 +626,7 @@ export default function ClientCalendar({
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
-                  className="flex-1 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-4 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex-1 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-4 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={handleSubmitBooking}
                   disabled={submittingBooking}
                 >
@@ -661,7 +661,7 @@ export default function ClientCalendar({
 
               <button
                 type="button"
-                className="mt-6 rounded-2xl bg-emerald-600 px-6 py-3 text-sm font-black text-white shadow-lg shadow-emerald-100 transition hover:-translate-y-0.5 hover:bg-emerald-700"
+                className="mt-6 rounded-md border border-emerald-200/80 bg-gradient-to-l from-emerald-100 via-green-50 to-white px-6 py-3 text-sm font-black text-black shadow-lg shadow-emerald-100 transition hover:-translate-y-0.5 hover:from-emerald-200/80 hover:via-green-50 hover:to-white"
                 onClick={onBackToList}
               >
                 Back to List
@@ -704,7 +704,7 @@ function SummaryItem({ label, value }: { label: string; value: string }) {
       <p className="text-xs font-bold uppercase tracking-[0.16em] text-violet-100">
         {label}
       </p>
-      <p className="mt-1 text-base font-black text-white">{value}</p>
+      <p className="mt-1 text-base font-black text-black">{value}</p>
     </div>
   );
 }

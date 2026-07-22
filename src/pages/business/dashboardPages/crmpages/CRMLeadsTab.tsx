@@ -1077,7 +1077,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               type="button"
               onClick={fetchLeads}
               disabled={loading}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <BizuplyLoader size="xs" compact />
@@ -1236,7 +1236,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     ].join(" ")}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600 text-sm font-black text-white shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white text-sm font-black text-black shadow-sm">
                         {getInitials(leadName)}
                       </div>
 
@@ -1352,7 +1352,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <button
                         type="button"
                         onClick={() => setSelectedLead(lead)}
-                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-sky-600 px-4 text-xs font-black text-white transition hover:bg-sky-700"
+                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-xs font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
                       >
                         {t("crm.common.open")}
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -1389,7 +1389,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600 text-lg font-black text-white shadow-sm">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white text-lg font-black text-black shadow-sm">
                     {getInitials(getLeadName(selectedLead, t))}
                   </div>
 
@@ -1426,7 +1426,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white">
                   <div className="p-5">
                     <div className="mb-5 flex flex-col items-center text-center">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-sky-600 text-2xl font-black text-white shadow-lg">
+                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-sky-600 text-2xl font-black text-black shadow-lg">
                         {getInitials(getLeadName(selectedLead, t))}
                       </div>
 
@@ -1708,7 +1708,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               !newActivityText.trim() ||
                               (newActivityType === "task" && !newTaskDueAt)
                             }
-                            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-11 items-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             <Send className="h-4 w-4" />
                             {newActivityType === "task"

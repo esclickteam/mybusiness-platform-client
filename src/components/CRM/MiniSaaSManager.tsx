@@ -1081,7 +1081,7 @@ export default function MiniSaaSManager() {
                   <button
                     type="button"
                     onClick={() => setShowInviteModal(true)}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-violet-700 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(124,58,237,0.25)] transition hover:-translate-y-0.5 hover:bg-violet-800"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-violet-700 px-5 text-sm font-black text-black shadow-[0_18px_50px_rgba(124,58,237,0.25)] transition hover:-translate-y-0.5 hover:bg-violet-800"
                   >
                     <UserPlus size={17} />
                     Add client
@@ -2458,9 +2458,9 @@ function DarkInfoRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold text-white/80">
+    <div className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3 text-sm font-bold text-black/80">
       <span>{label}</span>
-      <span className="font-black text-white">{value}</span>
+      <span className="font-black text-black">{value}</span>
     </div>
   );
 }

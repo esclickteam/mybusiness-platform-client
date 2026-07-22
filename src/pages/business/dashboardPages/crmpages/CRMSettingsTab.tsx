@@ -263,7 +263,7 @@ export default function CRMSettingsTab() {
                 type="button"
                 onClick={handleSave}
                 disabled={saving}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Save className="h-5 w-5" />
                 {saving
@@ -1244,7 +1244,7 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
 
         <button
           type="button"
-          className="mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
+          className="mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black text-black"
           style={{ backgroundColor: settings.themeColor }}
         >
           {t("crm.settings.branding.previewButton")}

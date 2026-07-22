@@ -261,7 +261,7 @@ export default function SchemaEditorCard({
               type="button"
               onClick={save}
               disabled={validation.blocking}
-              className="flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-black text-white transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-black text-black transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
               <Save className="h-4 w-4" /> שמירת Schema
             </button>

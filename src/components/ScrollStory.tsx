@@ -76,7 +76,7 @@ function FeatureText({
             key={item}
             className="flex items-center gap-3 rounded-2xl border border-white/80 bg-white/80 px-4 py-3 text-sm font-bold text-slate-700 shadow-sm backdrop-blur"
           >
-            <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-xs text-white">
+            <span className="grid h-6 w-6 place-items-center rounded-full bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-xs text-white">
               ✓
             </span>
             {item}
@@ -205,7 +205,7 @@ export default function ScrollStory() {
           })}
         </div>
 
-        <div className="mt-28 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
+        <div className="mt-28 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2rem] bg-white/10 px-8 py-10 text-center backdrop-blur-xl sm:px-12">
             <h3 className="text-3xl font-black tracking-[-0.03em] text-white sm:text-4xl">
               {t("scrollStory.footerTitle")}

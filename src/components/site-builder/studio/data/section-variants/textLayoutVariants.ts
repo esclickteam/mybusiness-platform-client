@@ -66,7 +66,7 @@ function paragraphBlock(title: string, text: string) {
 function textColumn(title: string, text: string, icon = "✦") {
   return `
 <article class="${cardClass}" data-editable-card="true">
-  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black">
     ${icon}
   </div>
 
@@ -127,11 +127,11 @@ function textHighlightBox(title: string, text: string) {
 function darkTextCard(title: string, text: string, icon = "✦") {
   return `
 <article class="rounded-[34px] border border-white/10 bg-white/8 p-7 text-white shadow-[0_24px_80px_rgba(0,0,0,0.12)]" data-editable-card="true">
-  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black text-white">
+  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-sm font-black text-black">
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-white" data-editable-text="true">
+  <h3 class="text-2xl font-black text-black" data-editable-text="true">
     ${title}
   </h3>
 
@@ -341,7 +341,7 @@ export const textLayoutVariants: SectionLayoutVariant[] = [
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
         <div class="relative mx-auto max-w-[900px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium Text
           </p>
 
@@ -704,7 +704,7 @@ export const textLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-center">
           <div class="max-w-[780px]">
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               מסר אחרון
             </p>
 
@@ -728,7 +728,7 @@ export const textLayoutVariants: SectionLayoutVariant[] = [
 
             <a
               href="https://wa.me/972500000000"
-              class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-white ring-1 ring-white/20"
+              class="inline-flex min-h-14 items-center justify-center rounded-2xl bg-white/15 px-8 text-sm font-black text-black ring-1 ring-white/20"
               data-editable-link="true"
             >
               וואטסאפ

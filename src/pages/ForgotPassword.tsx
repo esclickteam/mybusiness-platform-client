@@ -132,7 +132,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
               type="button"
               onClick={handleSendReset}
               disabled={loading}
-              className="group mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-8 py-4 text-base font-black text-white shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+              className="group mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-8 py-4 text-base font-black text-black shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {loading ? "Sending..." : "Send Reset Link"}
 

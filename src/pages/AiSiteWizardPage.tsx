@@ -620,7 +620,7 @@ export default function AiSiteWizardPage() {
                 type="button"
                 disabled={!canContinue()}
                 onClick={() => setStep((s) => s + 1)}
-                className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-40"
+                className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-2.5 text-sm font-semibold text-black hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-40"
               >
                 {t("aiSiteWizard.buttons.continue")}
               </button>
@@ -629,7 +629,7 @@ export default function AiSiteWizardPage() {
                 type="button"
                 disabled={submitting || !canContinue()}
                 onClick={handleGenerate}
-                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-2.5 text-sm font-semibold text-white hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-2.5 text-sm font-semibold text-black hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
               >
                 {submitting ? (
                   <BizuplyLoader size="xs" compact />

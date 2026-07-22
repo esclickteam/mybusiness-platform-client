@@ -297,7 +297,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                     {(insight.actionLabel || insight.cta?.label) && (
                       <button
                         type="button"
-                        className="mt-3 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2 text-xs font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+                        className="mt-3 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2 text-xs font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                         onClick={() => handleAction(rawInsight)}
                       >
                         {insight.actionLabel || insight.cta?.label}

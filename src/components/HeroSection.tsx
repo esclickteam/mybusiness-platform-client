@@ -99,7 +99,7 @@ export default function HeroSection() {
             <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white">
               {/* TOP FLOATING TOGGLE */}
               <div className="absolute left-1/2 top-5 z-40 flex -translate-x-1/2 items-center rounded-full border border-slate-200 bg-white/95 p-1 shadow-xl shadow-indigo-100 backdrop-blur">
-                <span className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-black text-white sm:px-5 sm:text-sm">
+                <span className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-black text-black sm:px-5 sm:text-sm">
                   {t("preview.themeLight")}
                 </span>
                 <span className="px-4 py-2 text-xs font-black text-slate-500 sm:px-5 sm:text-sm">
@@ -111,12 +111,12 @@ export default function HeroSection() {
                 {/* SIDEBAR */}
                 <aside className="hidden w-[225px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 md:block">
                   <div className="mb-8 flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-lg font-black text-white shadow-lg shadow-indigo-950/30">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-lg font-black text-black shadow-lg shadow-indigo-950/30">
                       B
                     </div>
 
                     <div>
-                      <p className="text-lg font-black text-white">BizUply</p>
+                      <p className="text-lg font-black text-black">BizUply</p>
                       <p className="text-xs font-semibold text-slate-400">
                         {t("preview.businessOs")}
                       </p>
@@ -143,7 +143,7 @@ export default function HeroSection() {
                     <p className="text-xs font-black uppercase tracking-wide text-slate-500">
                       AI Status
                     </p>
-                    <p className="mt-2 text-sm font-black text-white">
+                    <p className="mt-2 text-sm font-black text-black">
                       Smart assistant active
                     </p>
                   </div>
@@ -169,7 +169,7 @@ export default function HeroSection() {
 
                       <button
                         type="button"
-                        className="grid h-10 w-10 place-items-center rounded-full bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5"
+                        className="grid h-10 w-10 place-items-center rounded-full bg-indigo-600 text-lg font-black text-black shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5"
                         aria-label="Add"
                       >
                         +
@@ -290,7 +290,7 @@ export default function HeroSection() {
                             <button
                               key={item}
                               type="button"
-                              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-left text-sm font-black text-white shadow-lg shadow-indigo-100 transition hover:-translate-y-0.5"
+                              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-left text-sm font-black text-black shadow-lg shadow-indigo-100 transition hover:-translate-y-0.5"
                             >
                               {item}
                             </button>

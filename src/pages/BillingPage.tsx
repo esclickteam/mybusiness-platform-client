@@ -321,7 +321,7 @@ export default function SubscriptionPlanCard() {
 
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-black/80 backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
                   {t("billing.badge")}
                 </div>

@@ -254,7 +254,7 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     text: "text-slate-800",
     muted: "text-slate-600",
     accentText: "text-sky-700",
-    button: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:bg-sky-700",
+    button: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white",
     ghost: "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
     chip: "bg-sky-100 text-sky-800 ring-1 ring-sky-200",
     border: "border-slate-200",
@@ -455,13 +455,13 @@ function renderHeroLuxury(
 
       <div class="mx-auto flex min-h-[760px] w-full max-w-7xl items-center px-6 py-24">
         <div class="max-w-4xl">
-          <span class="mb-5 inline-flex rounded-full bg-white/15 px-5 py-2 text-sm font-black text-white ring-1 ring-white/20">${safe(seed.niche)}</span>
+          <span class="mb-5 inline-flex rounded-full bg-white/15 px-5 py-2 text-sm font-black text-black ring-1 ring-white/20">${safe(seed.niche)}</span>
           <h1 class="max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.09em] text-white md:text-8xl">${safe(seed.heroTitle)}</h1>
           <p class="mt-7 max-w-2xl text-xl font-bold leading-9 text-white/82">${safe(seed.heroSubtitle)}</p>
 
           <div class="mt-9 flex flex-wrap gap-3">
             <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full bg-white px-7 text-base font-black text-slate-800 transition hover:bg-slate-100">קביעת תור</a>
-            <a href="#gallery" class="inline-flex h-14 items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-base font-black text-white backdrop-blur transition hover:bg-white/15">צפייה בעבודות</a>
+            <a href="#gallery" class="inline-flex h-14 items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-base font-black text-black backdrop-blur transition hover:bg-white/15">צפייה בעבודות</a>
           </div>
         </div>
       </div>
@@ -554,7 +554,7 @@ function renderHeroFood(
         <p class="mt-7 max-w-2xl text-xl font-bold leading-9 text-orange-100/80">${safe(seed.heroSubtitle)}</p>
         <div class="mt-9 flex flex-wrap gap-3">
           <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full bg-orange-400 px-7 text-base font-black text-orange-950 transition hover:bg-orange-300">הזמנת מקום</a>
-          <a href="#services" class="inline-flex h-14 items-center justify-center rounded-full border border-white/15 bg-white/10 px-7 text-base font-black text-white transition hover:bg-white/15">לתפריט</a>
+          <a href="#services" class="inline-flex h-14 items-center justify-center rounded-full border border-white/15 bg-white/10 px-7 text-base font-black text-black transition hover:bg-white/15">לתפריט</a>
         </div>
       </div>
 
@@ -746,7 +746,7 @@ function renderServiceCards(block: ReadyWebsiteBlock, preset: DesignPreset) {
       <div class="grid gap-5 md:grid-cols-3">
         ${items.map((item, index) => `
           <article class="group rounded-[34px] ${preset.surface} p-7 shadow-xl shadow-slate-200/30 ring-1 ${preset.ring} transition hover:-translate-y-1 hover:shadow-2xl">
-            <div class="mb-6 grid h-16 w-16 place-items-center rounded-3xl ${index % 2 === 0 ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : "bg-sky-600"} text-2xl font-black text-white">${["✦", "◈", "●"][index % 3]}</div>
+            <div class="mb-6 grid h-16 w-16 place-items-center rounded-3xl ${index % 2 === 0 ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : "bg-sky-600"} text-2xl font-black text-black">${["✦", "◈", "●"][index % 3]}</div>
             <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.text}">${safe(item)}</h3>
             <p class="mt-3 text-base font-bold leading-7 ${preset.muted}">בלוק שירות מוכן לעריכה עם טקסט, מחיר וכפתור פעולה.</p>
             <a href="#booking" class="mt-6 inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-black transition ${preset.button}">בחר שירות</a>
@@ -980,7 +980,7 @@ function renderLead(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
     <section ${sectionAttrs(block, "lead")} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1fr_0.9fr]">
       <div class="rounded-[44px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-2xl shadow-slate-300/30">
-        <span class="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white">לידים</span>
+        <span class="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black text-black">לידים</span>
         <h2 class="text-5xl font-black leading-tight tracking-[-0.07em] text-white">${safe(block.title)}</h2>
         <p class="mt-4 text-lg font-bold leading-8 text-white/75">השאירו פרטים והעסק יחזור אליכם עם מענה מסודר ומהיר.</p>
       </div>

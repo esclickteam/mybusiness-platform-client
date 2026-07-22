@@ -231,7 +231,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
 
         <div class="relative grid items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium Hero
             </p>
 
@@ -388,7 +388,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <aside class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,0.18)]" data-editable-card="true">
-          <p class="text-sm font-black text-white/55" data-editable-text="true">הטבת החודש</p>
+          <p class="text-sm font-black text-black/55" data-editable-text="true">הטבת החודש</p>
           <h3 class="mt-4 text-5xl font-black tracking-[-0.06em] text-white" data-editable-text="true">VIP</h3>
           <p class="mt-5 text-base font-bold leading-8 text-white/70" data-editable-text="true">
             הטבה, מחיר, קופון או הודעה חשובה ללקוחות.

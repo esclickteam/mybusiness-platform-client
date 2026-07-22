@@ -58,7 +58,7 @@ function serviceCard(
 ) {
   return `
 <article class="${cardClass}" data-editable-card="true">
-  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black">
     ${icon}
   </div>
 
@@ -231,7 +231,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
       `
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="mx-auto max-w-[880px] text-center">
-          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+          <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
             Premium Services
           </p>
 
@@ -324,7 +324,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] p-8 text-white shadow-[0_44px_150px_rgba(139,92,246,0.28)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               השירות הפופולרי
             </p>
 
@@ -340,7 +340,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
               <a href="#booking" class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-[var(--biz-primary,#7C3AED)] shadow-xl" data-editable-link="true">
                 קביעת תור
               </a>
-              <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-white" data-editable-text="true">
+              <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-black" data-editable-text="true">
                 החל מ־₪350
               </span>
             </div>
@@ -632,7 +632,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Platform Features
             </p>
 
@@ -700,7 +700,7 @@ export const servicesLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">
+              <p class="text-sm font-black text-black/60" data-editable-text="true">
                 WhatsApp Preview
               </p>
 

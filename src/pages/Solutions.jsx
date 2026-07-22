@@ -146,7 +146,7 @@ function Solutions() {
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
                   >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-base font-black text-white shadow-lg shadow-indigo-100">
+                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
                       {index + 1}
                     </div>
 
@@ -183,7 +183,7 @@ function Solutions() {
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div
-                    className={`grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br ${item.gradient} text-2xl font-black text-white shadow-xl shadow-indigo-100`}
+                    className={`grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br ${item.gradient} text-2xl font-black text-black shadow-xl shadow-indigo-100`}
                   >
                     {item.icon}
                   </div>
@@ -221,7 +221,7 @@ function Solutions() {
         </section>
 
         {/* Summary without buttons */}
-        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
+        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
               {t("solutions.ctaTitleTop")}

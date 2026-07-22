@@ -124,7 +124,7 @@ function logoBlock({
   return `
     <a href="#home" class="flex min-w-0 shrink-0 items-center gap-3 ${center ? "justify-center text-center" : ""}" data-header-brand="true" ${editableAttrs("header-brand")}>
       <div
-        class="grid ${logoSize} shrink-0 place-items-center ${round} bg-gradient-to-br from-[var(--biz-primary,#7C3AED)] to-[var(--header-accent,#EC4899)] text-lg font-black text-white shadow-xl"
+        class="grid ${logoSize} shrink-0 place-items-center ${round} bg-gradient-to-br from-[var(--biz-primary,#7C3AED)] to-[var(--header-accent,#EC4899)] text-lg font-black text-black shadow-xl"
         data-header-logo-slot="true"
         ${editableAttrs("header-logo")}
       >
@@ -171,7 +171,7 @@ function mobileButton(light = false) {
       type="button"
       class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl ${
         light
-          ? "border border-white/20 bg-white/10 text-xl font-black text-white"
+          ? "border border-white/20 bg-white/10 text-xl font-black text-black"
           : "border border-slate-200 bg-white text-xl font-black text-slate-700"
       } lg:hidden"
       data-header-mobile-menu="true"
@@ -416,7 +416,7 @@ function headerLayout(index: number) {
         <div class="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-4">
           ${logoBlock({ compact: true, round: "rounded-xl" })}
           <div class="hidden min-w-0 flex-1 justify-center lg:flex">${pageLinks({ compact: true })}</div>
-          ${actions(`<a href="#contact" class="hidden whitespace-nowrap rounded-xl bg-[var(--biz-primary,#7C3AED)] px-4 py-3 text-xs font-black text-white sm:inline-flex" data-header-cta="true" ${editableAttrs("header-cta")}>תור</a>${mobileButton()}`)}
+          ${actions(`<a href="#contact" class="hidden whitespace-nowrap rounded-xl bg-[var(--biz-primary,#7C3AED)] px-4 py-3 text-xs font-black text-black sm:inline-flex" data-header-cta="true" ${editableAttrs("header-cta")}>תור</a>${mobileButton()}`)}
         </div>
       `,
     }),

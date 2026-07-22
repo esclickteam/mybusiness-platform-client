@@ -682,7 +682,7 @@ export function videoBox(src = "") {
           <div>
             <div class="mx-auto mb-5 grid h-20 w-20 place-items-center rounded-full bg-white/15 text-3xl shadow-2xl">▶</div>
             <p class="text-2xl font-black" data-editable-text="true">אזור וידאו</p>
-            <p class="mt-2 text-sm font-bold text-white/70" data-editable-text="true">אפשר להחליף לסרטון / תמונת קאבר</p>
+            <p class="mt-2 text-sm font-bold text-black/70" data-editable-text="true">אפשר להחליף לסרטון / תמונת קאבר</p>
           </div>
         </div>`
   }
@@ -706,7 +706,7 @@ export function shapedVideoBox(src = "", shape: VariantShape = "rect") {
           <div>
             <div class="mx-auto mb-5 grid h-20 w-20 place-items-center ${token(shape, "icon")} bg-white/15 text-3xl shadow-2xl">▶</div>
             <p class="text-2xl font-black" data-editable-text="true">אזור וידאו</p>
-            <p class="mt-2 text-sm font-bold text-white/70" data-editable-text="true">אפשר להחליף לסרטון / תמונת קאבר</p>
+            <p class="mt-2 text-sm font-bold text-black/70" data-editable-text="true">אפשר להחליף לסרטון / תמונת קאבר</p>
           </div>
         </div>`
   }
@@ -718,7 +718,7 @@ export function primaryButton(text = "קביעת תור", href = "#contact") {
   return `
 <a
   href="${href}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl shadow-[color-mix(in_srgb,var(--biz-primary,#7C3AED)_24%,transparent)] transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl shadow-[color-mix(in_srgb,var(--biz-primary,#7C3AED)_24%,transparent)] transition hover:-translate-y-0.5"
   data-editable-link="true"
 >
   ${text}
@@ -754,7 +754,7 @@ export function whatsappButton(text = "וואטסאפ", phone = "972500000000") 
   return `
 <a
   href="https://wa.me/${phone}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center gap-2 [border-radius:var(--biz-button-radius,18px)] bg-emerald-500 px-8 text-sm font-black text-white shadow-xl shadow-emerald-100 transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center gap-2 [border-radius:var(--biz-button-radius,18px)] bg-emerald-500 px-8 text-sm font-black text-black shadow-xl shadow-emerald-100 transition hover:-translate-y-0.5"
   data-editable-link="true"
   data-bot-action="whatsapp"
 >
@@ -772,7 +772,7 @@ export function shapedPrimaryButton(
   return `
 <a
   href="${href}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl transition hover:-translate-y-0.5"
   data-editable-link="true"
   data-bizuply-shape="${shape}"
   data-radius-editable="true"
@@ -826,7 +826,7 @@ export function shapedWhatsappButton(
   return `
 <a
   href="https://wa.me/${phone}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center gap-2 ${token(shape, "button")} bg-emerald-500 px-8 text-sm font-black text-white shadow-xl shadow-emerald-100 transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center gap-2 ${token(shape, "button")} bg-emerald-500 px-8 text-sm font-black text-black shadow-xl shadow-emerald-100 transition hover:-translate-y-0.5"
   data-editable-link="true"
   data-bot-action="whatsapp"
   data-bizuply-shape="${shape}"
@@ -906,7 +906,7 @@ export function shapedActionRow(
 export function featureCard(title: string, text: string, icon = "✦") {
   return `
 <article class="${cardClass}" data-editable-card="true">
-  <div class="mb-6 grid h-14 w-14 place-items-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black">
     ${icon}
   </div>
   <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
@@ -923,7 +923,7 @@ export function shapedFeatureCard(
 ) {
   return `
 <article class="${token(shape, "card")} border border-slate-200 bg-white p-7 shadow-[0_20px_65px_rgba(15,23,42,0.07)]" data-editable-card="true" data-bizuply-shape="${shape}">
-  <div class="mb-6 grid h-14 w-14 place-items-center ${token(shape, "icon")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
+  <div class="mb-6 grid h-14 w-14 place-items-center ${token(shape, "icon")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-black">
     ${icon}
   </div>
   <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
@@ -964,10 +964,10 @@ export function shapedSoftFeatureCard(
 export function darkFeatureCard(title: string, text: string, icon = "✦") {
   return `
 <article class="[border-radius:var(--biz-card-radius,30px)] border border-white/10 bg-white/8 p-6 text-white" data-editable-card="true">
-  <div class="mb-4 grid h-12 w-12 place-items-center [border-radius:var(--biz-icon-radius,18px)] bg-white/12 text-sm font-black text-white">
+  <div class="mb-4 grid h-12 w-12 place-items-center [border-radius:var(--biz-icon-radius,18px)] bg-white/12 text-sm font-black text-black">
     ${icon}
   </div>
-  <h3 class="text-xl font-black text-white" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-black" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-white/65" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -981,10 +981,10 @@ export function shapedDarkFeatureCard(
 ) {
   return `
 <article class="${token(shape, "card")} border border-white/10 bg-white/8 p-6 text-white" data-editable-card="true" data-bizuply-shape="${shape}">
-  <div class="mb-4 grid h-12 w-12 place-items-center ${token(shape, "icon")} bg-white/12 text-sm font-black text-white">
+  <div class="mb-4 grid h-12 w-12 place-items-center ${token(shape, "icon")} bg-white/12 text-sm font-black text-black">
     ${icon}
   </div>
-  <h3 class="text-xl font-black text-white" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-black" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-white/65" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -1188,7 +1188,7 @@ export function leadForm(buttonText = "שליחת פרטים") {
   ${leadFormFieldSlot(
     "submit",
     "כפתור שליחה",
-    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
+    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
   )}
 </form>
 `;
@@ -1223,7 +1223,7 @@ export function shapedLeadForm(
   ${leadFormFieldSlot(
     "submit",
     "כפתור שליחה",
-    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-white shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
+    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
   )}
 </form>
 `;
@@ -1238,7 +1238,7 @@ export function subscribeForm(buttonText = "הרשמה") {
     data-editable-input="true"
   />
   <button
-    class="${buttonSafeClass} inline-flex min-h-14 items-center justify-center [border-radius:var(--biz-icon-radius,18px)] bg-[var(--biz-primary,#7C3AED)] px-8 text-sm font-black text-white shadow-xl"
+    class="${buttonSafeClass} inline-flex min-h-14 items-center justify-center [border-radius:var(--biz-icon-radius,18px)] bg-[var(--biz-primary,#7C3AED)] px-8 text-sm font-black text-black shadow-xl"
     type="button"
   >
     ${buttonText}
@@ -1259,7 +1259,7 @@ export function shapedSubscribeForm(
     data-editable-input="true"
   />
   <button
-    class="${buttonSafeClass} inline-flex min-h-14 items-center justify-center ${token(shape, "button")} bg-[var(--biz-primary,#7C3AED)] px-8 text-sm font-black text-white shadow-xl"
+    class="${buttonSafeClass} inline-flex min-h-14 items-center justify-center ${token(shape, "button")} bg-[var(--biz-primary,#7C3AED)] px-8 text-sm font-black text-black shadow-xl"
     type="button"
   >
     ${buttonText}
@@ -1294,7 +1294,7 @@ export function shapedFaqItem(
 export function timelineItem(number: string, title: string, text: string) {
   return `
 <div class="flex gap-5" data-editable-card="true">
-  <div class="grid h-12 w-12 shrink-0 place-items-center [border-radius:var(--biz-icon-radius,18px)] bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">
+  <div class="grid h-12 w-12 shrink-0 place-items-center [border-radius:var(--biz-icon-radius,18px)] bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black">
     ${number}
   </div>
   <div>
@@ -1313,7 +1313,7 @@ export function shapedTimelineItem(
 ) {
   return `
 <div class="flex gap-5" data-editable-card="true" data-bizuply-shape="${shape}">
-  <div class="grid h-12 w-12 shrink-0 place-items-center ${token(shape, "icon")} bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-white">
+  <div class="grid h-12 w-12 shrink-0 place-items-center ${token(shape, "icon")} bg-[var(--biz-primary,#7C3AED)] text-sm font-black text-black">
     ${number}
   </div>
   <div>

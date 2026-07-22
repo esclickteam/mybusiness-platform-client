@@ -322,7 +322,7 @@ export default function ProfessionalMediaBrowser({
                       ) : null}
 
                       <div className="absolute inset-x-0 bottom-0 translate-y-full bg-gradient-to-t from-slate-950/95 via-slate-950/75 to-transparent p-4 pt-14 transition duration-200 group-hover:translate-y-0">
-                        <p className="line-clamp-1 text-xs font-black text-white">
+                        <p className="line-clamp-1 text-xs font-black text-black">
                           {item.title}
                         </p>
                         <p className="mt-1 line-clamp-1 text-[10px] font-bold text-slate-300">

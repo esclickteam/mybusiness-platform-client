@@ -42,7 +42,7 @@ export default function PreLoginBot() {
           aria-label="Ask BizUply"
           className="group relative flex items-center gap-2.5 rounded-full border border-slate-100 !bg-white px-4 py-2.5 text-slate-800 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
         >
-          <span className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm text-white shadow-md shadow-indigo-200">
+          <span className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-sm text-white shadow-md shadow-indigo-200">
             💬
             <span className="absolute -right-0.5 -top-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-400" />
           </span>
@@ -104,7 +104,7 @@ export default function PreLoginBot() {
             {/* Body */}
             <div className="bg-gradient-to-br from-white to-indigo-50/60 px-5 py-5">
               <div className="mb-4 flex items-start gap-3">
-                <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm font-black text-white shadow-lg shadow-indigo-100">
+                <div className="mt-1 grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-sm font-black text-black shadow-lg shadow-indigo-100">
                   B
                 </div>
 

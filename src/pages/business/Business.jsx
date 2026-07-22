@@ -129,7 +129,7 @@ function BusinessJoin() {
                   >
                     <div>
                       <p className="text-sm font-black">{title}</p>
-                      <p className="text-xs font-semibold text-white/60">
+                      <p className="text-xs font-semibold text-black/60">
                         {text}
                       </p>
                     </div>

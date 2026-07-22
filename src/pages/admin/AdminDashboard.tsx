@@ -243,11 +243,11 @@ function AdminDashboard() {
             <div className="relative z-10 flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
               <div className="max-w-4xl text-right">
                 <div className="mb-4 flex flex-wrap justify-start gap-2 text-right">
-                  <span className="rounded-full bg-white/14 px-4 py-2 text-xs font-black text-white ring-1 ring-white/20">
+                  <span className="rounded-full bg-white/14 px-4 py-2 text-xs font-black text-black ring-1 ring-white/20">
                     פאנל אדמין
                   </span>
 
-                  <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-white/75 ring-1 ring-white/15">
+                  <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-black/75 ring-1 ring-white/15">
                     {todayLabel}
                   </span>
 
@@ -294,7 +294,7 @@ function AdminDashboard() {
                 <button
                   type="button"
                   onClick={() => navigate("/admin/users")}
-                  className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-black text-white shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-white/15"
+                  className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-black text-black shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-white/15"
                 >
                   ניהול משתמשים
                 </button>

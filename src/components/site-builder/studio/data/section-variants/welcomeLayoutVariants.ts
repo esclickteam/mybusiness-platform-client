@@ -204,7 +204,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.26)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Premium Business
             </p>
             <h1 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-white md:text-7xl" data-editable-text="true">
@@ -296,7 +296,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] p-8 text-white shadow-[0_44px_150px_rgba(139,92,246,0.28)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/20 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               שירות מוביל
             </p>
             <h1 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] md:text-7xl" data-editable-text="true">
@@ -310,7 +310,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
               <a href="#booking" class="rounded-2xl bg-white px-8 py-4 text-sm font-black text-[var(--biz-primary,#7C3AED)] shadow-xl" data-editable-link="true">
                 קביעת תור
               </a>
-              <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-white" data-editable-text="true">
+              <span class="rounded-full bg-white/20 px-5 py-3 text-sm font-black text-black" data-editable-text="true">
                 החל מ־₪350
               </span>
             </div>
@@ -346,7 +346,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${darkCardClass}">
-          <p class="text-sm font-black text-white/60" data-editable-text="true">הטבת החודש</p>
+          <p class="text-sm font-black text-black/60" data-editable-text="true">הטבת החודש</p>
           <h3 class="mt-4 text-5xl font-black" data-editable-text="true">VIP</h3>
           <p class="mt-5 text-base font-bold leading-8 text-white/70" data-editable-text="true">
             10% הנחה ללקוחות חדשים או לחברי מועדון.
@@ -373,7 +373,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
       <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
-            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
+            <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-black" data-editable-text="true">
               Mini SaaS / מערכת
             </p>
             <h1 class="text-5xl font-black leading-[0.98] tracking-[-0.06em] text-white md:text-7xl" data-editable-text="true">
@@ -613,7 +613,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
 
           <div class="${cardClass}">
             <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <p class="text-sm font-black text-white/60" data-editable-text="true">WhatsApp Preview</p>
+              <p class="text-sm font-black text-black/60" data-editable-text="true">WhatsApp Preview</p>
               <div class="mt-5 grid gap-4">
                 <div class="rounded-[24px] bg-white/10 p-4 text-sm font-bold leading-7 text-white/75" data-editable-text="true">
                   שלום, אשמח לקבל פרטים על השירות.

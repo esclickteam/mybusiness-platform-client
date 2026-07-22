@@ -1155,7 +1155,7 @@ export default function CRMAppointmentsTab() {
               <button
                 type="button"
                 onClick={openCreateModal}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
               >
                 <Plus className="h-4 w-4" />
                 {t("crm.appointments.createAppointment")}
@@ -1678,7 +1678,7 @@ function AppointmentCard({
         <button
           type="button"
           onClick={onEdit}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-sky-700"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
         >
           <Edit3 className="h-3.5 w-3.5" />
           {t("crm.common.edit")}
@@ -2179,7 +2179,7 @@ function AppointmentModal({
                 !appointment.date ||
                 !appointment.time
               }
-              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
                 <BizuplyLoader size="xs" compact />

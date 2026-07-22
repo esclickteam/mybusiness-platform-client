@@ -1228,7 +1228,7 @@ export default function FacebookStyleNotifications() {
               initial={{ scale: 0.4, opacity: 0 }}
               animate={{ scale: [1.6, 1], opacity: 1 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
-              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-white shadow-sm ring-2 ring-white"
+              className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-black shadow-sm ring-2 ring-white"
             >
               {unreadCount > 99 ? "99+" : unreadCount}
             </motion.span>

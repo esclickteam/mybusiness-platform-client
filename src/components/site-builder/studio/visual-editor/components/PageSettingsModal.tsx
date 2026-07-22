@@ -1209,7 +1209,7 @@ export default function PageSettingsModal({
                       onClick={() =>
                         copyToClipboard(`${siteBaseUrl}/sitemap.xml`)
                       }
-                      className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-emerald-700 px-3 text-xs font-black text-white transition hover:bg-emerald-800"
+                      className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-emerald-700 px-3 text-xs font-black text-black transition hover:bg-emerald-800"
                     >
                       {copiedHint ? (
                         <>
@@ -1278,7 +1278,7 @@ export default function PageSettingsModal({
 
                 <ol className="space-y-3">
                   <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
                       1
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
@@ -1301,7 +1301,7 @@ export default function PageSettingsModal({
                   </li>
 
                   <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
                       2
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
@@ -1333,7 +1333,7 @@ export default function PageSettingsModal({
                         <button
                           type="button"
                           onClick={() => copyToClipboard(siteBaseUrl)}
-                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-3 text-xs font-black text-white transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
+                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-3 text-xs font-black text-black transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
                         >
                           {copiedHint ? (
                             <>
@@ -1350,7 +1350,7 @@ export default function PageSettingsModal({
                   </li>
 
                   <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
                       3
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
@@ -1409,7 +1409,7 @@ export default function PageSettingsModal({
                   </li>
 
                   <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-white">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
                       4
                     </span>
                     <div className="min-w-0 flex-1 space-y-2 pt-0.5">
@@ -1743,7 +1743,7 @@ export default function PageSettingsModal({
             <button
               type="button"
               onClick={handleSave}
-              className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-white shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600"
+              className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-black shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600"
             >
               שמירה
             </button>
