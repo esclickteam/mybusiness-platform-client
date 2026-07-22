@@ -1,211 +1,241 @@
 import { VISUAL_LIBRARY_IMAGES as IMG } from "./libraryAssets";
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
 import {
-  buildLayoutNodes,
+  buildCategoryPageNodes,
+  getRecipeMeta,
   makePageSection,
-  type PageLayoutKind,
 } from "./pageShowcaseHelpers";
 
-const page01 = makePageSection({
-  id: "section-events-page-01",
-  category: "events",
-  title: "אירועים – כחול עסקי",
-  previewLayout: "section-events-page-01",
-  backgroundColor: "#ffffff",
-  minHeight: "1600px",
-  thumbnail: IMG.event,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("split" as PageLayoutKind, {
-    eyebrow: 'EVENTS',
-    title: 'אירועים\nששווה להגיע אליהם',
-    subtitle: 'הדגשת אירוע קרוב בכחול.',
-    cta: 'לרכישת כרטיס',
-    secondaryCta: 'לכל האירועים',
-    image: IMG.event,
-    items: [{ title: 'הופעה', copy: 'במה חיה.' }, { title: 'סדנה', copy: 'למידה מעשית.' }, { title: 'מפגש', copy: 'נטוורקינג.' }, { title: 'השקה', copy: 'מוצר חדש.' }, { title: 'כנס', copy: 'יום מלא.' }, { title: 'ערב', copy: 'אווירה.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page01 = (() => {
+  const meta = getRecipeMeta("events", 0);
+  return makePageSection({
+    id: "section-events-page-01",
+    category: "events",
+    title: "אירועים – כרטיס",
+    previewLayout: "section-events-page-01",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.event,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 0, {
+      eyebrow: 'EVENTS',
+      title: 'אירועים\nששווה להגיע אליהם',
+      subtitle: 'כרטיס אירוע דרמטי עם stub.',
+      cta: 'לרכישת כרטיס',
+      secondaryCta: 'לכל האירועים',
+      image: IMG.event,
+      items: [{ title: 'הופעה', copy: 'במה חיה.', meta: '20:00' }, { title: 'סדנה', copy: 'למידה מעשית.', meta: '18:30' }, { title: 'מפגש', copy: 'נטוורקינג.', meta: '19:00' }, { title: 'השקה', copy: 'מוצר חדש.', meta: '17:00' }, { title: 'כנס', copy: 'יום מלא.', meta: '09:00' }, { title: 'ערב', copy: 'אווירה.', meta: '21:00' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page02 = makePageSection({
-  id: "section-events-page-02",
-  category: "events",
-  title: "אירועים – Editorial חם",
-  previewLayout: "section-events-page-02",
-  backgroundColor: "#f7f1ea",
-  minHeight: "1500px",
-  thumbnail: IMG.hospitality,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("center" as PageLayoutKind, {
-    eyebrow: 'UPCOMING',
-    title: 'מה קורה\nהחודש',
-    subtitle: 'לוח אירועים רגוע.',
-    cta: 'שמרו מקום',
-    image: IMG.hospitality,
-    items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page02 = (() => {
+  const meta = getRecipeMeta("events", 1);
+  return makePageSection({
+    id: "section-events-page-02",
+    category: "events",
+    title: "אירועים – אג׳נדה",
+    previewLayout: "section-events-page-02",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.hospitality,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 1, {
+      eyebrow: 'SCHEDULE',
+      title: 'לו״ז מלא\nליום האירוע',
+      subtitle: 'שורות אג׳נדה ברורות.',
+      cta: 'הורידו לו״ז',
+      image: IMG.hospitality,
+      items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page03 = makePageSection({
-  id: "section-events-page-03",
-  category: "events",
-  title: "אירועים – מגזין שחור",
-  previewLayout: "section-events-page-03",
-  backgroundColor: "#ffffff",
-  minHeight: "1550px",
-  thumbnail: IMG.event,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("magazine" as PageLayoutKind, {
-    eyebrow: 'EXPERIENCE',
-    title: 'חוויות\nשנשארות',
-    subtitle: 'אירוע בסגנון מגזין.',
-    cta: 'גלו חוויה',
-    image: IMG.event,
-    items: [{ title: 'הופעה', copy: 'במה חיה.' }, { title: 'סדנה', copy: 'למידה מעשית.' }, { title: 'מפגש', copy: 'נטוורקינג.' }, { title: 'השקה', copy: 'מוצר חדש.' }, { title: 'כנס', copy: 'יום מלא.' }, { title: 'ערב', copy: 'אווירה.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page03 = (() => {
+  const meta = getRecipeMeta("events", 2);
+  return makePageSection({
+    id: "section-events-page-03",
+    category: "events",
+    title: "אירועים – מקום",
+    previewLayout: "section-events-page-03",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.event,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 2, {
+      eyebrow: 'VENUE',
+      title: 'המקום\nשעושה את האווירה',
+      subtitle: 'קייס מקום + מדדים.',
+      cta: 'גלו את המקום',
+      image: IMG.event,
+      items: [{ title: 'הופעה', copy: 'במה חיה.', meta: '20:00' }, { title: 'סדנה', copy: 'למידה מעשית.', meta: '18:30' }, { title: 'מפגש', copy: 'נטוורקינג.', meta: '19:00' }, { title: 'השקה', copy: 'מוצר חדש.', meta: '17:00' }, { title: 'כנס', copy: 'יום מלא.', meta: '09:00' }, { title: 'ערב', copy: 'אווירה.', meta: '21:00' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page04 = makePageSection({
-  id: "section-events-page-04",
-  category: "events",
-  title: "אירועים – כרטיסים צבעוניים",
-  previewLayout: "section-events-page-04",
-  backgroundColor: "#eef6ff",
-  minHeight: "1500px",
-  thumbnail: IMG.travel,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("cards" as PageLayoutKind, {
-    eyebrow: 'CALENDAR',
-    title: 'שישה אירועים\nבצבעים שונים',
-    subtitle: 'כרטיסי אירוע חיים.',
-    cta: 'ללוח השנה',
-    image: IMG.travel,
-    items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page04 = (() => {
+  const meta = getRecipeMeta("events", 3);
+  return makePageSection({
+    id: "section-events-page-04",
+    category: "events",
+    title: "אירועים – לוח",
+    previewLayout: "section-events-page-04",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.travel,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 3, {
+      eyebrow: 'CALENDAR',
+      title: 'שישה אירועים\nבצבעים שונים',
+      subtitle: 'כרטיסי אירוע חיים.',
+      cta: 'ללוח השנה',
+      image: IMG.travel,
+      items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page05 = makePageSection({
-  id: "section-events-page-05",
-  category: "events",
-  title: "אירועים – ציר סגול",
-  previewLayout: "section-events-page-05",
-  backgroundColor: "#f6f4ff",
-  minHeight: "1580px",
-  thumbnail: IMG.event,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("timeline" as PageLayoutKind, {
-    eyebrow: 'SCHEDULE',
-    title: 'לו״ז מלא\nליום האירוע',
-    subtitle: 'ציר זמן למשתתפים.',
-    cta: 'הורידו לו״ז',
-    image: IMG.event,
-    items: [{ title: 'הופעה', copy: 'במה חיה.' }, { title: 'סדנה', copy: 'למידה מעשית.' }, { title: 'מפגש', copy: 'נטוורקינג.' }, { title: 'השקה', copy: 'מוצר חדש.' }, { title: 'כנס', copy: 'יום מלא.' }, { title: 'ערב', copy: 'אווירה.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page05 = (() => {
+  const meta = getRecipeMeta("events", 4);
+  return makePageSection({
+    id: "section-events-page-05",
+    category: "events",
+    title: "אירועים – דוברים",
+    previewLayout: "section-events-page-05",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.event,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 4, {
+      eyebrow: 'LINEUP',
+      title: 'הדוברים\nשלא כדאי לפספס',
+      subtitle: 'גריד דיוקנאות לליינאפ.',
+      cta: 'לפרטי הדוברים',
+      image: IMG.event,
+      items: [{ title: 'הופעה', copy: 'במה חיה.', meta: '20:00' }, { title: 'סדנה', copy: 'למידה מעשית.', meta: '18:30' }, { title: 'מפגש', copy: 'נטוורקינג.', meta: '19:00' }, { title: 'השקה', copy: 'מוצר חדש.', meta: '17:00' }, { title: 'כנס', copy: 'יום מלא.', meta: '09:00' }, { title: 'ערב', copy: 'אווירה.', meta: '21:00' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page06 = makePageSection({
-  id: "section-events-page-06",
-  category: "events",
-  title: "אירועים – לוח מספרים",
-  previewLayout: "section-events-page-06",
-  backgroundColor: "#111827",
-  minHeight: "1480px",
-  thumbnail: IMG.team,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("stats" as PageLayoutKind, {
-    eyebrow: 'COMMUNITY',
-    title: 'קהילה\nשגדלה בכל מפגש',
-    subtitle: 'מספרי קהל על רקע כהה.',
-    cta: 'הצטרפו',
-    image: IMG.team,
-    items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page06 = (() => {
+  const meta = getRecipeMeta("events", 5);
+  return makePageSection({
+    id: "section-events-page-06",
+    category: "events",
+    title: "אירועים – לילה",
+    previewLayout: "section-events-page-06",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.team,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 5, {
+      eyebrow: 'NIGHT',
+      title: 'אירוע לילה\nבלתי נשכח',
+      subtitle: 'אווירת לילה סינמטית.',
+      cta: 'הזמינו כרטיס',
+      image: IMG.team,
+      items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page07 = makePageSection({
-  id: "section-events-page-07",
-  category: "events",
-  title: "אירועים – קולנוע זהב",
-  previewLayout: "section-events-page-07",
-  backgroundColor: "#09090b",
-  minHeight: "1500px",
-  thumbnail: IMG.abstract,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("dark" as PageLayoutKind, {
-    eyebrow: 'NIGHT',
-    title: 'אירוע לילה\nבלתי נשכח',
-    subtitle: 'אווירת לילה שחורה-זהב.',
-    cta: 'הזמינו כרטיס',
-    image: IMG.abstract,
-    items: [{ title: 'הופעה', copy: 'במה חיה.' }, { title: 'סדנה', copy: 'למידה מעשית.' }, { title: 'מפגש', copy: 'נטוורקינג.' }, { title: 'השקה', copy: 'מוצר חדש.' }, { title: 'כנס', copy: 'יום מלא.' }, { title: 'ערב', copy: 'אווירה.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page07 = (() => {
+  const meta = getRecipeMeta("events", 6);
+  return makePageSection({
+    id: "section-events-page-07",
+    category: "events",
+    title: "אירועים – סדנה",
+    previewLayout: "section-events-page-07",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.abstract,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 6, {
+      eyebrow: 'GATHER',
+      title: 'מפגשים\nבאווירה נעימה',
+      subtitle: 'אירועים קהילתיים רכים.',
+      cta: 'אני מגיע/ה',
+      image: IMG.abstract,
+      items: [{ title: 'הופעה', copy: 'במה חיה.', meta: '20:00' }, { title: 'סדנה', copy: 'למידה מעשית.', meta: '18:30' }, { title: 'מפגש', copy: 'נטוורקינג.', meta: '19:00' }, { title: 'השקה', copy: 'מוצר חדש.', meta: '17:00' }, { title: 'כנס', copy: 'יום מלא.', meta: '09:00' }, { title: 'ערב', copy: 'אווירה.', meta: '21:00' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page08 = makePageSection({
-  id: "section-events-page-08",
-  category: "events",
-  title: "אירועים – לייפסטייל ורוד",
-  previewLayout: "section-events-page-08",
-  backgroundColor: "#fde8e4",
-  minHeight: "1520px",
-  thumbnail: IMG.hospitality,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("lifestyle" as PageLayoutKind, {
-    eyebrow: 'GATHER',
-    title: 'מפגשים\nבאווירה נעימה',
-    subtitle: 'אירועים קהילתיים רכים.',
-    cta: 'אני מגיע/ה',
-    image: IMG.hospitality,
-    items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page08 = (() => {
+  const meta = getRecipeMeta("events", 7);
+  return makePageSection({
+    id: "section-events-page-08",
+    category: "events",
+    title: "אירועים – ספירה",
+    previewLayout: "section-events-page-08",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.hospitality,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 7, {
+      eyebrow: 'COMMUNITY',
+      title: 'קהילה\nשגדלה בכל מפגש',
+      subtitle: 'מספרי קהל על רקע כהה.',
+      cta: 'הצטרפו',
+      image: IMG.hospitality,
+      items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page09 = makePageSection({
-  id: "section-events-page-09",
-  category: "events",
-  title: "אירועים – רשימה ירוקה",
-  previewLayout: "section-events-page-09",
-  backgroundColor: "#f0faf4",
-  minHeight: "1450px",
-  thumbnail: IMG.event,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("listMedia" as PageLayoutKind, {
-    eyebrow: 'LINEUP',
-    title: 'הליינאפ\nהמלא',
-    subtitle: 'רשימת מופעים לצד ויזואל.',
-    cta: 'לפרטי האירוע',
-    image: IMG.event,
-    items: [{ title: 'הופעה', copy: 'במה חיה.' }, { title: 'סדנה', copy: 'למידה מעשית.' }, { title: 'מפגש', copy: 'נטוורקינג.' }, { title: 'השקה', copy: 'מוצר חדש.' }, { title: 'כנס', copy: 'יום מלא.' }, { title: 'ערב', copy: 'אווירה.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page09 = (() => {
+  const meta = getRecipeMeta("events", 8);
+  return makePageSection({
+    id: "section-events-page-09",
+    category: "events",
+    title: "אירועים – לו״ז",
+    previewLayout: "section-events-page-09",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.event,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 8, {
+      eyebrow: 'FLOW',
+      title: 'מהרעיון\nעד סוף הערב',
+      subtitle: 'ציר זמן למשתתפים.',
+      cta: 'ללו״ז המלא',
+      image: IMG.event,
+      items: [{ title: 'הופעה', copy: 'במה חיה.', meta: '20:00' }, { title: 'סדנה', copy: 'למידה מעשית.', meta: '18:30' }, { title: 'מפגש', copy: 'נטוורקינג.', meta: '19:00' }, { title: 'השקה', copy: 'מוצר חדש.', meta: '17:00' }, { title: 'כנס', copy: 'יום מלא.', meta: '09:00' }, { title: 'ערב', copy: 'אווירה.', meta: '21:00' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page10 = makePageSection({
-  id: "section-events-page-10",
-  category: "events",
-  title: "אירועים – טופס כתום",
-  previewLayout: "section-events-page-10",
-  backgroundColor: "#fff7ed",
-  minHeight: "1450px",
-  thumbnail: IMG.hospitality,
-  keywords: ["אירועים","events","wix"],
-  nodes: buildLayoutNodes("ctaForm" as PageLayoutKind, {
-    eyebrow: 'RSVP',
-    title: 'שמרו מקום\nלפני שייגמר',
-    subtitle: 'טופס RSVP כתום.',
-    cta: 'RSVP',
-    image: IMG.hospitality,
-    items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page10 = (() => {
+  const meta = getRecipeMeta("events", 9);
+  return makePageSection({
+    id: "section-events-page-10",
+    category: "events",
+    title: "אירועים – RSVP",
+    previewLayout: "section-events-page-10",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.hospitality,
+    keywords: ["אירועים","events","wix"],
+    nodes: buildCategoryPageNodes("events", 9, {
+      eyebrow: 'RSVP',
+      title: 'שמרו מקום\nלפני שייגמר',
+      subtitle: 'טופס RSVP דומיננטי.',
+      cta: 'RSVP',
+      image: IMG.hospitality,
+      items: [{ title: 'שמירה', copy: 'RSVP.', meta: '01' }, { title: 'תזכורת', copy: 'הודעה.', meta: '02' }, { title: 'הגעה', copy: 'צ׳ק אין.', meta: '03' }, { title: 'חוויה', copy: 'האירוע.', meta: '04' }, { title: 'אחרי', copy: 'סיכום.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
 export const EVENTS_PAGE_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   page01,

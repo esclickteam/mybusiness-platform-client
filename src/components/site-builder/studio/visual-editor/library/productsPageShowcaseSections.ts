@@ -1,211 +1,241 @@
 import { VISUAL_LIBRARY_IMAGES as IMG } from "./libraryAssets";
 import type { VisualLibrarySectionTemplate } from "./visualLibraryTypes";
 import {
-  buildLayoutNodes,
+  buildCategoryPageNodes,
+  getRecipeMeta,
   makePageSection,
-  type PageLayoutKind,
 } from "./pageShowcaseHelpers";
 
-const page01 = makePageSection({
-  id: "section-products-page-01",
-  category: "commerce",
-  title: "מוצרים – כחול עסקי",
-  previewLayout: "section-products-page-01",
-  backgroundColor: "#ffffff",
-  minHeight: "1600px",
-  thumbnail: IMG.ecommerce,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("split" as PageLayoutKind, {
-    eyebrow: 'SHOP',
-    title: 'מוצרים\nשנבחרו בקפידה',
-    subtitle: 'חנות כחולה עם הדגשת מוצר.',
-    cta: 'לקנייה',
-    secondaryCta: 'לכל המוצרים',
-    image: IMG.ecommerce,
-    items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page01 = (() => {
+  const meta = getRecipeMeta("commerce", 0);
+  return makePageSection({
+    id: "section-products-page-01",
+    category: "commerce",
+    title: "מוצרים – קטלוג",
+    previewLayout: "section-products-page-01",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.ecommerce,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 0, {
+      eyebrow: 'SHOP',
+      title: 'מוצרים\nשנבחרו בקפידה',
+      subtitle: 'מדף קטלוג עם מחירים ברורים.',
+      cta: 'לקנייה',
+      secondaryCta: 'לכל המוצרים',
+      image: IMG.ecommerce,
+      items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page02 = makePageSection({
-  id: "section-products-page-02",
-  category: "commerce",
-  title: "מוצרים – Editorial חם",
-  previewLayout: "section-products-page-02",
-  backgroundColor: "#f7f1ea",
-  minHeight: "1500px",
-  thumbnail: IMG.product,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("center" as PageLayoutKind, {
-    eyebrow: 'COLLECTION',
-    title: 'הקולקציה\nהחדשה כאן',
-    subtitle: 'עמוד מוצרים רגוע ומדויק.',
-    cta: 'גלו קולקציה',
-    image: IMG.product,
-    items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page02 = (() => {
+  const meta = getRecipeMeta("commerce", 1);
+  return makePageSection({
+    id: "section-products-page-02",
+    category: "commerce",
+    title: "מוצרים – מוצר מוביל",
+    previewLayout: "section-products-page-02",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.product,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 1, {
+      eyebrow: 'FEATURED',
+      title: 'המוצר\nשכולם מדברים עליו',
+      subtitle: 'כיסוי גדול + מדדי מכירה.',
+      cta: 'הוסיפו לסל',
+      image: IMG.product,
+      items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page03 = makePageSection({
-  id: "section-products-page-03",
-  category: "commerce",
-  title: "מוצרים – מגזין שחור",
-  previewLayout: "section-products-page-03",
-  backgroundColor: "#ffffff",
-  minHeight: "1550px",
-  thumbnail: IMG.fashion,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("magazine" as PageLayoutKind, {
-    eyebrow: 'CURATED',
-    title: 'בחירות\nשל המותג',
-    subtitle: 'תצוגת מוצרים editorial.',
-    cta: 'הוסיפו לסל',
-    image: IMG.fashion,
-    items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page03 = (() => {
+  const meta = getRecipeMeta("commerce", 2);
+  return makePageSection({
+    id: "section-products-page-03",
+    category: "commerce",
+    title: "מוצרים – קולקציה",
+    previewLayout: "section-products-page-03",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.fashion,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 2, {
+      eyebrow: 'COLLECTION',
+      title: 'הקולקציה\nהחדשה כאן',
+      subtitle: 'מייסון לקולקציית עונה.',
+      cta: 'גלו קולקציה',
+      image: IMG.fashion,
+      items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page04 = makePageSection({
-  id: "section-products-page-04",
-  category: "commerce",
-  title: "מוצרים – כרטיסים צבעוניים",
-  previewLayout: "section-products-page-04",
-  backgroundColor: "#eef6ff",
-  minHeight: "1500px",
-  thumbnail: IMG.skincare,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("cards" as PageLayoutKind, {
-    eyebrow: 'CATALOG',
-    title: 'שישה מוצרים\nבצבעים שונים',
-    subtitle: 'רשת מוצרים חיה.',
-    cta: 'פתחו חנות',
-    image: IMG.skincare,
-    items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page04 = (() => {
+  const meta = getRecipeMeta("commerce", 3);
+  return makePageSection({
+    id: "section-products-page-04",
+    category: "commerce",
+    title: "מוצרים – מפרט",
+    previewLayout: "section-products-page-04",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.skincare,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 3, {
+      eyebrow: 'SPECS',
+      title: 'השוו מוצרים\nלפי תכונות',
+      subtitle: 'מטריצת מפרט לקנייה חכמה.',
+      cta: 'השוו דגמים',
+      image: IMG.skincare,
+      items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page05 = makePageSection({
-  id: "section-products-page-05",
-  category: "commerce",
-  title: "מוצרים – ציר סגול",
-  previewLayout: "section-products-page-05",
-  backgroundColor: "#f6f4ff",
-  minHeight: "1580px",
-  thumbnail: IMG.ecommerce,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("timeline" as PageLayoutKind, {
-    eyebrow: 'FROM IDEA',
-    title: 'מהרעיון\nלמוצר מדף',
-    subtitle: 'סיפור מוצר כתהליך.',
-    cta: 'הכירו את הקו',
-    image: IMG.ecommerce,
-    items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page05 = (() => {
+  const meta = getRecipeMeta("commerce", 4);
+  return makePageSection({
+    id: "section-products-page-05",
+    category: "commerce",
+    title: "מוצרים – מרצ׳ כהה",
+    previewLayout: "section-products-page-05",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.ecommerce,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 4, {
+      eyebrow: 'LUXE',
+      title: 'קולקציית\nפרימיום',
+      subtitle: 'חנות כהה למוצרי יוקרה.',
+      cta: 'גלו פרימיום',
+      image: IMG.ecommerce,
+      items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page06 = makePageSection({
-  id: "section-products-page-06",
-  category: "commerce",
-  title: "מוצרים – לוח מספרים",
-  previewLayout: "section-products-page-06",
-  backgroundColor: "#111827",
-  minHeight: "1480px",
-  thumbnail: IMG.product,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("stats" as PageLayoutKind, {
-    eyebrow: 'BEST SELLERS',
-    title: 'הנמכרים\nביותר',
-    subtitle: 'מספרי מכירות על רקע כהה.',
-    cta: 'קנו עכשיו',
-    image: IMG.product,
-    items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page06 = (() => {
+  const meta = getRecipeMeta("commerce", 5);
+  return makePageSection({
+    id: "section-products-page-06",
+    category: "commerce",
+    title: "מוצרים – בוטיק",
+    previewLayout: "section-products-page-06",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.product,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 5, {
+      eyebrow: 'DAILY',
+      title: 'מוצרים\nלשגרה יפה',
+      subtitle: 'אווירה רכה למוצרי יום-יום.',
+      cta: 'הוסיפו לסל',
+      image: IMG.product,
+      items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page07 = makePageSection({
-  id: "section-products-page-07",
-  category: "commerce",
-  title: "מוצרים – קולנוע זהב",
-  previewLayout: "section-products-page-07",
-  backgroundColor: "#09090b",
-  minHeight: "1500px",
-  thumbnail: IMG.fashion,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("dark" as PageLayoutKind, {
-    eyebrow: 'LUXE',
-    title: 'קולקציית\nפרימיום',
-    subtitle: 'קנייה יוקרתית.',
-    cta: 'גלו פרימיום',
-    image: IMG.fashion,
-    items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page07 = (() => {
+  const meta = getRecipeMeta("commerce", 6);
+  return makePageSection({
+    id: "section-products-page-07",
+    category: "commerce",
+    title: "מוצרים – השוואה",
+    previewLayout: "section-products-page-07",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.fashion,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 6, {
+      eyebrow: 'TIERS',
+      title: 'בחרו את\nהחבילה הנכונה',
+      subtitle: 'שלושה מסלולי מוצר.',
+      cta: 'בחרו עכשיו',
+      image: IMG.fashion,
+      items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page08 = makePageSection({
-  id: "section-products-page-08",
-  category: "commerce",
-  title: "מוצרים – לייפסטייל ורוד",
-  previewLayout: "section-products-page-08",
-  backgroundColor: "#fde8e4",
-  minHeight: "1520px",
-  thumbnail: IMG.skincare,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("lifestyle" as PageLayoutKind, {
-    eyebrow: 'DAILY',
-    title: 'מוצרים\nלשגרה יפה',
-    subtitle: 'אווירה רכה למוצרי יום-יום.',
-    cta: 'הוסיפו לסל',
-    image: IMG.skincare,
-    items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page08 = (() => {
+  const meta = getRecipeMeta("commerce", 7);
+  return makePageSection({
+    id: "section-products-page-08",
+    category: "commerce",
+    title: "מוצרים – בסטסלרים",
+    previewLayout: "section-products-page-08",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.skincare,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 7, {
+      eyebrow: 'BEST SELLERS',
+      title: 'הנמכרים\nביותר',
+      subtitle: 'קרוסלת מוצרים מובילים.',
+      cta: 'קנו עכשיו',
+      image: IMG.skincare,
+      items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page09 = makePageSection({
-  id: "section-products-page-09",
-  category: "commerce",
-  title: "מוצרים – רשימה ירוקה",
-  previewLayout: "section-products-page-09",
-  backgroundColor: "#f0faf4",
-  minHeight: "1450px",
-  thumbnail: IMG.ecommerce,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("listMedia" as PageLayoutKind, {
-    eyebrow: 'PICKS',
-    title: 'המלצות\nהשבוע',
-    subtitle: 'רשימת מוצרים לצד מדיה.',
-    cta: 'לרכישה',
-    image: IMG.ecommerce,
-    items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page09 = (() => {
+  const meta = getRecipeMeta("commerce", 8);
+  return makePageSection({
+    id: "section-products-page-09",
+    category: "commerce",
+    title: "מוצרים – לוקבּוק",
+    previewLayout: "section-products-page-09",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.ecommerce,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 8, {
+      eyebrow: 'LOOKBOOK',
+      title: 'לוקבּוק\nויזואלי',
+      subtitle: 'פילמסטריפ לקולקציה.',
+      cta: 'עלעל בלוקבּוק',
+      image: IMG.ecommerce,
+      items: [{ title: 'חדש', copy: 'מהמדף עכשיו.' }, { title: 'נמכר', copy: 'הכי מבוקש.' }, { title: 'מוגבל', copy: 'מלאי קטן.' }, { title: 'סט', copy: 'חיסכון בחבילה.' }, { title: 'מתנה', copy: 'אריזה מוכנה.' }, { title: 'דיגיטלי', copy: 'הורדה מיידית.' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
-const page10 = makePageSection({
-  id: "section-products-page-10",
-  category: "commerce",
-  title: "מוצרים – טופס כתום",
-  previewLayout: "section-products-page-10",
-  backgroundColor: "#fff7ed",
-  minHeight: "1450px",
-  thumbnail: IMG.product,
-  keywords: ["מוצרים","products","wix"],
-  nodes: buildLayoutNodes("ctaForm" as PageLayoutKind, {
-    eyebrow: 'ORDER',
-    title: 'הזמינו\nבכמה קליקים',
-    subtitle: 'טופס הזמנה כתום ומהיר.',
-    cta: 'שלחו הזמנה',
-    image: IMG.product,
-    items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
-    stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
-  }),
-});
+const page10 = (() => {
+  const meta = getRecipeMeta("commerce", 9);
+  return makePageSection({
+    id: "section-products-page-10",
+    category: "commerce",
+    title: "מוצרים – הזמנה",
+    previewLayout: "section-products-page-10",
+    backgroundColor: meta.backgroundColor,
+    minHeight: meta.minHeight,
+    thumbnail: IMG.product,
+    keywords: ["מוצרים","products","wix"],
+    nodes: buildCategoryPageNodes("commerce", 9, {
+      eyebrow: 'ORDER',
+      title: 'הזמינו\nבכמה קליקים',
+      subtitle: 'טופס הזמנה מהיר.',
+      cta: 'שלחו הזמנה',
+      image: IMG.product,
+      items: [{ title: 'בחירה', copy: 'מוצר אחד.', meta: '01' }, { title: 'פרטים', copy: 'מידות וצבע.', meta: '02' }, { title: 'סל', copy: 'מוסיפים.', meta: '03' }, { title: 'תשלום', copy: 'מאובטח.', meta: '04' }, { title: 'משלוח', copy: 'עד הבית.', meta: '05' }],
+      stats: [{ value: '98%', label: 'שביעות רצון' }, { value: '3x', label: 'צמיחה' }, { value: '14', label: 'ימים' }, { value: '5★', label: 'דירוג' }],
+    }),
+  });
+})();
 
 export const PRODUCTS_PAGE_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   page01,
