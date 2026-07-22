@@ -1,135 +1,24 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import "./faq.css";
 import HelpArticleLayout from "./HelpArticleLayout";
 
-const faqData = [
-  {
-    question: "איך יוצרים אתר חדש ב-Bizuply?",
-    answer: `
-מ-Dashboard עבור ל"בניית אתרים" → "האתרים שלי" → לחץ "אתר חדש".
-
-תוכל לבחור:
-• תבנית מוכנה — בחר עיצוב מהגלריה והמשך לעריכה
-• בנייה עם AI — ענה על שאלות קצרות וה-AI יבנה את האתר עבורך
-
-לאחר הבחירה, האתר ייפתח בעורך הוויזואלי לעריכה ופרסום.
-    `,
-  },
-  {
-    question: "מה ההבדל בין תבנית מוכנה לבנייה עם AI?",
-    answer: `
-תבנית מוכנה:
-• מתאימה למי שרוצה שליטה מלאה על העיצוב מההתחלה
-• בוחרים עיצוב מהגלריה ומותאמים תוכן וצבעים
-
-בנייה עם AI:
-• מתאימה למי שרוצה להתחיל מהר
-• עונים על שאלות על העסק, השירותים והסגנון
-• ה-AI יוצר מבנה, תוכן ראשוני, עיצוב והגדרות SEO
-• האתר נפתח בעורך מוכן לעריכה
-    `,
-  },
-  {
-    question: "איך עורכים את האתר בעורך הוויזואלי?",
-    answer: `
-פתח את האתר מ"האתרים שלי" → "עריכה".
-
-בעורך תוכל:
-• לגרור ולשנות סקשנים, טקסטים, תמונות וכפתורים
-• לשנות צבעים, גופנים וסגנון
-• להוסיף או להסיר סקשנים (שירותים, המלצות, FAQ ועוד)
-• לערוך הגדרות SEO
-• לצפות בתצוגה מקדימה לפני פרסום
-
-זכור לשמור לאחר כל שינוי משמעותי.
-    `,
-  },
-  {
-    question: "איך מפרסמים את האתר?",
-    answer: `
-לאחר סיום העריכה, לחץ על "פרסום" בעורך.
-
-Bizuply ייצור כתובת ייחודית (slug) לאתר, למשל:
-yourbusiness.bizuply.com
-
-לפני פרסום ודא:
-• פרטי העסק ויצירת קשר מעודכנים
-• יש תמונות איכותיות
-• כפתור יצירת קשר או קביעת תור פעיל
-• הגדרות SEO מולאו
-    `,
-  },
-  {
-    question: "איך מגדירים SEO לאתר?",
-    answer: `
-בעורך האתר, פתח את הגדרות SEO:
-
-• כותרת (Title) — עד 60 תווים, כולל שם העסק ומילת מפתח
-• תיאור (Meta Description) — עד 160 תווים על השירותים
-• מילות מפתח — 3–5 מילים רלוונטיות לתחום
-
-ניתן גם להגדיר סכמת FAQ לשיפור הופעה בגוגל.
-    `,
-  },
-  {
-    question: "איך מנהלים כמה אתרים?",
-    answer: `
-ב"האתרים שלי" תוכל:
-• לראות את כל האתרים — פעילים וטיוטות
-• לארגן אתרים בתיקיות
-• לשכפל, לשנות שם או למחוק אתר
-• לשתף קישור לאתר שפורסם
-• לערוך כל אתר בנפרד
-    `,
-  },
-  {
-    question: "מה לעשות אם השינויים לא נשמרים?",
-    answer: `
-נסה את הצעדים הבאים:
-
-• בדוק חיבור לאינטרנט
-• לחץ "שמור" שוב בעורך
-• רענון קשה (Ctrl + F5)
-• נקה מטמון דפדפן
-• נסה דפדפן אחר
-
-אם הבעיה נמשכת, פנה לתמיכה עם פרטים וצילום מסך.
-    `,
-  },
-  {
-    question: "האתר לא נטען אחרי פרסום — מה לעשות?",
-    answer: `
-• ודא שהאתר בסטטוס "פעיל" ולא "טיוטה"
-• המתן 2–5 דקות לעדכון
-• נסה לפתוח בחלון פרטי / Incognito
-• בדוק שה-slug (כתובת) נכון
-• רענן את הדף
-
-אם עדיין לא עובד, פנה לתמיכה טכנית.
-    `,
-  },
-  {
-    question: "אפשר לערוך את האתר אחרי פרסום?",
-    answer: `
-כן. פתח את האתר מ"האתרים שלי" → "עריכה", בצע שינויים ולחץ "שמור" ו-"פרסם" שוב.
-
-השינויים יעודכנו באתר החי תוך דקות ספורות.
-    `,
-  },
-  {
-    question: "איך משתפים את האתר עם לקוחות?",
-    answer: `
-לאחר פרסום:
-• העתק את הקישור מ"האתרים שלי" או מכפתור "שיתוף"
-• שלח ב-WhatsApp, רשתות חברתיות, חתימת מייל או כרטיס ביקור
-• הוסף את הקישור לפרופיל העסקי ב-Bizuply
-
-הדשבורד יציג סטטיסטיקות צפיות ותנועה לאתר.
-    `,
-  },
+const FAQ_KEYS = [
+  "createSite",
+  "templateVsAi",
+  "editSite",
+  "publish",
+  "seo",
+  "manageMultiple",
+  "notSaving",
+  "notLoading",
+  "editAfterPublish",
+  "share",
 ];
 
 export default function WebsiteBuildingFAQ() {
+  const { t } = useTranslation();
+  const f = "helpFaqs.websiteBuilding";
   const [openIndex, setOpenIndex] = useState(null);
 
   const toggleIndex = (index) => {
@@ -138,17 +27,15 @@ export default function WebsiteBuildingFAQ() {
 
   return (
     <HelpArticleLayout>
-      <h1 className="faq-title">שאלות נפוצות — בניית אתר</h1>
-      <p className="faq-subtitle">
-        תשובות לשאלות נפוצות על יצירה, עריכה ופרסום אתרים ב-Bizuply
-      </p>
+      <h1 className="faq-title">{t(`${f}.title`)}</h1>
+      <p className="faq-subtitle">{t(`${f}.subtitle`)}</p>
 
       <div className="faq-list">
-        {faqData.map((faq, idx) => {
+        {FAQ_KEYS.map((key, idx) => {
           const isOpen = openIndex === idx;
 
           return (
-            <div key={idx} className={`faq-item${isOpen ? " open" : ""}`}>
+            <div key={key} className={`faq-item${isOpen ? " open" : ""}`}>
               <button
                 className="faq-question"
                 onClick={() => toggleIndex(idx)}
@@ -156,7 +43,7 @@ export default function WebsiteBuildingFAQ() {
                 aria-controls={`faq-answer-${idx}`}
                 id={`faq-question-${idx}`}
               >
-                <span>{faq.question}</span>
+                <span>{t(`${f}.items.${key}.question`)}</span>
                 <span
                   className={`faq-plus ${isOpen ? "open" : ""}`}
                   aria-hidden
@@ -173,7 +60,7 @@ export default function WebsiteBuildingFAQ() {
                   className="faq-answer"
                   style={{ whiteSpace: "pre-wrap" }}
                 >
-                  {faq.answer}
+                  {t(`${f}.items.${key}.answer`)}
                 </div>
               )}
             </div>

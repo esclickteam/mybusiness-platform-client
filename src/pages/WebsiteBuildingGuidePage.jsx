@@ -1,143 +1,130 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import HelpArticleLayout from "./HelpArticleLayout";
 
 export default function WebsiteBuildingGuidePage() {
+  const { t } = useTranslation();
+  const g = "helpGuides.websiteBuilding";
+
   return (
     <HelpArticleLayout>
-      <h1>בניית אתר ב-Bizuply: המדריך המלא</h1>
+      <h1>{t(`${g}.title`)}</h1>
 
-      <h2>למה לבנות אתר בעסק שלך?</h2>
-      <p>
-        אתר מקצועי הוא הנכס הדיגיטלי המרכזי של העסק. הוא מאפשר ללקוחות
-        להכיר את השירותים שלך, ליצור קשר, לקבוע תורים ולבנות אמון — 24
-        שעות ביממה, מכל מכשיר.
-      </p>
-      <p>
-        ב-Bizuply תוכל לבנות אתר מותאם אישית בלי ידע טכני, בעזרת תבניות
-        מוכנות, עורך ויזואלי מתקדם, או בנייה חכמה עם AI.
-      </p>
+      <h2>{t(`${g}.whyTitle`)}</h2>
+      <p>{t(`${g}.whyP1`)}</p>
+      <p>{t(`${g}.whyP2`)}</p>
 
-      <h2>איך מתחילים?</h2>
+      <h2>{t(`${g}.howToStartTitle`)}</h2>
       <p>
-        מהדשבורד, עבור ל<strong>בניית אתרים → האתרים שלי</strong>. משם
-        תוכל ליצור אתר חדש, לנהל אתרים קיימים ולפרסם אותם.
+        {t(`${g}.howToStartBefore`)}
+        <strong>{t(`${g}.howToStartBold`)}</strong>
+        {t(`${g}.howToStartAfter`)}
       </p>
 
-      <h3>שתי דרכים ליצירת אתר</h3>
+      <h3>{t(`${g}.twoWaysTitle`)}</h3>
       <table>
         <thead>
           <tr>
-            <th>שיטה</th>
-            <th>מתאים ל...</th>
-            <th>מה קורה אחר כך?</th>
+            <th>{t(`${g}.table.method`)}</th>
+            <th>{t(`${g}.table.bestFor`)}</th>
+            <th>{t(`${g}.table.next`)}</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>תבנית מוכנה</td>
-            <td>מי שרוצה להתחיל מהר עם עיצוב מקצועי</td>
-            <td>בוחרים תבנית מהגלריה ועוברים ישר לעריכה בעורך</td>
+            <td>{t(`${g}.table.templateMethod`)}</td>
+            <td>{t(`${g}.table.templateBestFor`)}</td>
+            <td>{t(`${g}.table.templateNext`)}</td>
           </tr>
           <tr>
-            <td>בנייה עם AI</td>
-            <td>מי שרוצה אתר מותאם לפי תשובות קצרות</td>
-            <td>ה-AI בונה מבנה, תוכן, עיצוב ו-SEO — ופותח את העורך מוכן</td>
+            <td>{t(`${g}.table.aiMethod`)}</td>
+            <td>{t(`${g}.table.aiBestFor`)}</td>
+            <td>{t(`${g}.table.aiNext`)}</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>עורך האתר (Website Studio)</h2>
-      <p>
-        העורך הוויזואלי של Bizuply מאפשר לערוך כל חלק באתר בגרירה ושחרור,
-        בלי לכתוב קוד.
-      </p>
+      <h2>{t(`${g}.studioTitle`)}</h2>
+      <p>{t(`${g}.studioP1`)}</p>
 
-      <h3>מה אפשר לערוך?</h3>
+      <h3>{t(`${g}.canEditTitle`)}</h3>
       <ul>
-        <li>כותרות, טקסטים, כפתורים וקישורים</li>
-        <li>תמונות, גלריות וסרטונים</li>
-        <li>צבעים, גופנים וסגנון עיצובי</li>
-        <li>סקשנים: שירותים, המלצות, טופס יצירת קשר, FAQ ועוד</li>
-        <li>הגדרות SEO — כותרת, תיאור, מילות מפתח וסכמת FAQ</li>
+        {t(`${g}.canEditItems`, { returnObjects: true }).map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
       </ul>
 
-      <h3>טיפים לעבודה יעילה בעורך</h3>
+      <h3>{t(`${g}.editorTipsTitle`)}</h3>
       <ol>
         <li>
-          <strong>שמור לעיתים קרובות</strong> — לחץ על "שמור" לאחר כל
-          שינוי משמעותי.
+          <strong>{t(`${g}.tipSaveTitle`)}</strong>
+          {t(`${g}.tipSaveBody`)}
         </li>
         <li>
-          <strong>השתמש בתצוגה מקדימה</strong> — בדוק איך האתר נראה
-          במחשב ובנייד לפני פרסום.
+          <strong>{t(`${g}.tipPreviewTitle`)}</strong>
+          {t(`${g}.tipPreviewBody`)}
         </li>
         <li>
-          <strong>התחל מהתבנית</strong> — ערוך תוכן וצבעים, אל תנסה לבנות
-          מאפס אם אין צורך.
+          <strong>{t(`${g}.tipTemplateTitle`)}</strong>
+          {t(`${g}.tipTemplateBody`)}
         </li>
         <li>
-          <strong>הוסף קריאה לפעולה ברורה</strong> — כפתור "קביעת תור",
-          "צור קשר" או "WhatsApp" בולט בכל עמוד.
+          <strong>{t(`${g}.tipCtaTitle`)}</strong>
+          {t(`${g}.tipCtaBody`)}
         </li>
       </ol>
 
-      <h2>ניהול האתרים שלי</h2>
-      <p>במרכז "האתרים שלי" תוכל:</p>
+      <h2>{t(`${g}.manageTitle`)}</h2>
+      <p>{t(`${g}.manageIntro`)}</p>
       <ul>
-        <li>לראות את כל האתרים — פעילים וטיוטות</li>
-        <li>לארגן אתרים בתיקיות</li>
-        <li>לשכפל, לשנות שם או למחוק אתר</li>
-        <li>לשתף קישור לאתר שפורסם</li>
-        <li>לערוך אתר קיים בלחיצה אחת</li>
+        {t(`${g}.manageItems`, { returnObjects: true }).map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
       </ul>
 
-      <h2>פרסום האתר</h2>
+      <h2>{t(`${g}.publishTitle`)}</h2>
       <p>
-        לאחר שסיימת לערוך, לחץ על <strong>פרסום</strong>. Bizuply ייצור
-        כתובת ייחודית (slug) לאתר שלך, למשל:{" "}
+        {t(`${g}.publishBefore`)}
+        <strong>{t(`${g}.publishBold`)}</strong>
+        {t(`${g}.publishAfter`)}{" "}
         <code>yourbusiness.bizuply.com</code>
       </p>
-      <p>לפני פרסום, ודא:</p>
+      <p>{t(`${g}.publishChecklistIntro`)}</p>
       <ul>
-        <li>שם העסק ופרטי הקשר מעודכנים</li>
-        <li>יש לפחות תמונה אחת איכותית</li>
-        <li>כפתור יצירת קשר או קביעת תור פועל</li>
-        <li>הגדרות SEO מולאו (כותרת + תיאור)</li>
+        {t(`${g}.publishItems`, { returnObjects: true }).map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
       </ul>
 
-      <h2>SEO — להופיע בגוגל</h2>
-      <p>
-        בעורך, פתח את הגדרות ה-SEO והגדר:
-      </p>
+      <h2>{t(`${g}.seoTitle`)}</h2>
+      <p>{t(`${g}.seoIntro`)}</p>
       <ul>
         <li>
-          <strong>כותרת העמוד (Title)</strong> — עד 60 תווים, כולל שם
-          העסק ומילת מפתח
+          <strong>{t(`${g}.seoTitleLabel`)}</strong>
+          {t(`${g}.seoTitleBody`)}
         </li>
         <li>
-          <strong>תיאור (Meta Description)</strong> — עד 160 תווים, מסביר
-          מה העסק מציע
+          <strong>{t(`${g}.seoDescLabel`)}</strong>
+          {t(`${g}.seoDescBody`)}
         </li>
         <li>
-          <strong>מילות מפתח</strong> — 3–5 מילים רלוונטיות לתחום שלך
+          <strong>{t(`${g}.seoKeywordsLabel`)}</strong>
+          {t(`${g}.seoKeywordsBody`)}
         </li>
       </ul>
 
-      <h2>בנייה עם AI — איך זה עובד?</h2>
+      <h2>{t(`${g}.aiBuildTitle`)}</h2>
       <ol>
-        <li>בחר "בנייה עם AI" ביצירת אתר חדש</li>
-        <li>ענה על שאלות קצרות על העסק, השירותים והסגנון הרצוי</li>
-        <li>ה-AI יבחר מבנה, יכתוב תוכן ראשוני ויתאים עיצוב</li>
-        <li>האתר ייפתח בעורך — ערוך, התאם ופרסם</li>
+        {t(`${g}.aiBuildSteps`, { returnObjects: true }).map((step, i) => (
+          <li key={i}>{step}</li>
+        ))}
       </ol>
 
-      <h2>סיכום</h2>
+      <h2>{t(`${g}.summaryTitle`)}</h2>
       <ul>
-        <li>צור אתר מתבנית או עם AI — תוך דקות</li>
-        <li>ערוך בעורך הוויזואלי לפי הצורך</li>
-        <li>הגדר SEO לפני פרסום</li>
-        <li>פרסם ושתף את הקישור עם לקוחות</li>
-        <li>עקוב אחר תנועה ולידים מהדשבורד</li>
+        {t(`${g}.summaryItems`, { returnObjects: true }).map((item, i) => (
+          <li key={i}>{item}</li>
+        ))}
       </ul>
     </HelpArticleLayout>
   );

@@ -2869,5 +2869,526 @@
       "stagePlan": "site planning"
     },
     "defaultSiteName": "My site"
+  },
+  "helpGuides": {
+    "websiteBuilding": {
+      "title": "Building a website in Bizuply: the complete guide",
+      "whyTitle": "Why build a website for your business?",
+      "whyP1": "A professional website is your business’s core digital asset. It lets customers learn about your services, get in touch, book appointments, and build trust — 24 hours a day, from any device.",
+      "whyP2": "In Bizuply you can build a custom website without technical knowledge, using ready-made templates, an advanced visual editor, or smart AI-powered building.",
+      "howToStartTitle": "How do you get started?",
+      "howToStartBefore": "From the dashboard, go to ",
+      "howToStartBold": "Website Building → My Sites",
+      "howToStartAfter": ". From there you can create a new site, manage existing ones, and publish them.",
+      "twoWaysTitle": "Two ways to create a site",
+      "table": {
+        "method": "Method",
+        "bestFor": "Best for...",
+        "next": "What happens next?",
+        "templateMethod": "Ready-made template",
+        "templateBestFor": "Anyone who wants to start fast with a professional design",
+        "templateNext": "Pick a template from the gallery and go straight to the editor",
+        "aiMethod": "Build with AI",
+        "aiBestFor": "Anyone who wants a tailored site based on short answers",
+        "aiNext": "AI builds structure, content, design, and SEO — then opens the editor ready to go"
+      },
+      "studioTitle": "Website editor (Website Studio)",
+      "studioP1": "Bizuply’s visual editor lets you edit every part of the site with drag and drop, without writing code.",
+      "canEditTitle": "What can you edit?",
+      "canEditItems": [
+        "Headings, text, buttons, and links",
+        "Images, galleries, and videos",
+        "Colors, fonts, and design style",
+        "Sections: services, testimonials, contact form, FAQ, and more",
+        "SEO settings — title, description, keywords, and FAQ schema"
+      ],
+      "editorTipsTitle": "Tips for working efficiently in the editor",
+      "tipSaveTitle": "Save often",
+      "tipSaveBody": " — click Save after every meaningful change.",
+      "tipPreviewTitle": "Use preview",
+      "tipPreviewBody": " — check how the site looks on desktop and mobile before publishing.",
+      "tipTemplateTitle": "Start from the template",
+      "tipTemplateBody": " — edit content and colors; don’t rebuild from scratch unless you need to.",
+      "tipCtaTitle": "Add a clear call to action",
+      "tipCtaBody": " — a prominent “Book appointment”, “Contact”, or “WhatsApp” button on every page.",
+      "manageTitle": "Managing my sites",
+      "manageIntro": "In the \"My Sites\" hub you can:",
+      "manageItems": [
+        "See all sites — live and drafts",
+        "Organize sites into folders",
+        "Duplicate, rename, or delete a site",
+        "Share a link to a published site",
+        "Edit an existing site in one click"
+      ],
+      "publishTitle": "Publishing the site",
+      "publishBefore": "When you finish editing, click ",
+      "publishBold": "Publish",
+      "publishAfter": ". Bizuply will create a unique address (slug) for your site, for example:",
+      "publishChecklistIntro": "Before publishing, make sure:",
+      "publishItems": [
+        "Business name and contact details are up to date",
+        "There is at least one high-quality image",
+        "A contact or booking button works",
+        "SEO settings are filled in (title + description)"
+      ],
+      "seoTitle": "SEO — show up on Google",
+      "seoIntro": "In the editor, open SEO settings and configure:",
+      "seoTitleLabel": "Page title (Title)",
+      "seoTitleBody": " — up to 60 characters, including the business name and a keyword",
+      "seoDescLabel": "Description (Meta Description)",
+      "seoDescBody": " — up to 160 characters explaining what the business offers",
+      "seoKeywordsLabel": "Keywords",
+      "seoKeywordsBody": " — 3–5 words relevant to your field",
+      "aiBuildTitle": "Building with AI — how does it work?",
+      "aiBuildSteps": [
+        "Choose \"Build with AI\" when creating a new site",
+        "Answer short questions about the business, services, and desired style",
+        "AI picks a structure, writes initial content, and adapts the design",
+        "The site opens in the editor — edit, refine, and publish"
+      ],
+      "summaryTitle": "Summary",
+      "summaryItems": [
+        "Create a site from a template or with AI — in minutes",
+        "Edit in the visual editor as needed",
+        "Set SEO before publishing",
+        "Publish and share the link with customers",
+        "Track traffic and leads from the dashboard"
+      ]
+    },
+    "dashboard": {
+      "title": "The Bizuply dashboard: full control at a glance",
+      "whatTitle": "What is the Bizuply dashboard and why it matters",
+      "whatP1": "The dashboard is your control center in Bizuply. It brings together all essential business data in one clear, accessible view, so you can track activity in real time, understand performance, and spot trends or issues early.",
+      "whatP2": "Instead of relying on gut feeling, the dashboard supports data-driven decisions that help you manage and grow more effectively.",
+      "whyCoreTitle": "Why the dashboard should be a core business tool",
+      "whyCoreItems": [
+        "All key systems — calendar, CRM, and analytics — are concentrated in one place.",
+        "You can make faster, more accurate decisions based on up-to-date data.",
+        "Seasonal patterns become clearer and enable better planning.",
+        "When enabled, the AI advisor provides practical real-time recommendations."
+      ],
+      "includesTitle": "What the dashboard includes",
+      "reviewsTitle": "Customer reviews",
+      "reviewsP1": "This section shows reviews submitted by your customers and gives a clear picture of overall satisfaction.",
+      "howToUseLabel": "How to use the data:",
+      "reviewsItems": [
+        "Track customer sentiment over time.",
+        "Identify recurring strengths and areas to improve.",
+        "Respond to reviews when appropriate to show engagement and professionalism."
+      ],
+      "exampleLabel": "Example:",
+      "reviewsExample": "If customers often mention friendly service, highlight that in your business description or marketing messages.",
+      "appointmentsTitle": "Appointments and business calendar",
+      "appointmentsP1": "A central view of upcoming and past appointments, synced with the calendar and CRM.",
+      "whyImportantLabel": "Why it matters:",
+      "appointmentsItems": [
+        "Plan daily and monthly schedules efficiently.",
+        "Track workload in real time.",
+        "Easily manage reschedules, cancellations, and availability updates."
+      ],
+      "appointmentsExample": "If a particular month is full of appointments, consider adding more time slots or extending service hours.",
+      "byMonthTitle": "Appointments by month",
+      "byMonthP1": "A visual chart showing how appointment volume changes across months.",
+      "howHelpsLabel": "How it helps:",
+      "byMonthItems": [
+        "Identify peak periods and low-demand periods.",
+        "Spot growth or decline trends early.",
+        "Plan marketing campaigns and promotions based on real demand."
+      ],
+      "insightLabel": "Practical insight:",
+      "byMonthInsight": "If winter months show lower activity, consider targeted promotions or seasonal services.",
+      "insightsTitle": "Insights and action recommendations",
+      "insightsP1": "A summary of key performance metrics from the recent period, including AI-based insights when available.",
+      "insightsP2": "The system highlights unusual patterns such as a drop in inquiries or a rise in cancellations and suggests corrective actions.",
+      "insightsItems": [
+        "Surface issues before they become critical.",
+        "Focus on areas that need immediate action.",
+        "Get guidance for marketing and operational improvements."
+      ],
+      "insightsExample": "The AI advisor may suggest reaching out to customers who haven’t booked recently, or promoting availability for the coming month.",
+      "scheduleTitle": "Central schedule overview",
+      "scheduleP1": "A unified calendar view that shows all appointments by day and time, even when they come from different sources.",
+      "scheduleItems": [
+        "Removes the need to switch between tools.",
+        "Prevents duplicate appointments and schedule conflicts.",
+        "Supports quick creation of new appointments."
+      ],
+      "weeklyTitle": "Weekly summary",
+      "weeklyP1": "A detailed snapshot of recent business activity, including:",
+      "weeklyItems": [
+        "Total appointments booked and completed.",
+        "Cancellations and no-shows.",
+        "Inquiries and website activity."
+      ],
+      "howToUseThisLabel": "How to use this:",
+      "weeklyUseItems": [
+        "Compare bookings with attendance levels.",
+        "Assess inquiry volume against longer-term trends.",
+        "Connect marketing actions to changes in performance metrics."
+      ],
+      "whyTrackTitle": "Why tracking the dashboard matters",
+      "table": {
+        "reason": "Reason",
+        "impact": "Business impact",
+        "rows": [
+          {
+            "reason": "Continuous performance tracking",
+            "impact": "Faster, more informed decisions"
+          },
+          {
+            "reason": "CRM and calendar integration",
+            "impact": "More efficient management with fewer tools"
+          },
+          {
+            "reason": "Early trend detection",
+            "impact": "Timely response to potential issues"
+          },
+          {
+            "reason": "Insights from the AI advisor",
+            "impact": "Ongoing optimization and growth opportunities"
+          }
+        ]
+      },
+      "bestPracticesTitle": "Best practices for using the dashboard",
+      "bestPractices": [
+        "Review the dashboard daily or at least weekly to stay up to date.",
+        "Compare different time periods to identify meaningful trends.",
+        "Set measurable goals based on data, such as increasing appointments by a certain percentage.",
+        "Act on AI recommendations to improve service quality and marketing performance.",
+        "Use insights to plan promotions, service adjustments, or new offers."
+      ],
+      "summaryTitle": "Summary",
+      "summaryP1": "The dashboard is a central management tool that gives immediate visibility into business performance. By understanding the data and acting on insights, you can optimize operations, improve the customer experience, and support long-term growth."
+    },
+    "appointmentCrm": {
+      "title": "Appointments and CRM in Bizuply",
+      "whyBothTitle": "Why businesses need both an appointment calendar and a CRM",
+      "whyBothP1": "Service-based businesses often operate in more than one environment. Services may be delivered at a fixed location such as a clinic or office, and also at the customer’s home or another external location. To support that flexibility, appointment scheduling and customer management must work together.",
+      "whyBothP2": "The appointments calendar is a customer-facing tool that lets people see real-time availability and book independently — whether the service is at your location or at theirs. That reduces scheduling friction, removes unnecessary back-and-forth, and improves the booking experience.",
+      "whyBothP3": "The CRM, on the other hand, is an internal management system. It lets you track individual customers, store contact details, and document inquiries and service history over time. That information is essential for personalized service, better retention, and targeted marketing campaigns.",
+      "whyNotOutsideTitle": "Why not manage scheduling outside Bizuply?",
+      "whyNotOutsideP1": "Some businesses rely on external tools like Google Calendar, paper diaries, or disconnected systems for appointments. While that may seem convenient, it creates risks and limitations:",
+      "whyNotOutsideItems": [
+        "Lack of sync can cause duplicate appointments, schedule conflicts, and missed opportunities.",
+        "Double management increases administrative load and the risk of human error.",
+        "Customer data gets scattered, making it hard to track history, inquiries, and reviews in one place.",
+        "Marketing and retention suffer without a unified data source for segmentation and analysis."
+      ],
+      "howTogetherTitle": "How the appointment calendar and CRM work together in Bizuply",
+      "howTogetherP1": "Bizuply provides a fully integrated system. When a customer books an appointment — whether at the business location or at home — the booking is recorded immediately in the calendar and synced in real time.",
+      "howTogetherP2": "At the same time, the customer profile in the CRM is updated with appointment details, including service history and past interactions. All relevant information stays in one place, enabling accurate planning and consistent service.",
+      "benefitsTitle": "Key benefits for your business",
+      "benefits": [
+        "Significant time savings through centralized scheduling and customer management.",
+        "A smoother customer experience with clear availability and easy self-booking.",
+        "Data-driven marketing and retention based on real customer activity.",
+        "Flexible management of services across multiple locations."
+      ],
+      "durationsTitle": "Managing service durations to prevent delays and overload",
+      "durationsP1": "Accurate service duration settings are critical for operational quality and customer satisfaction.",
+      "durationAssessTitle": "Estimate service time accurately:",
+      "durationAssessBody": "Measure preparation, delivery, and cleanup after the service. Add a small buffer between appointments to prevent cascading delays.",
+      "durationSetTitle": "Set durations in the calendar:",
+      "durationSetBody": "Make sure customers book time slots that actually fit the service.",
+      "durationLoadTitle": "Manage daily load:",
+      "durationLoadBody": "On busy days, reduce the number of bookings or increase gaps to protect service quality.",
+      "durationTransparentTitle": "Be transparent with customers:",
+      "durationTransparentBody": "Clearly communicate the expected service duration and available options.",
+      "durationProactiveTitle": "Communicate proactively:",
+      "durationProactiveBody": "Notify customers in advance if delays occur to maintain trust and manage expectations.",
+      "durationDataTitle": "Use historical data:",
+      "durationDataBody": "Review dashboard insights to adjust service durations based on actual performance.",
+      "bestPracticesTitle": "Best practices for efficient calendar and CRM management",
+      "bestPractices": [
+        "Keep business hours and service locations up to date, including mobile services.",
+        "Review the calendar daily, with special attention to off-site appointments.",
+        "Segment customers in the CRM to support targeted communication and marketing.",
+        "Track service history for follow-ups and personalized offers.",
+        "Use reports and dashboards to spot trends and make decisions."
+      ],
+      "summaryTitle": "Summary",
+      "summaryP1": "An integrated appointment calendar and CRM are the foundation of efficient, modern business management in Bizuply. Together they enable smooth coordination across locations, full customer visibility, and smarter decisions in service and marketing.",
+      "summaryP2": "Managing service durations correctly and using unified data helps prevent overload, improves customer satisfaction, and provides clarity and control over day-to-day operations."
+    },
+    "aiCompanion": {
+      "title": "Artificial intelligence in Bizuply",
+      "whyAiTitle": "Why modern businesses need AI",
+      "whyAiP1": "In an increasingly competitive environment, customers expect fast, accurate, and personalized responses. Running a business on gut feeling or manual processes alone is no longer enough.",
+      "whyAiP2": "Artificial intelligence enables data-driven decisions by analyzing business activity in real time. It helps businesses operate more efficiently, respond faster to change, and stay competitive in dynamic markets.",
+      "whatIsTitle": "What is Bizuply’s AI advisor",
+      "whatIsP1": "The AI advisor is a smart system built into the Bizuply platform. It continuously analyzes your business data and provides insights, alerts, and practical recommendations tailored to your activity — from website building to appointments, CRM, and collaborations.",
+      "includesTitle": "What the AI advisor includes",
+      "includesItems": [
+        "Personalized insights based on customer activity, bookings, and engagement.",
+        "Automatic alerts for marketing opportunities, high-intent customers, and early signs of potential issues.",
+        "Data-driven recommendations across marketing, pricing, scheduling, and internal operations.",
+        "Ongoing updates based on real-time business performance."
+      ],
+      "includesNote": "All AI insights are also visible on the main dashboard, so critical information stays accessible.",
+      "strategicTitle": "Why the AI advisor is a strategic advisor",
+      "strategic1Title": "Insights based on real business data",
+      "strategic1Body": "The AI analyzes inquiries, bookings, cancellations, reviews, and operational patterns to surface insights that are hard to spot otherwise.",
+      "strategic2Title": "Practical recommendations, not generic advice",
+      "strategic2Body": "Suggestions are tailored to your business context and designed to support concrete actions, not abstract guidance.",
+      "strategic3Title": "Early detection of changes and risks",
+      "strategic3Body": "The system spots anomalies such as a drop in inquiries or a rise in cancellations and notifies you in time so you can intervene quickly.",
+      "strategic4Title": "Continuous improvement without external dependence",
+      "strategic4Body": "With an advisor available on an ongoing basis, businesses can improve, learn, and move forward without relying only on outside consultants.",
+      "getMostTitle": "How to get the most from the AI advisor",
+      "getMost1Title": "Set clear business goals",
+      "getMost1Body": "Identify areas you want to improve, such as marketing performance, customer retention, pricing, or operational efficiency.",
+      "getMost2Title": "Review insights consistently",
+      "getMost2Body": "Check the AI section regularly to stay current on alerts, recommendations, and emerging trends.",
+      "getMost3Title": "Apply marketing guidance strategically",
+      "getMost3Body": "Use AI insights to choose optimal timing for promotions, which services to highlight, and how to refine messaging.",
+      "getMost4Title": "Optimize operations with data",
+      "getMost4Body": "Assess whether your time investment aligns with revenue, identify pricing adjustments, and improve conversion rates.",
+      "getMost5Title": "Learn from long-term patterns",
+      "getMost5Body": "AI insights get stronger over time as patterns emerge, enabling continuous improvement of business strategy.",
+      "areasTitle": "Key areas for advice from the AI advisor",
+      "areasItems": [
+        "Marketing and sales optimization, including lead conversion and customer acquisition.",
+        "Time management and workload balance to ensure profitability and sustainability.",
+        "Customer retention and relationship management through personalized engagement.",
+        "Service quality and operational improvements to reduce friction and cancellations."
+      ],
+      "summaryTitle": "Summary",
+      "summaryP1": "Bizuply’s AI advisor acts as a strategic business advisor, integrated directly into your daily workflow. It turns raw data into clear insights, enabling informed decisions and measurable improvements.",
+      "summaryP2": "In a data-driven business environment, AI is not a luxury — it is a core capability that helps businesses adapt, grow, and stay competitive."
+    },
+    "businessCollaboration": {
+      "title": "Business collaborations in Bizuply",
+      "whyTitle": "Why business collaborations matter",
+      "whyP1": "Even when a business performs well, growth does not happen in isolation. Collaborations are not only about revenue sharing — they are a strategic way to expand reach, enter new markets, and build a trusted professional network that is hard to create alone.",
+      "whyP2": "By working with complementary businesses, you can:",
+      "whyItems": [
+        "Reach new target audiences that would otherwise be inaccessible.",
+        "Strengthen credibility through collaboration with established professionals.",
+        "Reduce marketing costs through joint promotion.",
+        "Create additional revenue through referrals, packages, or commissions.",
+        "Open opportunities such as joint campaigns, events, or combined services."
+      ],
+      "whyP3": "The right collaboration acts as a multiplier for sustainable long-term growth.",
+      "sectionTitle": "What the collaborations section includes",
+      "sectionP1": "The collaborations section lets you manage the full collaboration lifecycle in one organized workspace:",
+      "sectionFindTitle": "Find and propose collaborations",
+      "sectionFindBody": "by business category, including a clear description of what you offer and what you are looking for.",
+      "sectionMarketTitle": "Collaboration marketplace",
+      "sectionMarketBody": "where you can publish open proposals or discover existing opportunities.",
+      "sectionAlignTitle": "Dedicated pre-alignment",
+      "sectionAlignBody": "to discuss expectations and align before committing.",
+      "sectionAgreementsTitle": "Digital collaboration agreements",
+      "sectionAgreementsBody": "to upload, create, and sign contracts securely inside the platform.",
+      "sectionActiveTitle": "Active collaborations overview",
+      "sectionActiveBody": "showing all current partners, agreement details, and validity periods.",
+      "bestPracticesTitle": "Best practices for managing collaborations",
+      "bp1Title": "Define clear goals",
+      "bp1Body": "Before starting a collaboration, make sure both sides agree on the objective. That may include audience expansion, referral channels, joint promotions, or resource sharing. Clear goals reduce friction and increase success.",
+      "bp2Title": "Choose the right partners",
+      "bp2Body": "Choose businesses that complement your services rather than compete with them. The ideal partner serves a similar audience without overlapping offers, and demonstrates credibility and professionalism.",
+      "bp3Title": "Choose a collaboration model",
+      "bp3Body": "Common models include mutual referrals, commission-based referrals, combined service packages, and cross-promotion. Defining the model upfront prevents misunderstandings later.",
+      "bp4Title": "Keep communication consistent",
+      "bp4Body": "Periodic check-ins, shared performance insights, and open dialogue help collaborations stay effective and adaptable over time.",
+      "bp5Title": "Document and uphold agreements",
+      "bp5Body": "Use the platform’s agreement tools to store documents, record changes, and ensure all commitments are clear and approved by both sides.",
+      "evenWhenTitle": "Why collaborate even when the business is succeeding",
+      "evenWhenItems": [
+        "Growth accelerates when businesses operate inside a strong network.",
+        "Revenue can grow without proportionally increasing team size or marketing spend.",
+        "Collaborations enable faster entry into new markets.",
+        "Partnerships reduce isolation and encourage shared learning.",
+        "Ongoing collaboration helps businesses stay relevant and competitive."
+      ],
+      "summaryTitle": "Summary",
+      "summaryP1": "Business collaborations are a strategic lever that can improve marketing, operations, and revenue. Bizuply provides a structured, professional environment to discover partners, manage agreements, and sustain long-term collaboration relationships.",
+      "summaryP2": "By choosing the right partners, defining clear models, and managing everything inside the platform, you position the business for scalable, sustainable growth."
+    },
+    "chat": {
+      "title": "Using Bizuply Chat with customers the right way",
+      "howWorksTitle": "How the chat works",
+      "howWorksP1": "When a customer visits your business page on Bizuply, they can click the chat button and send you a direct message. The message is delivered instantly to your personal area under the “Business Messages” section, where you can read and respond.",
+      "howWorksP2": "You will receive notifications for new messages, ensuring that important inquiries are not missed.",
+      "howWorksP3": "If your account includes AI features, you may also receive:",
+      "howWorksItems": [
+        "Context-aware reply suggestions based on the conversation.",
+        "Alerts for urgent or high-intent customer messages."
+      ],
+      "whyEfficientTitle": "Why chat is the most efficient communication channel",
+      "whyEfficientItems": [
+        "Customers expect quick responses. Faster replies significantly improve conversion rates.",
+        "Asynchronous communication allows customers to write at their convenience, without phone calls or waiting.",
+        "Accessible from any device, including mobile and desktop.",
+        "Written communication creates a calm, professional interaction without the pressure of live calls.",
+        "All conversations are saved and can be referenced at any time."
+      ],
+      "whyNotOtherTitle": "Why not phone calls or external messaging apps?",
+      "channels": {
+        "channel": "Channel",
+        "limitations": "Limitations",
+        "advantage": "Bizuply Chat advantage",
+        "rows": [
+          {
+            "channel": "Phone",
+            "limitations": "No conversation history, time-consuming, disruptive",
+            "advantage": "Documented, quiet communication available anytime"
+          },
+          {
+            "channel": "External messaging apps",
+            "limitations": "Mixes personal and business communication",
+            "advantage": "Clear separation between business and private messages"
+          },
+          {
+            "channel": "Email",
+            "limitations": "Slow response times and lower engagement",
+            "advantage": "Real-time messaging with higher response rates"
+          }
+        ]
+      },
+      "advantagesTitle": "Key advantages of using chat",
+      "advantages": {
+        "advantage": "Advantage",
+        "impact": "Impact",
+        "rows": [
+          {
+            "advantage": "Instant communication",
+            "impact": "Questions and requests are resolved faster"
+          },
+          {
+            "advantage": "Accessibility",
+            "impact": "Ideal for busy or communication-averse customers"
+          },
+          {
+            "advantage": "Conversation history",
+            "impact": "Allows both sides to revisit details at any time"
+          },
+          {
+            "advantage": "Professional presence",
+            "impact": "Signals reliability and responsiveness"
+          },
+          {
+            "advantage": "Action-oriented",
+            "impact": "Easy to share links, quotes, and booking options"
+          }
+        ]
+      },
+      "guidelinesTitle": "Guidelines for effective chat conversations",
+      "g1Title": "Maintain a professional and friendly tone",
+      "g1Line1": "Use clear, concise language.",
+      "g1Line2": "Address customers by name to create a personal connection.",
+      "g1Line3": "Stay polite and patient, even when handling complaints.",
+      "g2Title": "Sell through value, not pressure",
+      "g2Line1": "Start with a focused opening question:",
+      "g2Quote1": "“Hi [Name], how can I help you today?”",
+      "g2Line2": "Provide a clear, concise explanation of the solution:",
+      "g2Quote2": "“The service includes a full facial treatment, takes approximately one hour, and is tailored to your needs.”",
+      "g2Line3": "End with a clear next step:",
+      "g2Quote3": "“Would you like me to check availability for Tuesday at 4:00 PM?”",
+      "g3Title": "Respond quickly",
+      "g3Line1": "Even a short acknowledgment improves customer confidence.",
+      "g3Line2": "Fast responses increase satisfaction and close rates.",
+      "examplesTitle": "Example chat conversations",
+      "ex1Title": "Example 1: Initial inquiry",
+      "ex1Customer": "Customer: “Hi, I wanted to ask about facial treatments.”",
+      "ex1YouLabel": "You:",
+      "ex1You": "“Hi [Name], thanks for reaching out. We offer several natural and personalized facial treatments. Would you like an overview or should I check upcoming availability?”",
+      "ex2Title": "Example 2: Explaining a service and pricing",
+      "ex2Customer": "Customer: “What does the facial include?”",
+      "ex2YouLabel": "You:",
+      "ex2You": "“Our standard facial includes deep cleansing, gentle exfoliation, facial massage, and calming masks. The session lasts about one hour and costs $290. Would you like me to check available times?”",
+      "ex3Title": "Example 3: Handling a price concern",
+      "ex3Customer": "Customer: “That sounds expensive. Do you have a more affordable option?”",
+      "ex3YouLabel": "You:",
+      "ex3You": "“I understand. We also offer a shorter 45-minute facial at a lower price of $180. I’d be happy to explain the differences and find a suitable option for you.”",
+      "ex4Title": "Example 4: Closing with a clear call to action",
+      "ex4Customer": "Customer: “Yes, I’d like to book.”",
+      "ex4YouLabel": "You:",
+      "ex4You": "“Great. I currently have availability on Wednesday at 10:00 AM and Thursday at 4:00 PM. Which works better for you?”",
+      "ex5Title": "Example 5: Responding to a complaint",
+      "ex5Customer": "Customer: “I wasn’t satisfied with the last treatment.”",
+      "ex5YouLabel": "You:",
+      "ex5You": "“I’m sorry to hear that. Your satisfaction is important to me, and I’d like to understand what happened so we can find the best solution. Would you prefer a follow-up session or a clarification call?”",
+      "advancedTitle": "Advanced tips for effective chat usage",
+      "advanced": {
+        "recommendation": "Recommendation",
+        "why": "Why it matters",
+        "rows": [
+          {
+            "recommendation": "Check messages multiple times per day",
+            "why": "Ensures timely responses to high-intent inquiries"
+          },
+          {
+            "recommendation": "Keep the FAQ section updated",
+            "why": "Reduces repetitive questions and saves time"
+          },
+          {
+            "recommendation": "Use AI suggestions when available",
+            "why": "Improves response speed and message quality"
+          },
+          {
+            "recommendation": "Remain calm with challenging customers",
+            "why": "Builds trust and increases retention"
+          }
+        ]
+      },
+      "summaryTitle": "Summary: Turning chat into a sales and service advantage",
+      "summaryItems": [
+        "Be available and respond promptly.",
+        "Use the customer’s name to personalize communication.",
+        "Offer focused solutions with clear explanations.",
+        "Ask open-ended questions to understand customer needs.",
+        "End conversations with a clear next step.",
+        "Maintain a professional and respectful tone.",
+        "Use conversation history to improve service quality."
+      ]
+    }
+  },
+  "helpFaqs": {
+    "websiteBuilding": {
+      "title": "FAQ — Website building",
+      "subtitle": "Answers to common questions about creating, editing, and publishing websites in Bizuply",
+      "items": {
+        "createSite": {
+          "question": "How do I create a new website in Bizuply?",
+          "answer": "From the Dashboard go to \"Website Building\" → \"My Sites\" → click \"New site\".\n\nYou can choose:\n• Ready-made template — pick a design from the gallery and continue to editing\n• Build with AI — answer short questions and AI will build the site for you\n\nAfter choosing, the site opens in the visual editor for editing and publishing."
+        },
+        "templateVsAi": {
+          "question": "What is the difference between a ready-made template and building with AI?",
+          "answer": "Ready-made template:\n• Best if you want full control over design from the start\n• Pick a design from the gallery and adapt content and colors\n\nBuild with AI:\n• Best if you want to start quickly\n• Answer questions about the business, services, and style\n• AI creates structure, initial content, design, and SEO settings\n• The site opens in the editor ready to edit"
+        },
+        "editSite": {
+          "question": "How do I edit the site in the visual editor?",
+          "answer": "Open the site from \"My Sites\" → \"Edit\".\n\nIn the editor you can:\n• Drag and change sections, text, images, and buttons\n• Change colors, fonts, and style\n• Add or remove sections (services, testimonials, FAQ, and more)\n• Edit SEO settings\n• Preview before publishing\n\nRemember to save after every meaningful change."
+        },
+        "publish": {
+          "question": "How do I publish the website?",
+          "answer": "After finishing editing, click \"Publish\" in the editor.\n\nBizuply will create a unique address (slug) for the site, for example:\nyourbusiness.bizuply.com\n\nBefore publishing, make sure:\n• Business and contact details are up to date\n• There are quality images\n• A contact or booking button is active\n• SEO settings are filled in"
+        },
+        "seo": {
+          "question": "How do I set SEO for the website?",
+          "answer": "In the site editor, open SEO settings:\n\n• Title — up to 60 characters, including the business name and a keyword\n• Meta Description — up to 160 characters about the services\n• Keywords — 3–5 words relevant to your field\n\nYou can also set FAQ schema to improve appearance on Google."
+        },
+        "manageMultiple": {
+          "question": "How do I manage multiple websites?",
+          "answer": "In \"My Sites\" you can:\n• See all sites — live and drafts\n• Organize sites into folders\n• Duplicate, rename, or delete a site\n• Share a link to a published site\n• Edit each site separately"
+        },
+        "notSaving": {
+          "question": "What should I do if changes are not saving?",
+          "answer": "Try the following steps:\n\n• Check your internet connection\n• Click \"Save\" again in the editor\n• Hard refresh (Ctrl + F5)\n• Clear browser cache\n• Try another browser\n\nIf the issue continues, contact support with details and a screenshot."
+        },
+        "notLoading": {
+          "question": "The site does not load after publishing — what should I do?",
+          "answer": "• Make sure the site status is \"Active\" and not \"Draft\"\n• Wait 2–5 minutes for updates\n• Try opening in a private / Incognito window\n• Check that the slug (address) is correct\n• Refresh the page\n\nIf it still does not work, contact technical support."
+        },
+        "editAfterPublish": {
+          "question": "Can I edit the site after publishing?",
+          "answer": "Yes. Open the site from \"My Sites\" → \"Edit\", make changes, then click \"Save\" and \"Publish\" again.\n\nChanges will update on the live site within a few minutes."
+        },
+        "share": {
+          "question": "How do I share the website with customers?",
+          "answer": "After publishing:\n• Copy the link from \"My Sites\" or the \"Share\" button\n• Send it via WhatsApp, social media, email signature, or business card\n• Add the link to your Bizuply business profile\n\nThe dashboard will show view and traffic statistics for the site."
+        }
+      }
+    }
   }
 }

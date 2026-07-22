@@ -4,8 +4,16 @@
   min-height: 100%;
   background: #f5f6fb;
   padding: 1.5rem 0 3rem;
+}
+
+.guide-article-page[dir="rtl"] {
   direction: rtl;
   text-align: right;
+}
+
+.guide-article-page[dir="ltr"] {
+  direction: ltr;
+  text-align: left;
 }
 
 .guide-article-container {
@@ -15,8 +23,8 @@
   font-family: Poppins, Inter, system-ui, Arial, sans-serif;
   color: #1f2937;
   line-height: 1.75;
-  text-align: right;
-  direction: rtl;
+  direction: inherit;
+  text-align: inherit;
 }
 
 .guide-article-container h1 {
