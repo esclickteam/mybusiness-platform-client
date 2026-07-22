@@ -54,7 +54,7 @@ function datePill(day: string, date: string, active = false) {
   type="button"
   class="rounded-[24px] px-5 py-4 text-center transition ${
     active
-      ? "bg-slate-950 text-white shadow-xl"
+      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl"
       : "border border-slate-200 bg-white text-slate-700 shadow-sm"
   }"
   data-editable-card="true"
@@ -83,7 +83,7 @@ function bookingServiceCard(
 >
   <div class="flex items-start justify-between gap-4">
     <div>
-      <h3 class="text-lg font-black text-slate-950" data-editable-text="true">${title}</h3>
+      <h3 class="text-lg font-black text-slate-800" data-editable-text="true">${title}</h3>
       <p class="mt-2 text-sm font-bold text-slate-500" data-editable-text="true">${duration}</p>
     </div>
 
@@ -122,7 +122,7 @@ function calendarMock() {
         Booking Calendar
       </p>
 
-      <h3 class="mt-2 text-3xl font-black text-slate-950" data-editable-text="true">
+      <h3 class="mt-2 text-3xl font-black text-slate-800" data-editable-text="true">
         בחרו תאריך ושעה
       </h3>
     </div>
@@ -165,7 +165,7 @@ function calendarMock() {
 function bookingFormCard(buttonText = "קביעת תור") {
   return `
 <div class="${softCardClass}" data-bizuply-block="booking-form" data-editable-card="true">
-  <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
     קביעת תור מהירה
   </h3>
 
@@ -195,11 +195,11 @@ function bookingFormCard(buttonText = "קביעת תור") {
 function bookingStep(number: string, title: string, text: string) {
   return `
 <div class="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white">
+  <div class="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
     ${number}
   </div>
 
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </div>
 `;
@@ -214,7 +214,7 @@ function appointmentPreviewCard() {
         Next appointment
       </p>
 
-      <h3 class="mt-2 text-2xl font-black text-slate-950" data-editable-text="true">
+      <h3 class="mt-2 text-2xl font-black text-slate-800" data-editable-text="true">
         התור הבא שלך
       </h3>
     </div>
@@ -226,7 +226,7 @@ function appointmentPreviewCard() {
 
   <div class="rounded-[30px] bg-slate-50 p-6">
     <p class="text-sm font-black text-slate-400" data-editable-text="true">יום שני · 13 לחודש</p>
-    <h4 class="mt-3 text-4xl font-black text-slate-950" data-editable-text="true">10:30</h4>
+    <h4 class="mt-3 text-4xl font-black text-slate-800" data-editable-text="true">10:30</h4>
     <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">
       שירות ראשון · 60 דקות · אצל העסק / אונליין / בבית הלקוח
     </p>
@@ -242,10 +242,10 @@ function appointmentPreviewCard() {
 
 function mobileBookingPreview() {
   return `
-<div class="mx-auto max-w-[360px] rounded-[44px] border border-slate-200 bg-slate-950 p-4 shadow-[0_42px_140px_rgba(15,23,42,0.25)]" data-editable-card="true">
+<div class="mx-auto max-w-[360px] rounded-[44px] border border-slate-200 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-4 shadow-[0_42px_140px_rgba(15,23,42,0.25)]" data-editable-card="true">
   <div class="rounded-[34px] bg-white p-5">
     <div class="mb-5 flex items-center justify-between">
-      <h3 class="text-xl font-black text-slate-950" data-editable-text="true">קביעת תור</h3>
+      <h3 class="text-xl font-black text-slate-800" data-editable-text="true">קביעת תור</h3>
       <span class="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-600" data-editable-text="true">Online</span>
     </div>
 
@@ -260,7 +260,7 @@ function mobileBookingPreview() {
       ${timeSlot("12:00")}
     </div>
 
-    <a href="#booking" class="mt-5 flex min-h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 text-xs font-black text-white" data-editable-link="true">
+    <a href="#booking" class="mt-5 flex min-h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" data-editable-link="true">
       אישור
     </a>
   </div>
@@ -423,7 +423,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -655,7 +655,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Booking
               </p>
@@ -707,7 +707,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             זמינות קרובה
           </h3>
 
@@ -810,7 +810,7 @@ export const bookingLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">

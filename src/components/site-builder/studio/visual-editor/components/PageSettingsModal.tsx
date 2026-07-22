@@ -574,7 +574,7 @@ export default function PageSettingsModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto bg-slate-950/55 p-3 backdrop-blur-md sm:p-6"
+      className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
       dir="rtl"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -599,7 +599,7 @@ export default function PageSettingsModal({
               <p className="text-[11px] font-black uppercase tracking-wider text-blue-600">
                 הגדרות עמוד
               </p>
-              <h2 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-950 sm:text-2xl">
+              <h2 className="mt-0.5 truncate text-xl font-black tracking-tight text-slate-800 sm:text-2xl">
                 {page.title || "עמוד"}
               </h2>
               <p className="mt-1 truncate text-xs font-semibold text-slate-400">
@@ -1114,7 +1114,7 @@ export default function PageSettingsModal({
                   </p>
                 </details>
 
-                <div className="rounded-2xl bg-slate-900 px-4 py-3">
+                <div className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-3">
                   <p className="text-[11px] font-black uppercase tracking-wide text-slate-400">
                     תג robots שייווצר אוטומטית
                   </p>
@@ -1333,7 +1333,7 @@ export default function PageSettingsModal({
                         <button
                           type="button"
                           onClick={() => copyToClipboard(siteBaseUrl)}
-                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-slate-900 px-3 text-xs font-black text-white transition hover:bg-slate-800"
+                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-3 text-xs font-black text-white transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
                         >
                           {copiedHint ? (
                             <>

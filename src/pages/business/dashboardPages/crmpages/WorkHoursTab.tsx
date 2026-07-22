@@ -345,7 +345,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   {t("crm.workHours.badge")}
                 </div>
 
-                <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                   {t("crm.workHours.heroTitle")}
                 </h2>
 
@@ -415,7 +415,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   {t("crm.workHours.badge")}
                 </div>
 
-                <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
+                <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-800">
                   {t("crm.workHours.settingsTitle")}
                 </h3>
 
@@ -429,7 +429,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : t("crm.workHours.saveHours")}
@@ -476,7 +476,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
           <div className="border-b border-slate-100 p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h3 className="text-2xl font-black text-slate-950">
+                <h3 className="text-2xl font-black text-slate-800">
                   {t("crm.workHours.scheduleTitle")}
                 </h3>
 
@@ -532,7 +532,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                         </div>
 
                         <div>
-                          <p className="text-base font-black text-slate-950">
+                          <p className="text-base font-black text-slate-800">
                             {dayLabel}
                           </p>
 
@@ -573,7 +573,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                           className={[
                             "inline-flex h-11 min-w-[104px] items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
                             isClosed
-                              ? "bg-slate-950 text-white shadow-lg shadow-slate-200 hover:bg-sky-950"
+                              ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 hover:bg-sky-950"
                               : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
                           ].join(" ")}
                         >
@@ -599,7 +599,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               </div>
 
               <div>
-                <h3 className="text-base font-black text-slate-950">
+                <h3 className="text-base font-black text-slate-800">
                   {t("crm.workHours.overviewTitle")}
                 </h3>
 
@@ -639,7 +639,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
           {!isSettingsVariant && (
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-              <h3 className="text-base font-black text-slate-950">
+              <h3 className="text-base font-black text-slate-800">
                 {t("crm.workHours.tipsTitle")}
               </h3>
 
@@ -653,7 +653,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
           {isSettingsVariant && (
             <section className="rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5">
-              <h3 className="text-base font-black text-slate-950">
+              <h3 className="text-base font-black text-slate-800">
                 {t("crm.workHours.bookingRulesTipTitle")}
               </h3>
 
@@ -711,7 +711,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -745,7 +745,7 @@ function MiniStatCard({
         <div>
           <p className="text-xs font-black text-slate-400">{label}</p>
 
-          <p className="mt-1 text-xl font-black text-slate-950">{value}</p>
+          <p className="mt-1 text-xl font-black text-slate-800">{value}</p>
         </div>
 
         <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-800">

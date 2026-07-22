@@ -465,7 +465,7 @@ export function NotificationSettingsPanel({
               <button
                 type="button"
                 onClick={handleInstall}
-                className="mt-2 inline-flex h-9 items-center gap-2 rounded-xl bg-slate-900 px-3 text-[11px] font-black text-white transition hover:bg-slate-800"
+                className="mt-2 inline-flex h-9 items-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 text-[11px] font-black text-white transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
               >
                 <Download className="h-3.5 w-3.5" />
                 {installEvent ? "התקן אפליקציה" : "איך מתקינים באייפון"}

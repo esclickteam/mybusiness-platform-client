@@ -622,7 +622,7 @@ export default function BusinessProfileView() {
 
           <div className="mx-auto max-w-4xl">
             <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
-              <h2 className="text-xl font-black text-slate-950">
+              <h2 className="text-xl font-black text-slate-800">
                 {t("businessProfile.view.recentReviews")}
               </h2>
 
@@ -697,7 +697,7 @@ export default function BusinessProfileView() {
             <div className="space-y-5">
               <div className="flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-950">
+                  <h2 className="text-2xl font-black text-slate-800">
                     {t("businessProfile.view.customerReviews")}
                   </h2>
 
@@ -711,7 +711,7 @@ export default function BusinessProfileView() {
                 {!isOwner && (
                   <button
                     type="button"
-                    className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     onClick={() => setShowReviewModal(true)}
                   >
                     {t("businessProfile.view.addReview")}
@@ -722,7 +722,7 @@ export default function BusinessProfileView() {
               {showReviewModal &&
                 createPortal(
                   <div
-                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-y-auto bg-slate-950/40 p-4 backdrop-blur-sm sm:p-6"
+                    className="fixed inset-0 z-[10050] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-sm sm:p-6"
                     onClick={() => setShowReviewModal(false)}
                     role="presentation"
                   >
@@ -793,7 +793,7 @@ export default function BusinessProfileView() {
                     <button
                       type="button"
                       onClick={() => setShowReviewModal(true)}
-                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     >
                       {t("businessProfile.view.writeFirstReview")}
                     </button>
@@ -822,7 +822,7 @@ export default function BusinessProfileView() {
                 🌐
               </div>
 
-              <h2 className="mt-5 text-3xl font-black text-slate-950">
+              <h2 className="mt-5 text-3xl font-black text-slate-800">
                 {t("businessProfile.view.websiteTitle")}
               </h2>
 
@@ -836,7 +836,7 @@ export default function BusinessProfileView() {
                   target="_blank"
                   rel="noreferrer"
                   dir="ltr"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
                   {t("businessProfile.contact.websiteCta")}
                 </a>
@@ -877,7 +877,7 @@ export default function BusinessProfileView() {
               >
                 <button
                   type="button"
-                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-sm font-black text-slate-950 transition hover:bg-violet-50"
+                  className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-sm font-black text-slate-800 transition hover:bg-violet-50"
                   onClick={() => setOpenFaqIndex(isOpen ? null : index)}
                 >
                   <span>{faq.question}</span>
@@ -914,7 +914,7 @@ export default function BusinessProfileView() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <section className="mx-auto max-w-7xl">
         <div className="relative overflow-visible rounded-[2.5rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
@@ -948,7 +948,7 @@ export default function BusinessProfileView() {
                     ✨
                   </div>
 
-                  <p className="mt-4 text-lg font-black text-slate-950">
+                  <p className="mt-4 text-lg font-black text-slate-800">
                     {t("businessProfile.view.welcome")}
                   </p>
                 </div>
@@ -971,7 +971,7 @@ export default function BusinessProfileView() {
                 )}
               </div>
 
-              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-950 sm:text-5xl">
+              <h1 className="mt-5 text-4xl font-black tracking-tight text-slate-800 sm:text-5xl">
                 {businessName || t("businessProfile.view.defaultBusinessName")}
               </h1>
 
@@ -1032,7 +1032,7 @@ export default function BusinessProfileView() {
                         className={[
                           "flex min-w-[124px] items-center justify-center rounded-2xl px-5 py-3 text-center text-sm font-black transition",
                           isActive
-                            ? "bg-gradient-to-l from-violet-600 to-blue-600 text-white shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
+                            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_34px_rgba(124,58,237,0.30)]"
                             : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700 hover:shadow-[0_12px_30px_rgba(124,58,237,0.14)]",
                         ].join(" ")}
                         onClick={() => handleTabChange(tab)}
@@ -1064,7 +1064,7 @@ function EmptyState({ title, text, icon = "✨", children }: EmptyStateProps) {
         {icon}
       </div>
 
-      <h3 className="text-lg font-black text-slate-950">{title}</h3>
+      <h3 className="text-lg font-black text-slate-800">{title}</h3>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {text}

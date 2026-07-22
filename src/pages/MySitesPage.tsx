@@ -413,7 +413,7 @@ export default function MySitesPage() {
             </div>
 
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                 {t("mySites.title")}
               </h1>
 
@@ -431,7 +431,7 @@ export default function MySitesPage() {
             <button
               type="button"
               onClick={handleCreateSite}
-              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-950 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
+              className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
             >
               <Plus className="h-4 w-4" />
               {t("mySites.newSite")}
@@ -495,7 +495,7 @@ export default function MySitesPage() {
                   title={t("mySites.rightClickDelete")}
                   className={`inline-flex h-11 items-center gap-2 rounded-2xl px-4 text-xs font-black transition ${
                     activeFolderId === folder._id
-                      ? "bg-slate-950 text-white shadow-lg"
+                      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg"
                       : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700"
                   }`}
                 >
@@ -538,7 +538,7 @@ export default function MySitesPage() {
                 <Globe2 className="h-8 w-8" />
               </div>
 
-              <h2 className="text-2xl font-black text-slate-950">
+              <h2 className="text-2xl font-black text-slate-800">
                 {t("mySites.emptyTitle")}
               </h2>
 
@@ -549,7 +549,7 @@ export default function MySitesPage() {
               <button
                 type="button"
                 onClick={handleCreateSite}
-                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-950 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
+                className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
               >
                 <Plus className="h-4 w-4" />
                 {t("mySites.createFirstSite")}
@@ -579,8 +579,8 @@ export default function MySitesPage() {
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
                       <MySiteCardPreview site={site} />
 
-                      <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-300 group-hover:bg-slate-950/35 group-hover:opacity-100">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-950 shadow-xl">
+                      <div className="absolute inset-0 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/0 opacity-0 transition duration-300 group-hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 group-hover:opacity-100">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-800 shadow-xl">
                           <Pencil className="h-4 w-4" />
                           {t("mySites.openInEditor")}
                         </span>
@@ -617,7 +617,7 @@ export default function MySitesPage() {
                           </div>
 
                           <div className="min-w-0">
-                            <h3 className="truncate text-base font-black text-slate-950">
+                            <h3 className="truncate text-base font-black text-slate-800">
                               {site.name || t("mySites.defaultSiteName")}
                             </h3>
 
@@ -786,7 +786,7 @@ function FolderFilterButton({
       onClick={onClick}
       className={`inline-flex h-11 items-center gap-2 rounded-2xl px-4 text-xs font-black transition ${
         active
-          ? "bg-slate-950 text-white shadow-lg"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg"
           : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700"
       }`}
     >

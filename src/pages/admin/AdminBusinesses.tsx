@@ -144,7 +144,7 @@ function AdminBusinesses() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-950 md:px-8"
+        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
@@ -248,7 +248,7 @@ function AdminBusinesses() {
                             type="button"
                             disabled={enteringId === biz._id}
                             onClick={() => handleEnterBusiness(biz)}
-                            className="rounded-2xl bg-gradient-to-l from-purple-700 to-fuchsia-600 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                            className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-2.5 text-xs font-black text-white shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                           >
                             {enteringId === biz._id
                               ? "נכנס..."

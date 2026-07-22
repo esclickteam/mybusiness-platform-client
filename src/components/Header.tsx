@@ -117,7 +117,7 @@ export default function Header() {
                 className={`text-[15px] font-extrabold transition ${
                   isActive
                     ? "text-indigo-600"
-                    : "text-slate-950 hover:text-indigo-600"
+                    : "text-slate-800 hover:text-indigo-600"
                 }`}
               >
                 {t(item.labelKey)}
@@ -232,9 +232,9 @@ export default function Header() {
             aria-label={t("common.openMenu")}
             aria-expanded={menuOpen}
           >
-            <span className="h-0.5 w-5 rounded-full bg-slate-900" />
-            <span className="h-0.5 w-5 rounded-full bg-slate-900" />
-            <span className="h-0.5 w-5 rounded-full bg-slate-900" />
+            <span className="h-0.5 w-5 rounded-full bg-violet-400" />
+            <span className="h-0.5 w-5 rounded-full bg-sky-400" />
+            <span className="h-0.5 w-5 rounded-full bg-cyan-400" />
           </button>
         </div>
       </nav>

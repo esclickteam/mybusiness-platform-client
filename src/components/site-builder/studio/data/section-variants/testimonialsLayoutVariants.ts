@@ -69,7 +69,7 @@ function testimonialAvatarCard(
     </div>
 
     <div>
-      <p class="text-sm font-black text-slate-950" data-editable-text="true">${name}</p>
+      <p class="text-sm font-black text-slate-800" data-editable-text="true">${name}</p>
       <p class="mt-1 text-xs font-bold text-slate-400" data-editable-text="true">${role}</p>
     </div>
   </div>
@@ -120,7 +120,7 @@ function compactTestimonial(
       ${quote}
     </p>
 
-    <p class="mt-4 text-sm font-black text-slate-950" data-editable-text="true">
+    <p class="mt-4 text-sm font-black text-slate-800" data-editable-text="true">
       ${name}
     </p>
   </div>
@@ -139,7 +139,7 @@ function bigQuoteCard(
     ”
   </div>
 
-  <p class="text-2xl font-black leading-10 tracking-[-0.03em] text-slate-950 md:text-4xl md:leading-[1.25]" data-editable-text="true">
+  <p class="text-2xl font-black leading-10 tracking-[-0.03em] text-slate-800 md:text-4xl md:leading-[1.25]" data-editable-text="true">
     ${quote}
   </p>
 
@@ -149,7 +149,7 @@ function bigQuoteCard(
     </div>
 
     <div>
-      <p class="text-base font-black text-slate-950" data-editable-text="true">${name}</p>
+      <p class="text-base font-black text-slate-800" data-editable-text="true">${name}</p>
       <p class="mt-1 text-sm font-bold text-slate-400" data-editable-text="true">${role}</p>
     </div>
   </div>
@@ -176,7 +176,7 @@ function beforeAfterProofCard() {
   <div class="mt-7">
     ${stars()}
 
-    <h3 class="mt-4 text-3xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="mt-4 text-3xl font-black text-slate-800" data-editable-text="true">
       התוצאה הייתה מעל הציפיות
     </h3>
 
@@ -308,7 +308,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="relative overflow-hidden rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -666,7 +666,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -742,7 +742,7 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             השאירו פרטים
           </h3>
 
@@ -880,19 +880,19 @@ export const testimonialsLayoutVariants: SectionLayoutVariant[] = [
           <blockquote class="rounded-[34px] bg-slate-50 p-7 text-center" data-editable-card="true">
             ${stars()}
             <p class="mt-5 text-base font-bold leading-8 text-slate-600" data-editable-text="true">“שירות מעולה וברור.”</p>
-            <p class="mt-5 text-sm font-black text-slate-950" data-editable-text="true">לקוחה מרוצה</p>
+            <p class="mt-5 text-sm font-black text-slate-800" data-editable-text="true">לקוחה מרוצה</p>
           </blockquote>
 
           <blockquote class="rounded-[34px] bg-slate-50 p-7 text-center" data-editable-card="true">
             ${stars()}
             <p class="mt-5 text-base font-bold leading-8 text-slate-600" data-editable-text="true">“הכל היה מקצועי.”</p>
-            <p class="mt-5 text-sm font-black text-slate-950" data-editable-text="true">לקוח מרוצה</p>
+            <p class="mt-5 text-sm font-black text-slate-800" data-editable-text="true">לקוח מרוצה</p>
           </blockquote>
 
           <blockquote class="rounded-[34px] bg-slate-50 p-7 text-center" data-editable-card="true">
             ${stars()}
             <p class="mt-5 text-base font-bold leading-8 text-slate-600" data-editable-text="true">“ממליצה בחום.”</p>
-            <p class="mt-5 text-sm font-black text-slate-950" data-editable-text="true">לקוחה חדשה</p>
+            <p class="mt-5 text-sm font-black text-slate-800" data-editable-text="true">לקוחה חדשה</p>
           </blockquote>
         </div>
       </div>

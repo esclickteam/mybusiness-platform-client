@@ -14,7 +14,7 @@ export default function Home() {
   const { t } = useTranslation();
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-950">
+    <main className="min-h-screen overflow-hidden bg-white text-slate-800">
       <Helmet>
         <title>{t("seo.homeTitle")}</title>
 

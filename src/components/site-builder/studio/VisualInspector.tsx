@@ -563,7 +563,7 @@ export default function VisualInspector({
               Inspector
             </p>
 
-            <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-950">
+            <h2 className="mt-1 text-xl font-black tracking-[-0.04em] text-slate-800">
               {currentTabTitle}
             </h2>
 
@@ -666,7 +666,7 @@ export default function VisualInspector({
                 <button
                   type="button"
                   onClick={handleTextSave}
-                  className="mt-3 w-full rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white transition hover:bg-violet-700"
+                  className="mt-3 w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   עדכון טקסט
                 </button>
@@ -1037,7 +1037,7 @@ export default function VisualInspector({
                 <button
                   type="button"
                   onClick={handleTextSave}
-                  className="mt-3 w-full rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white transition hover:bg-violet-700"
+                  className="mt-3 w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   שמירת טקסט
                 </button>
@@ -1086,7 +1086,7 @@ export default function VisualInspector({
                 <button
                   type="button"
                   onClick={handleImageSave}
-                  className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-xs font-black text-white transition hover:bg-violet-700"
+                  className="w-full rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   החלפת תמונה
                 </button>
@@ -1217,11 +1217,11 @@ export default function VisualInspector({
 function EmptySelection() {
   return (
     <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center">
-      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-slate-950 text-white">
+      <div className="mx-auto grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
         ✦
       </div>
 
-      <p className="mt-5 text-lg font-black text-slate-950">
+      <p className="mt-5 text-lg font-black text-slate-800">
         לא נבחר אלמנט
       </p>
 
@@ -1261,7 +1261,7 @@ function Tab({
 function PanelTitle({ title, subtitle }: { title: string; subtitle: string }) {
   return (
     <div className="mb-4 rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4">
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {subtitle}
       </p>
@@ -1281,7 +1281,7 @@ function DesignSection({
   return (
     <section className="mb-4 rounded-[1.65rem] border border-slate-200 bg-white p-4 shadow-sm">
       <div className="mb-3 flex items-center justify-between gap-3">
-        <p className="text-sm font-black text-slate-950">{title}</p>
+        <p className="text-sm font-black text-slate-800">{title}</p>
         <span className="grid h-8 w-8 place-items-center rounded-xl bg-violet-50 text-xs font-black text-violet-700">
           {icon}
         </span>
@@ -1399,7 +1399,7 @@ function RadiusControl({
 
           <div className="mt-2 h-2 overflow-hidden rounded-full bg-slate-200">
             <div
-              className="h-full rounded-full bg-gradient-to-l from-violet-700 to-fuchsia-500"
+              className="h-full rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -1425,7 +1425,7 @@ function RadiusControl({
             className={[
               "flex min-h-[42px] items-center justify-center border px-2 py-2 text-center text-[11px] font-black leading-tight transition",
               value === preset.value
-                ? "border-violet-700 bg-violet-700 text-white shadow-lg shadow-violet-100"
+                ? "border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-violet-100"
                 : "border-slate-200 bg-white text-slate-600 hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700",
             ].join(" ")}
             style={{ borderRadius: `${Math.min(preset.value, 28)}px` }}
@@ -1524,7 +1524,7 @@ function AnimationButton({
     >
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-sm font-black text-slate-950">{label}</p>
+          <p className="text-sm font-black text-slate-800">{label}</p>
 
           <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
             {description}

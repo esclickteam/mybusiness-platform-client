@@ -55,7 +55,7 @@ function contactInfoCard(title: string, value: string, icon = "☎") {
     ${icon}
   </div>
 
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -79,7 +79,7 @@ function contactMethodCard(
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -89,7 +89,7 @@ function contactMethodCard(
 
   <a
     href="${href}"
-    class="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl bg-slate-950 px-6 text-xs font-black text-white shadow-lg"
+    class="mt-6 inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg"
     data-editable-link="true"
   >
     ${button}
@@ -118,7 +118,7 @@ function mapBlock() {
 function contactMiniForm(buttonText = "שליחת פנייה") {
   return `
 <div class="${softCardClass}" data-editable-card="true">
-  <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
     נשמח לשמוע מכם
   </h3>
 
@@ -141,7 +141,7 @@ function scheduleCard() {
       <p class="text-xs font-black uppercase tracking-[0.18em] text-[var(--biz-primary,#7C3AED)]" data-editable-text="true">
         Opening Hours
       </p>
-      <h3 class="mt-2 text-2xl font-black text-slate-950" data-editable-text="true">
+      <h3 class="mt-2 text-2xl font-black text-slate-800" data-editable-text="true">
         שעות פעילות
       </h3>
     </div>
@@ -162,7 +162,7 @@ function scheduleCard() {
       <span data-editable-text="true">09:00 - 13:00</span>
     </div>
 
-    <div class="flex items-center justify-between rounded-2xl bg-slate-950 px-4 py-3 text-sm font-black text-white">
+    <div class="flex items-center justify-between rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
       <span data-editable-text="true">שבת</span>
       <span data-editable-text="true">סגור</span>
     </div>
@@ -313,7 +313,7 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Preview
               </p>
@@ -410,7 +410,7 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[58px] bg-slate-950 p-8 text-white shadow-[0_50px_170px_rgba(15,23,42,0.34)] md:p-14">
+      <div class="rounded-[58px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_50px_170px_rgba(15,23,42,0.34)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[1fr_0.9fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -556,7 +556,7 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[58px] bg-slate-950 p-8 text-white shadow-[0_50px_170px_rgba(15,23,42,0.34)] md:p-14">
+      <div class="rounded-[58px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_50px_170px_rgba(15,23,42,0.34)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -577,8 +577,8 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
             </div>
           </div>
 
-          <div class="rounded-[42px] bg-white p-6 text-slate-950" data-editable-card="true">
-            <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <div class="rounded-[42px] bg-white p-6 text-slate-800" data-editable-card="true">
+            <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
               בקשת דמו
             </h3>
 
@@ -737,7 +737,7 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
       kind,
       `
       <div class="grid overflow-hidden rounded-[58px] bg-white shadow-[0_44px_150px_rgba(15,23,42,0.18)] lg:grid-cols-2">
-        <div class="bg-slate-950 p-8 text-white md:p-14">
+        <div class="border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 md:p-14">
           <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
             Contact Details
           </p>
@@ -766,7 +766,7 @@ export const contactLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="p-8 md:p-14">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             השאירו פרטים
           </h3>
 

@@ -1170,7 +1170,7 @@ export default function CollabChat({
                 צ׳אט שיתופי פעולה
               </div>
 
-              <h2 className="mt-3 text-xl font-black text-slate-950">
+              <h2 className="mt-3 text-xl font-black text-slate-800">
                 הודעות עסקיות
               </h2>
 
@@ -1225,7 +1225,7 @@ export default function CollabChat({
                     className={[
                       "w-full rounded-2xl border p-3 text-right transition hover:-translate-y-0.5",
                       isActive
-                        ? "border-violet-200 bg-white text-slate-950 shadow-[0_16px_45px_rgba(124,58,237,0.16)] ring-2 ring-violet-100"
+                        ? "border-violet-200 bg-white text-slate-800 shadow-[0_16px_45px_rgba(124,58,237,0.16)] ring-2 ring-violet-100"
                         : "border-white bg-white/80 text-slate-800 shadow-sm hover:border-sky-100 hover:bg-white hover:shadow-md",
                     ].join(" ")}
                   >
@@ -1234,7 +1234,7 @@ export default function CollabChat({
                         className={[
                           "flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-black shadow-sm",
                           isActive
-                            ? "bg-gradient-to-br from-violet-600 to-fuchsia-500 text-white"
+                            ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800"
                             : "bg-sky-50 text-sky-700",
                         ].join(" ")}
                       >
@@ -1275,7 +1275,7 @@ export default function CollabChat({
             </div>
 
             <div className="min-w-0">
-              <h3 className="truncate text-base font-black text-slate-950">
+              <h3 className="truncate text-base font-black text-slate-800">
                 {selectedPartner
                   ? `שיחה עם ${selectedPartner.businessName}`
                   : "בחר שיחה עסקית"}
@@ -1365,7 +1365,7 @@ export default function CollabChat({
               <button
                 type="submit"
                 disabled={!input.trim()}
-                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <Send className="h-5 w-5" />
                 <span className="hidden sm:inline">שליחה</span>
@@ -1429,7 +1429,7 @@ function MessageBubble({
         className={[
           "max-w-[78%] rounded-[1.4rem] px-4 py-3 shadow-sm",
           isMine
-            ? "rounded-tl-md bg-gradient-to-br from-violet-700 to-fuchsia-600 text-white shadow-[0_12px_30px_rgba(124,58,237,0.20)]"
+            ? "rounded-tl-md bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white shadow-[0_12px_30px_rgba(124,58,237,0.20)]"
             : "rounded-tr-md border border-slate-100 bg-white text-slate-900 shadow-[0_10px_28px_rgba(15,23,42,0.05)]",
         ].join(" ")}
       >
@@ -1525,7 +1525,7 @@ function EmptyChat({ text }: { text: string }) {
           <MessageCircle className="h-7 w-7" />
         </div>
 
-        <h3 className="mt-4 text-lg font-black text-slate-950">
+        <h3 className="mt-4 text-lg font-black text-slate-800">
           אין שיחה פעילה
         </h3>
 

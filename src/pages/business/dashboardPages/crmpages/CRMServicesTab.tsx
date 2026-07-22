@@ -258,7 +258,7 @@ export default function CRMServicesTab() {
               {t("crm.services.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("crm.services.title")}
             </h2>
 
@@ -336,7 +336,7 @@ export default function CRMServicesTab() {
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {t("crm.services.listTitle")}
               </h3>
 
@@ -364,7 +364,7 @@ export default function CRMServicesTab() {
               <button
                 type="button"
                 onClick={openAdd}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
               >
                 <Plus className="h-5 w-5" />
                 {t("crm.services.newService")}
@@ -442,7 +442,7 @@ function ServiceFormPanel({
                 : t("crm.services.formBadgeNew")}
             </p>
 
-            <h3 className="mt-1 text-2xl font-black text-slate-950">
+            <h3 className="mt-1 text-2xl font-black text-slate-800">
               {editingService
                 ? t("crm.services.formTitleEdit")
                 : t("crm.services.formTitleNew")}
@@ -573,7 +573,7 @@ function ServiceFormPanel({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-5 w-5" />
             {saving ? t("crm.services.saving") : t("crm.services.saveService")}
@@ -616,7 +616,7 @@ function ServiceCard({
           <button
             type="button"
             onClick={onEdit}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-slate-950 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
             aria-label={t("crm.services.editAria")}
           >
             <Edit3 className="h-4 w-4" />
@@ -638,7 +638,7 @@ function ServiceCard({
       </div>
 
       <div className="p-5">
-        <h4 className="truncate text-lg font-black text-slate-950">
+        <h4 className="truncate text-lg font-black text-slate-800">
           {service.name || t("crm.services.unnamedService")}
         </h4>
 
@@ -733,7 +733,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -775,7 +775,7 @@ function InfoTile({
         </p>
       </div>
 
-      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -785,11 +785,11 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
 
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-800 shadow-sm">
         <Wrench className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">
+      <h4 className="text-xl font-black text-slate-800">
         {t("crm.services.emptyTitle")}
       </h4>
 
@@ -800,7 +800,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
         {t("crm.services.createService")}

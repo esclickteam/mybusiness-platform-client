@@ -188,7 +188,7 @@ function RatingRow({
           </div>
 
           <div className="min-w-0 text-right">
-            <p className="text-sm font-black text-slate-950">
+            <p className="text-sm font-black text-slate-800">
               {field.label}
               {field.required && <span className="text-violet-600"> *</span>}
             </p>
@@ -324,7 +324,7 @@ export default function ReviewForm({
       dir="rtl"
       onSubmit={handleSubmit}
       className={[
-        "relative text-right text-slate-950",
+        "relative text-right text-slate-800",
         isModalLayout
           ? "flex max-h-full min-h-0 flex-col overflow-hidden bg-white"
           : "overflow-hidden rounded-[2rem] border border-violet-100 bg-white",
@@ -341,7 +341,7 @@ export default function ReviewForm({
 
         <h3
           id="review-form-title"
-          className="mt-4 text-3xl font-black tracking-tight text-slate-950"
+          className="mt-4 text-3xl font-black tracking-tight text-slate-800"
         >
           כתיבת ביקורת
         </h3>
@@ -458,7 +458,7 @@ export default function ReviewForm({
           </div>
 
           <div>
-            <p className="text-sm font-black text-slate-950">ממוצע דירוג חי</p>
+            <p className="text-sm font-black text-slate-800">ממוצע דירוג חי</p>
             <p className="mt-1 text-xs font-bold text-slate-500">
               מחושב לפי הדירוגים שבחרתם
             </p>
@@ -494,7 +494,7 @@ export default function ReviewForm({
         <button
           type="submit"
           disabled={!canSubmit}
-          className="rounded-2xl bg-violet-600 px-7 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
+          className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-7 py-3 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:shadow-none"
         >
           {isSubmitting ? "שולח..." : "שליחת ביקורת"}
         </button>

@@ -1732,7 +1732,7 @@ export default function LottieAnimationBrowser({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             <Upload className="h-4 w-4" />
             העלאת JSON / Lottie
@@ -1778,7 +1778,7 @@ export default function LottieAnimationBrowser({
               className={[
                 "whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition",
                 category === item.id
-                  ? "bg-slate-950 text-white"
+                  ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
@@ -1959,7 +1959,7 @@ export default function LottieAnimationBrowser({
                   </div>
 
                   <div className="p-4">
-                    <h3 className="text-sm font-black text-slate-950">
+                    <h3 className="text-sm font-black text-slate-800">
                       {animation.title}
                     </h3>
                     <p className="mt-1 min-h-10 text-xs font-bold leading-5 text-slate-400">
@@ -1972,7 +1972,7 @@ export default function LottieAnimationBrowser({
                       onClick={() =>
                         void addAnimationToCanvas(animation)
                       }
-                      className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-xs font-black text-white transition hover:bg-violet-700 disabled:cursor-wait disabled:opacity-70"
+                      className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-xs font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-wait disabled:opacity-70"
                     >
                       {isAdding ? (
                         <BizuplyLoader size="xs" compact />

@@ -107,7 +107,7 @@ export default function BusinessSupport() {
   return (
     <main
       dir="rtl"
-      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-violet-50/40 px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
         <section className="relative overflow-hidden rounded-[2rem] border border-violet-100 bg-gradient-to-br from-white via-violet-50 to-sky-50 px-6 py-10 shadow-[0_24px_80px_rgba(109,40,217,0.10)] sm:px-8 lg:px-10">
@@ -120,7 +120,7 @@ export default function BusinessSupport() {
               תמיכה לעסקים
             </div>
 
-            <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+            <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
               איך אפשר לעזור?
             </h1>
 
@@ -137,7 +137,7 @@ export default function BusinessSupport() {
             className="rounded-[2rem] border border-white/70 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.08)] sm:p-7"
           >
             <div className="mb-6">
-              <h2 className="text-2xl font-black tracking-tight text-slate-950">
+              <h2 className="text-2xl font-black tracking-tight text-slate-800">
                 פתיחת פנייה לתמיכה
               </h2>
 
@@ -251,7 +251,7 @@ export default function BusinessSupport() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                className="flex h-13 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
               >
                 {loading ? "שולח..." : "שליחת פנייה"}
                 <Send size={17} />
@@ -283,7 +283,7 @@ export default function BusinessSupport() {
               <Headphones size={26} />
             </div>
 
-            <h2 className="mt-5 text-2xl font-black tracking-tight text-slate-950">
+            <h2 className="mt-5 text-2xl font-black tracking-tight text-slate-800">
               אנחנו כאן בשבילך
             </h2>
 

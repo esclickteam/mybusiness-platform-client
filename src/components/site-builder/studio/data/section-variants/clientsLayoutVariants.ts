@@ -67,7 +67,7 @@ function partnerCard(title: string, text: string, icon = "✦") {
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -102,7 +102,7 @@ function caseStudyCard(
     Case Study
   </p>
 
-  <h3 class="mt-4 text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="mt-4 text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -111,7 +111,7 @@ function caseStudyCard(
   </p>
 
   <div class="mt-6 rounded-[24px] bg-slate-50 p-5">
-    <strong class="block text-3xl font-black text-slate-950" data-editable-text="true">
+    <strong class="block text-3xl font-black text-slate-800" data-editable-text="true">
       ${result}
     </strong>
     <span class="mt-1 block text-xs font-bold text-slate-400" data-editable-text="true">
@@ -131,7 +131,7 @@ function clientQuote(name: string, quote: string) {
     ${quote}
   </p>
 
-  <p class="mt-5 text-sm font-black text-slate-950" data-editable-text="true">
+  <p class="mt-5 text-sm font-black text-slate-800" data-editable-text="true">
     ${name}
   </p>
 </div>
@@ -246,7 +246,7 @@ export const clientsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="relative overflow-hidden rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -520,7 +520,7 @@ export const clientsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[60px] bg-slate-950 p-8 text-white shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
+      <div class="rounded-[60px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_54px_180px_rgba(15,23,42,0.38)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -764,7 +764,7 @@ export const clientsLayoutVariants: SectionLayoutVariant[] = [
               <div class="mx-auto mb-4 grid h-16 w-16 place-items-center rounded-3xl bg-white text-3xl font-black text-[var(--biz-primary,#7C3AED)] shadow-xl">
                 +
               </div>
-              <p class="text-xl font-black text-slate-950" data-editable-text="true">הוספת תמונת לקוח / וידאו</p>
+              <p class="text-xl font-black text-slate-800" data-editable-text="true">הוספת תמונת לקוח / וידאו</p>
               <p class="mt-2 text-sm font-bold leading-6 text-slate-500" data-editable-text="true">
                 מתאים לסיפור לקוח, פרויקט או עדות וידאו.
               </p>

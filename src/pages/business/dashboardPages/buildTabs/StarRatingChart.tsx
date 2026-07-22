@@ -176,7 +176,7 @@ export default function StarRatingChart({
             סיכום דירוגים
           </div>
 
-          <h3 className="mt-3 text-xl font-black tracking-tight text-slate-950">
+          <h3 className="mt-3 text-xl font-black tracking-tight text-slate-800">
             דירוג לפי פרמטרים
           </h3>
 
@@ -189,7 +189,7 @@ export default function StarRatingChart({
           <p className="text-xs font-black text-amber-700">ממוצע כללי</p>
 
           <div className="mt-1 flex items-center justify-center gap-2">
-            <span className="text-2xl font-black text-slate-950">
+            <span className="text-2xl font-black text-slate-800">
               {overallAverage ? overallAverage.toFixed(1) : "—"}
             </span>
 
@@ -208,7 +208,7 @@ export default function StarRatingChart({
             ⭐
           </div>
 
-          <h4 className="mt-4 text-base font-black text-slate-950">
+          <h4 className="mt-4 text-base font-black text-slate-800">
             עדיין אין מספיק דירוגים
           </h4>
 
@@ -233,7 +233,7 @@ export default function StarRatingChart({
                     </span>
 
                     <div>
-                      <p className="text-sm font-black text-slate-950">
+                      <p className="text-sm font-black text-slate-800">
                         {label}
                       </p>
 
@@ -259,7 +259,7 @@ export default function StarRatingChart({
 
                 <div className="h-3 overflow-hidden rounded-full bg-white shadow-inner">
                   <div
-                    className="h-full rounded-full bg-gradient-to-l from-violet-600 to-blue-600 transition-all duration-500"
+                    className="h-full rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 transition-all duration-500"
                     style={{ width: `${hasRating ? percent : 0}%` }}
                   />
                 </div>

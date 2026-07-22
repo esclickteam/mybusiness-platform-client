@@ -32,7 +32,7 @@ function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-950">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
         <title>FAQ - Bizuply | Everything You Need to Know</title>
         <meta
@@ -55,7 +55,7 @@ function FAQ() {
           Bizuply Help Center
         </div>
 
-        <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+        <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
           Frequently Asked Questions
         </h1>
 
@@ -69,11 +69,11 @@ function FAQ() {
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
         {/* Left card */}
         <aside className="h-fit rounded-[2.5rem] border border-white/80 bg-white/70 p-7 shadow-xl shadow-slate-900/5 backdrop-blur">
-          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-2xl shadow-lg shadow-slate-900/20">
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20">
             ✨
           </div>
 
-          <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-950">
+          <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-800">
             Need a quick answer?
           </h2>
 
@@ -93,7 +93,7 @@ function FAQ() {
                 className="flex items-center justify-between rounded-3xl border border-slate-100 bg-white/80 px-5 py-4"
               >
                 <div>
-                  <p className="text-xl font-black text-slate-950">{title}</p>
+                  <p className="text-xl font-black text-slate-800">{title}</p>
                   <p className="text-sm font-bold text-slate-500">{text}</p>
                 </div>
                 <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">
@@ -114,7 +114,7 @@ function FAQ() {
                 key={item.q}
                 className={`overflow-hidden rounded-[1.75rem] border bg-white/75 shadow-lg shadow-slate-900/5 backdrop-blur transition-all duration-300 ${
                   isOpen
-                    ? "border-slate-200 ring-1 ring-slate-950/5"
+                    ? "border-slate-200 ring-1 ring-violet-100/40"
                     : "border-white/80 hover:-translate-y-0.5 hover:bg-white"
                 }`}
               >
@@ -124,14 +124,14 @@ function FAQ() {
                   className="flex w-full items-center justify-between gap-5 px-6 py-6 text-left sm:px-7"
                   aria-expanded={isOpen}
                 >
-                  <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-950 sm:text-xl">
+                  <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-xl">
                     {item.q}
                   </span>
 
                   <span
                     className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-2xl font-black transition ${
                       isOpen
-                        ? "bg-slate-950 text-white"
+                        ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                         : "bg-amber-100 text-amber-800"
                     }`}
                   >
@@ -162,7 +162,7 @@ function FAQ() {
 
       {/* CTA */}
       <section className="relative mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
-        <div className="overflow-hidden rounded-[2.5rem] bg-slate-950 px-6 py-12 text-center shadow-2xl shadow-slate-900/20 sm:px-10">
+        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 px-6 py-12 text-center shadow-2xl shadow-slate-900/20 sm:px-10">
           <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-300">
             Still have questions?
           </p>
@@ -179,7 +179,7 @@ function FAQ() {
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
             <a
               href="/join"
-              className="inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-950 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
+              className="inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
             >
               Join as a Business
               <span className="ml-2">→</span>

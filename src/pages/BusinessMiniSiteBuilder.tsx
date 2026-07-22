@@ -623,7 +623,7 @@ export default function BusinessMiniSiteBuilder({
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-6 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white"
+            className="mt-6 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
           >
             נסי שוב
           </button>

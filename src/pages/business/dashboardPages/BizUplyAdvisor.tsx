@@ -153,7 +153,7 @@ const BizUplyAdvisor: React.FC = () => {
         className="flex min-h-[60vh] items-center justify-center px-4"
       >
         <div className="max-w-xl rounded-[28px] border border-amber-200 bg-amber-50 px-6 py-5 text-center shadow-sm">
-          <h2 className="text-xl font-black text-slate-950">
+          <h2 className="text-xl font-black text-slate-800">
             לא נמצא עסק מחובר
           </h2>
 

@@ -38,7 +38,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
 
   return (
     <div
-      className="fixed inset-0 z-[99999] bg-slate-950/40 p-4 backdrop-blur-xl lg:hidden"
+      className="fixed inset-0 z-[99999] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-xl lg:hidden"
       role="dialog"
       aria-modal="true"
     >
@@ -50,7 +50,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
       />
 
       <div className="relative ms-auto flex h-full w-full max-w-[420px] flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl">
-        <div className="relative overflow-hidden bg-slate-950 px-5 py-5 text-white">
+        <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
             <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
@@ -98,7 +98,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
                 {t("common.myAccount")}
               </p>
-              <p className="mt-2 truncate text-lg font-black text-slate-950">
+              <p className="mt-2 truncate text-lg font-black text-slate-800">
                 {t("common.hello", { name: user.name })}
               </p>
             </div>
@@ -107,7 +107,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
               <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
                 {t("home.startTrial")}
               </p>
-              <p className="mt-2 text-lg font-black text-slate-950">
+              <p className="mt-2 text-lg font-black text-slate-800">
                 {t("home.headlineTop")} {t("home.headlineHighlight")}
               </p>
               <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">

@@ -486,7 +486,7 @@ export default function CollabMessagesTab({
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-xl font-black text-slate-950">{t("collab.messages.businessChat")}</h3>
+            <h3 className="text-xl font-black text-slate-800">{t("collab.messages.businessChat")}</h3>
             <p className="mt-1 text-sm font-semibold text-slate-500">
               {t("collab.messages.businessChatHint")}
             </p>
@@ -531,7 +531,7 @@ export default function CollabMessagesTab({
               {t("collab.messages.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("collab.messages.title")}
             </h2>
 
@@ -590,7 +590,7 @@ export default function CollabMessagesTab({
         <div className="border-b border-slate-100 bg-gradient-to-l from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {t("collab.messages.inboxTitle")}
               </h3>
 
@@ -706,7 +706,7 @@ function ProposalMessageCard({
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-lg font-black text-slate-950">
+            <h4 className="truncate text-lg font-black text-slate-800">
               {message.fromBusinessName || t("collab.messages.proposalFallback")}
             </h4>
 
@@ -739,7 +739,7 @@ function ProposalMessageCard({
           <button
             type="button"
             onClick={onOpenAgreement}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
           >
             <FileSignature className="h-4 w-4" />
             {t("collab.messages.viewAgreement")}
@@ -782,7 +782,7 @@ function ProposalMessageCard({
             <button
               type="button"
               onClick={onAccept}
-              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+              className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
             >
               <CheckCircle2 className="h-4 w-4" />
               {t("collab.messages.accept")}
@@ -812,7 +812,7 @@ function FilterButton({
       className={[
         "inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
         active
-          ? "bg-gradient-to-r from-violet-700 to-fuchsia-600 text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)]"
+          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)]"
           : "border border-slate-100 bg-white text-slate-600 shadow-sm hover:-translate-y-0.5 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -859,7 +859,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -891,7 +891,7 @@ function InfoTile({
         {label}
       </p>
 
-      <p className="mt-1 truncate text-sm font-black text-slate-950">
+      <p className="mt-1 truncate text-sm font-black text-slate-800">
         {value}
       </p>
     </div>
@@ -948,7 +948,7 @@ function EmptyState() {
         <Inbox className="h-7 w-7" />
       </div>
 
-      <h4 className="mt-4 text-xl font-black text-slate-950">
+      <h4 className="mt-4 text-xl font-black text-slate-800">
         {t("collab.messages.emptyTitle")}
       </h4>
 
@@ -968,7 +968,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-violet-900/10 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div

@@ -161,7 +161,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             {t("collab.market.form.badge")}
           </div>
 
-          <h3 className="mt-3 text-2xl font-black text-slate-950">
+          <h3 className="mt-3 text-2xl font-black text-slate-800">
             {t("collab.market.form.title")}
           </h3>
 
@@ -333,7 +333,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
         <button
           type="submit"
           disabled={loading}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <BizuplyLoader size="sm" compact />
@@ -486,7 +486,7 @@ export default function CollabMarketTab() {
               {t("collab.market.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("collab.market.title")}
             </h2>
 
@@ -498,7 +498,7 @@ export default function CollabMarketTab() {
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
           >
             <Plus className="h-5 w-5" />
             {t("collab.market.publish")}
@@ -544,7 +544,7 @@ export default function CollabMarketTab() {
         <div className="border-b border-slate-100 bg-gradient-to-l from-white to-sky-50/60 p-5">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {t("collab.market.listTitle")}
               </h3>
 
@@ -568,7 +568,7 @@ export default function CollabMarketTab() {
               <button
                 type="button"
                 onClick={() => setShowCreateModal(true)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
               >
                 <Plus className="h-5 w-5" />
                 {t("collab.market.publishNew")}
@@ -662,7 +662,7 @@ function CollabCard({
             </span>
           </div>
 
-          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
+          <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-800">
             {item.title || t("collab.market.untitled")}
           </h3>
         </div>
@@ -716,7 +716,7 @@ function CollabCard({
             type="button"
             onClick={onSendProposal}
             disabled={!publisherId}
-            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="h-5 w-5" />
             {t("collab.market.sendProposal")}
@@ -806,7 +806,7 @@ function InfoTile({
         </p>
       </div>
 
-      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -838,7 +838,7 @@ function StatCard({
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
 
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
 
@@ -897,7 +897,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
         <Handshake className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">
+      <h4 className="text-xl font-black text-slate-800">
         {t("collab.market.emptyTitle")}
       </h4>
 
@@ -908,7 +908,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
       >
         <Plus className="h-5 w-5" />
         {t("collab.market.publish")}
@@ -926,7 +926,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-violet-900/10 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div

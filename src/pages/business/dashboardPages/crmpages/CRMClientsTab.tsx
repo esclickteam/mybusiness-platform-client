@@ -900,7 +900,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
               {t("crm.clients.badge")}
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("crm.clients.title")}
             </h2>
 
@@ -1049,7 +1049,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className={[
                   "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black transition",
                   page === 1
-                    ? "bg-slate-950 text-white"
+                    ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                     : "bg-white text-slate-600 hover:bg-slate-50",
                 ].join(" ")}
               >
@@ -1108,7 +1108,7 @@ function ClientDetailsView({
 
           <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex min-w-0 items-center gap-4">
-              <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl bg-slate-950 text-lg font-black text-white shadow-[0_18px_45px_rgba(15,23,42,0.18)]">
+              <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_45px_rgba(15,23,42,0.18)]">
                 {getInitials(client.fullName) || (
                   <UserRound className="h-7 w-7" />
                 )}
@@ -1124,7 +1124,7 @@ function ClientDetailsView({
                   {t("crm.clients.details.backToClients")}
                 </button>
 
-                <h2 className="truncate text-3xl font-black tracking-tight text-slate-950">
+                <h2 className="truncate text-3xl font-black tracking-tight text-slate-800">
                   {client.fullName || t("crm.common.unnamedClient")}
                 </h2>
 
@@ -1141,7 +1141,7 @@ function ClientDetailsView({
               <button
                 type="button"
                 onClick={onEdit}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Edit3 className="h-4 w-4" />
                 {t("crm.common.edit")}
@@ -1257,7 +1257,7 @@ function ClientTabButton({
       className={[
         "inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-[0_14px_34px_rgba(15,23,42,0.16)]"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_14px_34px_rgba(15,23,42,0.16)]"
           : "bg-slate-50 text-slate-600 hover:bg-sky-50 hover:text-sky-700",
       ].join(" ")}
     >
@@ -1279,7 +1279,7 @@ function ClientMiniMetric({
       <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-xl font-black text-slate-950">{value}</p>
+      <p className="mt-2 text-xl font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -1296,7 +1296,7 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
           <UserRound className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="text-2xl font-black text-slate-950">{t("crm.clients.profile.title")}</h3>
+          <h3 className="text-2xl font-black text-slate-800">{t("crm.clients.profile.title")}</h3>
           <p className="text-sm font-bold text-slate-500">
             {t("crm.clients.profile.subtitle")}
           </p>
@@ -1319,7 +1319,7 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
       </div>
 
       <div className="mt-5 rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
-        <h4 className="text-base font-black text-slate-950">{t("crm.clients.profile.crmSummary")}</h4>
+        <h4 className="text-base font-black text-slate-800">{t("crm.clients.profile.crmSummary")}</h4>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <SummaryBox label={t("crm.clients.profile.created")} value={formatDate(client.createdAt, locale, emDash)} />
           <SummaryBox label={t("crm.clients.profile.updated")} value={formatDate(client.updatedAt, locale, emDash)} />
@@ -1349,7 +1349,7 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
             <CalendarDays className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-950">
+            <h3 className="text-2xl font-black text-slate-800">
               {t("crm.clients.appointmentsPanel.title")}
             </h3>
             <p className="text-sm font-bold text-slate-500">
@@ -1362,7 +1362,7 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
       {appointments.length === 0 ? (
         <div className="rounded-[1.7rem] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
-          <h4 className="mt-3 text-xl font-black text-slate-950">
+          <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.appointmentsPanel.emptyTitle")}
           </h4>
           <p className="mt-2 text-sm font-bold text-slate-500">
@@ -1410,7 +1410,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-base font-black text-slate-950">
+            <h4 className="truncate text-base font-black text-slate-800">
               {serviceName}
             </h4>
             <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1491,7 +1491,7 @@ function ClientDataPanel({
             <Layers3 className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-950">{t("crm.clients.clientDataPanel.title")}</h3>
+            <h3 className="text-2xl font-black text-slate-800">{t("crm.clients.clientDataPanel.title")}</h3>
             <p className="text-sm font-bold text-slate-500">
               {t("crm.clients.clientDataPanel.subtitle")}
             </p>
@@ -1502,7 +1502,7 @@ function ClientDataPanel({
           type="button"
           onClick={save}
           disabled={saving || fields.length === 0}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
           {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
@@ -1512,7 +1512,7 @@ function ClientDataPanel({
       {fields.length === 0 ? (
         <div className="rounded-[1.7rem] border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
-          <h4 className="mt-3 text-xl font-black text-slate-950">
+          <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.clientDataPanel.emptyTitle")}
           </h4>
           <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
@@ -1555,7 +1555,7 @@ function ConfiguredFieldInput({
           onChange={(event) => onChange(event.target.value)}
           placeholder={field.placeholder || field.description || ""}
           rows={4}
-          className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
         />
       </DataFieldShell>
     );
@@ -1567,7 +1567,7 @@ function ConfiguredFieldInput({
         <select
           value={stringValue}
           onChange={(event) => onChange(event.target.value)}
-          className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+          className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
         >
           <option value="">{t("crm.common.select")}</option>
           {(field.options || []).map((option) => (
@@ -1598,7 +1598,7 @@ function ConfiguredFieldInput({
             className={[
               "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
               Boolean(value)
-                ? "border-violet-700 bg-violet-700 text-white"
+                ? "border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                 : "border-slate-300 bg-white text-transparent",
             ].join(" ")}
           >
@@ -1650,7 +1650,7 @@ function ConfiguredFieldInput({
         value={stringValue}
         onChange={(event) => onChange(event.target.value)}
         placeholder={field.placeholder || field.description || ""}
-        className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+        className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
       />
     </DataFieldShell>
   );
@@ -1758,7 +1758,7 @@ function PortalAccessPanel({
             <LockKeyhole className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-950">
+            <h3 className="text-2xl font-black text-slate-800">
               {t("crm.clients.portal.title")}
             </h3>
             <p className="text-sm font-bold text-slate-500">
@@ -1782,7 +1782,7 @@ function PortalAccessPanel({
             type="button"
             onClick={save}
             disabled={saving}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {saving ? t("crm.common.saving") : t("crm.clients.portal.savingAccess")}
@@ -1803,7 +1803,7 @@ function PortalAccessPanel({
             ].join(" ")}
           >
             <div>
-              <p className="text-sm font-black text-slate-950">
+              <p className="text-sm font-black text-slate-800">
                 {t("crm.clients.portal.privateAccess")}
               </p>
               <p className="mt-1 text-xs font-bold text-slate-500">
@@ -1832,7 +1832,7 @@ function PortalAccessPanel({
                     event.target.value as PortalAccessSettings["status"],
                   )
                 }
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
                 <option value="not_invited">{t("crm.common.notInvited")}</option>
                 <option value="invited">{t("crm.common.invited")}</option>
@@ -1847,7 +1847,7 @@ function PortalAccessPanel({
                 value={draft.loginEmail}
                 onChange={(event) => update("loginEmail", event.target.value)}
                 placeholder={client.email || t("crm.clients.portal.emailPlaceholder")}
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
             </PortalFormField>
           </div>
@@ -1864,7 +1864,7 @@ function PortalAccessPanel({
                     event.target.value as PortalAccessSettings["paymentStatus"],
                   )
                 }
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
                 <option value="included">{t("crm.clients.portal.paymentIncluded")}</option>
                 <option value="free">{t("crm.clients.portal.paymentFree")}</option>
@@ -1879,7 +1879,7 @@ function PortalAccessPanel({
                 value={draft.monthlyPrice}
                 onChange={(event) => update("monthlyPrice", event.target.value)}
                 placeholder="0"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
             </PortalFormField>
 
@@ -1889,7 +1889,7 @@ function PortalAccessPanel({
                 onChange={(event) => update("pages", event.target.value)}
                 placeholder={t("crm.clients.portal.pagesPlaceholder")}
                 rows={3}
-                className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
+                className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-800 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
             </PortalFormField>
           </div>
@@ -1948,7 +1948,7 @@ function InfoCard({
       <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 truncate text-base font-black text-slate-950">
+      <p className="mt-2 truncate text-base font-black text-slate-800">
         {value}
       </p>
     </div>
@@ -1967,7 +1967,7 @@ function SummaryBox({
       <p className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-base font-black text-slate-950">{value}</p>
+      <p className="mt-2 text-base font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -1994,7 +1994,7 @@ function ClientsTable({
             <th className="w-12 px-4 py-4">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
+                className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-sky-500"
               />
             </th>
             <TableHead>{t("crm.clients.table.customer")}</TableHead>
@@ -2028,7 +2028,7 @@ function ClientsTable({
                 >
                   <input
                     type="checkbox"
-                    className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
+                    className="h-4 w-4 rounded border-slate-300 text-slate-800 focus:ring-sky-500"
                   />
                 </td>
 
@@ -2039,7 +2039,7 @@ function ClientsTable({
                     </div>
 
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-black text-slate-950">
+                      <p className="truncate text-sm font-black text-slate-800">
                         {client.fullName || t("crm.common.unnamedClient")}
                       </p>
                       <p className="truncate text-xs font-semibold text-slate-400">
@@ -2124,7 +2124,7 @@ function ClientsTable({
                     <button
                       type="button"
                       onClick={() => onOpen(client)}
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-950 hover:text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
                       aria-label={t("crm.clients.table.openClient")}
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -2176,7 +2176,7 @@ function ClientFormPanel({
               : t("crm.clients.form.editContact")}
           </p>
 
-          <h3 className="mt-1 text-2xl font-black text-slate-950">
+          <h3 className="mt-1 text-2xl font-black text-slate-800">
             {mode === "create"
               ? t("crm.clients.form.addClient")
               : t("crm.clients.form.editClient")}
@@ -2268,7 +2268,7 @@ function ClientFormPanel({
           type="button"
           onClick={onSave}
           disabled={isSaving}
-          className="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSaving ? t("crm.common.saving") : t("crm.clients.form.saveClient")}
         </button>
@@ -2341,7 +2341,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
           <div className="mt-2 flex items-center gap-2">
@@ -2407,7 +2407,7 @@ function FilterPill({ label, active }: { label: string; active?: boolean }) {
       className={[
         "rounded-xl px-4 py-2 text-xs font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-lg shadow-slate-200"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200"
           : "border border-slate-200 bg-white text-slate-500 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -2460,11 +2460,11 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
 
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
+      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-800 shadow-sm">
         <UsersRound className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">{t("crm.clients.emptyTitle")}</h4>
+      <h4 className="text-xl font-black text-slate-800">{t("crm.clients.emptyTitle")}</h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
         {t("crm.clients.emptyDescription")}
@@ -2473,7 +2473,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
         {t("crm.clients.createClient")}

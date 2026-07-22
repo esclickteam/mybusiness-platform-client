@@ -145,7 +145,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
       `
       <div class="mx-auto max-w-[980px] rounded-[52px] border border-slate-200 bg-white p-10 text-center shadow-[0_36px_120px_rgba(15,23,42,0.10)] md:p-16">
         <p class="${pillClass}" data-editable-text="true">ברוכים הבאים</p>
-        <h1 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h1 class="text-5xl font-black leading-[0.96] tracking-[-0.06em] text-slate-800 md:text-7xl" data-editable-text="true">
           כותרת חזקה שמסבירה למה לבחור דווקא בכם
         </h1>
         <p class="mx-auto mt-6 max-w-[740px] text-lg font-bold leading-9 text-slate-500 md:text-xl" data-editable-text="true">
@@ -201,7 +201,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.26)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.26)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-2">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -370,7 +370,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
+      <div class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_44px_150px_rgba(15,23,42,0.25)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -388,8 +388,8 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
             </div>
           </div>
 
-          <div class="rounded-[42px] bg-white p-5 text-slate-950">
-            <div class="rounded-[32px] bg-slate-950 p-5 text-white">
+          <div class="rounded-[42px] bg-white p-5 text-slate-800">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <div class="mb-5 flex items-center justify-between">
                 <p class="text-sm font-black" data-editable-text="true">Dashboard</p>
                 <span class="rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-black text-emerald-300" data-editable-text="true">
@@ -568,7 +568,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             דברו איתנו
           </h3>
           <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">
@@ -612,7 +612,7 @@ export const welcomeLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">WhatsApp Preview</p>
               <div class="mt-5 grid gap-4">
                 <div class="rounded-[24px] bg-white/10 p-4 text-sm font-bold leading-7 text-white/75" data-editable-text="true">

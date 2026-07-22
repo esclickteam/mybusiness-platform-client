@@ -39,7 +39,7 @@ export default function StoreProductsPage() {
                 ניהול חנות
               </div>
 
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
                 מוצרים, קטגוריות והגדרות חנות
               </h1>
 

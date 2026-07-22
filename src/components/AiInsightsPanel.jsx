@@ -237,7 +237,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
             <Sparkles size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-black text-slate-950">
+            <h3 className="text-lg font-black text-slate-800">
               {t("aiInsights.title")}
             </h3>
             <p className="text-sm font-medium text-slate-500">
@@ -261,7 +261,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
               >
                 <button
                   type="button"
-                  className="absolute end-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-violet-600 hover:text-white"
+                  className="absolute end-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 hover:text-white"
                   onClick={() => handleDismiss(rawInsight)}
                   aria-label={t("aiInsights.dismissAria")}
                 >
@@ -275,7 +275,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
 
                   <div className="min-w-0 flex-1">
                     <div className="mb-1 flex flex-wrap items-center gap-2">
-                      <h4 className="text-sm font-black text-slate-950">{insight.title}</h4>
+                      <h4 className="text-sm font-black text-slate-800">{insight.title}</h4>
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${styles.badge}`}
                       >
@@ -297,7 +297,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                     {(insight.actionLabel || insight.cta?.label) && (
                       <button
                         type="button"
-                        className="mt-3 rounded-xl bg-violet-600 px-4 py-2 text-xs font-black text-white transition hover:bg-violet-700"
+                        className="mt-3 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2 text-xs font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                         onClick={() => handleAction(rawInsight)}
                       >
                         {insight.actionLabel || insight.cta?.label}

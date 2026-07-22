@@ -74,7 +74,7 @@ export default function GallerySection({
   return (
     <section
       dir="rtl"
-      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.12),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(37,99,235,0.10),transparent_32%),linear-gradient(180deg,#f8fafc_0%,#eef2ff_100%)] px-4 py-6 text-right text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto grid max-w-7xl gap-7 xl:grid-cols-[1.02fr_0.98fr]">
         <div
@@ -98,7 +98,7 @@ export default function GallerySection({
 
               <div className="mt-5 flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
-                  <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                  <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                     תמונות גלריה
                   </h1>
 
@@ -113,7 +113,7 @@ export default function GallerySection({
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                     סה״כ תמונות
                   </p>
-                  <p className="mt-1 text-3xl font-black text-slate-950">
+                  <p className="mt-1 text-3xl font-black text-slate-800">
                     {images.length}
                   </p>
                 </div>
@@ -145,7 +145,7 @@ export default function GallerySection({
                 📸
               </div>
 
-              <h3 className="relative mt-5 text-xl font-black text-slate-950">
+              <h3 className="relative mt-5 text-xl font-black text-slate-800">
                 לחץ להעלאת תמונות
               </h3>
 
@@ -154,7 +154,7 @@ export default function GallerySection({
                 ורוחביות כדי שהפרופיל הציבורי ייראה מקצועי יותר.
               </p>
 
-              <span className="relative mt-5 inline-flex rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 py-3 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition group-hover:-translate-y-0.5">
+              <span className="relative mt-5 inline-flex rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black text-slate-800 shadow-xl shadow-violet-500/20 transition group-hover:-translate-y-0.5">
                 בחירת תמונות
               </span>
             </button>
@@ -162,7 +162,7 @@ export default function GallerySection({
             <div className="rounded-[1.75rem] border border-slate-100 bg-white p-4 shadow-sm sm:p-5">
               <div className="mb-5 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                  <h2 className="text-lg font-black text-slate-950">
+                  <h2 className="text-lg font-black text-slate-800">
                     גלריה שהועלתה
                   </h2>
 
@@ -184,7 +184,7 @@ export default function GallerySection({
                     🖼️
                   </div>
 
-                  <h3 className="mt-4 text-lg font-black text-slate-950">
+                  <h3 className="mt-4 text-lg font-black text-slate-800">
                     עדיין אין תמונות בגלריה
                   </h3>
 
@@ -234,7 +234,7 @@ export default function GallerySection({
                   onClick={() =>
                     navigate(`/business/${businessDetails._id}?tab=gallery`)
                   }
-                  className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  className="flex h-[52px] w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
                   צפייה בפרופיל הציבורי
                 </button>
@@ -246,7 +246,7 @@ export default function GallerySection({
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-sm">
               <div className="rounded-[1.5rem] border border-white bg-white px-6 py-5 text-center shadow-2xl">
                 <BizuplyLoader size="lg" />
-                <p className="text-sm font-black text-slate-950">
+                <p className="text-sm font-black text-slate-800">
                   שומר שינויים…
                 </p>
               </div>
@@ -271,12 +271,12 @@ export default function GallerySection({
                     <p className="text-xs font-black text-violet-700">
                       תצוגה מקדימה של הפרופיל הציבורי
                     </p>
-                    <h2 className="mt-1 text-xl font-black text-slate-950">
+                    <h2 className="mt-1 text-xl font-black text-slate-800">
                       הגלריה של {businessName}
                     </h2>
                   </div>
 
-                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-xl text-white shadow-lg shadow-violet-500/20">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-xl text-slate-800 shadow-lg shadow-violet-500/20">
                     📸
                   </div>
                 </div>
@@ -295,7 +295,7 @@ export default function GallerySection({
                           🖼️
                         </div>
 
-                        <h3 className="mt-4 text-lg font-black text-slate-950">
+                        <h3 className="mt-4 text-lg font-black text-slate-800">
                           אין תמונות בגלריה
                         </h3>
 
@@ -317,7 +317,7 @@ export default function GallerySection({
                   <div className="p-5">
                     <div className="flex items-start justify-between gap-4">
                       <div>
-                        <h3 className="text-2xl font-black text-slate-950">
+                        <h3 className="text-2xl font-black text-slate-800">
                           הגלריה שלנו
                         </h3>
                         <p className="mt-1 text-sm leading-6 text-slate-500">
@@ -368,7 +368,7 @@ export default function GallerySection({
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                           תמונות
                         </p>
-                        <p className="mt-1 text-2xl font-black text-slate-950">
+                        <p className="mt-1 text-2xl font-black text-slate-800">
                           {images.length}
                         </p>
                       </div>
@@ -377,7 +377,7 @@ export default function GallerySection({
                         <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                           סטטוס
                         </p>
-                        <p className="mt-1 text-lg font-black text-slate-950">
+                        <p className="mt-1 text-lg font-black text-slate-800">
                           {hasImages ? "פעיל" : "ריק"}
                         </p>
                       </div>

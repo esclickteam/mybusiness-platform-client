@@ -132,7 +132,7 @@ export default function CollabSentRequestsTab({
               Sent Proposals
             </div>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               Track proposals you sent
             </h2>
 
@@ -187,7 +187,7 @@ export default function CollabSentRequestsTab({
       <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <div className="border-b border-slate-100 bg-gradient-to-r from-white to-sky-50/60 p-5">
           <div>
-            <h3 className="text-2xl font-black text-slate-950">
+            <h3 className="text-2xl font-black text-slate-800">
               Outgoing Requests
             </h3>
 
@@ -240,7 +240,7 @@ function SentRequestCard({
           </div>
 
           <div className="min-w-0">
-            <h4 className="truncate text-lg font-black text-slate-950">
+            <h4 className="truncate text-lg font-black text-slate-800">
               {cleanString(request.title) || "Sent proposal"}
             </h4>
 
@@ -317,7 +317,7 @@ function SentRequestCard({
           Payment
         </p>
 
-        <p className="text-sm font-black text-slate-950">
+        <p className="text-sm font-black text-slate-800">
           {cleanString(request.payment) || "—"}
         </p>
       </div>
@@ -326,7 +326,7 @@ function SentRequestCard({
         <button
           type="button"
           onClick={onResend}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
         >
           <Send className="h-4 w-4" />
           Resend
@@ -409,7 +409,7 @@ function StatCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
           <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
@@ -445,7 +445,7 @@ function InfoTile({
         </p>
       </div>
 
-      <p className="truncate text-sm font-black text-slate-950">{value}</p>
+      <p className="truncate text-sm font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -509,7 +509,7 @@ function EmptyState() {
         <Send className="h-7 w-7" />
       </div>
 
-      <h4 className="mt-4 text-xl font-black text-slate-950">
+      <h4 className="mt-4 text-xl font-black text-slate-800">
         No proposals sent yet
       </h4>
 

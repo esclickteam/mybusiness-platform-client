@@ -282,7 +282,7 @@ const DailyAgenda = React.memo(
             </div>
 
             <div>
-              <h3 className="text-base font-bold text-slate-950">
+              <h3 className="text-base font-bold text-slate-800">
                 {t("dashboard.dailyAgenda.upcomingAppointments")}
               </h3>
 
@@ -377,7 +377,7 @@ const DailyAgenda = React.memo(
                           <span>{time}</span>
                         </div>
 
-                        <h4 className="truncate text-sm font-bold text-slate-950">
+                        <h4 className="truncate text-sm font-bold text-slate-800">
                           {serviceName}
                         </h4>
 
@@ -511,9 +511,8 @@ const DailyAgenda = React.memo(
                         onClick={editAppointment}
                         disabled={!businessId}
                         className="
-                          inline-flex items-center gap-2 rounded-xl bg-slate-950
-                          px-3 py-2 text-xs font-semibold text-white shadow-sm
-                          transition hover:bg-violet-700 disabled:cursor-not-allowed
+                          inline-flex items-center gap-2 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm
+                          transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed
                           disabled:opacity-40
                         "
                       >

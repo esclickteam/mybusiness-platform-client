@@ -68,12 +68,12 @@ function checklistItem(text: string) {
 function numberedListItem(number: string, title: string, text: string) {
   return `
 <li class="flex gap-5 rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-slate-950 text-sm font-black text-white">
+  <div class="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
     ${number}
   </div>
 
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -92,7 +92,7 @@ function featureListCard(title: string, items: string[], icon = "✦") {
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -107,7 +107,7 @@ function priceListRow(title: string, text: string, price: string) {
   return `
 <div class="flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:flex-row sm:items-center sm:justify-between" data-editable-card="true">
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -130,7 +130,7 @@ function priceListRow(title: string, text: string, price: string) {
 function comparisonRow(feature: string, basic: string, pro: string) {
   return `
 <div class="grid grid-cols-3 gap-3 rounded-[24px] border border-slate-200 bg-white p-4 text-sm font-black shadow-[0_14px_45px_rgba(15,23,42,0.04)]" data-editable-card="true">
-  <div class="text-slate-950" data-editable-text="true">${feature}</div>
+  <div class="text-slate-800" data-editable-text="true">${feature}</div>
   <div class="text-center text-slate-500" data-editable-text="true">${basic}</div>
   <div class="text-center text-[var(--biz-primary,#7C3AED)]" data-editable-text="true">${pro}</div>
 </div>
@@ -140,7 +140,7 @@ function comparisonRow(feature: string, basic: string, pro: string) {
 function faqListItem(question: string, answer: string) {
   return `
 <details class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <summary class="cursor-pointer text-lg font-black text-slate-950" data-editable-text="true">
+  <summary class="cursor-pointer text-lg font-black text-slate-800" data-editable-text="true">
     ${question}
   </summary>
 
@@ -375,7 +375,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
       )}
 
       <div class="mx-auto mt-12 max-w-[980px] rounded-[38px] border border-slate-200 bg-slate-50 p-5 shadow-[0_30px_100px_rgba(15,23,42,0.08)]">
-        <div class="mb-4 grid grid-cols-3 gap-3 rounded-[24px] bg-slate-950 p-4 text-sm font-black text-white">
+        <div class="mb-4 grid grid-cols-3 gap-3 rounded-[24px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
           <div data-editable-text="true">פיצ׳ר</div>
           <div class="text-center" data-editable-text="true">Basic</div>
           <div class="text-center" data-editable-text="true">Pro</div>
@@ -403,7 +403,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -551,7 +551,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -647,7 +647,7 @@ export const listLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             השאירו פרטים
           </h3>
 

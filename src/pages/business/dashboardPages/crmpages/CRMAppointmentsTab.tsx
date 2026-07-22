@@ -1116,7 +1116,7 @@ export default function CRMAppointmentsTab() {
   ];
 
   return (
-    <div dir={dir} className="space-y-6 text-start text-slate-950">
+    <div dir={dir} className="space-y-6 text-start text-slate-800">
       <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
         <div className="relative p-5 sm:p-6 lg:p-7">
           <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
@@ -1129,7 +1129,7 @@ export default function CRMAppointmentsTab() {
                 {t("crm.appointments.badge")}
               </div>
 
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                 {t("crm.appointments.title")}
               </h2>
 
@@ -1155,7 +1155,7 @@ export default function CRMAppointmentsTab() {
               <button
                 type="button"
                 onClick={openCreateModal}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-4 w-4" />
                 {t("crm.appointments.createAppointment")}
@@ -1197,7 +1197,7 @@ export default function CRMAppointmentsTab() {
         <section className="rounded-[2rem] border border-white/80 bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-5">
           <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-950">
+              <h3 className="text-2xl font-black text-slate-800">
                 {formatMonthTitle(monthDate, dateLocale)}
               </h3>
 
@@ -1283,7 +1283,7 @@ export default function CRMAppointmentsTab() {
                       className={[
                         "grid h-8 w-8 place-items-center rounded-xl text-sm font-black",
                         isToday
-                          ? "bg-slate-950 text-white"
+                          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                           : "bg-slate-50 text-slate-800",
                       ].join(" ")}
                     >
@@ -1331,7 +1331,7 @@ export default function CRMAppointmentsTab() {
           <section className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-2xl font-black text-slate-950">
+                <h3 className="text-2xl font-black text-slate-800">
                   {t("crm.appointments.syncedListTitle")}
                 </h3>
 
@@ -1395,7 +1395,7 @@ export default function CRMAppointmentsTab() {
                 <div className="rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50 p-7 text-center">
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
-                  <h3 className="mt-3 text-base font-black text-slate-950">
+                  <h3 className="mt-3 text-base font-black text-slate-800">
                     {t("crm.appointments.emptyTitle")}
                   </h3>
 
@@ -1436,7 +1436,7 @@ export default function CRMAppointmentsTab() {
                   </p>
                   <p
                     className={`text-sm font-black ${
-                      hasOpenDays ? "text-slate-950" : "text-amber-700"
+                      hasOpenDays ? "text-slate-800" : "text-amber-700"
                     }`}
                   >
                     {workHoursLabel}
@@ -1502,7 +1502,7 @@ function MetricCard({
           <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
             {label}
           </p>
-          <p className="mt-2 text-2xl font-black text-slate-950">{value}</p>
+          <p className="mt-2 text-2xl font-black text-slate-800">{value}</p>
         </div>
 
         <div className="grid h-11 w-11 place-items-center rounded-2xl bg-sky-50 text-sky-700">
@@ -1529,7 +1529,7 @@ function FilterButton({
       className={[
         "h-10 rounded-2xl text-xs font-black transition",
         active
-          ? "bg-slate-950 text-white shadow-[0_12px_28px_rgba(15,23,42,0.18)]"
+          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_12px_28px_rgba(15,23,42,0.18)]"
           : "bg-slate-50 text-slate-600 hover:bg-slate-100",
       ].join(" ")}
     >
@@ -1598,7 +1598,7 @@ function AppointmentCard({
             {t("crm.appointments.scheduled")}
           </div>
 
-          <h3 className="mt-2 truncate text-lg font-black text-slate-950">
+          <h3 className="mt-2 truncate text-lg font-black text-slate-800">
             {clientName}
           </h3>
 
@@ -1615,19 +1615,19 @@ function AppointmentCard({
       <div className="mt-4 grid gap-2 rounded-2xl bg-slate-50 p-3 text-sm font-bold text-slate-600">
         <div className="flex items-center justify-between gap-3">
           <span>{t("crm.common.date")}</span>
-          <span className="text-slate-950">
+          <span className="text-slate-800">
             {formatDate(appointment.date, dateLocale, emDash)}
           </span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
           <span>{t("crm.common.time")}</span>
-          <span className="text-slate-950">{appointment.time || emDash}</span>
+          <span className="text-slate-800">{appointment.time || emDash}</span>
         </div>
 
         <div className="flex items-center justify-between gap-3">
           <span>{t("crm.common.duration")}</span>
-          <span className="text-slate-950">
+          <span className="text-slate-800">
             {formatDuration(appointment.duration, t)}
           </span>
         </div>
@@ -1649,7 +1649,7 @@ function AppointmentCard({
         {Number(appointment.price) > 0 && (
           <div className="flex items-center justify-between gap-3">
             <span>{t("crm.common.price")}</span>
-            <span className="text-slate-950">
+            <span className="text-slate-800">
               {formatMoney(appointment.price, user)}
             </span>
           </div>
@@ -1678,7 +1678,7 @@ function AppointmentCard({
         <button
           type="button"
           onClick={onEdit}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-slate-950 text-xs font-black text-white transition hover:bg-sky-700"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-sky-700"
         >
           <Edit3 className="h-3.5 w-3.5" />
           {t("crm.common.edit")}
@@ -1838,7 +1838,7 @@ function AppointmentModal({
   );
 
   return (
-    <div dir={dir} className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-4 backdrop-blur-sm">
+    <div dir={dir} className="fixed inset-0 z-50 grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm">
       <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2.2rem] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
         <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-white via-sky-50/50 to-violet-50/50 p-5 md:p-6">
           <div>
@@ -1849,7 +1849,7 @@ function AppointmentModal({
                 : t("crm.appointments.modalBadgeNew")}
             </div>
 
-            <h2 className="mt-3 text-2xl font-black text-slate-950">
+            <h2 className="mt-3 text-2xl font-black text-slate-800">
               {editId
                 ? t("crm.appointments.modalTitleEdit")
                 : t("crm.appointments.modalTitleNew")}
@@ -1879,7 +1879,7 @@ function AppointmentModal({
                   </div>
 
                   <div>
-                    <h3 className="text-base font-black text-slate-950">
+                    <h3 className="text-base font-black text-slate-800">
                       {t("crm.appointments.clientDetailsTitle")}
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
@@ -1971,7 +1971,7 @@ function AppointmentModal({
                   </div>
 
                   <div>
-                    <h3 className="text-base font-black text-slate-950">
+                    <h3 className="text-base font-black text-slate-800">
                       {t("crm.appointments.appointmentDetailsTitle")}
                     </h3>
                     <p className="text-xs font-bold text-slate-500">
@@ -2115,7 +2115,7 @@ function AppointmentModal({
 
             <aside className="space-y-4">
               <div className="rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-sm">
-                <h3 className="text-base font-black text-slate-950">
+                <h3 className="text-base font-black text-slate-800">
                   {t("crm.appointments.bookingSummary")}
                 </h3>
 
@@ -2179,7 +2179,7 @@ function AppointmentModal({
                 !appointment.date ||
                 !appointment.time
               }
-              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
                 <BizuplyLoader size="xs" compact />
@@ -2258,7 +2258,7 @@ function SummaryRow({
   return (
     <div className="flex items-center justify-between gap-3 rounded-2xl bg-white/80 px-3 py-2 ring-1 ring-white">
       <span className="text-slate-400">{label}</span>
-      <span className="text-end text-slate-950">{value}</span>
+      <span className="text-end text-slate-800">{value}</span>
     </div>
   );
 }

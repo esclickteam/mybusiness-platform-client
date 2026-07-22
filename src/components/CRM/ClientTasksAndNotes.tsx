@@ -439,7 +439,7 @@ export default function ClientTasksAndNotes({
                 Notes
               </div>
 
-              <h3 className="mt-3 text-2xl font-black text-slate-950">
+              <h3 className="mt-3 text-2xl font-black text-slate-800">
                 Client notes
               </h3>
 
@@ -526,7 +526,7 @@ export default function ClientTasksAndNotes({
               Tasks
             </div>
 
-            <h3 className="mt-3 text-2xl font-black text-slate-950">
+            <h3 className="mt-3 text-2xl font-black text-slate-800">
               Follow-up tasks
             </h3>
 
@@ -561,7 +561,7 @@ export default function ClientTasksAndNotes({
           <div className="mt-5 rounded-[1.5rem] border border-slate-100 bg-slate-50 p-4">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black text-slate-950">
+                <p className="text-sm font-black text-slate-800">
                   {editTaskId ? "Edit task" : "New task"}
                 </p>
                 <p className="text-xs font-semibold text-slate-500">
@@ -803,7 +803,7 @@ function TaskCard({
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
-          <h4 className="truncate text-base font-black text-slate-950">
+          <h4 className="truncate text-base font-black text-slate-800">
             {task.title}
           </h4>
 
@@ -891,7 +891,7 @@ function MiniMetric({
           <p className="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">
             {label}
           </p>
-          <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+          <p className="mt-1 text-2xl font-black text-slate-800">{value}</p>
         </div>
 
         <div
@@ -962,7 +962,7 @@ function EmptyBox({
         <Icon className="h-6 w-6" />
       </div>
 
-      <h4 className="text-lg font-black text-slate-950">{title}</h4>
+      <h4 className="text-lg font-black text-slate-800">{title}</h4>
       <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500">
         {text}
       </p>

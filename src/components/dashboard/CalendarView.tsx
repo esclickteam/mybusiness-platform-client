@@ -85,7 +85,7 @@ const fallbackT: TFunction = (key, values) => {
 const eventColorClasses = [
   "border-yellow-100 bg-yellow-50 text-yellow-950",
   "border-pink-100 bg-pink-50 text-pink-950",
-  "border-violet-100 bg-violet-50 text-violet-950",
+  "border-violet-100 bg-violet-50 text-slate-800",
   "border-emerald-100 bg-emerald-50 text-emerald-950",
   "border-blue-100 bg-blue-50 text-blue-950",
   "border-orange-100 bg-orange-50 text-orange-950",
@@ -309,7 +309,7 @@ const CalendarView = React.memo(
               <CalendarDays size={18} />
             </div>
 
-            <h3 className="text-lg font-black capitalize text-slate-950 sm:text-xl">
+            <h3 className="text-lg font-black capitalize text-slate-800 sm:text-xl">
               {monthTitle}
             </h3>
           </div>
@@ -389,7 +389,7 @@ const CalendarView = React.memo(
                       text-xs font-black sm:h-9 sm:w-9 sm:text-sm
                       ${
                         isPurpleMarked
-                          ? "bg-violet-600 text-white"
+                          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                           : "bg-slate-50 text-slate-700"
                       }
                     `}

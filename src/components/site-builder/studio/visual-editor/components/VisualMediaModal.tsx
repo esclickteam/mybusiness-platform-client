@@ -284,7 +284,7 @@ export default function VisualMediaModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[2147483600] flex items-center justify-center bg-slate-950/55 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[2147483600] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-sm"
       dir="rtl"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
@@ -350,7 +350,7 @@ export default function VisualMediaModal({
               <button
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
-                className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+                className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 <Upload className="h-4 w-4" />
                 העלאת מדיה
@@ -416,7 +416,7 @@ export default function VisualMediaModal({
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
-                      className="mt-6 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+                      className="mt-6 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                     >
                       בחירת קובץ
                     </button>
@@ -575,7 +575,7 @@ export default function VisualMediaModal({
                 type="button"
                 disabled={!previewSrc || isUploading}
                 onClick={handleApply}
-                className="mt-auto rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-auto rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isUploading ? "מעלה..." : "בחירת מדיה"}
               </button>
@@ -719,7 +719,7 @@ export default function VisualMediaModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 <Check className="h-4 w-4" />
                 שמירה
@@ -729,7 +729,7 @@ export default function VisualMediaModal({
                 type="button"
                 disabled={!previewSrc || isUploading}
                 onClick={handleApply}
-                className="inline-flex items-center gap-2 rounded-2xl bg-violet-600 px-5 py-3 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ImageIcon className="h-4 w-4" />
                 {isUploading ? "מעלה..." : "בחירת מדיה"}

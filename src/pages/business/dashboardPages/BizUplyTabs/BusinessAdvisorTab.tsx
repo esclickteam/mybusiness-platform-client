@@ -709,19 +709,19 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir={dir}
-      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-950 sm:p-5"
+      className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-800 sm:p-5"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
         <header className="shrink-0 rounded-[28px] border border-slate-200 bg-white px-5 py-4 shadow-sm">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-lg shadow-violet-200">
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-lg shadow-violet-200">
                 <BrainCircuit className="h-6 w-6" />
               </div>
 
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
+                  <h1 className="text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
                     {t("advisor.title")}
                   </h1>
 
@@ -769,7 +769,7 @@ export default function BusinessAdvisorTab({
               <button
                 type="button"
                 onClick={startNewConversation}
-                className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-violet-700"
+                className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 <Plus className="h-5 w-5" />
                 {t("advisor.newChat")}
@@ -782,7 +782,7 @@ export default function BusinessAdvisorTab({
           <aside className="order-2 min-h-0 min-w-0 overflow-hidden rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm xl:order-1">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div>
-                <h2 className="text-sm font-black text-slate-950">
+                <h2 className="text-sm font-black text-slate-800">
                   {t("advisor.historyTitle")}
                 </h2>
                 <p className="mt-1 text-xs font-bold text-slate-500">
@@ -857,7 +857,7 @@ export default function BusinessAdvisorTab({
             <div className="shrink-0 border-b border-slate-100 bg-gradient-to-l from-white via-violet-50/70 to-sky-50/70 px-5 py-4">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-base font-black text-slate-950">
+                  <p className="text-base font-black text-slate-800">
                     {t("advisor.chatTitle")}
                   </p>
                   <p className="mt-1 text-xs font-bold text-slate-500">
@@ -896,7 +896,7 @@ export default function BusinessAdvisorTab({
                       }`}
                     >
                       {isAssistant && (
-                        <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-violet-600 text-white shadow-md shadow-violet-200">
+                        <span className="mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-md shadow-violet-200">
                           <BrainCircuit className="h-4 w-4" />
                         </span>
                       )}
@@ -909,13 +909,13 @@ export default function BusinessAdvisorTab({
                         } break-words rounded-[24px] px-5 py-4 text-[15px] leading-8 shadow-sm ${
                           isAssistant
                             ? "border border-slate-200 bg-white text-slate-800"
-                            : "bg-violet-600 text-white"
+                            : "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                         }`}
                       >
                         {isAssistant ? (
                           <div>
                             {displayContent && (
-                              <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-950 [&_ul]:my-3">
+                              <div className="max-w-none overflow-hidden break-words [&_*]:max-w-full [&_*]:break-words [&_code]:whitespace-pre-wrap [&_h1]:mb-3 [&_h1]:text-xl [&_h1]:font-black [&_h2]:mb-3 [&_h2]:mt-5 [&_h2]:text-lg [&_h2]:font-black [&_h3]:mb-2 [&_h3]:mt-4 [&_h3]:font-black [&_li]:my-2 [&_ol]:my-3 [&_p]:my-3 [&_pre]:overflow-x-hidden [&_pre]:whitespace-pre-wrap [&_pre]:break-words [&_strong]:font-black [&_strong]:text-slate-800 [&_ul]:my-3">
                                 <Markdown>{displayContent}</Markdown>
                               </div>
                             )}
@@ -1017,7 +1017,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={handleSubmit}
                   disabled={loading || !userInput.trim() || isLimitReached}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:text-slate-500 disabled:shadow-none"
                 >
                   {loading ? t("advisor.thinking") : t("advisor.send")}
                   <ArrowUp className="h-5 w-5" />
@@ -1028,7 +1028,7 @@ export default function BusinessAdvisorTab({
 
           <aside className="order-3 min-h-0 min-w-0 overflow-y-auto rounded-[28px] border border-slate-200 bg-white p-4 shadow-sm">
             <div className="mb-4">
-              <h2 className="text-sm font-black text-slate-950">
+              <h2 className="text-sm font-black text-slate-800">
                 {t("advisor.quickActionsTitle")}
               </h2>
               <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
@@ -1058,8 +1058,8 @@ export default function BusinessAdvisorTab({
                       <span
                         className={`flex h-9 w-9 items-center justify-center rounded-xl transition ${
                           command.highlighted
-                            ? "bg-violet-600 text-white"
-                            : "bg-violet-100 text-violet-700 group-hover:bg-violet-600 group-hover:text-white"
+                            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
+                            : "bg-violet-100 text-violet-700 group-hover:border-violet-200/80 group-hover:from-violet-200/80 group-hover:via-sky-100 group-hover:to-cyan-100 group-hover:text-slate-800"
                         }`}
                       >
                         <Icon className="h-5 w-5" />
@@ -1096,7 +1096,7 @@ export default function BusinessAdvisorTab({
       </div>
 
       {pendingAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-violet-900/10 p-4 backdrop-blur-sm">
           <div
             dir={dir}
             className="w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl"
@@ -1106,13 +1106,13 @@ export default function BusinessAdvisorTab({
                 {(() => {
                   const MetaIcon = getActionMeta(pendingAction.type, t).icon;
                   return (
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-600 text-white">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800">
                       <MetaIcon className="h-5 w-5" />
                     </span>
                   );
                 })()}
                 <div>
-                  <h3 className="text-lg font-black text-slate-950">
+                  <h3 className="text-lg font-black text-slate-800">
                     {t("advisor.confirmTitle")}
                   </h3>
                   <p className="text-xs font-bold text-slate-500">
@@ -1143,7 +1143,7 @@ export default function BusinessAdvisorTab({
                   type="button"
                   onClick={confirmPendingAction}
                   disabled={!!actionLoading}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:bg-violet-700 disabled:opacity-60"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-white shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
                 >
                   {actionLoading ? (
                     <BizuplyLoader size="xs" compact />

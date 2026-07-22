@@ -40,7 +40,7 @@ export default function PreLoginBot() {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Ask BizUply"
-          className="group relative flex items-center gap-2.5 rounded-full border border-slate-100 !bg-white px-4 py-2.5 text-slate-950 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
+          className="group relative flex items-center gap-2.5 rounded-full border border-slate-100 !bg-white px-4 py-2.5 text-slate-800 shadow-[0_12px_30px_rgba(15,23,42,0.12)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(15,23,42,0.16)]"
         >
           <span className="relative grid h-8 w-8 place-items-center rounded-full bg-gradient-to-br from-indigo-600 to-cyan-500 text-sm text-white shadow-md shadow-indigo-200">
             💬
@@ -48,7 +48,7 @@ export default function PreLoginBot() {
           </span>
 
           <span className="text-left">
-            <span className="block text-xs font-black leading-none text-slate-950">
+            <span className="block text-xs font-black leading-none text-slate-800">
               Ask BizUply
             </span>
             <span className="mt-0.5 block text-[10px] font-bold text-slate-500">
@@ -67,7 +67,7 @@ export default function PreLoginBot() {
         <div className="w-[calc(100vw-32px)] max-w-[420px] overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-3 shadow-[0_28px_90px_rgba(15,23,42,0.22)] backdrop-blur-2xl">
           <div className="overflow-hidden rounded-[1.55rem] border border-slate-100 bg-white">
             {/* Header */}
-            <header className="relative overflow-hidden bg-slate-950 px-5 py-5 text-white">
+            <header className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <div className="pointer-events-none absolute inset-0">
                 <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-500/35 blur-3xl" />
                 <div className="absolute -bottom-24 left-10 h-48 w-48 rounded-full bg-cyan-400/25 blur-3xl" />

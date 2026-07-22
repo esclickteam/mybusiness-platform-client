@@ -58,7 +58,7 @@ export default function HeroSection() {
   const chartBars = [42, 66, 53, 82, 74, 96, 120, 106];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-950">
+    <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-800">
       {/* BACKGROUND */}
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-[-260px] h-[620px] w-[980px] -translate-x-1/2 rounded-full bg-indigo-200/50 blur-3xl" />
@@ -78,7 +78,7 @@ export default function HeroSection() {
         </div>
 
         {/* HEADLINE */}
-        <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-slate-950 sm:text-6xl lg:text-7xl xl:text-8xl">
+        <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-slate-800 sm:text-6xl lg:text-7xl xl:text-8xl">
           {t("home.headlineTop")}
           <br />
           <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
@@ -109,7 +109,7 @@ export default function HeroSection() {
 
               <div className="relative z-10 flex min-h-[560px]">
                 {/* SIDEBAR */}
-                <aside className="hidden w-[225px] shrink-0 bg-slate-950 p-5 text-left text-white md:block">
+                <aside className="hidden w-[225px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 md:block">
                   <div className="mb-8 flex items-center gap-3">
                     <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-lg font-black text-white shadow-lg shadow-indigo-950/30">
                       B
@@ -157,7 +157,7 @@ export default function HeroSection() {
                       <p className="text-xs font-black uppercase tracking-[0.28em] text-indigo-600">
                         {t("preview.greeting")}
                       </p>
-                      <h3 className="mt-2 text-2xl font-black tracking-tight text-slate-950 md:text-3xl">
+                      <h3 className="mt-2 text-2xl font-black tracking-tight text-slate-800 md:text-3xl">
                         {t("preview.pipelineTitle")}
                       </h3>
                     </div>
@@ -183,7 +183,7 @@ export default function HeroSection() {
                       <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                         Revenue
                       </p>
-                      <p className="mt-2 text-xl font-black text-slate-950">
+                      <p className="mt-2 text-xl font-black text-slate-800">
                         $86.1k
                       </p>
                     </div>
@@ -192,7 +192,7 @@ export default function HeroSection() {
                       <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                         Clients
                       </p>
-                      <p className="mt-2 text-xl font-black text-slate-950">
+                      <p className="mt-2 text-xl font-black text-slate-800">
                         1,248
                       </p>
                     </div>
@@ -233,7 +233,7 @@ export default function HeroSection() {
                           <p className="text-xs font-black uppercase tracking-wide text-slate-400">
                             {stage.title}
                           </p>
-                          <p className="mt-3 text-xl font-black text-slate-950">
+                          <p className="mt-3 text-xl font-black text-slate-800">
                             {stage.amount}
                           </p>
                           <p className="mt-1 text-xs font-bold text-slate-500">
@@ -271,7 +271,7 @@ export default function HeroSection() {
                       </div>
 
                       {/* AI CARD */}
-                      <div className="rounded-2xl bg-white p-5 text-slate-950 shadow-sm ring-1 ring-slate-100">
+                      <div className="rounded-2xl bg-white p-5 text-slate-800 shadow-sm ring-1 ring-slate-100">
                         <div className="mb-4 flex items-center justify-between">
                           <p className="font-black">
                             {t("preview.aiAssistant")}

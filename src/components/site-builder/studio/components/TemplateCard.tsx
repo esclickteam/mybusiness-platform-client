@@ -52,7 +52,7 @@ export default function TemplateCard({
           <Badge tone="sky">{template.layout}</Badge>
         </div>
 
-        <h3 className="text-[22px] font-black leading-tight tracking-[-0.04em] text-slate-950">
+        <h3 className="text-[22px] font-black leading-tight tracking-[-0.04em] text-slate-800">
           {template.name}
         </h3>
 
@@ -69,7 +69,7 @@ export default function TemplateCard({
           <button
             type="button"
             onClick={onApply}
-            className="inline-flex h-12 flex-1 items-center justify-center rounded-[20px] bg-gradient-to-r from-slate-950 via-slate-900 to-violet-700 px-4 text-[15px] font-black text-white shadow-[0_16px_38px_rgba(15,23,42,0.20)] transition hover:scale-[1.01] hover:from-violet-700 hover:to-fuchsia-600"
+            className="inline-flex h-12 flex-1 items-center justify-center rounded-[20px] bg-gradient-to-r from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] px-4 text-[15px] font-black text-white shadow-[0_16px_38px_rgba(15,23,42,0.20)] transition hover:scale-[1.01] hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
           >
             החל אתר מוכן
           </button>
@@ -328,7 +328,7 @@ function getAccentClass(tone: PreviewTone) {
     gold: "bg-amber-500",
     purple: "bg-violet-500",
     sky: "bg-sky-500",
-    neutral: "bg-slate-950",
+    neutral: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
   };
 
   return map[tone];
@@ -336,15 +336,15 @@ function getAccentClass(tone: PreviewTone) {
 
 function getButtonClass(tone: PreviewTone) {
   const map: Record<PreviewTone, string> = {
-    dark: "bg-amber-400 text-slate-950",
+    dark: "bg-amber-400 text-slate-800",
     beauty: "bg-rose-600 text-white",
     clinic: "bg-teal-600 text-white",
     food: "bg-orange-600 text-white",
     green: "bg-lime-600 text-white",
-    gold: "bg-slate-950 text-white",
-    purple: "bg-violet-600 text-white",
+    gold: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
+    purple: "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800",
     sky: "bg-sky-600 text-white",
-    neutral: "bg-slate-950 text-white",
+    neutral: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
   };
 
   return map[tone];
@@ -395,13 +395,13 @@ function MiniNav({
     <div
       className={[
         "flex items-center justify-between gap-3 px-4 py-3",
-        dark ? "bg-slate-950 text-white" : "bg-white text-slate-950",
+        dark ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : "bg-white text-slate-800",
       ].join(" ")}
     >
       <div
         className={[
           "h-3 w-24 rounded-full",
-          dark ? "bg-white" : "bg-slate-950",
+          dark ? "bg-white" : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
         ].join(" ")}
       />
 
@@ -485,7 +485,7 @@ function PortfolioPreview({
       <div className="p-4">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <div className="h-6 w-48 rounded-full bg-slate-950" />
+            <div className="h-6 w-48 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
             <div className="mt-2 h-4 w-28 rounded-full bg-slate-200" />
           </div>
           <div className={["h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
@@ -524,7 +524,7 @@ function StorePreview({
       <div className="grid grid-cols-[0.82fr_1.18fr] gap-3 p-4">
         <div>
           <div className={["mb-2 h-2 w-16 rounded-full", getAccentClass(tone)].join(" ")} />
-          <div className="h-6 w-36 rounded-full bg-slate-950" />
+          <div className="h-6 w-36 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
           <div className="mt-2 h-5 w-24 rounded-full bg-slate-300" />
           <div className={["mt-4 h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
         </div>
@@ -614,7 +614,7 @@ function ClinicPreview({
 
 function DarkPreview({ template }: { template: ReadyWebsiteTemplate }) {
   return (
-    <div className="bg-slate-950 text-white">
+    <div className="border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
       <MiniNav tone="dark" dark />
 
       <div className="grid grid-cols-[0.9fr_1.1fr] gap-3 p-4">
@@ -658,7 +658,7 @@ function OfferPreview({
       <div className="grid grid-cols-[1fr_0.74fr] gap-3 p-4">
         <div>
           <div className={["mb-2 h-2 w-16 rounded-full", getAccentClass(tone)].join(" ")} />
-          <div className="h-6 w-40 rounded-full bg-slate-950" />
+          <div className="h-6 w-40 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
           <div className="mt-2 h-5 w-28 rounded-full bg-violet-200" />
           <div className={["mt-4 h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
         </div>
@@ -667,7 +667,7 @@ function OfferPreview({
           <div className="h-2 w-14 rounded-full bg-violet-300" />
           <div className="mt-3 h-8 w-20 rounded-full bg-violet-700" />
           <div className="mt-2 h-2 w-16 rounded-full bg-slate-200" />
-          <div className="mt-3 h-6 rounded-full bg-slate-950" />
+          <div className="mt-3 h-6 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
         </div>
       </div>
 
@@ -697,14 +697,14 @@ function EditorialPreview({
       <div className="grid grid-cols-[0.9fr_1.1fr] gap-3 p-4">
         <div className="rounded-[24px] bg-white p-4 shadow-sm ring-1 ring-slate-200">
           <div className={["mb-2 h-2 w-16 rounded-full", getAccentClass(tone)].join(" ")} />
-          <div className="h-6 w-40 rounded-full bg-slate-950" />
+          <div className="h-6 w-40 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
           <div className="mt-2 h-5 w-28 rounded-full bg-slate-200" />
           <div className={["mt-4 h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
         </div>
 
         <div className="grid grid-cols-2 gap-2">
           <img src={getImage(template, 0)} alt="" className="col-span-2 h-24 rounded-[22px] object-cover" draggable={false} />
-          <div className="rounded-2xl bg-slate-950 p-3">
+          <div className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-3">
             <div className="h-5 w-8 rounded-full bg-white" />
             <div className="mt-2 h-2 w-12 rounded-full bg-white/30" />
           </div>
@@ -741,7 +741,7 @@ function DashboardPreview({
       <div className="grid grid-cols-[1fr_0.9fr] gap-3 p-4">
         <div className="flex flex-col justify-center">
           <div className={["mb-2 h-2 w-16 rounded-full", getAccentClass(tone)].join(" ")} />
-          <div className="h-6 w-40 rounded-full bg-slate-950" />
+          <div className="h-6 w-40 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
           <div className="mt-2 h-5 w-28 rounded-full bg-slate-300" />
           <div className="mt-4 flex gap-2">
             <div className={["h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
@@ -783,7 +783,7 @@ function SplitPreview({
       <div className="grid grid-cols-[1fr_0.92fr] gap-3 p-4">
         <div className="flex flex-col justify-center">
           <div className={["mb-2 h-2 w-16 rounded-full", getAccentClass(tone)].join(" ")} />
-          <div className="h-6 w-40 rounded-full bg-slate-950" />
+          <div className="h-6 w-40 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
           <div className="mt-2 h-5 w-28 rounded-full bg-slate-300" />
           <div className={["mt-4 h-7 w-20 rounded-full", getButtonClass(tone)].join(" ")} />
         </div>
@@ -904,7 +904,7 @@ function MiniSection({
         <div className="rounded-xl bg-white p-1.5">
           <div className="h-3 rounded-full bg-slate-100" />
           <div className="mt-1 h-3 rounded-full bg-slate-100" />
-          <div className="mt-1 h-4 rounded-full bg-slate-950" />
+          <div className="mt-1 h-4 rounded-full border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" />
         </div>
       </div>
     );
@@ -954,7 +954,7 @@ function Badge({
   tone: PreviewTone;
 }) {
   const toneClass: Record<PreviewTone, string> = {
-    dark: "border-slate-700 bg-slate-900 text-white",
+    dark: "border-slate-700 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
     beauty: "border-rose-200 bg-rose-50 text-rose-800",
     clinic: "border-teal-200 bg-teal-50 text-teal-800",
     food: "border-orange-200 bg-orange-50 text-orange-800",

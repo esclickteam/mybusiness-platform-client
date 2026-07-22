@@ -27,7 +27,7 @@ const kind = "hero" as const;
 function heroStat(value: string, label: string) {
   return `
 <div class="rounded-[26px] border border-slate-200 bg-white p-5 text-center shadow-[0_16px_50px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <strong class="block text-3xl font-black tracking-[-0.05em] text-slate-950" data-editable-text="true">${value}</strong>
+  <strong class="block text-3xl font-black tracking-[-0.05em] text-slate-800" data-editable-text="true">${value}</strong>
   <span class="mt-2 block text-xs font-black text-slate-400" data-editable-text="true">${label}</span>
 </div>
 `;
@@ -40,7 +40,7 @@ function heroMiniCard(title: string, text: string, icon = "✦") {
     ${icon}
   </div>
 
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </div>
 `;
@@ -60,7 +60,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
         <div>
           <p class="${pillClass}" data-editable-text="true">עסק מקצועי</p>
 
-          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
             אתר עסקי שנראה כמו מותג גדול
           </h1>
 
@@ -96,7 +96,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
       <div>
         <p class="${pillClass}" data-editable-text="true">Welcome</p>
 
-        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
           כותרת ראשית חזקה לעסק שלכם
         </h1>
 
@@ -158,7 +158,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
       <div class="mx-auto max-w-[1040px] rounded-[58px] border border-slate-200 bg-white p-8 text-center shadow-[0_34px_120px_rgba(15,23,42,0.08)] md:p-16">
         <p class="${pillClass}" data-editable-text="true">Bizuply Website</p>
 
-        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
           כותרת ראשית נקייה, ברורה ומקצועית
         </h1>
 
@@ -189,7 +189,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
         <div>
           <p class="${pillClass}" data-editable-text="true">גלריה בראש האתר</p>
 
-          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
             תנו לתמונות להציג את העסק
           </h1>
 
@@ -225,7 +225,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -269,7 +269,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
       <div>
         <p class="${pillClass}" data-editable-text="true">וידאו בראש האתר</p>
 
-        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+        <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
           הציגו את העסק דרך סרטון קצר
         </h1>
 
@@ -304,7 +304,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
         <div>
           <p class="${pillClass}" data-editable-text="true">מדיה גמישה</p>
 
-          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
             בעל העסק יכול להוסיף תמונות וסרטונים
           </h1>
 
@@ -334,7 +334,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
           <div>
             <p class="${pillClass}" data-editable-text="true">שירות מוביל</p>
 
-            <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+            <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
               הציגו שירות אחד בצורה שמובילה לפנייה
             </h1>
 
@@ -376,7 +376,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
         <div class="rounded-[54px] border border-slate-200 bg-white p-8 shadow-[0_34px_120px_rgba(15,23,42,0.08)] md:p-14">
           <p class="${pillClass}" data-editable-text="true">Business Hero</p>
 
-          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-950 md:text-7xl" data-editable-text="true">
+          <h1 class="mt-5 text-5xl font-black leading-[0.95] tracking-[-0.065em] text-slate-800 md:text-7xl" data-editable-text="true">
             פתיחה עם כרטיס צד מקצועי
           </h1>
 
@@ -387,7 +387,7 @@ export const heroLayoutVariants: SectionLayoutVariant[] = [
           ${actionRow("פעולה ראשית", "מידע נוסף")}
         </div>
 
-        <aside class="rounded-[54px] bg-slate-950 p-8 text-white shadow-[0_34px_120px_rgba(15,23,42,0.18)]" data-editable-card="true">
+        <aside class="rounded-[54px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,0.18)]" data-editable-card="true">
           <p class="text-sm font-black text-white/55" data-editable-text="true">הטבת החודש</p>
           <h3 class="mt-4 text-5xl font-black tracking-[-0.06em] text-white" data-editable-text="true">VIP</h3>
           <p class="mt-5 text-base font-bold leading-8 text-white/70" data-editable-text="true">

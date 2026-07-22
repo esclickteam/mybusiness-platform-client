@@ -84,7 +84,7 @@ export default function AiModal(props: AiModalProps) {
 
   return (
     <div
-      className="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-950/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[9999] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/60 p-4 backdrop-blur-sm"
       onMouseDown={closeModal}
       aria-modal="true"
       role="dialog"
@@ -93,7 +93,7 @@ export default function AiModal(props: AiModalProps) {
         className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)]"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-sky-950 p-6 text-white">
+        <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 p-6 text-white">
           <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-sky-400/20 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 left-20 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
 
@@ -182,7 +182,7 @@ export default function AiModal(props: AiModalProps) {
               type="button"
               onClick={handleApprove}
               disabled={loading || !editedText.trim()}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
                 <BizuplyLoader size="sm" compact />

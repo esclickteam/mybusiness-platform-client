@@ -6,7 +6,7 @@ function Terms() {
     "scroll-mt-28 rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8";
 
   const h2Base =
-    "mb-5 text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl";
+    "mb-5 text-2xl font-black tracking-[-0.03em] text-slate-800 sm:text-3xl";
 
   const h3Base =
     "mb-3 mt-7 text-xl font-black tracking-[-0.02em] text-slate-900";
@@ -35,7 +35,7 @@ function Terms() {
   ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-950">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
         <title>Terms of Service - BizUply</title>
         <meta
@@ -58,7 +58,7 @@ function Terms() {
           Legal Center
         </div>
 
-        <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+        <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
           Terms of Service
         </h1>
 
@@ -75,11 +75,11 @@ function Terms() {
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.34fr_0.66fr] lg:px-10">
         {/* Sidebar */}
         <aside className="h-fit rounded-[2.5rem] border border-white/80 bg-white/70 p-6 shadow-xl shadow-slate-900/5 backdrop-blur lg:sticky lg:top-24">
-          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-2xl shadow-lg shadow-slate-900/20">
+          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20">
             ⚖️
           </div>
 
-          <h2 className="text-2xl font-black tracking-[-0.03em] text-slate-950">
+          <h2 className="text-2xl font-black tracking-[-0.03em] text-slate-800">
             Terms Overview
           </h2>
 
@@ -92,7 +92,7 @@ function Terms() {
               <a
                 key={section}
                 href={`#section-${index + 1}`}
-                className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white/70 px-4 py-3 text-sm font-black text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:text-slate-950"
+                className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-white/70 px-4 py-3 text-sm font-black text-slate-700 transition hover:-translate-y-0.5 hover:bg-white hover:text-slate-800"
               >
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-amber-100 text-xs text-amber-800">
                   {index + 1}
@@ -102,7 +102,7 @@ function Terms() {
             ))}
           </nav>
 
-          <div className="mt-6 rounded-3xl bg-slate-950 p-5 text-white">
+          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
             <p className="text-sm font-black text-amber-300">Contact</p>
             <p className="mt-2 break-all text-sm font-bold text-white/80">
               support@bizuply.com
@@ -985,7 +985,7 @@ function Terms() {
               and effect.
             </p>
 
-            <div className="mt-6 rounded-3xl bg-slate-950 px-6 py-5 text-white">
+            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
                 Last Updated
               </p>

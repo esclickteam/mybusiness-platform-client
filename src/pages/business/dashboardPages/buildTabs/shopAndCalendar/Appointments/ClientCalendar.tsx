@@ -383,7 +383,7 @@ export default function ClientCalendar({
               Appointment booking
             </p>
 
-            <h3 className="mt-2 text-2xl font-black text-slate-950">
+            <h3 className="mt-2 text-2xl font-black text-slate-800">
               Choose a date to see available times
             </h3>
 
@@ -433,7 +433,7 @@ export default function ClientCalendar({
                   Selected date
                 </p>
 
-                <h4 className="mt-1 text-2xl font-black text-slate-950">
+                <h4 className="mt-1 text-2xl font-black text-slate-800">
                   {selectedDate.toLocaleDateString("en-GB")}
                 </h4>
               </div>
@@ -475,7 +475,7 @@ export default function ClientCalendar({
                       Working hours
                     </p>
 
-                    <p className="mt-1 text-lg font-black text-slate-950">
+                    <p className="mt-1 text-lg font-black text-slate-800">
                       {config.start} – {config.end}
                     </p>
                   </div>
@@ -495,7 +495,7 @@ export default function ClientCalendar({
 
                 {availableSlots.length > 0 ? (
                   <div>
-                    <h5 className="mb-3 text-sm font-black text-slate-950">
+                    <h5 className="mb-3 text-sm font-black text-slate-800">
                       Available Slots
                     </h5>
 
@@ -504,7 +504,7 @@ export default function ClientCalendar({
                         <button
                           key={time}
                           type="button"
-                          className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-violet-600 hover:text-white"
+                          className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-300 hover:bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 hover:text-white"
                           onClick={() => handleSelectSlot(time)}
                         >
                           {time}
@@ -529,7 +529,7 @@ export default function ClientCalendar({
         <div className="mx-auto max-w-3xl space-y-5">
           {!bookingSuccess ? (
             <>
-              <div className="rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-600 to-fuchsia-600 p-5 text-white shadow-xl shadow-violet-100">
+              <div className="rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-5 text-slate-800 shadow-xl shadow-violet-100">
                 <p className="text-sm font-bold text-violet-100">
                   Booking Summary
                 </p>
@@ -558,7 +558,7 @@ export default function ClientCalendar({
                     Your details
                   </p>
 
-                  <h4 className="mt-1 text-xl font-black text-slate-950">
+                  <h4 className="mt-1 text-xl font-black text-slate-800">
                     Fill in your contact information
                   </h4>
 
@@ -626,7 +626,7 @@ export default function ClientCalendar({
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
-                  className="flex-1 rounded-2xl bg-violet-600 px-5 py-4 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex-1 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-4 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={handleSubmitBooking}
                   disabled={submittingBooking}
                 >

@@ -16,7 +16,7 @@ const solutionMeta = [
   {
     key: "card3",
     icon: "◎",
-    gradient: "from-violet-600 to-fuchsia-500",
+    gradient: "from-violet-200 via-sky-200 to-cyan-200",
   },
   {
     key: "card4",
@@ -57,7 +57,7 @@ function Solutions() {
   }));
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
+    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
       <Helmet>
         <title>{t("solutions.seoTitle")}</title>
         <meta name="description" content={t("solutions.seoDescription")} />
@@ -90,7 +90,7 @@ function Solutions() {
             {t("solutions.badge")}
           </div>
 
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
             {t("solutions.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
@@ -106,7 +106,7 @@ function Solutions() {
         {/* Premium overview */}
         <section className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
           <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative overflow-hidden bg-slate-950 p-8 text-white sm:p-10">
+            <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:p-10">
               <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
               <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
 
@@ -151,7 +151,7 @@ function Solutions() {
                     </div>
 
                     <div className="text-start">
-                      <h3 className="text-lg font-black text-slate-950">
+                      <h3 className="text-lg font-black text-slate-800">
                         {title}
                       </h3>
                       <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
@@ -197,7 +197,7 @@ function Solutions() {
                   {item.subtitle}
                 </p>
 
-                <h2 className="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-4xl">
+                <h2 className="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-4xl">
                   {item.title}
                 </h2>
 

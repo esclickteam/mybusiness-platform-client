@@ -323,7 +323,7 @@ export default function BusinessChatPage() {
             ⚠️
           </div>
 
-          <h2 className="mt-5 text-xl font-black text-slate-950">
+          <h2 className="mt-5 text-xl font-black text-slate-800">
             Business account not found
           </h2>
 
@@ -340,11 +340,11 @@ export default function BusinessChatPage() {
   ===================================================== */
 
   return (
-    <main className="min-h-screen bg-slate-50 px-3 py-4 text-slate-950 sm:px-5 lg:px-8">
+    <main className="min-h-screen bg-slate-50 px-3 py-4 text-slate-800 sm:px-5 lg:px-8">
       <div className="mx-auto max-w-7xl">
         {/* HEADER */}
         <div className="mb-5 overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-5 py-6 text-white sm:px-7">
+          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-5 py-6 text-white sm:px-7">
             <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -398,7 +398,7 @@ export default function BusinessChatPage() {
             <aside className="border-b border-slate-100 bg-white lg:border-b-0 lg:border-r">
               <div className="flex items-center justify-between border-b border-slate-100 px-5 py-4">
                 <div>
-                  <h2 className="text-lg font-black text-slate-950">
+                  <h2 className="text-lg font-black text-slate-800">
                     Conversations
                   </h2>
 
@@ -410,7 +410,7 @@ export default function BusinessChatPage() {
                 </div>
 
                 {totalUnread > 0 && (
-                  <div className="flex h-9 min-w-9 items-center justify-center rounded-full bg-violet-600 px-3 text-sm font-black text-white shadow-lg shadow-violet-500/25">
+                  <div className="flex h-9 min-w-9 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-3 text-sm font-black text-white shadow-lg shadow-violet-500/25">
                     {totalUnread}
                   </div>
                 )}
@@ -436,7 +436,7 @@ export default function BusinessChatPage() {
                       💬
                     </div>
 
-                    <h3 className="mt-4 text-lg font-black text-slate-950">
+                    <h3 className="mt-4 text-lg font-black text-slate-800">
                       No conversations yet
                     </h3>
 
@@ -459,7 +459,7 @@ export default function BusinessChatPage() {
                     <button
                       type="button"
                       onClick={() => setSelected(null)}
-                      className="inline-flex h-10 items-center justify-center rounded-xl bg-slate-950 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700"
+                      className="inline-flex h-10 items-center justify-center rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                     >
                       ← Back to conversations
                     </button>
@@ -485,7 +485,7 @@ export default function BusinessChatPage() {
                   </div>
                 </div>
 
-                <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-950">
+                <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-800">
                   Select a conversation
                 </h3>
 

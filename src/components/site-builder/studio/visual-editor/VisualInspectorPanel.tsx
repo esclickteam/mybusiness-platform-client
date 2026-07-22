@@ -496,7 +496,7 @@ function ToggleButton({
       className={[
         "inline-flex h-10 min-w-10 items-center justify-center rounded-xl border px-3 text-sm font-black transition",
         active
-          ? "border-violet-600 bg-violet-600 text-white"
+          ? "border-violet-600 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
           : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
         disabled ? "cursor-not-allowed opacity-40" : "",
       ].join(" ")}
@@ -557,7 +557,7 @@ export default function VisualInspectorPanel({
           <Sparkles className="h-7 w-7" />
         </div>
 
-        <h2 className="text-xl font-black text-slate-950">
+        <h2 className="text-xl font-black text-slate-800">
           בחרי אלמנט לעריכה
         </h2>
 
@@ -623,7 +623,7 @@ export default function VisualInspectorPanel({
               Inspector
             </p>
 
-            <h2 className="mt-1 truncate text-xl font-black text-slate-950">
+            <h2 className="mt-1 truncate text-xl font-black text-slate-800">
               {element.label || "אלמנט"}
             </h2>
 
@@ -676,7 +676,7 @@ export default function VisualInspectorPanel({
               className={[
                 "h-9 shrink-0 rounded-xl px-3 text-xs font-black transition",
                 activeTab === tab.value
-                  ? "bg-slate-950 text-white"
+                  ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
@@ -1468,7 +1468,7 @@ export default function VisualInspectorPanel({
                     onClick={() =>
                       editor?.openMediaPicker?.(elementId)
                     }
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Upload className="h-4 w-4" />
                     {editor?.isUploadingMedia
@@ -1508,7 +1508,7 @@ export default function VisualInspectorPanel({
                     onClick={() =>
                       editor?.openBackgroundMediaPicker?.(elementId)
                     }
-                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     <Upload className="h-4 w-4" />
                     העלאת תמונת רקע
@@ -1548,7 +1548,7 @@ export default function VisualInspectorPanel({
                           className={[
                             "h-11 rounded-2xl border text-sm font-black transition",
                             active
-                              ? "border-violet-600 bg-violet-600 text-white"
+                              ? "border-violet-600 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
                             locked
                               ? "cursor-not-allowed opacity-50"
@@ -1661,7 +1661,7 @@ export default function VisualInspectorPanel({
                   onClick={() =>
                     editor?.previewAnimation?.(elementId)
                   }
-                  className="h-11 rounded-2xl bg-slate-950 text-sm font-black text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="h-11 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   תצוגה מקדימה
                 </button>

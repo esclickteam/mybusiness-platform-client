@@ -402,12 +402,12 @@ export default function BusinessChatTab({
       <header className="border-b border-slate-200 bg-white px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 text-lg font-black text-white shadow-lg shadow-violet-500/20">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-lg font-black text-slate-800 shadow-lg shadow-violet-500/20">
               {customerName?.charAt(0)?.toUpperCase() || "C"}
             </div>
 
             <div className="min-w-0">
-              <h3 className="truncate text-lg font-black text-slate-950">
+              <h3 className="truncate text-lg font-black text-slate-800">
                 {customerName || "Client"}
               </h3>
 
@@ -459,7 +459,7 @@ export default function BusinessChatTab({
                   className={[
                     "max-w-[82%] rounded-[1.35rem] px-4 py-3 shadow-sm sm:max-w-[70%]",
                     isMine
-                      ? "rounded-br-md bg-slate-950 text-white"
+                      ? "rounded-br-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                       : "rounded-bl-md border border-slate-200 bg-white text-slate-900",
                     message.failed ? "border border-rose-300 bg-rose-50 text-rose-700" : "",
                     message.sending ? "opacity-75" : "",
@@ -493,7 +493,7 @@ export default function BusinessChatTab({
               </div>
             </div>
 
-            <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-950">
+            <h3 className="mt-6 text-2xl font-black tracking-tight text-slate-800">
               No messages yet
             </h3>
 
@@ -527,14 +527,14 @@ export default function BusinessChatTab({
                 sendMessage();
               }
             }}
-            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-3 py-3 text-sm font-medium leading-5 text-slate-950 outline-none placeholder:text-slate-400"
+            className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-3 py-3 text-sm font-medium leading-5 text-slate-800 outline-none placeholder:text-slate-400"
           />
 
           <button
             type="button"
             onClick={sendMessage}
             disabled={sending || !input.trim()}
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-slate-950 text-lg font-black text-white shadow-lg shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-50"
             aria-label="Send message"
           >
             ➤

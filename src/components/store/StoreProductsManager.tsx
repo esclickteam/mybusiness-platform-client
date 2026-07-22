@@ -446,7 +446,7 @@ function TextInput(props: React.InputHTMLAttributes<HTMLInputElement>) {
     <input
       {...props}
       className={cx(
-        "h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-950 outline-none transition",
+        "h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-extrabold text-slate-800 outline-none transition",
         "placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
         props.className
       )}
@@ -459,7 +459,7 @@ function TextArea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
     <textarea
       {...props}
       className={cx(
-        "min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold leading-7 text-slate-950 outline-none transition",
+        "min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-extrabold leading-7 text-slate-800 outline-none transition",
         "placeholder:text-slate-300 focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
         props.className
       )}
@@ -473,7 +473,7 @@ function SelectInput(props: React.SelectHTMLAttributes<HTMLSelectElement>) {
       <select
         {...props}
         className={cx(
-          "h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-sm font-extrabold text-slate-950 outline-none transition",
+          "h-12 w-full appearance-none rounded-2xl border border-slate-200 bg-white px-4 pl-10 text-sm font-extrabold text-slate-800 outline-none transition",
           "focus:border-violet-300 focus:ring-4 focus:ring-violet-100",
           props.className
         )}
@@ -496,8 +496,8 @@ function PrimaryButton({
       {...props}
       disabled={props.disabled || loading}
       className={cx(
-        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-600 px-5 py-3 text-sm font-semibold text-white shadow-md shadow-violet-200/50 transition",
-        "hover:-translate-y-0.5 hover:from-violet-700 hover:to-indigo-700 hover:shadow-lg active:translate-y-0",
+        "inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-semibold text-slate-800 shadow-md shadow-violet-200/50 transition",
+        "hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 hover:shadow-lg active:translate-y-0",
         "disabled:cursor-not-allowed disabled:opacity-60",
         props.className
       )}
@@ -560,7 +560,7 @@ function EmptyBox({
     <div className="grid min-h-[260px] place-items-center rounded-[32px] border border-dashed border-slate-300 bg-white p-8 text-center">
       <div>
         <ShoppingBag size={42} className="mx-auto text-slate-300" />
-        <p className="mt-4 text-lg font-black text-slate-950">{title}</p>
+        <p className="mt-4 text-lg font-black text-slate-800">{title}</p>
         <p className="mx-auto mt-2 max-w-md text-sm font-bold leading-7 text-slate-500">
           {text}
         </p>
@@ -1139,7 +1139,7 @@ export default function StoreProductsManager({
                 ניהול חנות
               </div>
 
-              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl">
+              <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl">
                 מוצרים, קטגוריות והגדרות
               </h1>
 
@@ -1209,14 +1209,14 @@ export default function StoreProductsManager({
                     ? "text-violet-700"
                     : "text-slate-500 hover:text-slate-800"
                   : view === item.id
-                    ? "bg-gradient-to-l from-violet-600 to-indigo-600 text-white shadow-md shadow-violet-200/40"
+                    ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-md shadow-violet-200/40"
                     : "bg-violet-50 text-violet-700 hover:bg-violet-100"
               )}
             >
               {item.icon}
               {item.label}
               {embedded && view === item.id ? (
-                <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-violet-600" />
+                <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70" />
               ) : null}
             </button>
           ))}
@@ -1338,7 +1338,7 @@ function StatCard({ title, value }: { title: string; value: React.ReactNode }) {
   return (
     <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-center">
       <p className="text-[11px] font-black text-slate-400">{title}</p>
-      <p className="mt-1 text-lg font-black text-slate-950">{value}</p>
+      <p className="mt-1 text-lg font-black text-slate-800">{value}</p>
     </div>
   );
 }
@@ -1370,7 +1370,7 @@ function ProductsView({
     <div>
       <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h2 className="text-2xl font-black text-slate-950">כל המוצרים</h2>
+          <h2 className="text-2xl font-black text-slate-800">כל המוצרים</h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
             כאן רואים כל מוצר שנוסף לחנות, כולל שיוך לקטגוריה.
           </p>
@@ -1473,7 +1473,7 @@ function ProductsView({
                 <div className="p-5">
                   <div className="mb-3 flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <h3 className="truncate text-lg font-black text-slate-950">
+                      <h3 className="truncate text-lg font-black text-slate-800">
                         {product.name}
                       </h3>
                       <p className="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-500">
@@ -1510,7 +1510,7 @@ function ProductsView({
                       <p className="text-[11px] font-black text-slate-400">
                         מלאי
                       </p>
-                      <p className="mt-1 text-sm font-black text-slate-950">
+                      <p className="mt-1 text-sm font-black text-slate-800">
                         {product.stock ?? 0}
                       </p>
                     </div>
@@ -1519,7 +1519,7 @@ function ProductsView({
                       <p className="text-[11px] font-black text-slate-400">
                         מק״ט
                       </p>
-                      <p className="mt-1 truncate text-sm font-black text-slate-950">
+                      <p className="mt-1 truncate text-sm font-black text-slate-800">
                         {product.sku || "-"}
                       </p>
                     </div>
@@ -1580,7 +1580,7 @@ function ProductFormView({
     <div>
       <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
         <div>
-          <h2 className="text-2xl font-black text-slate-950">
+          <h2 className="text-2xl font-black text-slate-800">
             {editingProductId ? "עריכת מוצר" : "הוספת מוצר חדש"}
           </h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1802,7 +1802,7 @@ function ProductFormView({
         </div>
 
         <aside className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-          <p className="text-lg font-black text-slate-950">תמונות המוצר</p>
+          <p className="text-lg font-black text-slate-800">תמונות המוצר</p>
           <p className="mt-1 text-xs font-bold leading-6 text-slate-500">
             התמונה הראשונה תהיה התמונה הראשית בגריד החנות.
           </p>
@@ -1895,7 +1895,7 @@ function CategoriesView({
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
         <div className="mb-5 flex items-center justify-between gap-3">
           <div>
-            <h2 className="text-2xl font-black text-slate-950">
+            <h2 className="text-2xl font-black text-slate-800">
               {editingCategoryId ? "עריכת קטגוריה" : "הוספת קטגוריה"}
             </h2>
             <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1995,7 +1995,7 @@ function CategoriesView({
       </div>
 
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-5 text-2xl font-black text-slate-950">
+        <h2 className="mb-5 text-2xl font-black text-slate-800">
           קטגוריות קיימות
         </h2>
 
@@ -2027,7 +2027,7 @@ function CategoriesView({
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-lg font-black text-slate-950">
+                    <p className="truncate text-lg font-black text-slate-800">
                       {category.name}
                     </p>
                     <p className="truncate text-xs font-bold text-slate-400">
@@ -2117,7 +2117,7 @@ function SettingsView({
         {focus !== "payments" ? (
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="mb-6">
-            <h2 className="text-2xl font-black text-slate-950">
+            <h2 className="text-2xl font-black text-slate-800">
               {focus === "shipping" ? "הגדרות משלוח" : "הגדרות חנות"}
             </h2>
             <p className="mt-1 text-sm font-bold text-slate-500">
@@ -2293,7 +2293,7 @@ function SettingsView({
                 תשלומים וסליקה
               </div>
 
-              <h2 className="mt-3 text-2xl font-black text-slate-950">
+              <h2 className="mt-3 text-2xl font-black text-slate-800">
                 חיבור סליקה של העסק
               </h2>
 
@@ -2547,7 +2547,7 @@ function SettingsView({
       {focus !== "shipping" ? (
       <aside className="space-y-5">
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-lg font-black text-slate-950">
+          <h3 className="text-lg font-black text-slate-800">
             ספקי סליקה פעילים
           </h3>
 
@@ -2568,7 +2568,7 @@ function SettingsView({
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
-                      <p className="text-sm font-black text-slate-950">
+                      <p className="text-sm font-black text-slate-800">
                         {provider.label || getPaymentProviderLabel(provider.provider)}
                       </p>
 
@@ -2669,7 +2669,7 @@ function CouponsView({
   return (
     <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-5 text-2xl font-black text-slate-950">
+        <h2 className="mb-5 text-2xl font-black text-slate-800">
           {editingCouponId ? "עריכת קופון" : "הוספת קופון"}
         </h2>
 
@@ -2812,7 +2812,7 @@ function CouponsView({
       </div>
 
       <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-        <h2 className="mb-5 text-2xl font-black text-slate-950">קופונים</h2>
+        <h2 className="mb-5 text-2xl font-black text-slate-800">קופונים</h2>
 
         {coupons.length === 0 ? (
           <EmptyBox
@@ -2828,7 +2828,7 @@ function CouponsView({
               >
                 <div className="flex items-center justify-between gap-3">
                   <div>
-                    <p className="text-lg font-black text-slate-950">
+                    <p className="text-lg font-black text-slate-800">
                       {coupon.code}
                     </p>
                     <p className="text-xs font-bold text-slate-400">
@@ -2877,7 +2877,7 @@ function OrdersView({
 }) {
   return (
     <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-      <h2 className="mb-5 text-2xl font-black text-slate-950">הזמנות</h2>
+      <h2 className="mb-5 text-2xl font-black text-slate-800">הזמנות</h2>
 
       {orders.length === 0 ? (
         <EmptyBox
@@ -2893,7 +2893,7 @@ function OrdersView({
             >
               <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
                 <div>
-                  <p className="text-lg font-black text-slate-950">
+                  <p className="text-lg font-black text-slate-800">
                     {order.orderNumber}
                   </p>
                   <p className="mt-1 text-sm font-bold text-slate-500">

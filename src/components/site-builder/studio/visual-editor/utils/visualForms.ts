@@ -618,7 +618,7 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         נשמח לשמוע מכם
       </div>
       <h2
-        class="mt-4 text-3xl font-black tracking-tight text-slate-950 md:text-4xl"
+        class="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl"
         data-bizuply-form-title="true"
         data-visual-editable="true"
         data-visual-edit-id="form.title"
@@ -648,7 +648,7 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
       data-visual-edit-id="form.submit"
       data-visual-edit-type="button"
       data-visual-edit-label="${submitText}"
-      class="group mt-7 inline-flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-violet-600 via-blue-600 to-cyan-500 px-6 text-center text-lg font-black text-white shadow-[0_20px_50px_rgba(79,70,229,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(79,70,229,0.34)] focus:outline-none focus:ring-4 focus:ring-violet-200"
+      class="group mt-7 inline-flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-center text-lg font-black text-slate-800 shadow-[0_20px_50px_rgba(79,70,229,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(79,70,229,0.34)] focus:outline-none focus:ring-4 focus:ring-violet-200"
     >
       <span data-visual-ignore-select="true">${submitText}</span>
       <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-visual-ignore-select="true">

@@ -283,7 +283,7 @@ export default function MarketingAdvisorTab({
   return (
     <section
       dir="rtl"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-right !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-fuchsia-50 p-4 text-right !text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       {/* Background */}
       <div className="pointer-events-none absolute inset-0">
@@ -305,7 +305,7 @@ export default function MarketingAdvisorTab({
               </div>
 
 
-              <h2 className="text-3xl font-black tracking-tight !text-slate-950 sm:text-4xl lg:text-5xl">
+              <h2 className="text-3xl font-black tracking-tight !text-slate-800 sm:text-4xl lg:text-5xl">
                 מרכז הפיקוד השיווקי שלך
               </h2>
 
@@ -322,7 +322,7 @@ export default function MarketingAdvisorTab({
               </p>
 
               <div className="mt-2 flex items-end gap-2">
-                <span className="text-4xl font-black !text-slate-950">
+                <span className="text-4xl font-black !text-slate-800">
                   {remainingQuestions ?? "—"}
                 </span>
                 <span className="pb-1 text-sm font-bold !text-slate-500">
@@ -345,7 +345,7 @@ export default function MarketingAdvisorTab({
           {!startedChat && (
             <div className="mt-7">
               <div className="mb-3 flex items-center justify-between gap-4">
-                <p className="text-sm font-black !text-slate-950">
+                <p className="text-sm font-black !text-slate-800">
                   התחל עם שאלת שיווק מוכנה
                 </p>
 
@@ -400,7 +400,7 @@ export default function MarketingAdvisorTab({
                     }`}
                   >
                     {isAssistant ? (
-                      <div className="max-w-none text-sm leading-7 [&_p]:my-2 [&_strong]:!text-slate-950 [&_ul]:my-2 [&_li]:my-1">
+                      <div className="max-w-none text-sm leading-7 [&_p]:my-2 [&_strong]:!text-slate-800 [&_ul]:my-2 [&_li]:my-1">
                         <Markdown>{msg.content}</Markdown>
                       </div>
                     ) : (

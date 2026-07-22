@@ -377,7 +377,7 @@ export default function CRMCustomerFile({ client, businessId }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6FAFD] p-4 text-slate-950 md:p-6">
+    <div className="min-h-screen bg-[#F6FAFD] p-4 text-slate-800 md:p-6">
       <div className="mx-auto max-w-7xl space-y-5">
         <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
           <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
@@ -395,7 +395,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                   Client File
                 </div>
 
-                <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
                   {client?.fullName || "Client profile"}
                 </h2>
 
@@ -461,7 +461,7 @@ export default function CRMCustomerFile({ client, businessId }) {
               <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
                 <div className="flex items-start justify-between gap-4 border-b border-slate-100 p-5">
                   <div>
-                    <h3 className="text-2xl font-black text-slate-950">
+                    <h3 className="text-2xl font-black text-slate-800">
                       Add CRM event
                     </h3>
 
@@ -545,7 +545,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                   <button
                     type="button"
                     onClick={addEvent}
-                    className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                    className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
                   >
                     <Save className="h-5 w-5" />
                     Save
@@ -556,7 +556,7 @@ export default function CRMCustomerFile({ client, businessId }) {
 
             <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <div className="border-b border-slate-100 p-5">
-                <h3 className="text-2xl font-black text-slate-950">
+                <h3 className="text-2xl font-black text-slate-800">
                   Activity Timeline
                 </h3>
 
@@ -569,7 +569,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                 {events.length === 0 ? (
                   <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-12 text-center">
                     <Sparkles className="mx-auto h-8 w-8 text-sky-700" />
-                    <h4 className="mt-4 text-xl font-black text-slate-950">
+                    <h4 className="mt-4 text-xl font-black text-slate-800">
                       No activity yet
                     </h4>
                     <p className="mt-2 text-sm font-semibold text-slate-500">
@@ -653,7 +653,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                             <button
                               type="button"
                               onClick={() => saveEdit(e.id)}
-                              className="rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white transition hover:bg-sky-950"
+                              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:bg-sky-950"
                             >
                               Save
                             </button>
@@ -661,7 +661,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                         </div>
                       ) : (
                         <div className="mt-4">
-                          <h4 className="text-lg font-black text-slate-950">
+                          <h4 className="text-lg font-black text-slate-800">
                             {e.title}
                           </h4>
 
@@ -687,7 +687,7 @@ export default function CRMCustomerFile({ client, businessId }) {
                 </div>
 
                 <div>
-                  <h3 className="text-base font-black text-slate-950">
+                  <h3 className="text-base font-black text-slate-800">
                     Client overview
                   </h3>
                   <p className="text-xs font-semibold text-slate-500">
@@ -732,7 +732,7 @@ function CustomClientFieldsPanel({
             Custom Client Fields
           </div>
 
-          <h3 className="mt-3 text-2xl font-black text-slate-950">
+          <h3 className="mt-3 text-2xl font-black text-slate-800">
             Client data fields
           </h3>
 
@@ -746,7 +746,7 @@ function CustomClientFieldsPanel({
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
           <Save className="h-5 w-5" />
           {saving ? "Saving..." : "Save Client Data"}
@@ -757,7 +757,7 @@ function CustomClientFieldsPanel({
         {fields.length === 0 ? (
           <div className="rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-12 text-center">
             <Sparkles className="mx-auto h-8 w-8 text-sky-700" />
-            <h4 className="mt-4 text-xl font-black text-slate-950">
+            <h4 className="mt-4 text-xl font-black text-slate-800">
               No custom fields yet
             </h4>
             <p className="mt-2 text-sm font-semibold text-slate-500">
@@ -926,7 +926,7 @@ function MiniMetric({ icon: Icon, label, value, helper }) {
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 truncate text-2xl font-black tracking-tight text-slate-950">
+          <p className="mt-2 truncate text-2xl font-black tracking-tight text-slate-800">
             {value}
           </p>
           <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>

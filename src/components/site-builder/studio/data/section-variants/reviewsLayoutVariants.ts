@@ -77,7 +77,7 @@ function reviewCard(
     </div>
 
     <div>
-      <p class="text-sm font-black text-slate-950" data-editable-text="true">
+      <p class="text-sm font-black text-slate-800" data-editable-text="true">
         ${name}
       </p>
 
@@ -109,7 +109,7 @@ function compactReview(
     ${quote}
   </p>
 
-  <p class="mt-5 text-sm font-black text-slate-950" data-editable-text="true">
+  <p class="mt-5 text-sm font-black text-slate-800" data-editable-text="true">
     ${name}
   </p>
 </div>
@@ -169,7 +169,7 @@ function reviewSummaryCard() {
 
   <div class="mt-5 flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
     <div>
-      <strong class="block text-7xl font-black tracking-[-0.08em] text-slate-950" data-editable-text="true">
+      <strong class="block text-7xl font-black tracking-[-0.08em] text-slate-800" data-editable-text="true">
         4.9
       </strong>
 
@@ -195,7 +195,7 @@ function reviewSummaryCard() {
 function reviewFormCard(buttonText = "שליחת ביקורת") {
   return `
 <div class="${softCardClass}" data-bizuply-block="review-form" data-editable-card="true">
-  <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
     השאירו ביקורת
   </h3>
 
@@ -242,7 +242,7 @@ function platformReview(platform: string, score: string, text: string) {
   return `
 <div class="rounded-[30px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
   <div class="flex items-center justify-between gap-4">
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${platform}</h3>
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${platform}</h3>
     <span class="rounded-full bg-amber-50 px-4 py-2 text-xs font-black text-amber-600" data-editable-text="true">${score}</span>
   </div>
 
@@ -263,7 +263,7 @@ function reviewFilterChip(text: string, active = false) {
   type="button"
   class="rounded-full px-5 py-3 text-xs font-black transition ${
     active
-      ? "bg-slate-950 text-white shadow-xl"
+      ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl"
       : "border border-slate-200 bg-white text-slate-600 shadow-sm"
   }"
   data-editable-text="true"
@@ -403,7 +403,7 @@ export const reviewsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -737,7 +737,7 @@ export const reviewsLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -841,7 +841,7 @@ export const reviewsLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             רוצים גם לקבל שירות כזה?
           </h3>
 

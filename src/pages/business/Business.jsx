@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 
 function BusinessJoin() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-950">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
         <title>
           Join Businesses - Collaborations, Clients & Smart Management | Bizuply
@@ -30,7 +30,7 @@ function BusinessJoin() {
             New growth platform for modern businesses
           </div>
 
-          <h1 className="max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
+          <h1 className="max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
             Grow your business with clients, collaborations & smart management.
           </h1>
 
@@ -43,7 +43,7 @@ function BusinessJoin() {
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <Link
               to="/register"
-              className="group inline-flex items-center justify-center rounded-2xl bg-slate-950 px-8 py-4 text-base font-black text-white shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:bg-slate-800"
+              className="group inline-flex items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
             >
               Start Free Trial
               <span className="ml-2 transition group-hover:translate-x-1">→</span>
@@ -67,7 +67,7 @@ function BusinessJoin() {
                 key={title}
                 className="rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur"
               >
-                <p className="text-xl font-black text-slate-950">{title}</p>
+                <p className="text-xl font-black text-slate-800">{title}</p>
                 <p className="mt-1 text-xs font-bold text-slate-500 sm:text-sm">
                   {text}
                 </p>
@@ -81,7 +81,7 @@ function BusinessJoin() {
           <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-200/70 via-white to-emerald-100/80 blur-2xl" />
 
           <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/12 backdrop-blur-xl">
-            <div className="rounded-[2rem] bg-slate-950 p-5 text-white">
+            <div className="rounded-[2rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <div className="mb-6 flex items-center justify-between">
                 <div>
                   <p className="text-sm font-bold text-amber-200">
@@ -96,7 +96,7 @@ function BusinessJoin() {
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-3xl bg-white p-5 text-slate-950">
+                <div className="rounded-3xl bg-white p-5 text-slate-800">
                   <p className="text-sm font-bold text-slate-500">
                     New inquiries
                   </p>
@@ -106,7 +106,7 @@ function BusinessJoin() {
                   </p>
                 </div>
 
-                <div className="rounded-3xl bg-amber-100 p-5 text-slate-950">
+                <div className="rounded-3xl bg-amber-100 p-5 text-slate-800">
                   <p className="text-sm font-bold text-amber-800">
                     Collaborations
                   </p>
@@ -148,7 +148,7 @@ function BusinessJoin() {
           <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-700">
             Why join Bizuply
           </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] text-slate-950 sm:text-5xl">
+          <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] text-slate-800 sm:text-5xl">
             Everything your business needs to grow smarter
           </h2>
         </div>
@@ -190,11 +190,11 @@ function BusinessJoin() {
               key={card.title}
               className="group rounded-[2rem] border border-white/80 bg-white/75 p-7 shadow-xl shadow-slate-900/5 backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/10"
             >
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-950 text-2xl shadow-lg shadow-slate-900/20 transition group-hover:scale-105">
+              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20 transition group-hover:scale-105">
                 {card.icon}
               </div>
 
-              <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-950">
+              <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-800">
                 {card.title}
               </h3>
 
@@ -218,7 +218,7 @@ function BusinessJoin() {
 
       {/* CTA */}
       <section className="relative mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
-        <div className="overflow-hidden rounded-[2.5rem] bg-slate-950 px-6 py-14 text-center shadow-2xl shadow-slate-900/20 sm:px-10 lg:py-16">
+        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 px-6 py-14 text-center shadow-2xl shadow-slate-900/20 sm:px-10 lg:py-16">
           <div className="mx-auto max-w-3xl">
             <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-300">
               Start growing today
@@ -236,7 +236,7 @@ function BusinessJoin() {
             <div className="mt-8">
               <Link
                 to="/register"
-                className="inline-flex items-center justify-center rounded-2xl bg-white px-9 py-4 text-base font-black text-slate-950 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
+                className="inline-flex items-center justify-center rounded-2xl bg-white px-9 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
               >
                 Start Free Trial
                 <span className="ml-2">→</span>

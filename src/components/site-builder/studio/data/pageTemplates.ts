@@ -79,7 +79,7 @@ function fallbackSection(request: PageSectionRequest) {
     <p class="mb-4 inline-flex rounded-full bg-[var(--biz-secondary,#F3E8FF)] px-5 py-2 text-xs font-black text-[var(--biz-primary,#7C3AED)]">
       ${request.kind}
     </p>
-    <h2 class="text-4xl font-black tracking-[-0.04em] text-slate-950">
+    <h2 class="text-4xl font-black tracking-[-0.04em] text-slate-800">
       ${title}
     </h2>
     <p class="mt-4 text-base font-bold leading-8 text-slate-500">

@@ -167,13 +167,13 @@ function PulseCTA({
     <a
       href="#early-access"
       className={cx(
-        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-8 py-4 text-base font-black leading-none !text-black shadow-[0_18px_55px_rgba(243,221,165,0.24)] transition hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff] sm:min-h-[64px] sm:px-9 sm:text-lg",
+        "biz-pulse-cta biz-clear-cta inline-flex min-h-[58px] items-center justify-center gap-3 rounded-full border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] px-8 py-4 text-base font-black leading-none !text-slate-800 shadow-[0_18px_55px_rgba(243,221,165,0.24)] transition hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff] sm:min-h-[64px] sm:px-9 sm:text-lg",
         dark && "shadow-[0_18px_55px_rgba(243,221,165,0.28)]",
         className,
       )}
     >
-      <span className="!text-black">{ctaLabel}</span>
-      <ArrowUpRight className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
+      <span className="!text-slate-800">{ctaLabel}</span>
+      <ArrowUpRight className="h-5 w-5 shrink-0 !text-slate-800 sm:h-6 sm:w-6" />
     </a>
   );
 }
@@ -3042,14 +3042,14 @@ export default function BizuplyEarlyAccessLanding() {
                     className={cx(
                       "biz-pulse-cta mt-6 inline-flex min-h-[64px] w-full items-center justify-center gap-3 rounded-full px-6 text-base font-black leading-none transition sm:min-h-[70px] sm:px-8 sm:text-lg",
                       isValid && !submitting
-                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] !text-black shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
+                        ? "border border-[#ffe9b8] bg-gradient-to-br from-[#fff9de] via-[#f3dda5] to-[#c996ff] !text-slate-800 shadow-[0_20px_60px_rgba(196,150,255,0.24)] hover:-translate-y-1 hover:from-[#fffbe8] hover:via-[#f4e2a2] hover:to-[#b884ff]"
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
                     {submitting
                       ? t("earlyAccess.form.submitting")
                       : t("earlyAccess.form.submit")}
-                    <Phone className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
+                    <Phone className="h-5 w-5 shrink-0 !text-slate-800 sm:h-6 sm:w-6" />
                   </button>
 
                   <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">

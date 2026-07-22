@@ -375,7 +375,7 @@ export default function StudioFontPicker({
               className="
                 fixed z-[999999]
                 flex flex-col overflow-hidden
-                border border-slate-300 bg-white text-slate-950
+                border border-slate-300 bg-white text-slate-800
                 shadow-[0_18px_45px_rgba(15,23,42,0.16)]
               "
               style={{

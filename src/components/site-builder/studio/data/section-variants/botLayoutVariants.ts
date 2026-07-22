@@ -66,7 +66,7 @@ function botBubble(text: string, side: "bot" | "user" = "bot") {
 function botChatWindow(title = "AI Assistant") {
   return `
 <div class="rounded-[42px] border border-slate-200 bg-white p-5 shadow-[0_34px_120px_rgba(15,23,42,0.12)]" data-bizuply-block="ai-bot" data-editable-card="true">
-  <div class="mb-5 flex items-center justify-between gap-4 rounded-[30px] bg-slate-950 p-5 text-white">
+  <div class="mb-5 flex items-center justify-between gap-4 rounded-[30px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
     <div class="flex items-center gap-4">
       <div class="grid h-12 w-12 place-items-center rounded-2xl bg-white/12 text-lg font-black">
         AI
@@ -121,7 +121,7 @@ function botFeature(title: string, text: string, icon = "AI") {
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -140,7 +140,7 @@ function botActionCard(title: string, text: string, icon = "✓") {
   </div>
 
   <div>
-    <h3 class="text-base font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-base font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -156,7 +156,7 @@ function automationRow(title: string, text: string, status = "פעיל") {
   return `
 <div class="flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:flex-row sm:items-center sm:justify-between" data-editable-card="true">
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -394,7 +394,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             קבלת ליד מהבוט
           </h3>
 
@@ -450,7 +450,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp AI Preview
               </p>
@@ -549,7 +549,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -693,7 +693,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="grid items-center gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
             <p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-sm font-black text-white" data-editable-text="true">
@@ -785,7 +785,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             השאירו פרטים
           </h3>
 
@@ -831,7 +831,7 @@ export const botLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${softCardClass}">
-            <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+            <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
               קבלת עדכונים
             </h3>
 

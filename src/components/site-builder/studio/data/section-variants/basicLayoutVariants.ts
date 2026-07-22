@@ -59,7 +59,7 @@ function basicInfoCard(title: string, text: string, icon = "✦") {
     ${icon}
   </div>
 
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
     ${title}
   </h3>
 
@@ -78,7 +78,7 @@ function miniInfoRow(title: string, text: string, icon = "✓") {
   </div>
 
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">
       ${title}
     </h3>
 
@@ -95,7 +95,7 @@ function noticeBar(title: string, text: string) {
 <div class="rounded-[34px] border border-slate-200 bg-white p-6 shadow-[0_20px_70px_rgba(15,23,42,0.07)]" data-editable-card="true">
   <div class="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
     <div>
-      <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">
+      <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">
         ${title}
       </h3>
 
@@ -301,7 +301,7 @@ export const basicLayoutVariants: SectionLayoutVariant[] = [
     wideSectionShell(
       kind,
       `
-      <div class="relative overflow-hidden rounded-[64px] bg-slate-950 p-8 text-white shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
+      <div class="relative overflow-hidden rounded-[64px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_58px_190px_rgba(15,23,42,0.40)] md:p-14">
         <div class="pointer-events-none absolute -left-24 top-0 h-80 w-80 rounded-full bg-fuchsia-500/20 blur-3xl"></div>
         <div class="pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-violet-500/20 blur-3xl"></div>
 
@@ -484,7 +484,7 @@ export const basicLayoutVariants: SectionLayoutVariant[] = [
         </div>
 
         <div class="${softCardClass}">
-          <h3 class="text-3xl font-black text-slate-950" data-editable-text="true">
+          <h3 class="text-3xl font-black text-slate-800" data-editable-text="true">
             קבלת פרטים
           </h3>
 
@@ -620,7 +620,7 @@ export const basicLayoutVariants: SectionLayoutVariant[] = [
           </div>
 
           <div class="${cardClass}">
-            <div class="rounded-[32px] bg-slate-950 p-6 text-white">
+            <div class="rounded-[32px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p class="text-sm font-black text-white/60" data-editable-text="true">
                 WhatsApp Preview
               </p>

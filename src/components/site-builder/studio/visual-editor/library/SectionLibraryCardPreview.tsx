@@ -66,8 +66,8 @@ function Btn({
         soft
           ? "border border-slate-200 bg-white text-slate-800"
           : dark
-            ? "bg-slate-950 text-white"
-            : "bg-violet-600 text-white",
+            ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+            : "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800",
       ].join(" ")}
     >
       {label}
@@ -122,7 +122,7 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("details-icons") || layout.includes("details-grid")) {
       return (
         <div className="grid h-full grid-cols-2 gap-1.5 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
-          <p className="col-span-2 text-[11px] font-black text-slate-950">{title}</p>
+          <p className="col-span-2 text-[11px] font-black text-slate-800">{title}</p>
           {["כתובת", "טלפון", "אימייל", "שעות"].map((label) => (
             <div key={label} className="border-2 border-slate-900 bg-white p-1.5 text-right">
               <p className="text-[8px] font-black text-violet-600">{label}</p>
@@ -160,7 +160,7 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="grid h-full grid-cols-[1.1fr_0.9fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
           <div className="flex flex-col justify-center gap-1 p-2 text-right">
-            <p className="text-[16px] font-black tracking-wide text-slate-950">צור קשר</p>
+            <p className="text-[16px] font-black tracking-wide text-slate-800">צור קשר</p>
             <p className="text-[8px] font-bold text-slate-500">{copy}</p>
             <Field label="הודעה" />
             <Btn label="שליחה" dark />
@@ -172,11 +172,11 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("centered-minimal")) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-1.5 px-6" style={{ backgroundColor: bg }} dir="rtl">
-          <p className="text-[12px] font-black text-slate-950">{title}</p>
+          <p className="text-[12px] font-black text-slate-800">{title}</p>
           <div className="w-full max-w-[70%] space-y-1 border-2 border-slate-900 bg-white p-2">
             <Field label="שם" />
             <Field label="אימייל" />
-            <span className="inline-flex rounded-none bg-slate-950 px-2 py-0.5 text-[8px] font-black text-white">שליחה</span>
+            <span className="inline-flex rounded-none border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">שליחה</span>
           </div>
         </div>
       );
@@ -185,7 +185,7 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
           <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-slate-950/60" />
+          <div className="absolute inset-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/60" />
           <div className="relative z-[1] w-[55%] rounded-[20px] bg-white/95 p-2 text-right shadow-lg">
             <p className="text-[10px] font-black">{title}</p>
             <Field label="אימייל" />
@@ -233,7 +233,7 @@ export default function SectionLibraryCardPreview({
             <p className="text-[8px] font-bold text-slate-500">עקבו אחרינו</p>
             <div className="mt-1 flex gap-1">
               {["IG", "FB", "TK", "YT"].map((s) => (
-                <span key={s} className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-900 text-[7px] font-black text-white">
+                <span key={s} className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800">
                   {s}
                 </span>
               ))}
@@ -246,7 +246,7 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("hours")) {
       return (
         <div className="grid h-full grid-cols-2 gap-2 p-2.5" style={{ backgroundColor: bg }} dir="rtl">
-          <div className="bg-violet-600 p-2 text-right text-white shadow-[4px_4px_0_#4c1d95]">
+          <div className="bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 p-2 text-right text-white shadow-[4px_4px_0_#4c1d95]">
             <p className="text-[10px] font-black">שעות פעילות</p>
             <p className="mt-1 text-[8px] font-bold leading-relaxed opacity-90">
               א׳–ה׳ 09:00–18:00
@@ -303,7 +303,7 @@ export default function SectionLibraryCardPreview({
           : "rounded-lg";
     const formCol = (
       <div className={`flex flex-col justify-center gap-1 p-2 text-right ${formClass} ${formRadius}`}>
-        <p className="text-[10px] font-black text-slate-950">{title}</p>
+        <p className="text-[10px] font-black text-slate-800">{title}</p>
         <Field label="שם מלא" />
         <Field label="אימייל" />
         <Btn label="שליחה" />
@@ -368,14 +368,14 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
           <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className={`absolute inset-0 ${light ? "bg-white/45" : "bg-slate-950/55"}`} />
+          <div className={`absolute inset-0 ${light ? "bg-white/45" : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55"}`} />
           <div className="relative z-[1] flex max-w-[82%] flex-col items-center gap-1 px-2 text-center">
             {badge ? (
               <span className={`text-[8px] font-black ${light ? "text-orange-700" : "text-violet-200"}`}>
                 {badge}
               </span>
             ) : null}
-            <p className={`line-clamp-2 text-[12px] font-black ${light ? "text-slate-950" : "text-white"}`}>
+            <p className={`line-clamp-2 text-[12px] font-black ${light ? "text-slate-800" : "text-white"}`}>
               {title}
             </p>
             <Btn label={cta} />
@@ -391,7 +391,7 @@ export default function SectionLibraryCardPreview({
               {badge}
             </span>
           ) : null}
-          <p className="line-clamp-2 text-[11px] font-black leading-tight text-slate-950">{title}</p>
+          <p className="line-clamp-2 text-[11px] font-black leading-tight text-slate-800">{title}</p>
           <p className="line-clamp-2 text-[7px] font-bold text-slate-500">{copy}</p>
           <div className="flex gap-1">
             <Btn label={cta} />
@@ -425,11 +425,11 @@ export default function SectionLibraryCardPreview({
           {[0, 1, 2].map((i) => (
             <div
               key={i}
-              className={`rounded-lg p-1.5 text-right ${i === 1 ? "bg-slate-950 text-white" : "border border-slate-200 bg-white"}`}
+              className={`rounded-lg p-1.5 text-right ${i === 1 ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : "border border-slate-200 bg-white"}`}
             >
               <p className="text-[8px] font-black opacity-70">תוכנית</p>
               <p className="text-[12px] font-black">₪{99 + i * 100}</p>
-              <div className={`mt-1 h-3 rounded-full ${i === 1 ? "bg-violet-500" : "bg-slate-900"}`} />
+              <div className={`mt-1 h-3 rounded-full ${i === 1 ? "bg-violet-500" : "bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800"}`} />
             </div>
           ))}
         </div>
@@ -481,7 +481,7 @@ export default function SectionLibraryCardPreview({
           <div className="col-span-2 row-span-2 overflow-hidden rounded-xl">
             <img src={img} alt="" className="h-full w-full object-cover" />
           </div>
-          <div className="rounded-lg bg-slate-950 p-1.5 text-right text-white">
+          <div className="rounded-lg border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
             <p className="text-[8px] font-black">כרטיס</p>
           </div>
           <div className="rounded-lg border border-slate-200 bg-white p-1.5 text-right">
@@ -495,7 +495,7 @@ export default function SectionLibraryCardPreview({
         nodeText(section, [`title${i + 1}`, `title-${i}`], `פרויקט ${i + 1}`),
       );
       return (
-        <div className="flex h-full flex-col gap-1 bg-slate-950 p-2" dir="rtl">
+        <div className="flex h-full flex-col gap-1 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-2" dir="rtl">
           {badge ? <span className="text-[7px] font-black text-violet-300">{badge}</span> : null}
           <p className="text-[11px] font-black text-white">{title}</p>
           <p className="line-clamp-1 text-[7px] font-bold text-slate-400">{copy}</p>
@@ -556,7 +556,7 @@ export default function SectionLibraryCardPreview({
           <div className="flex min-h-0 flex-1 items-center gap-1">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="flex flex-1 flex-col items-center gap-1">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-violet-600 text-[8px] font-black text-white">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-[8px] font-black text-white">
                   {i}
                 </div>
                 <p className="text-center text-[7px] font-bold text-slate-600">שלב {i}</p>
@@ -836,7 +836,7 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("story") || layout.includes("overlap")) {
       return (
         <div className="grid h-full grid-cols-[1.1fr_0.9fr] overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
-          <div className="flex flex-col justify-center gap-1 bg-slate-950 p-2 text-right text-white">
+          <div className="flex flex-col justify-center gap-1 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
             <p className="text-[8px] font-black text-cyan-300">{badge || "הסיפור"}</p>
             <p className="line-clamp-2 text-[11px] font-black">{title}</p>
             <p className="line-clamp-2 border-r-2 border-cyan-300 pr-1.5 text-[7px] font-bold text-slate-300">
@@ -859,7 +859,7 @@ export default function SectionLibraryCardPreview({
           <div className="relative mr-3 flex-1 border-r-2 border-violet-300 pr-3">
             {["2016", "2019", "2022", "היום"].map((y) => (
               <div key={y} className="mb-1.5 flex items-start gap-1.5">
-                <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-violet-600" />
+                <span className="mt-0.5 h-2 w-2 shrink-0 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70" />
                 <div className="text-right">
                   <p className="text-[8px] font-black text-violet-700">{y}</p>
                   <p className="text-[7px] font-bold text-slate-500">אבן דרך</p>
@@ -873,7 +873,7 @@ export default function SectionLibraryCardPreview({
     if (layout.includes("founder") || layout.includes("quote")) {
       const portrait = nodeImage(section, ["portrait", "image"]);
       return (
-        <div className="grid h-full grid-cols-[1.3fr_0.7fr] overflow-hidden bg-slate-950 p-2" dir="rtl">
+        <div className="grid h-full grid-cols-[1.3fr_0.7fr] overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-2" dir="rtl">
           <div className="flex flex-col justify-center gap-1 text-right text-white">
             <p className="text-[18px] font-black text-violet-300">״</p>
             <p className="line-clamp-3 text-[10px] font-black leading-snug">
@@ -925,7 +925,7 @@ export default function SectionLibraryCardPreview({
       return (
         <div className="relative flex h-full items-center justify-center overflow-hidden" dir="rtl">
           <img src={img} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-slate-950/55" />
+          <div className="absolute inset-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55" />
           <div className="relative z-[1] max-w-[80%] text-center text-white">
             <p className="line-clamp-2 text-[12px] font-black">{title}</p>
             <p className="mt-1 line-clamp-2 text-[7px] font-bold text-slate-200">{copy}</p>
@@ -1061,7 +1061,7 @@ export default function SectionLibraryCardPreview({
   return (
     <div className="grid h-full grid-cols-2 overflow-hidden" style={{ backgroundColor: bg }} dir="rtl">
       <div className="flex flex-col justify-center gap-1 p-2.5 text-right">
-        <p className="line-clamp-2 text-[11px] font-black text-slate-950">{title}</p>
+        <p className="line-clamp-2 text-[11px] font-black text-slate-800">{title}</p>
         <p className="line-clamp-2 text-[7px] font-bold text-slate-500">{copy}</p>
         <Btn label={cta} />
       </div>

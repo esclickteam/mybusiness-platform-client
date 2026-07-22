@@ -427,7 +427,7 @@ export default function HelpCenter() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-start text-slate-950 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[#f7f8fc] px-4 py-5 text-start text-slate-800 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-[1440px]">
         {/* HERO */}
@@ -735,7 +735,7 @@ export default function HelpCenter() {
                       t("helpCenter.searchingHelpFor", { term: searchTerm })
                     )
                   }
-                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-black text-white transition hover:bg-violet-700"
+                  className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-2.5 text-sm font-black text-white transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
                   <Bot size={16} /> {t("helpCenter.askAssistantShort")}
                 </button>

@@ -2471,7 +2471,7 @@ export default function PublicVisualSiteRenderer({
       dir="rtl"
     >
       <div className="max-w-xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
-        <h1 className="text-2xl font-black text-slate-950">
+        <h1 className="text-2xl font-black text-slate-800">
           לא נמצא תוכן להצגת האתר
         </h1>
 
@@ -2480,7 +2480,7 @@ export default function PublicVisualSiteRenderer({
           התבנית.
         </p>
 
-        <pre className="mt-5 overflow-auto rounded-2xl bg-slate-950 p-4 text-left text-xs text-white">
+        <pre className="mt-5 overflow-auto rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
           {JSON.stringify(
             {
               templateKey,

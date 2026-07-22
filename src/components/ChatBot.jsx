@@ -136,7 +136,7 @@ export default function ChatBot({
     return (
       <button
         onClick={() => setChatOpen(true)}
-        className="fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-violet-600 text-white shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:bg-violet-700"
+        className="fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
         aria-label={t("chatbot.openAria")}
       >
         <Bot size={24} />
@@ -149,14 +149,14 @@ export default function ChatBot({
       dir={dir}
       className="fixed bottom-6 right-6 z-[10000] flex h-[min(580px,calc(100vh-3rem))] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl"
     >
-      <header className="flex shrink-0 items-center justify-between bg-gradient-to-l from-violet-600 to-indigo-700 px-5 py-3.5 text-white">
+      <header className="flex shrink-0 items-center justify-between bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3.5 text-slate-800">
         <div className="flex items-center gap-2.5">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/20">
             <Bot size={18} />
           </div>
           <div>
             <p className="text-sm font-black">{t("chatbot.title")}</p>
-            <p className="text-[10px] font-medium text-violet-200">
+            <p className="text-[10px] font-medium text-slate-500">
               {t("chatbot.available247")}
             </p>
           </div>
@@ -214,7 +214,7 @@ export default function ChatBot({
                 dir="auto"
                 className={`max-w-[88%] break-words whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                   msg.sender === "user"
-                    ? "rounded-br-sm bg-violet-600 text-white"
+                    ? "rounded-br-sm bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
                     : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
                 }`}
               >
@@ -276,7 +276,7 @@ export default function ChatBot({
           <button
             onClick={() => sendMessage()}
             disabled={!chatInput.trim() || isLoading}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-40"
             aria-label={t("chatbot.sendAria")}
           >
             <Send size={16} className={dir === "rtl" ? "-scale-x-100" : undefined} />

@@ -523,7 +523,7 @@ function PublicMiniSitePage() {
             Bizuply Website
           </p>
 
-          <h1 className="mt-3 text-3xl font-black text-slate-950">
+          <h1 className="mt-3 text-3xl font-black text-slate-800">
             האתר עדיין לא זמין
           </h1>
 

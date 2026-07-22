@@ -325,7 +325,7 @@ export default function BusinessProfilePage({
                   פרופיל עסקי
                 </div>
 
-                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-5xl">
+                <h1 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
                   {business.businessName || "עסק ללא שם"}
                 </h1>
 
@@ -342,7 +342,7 @@ export default function BusinessProfilePage({
                   type="button"
                   onClick={openProposalModal}
                   disabled={!currentUserBusinessName}
-                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <FileSignature className="h-5 w-5" />
                   שליחת הצעה
@@ -436,7 +436,7 @@ export default function BusinessProfilePage({
                           <p className="text-xs font-black text-slate-400">
                             {item.label}
                           </p>
-                          <p className="truncate text-sm font-black text-slate-950">
+                          <p className="truncate text-sm font-black text-slate-800">
                             {item.value}
                           </p>
                         </div>
@@ -505,7 +505,7 @@ export default function BusinessProfilePage({
                     </div>
 
                     <div>
-                      <h3 className="text-xl font-black text-slate-950">
+                      <h3 className="text-xl font-black text-slate-800">
                         שליחת הודעה לעסק
                       </h3>
                       <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
@@ -525,7 +525,7 @@ export default function BusinessProfilePage({
 
                 <div className="mb-4 rounded-2xl border border-violet-100 bg-gradient-to-r from-violet-50 to-sky-50 p-4">
                   <p className="text-xs font-black text-slate-400">נשלח אל</p>
-                  <p className="mt-1 text-sm font-black text-slate-950">
+                  <p className="mt-1 text-sm font-black text-slate-800">
                     {business.businessName}
                   </p>
                 </div>
@@ -589,7 +589,7 @@ export default function BusinessProfilePage({
                     type="button"
                     onClick={handleSendBusinessMessage}
                     disabled={!chatMessage.trim() || sending}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {sending ? (
                       <BizuplyLoader size="xs" compact />
@@ -606,7 +606,7 @@ export default function BusinessProfilePage({
                   <CheckCircle2 className="h-8 w-8" />
                 </div>
 
-                <h3 className="mt-5 text-2xl font-black text-slate-950">
+                <h3 className="mt-5 text-2xl font-black text-slate-800">
                   ההודעה נשלחה בהצלחה
                 </h3>
 
@@ -618,7 +618,7 @@ export default function BusinessProfilePage({
                 <button
                   type="button"
                   onClick={handleContinueChat}
-                  className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5"
+                  className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5"
                 >
                   <MessageCircle className="h-5 w-5" />
                   המשך לצ׳אט
@@ -675,7 +675,7 @@ function MiniStatCard({
 
         <div className="min-w-0">
           <p className="text-xs font-black text-slate-400">{label}</p>
-          <p className="mt-1 truncate text-lg font-black text-slate-950">
+          <p className="mt-1 truncate text-lg font-black text-slate-800">
             {value}
           </p>
         </div>
@@ -703,7 +703,7 @@ function InfoPanel({
         </div>
 
         <div>
-          <h3 className="text-xl font-black text-slate-950">{title}</h3>
+          <h3 className="text-xl font-black text-slate-800">{title}</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
             {subtitle}
           </p>
@@ -720,7 +720,7 @@ function AgreementPoint({ title, text }: { title: string; text: string }) {
     <div className="rounded-2xl bg-slate-50 p-4">
       <div className="mb-2 flex items-center gap-2">
         <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-        <p className="text-sm font-black text-slate-950">{title}</p>
+        <p className="text-sm font-black text-slate-800">{title}</p>
       </div>
 
       <p className="text-sm font-semibold leading-7 text-slate-500">{text}</p>
@@ -753,7 +753,7 @@ function QuickAction({
       </div>
 
       <div>
-        <p className="text-sm font-black text-slate-950">{title}</p>
+        <p className="text-sm font-black text-slate-800">{title}</p>
         <p className="mt-1 text-xs font-semibold leading-5 text-slate-500">
           {text}
         </p>
@@ -791,7 +791,7 @@ function AppModal({
 }) {
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/25 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-violet-900/10 p-4 backdrop-blur-sm"
       onMouseDown={onClose}
     >
       <div

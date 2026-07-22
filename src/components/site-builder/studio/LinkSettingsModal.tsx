@@ -476,7 +476,7 @@ export default function LinkSettingsModal({
   return createPortal(
     <div
       dir="rtl"
-      className="pointer-events-auto fixed inset-0 z-[2147483647] grid place-items-center overflow-y-auto bg-slate-950/35 p-6 backdrop-blur-[2px]"
+      className="pointer-events-auto fixed inset-0 z-[2147483647] grid place-items-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 p-6 backdrop-blur-[2px]"
       onMouseDown={(event) => event.stopPropagation()}
       onPointerDown={(event) => event.stopPropagation()}
       onClick={(event) => event.stopPropagation()}
@@ -484,7 +484,7 @@ export default function LinkSettingsModal({
       <div className="relative my-auto max-h-[calc(100vh-48px)] w-[min(760px,calc(100vw-32px))] overflow-y-auto overflow-x-visible rounded-[32px] border border-slate-200 bg-white/95 p-6 text-right shadow-[0_30px_120px_rgba(15,23,42,0.24)] backdrop-blur-2xl">
         <div className="mb-5 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-3xl font-black text-slate-950">
+            <h2 className="text-3xl font-black text-slate-800">
               קישור לכפתור / טקסט
             </h2>
             <p className="mt-2 text-sm font-bold text-slate-500">
@@ -495,7 +495,7 @@ export default function LinkSettingsModal({
           <button
             type="button"
             onClick={onClose}
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-950"
+            className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-100 text-slate-500 transition hover:bg-slate-200 hover:text-slate-800"
             aria-label="סגירה"
           >
             <X className="h-6 w-6" />
@@ -513,7 +513,7 @@ export default function LinkSettingsModal({
                   "flex h-16 items-center justify-center gap-2 rounded-[20px] text-sm font-black transition",
                   mode === item.mode
                     ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
-                    : "text-slate-500 hover:text-slate-950",
+                    : "text-slate-500 hover:text-slate-800",
                 ].join(" ")}
                 title={item.label}
               >
@@ -529,7 +529,7 @@ export default function LinkSettingsModal({
                 "flex h-16 items-center justify-center gap-2 rounded-[20px] text-sm font-black transition",
                 MORE_MODES.some((item) => item.mode === mode)
                   ? "bg-white text-blue-700 shadow-[0_8px_20px_rgba(15,23,42,0.10)]"
-                  : "text-slate-500 hover:text-slate-950",
+                  : "text-slate-500 hover:text-slate-800",
               ].join(" ")}
               title="עוד"
             >
@@ -565,7 +565,7 @@ export default function LinkSettingsModal({
 
         <div className="min-h-[210px] rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
           <div className="mb-4 flex items-center justify-between gap-3">
-            <h3 className="text-xl font-black text-slate-950">
+            <h3 className="text-xl font-black text-slate-800">
               {getModeLabel(mode)}
             </h3>
 

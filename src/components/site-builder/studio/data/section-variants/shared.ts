@@ -227,19 +227,19 @@ export const softCardSharpClass =
   "[border-radius:var(--biz-soft-radius,0px)] border border-white bg-white/88 p-8 shadow-[0_20px_65px_rgba(15,23,42,0.08)] backdrop-blur-2xl";
 
 export const darkCardClass =
-  "[border-radius:var(--biz-soft-radius,var(--biz-card-radius,38px))] border border-white/10 bg-slate-950 p-8 text-white shadow-[0_34px_120px_rgba(15,23,42,0.24)]";
+  "[border-radius:var(--biz-soft-radius,var(--biz-card-radius,38px))] border border-white/10 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,0.24)]";
 
 export const darkCardRectClass =
-  "[border-radius:var(--biz-soft-radius,12px)] border border-white/10 bg-slate-950 p-8 text-white shadow-[0_28px_90px_rgba(15,23,42,0.22)]";
+  "[border-radius:var(--biz-soft-radius,12px)] border border-white/10 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_28px_90px_rgba(15,23,42,0.22)]";
 
 export const darkCardSharpClass =
-  "[border-radius:var(--biz-soft-radius,0px)] border border-white/10 bg-slate-950 p-8 text-white shadow-[0_24px_80px_rgba(15,23,42,0.18)]";
+  "[border-radius:var(--biz-soft-radius,0px)] border border-white/10 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_24px_80px_rgba(15,23,42,0.18)]";
 
 export const titleClass =
-  "text-4xl font-black leading-[1.04] tracking-[-0.05em] text-slate-950 md:text-6xl";
+  "text-4xl font-black leading-[1.04] tracking-[-0.05em] text-slate-800 md:text-6xl";
 
 export const h2Class =
-  "text-3xl font-black leading-[1.06] tracking-[-0.045em] text-slate-950 md:text-5xl";
+  "text-3xl font-black leading-[1.06] tracking-[-0.045em] text-slate-800 md:text-5xl";
 
 export const textClass =
   "mt-5 max-w-3xl text-base font-bold leading-8 text-slate-500 md:text-lg";
@@ -432,7 +432,7 @@ export function backgroundSection(
 ) {
   return `
 <section
-  class="relative mx-auto my-10 min-h-[640px] w-full max-w-[1380px] overflow-hidden [border-radius:var(--biz-radius,54px)] bg-slate-950 bg-cover bg-center px-8 py-24 shadow-[0_44px_150px_rgba(15,23,42,0.24)] sm:px-12 ${extraClass}"
+  class="relative mx-auto my-10 min-h-[640px] w-full max-w-[1380px] overflow-hidden [border-radius:var(--biz-radius,54px)] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 bg-cover bg-center px-8 py-24 shadow-[0_44px_150px_rgba(15,23,42,0.24)] sm:px-12 ${extraClass}"
   style="${radiusStyle("rounded")};background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.22)),url('${imageUrl}')"
   data-section-kind="${kind}"
   data-background-editable="true"
@@ -454,7 +454,7 @@ export function shapedBackgroundSection(
 ) {
   return `
 <section
-  class="relative mx-auto my-10 min-h-[640px] w-full max-w-[1380px] overflow-hidden ${token(shape, "section")} bg-slate-950 bg-cover bg-center px-8 py-24 shadow-[0_34px_120px_rgba(15,23,42,0.20)] sm:px-12 ${extraClass}"
+  class="relative mx-auto my-10 min-h-[640px] w-full max-w-[1380px] overflow-hidden ${token(shape, "section")} border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 bg-cover bg-center px-8 py-24 shadow-[0_34px_120px_rgba(15,23,42,0.20)] sm:px-12 ${extraClass}"
   style="${radiusStyle(shape)};background-image:linear-gradient(135deg,rgba(2,6,23,.72),rgba(2,6,23,.22)),url('${imageUrl}')"
   data-section-kind="${kind}"
   data-background-editable="true"
@@ -632,7 +632,7 @@ export function addMediaBox(text = "הוספת תמונה / וידאו") {
     <div class="mx-auto mb-4 grid h-16 w-16 place-items-center [border-radius:var(--biz-icon-radius,24px)] bg-white text-3xl font-black text-[var(--biz-primary,#7C3AED)] shadow-xl">
       +
     </div>
-    <p class="text-xl font-black text-slate-950" data-editable-text="true">${text}</p>
+    <p class="text-xl font-black text-slate-800" data-editable-text="true">${text}</p>
     <p class="mt-2 text-sm font-bold leading-6 text-slate-500" data-editable-text="true">
       לחצי כדי להחליף, להוסיף או לערוך מדיה.
     </p>
@@ -658,7 +658,7 @@ export function shapedAddMediaBox(
     <div class="mx-auto mb-4 grid h-16 w-16 place-items-center ${token(shape, "icon")} bg-white text-3xl font-black text-[var(--biz-primary,#7C3AED)] shadow-xl">
       +
     </div>
-    <p class="text-xl font-black text-slate-950" data-editable-text="true">${text}</p>
+    <p class="text-xl font-black text-slate-800" data-editable-text="true">${text}</p>
     <p class="mt-2 text-sm font-bold leading-6 text-slate-500" data-editable-text="true">
       לחצי כדי להחליף, להוסיף או לערוך מדיה.
     </p>
@@ -670,7 +670,7 @@ export function shapedAddMediaBox(
 export function videoBox(src = "") {
   return `
 <div
-  class="relative overflow-hidden [border-radius:var(--biz-media-radius,38px)] bg-slate-950 p-3 shadow-[0_30px_100px_rgba(15,23,42,0.14)]"
+  class="relative overflow-hidden [border-radius:var(--biz-media-radius,38px)] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-3 shadow-[0_30px_100px_rgba(15,23,42,0.14)]"
   data-editable-video-card="true"
   data-media-replaceable="true"
   data-radius-editable="true"
@@ -693,7 +693,7 @@ export function videoBox(src = "") {
 export function shapedVideoBox(src = "", shape: VariantShape = "rect") {
   return `
 <div
-  class="relative overflow-hidden ${token(shape, "media")} bg-slate-950 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)]"
+  class="relative overflow-hidden ${token(shape, "media")} border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 p-3 shadow-[0_24px_80px_rgba(15,23,42,0.12)]"
   data-editable-video-card="true"
   data-media-replaceable="true"
   data-bizuply-shape="${shape}"
@@ -742,7 +742,7 @@ export function darkButton(text = "לפרטים", href = "#contact") {
   return `
 <a
   href="${href}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-slate-950 px-8 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center [border-radius:var(--biz-button-radius,18px)] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:-translate-y-0.5"
   data-editable-link="true"
 >
   ${text}
@@ -808,7 +808,7 @@ export function shapedDarkButton(
   return `
 <a
   href="${href}"
-  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center ${token(shape, "button")} bg-slate-950 px-8 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5"
+  class="${buttonSafeClass} inline-flex min-h-[56px] items-center justify-center ${token(shape, "button")} border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:-translate-y-0.5"
   data-editable-link="true"
   data-bizuply-shape="${shape}"
   data-radius-editable="true"
@@ -909,7 +909,7 @@ export function featureCard(title: string, text: string, icon = "✦") {
   <div class="mb-6 grid h-14 w-14 place-items-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
     ${icon}
   </div>
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -926,7 +926,7 @@ export function shapedFeatureCard(
   <div class="mb-6 grid h-14 w-14 place-items-center ${token(shape, "icon")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] text-lg font-black text-white">
     ${icon}
   </div>
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -938,7 +938,7 @@ export function softFeatureCard(title: string, text: string, icon = "✓") {
   <div class="mb-4 grid h-12 w-12 place-items-center [border-radius:var(--biz-icon-radius,18px)] bg-white text-sm font-black text-[var(--biz-primary,#7C3AED)] shadow-sm">
     ${icon}
   </div>
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -955,7 +955,7 @@ export function shapedSoftFeatureCard(
   <div class="mb-4 grid h-12 w-12 place-items-center ${token(shape, "icon")} bg-white text-sm font-black text-[var(--biz-primary,#7C3AED)] shadow-sm">
     ${icon}
   </div>
-  <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
 </article>
 `;
@@ -993,7 +993,7 @@ export function shapedDarkFeatureCard(
 export function statCard(value: string, label: string) {
   return `
 <div class="[border-radius:var(--biz-card-radius,28px)] border border-slate-200 bg-white p-6 text-center shadow-[0_18px_55px_rgba(15,23,42,0.06)]" data-editable-card="true">
-  <strong class="block text-4xl font-black text-slate-950" data-editable-text="true">${value}</strong>
+  <strong class="block text-4xl font-black text-slate-800" data-editable-text="true">${value}</strong>
   <p class="mt-2 text-sm font-bold text-slate-500" data-editable-text="true">${label}</p>
 </div>
 `;
@@ -1006,7 +1006,7 @@ export function shapedStatCard(
 ) {
   return `
 <div class="${token(shape, "card")} border border-slate-200 bg-white p-6 text-center shadow-[0_16px_50px_rgba(15,23,42,0.06)]" data-editable-card="true" data-bizuply-shape="${shape}">
-  <strong class="block text-4xl font-black text-slate-950" data-editable-text="true">${value}</strong>
+  <strong class="block text-4xl font-black text-slate-800" data-editable-text="true">${value}</strong>
   <p class="mt-2 text-sm font-bold text-slate-500" data-editable-text="true">${label}</p>
 </div>
 `;
@@ -1025,7 +1025,7 @@ export function testimonialCard(
   <div class="mt-6 flex items-center gap-3">
     <div class="h-12 w-12 [border-radius:var(--biz-badge-radius,999px)] bg-[var(--biz-secondary,#F3E8FF)]"></div>
     <div>
-      <p class="text-sm font-black text-slate-950" data-editable-text="true">${name}</p>
+      <p class="text-sm font-black text-slate-800" data-editable-text="true">${name}</p>
       <p class="text-xs font-bold text-slate-400" data-editable-text="true">ביקורת מאומתת</p>
     </div>
   </div>
@@ -1047,7 +1047,7 @@ export function shapedTestimonialCard(
   <div class="mt-6 flex items-center gap-3">
     <div class="h-12 w-12 ${token(shape, "icon")} bg-[var(--biz-secondary,#F3E8FF)]"></div>
     <div>
-      <p class="text-sm font-black text-slate-950" data-editable-text="true">${name}</p>
+      <p class="text-sm font-black text-slate-800" data-editable-text="true">${name}</p>
       <p class="text-xs font-bold text-slate-400" data-editable-text="true">ביקורת מאומתת</p>
     </div>
   </div>
@@ -1063,7 +1063,7 @@ export function priceCard(
 ) {
   return `
 <article class="${cardClass} ${highlighted ? "ring-2 ring-[var(--biz-primary,#7C3AED)]" : ""}" data-editable-card="true">
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   <div class="mt-7 flex items-end justify-between gap-4">
     <span class="text-sm font-bold text-slate-400" data-editable-text="true">החל מ־</span>
@@ -1083,7 +1083,7 @@ export function shapedPriceCard(
 ) {
   return `
 <article class="${token(shape, "card")} border border-slate-200 bg-white p-7 shadow-[0_20px_65px_rgba(15,23,42,0.07)] ${highlighted ? "ring-2 ring-[var(--biz-primary,#7C3AED)]" : ""}" data-editable-card="true" data-bizuply-shape="${shape}">
-  <h3 class="text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-3 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   <div class="mt-7 flex items-end justify-between gap-4">
     <span class="text-sm font-bold text-slate-400" data-editable-text="true">החל מ־</span>
@@ -1102,7 +1102,7 @@ export function productCard(
   return `
 <article class="${cardClass}" data-bizuply-block="product-card" data-editable-card="true">
   ${imageBlock(imageUrl, "min-h-[250px]", "rounded-[28px]")}
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">
     תיאור קצר של המוצר, יתרון מרכזי ולמה כדאי לרכוש.
   </p>
@@ -1123,7 +1123,7 @@ export function shapedProductCard(
   return `
 <article class="${token(shape, "card")} border border-slate-200 bg-white p-7 shadow-[0_20px_65px_rgba(15,23,42,0.07)]" data-bizuply-block="product-card" data-editable-card="true" data-bizuply-shape="${shape}">
   ${shapedImageBlock(imageUrl, "min-h-[250px]", shape)}
-  <h3 class="mt-6 text-2xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+  <h3 class="mt-6 text-2xl font-black text-slate-800" data-editable-text="true">${title}</h3>
   <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">
     תיאור קצר של המוצר, יתרון מרכזי ולמה כדאי לרכוש.
   </p>
@@ -1271,7 +1271,7 @@ export function shapedSubscribeForm(
 export function faqItem(question: string, answer: string, open = false) {
   return `
 <details class="${cardClass}" ${open ? "open" : ""}>
-  <summary class="cursor-pointer text-lg font-black text-slate-950" data-editable-text="true">${question}</summary>
+  <summary class="cursor-pointer text-lg font-black text-slate-800" data-editable-text="true">${question}</summary>
   <p class="mt-4 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${answer}</p>
 </details>
 `;
@@ -1285,7 +1285,7 @@ export function shapedFaqItem(
 ) {
   return `
 <details class="${token(shape, "card")} border border-slate-200 bg-white p-7 shadow-[0_20px_65px_rgba(15,23,42,0.07)]" ${open ? "open" : ""} data-bizuply-shape="${shape}">
-  <summary class="cursor-pointer text-lg font-black text-slate-950" data-editable-text="true">${question}</summary>
+  <summary class="cursor-pointer text-lg font-black text-slate-800" data-editable-text="true">${question}</summary>
   <p class="mt-4 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${answer}</p>
 </details>
 `;
@@ -1298,7 +1298,7 @@ export function timelineItem(number: string, title: string, text: string) {
     ${number}
   </div>
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 </div>
@@ -1317,7 +1317,7 @@ export function shapedTimelineItem(
     ${number}
   </div>
   <div>
-    <h3 class="text-xl font-black text-slate-950" data-editable-text="true">${title}</h3>
+    <h3 class="text-xl font-black text-slate-800" data-editable-text="true">${title}</h3>
     <p class="mt-2 text-sm font-bold leading-7 text-slate-500" data-editable-text="true">${text}</p>
   </div>
 </div>

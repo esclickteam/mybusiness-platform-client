@@ -248,7 +248,7 @@ export default function VisualEditorShell({
         isInlineEditing ? "true" : "false"
       }
       className={[
-        "fixed inset-0 z-[100] flex min-h-screen flex-col overflow-hidden bg-slate-100 text-slate-950",
+        "fixed inset-0 z-[100] flex min-h-screen flex-col overflow-hidden bg-slate-100 text-slate-800",
         className,
       ]
         .filter(Boolean)
@@ -268,7 +268,7 @@ export default function VisualEditorShell({
           </button>
 
           <div className="hidden min-w-0 lg:block">
-            <p className="max-w-[220px] truncate text-sm font-black text-slate-950">
+            <p className="max-w-[220px] truncate text-sm font-black text-slate-800">
               {templateName}
             </p>
           </div>
@@ -428,7 +428,7 @@ export default function VisualEditorShell({
             type="button"
             disabled={busy}
             onClick={handlePublish}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 text-sm font-black text-white shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
             {isSaving ? "מפרסם..." : "פרסום"}
           </button>

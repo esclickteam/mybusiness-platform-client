@@ -707,7 +707,7 @@ export default function AiPartnerTab({
   return (
     <section
       dir="rtl"
-      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 text-right !text-slate-950 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
+      className="relative min-h-[calc(100vh-120px)] overflow-hidden rounded-[32px] border border-slate-200 bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 text-right !text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.12)] sm:p-6 lg:p-8"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-violet-300/35 blur-3xl" />
@@ -730,7 +730,7 @@ export default function AiPartnerTab({
                 שותף עסקי AI
               </div>
 
-              <h2 className="max-w-2xl text-4xl font-black tracking-tight !text-slate-950 sm:text-5xl lg:text-6xl">
+              <h2 className="max-w-2xl text-4xl font-black tracking-tight !text-slate-800 sm:text-5xl lg:text-6xl">
                 מרכז הפיקוד של ה-AI שלך
               </h2>
 
@@ -746,7 +746,7 @@ export default function AiPartnerTab({
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-slate-400">
                   מאזן
                 </p>
-                <p className="mt-2 text-4xl font-black !text-slate-950">
+                <p className="mt-2 text-4xl font-black !text-slate-800">
                   {remainingQuestions ?? "—"}
                 </p>
                 <p
@@ -762,7 +762,7 @@ export default function AiPartnerTab({
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-amber-700/70">
                   ממתין
                 </p>
-                <p className="mt-2 text-4xl font-black !text-slate-950">
+                <p className="mt-2 text-4xl font-black !text-slate-800">
                   {pendingSuggestions.length}
                 </p>
                 <p className="mt-1 text-xs font-black !text-amber-700">
@@ -774,7 +774,7 @@ export default function AiPartnerTab({
                 <p className="text-xs font-black uppercase tracking-[0.2em] !text-cyan-700/70">
                   נשלחו
                 </p>
-                <p className="mt-2 text-4xl font-black !text-slate-950">
+                <p className="mt-2 text-4xl font-black !text-slate-800">
                   {sentSuggestions.length}
                 </p>
                 <p className="mt-1 text-xs font-black !text-cyan-700">
@@ -788,7 +788,7 @@ export default function AiPartnerTab({
             <button
               type="button"
               onClick={() => setShowHistory((prev) => !prev)}
-              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-violet-600 px-5 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700"
+              className="inline-flex min-h-12 items-center justify-center rounded-2xl border border-violet-200 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
             >
               {showHistory ? "חזרה לשותף AI" : "צפה בהיסטוריית פקודות"}
             </button>
@@ -808,7 +808,7 @@ export default function AiPartnerTab({
             <div className="rounded-[28px] border border-slate-200 bg-white p-4 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <div className="mb-4 flex items-center justify-between gap-4">
                 <div>
-                  <h3 className="text-xl font-black !text-slate-950">
+                  <h3 className="text-xl font-black !text-slate-800">
                     היסטוריית פקודות
                   </h3>
                   <p className="mt-1 text-sm !text-slate-500">
@@ -881,7 +881,7 @@ export default function AiPartnerTab({
             <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
               <div className="space-y-5">
                 <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-                  <label className="mb-3 block text-sm font-black !text-slate-950">
+                  <label className="mb-3 block text-sm font-black !text-slate-800">
                     מה השותף AI שלך צריך לעשות?
                   </label>
 
@@ -905,7 +905,7 @@ export default function AiPartnerTab({
                       disabled={
                         loading || !commandText.trim() || isLimitReached
                       }
-                      className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-violet-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0"
+                      className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none disabled:hover:translate-y-0"
                     >
                       {loading ? "עובד..." : "שלח ל-AI"}
                     </button>
@@ -928,7 +928,7 @@ export default function AiPartnerTab({
                           key={pkg.id}
                           className={`cursor-pointer rounded-2xl border p-4 transition ${
                             selectedPackage?.id === pkg.id
-                              ? "border-violet-500 bg-violet-600 !text-white shadow-lg shadow-violet-200"
+                              ? "border-violet-500 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 !text-white shadow-lg shadow-violet-200"
                               : "border-slate-200 bg-white !text-slate-700 hover:border-violet-200 hover:bg-violet-50"
                           }`}
                         >
@@ -954,7 +954,7 @@ export default function AiPartnerTab({
                       type="button"
                       onClick={handlePurchaseExtra}
                       disabled={purchaseLoading || !selectedPackage}
-                      className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-violet-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none sm:w-auto"
+                      className="mt-4 inline-flex min-h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-6 text-sm font-black !text-white shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:bg-slate-300 disabled:!text-slate-500 disabled:shadow-none sm:w-auto"
                     >
                       {purchaseLoading ? "מעבד..." : "רכישת חבילה"}
                     </button>
@@ -977,7 +977,7 @@ export default function AiPartnerTab({
                   <div className="rounded-[28px] border border-emerald-100 bg-white p-5 !text-slate-800 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
                     <div className="mb-3 flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-500" />
-                      <h3 className="text-lg font-black !text-slate-950">
+                      <h3 className="text-lg font-black !text-slate-800">
                         תשובת AI
                       </h3>
                     </div>
@@ -992,7 +992,7 @@ export default function AiPartnerTab({
               <aside className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
                 <div className="mb-4 flex items-center justify-between gap-4">
                   <div>
-                    <h3 className="text-xl font-black !text-slate-950">
+                    <h3 className="text-xl font-black !text-slate-800">
                       המלצות AI
                     </h3>
                     <p className="mt-1 text-sm !text-slate-500">
@@ -1065,11 +1065,11 @@ export default function AiPartnerTab({
 
       {activeSuggestion && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-sm"
           onClick={() => setActiveSuggestion(null)}
         >
           <div
-            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-slate-200 bg-white p-5 text-right !text-slate-950 shadow-[0_30px_120px_rgba(15,23,42,0.28)] sm:p-6"
+            className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[32px] border border-slate-200 bg-white p-5 text-right !text-slate-800 shadow-[0_30px_120px_rgba(15,23,42,0.28)] sm:p-6"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="mb-5 flex items-start justify-between gap-4">
@@ -1077,7 +1077,7 @@ export default function AiPartnerTab({
                 <p className="text-xs font-black uppercase tracking-[0.22em] !text-violet-600">
                   הודעת AI חדשה
                 </p>
-                <h4 className="mt-2 text-2xl font-black !text-slate-950">
+                <h4 className="mt-2 text-2xl font-black !text-slate-800">
                   בדיקת המלצה
                 </h4>
               </div>
@@ -1165,7 +1165,7 @@ export default function AiPartnerTab({
                       type="button"
                       disabled={loading}
                       onClick={() => setEditing(true)}
-                      className="min-h-12 rounded-2xl bg-violet-600 px-5 text-sm font-black !text-white shadow-lg shadow-violet-100 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="min-h-12 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black !text-white shadow-lg shadow-violet-100 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       עריכה
                     </button>

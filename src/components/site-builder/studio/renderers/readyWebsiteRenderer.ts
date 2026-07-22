@@ -85,13 +85,13 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     return {
       page: "bg-[#070A12] text-white",
       section: "bg-[#070A12]",
-      surface: "bg-slate-900 text-white",
+      surface: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
       surface2: "bg-slate-800 text-white",
       soft: "bg-white/10",
       text: "text-white",
       muted: "text-slate-300",
       accentText: "text-amber-300",
-      button: "bg-amber-400 text-slate-950 hover:bg-amber-300",
+      button: "bg-amber-400 text-slate-800 hover:bg-amber-300",
       ghost: "border border-white/15 bg-white/10 text-white hover:bg-white/15",
       chip: "bg-white/10 text-white ring-1 ring-white/15",
       border: "border-white/10",
@@ -107,10 +107,10 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("rose")
   ) {
     return {
-      page: "bg-[#FFF1F7] text-slate-950",
+      page: "bg-[#FFF1F7] text-slate-800",
       section: "bg-[#FFF1F7]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-rose-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-rose-50 text-slate-800",
       soft: "bg-rose-100",
       text: "text-rose-950",
       muted: "text-slate-600",
@@ -130,10 +130,10 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("health")
   ) {
     return {
-      page: "bg-[#F0FDFA] text-slate-950",
+      page: "bg-[#F0FDFA] text-slate-800",
       section: "bg-[#F0FDFA]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-teal-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-teal-50 text-slate-800",
       soft: "bg-teal-100",
       text: "text-teal-950",
       muted: "text-slate-600",
@@ -153,10 +153,10 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("catering")
   ) {
     return {
-      page: "bg-[#FFF7ED] text-slate-950",
+      page: "bg-[#FFF7ED] text-slate-800",
       section: "bg-[#FFF7ED]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-orange-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-orange-50 text-slate-800",
       soft: "bg-orange-100",
       text: "text-orange-950",
       muted: "text-slate-600",
@@ -177,10 +177,10 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("yoga")
   ) {
     return {
-      page: "bg-[#F7FEE7] text-slate-950",
+      page: "bg-[#F7FEE7] text-slate-800",
       section: "bg-[#F7FEE7]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-lime-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-lime-50 text-slate-800",
       soft: "bg-lime-100",
       text: "text-lime-950",
       muted: "text-slate-600",
@@ -203,16 +203,16 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("hotel")
   ) {
     return {
-      page: "bg-[#FFFBEB] text-slate-950",
+      page: "bg-[#FFFBEB] text-slate-800",
       section: "bg-[#FFFBEB]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-amber-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-amber-50 text-slate-800",
       soft: "bg-amber-100",
-      text: "text-slate-950",
+      text: "text-slate-800",
       muted: "text-slate-600",
       accentText: "text-amber-700",
-      button: "bg-slate-950 text-white hover:bg-amber-700",
-      ghost: "border border-amber-200 bg-white text-slate-950 hover:bg-amber-50",
+      button: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:bg-amber-700",
+      ghost: "border border-amber-200 bg-white text-slate-800 hover:bg-amber-50",
       chip: "bg-amber-100 text-amber-800 ring-1 ring-amber-200",
       border: "border-amber-100",
       ring: "ring-amber-100",
@@ -228,12 +228,12 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
     key.includes("coaching")
   ) {
     return {
-      page: "bg-[#F5F3FF] text-slate-950",
+      page: "bg-[#F5F3FF] text-slate-800",
       section: "bg-[#F5F3FF]",
-      surface: "bg-white text-slate-950",
-      surface2: "bg-violet-50 text-slate-950",
+      surface: "bg-white text-slate-800",
+      surface2: "bg-violet-50 text-slate-800",
       soft: "bg-violet-100",
-      text: "text-violet-950",
+      text: "text-slate-800",
       muted: "text-slate-600",
       accentText: "text-violet-700",
       button: "bg-violet-700 text-white hover:bg-violet-800",
@@ -246,15 +246,15 @@ function getPreset(seed: ReadyWebsiteTemplateSeed): DesignPreset {
   }
 
   return {
-    page: "bg-slate-50 text-slate-950",
+    page: "bg-slate-50 text-slate-800",
     section: "bg-slate-50",
-    surface: "bg-white text-slate-950",
-    surface2: "bg-slate-100 text-slate-950",
+    surface: "bg-white text-slate-800",
+    surface2: "bg-slate-100 text-slate-800",
     soft: "bg-slate-100",
-    text: "text-slate-950",
+    text: "text-slate-800",
     muted: "text-slate-600",
     accentText: "text-sky-700",
-    button: "bg-slate-950 text-white hover:bg-sky-700",
+    button: "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:bg-sky-700",
     ghost: "border border-slate-200 bg-white text-slate-800 hover:bg-slate-50",
     chip: "bg-sky-100 text-sky-800 ring-1 ring-sky-200",
     border: "border-slate-200",
@@ -428,7 +428,7 @@ function renderHeroEditorial(
 
       <div class="grid grid-cols-2 gap-5">
         <img src="${image}" alt="" class="col-span-2 h-[420px] w-full rounded-[46px] object-cover shadow-2xl shadow-slate-300/30" />
-        <div class="rounded-[34px] bg-slate-950 p-7 text-white">
+        <div class="rounded-[34px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
           <b class="text-5xl font-black tracking-[-0.08em]">01</b>
           <p class="mt-4 text-sm font-bold leading-6 text-white/80">עיצוב מגזיני עם תמונות גדולות.</p>
         </div>
@@ -460,7 +460,7 @@ function renderHeroLuxury(
           <p class="mt-7 max-w-2xl text-xl font-bold leading-9 text-white/82">${safe(seed.heroSubtitle)}</p>
 
           <div class="mt-9 flex flex-wrap gap-3">
-            <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full bg-white px-7 text-base font-black text-slate-950 transition hover:bg-slate-100">קביעת תור</a>
+            <a href="#booking" class="inline-flex h-14 items-center justify-center rounded-full bg-white px-7 text-base font-black text-slate-800 transition hover:bg-slate-100">קביעת תור</a>
             <a href="#gallery" class="inline-flex h-14 items-center justify-center rounded-full border border-white/25 bg-white/10 px-7 text-base font-black text-white backdrop-blur transition hover:bg-white/15">צפייה בעבודות</a>
           </div>
         </div>
@@ -495,7 +495,7 @@ function renderHeroDark(
           <b class="text-5xl font-black tracking-[-0.08em] text-amber-300">24/7</b>
           <p class="mt-3 text-sm font-bold text-slate-300">זמינות ולידים</p>
         </article>
-        <article class="rounded-[30px] bg-amber-400 p-7 text-slate-950">
+        <article class="rounded-[30px] bg-amber-400 p-7 text-slate-800">
           <b class="text-5xl font-black tracking-[-0.08em]">VIP</b>
           <p class="mt-3 text-sm font-black">חוויה פרימיום</p>
         </article>
@@ -746,7 +746,7 @@ function renderServiceCards(block: ReadyWebsiteBlock, preset: DesignPreset) {
       <div class="grid gap-5 md:grid-cols-3">
         ${items.map((item, index) => `
           <article class="group rounded-[34px] ${preset.surface} p-7 shadow-xl shadow-slate-200/30 ring-1 ${preset.ring} transition hover:-translate-y-1 hover:shadow-2xl">
-            <div class="mb-6 grid h-16 w-16 place-items-center rounded-3xl ${index % 2 === 0 ? "bg-slate-950" : "bg-sky-600"} text-2xl font-black text-white">${["✦", "◈", "●"][index % 3]}</div>
+            <div class="mb-6 grid h-16 w-16 place-items-center rounded-3xl ${index % 2 === 0 ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : "bg-sky-600"} text-2xl font-black text-white">${["✦", "◈", "●"][index % 3]}</div>
             <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.text}">${safe(item)}</h3>
             <p class="mt-3 text-base font-bold leading-7 ${preset.muted}">בלוק שירות מוכן לעריכה עם טקסט, מחיר וכפתור פעולה.</p>
             <a href="#booking" class="mt-6 inline-flex h-12 items-center justify-center rounded-full px-6 text-sm font-black transition ${preset.button}">בחר שירות</a>
@@ -793,7 +793,7 @@ function renderTimeline(block: ReadyWebsiteBlock, preset: DesignPreset) {
         <div class="grid gap-5">
           ${items.map((item, index) => `
             <article class="relative grid grid-cols-[60px_1fr] gap-5 rounded-[30px] ${preset.surface} p-6 shadow-lg shadow-slate-200/30 ring-1 ${preset.ring}">
-              <span class="grid h-12 w-12 place-items-center rounded-2xl bg-slate-950 text-xl font-black text-white">${index + 1}</span>
+              <span class="grid h-12 w-12 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">${index + 1}</span>
               <div>
                 <h3 class="text-2xl font-black tracking-[-0.04em] ${preset.text}">${safe(item)}</h3>
                 <p class="mt-2 text-base font-bold leading-7 ${preset.muted}">שלב ברור בחווית הלקוח, עם הסבר קצר ופעולה.</p>
@@ -815,12 +815,12 @@ function renderPriceCards(block: ReadyWebsiteBlock, preset: DesignPreset) {
 
       <div class="grid gap-5 md:grid-cols-3">
         ${items.map((item, index) => `
-          <article class="${index === 1 ? "scale-[1.02] bg-slate-950 text-white" : preset.surface} rounded-[36px] p-7 shadow-2xl shadow-slate-200/30 ring-1 ${preset.ring}">
+          <article class="${index === 1 ? "scale-[1.02] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800" : preset.surface} rounded-[36px] p-7 shadow-2xl shadow-slate-200/30 ring-1 ${preset.ring}">
             <p class="text-sm font-black ${index === 1 ? "text-white/70" : preset.accentText}">מסלול ${index + 1}</p>
             <h3 class="mt-3 text-3xl font-black tracking-[-0.05em] ${index === 1 ? "text-white" : preset.text}">${safe(item)}</h3>
             <b class="mt-5 block text-5xl font-black tracking-[-0.08em] ${index === 1 ? "text-white" : preset.text}">${["₪99", "₪249", "₪499"][index % 3]}</b>
             <p class="mt-4 text-sm font-bold leading-6 ${index === 1 ? "text-white/70" : preset.muted}">חבילה מוכנה לעריכה עם יתרונות וכפתור פעולה.</p>
-            <a href="#lead" class="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full text-sm font-black transition ${index === 1 ? "bg-white text-slate-950 hover:bg-slate-100" : preset.button}">בחירת מסלול</a>
+            <a href="#lead" class="mt-6 inline-flex h-12 w-full items-center justify-center rounded-full text-sm font-black transition ${index === 1 ? "bg-white text-slate-800 hover:bg-slate-100" : preset.button}">בחירת מסלול</a>
           </article>
         `).join("")}
       </div>
@@ -979,16 +979,16 @@ function renderStore(block: ReadyWebsiteBlock, preset: DesignPreset) {
 function renderLead(block: ReadyWebsiteBlock, preset: DesignPreset) {
   return `
     <section ${sectionAttrs(block, "lead")} class="mx-auto grid w-full max-w-7xl grid-cols-1 items-center gap-8 px-6 py-20 md:grid-cols-[1fr_0.9fr]">
-      <div class="rounded-[44px] bg-slate-950 p-10 text-white shadow-2xl shadow-slate-300/30">
+      <div class="rounded-[44px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-2xl shadow-slate-300/30">
         <span class="mb-4 inline-flex rounded-full bg-white/15 px-4 py-2 text-sm font-black text-white">לידים</span>
         <h2 class="text-5xl font-black leading-tight tracking-[-0.07em] text-white">${safe(block.title)}</h2>
         <p class="mt-4 text-lg font-bold leading-8 text-white/75">השאירו פרטים והעסק יחזור אליכם עם מענה מסודר ומהיר.</p>
       </div>
 
       <form class="grid gap-3 rounded-[38px] ${preset.surface} p-6 shadow-2xl shadow-slate-200/40 ring-1 ${preset.ring}" data-bizuply-widget="lead-form" data-api="/api/businesses/{{businessId}}/leads">
-        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם מלא" />
-        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
-        <textarea class="min-h-32 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="מה תרצו לדעת?"></textarea>
+        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם מלא" />
+        <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
+        <textarea class="min-h-32 rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="מה תרצו לדעת?"></textarea>
         <button type="button" class="h-14 rounded-full text-base font-black transition ${preset.button}">שליחת פרטים</button>
       </form>
     </section>
@@ -1034,10 +1034,10 @@ function renderContact(block: ReadyWebsiteBlock, preset: DesignPreset) {
     return `
       <section ${sectionAttrs(block, "contact")} class="mx-auto grid w-full max-w-7xl grid-cols-1 gap-5 px-6 py-20 md:grid-cols-[0.75fr_1fr_0.8fr]">
         <div>${titleBlock(block, "יצירת קשר", preset, "right")}</div>
-        <div class="grid min-h-[320px] place-items-center rounded-[38px] bg-slate-950 p-8 text-center text-2xl font-black text-white shadow-2xl shadow-slate-300/30">מפה / אזורי שירות</div>
+        <div class="grid min-h-[320px] place-items-center rounded-[38px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-2xl shadow-slate-300/30">מפה / אזורי שירות</div>
         <form class="grid gap-3 rounded-[38px] ${preset.surface} p-6 shadow-2xl shadow-slate-200/40 ring-1 ${preset.ring}">
-          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם" />
-          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-950 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
+          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="שם" />
+          <input class="h-14 rounded-2xl border border-slate-200 bg-white px-5 text-base font-bold text-slate-800 outline-none placeholder:text-slate-400 focus:border-violet-300" placeholder="טלפון" />
           <button type="button" class="h-14 rounded-full text-base font-black transition ${preset.button}">שליחה</button>
         </form>
       </section>

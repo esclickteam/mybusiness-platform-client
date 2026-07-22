@@ -383,7 +383,7 @@ export default function StudioSidebar({
               className={[
                 "group relative flex w-full flex-col items-center justify-center rounded-[1.35rem] px-2 py-3 text-[11px] font-black transition",
                 active
-                  ? "bg-gradient-to-br from-violet-600 to-fuchsia-600 text-white shadow-xl shadow-violet-100"
+                  ? "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-slate-800 shadow-xl shadow-violet-100"
                   : "text-slate-500 hover:bg-violet-50 hover:text-violet-700",
               ].join(" ")}
             >
@@ -581,7 +581,7 @@ export default function StudioSidebar({
                 <button
                   type="button"
                   onClick={onOpenMedia}
-                  className="w-full rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+                  className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                 >
                   פתיחת מנהל מדיה
                 </button>
@@ -609,7 +609,7 @@ export default function StudioSidebar({
                     <button
                       type="button"
                       onClick={openStoreManagementPage}
-                      className="mt-4 w-full rounded-2xl bg-gradient-to-l from-violet-700 to-fuchsia-600 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
+                      className="mt-4 w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-white shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                     >
                       פתיחת ניהול חנות
                     </button>
@@ -1140,7 +1140,7 @@ function PanelHeader({
     <div className="border-b border-slate-200 bg-white px-5 py-5">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black tracking-tight text-slate-950">
+          <h2 className="text-2xl font-black tracking-tight text-slate-800">
             {title}
           </h2>
           <p className="mt-1 text-sm font-bold leading-6 text-slate-400">
@@ -1151,7 +1151,7 @@ function PanelHeader({
         <button
           type="button"
           onClick={onClose}
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-400 shadow-sm transition hover:bg-slate-950 hover:text-white"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-400 shadow-sm transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
           title="סגירת פאנל"
         >
           ×
@@ -1260,7 +1260,7 @@ function ElementCard({
       onClick={onClick}
       className="group rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-sm transition hover:-translate-y-1 hover:border-violet-200 hover:bg-violet-50 hover:shadow-xl"
     >
-      <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-lg font-black text-violet-700 transition group-hover:bg-violet-700 group-hover:text-white">
+      <span className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-100 text-lg font-black text-violet-700 transition group-hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 group-hover:text-white">
         {element.icon}
       </span>
 
@@ -1302,7 +1302,7 @@ function SectionCard({
         </span>
       </div>
 
-      <p className="text-sm font-black text-slate-950">{section.title}</p>
+      <p className="text-sm font-black text-slate-800">{section.title}</p>
 
       <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
         {section.description}
@@ -1319,12 +1319,12 @@ function PaletteCard({
   onClick: () => void;
 }) {
   const swatches = [
-    "bg-violet-600",
+    "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70",
     "bg-fuchsia-500",
     "bg-sky-400",
     "bg-emerald-400",
     "bg-amber-400",
-    "bg-slate-950",
+    "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
   ];
 
   return (
@@ -1346,7 +1346,7 @@ function PaletteCard({
         ))}
       </div>
 
-      <p className="text-base font-black text-slate-950">{palette.name}</p>
+      <p className="text-base font-black text-slate-800">{palette.name}</p>
 
       <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
         {palette.description}
@@ -1382,7 +1382,7 @@ function StoreNavButton({
     >
       <div className="flex items-start justify-between gap-4">
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-black text-slate-950">
+          <span className="block text-sm font-black text-slate-800">
             {title}
           </span>
           <span className="mt-1 block text-xs font-bold leading-5 text-slate-500">
@@ -1413,7 +1413,7 @@ function SmartButton({
       onClick={onClick}
       className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-300 hover:bg-violet-50 hover:shadow-xl"
     >
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {text}
       </p>
@@ -1424,7 +1424,7 @@ function SmartButton({
 function Info({ title, text }: { title: string; text: string }) {
   return (
     <div className="mb-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-sm font-black text-slate-950">{title}</p>
+      <p className="text-sm font-black text-slate-800">{title}</p>
       <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
         {text}
       </p>
