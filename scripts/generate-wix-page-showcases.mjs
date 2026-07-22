@@ -16,21 +16,60 @@ function esc(s) {
     .replace(/\n/g, "\\n");
 }
 
-function makePages(heName, configs) {
-  return configs.map((cfg, index) => ({
-    key: String(index + 1).padStart(2, "0"),
-    index,
-    title: `${heName} – ${cfg.label}`,
-    eyebrow: cfg.eyebrow,
-    h: cfg.h,
-    sub: cfg.sub,
-    cta: cfg.cta,
-    cta2: cfg.cta2,
-    img: cfg.img,
-    items: cfg.items,
-    stats: cfg.stats,
-  }));
+/** Rotate a category image pack so each page starts on a different primary photo. */
+function rotatePack(pack, start) {
+  const n = pack.length;
+  return Array.from({ length: n }, (_, i) => pack[(start + i) % n]);
 }
+
+function makePages(heName, configs, imgPack) {
+  return configs.map((cfg, index) => {
+    const pack = rotatePack(imgPack || [cfg.img], index);
+    return {
+      key: String(index + 1).padStart(2, "0"),
+      index,
+      title: `${heName} – ${cfg.label}`,
+      eyebrow: cfg.eyebrow,
+      h: cfg.h,
+      sub: cfg.sub,
+      cta: cfg.cta,
+      cta2: cfg.cta2,
+      img: cfg.img || pack[0],
+      images: pack,
+      items: cfg.items,
+      stats: cfg.stats,
+    };
+  });
+}
+
+const HOME_IMGS = [
+  "office",
+  "tech",
+  "workspace",
+  "team",
+  "finance",
+  "product",
+  "meeting",
+  "laptop",
+  "city",
+  "hands",
+  "studio",
+  "cafe",
+];
+const SERVICES_IMGS = [
+  "tech",
+  "office",
+  "workspace",
+  "product",
+  "finance",
+  "meeting",
+  "hands",
+  "laptop",
+  "studio",
+  "medical",
+  "beauty",
+  "abstract",
+];
 
 const homeItems = [
   [
@@ -67,7 +106,7 @@ const categories = [
       { label: "סינמטי", eyebrow: "PREMIUM", h: "נוכחות דיגיטלית\nברמה אחרת", sub: "דרמה שחורה עם מבטאי זהב.", cta: "הצטרפו עכשיו", img: "abstract", items: homeItems[0].slice(0, 3), stats: homeItems[1] },
       { label: "רשימה+מדיה", eyebrow: "TOOLKIT", h: "הכלים שהופכים\nעסק למסודר", sub: "רשימה ממוספרת לצד מדיה דומיננטית.", cta: "נסו בחינם", img: "tech", items: homeItems[0].slice(0, 5), stats: homeItems[1] },
       { label: "מפוצל", eyebrow: "PLATFORM", h: "פלטפורמה אחת\nלכל העסק", sub: "פיצול תמונה/טקסט עם כרטיסי ערך.", cta: "התחילו", cta2: "למד עוד", img: "workspace", items: homeItems[0].slice(0, 3), stats: homeItems[1] },
-    ]),
+    ], HOME_IMGS),
   },
   {
     file: "servicesPageShowcaseSections.ts",
@@ -86,35 +125,39 @@ const categories = [
       { label: "מגזין", eyebrow: "EXPERTISE", h: "שירותי בוטיק\nבפריסה נועזת", sub: "קולאז׳ שחור-לבן עם היררכיה חזקה.", cta: "גלו שירות", img: "fashion", items: [{ title: "מיתוג", copy: "זהות שלמה.", meta: "01" }, { title: "אתר", copy: "עמודים ממירים.", meta: "02" }, { title: "תוכן", copy: "מסרים חדים.", meta: "03" }, { title: "צמיחה", copy: "תהליכים יציבים.", meta: "04" }], stats: [{ value: "A+", label: "איכות" }, { value: "12", label: "שנים" }, { value: "300+", label: "פרויקטים" }, { value: "5★", label: "דירוג" }] },
       { label: "תפריט", eyebrow: "MENU", h: "קטלוג שירותים\nמסודר", sub: "רשימה ברורה לצד מדיה גדולה.", cta: "בחרו מהרשימה", img: "beauty", items: [{ title: "פגישת ייעוץ", copy: "45 דקות.", meta: "01" }, { title: "חבילת בסיס", copy: "ליווי חודשי.", meta: "02" }, { title: "חבילת צמיחה", copy: "אתר + CRM.", meta: "03" }, { title: "ריטיינר", copy: "תחזוקה מלאה.", meta: "04" }, { title: "סדנה", copy: "הדרכת צוות.", meta: "05" }], stats: [{ value: "5", label: "פריטים" }, { value: "Clear", label: "מחיר" }, { value: "Fast", label: "הזמנה" }, { value: "Easy", label: "בחירה" }] },
       { label: "ייעוץ", eyebrow: "BOOK NOW", h: "השירות הנכון\nמתחיל בשיחה", sub: "טופס קביעה דומיננטי לסגירת פגישה.", cta: "שלחו בקשה", cta2: "התקשרו", img: "medical", items: [{ title: "מענה מהיר", copy: "תוך יום עסקים." }, { title: "ליווי", copy: "לא נעלמים." }, { title: "שקיפות", copy: "בלי הפתעות." }], stats: [{ value: "<24h", label: "חזרה" }, { value: "Free", label: "שיחה" }, { value: "No spam", label: "הבטחה" }, { value: "Human", label: "מענה" }] },
-    ]),
+    ], SERVICES_IMGS),
   },
 ];
 
 function cat(file, exportName, category, idPrefix, keywords, heName, imgSet, itemSets, labels) {
-  const pages = labels.map((cfg, index) => ({
-    key: String(index + 1).padStart(2, "0"),
-    index,
-    title: `${heName} – ${cfg.label}`,
-    eyebrow: cfg.eyebrow,
-    h: cfg.h,
-    sub: cfg.sub,
-    cta: cfg.cta,
-    cta2: cfg.cta2,
-    img: imgSet[index % imgSet.length],
-    items: itemSets[index % itemSets.length],
-    stats: cfg.stats || [
-      { value: "98%", label: "שביעות רצון" },
-      { value: "3x", label: "צמיחה" },
-      { value: "14", label: "ימים" },
-      { value: "5★", label: "דירוג" },
-    ],
-  }));
+  const pages = labels.map((cfg, index) => {
+    const pack = rotatePack(imgSet, index);
+    return {
+      key: String(index + 1).padStart(2, "0"),
+      index,
+      title: `${heName} – ${cfg.label}`,
+      eyebrow: cfg.eyebrow,
+      h: cfg.h,
+      sub: cfg.sub,
+      cta: cfg.cta,
+      cta2: cfg.cta2,
+      img: pack[0],
+      images: pack,
+      items: itemSets[index % itemSets.length],
+      stats: cfg.stats || [
+        { value: "98%", label: "שביעות רצון" },
+        { value: "3x", label: "צמיחה" },
+        { value: "14", label: "ימים" },
+        { value: "5★", label: "דירוג" },
+      ],
+    };
+  });
   return { file, exportName, category, idPrefix, keywords, pages };
 }
 
 const rest = [
   cat("galleryPageShowcaseSections.ts", "GALLERY_PAGE_SHOWCASE_SECTIONS", "gallery", "section-gallery-page", ["גלריה", "gallery", "wix"], "גלריה",
-    ["architecture", "interior", "fashion", "workspace", "construction", "abstract", "beauty", "event", "nature", "travel"],
+    ["architecture", "interior", "fashion", "workspace", "construction", "abstract", "beauty", "event", "nature", "travel", "camera", "studio"],
     [
       [{ title: "פרויקט מגורים", copy: "חללים חמים ומדויקים." }, { title: "מסחרי", copy: "נוכחות רחוב חזקה." }, { title: "מותג", copy: "שפה ויזואלית עקבית." }, { title: "אירוע", copy: "רגעים שנבחרו." }, { title: "מוצר", copy: "צילום שמוכר." }, { title: "דיגיטל", copy: "ממשקים נקיים." }],
       [{ title: "אור", copy: "קומפוזיציה בהירה.", meta: "01" }, { title: "צל", copy: "דרמה מבוקרת.", meta: "02" }, { title: "טקסטורה", copy: "חומרים אמיתיים.", meta: "03" }, { title: "פריים", copy: "רגע מדויק.", meta: "04" }, { title: "עריכה", copy: "סלקציה.", meta: "05" }],
@@ -172,7 +215,7 @@ const rest = [
     ],
   ),
   cat("productsPageShowcaseSections.ts", "PRODUCTS_PAGE_SHOWCASE_SECTIONS", "commerce", "section-products-page", ["מוצרים", "products", "wix"], "מוצרים",
-    ["ecommerce", "product", "fashion", "skincare", "ecommerce", "product", "fashion", "skincare", "ecommerce", "product"],
+    ["ecommerce", "product", "fashion", "skincare", "beauty", "kitchen", "food", "tech", "workspace", "cafe", "studio", "abstract"],
     [
       [{ title: "חדש", copy: "מהמדף עכשיו." }, { title: "נמכר", copy: "הכי מבוקש." }, { title: "מוגבל", copy: "מלאי קטן." }, { title: "סט", copy: "חיסכון בחבילה." }, { title: "מתנה", copy: "אריזה מוכנה." }, { title: "דיגיטלי", copy: "הורדה מיידית." }],
       [{ title: "בחירה", copy: "מוצר אחד.", meta: "01" }, { title: "פרטים", copy: "מידות וצבע.", meta: "02" }, { title: "סל", copy: "מוסיפים.", meta: "03" }, { title: "תשלום", copy: "מאובטח.", meta: "04" }, { title: "משלוח", copy: "עד הבית.", meta: "05" }],
@@ -210,7 +253,7 @@ const rest = [
     ],
   ),
   cat("blogPageShowcaseSections.ts", "BLOG_PAGE_SHOWCASE_SECTIONS", "blog", "section-blog-page", ["בלוג", "blog", "wix"], "בלוג",
-    ["education", "office", "workspace", "tech", "education", "finance", "abstract", "nature", "education", "office"],
+    ["education", "writing", "bookshelf", "laptop", "office", "workspace", "cafe", "nature", "meeting", "hands", "studio", "tech"],
     [
       [{ title: "מדריך", copy: "שלב אחר שלב." }, { title: "טיפ", copy: "מהיר ליישום." }, { title: "ראיון", copy: "מאחורי הקלעים." }, { title: "ניתוח", copy: "מספרים אמיתיים." }, { title: "סיפור", copy: "מהשטח." }, { title: "עדכון", copy: "מה חדש." }],
       [{ title: "קוראים", copy: "פותחים פוסט.", meta: "01" }, { title: "לומדים", copy: "מיישמים.", meta: "02" }, { title: "משתפים", copy: "מעבירים הלאה.", meta: "03" }, { title: "חוזרים", copy: "לפוסט הבא.", meta: "04" }, { title: "נרשמים", copy: "לניוזלטר.", meta: "05" }],
@@ -229,7 +272,7 @@ const rest = [
     ],
   ),
   cat("eventsPageShowcaseSections.ts", "EVENTS_PAGE_SHOWCASE_SECTIONS", "events", "section-events-page", ["אירועים", "events", "wix"], "אירועים",
-    ["event", "hospitality", "event", "travel", "event", "team", "abstract", "hospitality", "event", "hospitality"],
+    ["event", "stage", "hospitality", "travel", "team", "city", "abstract", "cafe", "meeting", "hands", "studio", "nature"],
     [
       [{ title: "הופעה", copy: "במה חיה.", meta: "20:00" }, { title: "סדנה", copy: "למידה מעשית.", meta: "18:30" }, { title: "מפגש", copy: "נטוורקינג.", meta: "19:00" }, { title: "השקה", copy: "מוצר חדש.", meta: "17:00" }, { title: "כנס", copy: "יום מלא.", meta: "09:00" }, { title: "ערב", copy: "אווירה.", meta: "21:00" }],
       [{ title: "שמירה", copy: "RSVP.", meta: "01" }, { title: "תזכורת", copy: "הודעה.", meta: "02" }, { title: "הגעה", copy: "צ׳ק אין.", meta: "03" }, { title: "חוויה", copy: "האירוע.", meta: "04" }, { title: "אחרי", copy: "סיכום.", meta: "05" }],
@@ -273,7 +316,7 @@ rest[rest.length - 1].idPrefix = "section-testimonials-page";
 
 rest.push(
   cat("teamPageShowcaseSections.ts", "TEAM_PAGE_SHOWCASE_SECTIONS", "team", "section-team-page", ["צוות", "team", "wix"], "צוות",
-    ["team", "office", "workspace", "team", "office", "finance", "abstract", "hospitality", "team", "office"],
+    ["team", "portrait", "meeting", "hands", "office", "workspace", "studio", "hospitality", "cafe", "city", "laptop", "finance"],
     [
       [{ title: "עיצוב", copy: "ויזואל וממשקים." }, { title: "פיתוח", copy: "קוד וביצועים." }, { title: "שיווק", copy: "צמיחה." }, { title: "מכירות", copy: "סגירות." }, { title: "תמיכה", copy: "לקוחות מרוצים." }, { title: "הנהלה", copy: "חזון." }],
       [{ title: "היכרות", copy: "יום ראשון.", meta: "01" }, { title: "חניכה", copy: "ליווי צמוד.", meta: "02" }, { title: "עשייה", copy: "פרויקטים.", meta: "03" }, { title: "צמיחה", copy: "קידום.", meta: "04" }, { title: "מנהיגות", copy: "הובלה.", meta: "05" }],
@@ -378,6 +421,10 @@ function genFile(catDef) {
     lines.push(`      cta: '${esc(p.cta)}',`);
     if (p.cta2) lines.push(`      secondaryCta: '${esc(p.cta2)}',`);
     lines.push(`      image: IMG.${p.img},`);
+    const imageList = (p.images || [p.img])
+      .map((key) => `IMG.${key}`)
+      .join(", ");
+    lines.push(`      images: [${imageList}],`);
     lines.push(`      items: [${items}],`);
     lines.push(`      stats: [${stats}],`);
     lines.push("    }),");

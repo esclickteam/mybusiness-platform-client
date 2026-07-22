@@ -5,6 +5,7 @@ import {
   imageNode,
   textNode,
 } from "./libraryFactories";
+import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import type { VisualLibraryNodeTemplate } from "./visualLibraryTypes";
 
 export type PageContent = {
@@ -14,10 +15,36 @@ export type PageContent = {
   cta: string;
   secondaryCta?: string;
   image: string;
+  /** Extra distinct images for grids/collages — never reuse the same URL in one page. */
+  images?: string[];
   imageAlt?: string;
   items?: Array<{ title: string; copy: string; meta?: string }>;
   stats?: Array<{ value: string; label: string }>;
 };
+
+const LIBRARY_IMAGE_POOL = Object.values(VISUAL_LIBRARY_IMAGES);
+
+/** Deduped image sequence for a page preview (primary + extras + library fallback). */
+export function imagePool(content: PageContent): string[] {
+  const seen = new Set<string>();
+  const out: string[] = [];
+  for (const url of [
+    content.image,
+    ...(content.images || []),
+    ...LIBRARY_IMAGE_POOL,
+  ]) {
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    out.push(url);
+  }
+  return out.length ? out : [...LIBRARY_IMAGE_POOL];
+}
+
+/** Pick a unique image by slot index so grids never show identical photos. */
+export function pickImage(content: PageContent, index = 0): string {
+  const pool = imagePool(content);
+  return pool[index % pool.length];
+}
 
 export type ShowcaseTheme = {
   ink: string;
@@ -118,7 +145,7 @@ export const patternSplitHero: PatternFn = (content, theme, g) => {
     textNode("subtitle", content.subtitle, { color: theme.muted, fontSize: "17px", lineHeight: "1.65" }, L(g, 56, 300, "460px", "90px", 20)),
     buttonNode("cta", content.cta, btn(theme), L(g, 56, 410, "190px", "50px", 20)),
     ...(content.secondaryCta ? [buttonNode("cta2", content.secondaryCta, btn(theme, "ghost"), L(g, 260, 410, "170px", "50px", 20))] : []),
-    imageNode("hero", content.image, { borderRadius: theme.sharpRadius, objectFit: "cover" }, L(g, 580, 0, "520px", "600px", 8), content.imageAlt || content.title),
+    imageNode("hero", pickImage(content, 0), { borderRadius: theme.sharpRadius, objectFit: "cover" }, L(g, 580, 0, "520px", "600px", 8), content.imageAlt || content.title),
     ...items.slice(0, 3).flatMap((item, i) => {
       const x = 56 + i * (g.cardW + g.gap);
       return [
@@ -137,7 +164,7 @@ export const patternSplitHero: PatternFn = (content, theme, g) => {
     boxNode("footer-bar", { backgroundColor: theme.ink }, L(g, 0, 1120, "1100px", "300px", 1)),
     textNode("footer-t", "מוכנים להתחיל?", { color: "#fff", fontSize: "34px", fontWeight: "800" }, L(g, 56, 1200, "480px", "48px", 20)),
     buttonNode("footer-cta", content.cta, btn(theme), L(g, 56, 1280, "200px", "50px", 20)),
-    imageNode("footer-img", content.image, { borderRadius: theme.sharpRadius, objectFit: "cover" }, L(g, 620, 1170, "400px", "210px", 8), "תצוגה"),
+    imageNode("footer-img", pickImage(content, 1), { borderRadius: theme.sharpRadius, objectFit: "cover" }, L(g, 620, 1170, "400px", "210px", 8), "תצוגה"),
   ];
 };
 
@@ -147,7 +174,7 @@ export const patternCenterEditorial: PatternFn = (content, theme, g) => [
   textNode("title", content.title, { color: theme.ink, fontSize: "64px", fontWeight: "700", letterSpacing: "-0.04em", textAlign: "center", whiteSpace: "pre-line", lineHeight: "1.05" }, L(g, 180, 120, "740px", "150px", 20)),
   textNode("subtitle", content.subtitle, { color: theme.muted, fontSize: "18px", textAlign: "center", lineHeight: "1.6" }, L(g, 260, 290, "580px", "70px", 20)),
   buttonNode("cta", content.cta, btn(theme, "soft"), L(g, 430, 380, "220px", "52px", 20)),
-  imageNode("hero", content.image, { borderRadius: "28px", objectFit: "cover" }, L(g, 160, 470, "780px", "420px", 8), content.imageAlt || content.title),
+  imageNode("hero", pickImage(content, 0), { borderRadius: "28px", objectFit: "cover" }, L(g, 160, 470, "780px", "420px", 8), content.imageAlt || content.title),
   ...(content.items || []).slice(0, 3).flatMap((item, i) => {
     const x = 160 + i * 270;
     return [
@@ -169,10 +196,10 @@ export const patternCenterEditorial: PatternFn = (content, theme, g) => [
 export const patternMagazine: PatternFn = (content, theme, g) => {
   const items = content.items || [];
   return [
-    imageNode("a", content.image, { borderRadius: "0px", objectFit: "cover", filter: "grayscale(1)" }, L(g, 40, 40, "420px", "320px", 8), "A"),
-    imageNode("b", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 480, 40, "280px", "200px", 8), "B"),
-    imageNode("c", content.image, { borderRadius: "0px", objectFit: "cover", filter: "grayscale(1)" }, L(g, 780, 40, "280px", "320px", 8), "C"),
-    imageNode("d", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 480, 260, "280px", "100px", 8), "D"),
+    imageNode("a", pickImage(content, 0), { borderRadius: "0px", objectFit: "cover", filter: "grayscale(1)" }, L(g, 40, 40, "420px", "320px", 8), "A"),
+    imageNode("b", pickImage(content, 1), { borderRadius: "0px", objectFit: "cover" }, L(g, 480, 40, "280px", "200px", 8), "B"),
+    imageNode("c", pickImage(content, 2), { borderRadius: "0px", objectFit: "cover", filter: "grayscale(1)" }, L(g, 780, 40, "280px", "320px", 8), "C"),
+    imageNode("d", pickImage(content, 3), { borderRadius: "0px", objectFit: "cover" }, L(g, 480, 260, "280px", "100px", 8), "D"),
     boxNode("band", { backgroundColor: theme.ink }, L(g, 40, 400, "1020px", "280px", 5)),
     textNode("eyebrow", content.eyebrow, { color: "rgba(255,255,255,.55)", fontSize: "12px", fontWeight: "800", letterSpacing: "0.24em" }, L(g, 70, 440, "400px", "22px", 20)),
     textNode("title", content.title, { color: "#fff", fontSize: "56px", fontWeight: "900", letterSpacing: "-0.05em", whiteSpace: "pre-line", lineHeight: "0.95" }, L(g, 70, 480, "620px", "140px", 20)),
@@ -231,7 +258,7 @@ export const patternTimeline: PatternFn = (content, theme, g) => {
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "15px" }, L(g, 130, y + 70, "360px", "40px", 20)),
       ];
     }),
-    imageNode("side", content.image, { borderRadius: "24px", objectFit: "cover" }, L(g, 580, 420, "460px", "700px", 8), content.imageAlt || content.title),
+    imageNode("side", pickImage(content, 0), { borderRadius: "24px", objectFit: "cover" }, L(g, 580, 420, "460px", "700px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -253,7 +280,7 @@ export const patternDarkStats: PatternFn = (content, theme, g) => {
       ];
     }),
     boxNode("panel", { backgroundColor: "rgba(255,255,255,.06)", borderRadius: "20px" }, L(g, 60, 640, "980px", "520px", 4)),
-    imageNode("chart", content.image, { borderRadius: "16px", objectFit: "cover", opacity: "0.9" }, L(g, 90, 680, "920px", "280px", 8), "מדדים"),
+    imageNode("chart", pickImage(content, 0), { borderRadius: "16px", objectFit: "cover", opacity: "0.9" }, L(g, 90, 680, "920px", "280px", 8), "מדדים"),
     ...items.slice(0, 3).flatMap((item, i) => {
       const x = 90 + i * 310;
       return [
@@ -268,7 +295,7 @@ export const patternDarkStats: PatternFn = (content, theme, g) => {
 export const patternCinematic: PatternFn = (content, theme, g) => {
   const items = content.items || [];
   return [
-    imageNode("bg", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "700px", 2), content.imageAlt || content.title),
+    imageNode("bg", pickImage(content, 0), { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "700px", 2), content.imageAlt || content.title),
     boxNode("veil", { backgroundColor: "rgba(9,9,11,0.62)" }, L(g, 0, 0, "1100px", "700px", 3)),
     textNode("eyebrow", content.eyebrow, { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.28em" }, L(g, 70, 180, "500px", "22px", 20)),
     textNode("title", content.title, { color: "#fff", fontSize: "64px", fontWeight: "800", letterSpacing: "-0.05em", whiteSpace: "pre-line", lineHeight: "0.96" }, L(g, 70, 230, "760px", "160px", 20)),
@@ -288,7 +315,7 @@ export const patternCinematic: PatternFn = (content, theme, g) => {
 export const patternLifestyle: PatternFn = (content, theme, g) => {
   const items = content.items || [];
   return [
-    imageNode("hero", content.image, { borderRadius: "40px", objectFit: "cover" }, L(g, 40, 40, "1020px", "440px", 8), content.imageAlt || content.title),
+    imageNode("hero", pickImage(content, 0), { borderRadius: "40px", objectFit: "cover" }, L(g, 40, 40, "1020px", "440px", 8), content.imageAlt || content.title),
     boxNode("pill", { backgroundColor: "#fff", borderRadius: "999px" }, L(g, 380, 420, "340px", "54px", 12)),
     textNode("pill-t", content.eyebrow, { color: theme.accent, fontSize: "13px", fontWeight: "800", letterSpacing: "0.16em", textAlign: "center" }, L(g, 380, 435, "340px", "24px", 20)),
     textNode("title", content.title, { color: theme.ink, fontSize: "56px", fontWeight: "700", letterSpacing: "-0.04em", textAlign: "center", whiteSpace: "pre-line" }, L(g, 160, 520, "780px", "120px", 20)),
@@ -322,7 +349,7 @@ export const patternListMedia: PatternFn = (content, theme, g) => {
         boxNode(`rule-${i}`, { backgroundColor: theme.soft }, L(g, 60, y + 90, "440px", "1px", 4)),
       ];
     }),
-    imageNode("media", content.image, { borderRadius: theme.radius, objectFit: "cover" }, L(g, 560, 90, "480px", "980px", 8), content.imageAlt || content.title),
+    imageNode("media", pickImage(content, 0), { borderRadius: theme.radius, objectFit: "cover" }, L(g, 560, 90, "480px", "980px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -347,7 +374,7 @@ export const patternFormPanel: PatternFn = (content, theme, g) => {
     boxNode("f3", { backgroundColor: theme.surfaceAlt, borderRadius: "12px" }, L(g, 620, 350, "380px", "120px", 7)),
     buttonNode("cta", content.cta, btn(theme), L(g, 620, 510, "380px", "54px", 20)),
     ...(content.secondaryCta ? [buttonNode("cta2", content.secondaryCta, btn(theme, "ghost"), L(g, 620, 580, "380px", "50px", 20))] : []),
-    imageNode("side", content.image, { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 640, "480px", "420px", 8), content.imageAlt || content.title),
+    imageNode("side", pickImage(content, 0), { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 640, "480px", "420px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -364,7 +391,7 @@ export const patternMasonry: PatternFn = (content, theme, g) => {
   ];
   return [
     ...tiles.map((t, i) =>
-      imageNode(`tile-${i}`, content.image, { borderRadius: i % 2 ? "28px" : "8px", objectFit: "cover" }, L(g, t.x, t.y, `${t.w}px`, `${t.h}px`, 8), items[i]?.title || `עבודה ${i + 1}`),
+      imageNode(`tile-${i}`, pickImage(content, i), { borderRadius: i % 2 ? "28px" : "8px", objectFit: "cover" }, L(g, t.x, t.y, `${t.w}px`, `${t.h}px`, 8), items[i]?.title || `עבודה ${i + 1}`),
     ),
     boxNode("caption", { backgroundColor: theme.ink }, L(g, 40, 760, "1020px", "220px", 5)),
     textNode("title", content.title, { color: "#fff", fontSize: "42px", fontWeight: "800", whiteSpace: "pre-line" }, L(g, 80, 800, "700px", "100px", 20)),
@@ -380,7 +407,7 @@ export const patternFilmstrip: PatternFn = (content, theme, g) => {
     textNode("eyebrow", content.eyebrow, { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.24em" }, L(g, 50, 40, "400px", "22px", 20)),
     textNode("title", content.title, { color: theme.ink, fontSize: "48px", fontWeight: "800", whiteSpace: "pre-line", letterSpacing: "-0.04em" }, L(g, 50, 80, "900px", "110px", 20)),
     ...[0, 1, 2, 3, 4].map((i) =>
-      imageNode(`f-${i}`, content.image, { borderRadius: "0px", objectFit: "cover", border: `4px solid ${theme.ink}` }, L(g, 40 + i * 210, 230, "195px", "260px", 8), items[i]?.title || `פריים ${i + 1}`),
+      imageNode(`f-${i}`, pickImage(content, i), { borderRadius: "0px", objectFit: "cover", border: `4px solid ${theme.ink}` }, L(g, 40 + i * 210, 230, "195px", "260px", 8), items[i]?.title || `פריים ${i + 1}`),
     ),
     boxNode("strip", { backgroundColor: theme.accent }, L(g, 40, 510, "1020px", "12px", 4)),
     ...items.slice(0, 4).flatMap((item, i) => {
@@ -391,7 +418,7 @@ export const patternFilmstrip: PatternFn = (content, theme, g) => {
       ];
     }),
     buttonNode("cta", content.cta, btn(theme), L(g, 50, 720, "220px", "52px", 20)),
-    imageNode("feature", content.image, { borderRadius: "16px", objectFit: "cover" }, L(g, 320, 700, "720px", "360px", 8), content.imageAlt || content.title),
+    imageNode("feature", pickImage(content, 5), { borderRadius: "16px", objectFit: "cover" }, L(g, 320, 700, "720px", "360px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -415,7 +442,7 @@ export const patternPackageTiers: PatternFn = (content, theme, g) => {
         buttonNode(`cta-${i}`, content.cta, i === 1 ? btn(theme) : btn(theme, "ghost"), L(g, x + 45, 700, "220px", "50px", 20)),
       ];
     }),
-    imageNode("band", content.image, { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 880, "980px", "280px", 8), content.imageAlt || content.title),
+    imageNode("band", pickImage(content, 0), { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 880, "980px", "280px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -438,7 +465,7 @@ export const patternQuoteWall: PatternFn = (content, theme, g) => {
       ];
     }),
     buttonNode("cta", content.cta, btn(theme), L(g, 60, 920, "220px", "52px", 20)),
-    imageNode("portrait", content.image, { borderRadius: "999px", objectFit: "cover" }, L(g, 820, 880, "180px", "180px", 8), "דיוקן"),
+    imageNode("portrait", pickImage(content, 0), { borderRadius: "999px", objectFit: "cover" }, L(g, 820, 880, "180px", "180px", 8), "דיוקן"),
   ];
 };
 
@@ -450,7 +477,7 @@ export const patternAgendaRows: PatternFn = (content, theme, g) => {
     textNode("eyebrow", content.eyebrow, { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.22em" }, L(g, 60, 60, "400px", "22px", 20)),
     textNode("title", content.title, { color: "#fff", fontSize: "52px", fontWeight: "800", whiteSpace: "pre-line" }, L(g, 60, 110, "700px", "120px", 20)),
     buttonNode("cta", content.cta, btn(theme), L(g, 60, 260, "210px", "50px", 20)),
-    imageNode("poster", content.image, { borderRadius: "16px", objectFit: "cover" }, L(g, 700, 40, "340px", "280px", 8), "פוסטר"),
+    imageNode("poster", pickImage(content, 0), { borderRadius: "16px", objectFit: "cover" }, L(g, 700, 40, "340px", "280px", 8), "פוסטר"),
     ...items.slice(0, 5).flatMap((item, i) => {
       const y = 400 + i * 120;
       return [
@@ -477,7 +504,7 @@ export const patternPortraitGrid: PatternFn = (content, theme, g) => {
       const x = 60 + col * 340;
       const y = 230 + row * 360;
       return [
-        imageNode(`p-${i}`, content.image, { borderRadius: "22px", objectFit: "cover" }, L(g, x, y, "310px", "240px", 8), item.title),
+        imageNode(`p-${i}`, pickImage(content, i), { borderRadius: "22px", objectFit: "cover" }, L(g, x, y, "310px", "240px", 8), item.title),
         textNode(`t-${i}`, item.title, { color: theme.ink, fontSize: "22px", fontWeight: "800" }, L(g, x, y + 260, "310px", "32px", 20)),
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "14px" }, L(g, x, y + 298, "310px", "28px", 20)),
       ];
@@ -502,7 +529,7 @@ export const patternAccordion: PatternFn = (content, theme, g) => {
         textNode(`plus-${i}`, i === 0 ? "−" : "+", { color: theme.accent, fontSize: "28px", fontWeight: "700", textAlign: "center" }, L(g, 690, y + 24, "40px", "40px", 20)),
       ];
     }),
-    imageNode("side", content.image, { borderRadius: "24px", objectFit: "cover" }, L(g, 800, 300, "250px", "660px", 8), content.imageAlt || content.title),
+    imageNode("side", pickImage(content, 0), { borderRadius: "24px", objectFit: "cover" }, L(g, 800, 300, "250px", "660px", 8), content.imageAlt || content.title),
     buttonNode("cta", content.cta, btn(theme), L(g, 60, 1000, "240px", "52px", 20)),
   ];
 };
@@ -521,7 +548,7 @@ export const patternCatalogShelf: PatternFn = (content, theme, g) => {
       const y = 260 + row * 340;
       return [
         boxNode(`prod-${i}`, { backgroundColor: "#fff", borderRadius: "18px", border: `1px solid ${theme.soft}` }, L(g, x, y, "320px", "300px", 5)),
-        imageNode(`img-${i}`, content.image, { borderRadius: "14px", objectFit: "cover" }, L(g, x + 16, y + 16, "288px", "160px", 8), item.title),
+        imageNode(`img-${i}`, pickImage(content, i), { borderRadius: "14px", objectFit: "cover" }, L(g, x + 16, y + 16, "288px", "160px", 8), item.title),
         textNode(`t-${i}`, item.title, { color: theme.ink, fontSize: "20px", fontWeight: "800" }, L(g, x + 20, y + 195, "280px", "30px", 20)),
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "13px" }, L(g, x + 20, y + 230, "200px", "28px", 20)),
         textNode(`price-${i}`, (content.stats || [])[i % 4]?.value || "₪99", { color: theme.accent, fontSize: "18px", fontWeight: "900" }, L(g, x + 220, y + 230, "80px", "28px", 20)),
@@ -539,7 +566,7 @@ export const patternFeatureMosaic: PatternFn = (content, theme, g) => {
     textNode("eyebrow", content.eyebrow, { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.2em" }, L(g, 70, 80, "400px", "22px", 20)),
     textNode("title", content.title, { color: "#fff", fontSize: "48px", fontWeight: "800", whiteSpace: "pre-line" }, L(g, 70, 130, "560px", "140px", 20)),
     buttonNode("cta", content.cta, btn(theme), L(g, 70, 320, "200px", "50px", 20)),
-    imageNode("side", content.image, { borderRadius: theme.radius, objectFit: "cover" }, L(g, 700, 40, "360px", "420px", 8), content.imageAlt || content.title),
+    imageNode("side", pickImage(content, 0), { borderRadius: theme.radius, objectFit: "cover" }, L(g, 700, 40, "360px", "420px", 8), content.imageAlt || content.title),
     ...items.slice(0, 4).flatMap((item, i) => {
       const x = 40 + (i % 2) * 530;
       const y = 500 + Math.floor(i / 2) * 220;
@@ -556,7 +583,7 @@ export const patternFeatureMosaic: PatternFn = (content, theme, g) => {
 export const patternContactDesk: PatternFn = (content, theme, g) => {
   const items = content.items || [];
   return [
-    imageNode("map", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "340px", 2), "מפה"),
+    imageNode("map", pickImage(content, 0), { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "340px", 2), "מפה"),
     boxNode("overlay", { backgroundColor: "rgba(15,23,42,0.45)" }, L(g, 0, 0, "1100px", "340px", 3)),
     textNode("title", content.title, { color: "#fff", fontSize: "52px", fontWeight: "800", whiteSpace: "pre-line" }, L(g, 60, 100, "700px", "120px", 20)),
     buttonNode("cta", content.cta, btn(theme), L(g, 60, 250, "200px", "50px", 20)),
@@ -585,7 +612,7 @@ export const patternCvColumns: PatternFn = (content, theme, g) => {
   const stats = content.stats || [];
   return [
     boxNode("sidebar", { backgroundColor: theme.ink }, L(g, 0, 0, "360px", "1500px", 2)),
-    imageNode("avatar", content.image, { borderRadius: "999px", objectFit: "cover" }, L(g, 70, 60, "220px", "220px", 8), "דיוקן"),
+    imageNode("avatar", pickImage(content, 0), { borderRadius: "999px", objectFit: "cover" }, L(g, 70, 60, "220px", "220px", 8), "דיוקן"),
     textNode("name", content.title.replace(/\n/g, " "), { color: "#fff", fontSize: "28px", fontWeight: "800" }, L(g, 40, 310, "280px", "70px", 20)),
     textNode("role", content.eyebrow, { color: theme.accent, fontSize: "13px", fontWeight: "800", letterSpacing: "0.16em" }, L(g, 40, 390, "280px", "24px", 20)),
     ...stats.slice(0, 3).flatMap((st, i) => {
@@ -630,7 +657,7 @@ export const patternTicketHero: PatternFn = (content, theme, g) => {
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "13px" }, L(g, x + 18, 620, "200px", "40px", 20)),
       ];
     }),
-    imageNode("venue", content.image, { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 760, "980px", "360px", 8), "מקום"),
+    imageNode("venue", pickImage(content, 0), { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 760, "980px", "360px", 8), "מקום"),
   ];
 };
 
@@ -656,7 +683,7 @@ export const patternComparisonMatrix: PatternFn = (content, theme, g) => {
       ];
     }),
     buttonNode("cta", content.cta, btn(theme), L(g, 60, 900, "240px", "52px", 20)),
-    imageNode("side", content.image, { borderRadius: "16px", objectFit: "cover" }, L(g, 360, 900, "680px", "220px", 8), content.imageAlt || content.title),
+    imageNode("side", pickImage(content, 0), { borderRadius: "16px", objectFit: "cover" }, L(g, 360, 900, "680px", "220px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -672,7 +699,7 @@ export const patternCarouselRail: PatternFn = (content, theme, g) => {
       const item = items[i] || { title: `כרטיס ${i + 1}`, copy: "תוכן." };
       return [
         boxNode(`card-${i}`, { backgroundColor: "#fff", borderRadius: "24px", border: `1px solid ${theme.soft}`, boxShadow: "0 18px 40px rgba(15,23,42,.12)" }, L(g, x, y, "300px", "380px", 5 + i)),
-        imageNode(`img-${i}`, content.image, { borderRadius: "18px", objectFit: "cover" }, L(g, x + 18, y + 18, "264px", "180px", 8), item.title),
+        imageNode(`img-${i}`, pickImage(content, i), { borderRadius: "18px", objectFit: "cover" }, L(g, x + 18, y + 18, "264px", "180px", 8), item.title),
         textNode(`t-${i}`, item.title, { color: theme.ink, fontSize: "20px", fontWeight: "800" }, L(g, x + 24, y + 220, "250px", "34px", 20)),
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "14px" }, L(g, x + 24, y + 265, "250px", "50px", 20)),
       ];
@@ -685,7 +712,7 @@ export const patternCarouselRail: PatternFn = (content, theme, g) => {
         textNode(`sl-${i}`, st.label, { color: theme.ink, fontSize: "13px", fontWeight: "700" }, L(g, x, 770, "180px", "24px", 20)),
       ];
     }),
-    imageNode("wide", content.image, { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 860, "980px", "280px", 8), content.imageAlt || content.title),
+    imageNode("wide", pickImage(content, 4), { borderRadius: "20px", objectFit: "cover" }, L(g, 60, 860, "980px", "280px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -706,7 +733,7 @@ export const patternBoldStatement: PatternFn = (content, theme, g) => {
         textNode(`c-${i}`, item.copy, { color: theme.muted, fontSize: "15px" }, L(g, x, 770, "300px", "50px", 20)),
       ];
     }),
-    imageNode("strip", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 900, "1100px", "320px", 8), content.imageAlt || content.title),
+    imageNode("strip", pickImage(content, 0), { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 900, "1100px", "320px", 8), content.imageAlt || content.title),
   ];
 };
 
@@ -715,7 +742,7 @@ export const patternCaseStudy: PatternFn = (content, theme, g) => {
   const items = content.items || [];
   const stats = content.stats || [];
   return [
-    imageNode("cover", content.image, { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "520px", 2), content.imageAlt || content.title),
+    imageNode("cover", pickImage(content, 0), { borderRadius: "0px", objectFit: "cover" }, L(g, 0, 0, "1100px", "520px", 2), content.imageAlt || content.title),
     boxNode("card", { backgroundColor: "#fff", borderRadius: "24px" }, L(g, 80, 380, "940px", "280px", 6)),
     textNode("eyebrow", content.eyebrow, { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.2em" }, L(g, 120, 420, "400px", "22px", 20)),
     textNode("title", content.title, { color: theme.ink, fontSize: "40px", fontWeight: "800", whiteSpace: "pre-line" }, L(g, 120, 460, "700px", "100px", 20)),
