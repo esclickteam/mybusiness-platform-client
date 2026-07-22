@@ -19,137 +19,117 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 1.5rem;
 }
 
 .bizuply-loader--inline {
   padding: 2.5rem 1rem;
 }
 
-.bizuply-loader__scan-container {
+/* Logo stage — img sets size, shine is masked to same shape */
+.bizuply-loader__logo-stage {
   position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  border-radius: 1.25rem;
-  padding: 0.75rem 1rem;
+  display: inline-block;
+  line-height: 0;
 }
 
-.bizuply-loader__logo {
+.bizuply-loader__logo-base {
   display: block;
   width: auto;
-  max-width: min(80vw, 420px);
   height: auto;
+  max-width: 100%;
   object-fit: contain;
-  position: relative;
-  z-index: 1;
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-.bizuply-loader__logo--xs {
-  max-width: 5rem;
+.bizuply-loader__logo-base--xs {
+  width: 4.5rem;
 }
 
-.bizuply-loader__logo--sm {
-  max-width: 8rem;
+.bizuply-loader__logo-base--sm {
+  width: 7rem;
 }
 
-.bizuply-loader__logo--md {
-  max-width: 12rem;
+.bizuply-loader__logo-base--md {
+  width: 11rem;
 }
 
-.bizuply-loader__logo--lg {
-  max-width: 16rem;
+.bizuply-loader__logo-base--lg {
+  width: 16rem;
 }
 
-.bizuply-loader__logo--xl {
-  max-width: min(80vw, 22rem);
+.bizuply-loader__logo-base--xl {
+  width: min(88vw, 28rem);
 }
 
-.bizuply-loader__scan-beam {
+.bizuply-loader-screen .bizuply-loader__logo-base--xl,
+.bizuply-loader--hero .bizuply-loader__logo-base--xl {
+  width: min(92vw, 42rem);
+}
+
+/* Shine lives ONLY inside the logo silhouette (mask = logo) */
+.bizuply-loader__logo-shine {
   position: absolute;
-  inset: -10% -20%;
-  z-index: 2;
+  inset: 0;
+  pointer-events: none;
+  -webkit-mask-image: var(--bizuply-logo-url);
+  mask-image: var(--bizuply-logo-url);
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
   background: linear-gradient(
     105deg,
     transparent 0%,
     transparent 38%,
-    rgba(139, 92, 246, 0.12) 44%,
-    rgba(139, 92, 246, 0.42) 50%,
-    rgba(59, 130, 246, 0.32) 56%,
+    rgba(255, 255, 255, 0.25) 44%,
+    rgba(221, 214, 254, 0.95) 49%,
+    rgba(196, 181, 253, 1) 50%,
+    rgba(147, 197, 253, 0.95) 51%,
+    rgba(255, 255, 255, 0.35) 56%,
     transparent 62%,
     transparent 100%
   );
-  transform: translateX(-130%);
-  animation: bizuply-scan-beam 2.4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-.bizuply-loader__scan-line {
-  position: absolute;
-  top: -8%;
-  bottom: -8%;
-  width: 4px;
-  z-index: 3;
-  border-radius: 999px;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    rgba(139, 92, 246, 0.95),
-    rgba(59, 130, 246, 0.95),
-    transparent
-  );
-  box-shadow:
-    0 0 18px rgba(139, 92, 246, 0.75),
-    0 0 36px rgba(59, 130, 246, 0.35);
-  transform: translateX(-130%);
-  animation: bizuply-scan-line 2.4s ease-in-out infinite;
-  pointer-events: none;
+  background-size: 280% 100%;
+  animation: bizuply-logo-shine 2.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 12px rgba(139, 92, 246, 0.35));
 }
 
 .bizuply-loader__label {
   margin: 0;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 700;
   color: #64748b;
   text-align: center;
 }
 
-@keyframes bizuply-scan-beam {
+@keyframes bizuply-logo-shine {
   0% {
-    transform: translateX(-130%);
+    background-position: 160% 50%;
   }
 
   100% {
-    transform: translateX(130%);
-  }
-}
-
-@keyframes bizuply-scan-line {
-  0% {
-    transform: translateX(-130%);
-  }
-
-  100% {
-    transform: translateX(130%);
-  }
-}
-
-@keyframes bizuply-loader-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-  }
-
-  50% {
-    opacity: 1;
+    background-position: -160% 50%;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .bizuply-loader__scan-beam,
-  .bizuply-loader__scan-line {
-    animation: bizuply-loader-pulse 1.6s ease-in-out infinite;
-    transform: none;
+  .bizuply-loader__logo-shine {
+    animation: bizuply-logo-shine-pulse 1.8s ease-in-out infinite;
+    background-position: 50% 50%;
+  }
+}
+
+@keyframes bizuply-logo-shine-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
