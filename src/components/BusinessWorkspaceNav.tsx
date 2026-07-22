@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   LayoutDashboard,
   CircleUserRound,
@@ -13,6 +14,7 @@ import {
   ChevronDown,
   LayoutTemplate,
 } from "lucide-react";
+import { getTextDirection } from "../i18n/localeUtils";
 
 /* =========================
    Types
@@ -121,7 +123,7 @@ function NavItem({
             `}
           />
 
-          <span className="min-w-0 flex-1 truncate text-left">{label}</span>
+          <span className="min-w-0 flex-1 truncate text-start">{label}</span>
         </>
       )}
     </NavLink>
@@ -216,10 +218,13 @@ function WorkspaceCard({
 
 export default function BusinessWorkspaceNav({
   onNavigate,
-  t = fallbackT,
+  t: tProp,
   workspaceName,
 }: BusinessWorkspaceNavProps) {
   const { businessId } = useParams<{ businessId: string }>();
+  const { t: tI18n, i18n } = useTranslation();
+  const t = tProp || ((key: string) => tI18n(key));
+  const dir = getTextDirection(i18n.language);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -261,18 +266,12 @@ export default function BusinessWorkspaceNav({
       icon: UserRound,
       exact: true,
     },
-
-    /*
-      בניית אתרים:
-      מוביל לעמוד ״האתרים שלי״.
-    */
     {
       labelKey: "businessNav.buildWebsite",
-      fallback: "בניית אתרים",
+      fallback: "Build Website",
       to: `${basePath}/dashboard/website`,
       icon: LayoutTemplate,
     },
-
     {
       labelKey: "businessNav.billing",
       fallback: "Billing & Subscription",
@@ -289,9 +288,9 @@ export default function BusinessWorkspaceNav({
 
   return (
     <nav
-      dir="ltr"
-      aria-label="Business workspace navigation"
-      className="flex h-full min-h-0 flex-col overflow-hidden text-left"
+      dir={dir}
+      aria-label={translate(t, "businessNav.ariaLabel", "Business workspace navigation")}
+      className="flex h-full min-h-0 flex-col overflow-hidden text-start"
     >
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-1 pb-3">
         {items.map((item) => (

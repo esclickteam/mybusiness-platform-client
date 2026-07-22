@@ -1,6 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 
 type Feature = {
   title: string;
@@ -12,10 +13,12 @@ type Feature = {
 };
 
 export default function WhyBizuply() {
+  const { t } = useTranslation();
+
   const features: Feature[] = [
     {
-      title: "One platform instead of many tools",
-      text: "Manage clients, tasks, deals, appointments and automations in one clean workspace — without jumping between systems.",
+      title: t("why.feature1Title"),
+      text: t("why.feature1Text"),
       icon: (
         <svg
           width="34"
@@ -38,13 +41,13 @@ export default function WhyBizuply() {
           />
         </svg>
       ),
-      badge: "All-in-one",
+      badge: t("why.feature1Badge"),
       gradient: "from-indigo-600 to-violet-600",
       glow: "bg-indigo-300/35",
     },
     {
-      title: "Built for real daily business work",
-      text: "Designed for real workflows, not theory. Fast actions, clear data and practical tools your business can use every day.",
+      title: t("why.feature2Title"),
+      text: t("why.feature2Text"),
       icon: (
         <svg
           width="34"
@@ -61,13 +64,13 @@ export default function WhyBizuply() {
           />
         </svg>
       ),
-      badge: "Fast workflow",
+      badge: t("why.feature2Badge"),
       gradient: "from-blue-600 to-cyan-500",
       glow: "bg-cyan-300/35",
     },
     {
-      title: "Designed to grow with you",
-      text: "Start simple and unlock advanced CRM, collaboration, analytics and AI tools as your business grows.",
+      title: t("why.feature3Title"),
+      text: t("why.feature3Text"),
       icon: (
         <svg
           width="34"
@@ -91,23 +94,23 @@ export default function WhyBizuply() {
           />
         </svg>
       ),
-      badge: "Scalable",
+      badge: t("why.feature3Badge"),
       gradient: "from-violet-600 to-fuchsia-500",
       glow: "bg-violet-300/35",
     },
   ];
 
   const workflows = [
-    ["Clients", "Centralize contacts, history and activity"],
-    ["Appointments", "Schedule and manage bookings easily"],
-    ["Collaborations", "Work with partners in one place"],
-    ["AI Assistant", "Get summaries, insights and next actions"],
+    [t("why.workflowClients"), t("why.workflowClientsText")],
+    [t("why.workflowAppointments"), t("why.workflowAppointmentsText")],
+    [t("why.workflowCollab"), t("why.workflowCollabText")],
+    [t("why.workflowAi"), t("why.workflowAiText")],
   ];
 
   const stats = [
-    ["50K+", "actions managed"],
-    ["98%", "satisfaction"],
-    ["24/7", "business visibility"],
+    ["50K+", t("why.statActions")],
+    ["98%", t("why.statSatisfaction")],
+    ["24/7", t("why.statVisibility")],
   ];
 
   return (
@@ -123,21 +126,19 @@ export default function WhyBizuply() {
         <div className="mx-auto max-w-3xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            WHY BIZUPLY
+            {t("why.eyebrow")}
           </div>
 
           <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
-            One platform.
+            {t("why.titleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              Unlimited possibilities.
+              {t("why.titleHighlight")}
             </span>
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            Everything your business needs — CRM, clients, appointments,
-            collaborations, automations and AI — in one simple, powerful
-            platform.
+            {t("why.subtitle")}
           </p>
         </div>
 
@@ -149,17 +150,15 @@ export default function WhyBizuply() {
 
               <div className="relative">
                 <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  Built for modern businesses
+                  {t("why.builtFor")}
                 </div>
 
                 <h3 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  Stop managing your business across disconnected tools.
+                  {t("why.panelTitle")}
                 </h3>
 
                 <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  BizUply brings your daily business operations into one
-                  beautiful workspace — so you can move faster, stay organized
-                  and grow with confidence.
+                  {t("why.panelText")}
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
@@ -189,7 +188,7 @@ export default function WhyBizuply() {
                       {index + 1}
                     </div>
 
-                    <div className="text-left">
+                    <div className="text-start">
                       <h4 className="text-lg font-black text-slate-950">
                         {title}
                       </h4>
@@ -198,7 +197,7 @@ export default function WhyBizuply() {
                       </p>
                     </div>
 
-                    <div className="ml-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
+                    <div className="ms-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
                       →
                     </div>
                   </div>
@@ -241,8 +240,10 @@ export default function WhyBizuply() {
                   href="/features"
                   className="mt-7 flex items-center gap-2 text-sm font-black text-indigo-700"
                 >
-                  Learn more
-                  <span className="transition group-hover:translate-x-1">→</span>
+                  {t("common.learnMore")}
+                  <span className="transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                    →
+                  </span>
                 </a>
               </div>
             </div>
@@ -251,12 +252,11 @@ export default function WhyBizuply() {
 
         <div className="mx-auto mt-14 max-w-4xl rounded-[2rem] border border-indigo-100 bg-white/85 px-8 py-8 text-center shadow-xl shadow-indigo-100/60 backdrop-blur">
           <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-950 sm:text-3xl">
-            Built to replace scattered tools with one beautiful business OS.
+            {t("why.bottomTitle")}
           </h3>
 
           <p className="mx-auto mt-3 max-w-2xl text-base font-semibold leading-7 text-slate-600">
-            Start with what you need today, and unlock more powerful workflows
-            as your business grows.
+            {t("why.bottomText")}
           </p>
         </div>
       </div>

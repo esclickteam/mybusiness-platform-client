@@ -1,10 +1,14 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 export default function FinalCTA() {
+  const { t } = useTranslation();
+
   const productItems = [
-    ["CRM", "Clients, leads and follow-ups"],
-    ["Appointments", "Bookings and schedule"],
-    ["AI Tools", "Insights and next actions"],
+    [t("finalCta.crm"), t("finalCta.crmText")],
+    [t("finalCta.appointments"), t("finalCta.appointmentsText")],
+    [t("finalCta.aiTools"), t("finalCta.aiToolsText")],
   ];
 
   return (
@@ -29,20 +33,19 @@ export default function FinalCTA() {
             <div className="relative mx-auto max-w-4xl">
               <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/10 px-5 py-2 text-sm font-black text-cyan-100 shadow-2xl shadow-indigo-950/30 backdrop-blur">
                 <span className="h-2.5 w-2.5 rounded-full bg-cyan-300 shadow-[0_0_18px_rgba(103,232,249,0.95)]" />
-                BizUply business OS
+                {t("finalCta.eyebrow")}
               </div>
 
               <h2 className="mt-8 text-4xl font-black leading-[1.02] tracking-[-0.05em] text-white sm:text-6xl lg:text-7xl">
-                Run your business
+                {t("finalCta.titleTop")}
                 <br />
                 <span className="bg-gradient-to-r from-cyan-300 via-blue-400 to-violet-400 bg-clip-text text-transparent">
-                  in one place.
+                  {t("finalCta.titleHighlight")}
                 </span>
               </h2>
 
               <p className="mx-auto mt-6 max-w-2xl text-lg font-semibold leading-8 text-slate-300">
-                Manage your business page, CRM, appointments, collaborations
-                and AI tools — all from one connected workspace.
+                {t("finalCta.subtitle")}
               </p>
             </div>
 
@@ -50,7 +53,7 @@ export default function FinalCTA() {
               {productItems.map(([title, text]) => (
                 <div
                   key={title}
-                  className="rounded-3xl border border-white/10 bg-white/10 p-5 text-left backdrop-blur transition hover:bg-white/[0.14]"
+                  className="rounded-3xl border border-white/10 bg-white/10 p-5 text-start backdrop-blur transition hover:bg-white/[0.14]"
                 >
                   <div className="mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-sm font-black text-white">
                     ✓

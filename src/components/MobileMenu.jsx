@@ -1,18 +1,20 @@
 import React, { useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FaTimes, FaChevronRight } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
-
-const navLinks = [
-  { to: "/features", label: "Features" },
-  { to: "/solutions", label: "Solutions" },
-  { to: "/how-it-works", label: "How it Works" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/about", label: "About" },
-];
 
 export default function MobileMenu({ open, onClose, user, onLogout }) {
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const navLinks = [
+    { to: "/features", label: t("nav.features") },
+    { to: "/solutions", label: t("nav.solutions") },
+    { to: "/how-it-works", label: t("nav.howItWorks") },
+    { to: "/pricing", label: t("nav.pricing") },
+    { to: "/about", label: t("nav.about") },
+  ];
 
   useEffect(() => {
     if (!open) return;
@@ -40,17 +42,14 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
       role="dialog"
       aria-modal="true"
     >
-      {/* Overlay click */}
       <button
         type="button"
-        aria-label="Close menu overlay"
+        aria-label={t("common.closeMenu")}
         onClick={onClose}
         className="absolute inset-0 h-full w-full cursor-default"
       />
 
-      {/* Panel */}
-      <div className="relative ml-auto flex h-full w-full max-w-[420px] flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl">
-        {/* Header */}
+      <div className="relative ms-auto flex h-full w-full max-w-[420px] flex-col overflow-hidden rounded-[2rem] border border-white/80 bg-white/90 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl">
         <div className="relative overflow-hidden bg-slate-950 px-5 py-5 text-white">
           <div className="pointer-events-none absolute inset-0">
             <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
@@ -85,7 +84,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
             <button
               type="button"
               onClick={onClose}
-              aria-label="Close menu"
+              aria-label={t("common.closeMenu")}
               className="grid h-11 w-11 place-items-center rounded-full border border-white/10 bg-white/10 text-white transition hover:bg-white/15"
             >
               <FaTimes />
@@ -93,33 +92,31 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
           </div>
         </div>
 
-        {/* User card */}
         <div className="border-b border-slate-100 bg-gradient-to-br from-white to-indigo-50/70 px-5 py-5">
           {user ? (
             <div className="rounded-[1.5rem] border border-white/80 bg-white/85 p-4 shadow-sm backdrop-blur">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
-                Signed in
+                {t("common.myAccount")}
               </p>
               <p className="mt-2 truncate text-lg font-black text-slate-950">
-                Hello, {user.name}
+                {t("common.hello", { name: user.name })}
               </p>
             </div>
           ) : (
             <div className="rounded-[1.5rem] border border-white/80 bg-white/85 p-4 shadow-sm backdrop-blur">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-indigo-600">
-                Start building
+                {t("home.startTrial")}
               </p>
               <p className="mt-2 text-lg font-black text-slate-950">
-                Run your business in one place.
+                {t("home.headlineTop")} {t("home.headlineHighlight")}
               </p>
               <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                CRM, clients, appointments, collaborations and AI tools.
+                {t("why.subtitle")}
               </p>
             </div>
           )}
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 overflow-y-auto bg-white px-5 py-5">
           <div className="space-y-3">
             {navLinks.map((item) => {
@@ -139,13 +136,13 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                   <span>{item.label}</span>
 
                   <span
-                    className={`grid h-9 w-9 place-items-center rounded-full transition group-hover:translate-x-1 ${
+                    className={`grid h-9 w-9 place-items-center rounded-full transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1 ${
                       active
                         ? "bg-white/20 text-white"
                         : "bg-indigo-50 text-indigo-700"
                     }`}
                   >
-                    <FaChevronRight className="text-xs" />
+                    <FaChevronRight className="text-xs rtl:rotate-180" />
                   </span>
                 </Link>
               );
@@ -153,7 +150,6 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
           </div>
         </nav>
 
-        {/* CTAs */}
         <div className="border-t border-slate-100 bg-gradient-to-br from-white to-indigo-50/70 px-5 py-5">
           {!user ? (
             <div className="grid gap-3">
@@ -162,8 +158,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 onClick={onClose}
                 className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-6 py-4 text-base font-black text-white shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
               >
-                Try it Free
-                <span className="ml-2 transition group-hover:translate-x-1">
+                {t("home.startTrial")}
+                <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
                   →
                 </span>
               </Link>
@@ -173,11 +169,11 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 onClick={onClose}
                 className="inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-6 py-4 text-base font-black text-slate-900 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:text-indigo-700"
               >
-                Log in
+                {t("common.login")}
               </Link>
 
               <p className="text-center text-xs font-bold text-slate-500">
-                14-day free trial · No credit card required
+                {t("home.trustTrial")} · {t("home.trustNoCard")}
               </p>
             </div>
           ) : (
@@ -187,8 +183,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 onClick={onClose}
                 className="group inline-flex w-full items-center justify-center rounded-full bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 px-6 py-4 text-base font-black text-white shadow-[0_16px_40px_rgba(99,102,241,0.26)] transition hover:-translate-y-0.5"
               >
-                My Account
-                <span className="ml-2 transition group-hover:translate-x-1">
+                {t("common.myAccount")}
+                <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
                   →
                 </span>
               </Link>
@@ -201,7 +197,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
                 }}
                 className="inline-flex w-full items-center justify-center rounded-full border border-rose-100 bg-white px-6 py-4 text-base font-black text-rose-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-50"
               >
-                Logout
+                {t("common.logout")}
               </button>
             </div>
           )}

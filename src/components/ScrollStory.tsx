@@ -1,5 +1,7 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 type FeatureAlign = "center" | "left" | "right";
 
 type Feature = {
@@ -11,59 +13,6 @@ type Feature = {
   badge: string;
   align: FeatureAlign;
 };
-
-const features: Feature[] = [
-  {
-    label: "OVERVIEW",
-    title: "Everything you need. In one dashboard.",
-    description:
-      "See performance, activity, reviews, appointments and insights — all connected in one beautiful workspace.",
-    image: "/images/dashboard-preview-v3.png",
-    alt: "Business dashboard preview",
-    badge: "Live overview",
-    align: "center",
-  },
-  {
-    label: "PLATFORM",
-    title: "Your business page",
-    description:
-      "Create a clean, professional page that represents your brand, showcases your services and helps clients connect faster.",
-    image: "/images/business-page-v4.png",
-    alt: "Business page preview",
-    badge: "Professional profile",
-    align: "left",
-  },
-  {
-    label: "WORK TOGETHER",
-    title: "Collaborations",
-    description:
-      "Work with partners and other businesses — messages, proposals, agreements and shared activity in one place.",
-    image: "/images/collaborations-v11.png",
-    alt: "Collaborations preview",
-    badge: "Partner workspace",
-    align: "right",
-  },
-  {
-    label: "ORGANIZE",
-    title: "Smart CRM",
-    description:
-      "Manage clients, conversations, appointments and history — with every detail organized automatically.",
-    image: "/images/crm-preview-v2.png",
-    alt: "CRM preview",
-    badge: "Client intelligence",
-    align: "left",
-  },
-  {
-    label: "GROW SMART",
-    title: "AI that works for you",
-    description:
-      "Get smart recommendations, automated follow-ups and insights that help you decide what to do next — faster and better.",
-    image: "/images/ai-preview.png",
-    alt: "AI assistant preview",
-    badge: "AI assistant",
-    align: "right",
-  },
-];
 
 function FeatureVisual({ feature }: { feature: Feature }) {
   return (
@@ -101,17 +50,11 @@ function FeatureVisual({ feature }: { feature: Feature }) {
 
 function FeatureText({
   feature,
+  bullets,
 }: {
   feature: Feature;
-  index: number;
+  bullets: string[];
 }) {
-  const bullets = [
-    "Beautiful workflow",
-    "Real-time updates",
-    "Easy to manage",
-    "Built to grow",
-  ];
-
   return (
     <div className="relative">
       <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-2 text-sm font-black text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur">
@@ -145,6 +88,63 @@ function FeatureText({
 }
 
 export default function ScrollStory() {
+  const { t } = useTranslation();
+
+  const features: Feature[] = [
+    {
+      label: t("scrollStory.introLabel"),
+      title: t("scrollStory.introTitle"),
+      description: t("scrollStory.introDescription"),
+      image: "/images/dashboard-preview-v3.png",
+      alt: t("scrollStory.introAlt"),
+      badge: t("scrollStory.introBadge"),
+      align: "center",
+    },
+    {
+      label: t("scrollStory.pageLabel"),
+      title: t("scrollStory.pageTitle"),
+      description: t("scrollStory.pageDescription"),
+      image: "/images/business-page-v4.png",
+      alt: t("scrollStory.pageAlt"),
+      badge: t("scrollStory.pageBadge"),
+      align: "left",
+    },
+    {
+      label: t("scrollStory.collabLabel"),
+      title: t("scrollStory.collabTitle"),
+      description: t("scrollStory.collabDescription"),
+      image: "/images/collaborations-v11.png",
+      alt: t("scrollStory.collabAlt"),
+      badge: t("scrollStory.collabBadge"),
+      align: "right",
+    },
+    {
+      label: t("scrollStory.crmLabel"),
+      title: t("scrollStory.crmTitle"),
+      description: t("scrollStory.crmDescription"),
+      image: "/images/crm-preview-v2.png",
+      alt: t("scrollStory.crmAlt"),
+      badge: t("scrollStory.crmBadge"),
+      align: "left",
+    },
+    {
+      label: t("scrollStory.aiLabel"),
+      title: t("scrollStory.aiTitle"),
+      description: t("scrollStory.aiDescription"),
+      image: "/images/ai-preview.png",
+      alt: t("scrollStory.aiAlt"),
+      badge: t("scrollStory.aiBadge"),
+      align: "right",
+    },
+  ];
+
+  const bullets = [
+    t("scrollStory.bullet1"),
+    t("scrollStory.bullet2"),
+    t("scrollStory.bullet3"),
+    t("scrollStory.bullet4"),
+  ];
+
   const [intro, ...steps] = features;
 
   return (
@@ -164,16 +164,15 @@ export default function ScrollStory() {
           </div>
 
           <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
-            Everything you need.
+            {t("scrollStory.introTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              In one dashboard.
+              {t("scrollStory.introTitleHighlight")}
             </span>
           </h2>
 
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-slate-600">
-            See your business performance at a glance — activity, reviews,
-            appointments and insights, all connected in one premium workspace.
+            {t("scrollStory.introSubtitle")}
           </p>
         </div>
 
@@ -182,7 +181,7 @@ export default function ScrollStory() {
         </div>
 
         <div className="mt-28 space-y-28">
-          {steps.map((feature, index) => {
+          {steps.map((feature) => {
             const imageFirst = feature.align === "left";
 
             return (
@@ -196,10 +195,10 @@ export default function ScrollStory() {
 
                 <div
                   className={[
-                    imageFirst ? "lg:order-2 lg:pl-4" : "lg:order-1 lg:pr-4",
+                    imageFirst ? "lg:order-2 lg:ps-4" : "lg:order-1 lg:pe-4",
                   ].join(" ")}
                 >
-                  <FeatureText feature={feature} index={index + 1} />
+                  <FeatureText feature={feature} bullets={bullets} />
                 </div>
               </div>
             );
@@ -209,12 +208,11 @@ export default function ScrollStory() {
         <div className="mt-28 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2rem] bg-white/10 px-8 py-10 text-center backdrop-blur-xl sm:px-12">
             <h3 className="text-3xl font-black tracking-[-0.03em] text-white sm:text-4xl">
-              One platform. Every business workflow.
+              {t("scrollStory.footerTitle")}
             </h3>
 
             <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              Manage your business page, clients, CRM, collaborations and AI
-              tools from one beautiful workspace.
+              {t("scrollStory.footerText")}
             </p>
           </div>
         </div>

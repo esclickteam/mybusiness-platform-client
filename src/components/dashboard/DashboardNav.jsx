@@ -5,7 +5,9 @@ import React, {
   useContext,
   useCallback,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { AuthContext } from "../../context/AuthContext";
+import { getTextDirection } from "../../i18n/localeUtils";
 import "./DashboardNav.css";
 
 
@@ -33,7 +35,9 @@ const LABELS = {
 
 const DashboardNav = ({ refs = {} }) => {
   const { user } = useContext(AuthContext);
+  const { i18n } = useTranslation();
   const [activeSection, setActiveSection] = useState(null);
+  const dir = getTextDirection(i18n.language);
 
   /* =========================
      Only refs that actually exist
@@ -116,7 +120,7 @@ const DashboardNav = ({ refs = {} }) => {
     <nav
       className="dashboard-nav"
       aria-label="Dashboard section navigation"
-      dir="ltr"
+      dir={dir}
     >
       {buttons.map(({ id, label }) => {
         const isActive = activeSection === id;

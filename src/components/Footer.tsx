@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type FooterLink = {
   label: string;
@@ -16,24 +17,26 @@ type FooterColumnProps = {
 };
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   const productLinks: FooterLink[] = [
-    { label: "How It Works", to: "/how-it-works" },
-    { label: "Features", to: "/features" },
-    { label: "Pricing", to: "/pricing" },
-    { label: "Solutions", to: "/solutions" },
+    { label: t("footer.howItWorks"), to: "/how-it-works" },
+    { label: t("footer.features"), to: "/features" },
+    { label: t("footer.pricing"), to: "/pricing" },
+    { label: t("footer.solutions"), to: "/solutions" },
   ];
 
   const companyLinks: FooterLink[] = [
-    { label: "About Us", to: "/about" },
-    { label: "Join as a Business", to: "/business" },
+    { label: t("footer.aboutUs"), to: "/about" },
+    { label: t("footer.joinBusiness"), to: "/business" },
   ];
 
   const supportLinks: FooterLink[] = [
-    { label: "FAQ", to: "/faq" },
-    { label: "Contact", to: "/contact" },
-    { label: "Terms", to: "/terms" },
-    { label: "Privacy Policy", to: "/privacy-policy" },
-    { label: "Accessibility", to: "/accessibility" },
+    { label: t("footer.faq"), to: "/faq" },
+    { label: t("footer.contact"), to: "/contact" },
+    { label: t("footer.terms"), to: "/terms" },
+    { label: t("footer.privacy"), to: "/privacy-policy" },
+    { label: t("footer.accessibility"), to: "/accessibility" },
   ];
 
   const socialLinks: SocialLink[] = [
@@ -44,7 +47,6 @@ export default function Footer() {
 
   return (
     <footer className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
-      {/* Background glow */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[360px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-24 h-[320px] w-[320px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -55,7 +57,6 @@ export default function Footer() {
         <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_28px_90px_rgba(79,70,229,0.14)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
           <div className="rounded-[1.6rem] border border-slate-100 bg-white/90 px-5 py-8 sm:rounded-[2rem] sm:px-8 sm:py-10 lg:px-10">
             <div className="grid gap-10 lg:grid-cols-[1.2fr_0.75fr_0.75fr_0.8fr_1.1fr]">
-              {/* Brand */}
               <div>
                 <Link to="/" className="inline-flex items-center gap-3">
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-white shadow-xl shadow-indigo-100">
@@ -68,8 +69,7 @@ export default function Footer() {
                 </Link>
 
                 <p className="mt-5 max-w-sm text-base font-semibold leading-7 text-slate-600">
-                  Everything your business needs. In one beautiful, connected
-                  workspace.
+                  {t("footer.tagline")}
                 </p>
 
                 <div className="mt-6 flex items-center gap-3">
@@ -86,31 +86,29 @@ export default function Footer() {
                 </div>
               </div>
 
-              <FooterColumn title="Product" links={productLinks} />
-              <FooterColumn title="Company" links={companyLinks} />
-              <FooterColumn title="Support" links={supportLinks} />
+              <FooterColumn title={t("footer.product")} links={productLinks} />
+              <FooterColumn title={t("footer.company")} links={companyLinks} />
+              <FooterColumn title={t("footer.support")} links={supportLinks} />
 
-              {/* CTA card */}
               <div className="rounded-[1.75rem] border border-slate-100 bg-gradient-to-br from-slate-950 to-indigo-950 p-6 text-white shadow-xl shadow-indigo-100">
                 <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl">
                   ✦
                 </div>
 
                 <h4 className="text-xl font-black tracking-[-0.03em]">
-                  Build your business OS.
+                  {t("footer.ctaTitle")}
                 </h4>
 
                 <p className="mt-3 text-sm font-semibold leading-6 text-slate-300">
-                  Start managing your business page, CRM, collaborations and AI
-                  tools in one place.
+                  {t("footer.ctaText")}
                 </p>
 
                 <Link
                   to="/register"
                   className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3.5 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-950/20 transition hover:-translate-y-0.5"
                 >
-                  Get started free
-                  <span className="ml-2">→</span>
+                  {t("footer.ctaButton")}
+                  <span className="ms-2">→</span>
                 </Link>
               </div>
             </div>
@@ -118,9 +116,9 @@ export default function Footer() {
             <div className="my-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
             <div className="flex flex-col gap-5 text-sm font-semibold text-slate-500 lg:flex-row lg:items-center lg:justify-between">
-              <p>© {new Date().getFullYear()} Bizuply. All rights reserved.</p>
+              <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
 
-              <p className="max-w-2xl leading-6 lg:text-right">
+              <p className="max-w-2xl leading-6 lg:text-end">
                 1007 N Orange Street, 4th Floor, Ste 1382, Wilmington, DE
                 19801, United States.
               </p>

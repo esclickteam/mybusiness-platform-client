@@ -1,6 +1,8 @@
 import React, { Suspense, lazy, useEffect, useState } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "./i18n/localeUtils";
 
 import PreLoginBot from "./components/PreLoginBot";
 import Header from "./components/Header";
@@ -590,6 +592,8 @@ function PageLoader() {
 export default function App() {
   const { user, loading } = useAuth();
   const location = useLocation();
+  const { i18n } = useTranslation();
+  const appDir = getTextDirection(i18n.language);
 
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
@@ -643,7 +647,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className="app-layout" dir="ltr">
+      <div className="app-layout" dir={appDir}>
         {!isBusinessChatRoute && !isEarlyAccessLanding && <Header />}
 
         <ScrollToTop />
