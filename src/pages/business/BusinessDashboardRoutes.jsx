@@ -8,6 +8,7 @@ import API from "../../api";
 
 import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
+import LazyRouteBoundary from "../../components/LazyRouteBoundary";
 
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
@@ -22,7 +23,9 @@ const WebsiteStudioPage = lazy(() =>
   import("../../components/site-builder/studio/WebsiteStudioPage")
 );
 const MySitesPage = lazy(() => import("../MySitesPage"));
-const SiteManagementPanelPage = lazy(() => import("../SiteManagementPanelPage"));
+const SiteManagementPanelPage = lazyWithPreload(() =>
+  import("../SiteManagementPanelPage")
+);
 const CreateWebsiteMethodPage = lazy(() =>
   import("../CreateWebsiteMethodPage")
 );
@@ -248,8 +251,9 @@ const BusinessDashboardRoutes = () => {
   }
 
   return (
-    <Suspense fallback={<div>🔄 Loading dashboard...</div>}>
-      <Routes>
+    <LazyRouteBoundary>
+      <Suspense fallback={<div>🔄 Loading dashboard...</div>}>
+        <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
           <Route index element={<DashboardIndexRedirect businessId={businessId} />} />
 
@@ -408,6 +412,7 @@ const BusinessDashboardRoutes = () => {
         </Route>
       </Routes>
     </Suspense>
+    </LazyRouteBoundary>
   );
 };
 
