@@ -1,22 +1,11 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-const features = [
+const featureMeta = [
   {
+    key: "card1",
     number: "01",
-    title: "Professional Business Page",
-    subtitle: "Your business profile, built to convert.",
-    description:
-      "Every business gets a polished digital business page that presents your brand, services, availability and contact details in one professional place.",
-    points: [
-      "Business name, category and description",
-      "Logo, gallery and visual brand assets",
-      "Working hours and contact details",
-      "Social links and location",
-      "Services with duration and availability",
-    ],
-    result:
-      "A clean, professional online presence that makes your business easier to find, trust and contact.",
     icon: (
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
         <path
@@ -36,20 +25,8 @@ const features = [
     gradient: "from-indigo-600 to-violet-600",
   },
   {
+    key: "card2",
     number: "02",
-    title: "CRM — Client Management",
-    subtitle: "Know every client. Track every step.",
-    description:
-      "Manage relationships, tasks, notes, appointments and history in one organized CRM built for real service businesses.",
-    points: [
-      "Client files for every customer",
-      "Notes from calls, meetings and services",
-      "Activity and work history",
-      "Tasks and follow-up reminders",
-      "Appointments directly from client files",
-    ],
-    result:
-      "All your client data, communication and next actions stay structured, searchable and easy to manage.",
     icon: (
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
         <path
@@ -79,20 +56,8 @@ const features = [
     gradient: "from-blue-600 to-cyan-500",
   },
   {
+    key: "card3",
     number: "03",
-    title: "Messaging System",
-    subtitle: "Every conversation in one place.",
-    description:
-      "Let clients contact you directly from your business page, then manage every message from a single organized dashboard.",
-    points: [
-      "Clients send messages from your page",
-      "Messages appear in your dashboard",
-      "Reply directly inside BizUply",
-      "Message history is saved",
-      "Real-time notifications",
-    ],
-    result:
-      "Client communication becomes centralized, organized and much easier to follow up on.",
     icon: (
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
         <path
@@ -112,20 +77,8 @@ const features = [
     gradient: "from-violet-600 to-fuchsia-500",
   },
   {
+    key: "card4",
     number: "04",
-    title: "Ratings & Reviews",
-    subtitle: "Build trust with every client.",
-    description:
-      "Strengthen your reputation with public reviews, ratings and verified feedback that helps new clients choose your business.",
-    points: [
-      "Clients leave public reviews",
-      "Star ratings build credibility",
-      "Reviews appear on your page",
-      "Better reputation over time",
-      "More trust across the BizUply network",
-    ],
-    result:
-      "Authentic feedback helps your business look more reliable, professional and ready to grow.",
     icon: (
       <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
         <path
@@ -141,18 +94,37 @@ const features = [
 ];
 
 function Features() {
+  const { t } = useTranslation();
+
+  const overviewStats = [
+    [t("features.statCrm"), t("features.statCrmLabel")],
+    [t("features.statAi"), t("features.statAiLabel")],
+    [t("features.stat360"), t("features.stat360Label")],
+  ];
+
+  const overviewItems = [
+    [t("features.overviewItem1Title"), t("features.overviewItem1Text")],
+    [t("features.overviewItem2Title"), t("features.overviewItem2Text")],
+    [t("features.overviewItem3Title"), t("features.overviewItem3Text")],
+    [t("features.overviewItem4Title"), t("features.overviewItem4Text")],
+    [t("features.overviewItem5Title"), t("features.overviewItem5Text")],
+  ];
+
+  const features = featureMeta.map((meta) => ({
+    ...meta,
+    title: t(`features.${meta.key}Title`),
+    subtitle: t(`features.${meta.key}Subtitle`),
+    description: t(`features.${meta.key}Description`),
+    points: [1, 2, 3, 4, 5].map((n) => t(`features.${meta.key}Point${n}`)),
+    result: t(`features.${meta.key}Result`),
+  }));
+
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
       <Helmet>
-        <title>BizUply — All the Tools Your Business Needs in One Place</title>
-        <meta
-          name="description"
-          content="Explore BizUply features — an all-in-one platform combining CRM, chat, scheduling, reviews, collaborations, and AI tools for small businesses."
-        />
-        <meta
-          name="keywords"
-          content="BizUply, business platform, CRM, chat, reviews, scheduling, AI assistant, small business tools, SaaS, business management"
-        />
+        <title>{t("features.seoTitle")}</title>
+        <meta name="description" content={t("features.seoDescription")} />
+        <meta name="keywords" content={t("features.seoKeywords")} />
         <meta name="author" content="BizUply" />
       </Helmet>
 
@@ -169,21 +141,19 @@ function Features() {
         <section className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            BIZUPLY FEATURES
+            {t("features.badge")}
           </div>
 
           <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            All the tools your business needs
+            {t("features.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              in one place.
+              {t("features.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            BizUply brings together your business page, CRM, messages, reviews,
-            collaborations, appointments and AI insights — all inside one smart,
-            beautiful workspace.
+            {t("features.heroSubtitle")}
           </p>
         </section>
 
@@ -196,25 +166,19 @@ function Features() {
 
               <div className="relative">
                 <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  Business OS
+                  {t("features.overviewBadge")}
                 </div>
 
                 <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  Replace scattered tools with one connected workspace.
+                  {t("features.overviewTitle")}
                 </h2>
 
                 <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  Instead of managing clients in one place, messages in another,
-                  appointments somewhere else and AI separately — BizUply brings
-                  everything together.
+                  {t("features.overviewText")}
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {[
-                    ["CRM", "Client data"],
-                    ["AI", "Next actions"],
-                    ["360°", "Business view"],
-                  ].map(([value, label]) => (
+                  {overviewStats.map(([value, label]) => (
                     <div
                       key={label}
                       className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
@@ -231,13 +195,7 @@ function Features() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
               <div className="grid gap-4">
-                {[
-                  ["Business Page", "Present your business professionally"],
-                  ["CRM", "Track clients, notes and follow-ups"],
-                  ["Messaging", "Keep conversations organized"],
-                  ["Reviews", "Build credibility and trust"],
-                  ["AI Insights", "Know what to do next"],
-                ].map(([title, text], index) => (
+                {overviewItems.map(([title, text], index) => (
                   <div
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -246,7 +204,7 @@ function Features() {
                       {index + 1}
                     </div>
 
-                    <div className="text-left">
+                    <div className="text-start">
                       <h3 className="text-lg font-black text-slate-950">
                         {title}
                       </h3>
@@ -255,7 +213,7 @@ function Features() {
                       </p>
                     </div>
 
-                    <div className="ml-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
+                    <div className="ms-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
                       →
                     </div>
                   </div>
@@ -269,7 +227,7 @@ function Features() {
         <section className="mt-20 grid gap-7 lg:grid-cols-2">
           {features.map((feature) => (
             <article
-              key={feature.title}
+              key={feature.key}
               className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)]"
             >
               <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
@@ -317,7 +275,7 @@ function Features() {
 
                 <div className="mt-6 rounded-2xl bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px]">
                   <p className="rounded-2xl bg-white px-5 py-4 text-sm font-black leading-6 text-slate-800">
-                    <span className="text-indigo-700">Result:</span>{" "}
+                    <span className="text-indigo-700">{t("features.resultLabel")}</span>{" "}
                     {feature.result}
                   </p>
                 </div>
@@ -330,14 +288,13 @@ function Features() {
         <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
-              Build, manage and grow
+              {t("features.ctaTitleTop")}
               <br />
-              your business from one place.
+              {t("features.ctaTitleBottom")}
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              From client management to AI insights, BizUply gives you the tools
-              to operate more professionally and move faster.
+              {t("features.ctaText")}
             </p>
           </div>
         </section>

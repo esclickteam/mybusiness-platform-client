@@ -1,91 +1,70 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-const solutions = [
+const solutionMeta = [
   {
-    title: "For Service Providers",
-    subtitle: "Clinics, Trainers, Therapists, Hair & Beauty Professionals",
-    challenge:
-      "Managing clients, appointments, and daily communication can be overwhelming.",
-    solution:
-      "A smart CRM that keeps all client information, messages, appointments and reviews in one connected place.",
-    plus:
-      "Built-in live chat helps you stay connected and deliver a professional, personalized client experience.",
+    key: "card1",
     icon: "✦",
     gradient: "from-indigo-600 to-violet-600",
   },
   {
-    title: "For On-Site Professionals",
-    subtitle: "Electricians, Installers, Cleaners, Technicians",
-    challenge:
-      "Communicating with clients while on the move is hard to manage.",
-    solution:
-      "A mobile-friendly business page with built-in chat, customer reviews and smart inquiry management.",
-    plus:
-      "Connect with complementary businesses nearby to build collaborations and expand your client base.",
+    key: "card2",
     icon: "↗",
     gradient: "from-blue-600 to-cyan-500",
   },
   {
-    title: "For Freelancers & Digital Consultants",
-    subtitle: "Designers, Marketers, Consultants, Digital Experts",
-    challenge:
-      "Staying visible, organized and trusted in the digital space can be difficult.",
-    solution:
-      "A professional business profile with service listings, real client reviews and instant communication.",
-    plus:
-      "BizUply’s AI assistant helps you craft messages, track leads and make better decisions faster.",
+    key: "card3",
     icon: "◎",
     gradient: "from-violet-600 to-fuchsia-500",
   },
   {
-    title: "For Small Businesses & Shops",
-    subtitle: "Studios, Shops, Local Businesses, Growing Teams",
-    challenge:
-      "Managing clients, messages and reviews across multiple channels quickly becomes messy.",
-    solution:
-      "Centralized communication and client management through one simple, beautiful interface.",
-    plus:
-      "Real-time insights and analytics help you understand performance and improve every week.",
+    key: "card4",
     icon: "◆",
     gradient: "from-cyan-500 to-indigo-600",
   },
   {
-    title: "For Business Collaborations",
-    subtitle: "Partners, Agencies, Complementary Businesses",
-    challenge:
-      "Finding and managing partnerships with complementary businesses takes time and trust.",
-    solution:
-      "A built-in collaboration network designed to connect professionals, expand reach and boost profits together.",
-    plus:
-      "Every connection is built on transparency, trust and mutual growth — because businesses grow better together.",
+    key: "card5",
     icon: "∞",
     gradient: "from-indigo-600 via-violet-600 to-cyan-500",
   },
 ];
 
 function Solutions() {
+  const { t } = useTranslation();
+
+  const overviewStats = [
+    [t("solutions.statCrm"), t("solutions.statCrmLabel")],
+    [t("solutions.statAi"), t("solutions.statAiLabel")],
+    [t("solutions.stat360"), t("solutions.stat360Label")],
+  ];
+
+  const overviewItems = [
+    [t("solutions.overviewItem1Title"), t("solutions.overviewItem1Text")],
+    [t("solutions.overviewItem2Title"), t("solutions.overviewItem2Text")],
+    [t("solutions.overviewItem3Title"), t("solutions.overviewItem3Text")],
+    [t("solutions.overviewItem4Title"), t("solutions.overviewItem4Text")],
+    [t("solutions.overviewItem5Title"), t("solutions.overviewItem5Text")],
+  ];
+
+  const solutions = solutionMeta.map((meta) => ({
+    ...meta,
+    title: t(`solutions.${meta.key}Title`),
+    subtitle: t(`solutions.${meta.key}Subtitle`),
+    challenge: t(`solutions.${meta.key}Challenge`),
+    solution: t(`solutions.${meta.key}Solution`),
+    plus: t(`solutions.${meta.key}Plus`),
+  }));
+
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
       <Helmet>
-        <title>BizUply — Smart Solutions for Every Type of Business</title>
-        <meta
-          name="description"
-          content="Discover BizUply's tailored solutions for every business type — from service providers and freelancers to shops and collaborations. Manage clients, communication, and growth in one smart place."
-        />
-        <meta
-          name="keywords"
-          content="BizUply solutions, small business tools, CRM, client management, AI assistant, business collaborations, service providers, freelancers, shops, SaaS platform"
-        />
+        <title>{t("solutions.seoTitle")}</title>
+        <meta name="description" content={t("solutions.seoDescription")} />
+        <meta name="keywords" content={t("solutions.seoKeywords")} />
         <meta name="author" content="BizUply" />
-        <meta
-          property="og:title"
-          content="BizUply — Smart Solutions for Businesses"
-        />
-        <meta
-          property="og:description"
-          content="BizUply adapts to every business type with smart tools for management, communication, and automation."
-        />
+        <meta property="og:title" content={t("solutions.ogTitle")} />
+        <meta property="og:description" content={t("solutions.ogDescription")} />
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://www.bizuply.com/solutions" />
         <meta
@@ -108,21 +87,19 @@ function Solutions() {
         <section className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            BIZUPLY SOLUTIONS
+            {t("solutions.badge")}
           </div>
 
           <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            Smart solutions
+            {t("solutions.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              for every business.
+              {t("solutions.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Every business is unique — with its own clients, challenges and
-            goals. BizUply adapts to your workflow with CRM, communication,
-            collaborations and AI tools in one smart platform.
+            {t("solutions.heroSubtitle")}
           </p>
         </section>
 
@@ -135,25 +112,19 @@ function Solutions() {
 
               <div className="relative">
                 <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  One platform. Multiple workflows.
+                  {t("solutions.overviewBadge")}
                 </div>
 
                 <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  Built for the way real businesses actually work.
+                  {t("solutions.overviewTitle")}
                 </h2>
 
                 <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  Whether you work from a studio, visit clients on-site, sell
-                  services online or collaborate with partners — BizUply gives
-                  you one connected workspace to manage it all.
+                  {t("solutions.overviewText")}
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {[
-                    ["CRM", "Clients"],
-                    ["AI", "Insights"],
-                    ["360°", "Business view"],
-                  ].map(([value, label]) => (
+                  {overviewStats.map(([value, label]) => (
                     <div
                       key={label}
                       className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
@@ -170,13 +141,7 @@ function Solutions() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
               <div className="grid gap-4">
-                {[
-                  ["Service Providers", "Clients, bookings and communication"],
-                  ["On-Site Pros", "Mobile-friendly workflows"],
-                  ["Freelancers", "Professional profile and lead tracking"],
-                  ["Small Businesses", "Messages, reviews and insights"],
-                  ["Collaborations", "Partner network and shared growth"],
-                ].map(([title, text], index) => (
+                {overviewItems.map(([title, text], index) => (
                   <div
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -185,7 +150,7 @@ function Solutions() {
                       {index + 1}
                     </div>
 
-                    <div className="text-left">
+                    <div className="text-start">
                       <h3 className="text-lg font-black text-slate-950">
                         {title}
                       </h3>
@@ -194,7 +159,7 @@ function Solutions() {
                       </p>
                     </div>
 
-                    <div className="ml-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
+                    <div className="ms-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
                       →
                     </div>
                   </div>
@@ -208,7 +173,7 @@ function Solutions() {
         <section className="mt-20 grid gap-7 lg:grid-cols-2">
           {solutions.map((item, index) => (
             <article
-              key={item.title}
+              key={item.key}
               className={`group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] ${
                 index === solutions.length - 1 ? "lg:col-span-2" : ""
               }`}
@@ -237,9 +202,18 @@ function Solutions() {
                 </h2>
 
                 <div className="mt-6 grid gap-4">
-                  <SolutionLine label="The Challenge" text={item.challenge} />
-                  <SolutionLine label="The Solution" text={item.solution} />
-                  <SolutionLine label="Plus" text={item.plus} />
+                  <SolutionLine
+                    label={t("solutions.challengeLabel")}
+                    text={item.challenge}
+                  />
+                  <SolutionLine
+                    label={t("solutions.solutionLabel")}
+                    text={item.solution}
+                  />
+                  <SolutionLine
+                    label={t("solutions.plusLabel")}
+                    text={item.plus}
+                  />
                 </div>
               </div>
             </article>
@@ -250,14 +224,13 @@ function Solutions() {
         <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
-              One flexible platform.
+              {t("solutions.ctaTitleTop")}
               <br />
-              Built around your business.
+              {t("solutions.ctaTitleBottom")}
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              No matter your field, BizUply adapts to your workflow — helping
-              your business stay connected, efficient and ready to grow.
+              {t("solutions.ctaText")}
             </p>
           </div>
         </section>
