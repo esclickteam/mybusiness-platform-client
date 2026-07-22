@@ -4,7 +4,6 @@ import {
   ArrowRight,
   ExternalLink,
   Globe2,
-  LayoutGrid,
   Loader2,
   Puzzle,
   Settings2,
@@ -20,39 +19,23 @@ import SitePluginStore from "../components/website/site-management/SitePluginSto
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
 import SiteMorningInvoicePanel from "../components/website/site-management/SiteMorningInvoicePanel";
+import SiteGenericPluginPanel from "../components/website/site-management/SiteGenericPluginPanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import {
+  getPluginAccent,
+  getPluginIcon,
   getSectionIcon,
   PLUGIN_SECTION_MAP,
   SECTION_META,
   type SitePanelSection,
 } from "../data/sitePluginNav";
 
-function PlaceholderPluginPanel({
-  title,
-  description,
-  editorHref,
-}: {
-  title: string;
-  description: string;
-  editorHref: string;
-}) {
-  return (
-    <div className="rounded-[28px] border border-dashed border-slate-200 bg-slate-50/80 p-8 text-center">
-      <h2 className="text-xl font-black text-slate-950">{title}</h2>
-      <p className="mx-auto mt-3 max-w-xl text-sm font-bold leading-7 text-slate-500">
-        {description}
-      </p>
-      <Link
-        to={editorHref}
-        className="mt-6 inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white transition hover:bg-violet-700"
-      >
-        <ExternalLink size={16} />
-        הגדרה בעורך האתר
-      </Link>
-    </div>
-  );
-}
+const MANAGEMENT_PANEL_KEYS = new Set([
+  "store",
+  "booking",
+  "payments",
+  "invoices",
+]);
 
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
@@ -112,6 +95,7 @@ export default function SiteManagementPanelPage() {
     const items: SitePanelSection[] = ["overview", "plugins"];
 
     enabledPlugins.forEach((key) => {
+      if (!MANAGEMENT_PANEL_KEYS.has(key)) return;
       const section = PLUGIN_SECTION_MAP[key];
       if (section && !items.includes(section)) {
         items.push(section);
@@ -120,6 +104,12 @@ export default function SiteManagementPanelPage() {
 
     return items;
   }, [enabledPlugins]);
+
+  const activePluginDef = useMemo(() => {
+    const pluginKey = SECTION_META[activeSection]?.pluginKey;
+    if (!pluginKey) return null;
+    return catalog.find((item) => item.key === pluginKey) || null;
+  }, [activeSection, catalog]);
 
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const next = enabled
@@ -134,8 +124,10 @@ export default function SiteManagementPanelPage() {
       setDetectedFromSite([]);
 
       if (enabled) {
-        const section = PLUGIN_SECTION_MAP[pluginKey];
-        if (section) setActiveSection(section);
+        if (MANAGEMENT_PANEL_KEYS.has(pluginKey)) {
+          const section = PLUGIN_SECTION_MAP[pluginKey];
+          if (section) setActiveSection(section);
+        }
       } else if (
         activeSection !== "overview" &&
         activeSection !== "plugins" &&
@@ -256,62 +248,56 @@ export default function SiteManagementPanelPage() {
 
         <main className="min-w-0 flex-1">
           {activeSection === "overview" ? (
-            <div className="space-y-6">
-              <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm md:p-8">
-                <div className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-[11px] font-black text-slate-600">
-                  <LayoutGrid size={13} />
-                  סקירה כללית
-                </div>
-                <h2 className="mt-4 text-2xl font-black text-slate-950">
-                  ברוכים הבאים לפאנל הניהול
-                </h2>
-                <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                  מכאן מנהלים את כל מה שקשור לאתר — תוספים, חנות, יומן, סליקה
-                  ועוד. כל הגדרה שתעשו כאן משפיעה על האתר הזה בלבד.
+            <div className="mx-auto max-w-5xl space-y-4">
+              <div className="rounded-[20px] border border-slate-200 bg-white p-5 shadow-sm">
+                <h2 className="text-lg font-black text-slate-950">סקירה</h2>
+                <p className="mt-1 text-xs font-bold text-slate-500">
+                  {enabledPlugins.length} תוספים פעילים · ניהול מרוכז לאתר הזה
                 </p>
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
                 <button
                   type="button"
                   onClick={() => setActiveSection("plugins")}
-                  className="rounded-[28px] border border-violet-200 bg-violet-50/50 p-6 text-right transition hover:bg-violet-50"
+                  className="mt-4 inline-flex h-9 items-center gap-2 rounded-xl bg-slate-950 px-4 text-xs font-black text-white"
                 >
-                  <Puzzle className="text-violet-600" size={24} />
-                  <h3 className="mt-3 text-lg font-black text-slate-950">
-                    חנות תוספים
-                  </h3>
-                  <p className="mt-1 text-sm font-bold text-slate-500">
-                    {enabledPlugins.length
-                      ? `${enabledPlugins.length} תוספים פעילים`
-                      : "התקינו תוספים לאתר"}
-                  </p>
+                  <Puzzle size={14} />
+                  פתיחת חנות תוספים
                 </button>
-
-                {enabledPlugins.map((key) => {
-                  const section = PLUGIN_SECTION_MAP[key];
-                  if (!section) return null;
-                  const Icon = getSectionIcon(section);
-                  const meta = SECTION_META[section];
-
-                  return (
-                    <button
-                      key={key}
-                      type="button"
-                      onClick={() => setActiveSection(section)}
-                      className="rounded-[28px] border border-slate-200 bg-white p-6 text-right transition hover:border-violet-200"
-                    >
-                      <Icon className="text-slate-700" size={24} />
-                      <h3 className="mt-3 text-lg font-black text-slate-950">
-                        {meta.label}
-                      </h3>
-                      <p className="mt-1 text-sm font-bold text-slate-500">
-                        {meta.description}
-                      </p>
-                    </button>
-                  );
-                })}
               </div>
+
+              {enabledPlugins.length > 0 ? (
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                  {enabledPlugins.map((key) => {
+                    const plugin = catalog.find((item) => item.key === key);
+                    if (!plugin) return null;
+                    const Icon = getPluginIcon(plugin.key);
+                    const accent = getPluginAccent(plugin.key, plugin.accent);
+                    const section = PLUGIN_SECTION_MAP[key];
+                    const canManage = MANAGEMENT_PANEL_KEYS.has(key);
+
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        onClick={() => {
+                          if (canManage && section) setActiveSection(section);
+                          else setActiveSection("plugins");
+                        }}
+                        className="rounded-[16px] border border-slate-200 bg-white p-3 text-right transition hover:border-violet-200"
+                      >
+                        <div
+                          className="grid h-10 w-10 place-items-center rounded-[12px] text-white"
+                          style={{ background: accent }}
+                        >
+                          <Icon size={18} />
+                        </div>
+                        <p className="mt-2 text-[11px] font-black text-slate-900">
+                          {plugin.name}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : null}
             </div>
           ) : null}
 
@@ -341,26 +327,11 @@ export default function SiteManagementPanelPage() {
             <SiteMorningInvoicePanel businessId={businessId} />
           ) : null}
 
-          {activeSection === "leads" && enabledSet.has("leads") ? (
-            <PlaceholderPluginPanel
-              title="טופס לידים"
-              description="הוסיפו בלוק 'טופס לידים' בעורך האתר. הפניות יגיעו ל-CRM של העסק."
-              editorHref={editorHref}
-            />
-          ) : null}
-
-          {activeSection === "reviews" && enabledSet.has("reviews") ? (
-            <PlaceholderPluginPanel
-              title="ביקורות"
-              description="הוסיפו בלוק 'ביקורות' בעורך האתר והציגו המלצות לקוחות."
-              editorHref={editorHref}
-            />
-          ) : null}
-
-          {activeSection === "club" && enabledSet.has("club") ? (
-            <PlaceholderPluginPanel
-              title="מועדון לקוחות"
-              description="הוסיפו בלוק 'מועדון לקוחות' בעורך האתר לאזור לקוחות והטבות."
+          {activePluginDef &&
+          enabledSet.has(activePluginDef.key) &&
+          !MANAGEMENT_PANEL_KEYS.has(activePluginDef.key) ? (
+            <SiteGenericPluginPanel
+              plugin={activePluginDef}
               editorHref={editorHref}
             />
           ) : null}

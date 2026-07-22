@@ -10,6 +10,8 @@ import {
   Save,
   Sparkles,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import API from "@api";
 import { useAuth } from "@/context/AuthContext";
@@ -17,6 +19,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   workHoursQueryKey,
 } from "@/hooks/useBusinessWorkHours";
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 import { dispatchWorkHoursUpdated } from "@/utils/workHoursEvents";
 
 type WorkHoursTabVariant = "page" | "settings";
@@ -42,7 +45,17 @@ type AuthContextValue = {
   user?: AuthUser | null;
 };
 
-const weekdays = [
+const WEEKDAY_KEYS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
+
+const WEEKDAY_API_NAMES = [
   "Sunday",
   "Monday",
   "Tuesday",
@@ -154,7 +167,7 @@ function normalizeWorkHours(raw: any): WeeklyHours {
         return;
       }
 
-      const namedDayIndex = weekdays.findIndex(
+      const namedDayIndex = WEEKDAY_API_NAMES.findIndex(
         (day) => day.toLowerCase() === key.toLowerCase()
       );
 
@@ -170,7 +183,7 @@ function normalizeWorkHours(raw: any): WeeklyHours {
 function sanitizeWorkHours(weeklyHours: WeeklyHours): WeeklyHours {
   const next: WeeklyHours = { ...emptyWeeklyHours };
 
-  weekdays.forEach((_, index) => {
+  WEEKDAY_KEYS.forEach((_, index) => {
     const day = weeklyHours[index];
 
     if (!day) {
@@ -188,6 +201,8 @@ function sanitizeWorkHours(weeklyHours: WeeklyHours): WeeklyHours {
 }
 
 export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const isSettingsVariant = variant === "settings";
   const queryClient = useQueryClient();
 
@@ -234,15 +249,15 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
   }, [businessId]);
 
   const openDaysCount = useMemo(() => {
-    return weekdays.filter((_, index) => weeklyHours[index] !== null).length;
+    return WEEKDAY_KEYS.filter((_, index) => weeklyHours[index] !== null).length;
   }, [weeklyHours]);
 
   const closedDaysCount = useMemo(() => {
-    return weekdays.length - openDaysCount;
+    return WEEKDAY_KEYS.length - openDaysCount;
   }, [openDaysCount]);
 
   const totalWeeklyMinutes = useMemo(() => {
-    return weekdays.reduce((sum, _, index) => {
+    return WEEKDAY_KEYS.reduce((sum, _, index) => {
       const day = weeklyHours[index];
 
       if (!day?.start || !day?.end) return sum;
@@ -282,7 +297,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
       setSaved(false);
 
       if (!businessId) {
-        alert("Missing businessId");
+        alert(t("crm.workHours.missingBusinessId"));
         return;
       }
 
@@ -303,7 +318,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
       setSaved(true);
     } catch (error) {
       console.error("Error saving work hours:", error);
-      alert("Failed to save work hours");
+      alert(t("crm.workHours.saveFailed"));
     } finally {
       setSaving(false);
 
@@ -314,7 +329,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
   };
 
   return (
-    <div className={isSettingsVariant ? "space-y-5" : "space-y-5"}>
+    <div dir={dir} className="space-y-5">
       {!isSettingsVariant && (
         <>
           <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
@@ -326,16 +341,15 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
                   <Clock className="h-4 w-4" />
-                  CRM Work Hours
+                  {t("crm.workHours.badge")}
                 </div>
 
                 <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                  Business working hours
+                  {t("crm.workHours.heroTitle")}
                 </h2>
 
                 <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                  Set your weekly availability so appointments and booking slots
-                  match your real business schedule.
+                  {t("crm.workHours.heroSubtitle")}
                 </p>
 
                 <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -346,7 +360,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     <Save className="h-5 w-5" />
-                    {saving ? "Saving..." : "Save Changes"}
+                    {saving ? t("crm.common.saving") : t("crm.common.saveChanges")}
                   </button>
                 </div>
               </div>
@@ -357,31 +371,31 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
-              label="Open days"
+              label={t("crm.workHours.openDays")}
               value={openDaysCount}
               icon={CalendarDays}
-              helper="available this week"
+              helper={t("crm.workHours.openDaysHelper")}
             />
 
             <StatCard
-              label="Closed days"
+              label={t("crm.workHours.closedDays")}
               value={closedDaysCount}
               icon={Power}
-              helper="not bookable"
+              helper={t("crm.workHours.closedDaysHelper")}
             />
 
             <StatCard
-              label="Weekly hours"
-              value={formatWeeklyHours(totalWeeklyMinutes)}
+              label={t("crm.workHours.weeklyHours")}
+              value={formatWeeklyHours(totalWeeklyMinutes, t)}
               icon={Clock}
-              helper="total availability"
+              helper={t("crm.workHours.weeklyHoursHelper")}
             />
 
             <StatCard
-              label="Booking status"
-              value="Active"
+              label={t("crm.workHours.bookingStatus")}
+              value={t("crm.common.active")}
               icon={Sparkles}
-              helper="slots are synced"
+              helper={t("crm.workHours.bookingStatusHelper")}
             />
           </section>
         </>
@@ -397,16 +411,15 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-sky-700">
-                  CRM Work Hours
+                  {t("crm.workHours.badge")}
                 </div>
 
                 <h3 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-                  Working hours
+                  {t("crm.workHours.settingsTitle")}
                 </h3>
 
                 <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
-                  Define which days are open and control the time range clients
-                  can use for appointments.
+                  {t("crm.workHours.settingsSubtitle")}
                 </p>
               </div>
             </div>
@@ -418,32 +431,32 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
-              {saving ? "Saving..." : "Save Hours"}
+              {saving ? t("crm.common.saving") : t("crm.workHours.saveHours")}
             </button>
           </div>
 
           <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             <MiniStatCard
-              label="Open days"
+              label={t("crm.workHours.openDays")}
               value={openDaysCount}
               icon={CalendarDays}
             />
 
             <MiniStatCard
-              label="Closed days"
+              label={t("crm.workHours.closedDays")}
               value={closedDaysCount}
               icon={Power}
             />
 
             <MiniStatCard
-              label="Weekly hours"
-              value={formatWeeklyHours(totalWeeklyMinutes)}
+              label={t("crm.workHours.weeklyHours")}
+              value={formatWeeklyHours(totalWeeklyMinutes, t)}
               icon={Clock}
             />
 
             <MiniStatCard
-              label="Status"
-              value="Active"
+              label={t("crm.workHours.status")}
+              value={t("crm.common.active")}
               icon={Sparkles}
             />
           </div>
@@ -463,12 +476,11 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <h3 className="text-2xl font-black text-slate-950">
-                  Weekly Schedule
+                  {t("crm.workHours.scheduleTitle")}
                 </h3>
 
                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                  Choose which days are open and define the start/end time for
-                  each day.
+                  {t("crm.workHours.scheduleSubtitle")}
                 </p>
               </div>
 
@@ -480,7 +492,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-4 text-sm font-black text-white shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Save className="h-4 w-4" />
-                  {saving ? "Saving..." : "Save"}
+                  {saving ? t("crm.common.saving") : t("crm.common.save")}
                 </button>
               )}
             </div>
@@ -490,13 +502,14 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
             <LoadingState />
           ) : (
             <div className="grid gap-3 p-5">
-              {weekdays.map((day, index) => {
+              {WEEKDAY_KEYS.map((dayKey, index) => {
                 const dayData = weeklyHours[index];
                 const isClosed = dayData === null;
+                const dayLabel = t(`crm.workHours.days.${dayKey}`);
 
                 return (
                   <div
-                    key={day}
+                    key={dayKey}
                     className={[
                       "rounded-[1.5rem] border p-4 transition",
                       isClosed
@@ -519,13 +532,13 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
                         <div>
                           <p className="text-base font-black text-slate-950">
-                            {day}
+                            {dayLabel}
                           </p>
 
                           <p className="text-sm font-semibold text-slate-500">
                             {isClosed
-                              ? "Closed for bookings"
-                              : "Open for bookings"}
+                              ? t("crm.workHours.closedForBookings")
+                              : t("crm.workHours.openForBookings")}
                           </p>
                         </div>
                       </div>
@@ -564,7 +577,9 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                           ].join(" ")}
                         >
                           <Power className="h-4 w-4" />
-                          {isClosed ? "Closed" : "Open"}
+                          {isClosed
+                            ? t("crm.workHours.closed")
+                            : t("crm.workHours.open")}
                         </button>
                       </div>
                     </div>
@@ -584,26 +599,26 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
 
               <div>
                 <h3 className="text-base font-black text-slate-950">
-                  Weekly Overview
+                  {t("crm.workHours.overviewTitle")}
                 </h3>
 
                 <p className="text-xs font-semibold text-slate-500">
-                  Live summary of your schedule
+                  {t("crm.workHours.overviewSubtitle")}
                 </p>
               </div>
             </div>
 
             <div className="mt-5 divide-y divide-slate-100">
-              {weekdays.map((day, index) => {
+              {WEEKDAY_KEYS.map((dayKey, index) => {
                 const dayData = weeklyHours[index];
 
                 return (
                   <div
-                    key={day}
+                    key={dayKey}
                     className="flex items-center justify-between gap-4 py-3"
                   >
                     <span className="text-sm font-black text-slate-700">
-                      {day}
+                      {t(`crm.workHours.days.${dayKey}`)}
                     </span>
 
                     {dayData ? (
@@ -612,7 +627,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                       </span>
                     ) : (
                       <span className="rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-500">
-                        Closed
+                        {t("crm.workHours.closed")}
                       </span>
                     )}
                   </div>
@@ -624,13 +639,13 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
           {!isSettingsVariant && (
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <h3 className="text-base font-black text-slate-950">
-                Schedule Tips
+                {t("crm.workHours.tipsTitle")}
               </h3>
 
               <div className="mt-4 space-y-3">
-                <TipItem text="Keep at least one day closed for rest or admin work." />
-                <TipItem text="Use realistic hours so clients cannot book outside your availability." />
-                <TipItem text="After changing hours, save to refresh booking slots." />
+                <TipItem text={t("crm.workHours.tip1")} />
+                <TipItem text={t("crm.workHours.tip2")} />
+                <TipItem text={t("crm.workHours.tip3")} />
               </div>
             </section>
           )}
@@ -638,12 +653,11 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
           {isSettingsVariant && (
             <section className="rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5">
               <h3 className="text-base font-black text-slate-950">
-                Booking rules tip
+                {t("crm.workHours.bookingRulesTipTitle")}
               </h3>
 
               <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                For blocked dates, holidays or special hours, use the Special
-                Dates tab inside CRM Setup.
+                {t("crm.workHours.bookingRulesTipText")}
               </p>
             </section>
           )}
@@ -651,9 +665,9 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
       </section>
 
       {saved && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm font-black text-emerald-700 shadow-[0_20px_70px_rgba(15,23,42,0.18)]">
+        <div className="fixed bottom-6 end-6 z-50 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm font-black text-emerald-700 shadow-[0_20px_70px_rgba(15,23,42,0.18)]">
           <CheckCircle2 className="h-5 w-5" />
-          Saved successfully
+          {t("crm.workHours.savedToast")}
         </div>
       )}
     </div>
@@ -688,6 +702,8 @@ function StatCard({
   icon: React.ElementType;
   helper: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
       <div className="flex items-start justify-between gap-3">
@@ -698,7 +714,9 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            {t("crm.common.statusActive")}
+          </p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -788,12 +806,14 @@ function TipItem({ text }: { text: string }) {
 }
 
 function LoadingState() {
+  const { t } = useTranslation();
+
   return (
     <div className="p-10 text-center">
       <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
 
       <p className="text-sm font-bold text-slate-500">
-        Loading working hours...
+        {t("crm.workHours.loading")}
       </p>
     </div>
   );
@@ -809,15 +829,20 @@ function timeToMinutes(value: string) {
   return hours * 60 + minutes;
 }
 
-function formatWeeklyHours(minutes: number) {
+function formatWeeklyHours(minutes: number, t: TFunction) {
   const hours = Math.floor(minutes / 60);
   const restMinutes = minutes % 60;
 
-  if (hours <= 0 && restMinutes <= 0) return "0h";
-
-  if (restMinutes > 0) {
-    return `${hours}h ${restMinutes}m`;
+  if (hours <= 0 && restMinutes <= 0) {
+    return t("crm.common.durationHours", { count: 0 });
   }
 
-  return `${hours}h`;
+  if (restMinutes > 0) {
+    return t("crm.common.durationHoursMinutes", {
+      hours,
+      minutes: restMinutes,
+    });
+  }
+
+  return t("crm.common.durationHours", { count: hours });
 }

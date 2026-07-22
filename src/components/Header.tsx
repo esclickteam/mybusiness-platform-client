@@ -6,10 +6,11 @@ import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
+import { markManualLanguageChoice, normalizeLanguage } from "../i18n/localeUtils";
 
 type NavLink = {
   to: string;
-  label: string;
+  labelKey: string;
 };
 
 type Language = {
@@ -18,26 +19,21 @@ type Language = {
 };
 
 const navLinks: NavLink[] = [
-  { to: "/features", label: "Features" },
-  { to: "/solutions", label: "Solutions" },
-  { to: "/how-it-works", label: "How it Works" },
-  { to: "/pricing", label: "Pricing" },
-  { to: "/about", label: "About" },
+  { to: "/features", labelKey: "nav.features" },
+  { to: "/solutions", labelKey: "nav.solutions" },
+  { to: "/how-it-works", labelKey: "nav.howItWorks" },
+  { to: "/pricing", labelKey: "nav.pricing" },
+  { to: "/about", labelKey: "nav.about" },
 ];
 
 const languages: Language[] = [
   { code: "en", label: "English" },
   { code: "he", label: "עברית" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "es", label: "Español" },
-  { code: "nl", label: "Nederlands" },
-  { code: "it", label: "Italiano" },
 ];
 
 export default function Header() {
   const { user, logout } = useAuth();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -46,7 +42,7 @@ export default function Header() {
 
   const languageRef = useRef<HTMLDivElement | null>(null);
 
-  const currentLangCode = i18n.language?.split("-")?.[0] || "en";
+  const currentLangCode = normalizeLanguage(i18n.language);
 
   const currentLanguage =
     languages.find((lang) => lang.code === currentLangCode) ?? languages[0];
@@ -72,14 +68,16 @@ export default function Header() {
     };
   }, []);
 
-  const handleChangeLanguage = async (lng: string) => {
-    await i18n.changeLanguage(lng);
+  const handleChangeLanguage = (lng: string) => {
+    if (normalizeLanguage(lng) === currentLangCode) {
+      setLanguageOpen(false);
+      return;
+    }
 
-    localStorage.setItem("i18nextLng", lng);
-    document.documentElement.lang = lng;
-    document.documentElement.dir = lng === "he" ? "rtl" : "ltr";
-
+    // Persist choice, then reload so every page (including older hardcoded screens) picks up lang/dir.
+    markManualLanguageChoice(lng);
     setLanguageOpen(false);
+    window.location.reload();
   };
 
   const handleLogout = async () => {
@@ -98,7 +96,6 @@ export default function Header() {
   return (
     <>
       <nav className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-5 shadow-sm backdrop-blur-xl sm:px-6 lg:px-14">
-        {/* Logo */}
         <div className="flex items-center">
           <Link to="/" className="inline-flex items-center">
             <img
@@ -109,7 +106,6 @@ export default function Header() {
           </Link>
         </div>
 
-        {/* Desktop Navigation */}
         <div className="hidden items-center gap-10 lg:flex">
           {navLinks.map((item) => {
             const isActive = location.pathname === item.to;
@@ -124,39 +120,37 @@ export default function Header() {
                     : "text-slate-950 hover:text-indigo-600"
                 }`}
               >
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}
         </div>
 
-        {/* Desktop Actions */}
         <div className="hidden items-center gap-5 lg:flex">
           <Link
             to="/contact"
             className="text-[15px] font-bold text-[#082f5f] underline underline-offset-4 transition hover:text-blue-600"
           >
-            Contact Us
+            {t("common.contactUs")}
           </Link>
 
-          {/* Language Switcher */}
           <div ref={languageRef} className="relative">
             <button
               type="button"
               onClick={() => setLanguageOpen((prev) => !prev)}
               className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-[0_10px_28px_rgba(15,126,232,0.14)] transition hover:-translate-y-0.5 hover:bg-[#dff0ff]"
-              aria-label="Change language"
+              aria-label={t("common.changeLanguage")}
               aria-expanded={languageOpen}
             >
               <FaGlobe className="text-[25px]" />
             </button>
 
             {languageOpen && (
-              <div className="absolute right-1/2 top-[72px] z-[9999] w-[220px] translate-x-1/2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)]">
-                <div className="absolute -top-2.5 right-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white" />
+              <div className="absolute end-1/2 top-[72px] z-[9999] w-[220px] translate-x-1/2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)] rtl:-translate-x-1/2">
+                <div className="absolute -top-2.5 end-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white rtl:-translate-x-1/2" />
 
                 <div className="relative border-b border-slate-100 px-3 py-3 text-sm font-black text-slate-900">
-                  Change language
+                  {t("common.changeLanguage")}
                 </div>
 
                 <div className="relative pt-2">
@@ -168,7 +162,7 @@ export default function Header() {
                         key={lang.code}
                         type="button"
                         onClick={() => handleChangeLanguage(lang.code)}
-                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-left text-sm font-bold transition ${
+                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-start text-sm font-bold transition ${
                           isActive
                             ? "bg-[#eef6ff] text-[#0f7ee8]"
                             : "text-slate-700 hover:bg-slate-50 hover:text-blue-600"
@@ -193,19 +187,19 @@ export default function Header() {
               className="inline-flex items-center gap-2 text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
             >
               <FaUser className="text-[16px]" />
-              <span>Login</span>
+              <span>{t("common.login")}</span>
             </Link>
           ) : (
             <>
               <span className="text-sm font-bold text-slate-700">
-                Hello, {user.name}
+                {t("common.hello", { name: user.name })}
               </span>
 
               <Link
                 to="/dashboard"
                 className="text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
               >
-                My Account
+                {t("common.myAccount")}
               </Link>
 
               <button
@@ -213,21 +207,20 @@ export default function Header() {
                 onClick={handleLogout}
                 className="text-[15px] font-black text-rose-600 transition hover:text-rose-700"
               >
-                Logout
+                {t("common.logout")}
               </button>
             </>
           )}
         </div>
 
-        {/* Mobile Actions */}
-        <div className="ml-auto flex items-center gap-3 lg:hidden">
+        <div className="ms-auto flex items-center gap-3 lg:hidden">
           <button
             type="button"
             onClick={() =>
               handleChangeLanguage(currentLanguage.code === "he" ? "en" : "he")
             }
             className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-sm transition hover:bg-[#dff0ff]"
-            aria-label="Change language"
+            aria-label={t("common.changeLanguage")}
           >
             <FaGlobe className="text-lg" />
           </button>
@@ -236,7 +229,7 @@ export default function Header() {
             type="button"
             onClick={() => setMenuOpen(true)}
             className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50"
-            aria-label="Open menu"
+            aria-label={t("common.openMenu")}
             aria-expanded={menuOpen}
           >
             <span className="h-0.5 w-5 rounded-full bg-slate-900" />

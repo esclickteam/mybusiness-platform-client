@@ -174,7 +174,8 @@ function getTodayIso(): string {
 }
 
 function getLocale(language?: string): string {
-  return "en-US";
+  const lang = String(language || "en").split("-")[0].toLowerCase();
+  return lang === "he" ? "he-IL" : "en-US";
 }
 
 
@@ -1776,9 +1777,11 @@ export default function DashboardPage() {
     syncedStats.rating ??
     (syncedStats.reviews_count ? 4.9 : 0);
 
+  const pageDir = String(i18n.language || "en").split("-")[0] === "he" ? "rtl" : "ltr";
+
   return (
     <div
-      dir="ltr"
+      dir={pageDir}
       className="min-h-screen overflow-x-hidden bg-[radial-gradient(circle_at_top_left,#f1e8ff_0,#f8f6ff_34%,#f6f7fb_68%,#ffffff_100%)] text-slate-950"
     >
       <div className="mx-auto w-full max-w-[1680px] px-4 py-4 sm:px-6 lg:px-8">

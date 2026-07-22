@@ -2,9 +2,14 @@ import dayjs from "dayjs";
 
 import type { DatePreset, DashboardFilters } from "./dashboardOverviewTypes";
 
-export function buildBusinessGreeting(businessName?: string) {
-  const name = (businessName || "העסק שלך").trim();
-  return `שלום, ${name}!`;
+export function buildBusinessGreeting(
+  businessName?: string,
+  options?: { yourBusinessLabel?: string; greetingTemplate?: string }
+) {
+  const fallbackName = options?.yourBusinessLabel || "your business";
+  const name = (businessName || fallbackName).trim();
+  const template = options?.greetingTemplate || "Hello, {{name}}!";
+  return template.replace("{{name}}", name);
 }
 
 export type CalendarAppointment = {

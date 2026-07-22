@@ -1,112 +1,111 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 
-const steps = [
+const stepMeta = [
   {
+    key: "step1",
     number: "01",
-    label: "GET STARTED",
-    title: "Create a business or client profile",
-    description:
-      "Set up your account in minutes and start using Bizuply as a business owner or as a client.",
-    business: [
-      'Click "Join as a Business" and fill out your basic details.',
-      "Upload your logo, images and set your business hours.",
-      "Choose the right plan for your business.",
-      "Result: You get a professional business page ready to welcome clients.",
-    ],
-    client: [
-      'Click "Sign Up" and choose "New Client".',
-      "Fill in your name, email and password.",
-      "Result: Search businesses, book services and chat directly with providers.",
-    ],
     icon: "✦",
     gradient: "from-indigo-600 to-violet-600",
+    hasSides: true,
+    businessCount: 4,
+    clientCount: 3,
   },
   {
+    key: "step2",
     number: "02",
-    label: "DISCOVER",
-    title: "Smart business & service search",
-    description:
-      "Clients can quickly find the right business using smart search, filters and clear business profiles.",
-    points: [
-      'Search keywords like "Hairdresser in NYC".',
-      "Results can be based on ratings, location and availability.",
-      "Filter by price, reviews, category and business hours.",
-      "Result: Clients quickly find the exact business they need.",
-    ],
     icon: "⌕",
     gradient: "from-blue-600 to-cyan-500",
+    pointCount: 4,
   },
   {
+    key: "step3",
     number: "03",
-    label: "BOOKINGS",
-    title: "Schedule and manage appointments",
-    description:
-      "Turn availability into bookings with a simple scheduling flow that keeps everyone updated.",
-    points: [
-      'Clients visit a business page and click "Book Now".',
-      "They view available calendar slots and get instant confirmation.",
-      "Automatic reminders help reduce missed appointments.",
-      "Result: Easier booking management for both sides.",
-    ],
     icon: "◷",
     gradient: "from-violet-600 to-fuchsia-500",
+    pointCount: 4,
   },
   {
+    key: "step4",
     number: "04",
-    label: "COMMUNICATION",
-    title: "Direct messages and collaborations",
-    description:
-      "Keep client conversations and business-to-business collaborations in one connected workspace.",
-    points: [
-      'Clients can click "Send Message" from every business page.',
-      "Questions and requests go directly to the business owner.",
-      "Businesses can send collaboration requests.",
-      "Result: Easier communication, partnerships and referrals.",
-    ],
     icon: "↔",
     gradient: "from-cyan-500 to-indigo-600",
+    pointCount: 4,
   },
   {
+    key: "step5",
     number: "05",
-    label: "INSIGHTS",
-    title: "Track and manage your activity",
-    description:
-      "Use the dashboard to understand what is happening in your business and decide what to do next.",
-    points: [
-      "Businesses can view dashboard data on visits, bookings and client activity.",
-      "Marketing tools help send promotions and updates.",
-      "Clients can view booking and appointment history.",
-      "Smart recommendations help clients discover better services.",
-    ],
     icon: "◆",
     gradient: "from-indigo-600 via-violet-600 to-cyan-500",
+    pointCount: 4,
   },
 ];
 
 function HowItWorks() {
+  const { t } = useTranslation();
+
+  const overviewStats = [
+    ["01", t("howItWorks.overviewStat1Label")],
+    ["02", t("howItWorks.overviewStat2Label")],
+    ["03", t("howItWorks.overviewStat3Label")],
+  ];
+
+  const overviewItems = [
+    [t("howItWorks.overviewItem1Title"), t("howItWorks.overviewItem1Text")],
+    [t("howItWorks.overviewItem2Title"), t("howItWorks.overviewItem2Text")],
+    [t("howItWorks.overviewItem3Title"), t("howItWorks.overviewItem3Text")],
+    [t("howItWorks.overviewItem4Title"), t("howItWorks.overviewItem4Text")],
+    [t("howItWorks.overviewItem5Title"), t("howItWorks.overviewItem5Text")],
+  ];
+
+  const simplicityItems = [
+    [t("howItWorks.simplicityItem1Title"), t("howItWorks.simplicityItem1Text")],
+    [t("howItWorks.simplicityItem2Title"), t("howItWorks.simplicityItem2Text")],
+    [t("howItWorks.simplicityItem3Title"), t("howItWorks.simplicityItem3Text")],
+  ];
+
+  const steps = stepMeta.map((meta) => {
+    const base = {
+      ...meta,
+      label: t(`howItWorks.${meta.key}Label`),
+      title: t(`howItWorks.${meta.key}Title`),
+      description: t(`howItWorks.${meta.key}Description`),
+    };
+
+    if (meta.hasSides) {
+      return {
+        ...base,
+        business: Array.from({ length: meta.businessCount }, (_, i) =>
+          t(`howItWorks.${meta.key}Business${i + 1}`)
+        ),
+        client: Array.from({ length: meta.clientCount }, (_, i) =>
+          t(`howItWorks.${meta.key}Client${i + 1}`)
+        ),
+      };
+    }
+
+    return {
+      ...base,
+      points: Array.from({ length: meta.pointCount }, (_, i) =>
+        t(`howItWorks.${meta.key}Point${i + 1}`)
+      ),
+    };
+  });
+
   return (
     <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-950">
       <Helmet>
-        <title>How It Works - Bizuply | Platform Guide</title>
-        <meta
-          name="description"
-          content="A simple guide on how Bizuply connects businesses with clients, manages appointments, and improves communication with smart automation tools."
-        />
-        <meta
-          name="keywords"
-          content="Bizuply, how it works, business management, scheduling, communication, automation, clients, SaaS"
-        />
+        <title>{t("howItWorks.seoTitle")}</title>
+        <meta name="description" content={t("howItWorks.seoDescription")} />
+        <meta name="keywords" content={t("howItWorks.seoKeywords")} />
         <link rel="canonical" href="https://bizuply.com/how-it-works" />
         <meta name="robots" content="index, follow" />
 
-        <meta
-          property="og:title"
-          content="How Bizuply Works – Simple Platform Guide"
-        />
+        <meta property="og:title" content={t("howItWorks.ogTitle")} />
         <meta
           property="og:description"
-          content="Learn how Bizuply helps businesses manage clients, bookings, and collaborations in one smart system."
+          content={t("howItWorks.ogDescription")}
         />
         <meta property="og:url" content="https://bizuply.com/how-it-works" />
         <meta property="og:type" content="website" />
@@ -114,13 +113,10 @@ function HowItWorks() {
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta
-          name="twitter:title"
-          content="How Bizuply Works – Simple Platform Guide"
-        />
+        <meta name="twitter:title" content={t("howItWorks.twitterTitle")} />
         <meta
           name="twitter:description"
-          content="Step-by-step guide to Bizuply: managing clients, booking services, and growing your business with smart automation."
+          content={t("howItWorks.twitterDescription")}
         />
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
@@ -138,21 +134,19 @@ function HowItWorks() {
         <section className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
             <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            HOW BIZUPLY WORKS
+            {t("howItWorks.badge")}
           </div>
 
           <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-950 sm:text-6xl lg:text-7xl">
-            From setup to growth
+            {t("howItWorks.heroTitleTop")}
             <br />
             <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              in one simple flow.
+              {t("howItWorks.heroTitleHighlight")}
             </span>
           </h1>
 
           <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            Learn step by step how Bizuply helps businesses create a
-            professional presence, manage clients, schedule services,
-            communicate clearly and grow with smarter tools.
+            {t("howItWorks.heroSubtitle")}
           </p>
         </section>
 
@@ -165,25 +159,19 @@ function HowItWorks() {
 
               <div className="relative">
                 <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  Simple setup. Powerful results.
+                  {t("howItWorks.overviewBadge")}
                 </div>
 
                 <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  Everything starts with one connected business workspace.
+                  {t("howItWorks.overviewTitle")}
                 </h2>
 
                 <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  Bizuply connects your business page, search visibility,
-                  appointments, messages, CRM, collaborations and activity data
-                  into one smooth experience.
+                  {t("howItWorks.overviewText")}
                 </p>
 
                 <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {[
-                    ["01", "Create"],
-                    ["02", "Connect"],
-                    ["03", "Grow"],
-                  ].map(([value, label]) => (
+                  {overviewStats.map(([value, label]) => (
                     <div
                       key={label}
                       className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
@@ -200,13 +188,7 @@ function HowItWorks() {
 
             <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
               <div className="grid gap-4">
-                {[
-                  ["Create a profile", "Build your business page"],
-                  ["Get discovered", "Search and filters help clients find you"],
-                  ["Book services", "Manage appointments clearly"],
-                  ["Communicate", "Messages and collaboration requests"],
-                  ["Track activity", "Dashboard insights and next actions"],
-                ].map(([title, text], index) => (
+                {overviewItems.map(([title, text], index) => (
                   <div
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
@@ -215,7 +197,7 @@ function HowItWorks() {
                       {index + 1}
                     </div>
 
-                    <div className="text-left">
+                    <div className="text-start">
                       <h3 className="text-lg font-black text-slate-950">
                         {title}
                       </h3>
@@ -224,7 +206,7 @@ function HowItWorks() {
                       </p>
                     </div>
 
-                    <div className="ml-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
+                    <div className="ms-auto hidden h-9 w-9 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
                       →
                     </div>
                   </div>
@@ -238,16 +220,15 @@ function HowItWorks() {
         <section className="mt-20">
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-5xl">
-              A clear process from first click
+              {t("howItWorks.timelineTitleTop")}
               <br />
               <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                to daily management.
+                {t("howItWorks.timelineTitleHighlight")}
               </span>
             </h2>
 
             <p className="mt-5 text-lg leading-8 text-slate-600">
-              Each step is designed to be simple, practical and connected to the
-              next part of your business workflow.
+              {t("howItWorks.timelineSubtitle")}
             </p>
           </div>
 
@@ -258,7 +239,7 @@ function HowItWorks() {
               {steps.map((step) => (
                 <article
                   key={step.number}
-                  className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] lg:ml-16"
+                  className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] lg:ms-16"
                 >
                   <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
 
@@ -276,7 +257,7 @@ function HowItWorks() {
                             {step.label}
                           </p>
                           <p className="mt-1 text-sm font-black text-slate-400">
-                            Step {step.number}
+                            {t("howItWorks.stepPrefix")} {step.number}
                           </p>
                         </div>
                       </div>
@@ -294,13 +275,19 @@ function HowItWorks() {
                       {step.business && step.client ? (
                         <div className="grid gap-4 md:grid-cols-2">
                           <StepList
-                            title="For Businesses"
+                            title={t("howItWorks.forBusinesses")}
                             items={step.business}
                           />
-                          <StepList title="For Clients" items={step.client} />
+                          <StepList
+                            title={t("howItWorks.forClients")}
+                            items={step.client}
+                          />
                         </div>
                       ) : (
-                        <StepList title="What happens" items={step.points} />
+                        <StepList
+                          title={t("howItWorks.whatHappens")}
+                          items={step.points}
+                        />
                       )}
                     </div>
                   </div>
@@ -316,30 +303,22 @@ function HowItWorks() {
             <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
               <div>
                 <div className="mb-6 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-                  WHY IT FEELS SIMPLE
+                  {t("howItWorks.simplicityBadge")}
                 </div>
 
                 <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-slate-950 sm:text-5xl">
-                  Powerful tools,
+                  {t("howItWorks.simplicityTitleTop")}
                   <br />
-                  without the complexity.
+                  {t("howItWorks.simplicityTitleBottom")}
                 </h2>
 
                 <p className="mt-5 text-lg leading-8 text-slate-600">
-                  Bizuply is designed so business owners can start fast, stay
-                  organized and manage daily work without complicated setup.
+                  {t("howItWorks.simplicityText")}
                 </p>
               </div>
 
               <div className="grid gap-4">
-                {[
-                  ["User-friendly design", "No technical experience required."],
-                  [
-                    "Automatic reminders",
-                    "Notifications help clients and businesses stay updated.",
-                  ],
-                  ["Support at every step", "Guidance is built into the flow."],
-                ].map(([title, text], index) => (
+                {simplicityItems.map(([title, text], index) => (
                   <div
                     key={title}
                     className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-indigo-50/70 p-5 shadow-sm"
@@ -367,14 +346,13 @@ function HowItWorks() {
         <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
             <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
-              Ready to see how Bizuply
+              {t("howItWorks.ctaTitleTop")}
               <br />
-              works for your business?
+              {t("howItWorks.ctaTitleBottom")}
             </h2>
 
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              Create your business workspace, connect with clients and manage
-              everything from one smart platform.
+              {t("howItWorks.ctaText")}
             </p>
           </div>
         </section>

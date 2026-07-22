@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
 
@@ -46,6 +47,7 @@ const getAppointmentsList = (
 };
 
 const BizUplyAdvisor: React.FC = () => {
+  const dir = useLocaleDir();
   const [businessDetails, setBusinessDetails] =
     useState<BusinessDetails>(null);
 
@@ -142,7 +144,7 @@ const BizUplyAdvisor: React.FC = () => {
   if (loading) {
     return (
       <div
-        dir="rtl"
+        dir={dir}
         className="flex min-h-[60vh] items-center justify-center px-4"
       >
         <div className="rounded-3xl border border-slate-200 bg-white px-8 py-6 text-center shadow-xl">
@@ -159,7 +161,7 @@ const BizUplyAdvisor: React.FC = () => {
   if (!businessId) {
     return (
       <div
-        dir="rtl"
+        dir={dir}
         className="flex min-h-[60vh] items-center justify-center px-4"
       >
         <div className="max-w-xl rounded-[28px] border border-amber-200 bg-amber-50 px-6 py-5 text-center shadow-sm">
@@ -177,7 +179,7 @@ const BizUplyAdvisor: React.FC = () => {
 
   return (
     <main
-      dir="rtl"
+      dir={dir}
       className="min-h-screen bg-slate-50 px-3 py-4 sm:px-5 lg:px-6"
     >
       <BusinessAdvisorTab

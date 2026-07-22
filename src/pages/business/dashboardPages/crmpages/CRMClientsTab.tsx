@@ -27,7 +27,10 @@ import {
   X,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import API from "@api";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type CustomFieldType =
   | "text"
@@ -153,23 +156,9 @@ const CUSTOM_FIELDS_STORAGE_KEY = "bizuply_custom_client_fields";
 const CLIENT_DATA_TAB_ID = "client_data_values";
 const PORTAL_ACCESS_TAB_ID = "client_portal_access";
 
-const fieldTypeLabels: Record<CustomFieldType, string> = {
-  text: "Short text",
-  textarea: "Long text",
-  summary: "Summary",
-  number: "Number",
-  date: "Date",
-  status: "Status",
-  checkbox: "Checkbox",
-  boolean: "Yes / No",
-  select: "Select",
-  checklist: "Checklist",
-  link: "Link",
-  email: "Email",
-  phone: "Phone",
-  file: "File",
-  image: "Image",
-};
+function getFieldTypeLabel(type: CustomFieldType, t: TFunction) {
+  return t(`crm.clients.fieldTypes.${type}`);
+}
 
 function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -213,10 +202,14 @@ function normalizeClientFieldType(value: unknown): CustomFieldType {
 function normalizeConfiguredClientField(
   value: Partial<ConfiguredClientField>,
   index: number,
+  t: TFunction,
 ): ConfiguredClientField {
-  const label = String(value.label || "").trim() || `Custom field ${index + 1}`;
+  const label =
+    String(value.label || "").trim() ||
+    t("crm.clients.defaults.customField", { index: index + 1 });
   const key =
-    cleanKey(String(value.key || label)) || `custom_field_${index + 1}`;
+    cleanKey(String(value.key || label)) ||
+    t("crm.clients.defaults.customFieldKey", { index: index + 1 });
 
   return {
     id: String(value.id || key || uid("client_field")),
@@ -236,7 +229,7 @@ function normalizeConfiguredClientField(
   };
 }
 
-function loadConfiguredClientFields(): ConfiguredClientField[] {
+function loadConfiguredClientFields(t: TFunction): ConfiguredClientField[] {
   if (typeof window === "undefined") return [];
 
   try {
@@ -246,7 +239,7 @@ function loadConfiguredClientFields(): ConfiguredClientField[] {
     if (!Array.isArray(parsed)) return [];
 
     return parsed
-      .map(normalizeConfiguredClientField)
+      .map((field, index) => normalizeConfiguredClientField(field, index, t))
       .filter(
         (field) =>
           field.active !== false && field.showInClientProfile !== false,
@@ -257,12 +250,12 @@ function loadConfiguredClientFields(): ConfiguredClientField[] {
   }
 }
 
-function normalizeCustomTabs(value: unknown): CustomClientTab[] {
+function normalizeCustomTabs(value: unknown, t: TFunction): CustomClientTab[] {
   if (!Array.isArray(value)) return [];
 
   return value.map((tab: any) => ({
     id: String(tab.id || uid("tab")),
-    title: String(tab.title || "Client tab"),
+    title: String(tab.title || t("crm.clients.defaults.clientTab")),
     description: String(tab.description || ""),
     showInClientPortal: Boolean(tab.showInClientPortal),
     whoCanFill: ["business", "client", "both"].includes(tab.whoCanFill)
@@ -272,7 +265,7 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
       ? tab.fields.map((field: any) => ({
           id: String(field.id || uid("field")),
           key: String(field.key || cleanKey(field.label || "field")),
-          label: String(field.label || "Custom field"),
+          label: String(field.label || t("crm.clients.defaults.customFieldLabel")),
           type: normalizeClientFieldType(field.type),
           source: [
             "business_input",
@@ -300,7 +293,10 @@ function normalizeCustomTabs(value: unknown): CustomClientTab[] {
   }));
 }
 
-async function fetchClients(businessId: string): Promise<CRMClient[]> {
+async function fetchClients(
+  businessId: string,
+  t: TFunction,
+): Promise<CRMClient[]> {
   if (!businessId) return [];
 
   const res = await API.get(`/crm-clients/${businessId}`);
@@ -314,14 +310,14 @@ async function fetchClients(businessId: string): Promise<CRMClient[]> {
     address: client.address || "",
     appointments: Array.isArray(client.appointments) ? client.appointments : [],
     totalSpent: Number(client.totalSpent) || 0,
-    customTabs: normalizeCustomTabs(client.customTabs),
+    customTabs: normalizeCustomTabs(client.customTabs, t),
     createdAt: client.createdAt,
     updatedAt: client.updatedAt,
   }));
 }
 
-function getClientDataValues(client: CRMClient): ClientDataDraft {
-  const tabs = normalizeCustomTabs(client.customTabs);
+function getClientDataValues(client: CRMClient, t: TFunction): ClientDataDraft {
+  const tabs = normalizeCustomTabs(client.customTabs, t);
   const dataTab = tabs.find((tab) => tab.id === CLIENT_DATA_TAB_ID);
   const values: ClientDataDraft = {};
 
@@ -342,6 +338,7 @@ function buildClientDataTab(
   configuredFields: ConfiguredClientField[],
   values: ClientDataDraft,
   previousTabs: CustomClientTab[],
+  t: TFunction,
 ): CustomClientTab {
   const previousDataTab = previousTabs.find(
     (tab) => tab.id === CLIENT_DATA_TAB_ID,
@@ -351,8 +348,8 @@ function buildClientDataTab(
 
   return {
     id: CLIENT_DATA_TAB_ID,
-    title: "Client data",
-    description: "Personal values based on the fields configured in the CRM",
+    title: t("crm.clients.clientDataPanel.tabTitle"),
+    description: t("crm.clients.clientDataPanel.tabDescription"),
     showInClientPortal: true,
     whoCanFill: "business",
     createdAt: previousDataTab?.createdAt || now,
@@ -390,8 +387,11 @@ function defaultFieldValue(type: CustomFieldType) {
   return "";
 }
 
-function getPortalAccessSettings(client: CRMClient): PortalAccessSettings {
-  const tabs = normalizeCustomTabs(client.customTabs);
+function getPortalAccessSettings(
+  client: CRMClient,
+  t: TFunction,
+): PortalAccessSettings {
+  const tabs = normalizeCustomTabs(client.customTabs, t);
   const portalTab = tabs.find((tab) => tab.id === PORTAL_ACCESS_TAB_ID);
   const values = getFieldsValueMap(portalTab?.fields || []);
 
@@ -421,6 +421,7 @@ function getPortalAccessSettings(client: CRMClient): PortalAccessSettings {
 function buildPortalAccessTab(
   settings: PortalAccessSettings,
   previousTabs: CustomClientTab[],
+  t: TFunction,
 ): CustomClientTab {
   const previousPortalTab = previousTabs.find(
     (tab) => tab.id === PORTAL_ACCESS_TAB_ID,
@@ -429,8 +430,8 @@ function buildPortalAccessTab(
 
   return {
     id: PORTAL_ACCESS_TAB_ID,
-    title: "Portal access",
-    description: "Login permissions for the private client portal",
+    title: t("crm.clients.portal.tabTitle"),
+    description: t("crm.clients.portal.tabDescription"),
     showInClientPortal: false,
     whoCanFill: "business",
     createdAt: previousPortalTab?.createdAt || now,
@@ -438,45 +439,45 @@ function buildPortalAccessTab(
     fields: [
       createPortalField(
         "portal_enabled",
-        "Access enabled",
+        t("crm.clients.portal.fieldAccessEnabled"),
         "boolean",
         settings.enabled,
       ),
       createPortalField(
         "portal_status",
-        "Access status",
+        t("crm.clients.portal.fieldAccessStatus"),
         "status",
         settings.status,
         ["not_invited", "invited", "active", "paused"],
       ),
       createPortalField(
         "portal_login_email",
-        "Login email",
+        t("crm.clients.portal.fieldLoginEmail"),
         "email",
         settings.loginEmail,
       ),
       createPortalField(
         "portal_payment_status",
-        "Payment status",
+        t("crm.clients.portal.fieldPaymentStatus"),
         "status",
         settings.paymentStatus,
         ["free", "included", "paid", "unpaid"],
       ),
       createPortalField(
         "portal_monthly_price",
-        "Monthly price",
+        t("crm.clients.portal.fieldMonthlyPrice"),
         "number",
         settings.monthlyPrice,
       ),
       createPortalField(
         "portal_pages",
-        "Enabled pages",
+        t("crm.clients.portal.fieldEnabledPages"),
         "textarea",
         settings.pages,
       ),
       createPortalField(
         "portal_last_invite_sent_at",
-        "Last invitation sent at",
+        t("crm.clients.portal.fieldLastInvite"),
         "date",
         settings.lastInviteSentAt,
       ),
@@ -515,18 +516,13 @@ function upsertTab(tabs: CustomClientTab[], nextTab: CustomClientTab) {
   return tabs.map((tab) => (tab.id === nextTab.id ? nextTab : tab));
 }
 
-function getClientStatusLabel(status: ClientStatus): string {
-  const labels: Record<ClientStatus, string> = {
-    Active: "Active",
-    Inactive: "Inactive",
-    Prospect: "Prospect",
-    Customer: "Customer",
-  };
-
-  return labels[status] || status;
+function getClientStatusLabel(status: ClientStatus, t: TFunction): string {
+  return t(`crm.clients.statuses.${status}`);
 }
 
 export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const queryClient = useQueryClient();
 
   const [mode, setMode] = useState<Mode>("list");
@@ -547,19 +543,19 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     error,
   } = useQuery<CRMClient[]>({
     queryKey: ["clients", businessId],
-    queryFn: () => fetchClients(businessId),
+    queryFn: () => fetchClients(businessId, t),
     enabled: Boolean(businessId),
   });
 
   useEffect(() => {
     const loadFields = () =>
-      setConfiguredClientFields(loadConfiguredClientFields());
+      setConfiguredClientFields(loadConfiguredClientFields(t));
 
     loadFields();
     window.addEventListener("storage", loadFields);
 
     return () => window.removeEventListener("storage", loadFields);
-  }, []);
+  }, [t]);
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -610,9 +606,9 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }, [clients]);
 
   const portalAccessCount = useMemo(() => {
-    return clients.filter((client) => getPortalAccessSettings(client).enabled)
+    return clients.filter((client) => getPortalAccessSettings(client, t).enabled)
       .length;
-  }, [clients]);
+  }, [clients, t]);
 
   const customDataCount = configuredClientFields.length;
 
@@ -680,7 +676,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   ) => {
     if (!selectedClient) return;
 
-    const currentTabs = normalizeCustomTabs(selectedClient.customTabs);
+    const currentTabs = normalizeCustomTabs(selectedClient.customTabs, t);
     const nextTabs = updater(currentTabs);
 
     const nextClient: CRMClient = {
@@ -711,6 +707,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         configuredClientFields,
         values,
         currentTabs,
+        t,
       );
       return upsertTab(currentTabs, nextDataTab);
     });
@@ -720,7 +717,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     if (!selectedClient) return;
 
     await updateSelectedClientCustomTabs((currentTabs) => {
-      const nextPortalTab = buildPortalAccessTab(settings, currentTabs);
+      const nextPortalTab = buildPortalAccessTab(settings, currentTabs, t);
       return upsertTab(currentTabs, nextPortalTab);
     });
   };
@@ -728,7 +725,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   const handleSendPortalInvite = async () => {
     if (!selectedClient) return;
 
-    const current = getPortalAccessSettings(selectedClient);
+    const current = getPortalAccessSettings(selectedClient, t);
 
     await handleSavePortalAccess({
       ...current,
@@ -737,9 +734,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       lastInviteSentAt: new Date().toISOString(),
     });
 
-    alert(
-      "The invitation status was updated. Connect this button to the email sending endpoint when it is ready.",
-    );
+    alert(t("crm.clients.portal.inviteAlert"));
   };
 
   const handleDelete = async (
@@ -748,7 +743,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   ) => {
     event?.stopPropagation();
 
-    if (!window.confirm(`Delete "${client.fullName}"?`)) return;
+    if (!window.confirm(t("crm.clients.alerts.deleteConfirm", { name: client.fullName }))) return;
 
     try {
       await API.delete(`/crm-clients/${client._id}`);
@@ -760,23 +755,23 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       }
     } catch (err) {
       console.error("Delete client error:", err);
-      alert("Delete failed");
+      alert(t("crm.clients.alerts.deleteFailed"));
     }
   };
 
   const validateForm = () => {
     if (!formClient.fullName.trim()) {
-      alert("Name is required");
+      alert(t("crm.clients.alerts.nameRequired"));
       return false;
     }
 
     if (!formClient.phone.trim()) {
-      alert("Phone is required");
+      alert(t("crm.clients.alerts.phoneRequired"));
       return false;
     }
 
     if (!businessId) {
-      alert("Business ID is missing");
+      alert(t("crm.clients.alerts.businessIdMissing"));
       return false;
     }
 
@@ -808,7 +803,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         address: res.data?.address || formClient.address,
         appointments: res.data?.appointments || [],
         totalSpent: res.data?.totalSpent || 0,
-        customTabs: normalizeCustomTabs(res.data?.customTabs),
+        customTabs: normalizeCustomTabs(res.data?.customTabs, t),
       };
 
       setSelectedClient(createdClient);
@@ -817,7 +812,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       setMode("view");
     } catch (err) {
       console.error("Create client error:", err);
-      alert("Client creation failed");
+      alert(t("crm.clients.alerts.createFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -850,7 +845,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       setMode("view");
     } catch (err) {
       console.error("Update client error:", err);
-      alert("Client update failed");
+      alert(t("crm.clients.alerts.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -891,7 +886,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }
 
   return (
-    <div dir="ltr" className="space-y-5 text-left">
+    <div dir={dir} className="space-y-5 text-start">
       <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
@@ -901,15 +896,15 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <UsersRound className="h-4 w-4" />
-              CRM Clients
+              {t("crm.clients.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Premium client management
+              {t("crm.clients.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              Manage client profiles, client appointments, custom data, and private portal access from one clean CRM workspace.
+              {t("crm.clients.subtitle")}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -919,7 +914,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Plus className="h-5 w-5" />
-                Add Client
+                {t("crm.clients.addClient")}
               </button>
 
               <button
@@ -927,7 +922,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Download className="h-5 w-5" />
-                Import Clients
+                {t("crm.clients.importClients")}
               </button>
             </div>
           </div>
@@ -938,45 +933,45 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
         <StatCard
-          label="Total Clients"
+          label={t("crm.clients.stats.totalClients")}
           value={clients.length.toLocaleString()}
           icon={UsersRound}
           trend="12.5%"
           tone="sky"
         />
         <StatCard
-          label="Active Clients"
+          label={t("crm.clients.stats.activeClients")}
           value={activeClients.toLocaleString()}
           icon={UserRound}
           trend="8.2%"
           tone="emerald"
         />
         <StatCard
-          label="Appointments"
+          label={t("crm.clients.stats.appointments")}
           value={totalAppointments.toLocaleString()}
           icon={CalendarDays}
           trend="15.3%"
           tone="blue"
         />
         <StatCard
-          label="Monthly Revenue"
-          value={`${revenue.toLocaleString()} $`}
+          label={t("crm.clients.stats.monthlyRevenue")}
+          value={t("crm.common.currencyAmount", { amount: revenue.toLocaleString() })}
           icon={Building2}
           trend="16.7%"
           tone="sky"
         />
         <StatCard
-          label="Client Data Fields"
+          label={t("crm.clients.stats.clientDataFields")}
           value={customDataCount.toLocaleString()}
           icon={Layers3}
-          trend="Ready"
+          trend={t("crm.clients.stats.trendReady")}
           tone="amber"
         />
         <StatCard
-          label="Portal Access"
+          label={t("crm.clients.stats.portalAccess")}
           value={portalAccessCount.toLocaleString()}
           icon={ShieldCheck}
-          trend="Active"
+          trend={t("crm.clients.stats.trendActive")}
           tone="emerald"
         />
       </section>
@@ -989,42 +984,42 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search clients by name, phone, or email..."
+                placeholder={t("crm.clients.searchPlaceholder")}
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pl-12 pr-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
               />
             </div>
 
             <div className="flex flex-wrap gap-2">
-              <ToolbarButton icon={Filter} label="Segment" />
-              <ToolbarButton icon={Filter} label="Status" />
-              <ToolbarButton icon={Filter} label="More Filters" />
-              <ToolbarButton icon={ArrowDownUp} label="Sort: Newest" />
-              <IconButton icon={Download} label="Export" />
-              <IconButton icon={Grid2X2} label="View" />
+              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.segment")} />
+              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.status")} />
+              <ToolbarButton icon={Filter} label={t("crm.clients.toolbar.moreFilters")} />
+              <ToolbarButton icon={ArrowDownUp} label={t("crm.clients.toolbar.sortNewest")} />
+              <IconButton icon={Download} label={t("crm.clients.toolbar.export")} />
+              <IconButton icon={Grid2X2} label={t("crm.clients.toolbar.view")} />
             </div>
           </div>
 
           <div className="mt-4 flex flex-wrap gap-2">
-            <FilterPill active label={`All ${clients.length}`} />
-            <FilterPill label={`Active ${activeClients}`} />
-            <FilterPill label={`Inactive ${inactiveClients}`} />
-            <FilterPill label={`Prospects ${prospectClients}`} />
-            <FilterPill label={`Customers ${customerClients}`} />
+            <FilterPill active label={t("crm.clients.filters.all", { count: clients.length })} />
+            <FilterPill label={t("crm.clients.filters.active", { count: activeClients })} />
+            <FilterPill label={t("crm.clients.filters.inactive", { count: inactiveClients })} />
+            <FilterPill label={t("crm.clients.filters.prospects", { count: prospectClients })} />
+            <FilterPill label={t("crm.clients.filters.customers", { count: customerClients })} />
           </div>
         </div>
 
         {isLoading ? (
           <div className="p-10 text-center">
             <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-100 border-t-slate-950" />
-            <p className="text-sm font-bold text-slate-500">Loading clients...</p>
+            <p className="text-sm font-bold text-slate-500">{t("crm.clients.loading")}</p>
           </div>
         ) : error ? (
           <div className="m-5 rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
             <p className="text-lg font-black text-red-700">
-              Failed to load clients
+              {t("crm.clients.loadFailedTitle")}
             </p>
             <p className="mt-2 text-sm text-red-500">
-              Refresh the page and try again.
+              {t("crm.clients.loadFailedDescription")}
             </p>
           </div>
         ) : filteredClients.length === 0 ? (
@@ -1039,7 +1034,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
         <div className="flex flex-col gap-3 border-t border-slate-100 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm font-semibold text-slate-500">
-            Showing 1 to {filteredClients.length} of {clients.length} Customers
+            {t("crm.clients.showing", { from: filteredClients.length, total: clients.length })}
           </p>
 
           <div className="flex items-center justify-center gap-2">
@@ -1069,7 +1064,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           </div>
 
           <button className="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-600 transition hover:bg-slate-50">
-            10 per page
+            {t("crm.clients.perPage")}
           </button>
         </div>
       </section>
@@ -1100,7 +1095,8 @@ function ClientDetailsView({
   onSavePortalAccess: (settings: PortalAccessSettings) => Promise<void>;
   onSendPortalInvite: () => Promise<void>;
 }) {
-  const portalAccess = getPortalAccessSettings(client);
+  const { t } = useTranslation();
+  const portalAccess = getPortalAccessSettings(client, t);
 
   return (
     <div className="space-y-5">
@@ -1124,16 +1120,18 @@ function ClientDetailsView({
                   className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-black text-slate-600 shadow-sm ring-1 ring-slate-100 transition hover:bg-white"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
-                  Back to clients
+                  {t("crm.clients.details.backToClients")}
                 </button>
 
                 <h2 className="truncate text-3xl font-black tracking-tight text-slate-950">
-                  {client.fullName || "Unnamed client"}
+                  {client.fullName || t("crm.common.unnamedClient")}
                 </h2>
 
                 <p className="mt-1 text-sm font-bold text-slate-500">
-                  Client file · {formatPhone(client.phone) || "No phone"} ·{" "}
-                  {client.email || "No email"}
+                  {t("crm.clients.details.clientFile", {
+                    phone: formatPhone(client.phone) || t("crm.common.noPhone"),
+                    email: client.email || t("crm.common.noEmail"),
+                  })}
                 </p>
               </div>
             </div>
@@ -1145,7 +1143,7 @@ function ClientDetailsView({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-4 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700"
               >
                 <Edit3 className="h-4 w-4" />
-                Edit
+                {t("crm.common.edit")}
               </button>
 
               <button
@@ -1154,15 +1152,15 @@ function ClientDetailsView({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("crm.common.delete")}
               </button>
             </div>
           </div>
 
           <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <ClientMiniMetric label="Status" value={getClientStatusLabel(getClientStatus(client))} />
+            <ClientMiniMetric label={t("crm.clients.details.status")} value={getClientStatusLabel(getClientStatus(client), t)} />
             <ClientMiniMetric
-              label="Appointments"
+              label={t("crm.clients.details.appointments")}
               value={
                 Array.isArray(client.appointments)
                   ? client.appointments.length
@@ -1170,15 +1168,15 @@ function ClientDetailsView({
               }
             />
             <ClientMiniMetric
-              label="Client Data Fields"
+              label={t("crm.clients.details.clientDataFields")}
               value={configuredFields.length}
             />
             <ClientMiniMetric
-              label="Portal Access"
+              label={t("crm.clients.details.portalAccess")}
               value={
                 portalAccess.enabled
-                  ? accessStatusLabel(portalAccess.status)
-                  : "Off"
+                  ? accessStatusLabel(portalAccess.status, t)
+                  : t("crm.common.off")
               }
             />
           </div>
@@ -1189,25 +1187,25 @@ function ClientDetailsView({
             <ClientTabButton
               active={activeTab === "profile"}
               icon={UserRound}
-              label="Client Profile"
+              label={t("crm.clients.details.tabProfile")}
               onClick={() => setActiveTab("profile")}
             />
             <ClientTabButton
               active={activeTab === "appointments"}
               icon={CalendarDays}
-              label="Appointments"
+              label={t("crm.clients.details.tabAppointments")}
               onClick={() => setActiveTab("appointments")}
             />
             <ClientTabButton
               active={activeTab === "client-data"}
               icon={Layers3}
-              label="Client data"
+              label={t("crm.clients.details.tabClientData")}
               onClick={() => setActiveTab("client-data")}
             />
             <ClientTabButton
               active={activeTab === "portal-access"}
               icon={LockKeyhole}
-              label="Portal access"
+              label={t("crm.clients.details.tabPortalAccess")}
               onClick={() => setActiveTab("portal-access")}
             />
           </div>
@@ -1286,6 +1284,10 @@ function ClientMiniMetric({
 }
 
 function ClientProfilePanel({ client }: { client: CRMClient }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en";
+  const emDash = t("crm.common.emDash");
+
   return (
     <section className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
       <div className="mb-5 flex items-center gap-3">
@@ -1293,9 +1295,9 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
           <UserRound className="h-5 w-5" />
         </div>
         <div>
-          <h3 className="text-2xl font-black text-slate-950">Client Profile</h3>
+          <h3 className="text-2xl font-black text-slate-950">{t("crm.clients.profile.title")}</h3>
           <p className="text-sm font-bold text-slate-500">
-            Basic CRM details only. Custom values are managed in the Client Data tab.
+            {t("crm.clients.profile.subtitle")}
           </p>
         </div>
       </div>
@@ -1303,26 +1305,28 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <InfoCard
           icon={UserRound}
-          label="Full Name"
-          value={client.fullName || "—"}
+          label={t("crm.clients.profile.fullName")}
+          value={client.fullName || emDash}
         />
         <InfoCard
           icon={Phone}
-          label="Phone"
-          value={formatPhone(client.phone) || "—"}
+          label={t("crm.clients.profile.phone")}
+          value={formatPhone(client.phone) || emDash}
         />
-        <InfoCard icon={Mail} label="Email" value={client.email || "—"} />
-        <InfoCard icon={MapPin} label="Address" value={client.address || "—"} />
+        <InfoCard icon={Mail} label={t("crm.clients.profile.email")} value={client.email || emDash} />
+        <InfoCard icon={MapPin} label={t("crm.clients.profile.address")} value={client.address || emDash} />
       </div>
 
       <div className="mt-5 rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
-        <h4 className="text-base font-black text-slate-950">CRM Summary</h4>
+        <h4 className="text-base font-black text-slate-950">{t("crm.clients.profile.crmSummary")}</h4>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <SummaryBox label="Created" value={formatDate(client.createdAt)} />
-          <SummaryBox label="Updated" value={formatDate(client.updatedAt)} />
+          <SummaryBox label={t("crm.clients.profile.created")} value={formatDate(client.createdAt, locale, emDash)} />
+          <SummaryBox label={t("crm.clients.profile.updated")} value={formatDate(client.updatedAt, locale, emDash)} />
           <SummaryBox
-            label="Total Spent"
-            value={`${Number(client.totalSpent || 0).toLocaleString()} $`}
+            label={t("crm.clients.profile.totalSpent")}
+            value={t("crm.common.currencyAmount", {
+              amount: Number(client.totalSpent || 0).toLocaleString(),
+            })}
           />
         </div>
       </div>
@@ -1331,6 +1335,7 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
 }
 
 function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
+  const { t } = useTranslation();
   const appointments = Array.isArray(client.appointments)
     ? client.appointments
     : [];
@@ -1344,10 +1349,10 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
           </div>
           <div>
             <h3 className="text-2xl font-black text-slate-950">
-              Client Appointments
+              {t("crm.clients.appointmentsPanel.title")}
             </h3>
             <p className="text-sm font-bold text-slate-500">
-              Only appointments linked to this client are shown here.
+              {t("crm.clients.appointmentsPanel.subtitle")}
             </p>
           </div>
         </div>
@@ -1357,10 +1362,10 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
         <div className="rounded-[1.7rem] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
           <h4 className="mt-3 text-xl font-black text-slate-950">
-            No appointments yet
+            {t("crm.clients.appointmentsPanel.emptyTitle")}
           </h4>
           <p className="mt-2 text-sm font-bold text-slate-500">
-            This client’s appointments will appear here after they are scheduled.
+            {t("crm.clients.appointmentsPanel.emptyDescription")}
           </p>
         </div>
       ) : (
@@ -1378,12 +1383,18 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
 }
 
 function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en";
+  const emDash = t("crm.common.emDash");
   const item = appointment as Record<string, any>;
   const serviceName =
-    item.serviceName || item.service?.name || item.title || "Appointment";
+    item.serviceName ||
+    item.service?.name ||
+    item.title ||
+    t("crm.clients.appointmentsPanel.defaultService");
   const date =
     item.date || item.appointmentDate || item.startDate || item.startAt;
-  const time = item.time || item.appointmentTime || item.startHour || "—";
+  const time = item.time || item.appointmentTime || item.startHour || emDash;
   const duration =
     item.duration || item.durationMinutes || item.service?.duration || 30;
   const price = Number(item.price || item.service?.price || 0);
@@ -1402,7 +1413,11 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
               {serviceName}
             </h4>
             <p className="mt-1 text-sm font-bold text-slate-500">
-              {formatDate(date)} · {time} · {duration} min
+              {t("crm.clients.appointmentsPanel.meta", {
+                date: formatDate(date, locale, emDash),
+                time,
+                duration,
+              })}
             </p>
           </div>
         </div>
@@ -1410,7 +1425,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
         <div className="flex flex-wrap items-center gap-2">
           {price > 0 && (
             <span className="rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700 ring-1 ring-slate-100">
-              {`${price.toLocaleString()} $`}
+              {t("crm.common.currencyAmount", { amount: price.toLocaleString() })}
             </span>
           )}
 
@@ -1422,7 +1437,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
                 : "bg-amber-50 text-amber-700",
             ].join(" ")}
           >
-            {paid ? "Paid" : "Unpaid"}
+            {paid ? t("crm.common.paid") : t("crm.common.unpaid")}
           </span>
         </div>
       </div>
@@ -1439,14 +1454,16 @@ function ClientDataPanel({
   fields: ConfiguredClientField[];
   onSave: (values: ClientDataDraft) => Promise<void>;
 }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [draft, setDraft] = useState<ClientDataDraft>(() =>
-    getClientDataValues(client),
+    getClientDataValues(client, t),
   );
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    setDraft(getClientDataValues(client));
-  }, [client]);
+    setDraft(getClientDataValues(client, t));
+  }, [client, t]);
 
   const updateValue = (key: string, value: unknown) => {
     setDraft((prev) => ({ ...prev, [key]: value }));
@@ -1456,7 +1473,7 @@ function ClientDataPanel({
     setSaving(true);
     try {
       await onSave(draft);
-      alert("Client data saved");
+      alert(t("crm.clients.clientDataPanel.savedAlert"));
     } finally {
       setSaving(false);
     }
@@ -1464,7 +1481,7 @@ function ClientDataPanel({
 
   return (
     <section
-      dir="ltr"
+      dir={dir}
       className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1473,10 +1490,9 @@ function ClientDataPanel({
             <Layers3 className="h-5 w-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-black text-slate-950">Client data</h3>
+            <h3 className="text-2xl font-black text-slate-950">{t("crm.clients.clientDataPanel.title")}</h3>
             <p className="text-sm font-bold text-slate-500">
-              Only data fields already configured in the CRM are filled here. Fields are not configured here
-              new.
+              {t("crm.clients.clientDataPanel.subtitle")}
             </p>
           </div>
         </div>
@@ -1488,7 +1504,7 @@ function ClientDataPanel({
           className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
-          {saving ? "Saving..." : "Saving data"}
+          {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
         </button>
       </div>
 
@@ -1496,11 +1512,10 @@ function ClientDataPanel({
         <div className="rounded-[1.7rem] border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
           <h4 className="mt-3 text-xl font-black text-slate-950">
-            No client data fields have been configured yet
+            {t("crm.clients.clientDataPanel.emptyTitle")}
           </h4>
           <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-            Fields are configured in the central CRM / Mini SaaS settings. After configuration they
-            will automatically appear here for each client.
+            {t("crm.clients.clientDataPanel.emptyDescription")}
           </p>
         </div>
       ) : (
@@ -1528,6 +1543,7 @@ function ConfiguredFieldInput({
   value: unknown;
   onChange: (value: unknown) => void;
 }) {
+  const { t } = useTranslation();
   const stringValue = value == null ? "" : String(value);
 
   if (field.type === "textarea" || field.type === "summary") {
@@ -1552,7 +1568,7 @@ function ConfiguredFieldInput({
           onChange={(event) => onChange(event.target.value)}
           className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-950 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
         >
-          <option value="">Select</option>
+          <option value="">{t("crm.common.select")}</option>
           {(field.options || []).map((option) => (
             <option key={option} value={option}>
               {option}
@@ -1576,7 +1592,7 @@ function ConfiguredFieldInput({
               : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white",
           ].join(" ")}
         >
-          <span>{Boolean(value) ? "Yes" : "No"}</span>
+          <span>{Boolean(value) ? t("crm.common.yes") : t("crm.common.no")}</span>
           <span
             className={[
               "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
@@ -1611,7 +1627,7 @@ function ConfiguredFieldInput({
                   onChange(next);
                 }}
                 className={[
-                  "rounded-2xl border p-3 text-left text-sm font-black transition",
+                  "rounded-2xl border p-3 text-start text-sm font-black transition",
                   checked
                     ? "border-violet-300 bg-violet-50 text-violet-700"
                     : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white",
@@ -1648,6 +1664,8 @@ function DataFieldShell({
   wide?: boolean;
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className={wide ? "lg:col-span-2" : ""}>
       <div className="mb-2 flex items-center justify-between gap-3">
@@ -1656,7 +1674,7 @@ function DataFieldShell({
           {field.required && <span className="mr-1 text-rose-500">*</span>}
         </label>
         <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700 ring-1 ring-violet-100">
-          {fieldTypeLabels[field.type] || field.type}
+          {getFieldTypeLabel(field.type, t)}
         </span>
       </div>
       {children}
@@ -1690,6 +1708,10 @@ function PortalAccessPanel({
   onSave: (settings: PortalAccessSettings) => Promise<void>;
   onSendInvite: () => Promise<void>;
 }) {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+  const locale = i18n.language || "en";
+  const emDash = t("crm.common.emDash");
   const [draft, setDraft] = useState<PortalAccessSettings>(settings);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
@@ -1709,7 +1731,7 @@ function PortalAccessPanel({
     setSaving(true);
     try {
       await onSave(draft);
-      alert("Portal access saved");
+      alert(t("crm.clients.portal.savedAlert"));
     } finally {
       setSaving(false);
     }
@@ -1726,7 +1748,7 @@ function PortalAccessPanel({
 
   return (
     <section
-      dir="ltr"
+      dir={dir}
       className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -1736,11 +1758,10 @@ function PortalAccessPanel({
           </div>
           <div>
             <h3 className="text-2xl font-black text-slate-950">
-              Portal access
+              {t("crm.clients.portal.title")}
             </h3>
             <p className="text-sm font-bold text-slate-500">
-              Enable client access to the private portal, separately from client data
-              and appointments.
+              {t("crm.clients.portal.subtitle")}
             </p>
           </div>
         </div>
@@ -1753,7 +1774,7 @@ function PortalAccessPanel({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Mail className="h-4 w-4" />
-            {sending ? "Sending..." : "Send invitation"}
+            {sending ? t("crm.clients.portal.sending") : t("crm.clients.portal.sendInvitation")}
           </button>
 
           <button
@@ -1763,7 +1784,7 @@ function PortalAccessPanel({
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
-            {saving ? "Saving..." : "Saving access"}
+            {saving ? t("crm.common.saving") : t("crm.clients.portal.savingAccess")}
           </button>
         </div>
       </div>
@@ -1774,7 +1795,7 @@ function PortalAccessPanel({
             type="button"
             onClick={() => update("enabled", !draft.enabled)}
             className={[
-              "flex w-full items-center justify-between rounded-2xl border p-4 text-left transition",
+              "flex w-full items-center justify-between rounded-2xl border p-4 text-start transition",
               draft.enabled
                 ? "border-emerald-200 bg-emerald-50"
                 : "border-slate-200 bg-white",
@@ -1782,10 +1803,10 @@ function PortalAccessPanel({
           >
             <div>
               <p className="text-sm font-black text-slate-950">
-                Private portal access
+                {t("crm.clients.portal.privateAccess")}
               </p>
               <p className="mt-1 text-xs font-bold text-slate-500">
-                When active, the client can log in to the website according to the permissions.
+                {t("crm.clients.portal.privateAccessHint")}
               </p>
             </div>
             <span
@@ -1801,7 +1822,7 @@ function PortalAccessPanel({
           </button>
 
           <div className="mt-4 grid gap-4">
-            <PortalFormField label="Access status">
+            <PortalFormField label={t("crm.clients.portal.accessStatus")}>
               <select
                 value={draft.status}
                 onChange={(event) =>
@@ -1812,19 +1833,19 @@ function PortalAccessPanel({
                 }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
-                <option value="not_invited">Not invited</option>
-                <option value="invited">Invited</option>
-                <option value="active">Active</option>
-                <option value="paused">Paused</option>
+                <option value="not_invited">{t("crm.common.notInvited")}</option>
+                <option value="invited">{t("crm.common.invited")}</option>
+                <option value="active">{t("crm.common.active")}</option>
+                <option value="paused">{t("crm.common.paused")}</option>
               </select>
             </PortalFormField>
 
-            <PortalFormField label="Login email">
+            <PortalFormField label={t("crm.clients.portal.loginEmail")}>
               <input
                 type="email"
                 value={draft.loginEmail}
                 onChange={(event) => update("loginEmail", event.target.value)}
-                placeholder={client.email || "client@email.com"}
+                placeholder={client.email || t("crm.clients.portal.emailPlaceholder")}
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
             </PortalFormField>
@@ -1833,7 +1854,7 @@ function PortalAccessPanel({
 
         <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
           <div className="grid gap-4">
-            <PortalFormField label="Payment type">
+            <PortalFormField label={t("crm.clients.portal.paymentType")}>
               <select
                 value={draft.paymentStatus}
                 onChange={(event) =>
@@ -1844,14 +1865,14 @@ function PortalAccessPanel({
                 }
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               >
-                <option value="included">Included in service</option>
-                <option value="free">Free</option>
-                <option value="paid">Paid</option>
-                <option value="unpaid">Awaiting payment</option>
+                <option value="included">{t("crm.clients.portal.paymentIncluded")}</option>
+                <option value="free">{t("crm.clients.portal.paymentFree")}</option>
+                <option value="paid">{t("crm.clients.portal.paymentPaid")}</option>
+                <option value="unpaid">{t("crm.clients.portal.paymentUnpaid")}</option>
               </select>
             </PortalFormField>
 
-            <PortalFormField label="Monthly price">
+            <PortalFormField label={t("crm.clients.portal.monthlyPrice")}>
               <input
                 type="number"
                 value={draft.monthlyPrice}
@@ -1861,11 +1882,11 @@ function PortalAccessPanel({
               />
             </PortalFormField>
 
-            <PortalFormField label="Enabled pages for the client">
+            <PortalFormField label={t("crm.clients.portal.enabledPages")}>
               <textarea
                 value={draft.pages}
                 onChange={(event) => update("pages", event.target.value)}
-                placeholder="Example: dashboard, plan, files"
+                placeholder={t("crm.clients.portal.pagesPlaceholder")}
                 rows={3}
                 className="w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold text-slate-950 outline-none focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
               />
@@ -1876,14 +1897,14 @@ function PortalAccessPanel({
 
       <div className="mt-5 rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5">
         <div className="grid gap-3 md:grid-cols-3">
-          <SummaryBox label="Status" value={accessStatusLabel(draft.status)} />
-          <SummaryBox label="Login email" value={draft.loginEmail || "—"} />
+          <SummaryBox label={t("crm.clients.portal.statusSummary")} value={accessStatusLabel(draft.status, t)} />
+          <SummaryBox label={t("crm.clients.portal.loginEmail")} value={draft.loginEmail || emDash} />
           <SummaryBox
-            label="Last invitation"
+            label={t("crm.clients.portal.lastInvitation")}
             value={
               draft.lastInviteSentAt
-                ? formatDate(draft.lastInviteSentAt)
-                : "Not sent"
+                ? formatDate(draft.lastInviteSentAt, locale, emDash)
+                : t("crm.clients.portal.notSent")
             }
           />
         </div>
@@ -1962,26 +1983,28 @@ function ClientsTable({
     event?: React.MouseEvent<HTMLButtonElement>,
   ) => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="overflow-x-auto">
       <table className="min-w-[1120px] w-full border-collapse">
         <thead>
-          <tr className="border-b border-slate-100 bg-white text-left">
+          <tr className="border-b border-slate-100 bg-white text-start">
             <th className="w-12 px-4 py-4">
               <input
                 type="checkbox"
                 className="h-4 w-4 rounded border-slate-300 text-slate-950 focus:ring-sky-500"
               />
             </th>
-            <TableHead>Customer</TableHead>
-            <TableHead>Contact Details</TableHead>
-            <TableHead>Location</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Appointments</TableHead>
-            <TableHead>Portal Access</TableHead>
-            <TableHead>Client data</TableHead>
-            <TableHead>Total Spent</TableHead>
-            <TableHead align="right">Actions</TableHead>
+            <TableHead>{t("crm.clients.table.customer")}</TableHead>
+            <TableHead>{t("crm.clients.table.contactDetails")}</TableHead>
+            <TableHead>{t("crm.clients.table.location")}</TableHead>
+            <TableHead>{t("crm.clients.table.status")}</TableHead>
+            <TableHead>{t("crm.clients.table.appointments")}</TableHead>
+            <TableHead>{t("crm.clients.table.portalAccess")}</TableHead>
+            <TableHead>{t("crm.clients.table.clientData")}</TableHead>
+            <TableHead>{t("crm.clients.table.totalSpent")}</TableHead>
+            <TableHead align="right">{t("crm.clients.table.actions")}</TableHead>
           </tr>
         </thead>
 
@@ -1989,8 +2012,8 @@ function ClientsTable({
           {clients.map((client) => {
             const status = getClientStatus(client);
             const initials = getInitials(client.fullName);
-            const portalAccess = getPortalAccessSettings(client);
-            const dataValues = Object.keys(getClientDataValues(client)).length;
+            const portalAccess = getPortalAccessSettings(client, t);
+            const dataValues = Object.keys(getClientDataValues(client, t)).length;
 
             return (
               <tr
@@ -2016,10 +2039,10 @@ function ClientsTable({
 
                     <div className="min-w-0">
                       <p className="truncate text-sm font-black text-slate-950">
-                        {client.fullName || "Unnamed client"}
+                        {client.fullName || t("crm.common.unnamedClient")}
                       </p>
                       <p className="truncate text-xs font-semibold text-slate-400">
-                        {client.address || "No address"}
+                        {client.address || t("crm.clients.table.noAddress")}
                       </p>
                     </div>
                   </div>
@@ -2044,9 +2067,9 @@ function ClientsTable({
 
                 <td className="px-4 py-4">
                   <p className="max-w-[140px] truncate text-xs font-bold text-slate-600">
-                    {client.address || "—"}
+                    {client.address || t("crm.common.emDash")}
                   </p>
-                  <p className="text-xs font-semibold text-slate-400">Israel</p>
+                  <p className="text-xs font-semibold text-slate-400">{t("crm.clients.table.israel")}</p>
                 </td>
 
                 <td className="px-4 py-4">
@@ -2058,7 +2081,7 @@ function ClientsTable({
                     {client.appointments?.length || 0}
                   </p>
                   <p className="text-xs font-semibold text-slate-400">
-                    Customer only
+                    {t("crm.clients.table.customerOnly")}
                   </p>
                 </td>
 
@@ -2072,8 +2095,8 @@ function ClientsTable({
                     ].join(" ")}
                   >
                     {portalAccess.enabled
-                      ? accessStatusLabel(portalAccess.status)
-                      : "Off"}
+                      ? accessStatusLabel(portalAccess.status, t)
+                      : t("crm.common.off")}
                   </span>
                 </td>
 
@@ -2081,17 +2104,19 @@ function ClientsTable({
                   <p className="text-sm font-black text-slate-900">
                     {dataValues}
                   </p>
-                  <p className="text-xs font-semibold text-slate-400">Values</p>
+                  <p className="text-xs font-semibold text-slate-400">{t("crm.clients.table.values")}</p>
                 </td>
 
                 <td className="px-4 py-4">
                   <p className="text-sm font-black text-slate-900">
-                    {`${Number(client.totalSpent || 0).toLocaleString()} $`}
+                    {t("crm.common.currencyAmount", {
+                      amount: Number(client.totalSpent || 0).toLocaleString(),
+                    })}
                   </p>
                 </td>
 
                 <td
-                  className="px-4 py-4 text-left"
+                  className="px-4 py-4 text-start"
                   onClick={(event) => event.stopPropagation()}
                 >
                   <div className="flex justify-end gap-2">
@@ -2099,7 +2124,7 @@ function ClientsTable({
                       type="button"
                       onClick={() => onOpen(client)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-950 hover:text-white"
-                      aria-label="Open Client"
+                      aria-label={t("crm.clients.table.openClient")}
                     >
                       <MoreHorizontal className="h-4 w-4" />
                     </button>
@@ -2108,7 +2133,7 @@ function ClientsTable({
                       type="button"
                       onClick={(event) => onDelete(client, event)}
                       className="flex h-9 w-9 items-center justify-center rounded-xl border border-rose-100 bg-rose-50 text-rose-700 transition hover:bg-rose-600 hover:text-white"
-                      aria-label="Delete Client"
+                      aria-label={t("crm.clients.table.deleteClient")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -2138,20 +2163,26 @@ function ClientFormPanel({
   onCancel: () => void;
   onSave: () => void;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
       <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
-            {mode === "create" ? "New CRM Contact" : "Edit CRM Contact"}
+            {mode === "create"
+              ? t("crm.clients.form.newContact")
+              : t("crm.clients.form.editContact")}
           </p>
 
           <h3 className="mt-1 text-2xl font-black text-slate-950">
-            {mode === "create" ? "Add Client" : "Edit Client"}
+            {mode === "create"
+              ? t("crm.clients.form.addClient")
+              : t("crm.clients.form.editClient")}
           </h3>
 
           <p className="mt-1 text-sm text-slate-500">
-            Save client details once and use them across appointments, client data, and client files.
+            {t("crm.clients.form.subtitle")}
           </p>
         </div>
 
@@ -2165,9 +2196,9 @@ function ClientFormPanel({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <FormField label="Full Name" required>
+        <FormField label={t("crm.clients.form.fullName")} required>
           <input
-            placeholder="Full Name"
+            placeholder={t("crm.clients.form.fullName")}
             value={formClient.fullName}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2179,9 +2210,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="Phone" required>
+        <FormField label={t("crm.clients.form.phone")} required>
           <input
-            placeholder="Phone"
+            placeholder={t("crm.clients.form.phone")}
             value={formClient.phone}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2193,9 +2224,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="Email">
+        <FormField label={t("crm.clients.form.email")}>
           <input
-            placeholder="Email"
+            placeholder={t("crm.clients.form.email")}
             type="email"
             value={formClient.email}
             onChange={(event) =>
@@ -2208,9 +2239,9 @@ function ClientFormPanel({
           />
         </FormField>
 
-        <FormField label="Address">
+        <FormField label={t("crm.clients.form.address")}>
           <input
-            placeholder="Address"
+            placeholder={t("crm.clients.form.address")}
             value={formClient.address}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -2229,7 +2260,7 @@ function ClientFormPanel({
           onClick={onCancel}
           className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200"
         >
-          Cancel
+          {t("crm.common.cancel")}
         </button>
 
         <button
@@ -2238,7 +2269,7 @@ function ClientFormPanel({
           disabled={isSaving}
           className="rounded-2xl bg-slate-950 px-6 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          {isSaving ? "Saving..." : "Save Client"}
+          {isSaving ? t("crm.common.saving") : t("crm.clients.form.saveClient")}
         </button>
       </div>
     </div>
@@ -2294,6 +2325,7 @@ function StatCard({
   tone: "sky" | "emerald" | "blue" | "amber";
   negative?: boolean;
 }) {
+  const { t } = useTranslation();
   const iconClass =
     tone === "emerald"
       ? "bg-emerald-50 text-emerald-600"
@@ -2322,7 +2354,7 @@ function StatCard({
             </span>
           </div>
           <p className="mt-1 text-xs font-semibold text-slate-400">
-            compared to the last 30 days
+            {t("crm.clients.stats.comparedToLast30Days")}
           </p>
         </div>
 
@@ -2394,7 +2426,7 @@ function TableHead({
     <th
       className={[
         "px-4 py-4 text-xs font-black text-slate-400",
-        align === "right" ? "text-left" : "text-left",
+        align === "right" ? "text-start" : "text-start",
       ].join(" ")}
     >
       {children}
@@ -2403,6 +2435,7 @@ function TableHead({
 }
 
 function StatusBadge({ status }: { status: ClientStatus }) {
+  const { t } = useTranslation();
   const className =
     status === "Active"
       ? "bg-emerald-50 text-emerald-700"
@@ -2416,22 +2449,24 @@ function StatusBadge({ status }: { status: ClientStatus }) {
     <span
       className={`inline-flex rounded-xl px-3 py-1.5 text-xs font-black ${className}`}
     >
-      {getClientStatusLabel(status)}
+      {getClientStatusLabel(status, t)}
     </span>
   );
 }
 
 function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
+
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-950 shadow-sm">
         <UsersRound className="h-7 w-7" />
       </div>
 
-      <h4 className="text-xl font-black text-slate-950">No clients yet</h4>
+      <h4 className="text-xl font-black text-slate-950">{t("crm.clients.emptyTitle")}</h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-slate-500">
-        Create your first CRM client, or let the system add clients automatically from public bookings.
+        {t("crm.clients.emptyDescription")}
       </p>
 
       <button
@@ -2440,7 +2475,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-3 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
       >
         <Plus className="h-5 w-5" />
-        Create Client
+        {t("crm.clients.createClient")}
       </button>
     </div>
   );
@@ -2492,14 +2527,14 @@ function formatPhone(phone: string) {
   return phone.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
 }
 
-function formatDate(value?: unknown) {
-  if (!value) return "—";
+function formatDate(value?: unknown, locale = "en-US", emDash = "—") {
+  if (!value) return emDash;
 
   const date = new Date(String(value));
 
   if (Number.isNaN(date.getTime())) return String(value);
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(locale, {
     month: "short",
     day: "2-digit",
     year: "numeric",
@@ -2511,9 +2546,12 @@ function getAppointmentId(appointment: unknown, index: number) {
   return String(item._id || item.id || item.appointmentId || index);
 }
 
-function accessStatusLabel(status: PortalAccessSettings["status"]) {
-  if (status === "active") return "Active";
-  if (status === "invited") return "Invited";
-  if (status === "paused") return "Paused";
-  return "Not invited";
+function accessStatusLabel(
+  status: PortalAccessSettings["status"],
+  t: TFunction,
+) {
+  if (status === "active") return t("crm.common.active");
+  if (status === "invited") return t("crm.common.invited");
+  if (status === "paused") return t("crm.common.paused");
+  return t("crm.common.notInvited");
 }

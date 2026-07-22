@@ -7,6 +7,7 @@ import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
 import { AiProvider } from "../../../context/AiContext";
 import { fetchMyBusinessId } from "./collabtabs/collabUtils";
+import { useLocaleDir } from "../../../hooks/useLocaleDir";
 
 type ProfileData = {
   businessName: string;
@@ -60,6 +61,7 @@ const tabs: TabItem[] = [
 ];
 
 export default function Collab() {
+  const dir = useLocaleDir();
   const { user, loading, isImpersonating } = useAuth() as AuthContextValue;
   const location = useLocation();
 
@@ -148,7 +150,7 @@ export default function Collab() {
 
   if (loading) {
     return (
-      <div dir="rtl" className="p-6 text-center text-sm font-bold text-slate-700">
+      <div className="p-6 text-center text-sm font-bold text-slate-700">
         🔄 טוען נתונים...
       </div>
     );
@@ -156,7 +158,7 @@ export default function Collab() {
 
   if (!user && !devMode) {
     return (
-      <div dir="rtl" className="p-6 text-center text-sm font-bold text-slate-700">
+      <div className="p-6 text-center text-sm font-bold text-slate-700">
         ⚠️ יש להתחבר כדי לגשת לעמוד הזה.
       </div>
     );
@@ -164,7 +166,7 @@ export default function Collab() {
 
   if (!hasCollabAccess && !devMode) {
     return (
-      <div dir="rtl" className="p-6 text-center">
+      <div className="p-6 text-center">
         <h2 className="text-xl font-black text-slate-950">
           שיתופי פעולה זמינים רק במסלול המתקדם
         </h2>
@@ -179,8 +181,8 @@ export default function Collab() {
   return (
     <AiProvider>
       <section
-        dir="rtl"
-        className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-white via-sky-50/40 to-cyan-50/60 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+        dir={dir}
+        className="min-h-[calc(100vh-72px)] bg-gradient-to-br from-white via-sky-50/40 to-cyan-50/60 px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
       >
         <div className="mx-auto w-full max-w-7xl">
           <nav

@@ -23,8 +23,11 @@ import {
   Webhook,
   X,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type LeadStatus =
   | "new"
@@ -149,13 +152,9 @@ const RAW_API_BASE =
 
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
-const statusLabels: Record<LeadStatus, string> = {
-  new: "New",
-  contacted: "Contacted",
-  interested: "Interested",
-  converted: "Converted",
-  lost: "Lost",
-};
+function getStatusLabel(status: LeadStatus, t: TFunction) {
+  return t(`crm.leads.statuses.${status}`);
+}
 
 const statusBadgeClasses: Record<LeadStatus, string> = {
   new: "border-sky-200 bg-sky-50 text-sky-700",
@@ -178,8 +177,9 @@ function getToken() {
   return localStorage.getItem("token");
 }
 
-function getCurrentUserName() {
-  if (typeof window === "undefined") return "System User";
+function getCurrentUserName(t: TFunction) {
+  const fallback = t("crm.common.systemUser");
+  if (typeof window === "undefined") return fallback;
 
   const directName =
     localStorage.getItem("userName") ||
@@ -195,7 +195,7 @@ function getCurrentUserName() {
     localStorage.getItem("authUser") ||
     "";
 
-  if (!rawUser) return "System User";
+  if (!rawUser) return fallback;
 
   try {
     const user = JSON.parse(rawUser);
@@ -204,10 +204,10 @@ function getCurrentUserName() {
       user?.fullName ||
       user?.businessName ||
       user?.email ||
-      "System User"
+      fallback
     );
   } catch {
-    return "System User";
+    return fallback;
   }
 }
 
@@ -293,11 +293,11 @@ function safeJsonParse(value: unknown) {
   }
 }
 
-function formatDate(value?: string | null) {
-  if (!value) return "—";
+function formatDate(value?: string | null, locale = "en-US", emDash = "—") {
+  if (!value) return emDash;
 
   try {
-    return new Intl.DateTimeFormat("he-IL", {
+    return new Intl.DateTimeFormat(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -305,15 +305,15 @@ function formatDate(value?: string | null) {
       minute: "2-digit",
     }).format(new Date(value));
   } catch {
-    return "—";
+    return emDash;
   }
 }
 
-function formatShortDate(value?: string) {
-  if (!value) return "—";
+function formatShortDate(value?: string, locale = "en-US", emDash = "—") {
+  if (!value) return emDash;
 
   try {
-    return new Intl.DateTimeFormat("he-IL", {
+    return new Intl.DateTimeFormat(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "2-digit",
@@ -321,12 +321,12 @@ function formatShortDate(value?: string) {
       minute: "2-digit",
     }).format(new Date(value));
   } catch {
-    return "—";
+    return emDash;
   }
 }
 
-function getLeadName(lead: Lead) {
-  return lead.name || lead.fullName || "Unnamed lead";
+function getLeadName(lead: Lead, t: TFunction) {
+  return lead.name || lead.fullName || t("crm.leads.unnamedLead");
 }
 
 function getInitials(name?: string) {
@@ -377,19 +377,19 @@ function isMetaLead(lead: Lead) {
   );
 }
 
-function getLeadSourceLabel(lead: Lead) {
-  if (isMetaLead(lead)) return "Meta Lead Ads";
+function getLeadSourceLabel(lead: Lead, t: TFunction) {
+  if (isMetaLead(lead)) return t("crm.leads.sources.metaLeadAds");
 
-  return lead.source || lead.provider || "Manual";
+  return lead.source || lead.provider || t("crm.leads.sources.manual");
 }
 
-function getLeadFormName(lead: Lead) {
+function getLeadFormName(lead: Lead, t: TFunction) {
   return (
     lead.facebook?.formName ||
     lead.externalFormId ||
     lead.facebook?.formId ||
-    (isMetaLead(lead) ? "Meta Lead Ads form" : lead.source) ||
-    "Manual lead"
+    (isMetaLead(lead) ? t("crm.leads.sources.metaForm") : lead.source) ||
+    t("crm.leads.sources.manualLead")
   );
 }
 
@@ -464,7 +464,7 @@ function extractRawFieldData(lead: Lead): RawFieldItem[] {
   return [];
 }
 
-function getLeadDetails(lead: Lead): LeadDetail[] {
+function getLeadDetails(lead: Lead, t: TFunction): LeadDetail[] {
   const details: LeadDetail[] = [];
 
   const pushDetail = (label?: unknown, value?: unknown) => {
@@ -502,10 +502,10 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
     );
   });
 
-  pushDetail("Guest count", lead.guestCount);
-  pushDetail("Interested service", lead.interestedService);
-  pushDetail("Event date", lead.eventDate);
-  pushDetail("Event type", lead.eventType);
+  pushDetail(t("crm.leads.detailLabels.guestCount"), lead.guestCount);
+  pushDetail(t("crm.leads.detailLabels.interestedService"), lead.interestedService);
+  pushDetail(t("crm.leads.detailLabels.eventDate"), lead.eventDate);
+  pushDetail(t("crm.leads.detailLabels.eventType"), lead.eventType);
 
   pushDetail(lead.detail1Label, lead.detail1Value);
   pushDetail(lead.detail2Label, lead.detail2Value);
@@ -521,20 +521,20 @@ function getLeadDetails(lead: Lead): LeadDetail[] {
   return details;
 }
 
-function getLeadSearchText(lead: Lead) {
-  const detailsText = getLeadDetails(lead)
+function getLeadSearchText(lead: Lead, t: TFunction) {
+  const detailsText = getLeadDetails(lead, t)
     .map((detail) => `${detail.label} ${detail.value}`)
     .join(" ");
 
   return [
-    getLeadName(lead),
+    getLeadName(lead, t),
     lead.phone,
     lead.email,
     lead.message,
     lead.source,
     lead.provider,
-    getLeadSourceLabel(lead),
-    getLeadFormName(lead),
+    getLeadSourceLabel(lead, t),
+    getLeadFormName(lead, t),
     lead.externalLeadId,
     lead.externalPageId,
     lead.externalFormId,
@@ -567,19 +567,19 @@ function sortByNewest<T extends { createdAt?: string }>(items: T[]) {
   });
 }
 
-function getActivityTypeLabel(type?: LeadActivityType) {
+function getActivityTypeLabel(type: LeadActivityType | undefined, t: TFunction) {
   switch (type) {
     case "call":
-      return "Call";
+      return t("crm.leads.activityTypes.call");
     case "whatsapp":
-      return "WhatsApp";
+      return t("crm.leads.activityTypes.whatsapp");
     case "status":
-      return "Status";
+      return t("crm.leads.activityTypes.status");
     case "task":
-      return "Task";
+      return t("crm.leads.activityTypes.task");
     case "note":
     default:
-      return "Note";
+      return t("crm.leads.activityTypes.note");
   }
 }
 
@@ -592,7 +592,9 @@ function DetailRow({
   value?: string;
   copyable?: boolean;
 }) {
+  const { t } = useTranslation();
   const cleanValue = cleanText(value);
+  const emDash = t("crm.common.emDash");
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -604,7 +606,7 @@ function DetailRow({
             type="button"
             onClick={() => copyText(cleanValue)}
             className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-sky-50 hover:text-sky-700"
-            title="Copy"
+            title={t("crm.common.copy")}
           >
             <Copy className="h-3.5 w-3.5" />
           </button>
@@ -616,15 +618,17 @@ function DetailRow({
           "whitespace-pre-wrap break-words text-sm font-black text-slate-900",
           cleanValue ? "" : "text-slate-300",
         ].join(" ")}
-        dir={/[A-Za-z0-9@+]/.test(cleanValue) ? "ltr" : "rtl"}
+        dir={/[A-Za-z0-9@+]/.test(cleanValue) ? "ltr" : undefined}
       >
-        {cleanValue || "—"}
+        {cleanValue || emDash}
       </p>
     </div>
   );
 }
 
 function LeadStatusBadge({ status }: { status: LeadStatus }) {
+  const { t } = useTranslation();
+
   return (
     <span
       className={[
@@ -633,13 +637,14 @@ function LeadStatusBadge({ status }: { status: LeadStatus }) {
       ].join(" ")}
     >
       <span className={`h-2 w-2 rounded-full ${statusDotClasses[status]}`} />
-      {statusLabels[status]}
+      {getStatusLabel(status, t)}
     </span>
   );
 }
 
 function SourceBadge({ lead }: { lead: Lead }) {
-  const sourceLabel = getLeadSourceLabel(lead);
+  const { t } = useTranslation();
+  const sourceLabel = getLeadSourceLabel(lead, t);
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
@@ -654,13 +659,18 @@ function SourceBadge({ lead }: { lead: Lead }) {
       </span>
 
       <span className="max-w-full truncate text-xs font-bold text-slate-400">
-        {getLeadFormName(lead)}
+        {getLeadFormName(lead, t)}
       </span>
     </div>
   );
 }
 
 export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+  const locale = i18n.language || "en";
+  const emDash = t("crm.common.emDash");
+
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [highlightedActivityId, setHighlightedActivityId] = useState("");
@@ -698,7 +708,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         return nextLeads.find((lead) => lead._id === current._id) || current;
       });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to load leads");
+      setError(
+        err instanceof Error ? err.message : t("crm.leads.errors.loadFailed")
+      );
     } finally {
       setLoading(false);
     }
@@ -745,10 +757,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         setSelectedLead(targetLead);
         scrollToActivity(activityId);
       } else {
-        setError("The lead linked to the notification was not found.");
+        setError(t("crm.leads.errors.leadNotFound"));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to open the lead from the notification");
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("crm.leads.errors.openFromNotificationFailed")
+      );
     }
   };
 
@@ -786,14 +802,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     const q = search.trim().toLowerCase();
 
     return leads.filter((lead) => {
-      const matchesSearch = !q || getLeadSearchText(lead).includes(q);
+      const matchesSearch = !q || getLeadSearchText(lead, t).includes(q);
 
       const matchesStatus =
         statusFilter === "all" || (lead.status || "new") === statusFilter;
 
       return matchesSearch && matchesStatus;
     });
-  }, [leads, search, statusFilter]);
+  }, [leads, search, statusFilter, t]);
 
   const stats = useMemo(() => {
     return {
@@ -803,7 +819,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       interested: leads.filter((lead) => lead.status === "interested").length,
       converted: leads.filter((lead) => lead.status === "converted").length,
       integration: leads.filter((lead) => {
-        const label = getLeadSourceLabel(lead).toLowerCase();
+        const label = getLeadSourceLabel(lead, t).toLowerCase();
         return (
           label.includes("meta lead ads") ||
           label.includes("facebook") ||
@@ -812,9 +828,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         );
       }).length,
     };
-  }, [leads]);
+  }, [leads, t]);
 
-  const selectedDetails = selectedLead ? getLeadDetails(selectedLead) : [];
+  const selectedDetails = selectedLead ? getLeadDetails(selectedLead, t) : [];
   const selectedStatus = selectedLead?.status || "new";
   const selectedWhatsAppPhone = normalizePhoneForWhatsApp(selectedLead?.phone);
 
@@ -868,7 +884,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setSelectedLead(
         previousLeads.find((lead) => lead._id === leadId) || selectedLead
       );
-      setError(err instanceof Error ? err.message : "Failed to update status");
+      setError(
+        err instanceof Error ? err.message : t("crm.leads.errors.updateStatusFailed")
+      );
     }
   };
 
@@ -876,7 +894,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     if (!selectedLead || !newActivityText.trim()) return;
 
     if (newActivityType === "task" && !newTaskDueAt) {
-      setError("To save a task, choose a due date and time.");
+      setError(t("crm.leads.errors.taskDueRequired"));
       return;
     }
 
@@ -891,7 +909,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       id: crypto.randomUUID(),
       type: newActivityType,
       text: newActivityText.trim(),
-      createdBy: getCurrentUserName(),
+      createdBy: getCurrentUserName(t),
       createdAt: new Date().toISOString(),
       taskDueAt: taskDueAtIso,
       taskDone: false,
@@ -949,7 +967,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setError(
         err instanceof Error
           ? err.message
-          : "Failed to save the activity. Check that the activities API is updated."
+          : t("crm.leads.errors.saveActivityFailed")
       );
     } finally {
       setSavingActivity(false);
@@ -978,7 +996,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   ...item,
                   taskDone: nextDone,
                   taskCompletedAt: nextDone ? new Date().toISOString() : null,
-                  taskCompletedBy: nextDone ? getCurrentUserName() : "",
+                  taskCompletedBy: nextDone ? getCurrentUserName(t) : "",
                 }
               : item
           ),
@@ -997,7 +1015,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 ...item,
                 taskDone: nextDone,
                 taskCompletedAt: nextDone ? new Date().toISOString() : null,
-                taskCompletedBy: nextDone ? getCurrentUserName() : "",
+                taskCompletedBy: nextDone ? getCurrentUserName(t) : "",
               }
             : item
         ),
@@ -1023,12 +1041,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         );
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update the task");
+      setError(
+        err instanceof Error ? err.message : t("crm.leads.errors.updateTaskFailed")
+      );
     }
   };
 
   return (
-    <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir="ltr">
+    <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir={dir}>
       <MetaLeadAdsIntegration />
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
@@ -1040,16 +1060,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div>
               <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
                 <Sparkles className="h-4 w-4" />
-                Smart CRM
+                {t("crm.leads.badge")}
               </div>
 
               <h1 className="text-3xl font-black tracking-tight sm:text-5xl">
-                Lead Management
+                {t("crm.leads.title")}
               </h1>
 
               <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
-                Professional lead table, full client profile, notes and tasks as part
-                of the timeline, including on-site reminders by due time.
+                {t("crm.leads.subtitle")}
               </p>
             </div>
 
@@ -1062,42 +1081,42 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <RefreshCw
                 className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
               />
-              Refresh Leads
+              {t("crm.leads.refreshLeads")}
             </button>
           </div>
         </div>
 
         <div className="grid gap-4 bg-white p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-5">
           <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-            <p className="text-xs font-black text-slate-400">Total</p>
+            <p className="text-xs font-black text-slate-400">{t("crm.leads.stats.total")}</p>
             <p className="mt-2 text-3xl font-black text-slate-800">
               {stats.total}
             </p>
           </div>
 
           <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">New</p>
+            <p className="text-xs font-black text-sky-600">{t("crm.leads.stats.new")}</p>
             <p className="mt-2 text-3xl font-black text-sky-800">
               {stats.new}
             </p>
           </div>
 
           <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-            <p className="text-xs font-black text-violet-600">Contacted</p>
+            <p className="text-xs font-black text-violet-600">{t("crm.leads.stats.contacted")}</p>
             <p className="mt-2 text-3xl font-black text-violet-800">
               {stats.contacted}
             </p>
           </div>
 
           <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">Converted</p>
+            <p className="text-xs font-black text-sky-600">{t("crm.leads.stats.converted")}</p>
             <p className="mt-2 text-3xl font-black text-sky-800">
               {stats.converted}
             </p>
           </div>
 
           <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5">
-            <p className="text-xs font-black text-blue-600">Open Tasks</p>
+            <p className="text-xs font-black text-blue-600">{t("crm.leads.stats.openTasks")}</p>
             <p className="mt-2 text-3xl font-black text-blue-800">
               {leads.reduce(
                 (sum, lead) =>
@@ -1128,7 +1147,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Search by name, phone, email, source, or lead details..."
+                placeholder={t("crm.leads.searchPlaceholder")}
                 className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
               />
             </div>
@@ -1136,7 +1155,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div className="flex flex-wrap items-center gap-2">
               <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
                 <Filter className="h-4 w-4" />
-                Filter
+                {t("crm.common.filter")}
               </div>
 
               {(["all", "new", "contacted", "interested", "converted", "lost"] as const).map(
@@ -1152,7 +1171,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
                     ].join(" ")}
                   >
-                    {status === "all" ? "All" : statusLabels[status]}
+                    {status === "all" ? t("crm.common.all") : getStatusLabel(status, t)}
                   </button>
                 )
               )}
@@ -1176,30 +1195,30 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
 
             <h3 className="text-2xl font-black text-slate-800">
-              No leads to display
+              {t("crm.leads.emptyTitle")}
             </h3>
 
             <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-500">
-              When a new lead comes in, it will appear here with all form fields.
+              {t("crm.leads.emptyDescription")}
             </p>
           </div>
         ) : (
           <div className="w-full">
             <div className="hidden border-b border-slate-200 bg-slate-50 px-4 py-4 text-xs font-black uppercase tracking-[0.08em] text-slate-400 xl:grid xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:gap-4">
-              <div>Lead</div>
-              <div>Contact Details</div>
-              <div>Source</div>
-              <div>Main Details</div>
-              <div>Status</div>
-              <div>Created Date</div>
-              <div>Actions</div>
+              <div>{t("crm.leads.table.lead")}</div>
+              <div>{t("crm.leads.table.contactDetails")}</div>
+              <div>{t("crm.leads.table.source")}</div>
+              <div>{t("crm.leads.table.mainDetails")}</div>
+              <div>{t("crm.leads.table.status")}</div>
+              <div>{t("crm.leads.table.createdDate")}</div>
+              <div>{t("crm.leads.table.actions")}</div>
             </div>
 
             <div className="divide-y divide-slate-100">
               {filteredLeads.map((lead) => {
                 const status = lead.status || "new";
-                const leadName = getLeadName(lead);
-                const details = getLeadDetails(lead);
+                const leadName = getLeadName(lead, t);
+                const details = getLeadDetails(lead, t);
                 const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
                 const mainDetails = details.slice(0, 3);
 
@@ -1223,14 +1242,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {leadName}
                         </p>
                         <p className="mt-1 truncate text-xs font-bold text-slate-400">
-                          {lead.email || lead.phone || "No contact details"}
+                          {lead.email || lead.phone || t("crm.leads.noContactDetails")}
                         </p>
                       </div>
                     </div>
 
                     <div className="min-w-0 space-y-1">
                       <p className="text-xs font-black text-slate-400 xl:hidden">
-                        Contact Details
+                        {t("crm.leads.table.contactDetails")}
                       </p>
 
                       {lead.phone ? (
@@ -1242,7 +1261,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </p>
                       ) : (
                         <p className="text-sm font-bold text-slate-300">
-                          No phone
+                          {t("crm.common.noPhone")}
                         </p>
                       )}
 
@@ -1260,7 +1279,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                     <div className="min-w-0">
                       <p className="mb-2 text-xs font-black text-slate-400 xl:hidden">
-                        Main Details
+                        {t("crm.leads.table.mainDetails")}
                       </p>
 
                       {mainDetails.length > 0 ? (
@@ -1285,7 +1304,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         </div>
                       ) : (
                         <span className="text-sm font-bold text-slate-300">
-                          No additional data
+                          {t("crm.leads.noAdditionalData")}
                         </span>
                       )}
                     </div>
@@ -1297,7 +1316,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
                       <CalendarDays className="h-4 w-4 shrink-0 text-slate-400" />
                       <span className="leading-5">
-                        {formatShortDate(lead.createdAt)}
+                        {formatShortDate(lead.createdAt, locale, emDash)}
                       </span>
                     </div>
 
@@ -1311,7 +1330,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           target="_blank"
                           rel="noreferrer"
                           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="WhatsApp"
+                          title={t("crm.common.whatsapp")}
                         >
                           <MessageCircle className="h-4 w-4" />
                         </a>
@@ -1321,7 +1340,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`tel:${lead.phone}`}
                           className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="Call"
+                          title={t("crm.common.call")}
                         >
                           <Phone className="h-4 w-4" />
                         </a>
@@ -1332,7 +1351,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         onClick={() => setSelectedLead(lead)}
                         className="inline-flex h-10 shrink-0 items-center gap-2 rounded-2xl bg-sky-600 px-4 text-xs font-black text-white transition hover:bg-sky-700"
                       >
-                        Open
+                        {t("crm.common.open")}
                         <ExternalLink className="h-3.5 w-3.5" />
                       </button>
                     </div>
@@ -1347,7 +1366,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       {selectedLead && (
         <div
           className="fixed inset-0 z-[90] bg-sky-600/45 backdrop-blur-sm"
-          dir="ltr"
+          dir={dir}
         >
           <div
             className="absolute inset-0"
@@ -1362,26 +1381,26 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     type="button"
                     onClick={() => setSelectedLead(null)}
                     className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
-                    title="Close"
+                    title={t("crm.common.close")}
                   >
                     <X className="h-5 w-5" />
                   </button>
 
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-600 text-lg font-black text-white shadow-sm">
-                    {getInitials(getLeadName(selectedLead))}
+                    {getInitials(getLeadName(selectedLead, t))}
                   </div>
 
                   <div className="min-w-0">
                     <h2 className="truncate text-2xl font-black text-slate-800">
-                      {getLeadName(selectedLead)}
+                      {getLeadName(selectedLead, t)}
                     </h2>
 
                     <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
-                      <span>{selectedLead.phone || "No phone"}</span>
+                      <span>{selectedLead.phone || t("crm.common.noPhone")}</span>
                       <span>•</span>
-                      <span>{getLeadSourceLabel(selectedLead)}</span>
+                      <span>{getLeadSourceLabel(selectedLead, t)}</span>
                       <span>•</span>
-                      <span>{formatDate(selectedLead.createdAt)}</span>
+                      <span>{formatDate(selectedLead.createdAt, locale, emDash)}</span>
                     </div>
                   </div>
                 </div>
@@ -1395,7 +1414,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                   >
                     <RefreshCw className="h-4 w-4" />
-                    Refresh
+                    {t("crm.common.refresh")}
                   </button>
                 </div>
               </header>
@@ -1405,15 +1424,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   <div className="p-5">
                     <div className="mb-5 flex flex-col items-center text-center">
                       <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-sky-600 text-2xl font-black text-white shadow-lg">
-                        {getInitials(getLeadName(selectedLead))}
+                        {getInitials(getLeadName(selectedLead, t))}
                       </div>
 
                       <h3 className="mt-4 max-w-full truncate text-2xl font-black text-slate-800">
-                        {getLeadName(selectedLead)}
+                        {getLeadName(selectedLead, t)}
                       </h3>
 
                       <p className="mt-1 text-sm font-bold text-slate-400">
-                        {getLeadFormName(selectedLead)}
+                        {getLeadFormName(selectedLead, t)}
                       </p>
                     </div>
 
@@ -1424,10 +1443,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           target="_blank"
                           rel="noreferrer"
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="WhatsApp"
+                          title={t("crm.common.whatsapp")}
                         >
                           <MessageCircle className="mb-1 h-5 w-5" />
-                          WhatsApp
+                          {t("crm.common.whatsapp")}
                         </a>
                       )}
 
@@ -1435,10 +1454,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`tel:${selectedLead.phone}`}
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title="Call"
+                          title={t("crm.common.call")}
                         >
                           <Phone className="mb-1 h-5 w-5" />
-                          Call
+                          {t("crm.common.call")}
                         </a>
                       )}
 
@@ -1446,10 +1465,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <a
                           href={`mailto:${selectedLead.email}`}
                           className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                          title="Email"
+                          title={t("crm.common.email")}
                         >
                           <Mail className="mb-1 h-5 w-5" />
-                          Email
+                          {t("crm.common.email")}
                         </a>
                       )}
 
@@ -1459,48 +1478,48 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           copyText(
                             selectedLead.phone ||
                               selectedLead.email ||
-                              getLeadName(selectedLead)
+                              getLeadName(selectedLead, t)
                           )
                         }
                         className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                        title="Copy"
+                        title={t("crm.common.copy")}
                       >
                         <Copy className="mb-1 h-5 w-5" />
-                        Copy
+                        {t("crm.common.copy")}
                       </button>
                     </div>
 
                     <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          Lead Details
+                          {t("crm.leads.drawer.leadDetails")}
                         </h4>
                         <UserRound className="h-5 w-5 text-slate-300" />
                       </div>
 
                       <div className="space-y-3">
                         <DetailRow
-                          label="Name"
-                          value={getLeadName(selectedLead)}
+                          label={t("crm.common.name")}
+                          value={getLeadName(selectedLead, t)}
                           copyable
                         />
                         <DetailRow
-                          label="Phone"
+                          label={t("crm.common.phone")}
                           value={selectedLead.phone}
                           copyable
                         />
                         <DetailRow
-                          label="Email"
+                          label={t("crm.common.email")}
                           value={selectedLead.email}
                           copyable
                         />
                         <DetailRow
-                          label="Status"
-                          value={statusLabels[selectedStatus]}
+                          label={t("crm.common.status")}
+                          value={getStatusLabel(selectedStatus, t)}
                         />
                         <DetailRow
-                          label="Created Date"
-                          value={formatDate(selectedLead.createdAt)}
+                          label={t("crm.common.createdDate")}
+                          value={formatDate(selectedLead.createdAt, locale, emDash)}
                         />
                       </div>
                     </section>
@@ -1508,7 +1527,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          Update Status
+                          {t("crm.leads.drawer.updateStatus")}
                         </h4>
                         <ChevronDown className="h-5 w-5 text-slate-300" />
                       </div>
@@ -1526,11 +1545,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           statusBadgeClasses[selectedStatus],
                         ].join(" ")}
                       >
-                        <option value="new">New</option>
-                        <option value="contacted">Contacted</option>
-                        <option value="interested">Interested</option>
-                        <option value="converted">Converted</option>
-                        <option value="lost">Lost</option>
+                        <option value="new">{t("crm.leads.statuses.new")}</option>
+                        <option value="contacted">{t("crm.leads.statuses.contacted")}</option>
+                        <option value="interested">{t("crm.leads.statuses.interested")}</option>
+                        <option value="converted">{t("crm.leads.statuses.converted")}</option>
+                        <option value="lost">{t("crm.leads.statuses.lost")}</option>
                       </select>
                     </section>
                   </div>
@@ -1541,7 +1560,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <h3 className="text-lg font-black text-slate-800">
-                          Data Summary
+                          {t("crm.leads.drawer.dataSummary")}
                         </h3>
                         <CheckCircle2 className="h-5 w-5 text-sky-500" />
                       </div>
@@ -1549,28 +1568,28 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="grid gap-4 md:grid-cols-3">
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            Created Date
+                            {t("crm.common.createdDate")}
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
-                            {formatDate(selectedLead.createdAt)}
+                            {formatDate(selectedLead.createdAt, locale, emDash)}
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            Client Stage
+                            {t("crm.leads.drawer.clientStage")}
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
-                            Lead
+                            {t("crm.leads.drawer.clientStageLead")}
                           </p>
                         </div>
 
                         <div className="rounded-2xl bg-slate-50 p-4">
                           <p className="text-xs font-black text-slate-400">
-                            Lead Status
+                            {t("crm.leads.drawer.leadStatus")}
                           </p>
                           <p className="mt-2 text-sm font-black text-slate-900">
-                            {statusLabels[selectedStatus]}
+                            {getStatusLabel(selectedStatus, t)}
                           </p>
                         </div>
                       </div>
@@ -1579,11 +1598,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                       <div className="mb-5 flex items-center justify-between">
                         <h3 className="text-lg font-black text-slate-800">
-                          All Form Data
+                          {t("crm.leads.drawer.allFormData")}
                         </h3>
 
                         <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                          {selectedDetails.length} Fields
+                          {t("crm.leads.drawer.fieldsCount", { count: selectedDetails.length })}
                         </span>
                       </div>
 
@@ -1601,7 +1620,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       ) : (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                           <p className="text-sm font-bold text-slate-400">
-                            There is no additional form data for this lead
+                            {t("crm.leads.drawer.noFormData")}
                           </p>
                         </div>
                       )}
@@ -1611,10 +1630,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="mb-5 flex items-center justify-between">
                         <div>
                           <h3 className="text-lg font-black text-slate-800">
-                            Documentation, Notes and Tasks
+                            {t("crm.leads.drawer.documentationTitle")}
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            A task is an activity record with a due date and time.
+                            {t("crm.leads.drawer.documentationSubtitle")}
                           </p>
                         </div>
 
@@ -1632,10 +1651,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             }
                             className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
-                            <option value="note">Note</option>
-                            <option value="call">Call</option>
-                            <option value="whatsapp">WhatsApp</option>
-                            <option value="task">Task</option>
+                            <option value="note">{t("crm.common.note")}</option>
+                            <option value="call">{t("crm.common.call")}</option>
+                            <option value="whatsapp">{t("crm.common.whatsapp")}</option>
+                            <option value="task">{t("crm.common.task")}</option>
                           </select>
 
                           <textarea
@@ -1645,8 +1664,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             }
                             placeholder={
                               newActivityType === "task"
-                                ? "Write the task to complete..."
-                                : "Write a note, call summary, or customer update here..."
+                                ? t("crm.leads.drawer.taskPlaceholder")
+                                : t("crm.leads.drawer.notePlaceholder")
                             }
                             className="min-h-[96px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
@@ -1656,7 +1675,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
                             <div className="flex h-12 items-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700 ring-1 ring-amber-100">
                               <Bell className="h-4 w-4" />
-                              Due Time
+                              {t("crm.leads.drawer.dueTime")}
                             </div>
 
                             <input
@@ -1672,9 +1691,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="flex flex-wrap items-center justify-between gap-3">
                           <p className="text-xs font-bold text-slate-400">
-                            Recorded by:{" "}
+                            {t("crm.leads.drawer.recordedBy")}{" "}
                             <span className="font-black text-slate-700">
-                              {getCurrentUserName()}
+                              {getCurrentUserName(t)}
                             </span>
                           </p>
 
@@ -1690,8 +1709,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           >
                             <Send className="h-4 w-4" />
                             {newActivityType === "task"
-                              ? "Saving Task"
-                              : "Saving Activity"}
+                              ? t("crm.leads.drawer.savingTask")
+                              : t("crm.leads.drawer.savingActivity")}
                           </button>
                         </div>
                       </div>
@@ -1747,8 +1766,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                         ].join(" ")}
                                         title={
                                           activity.taskDone
-                                            ? "Reopen task"
-                                            : "Mark as done"
+                                            ? t("crm.leads.drawer.reopenTask")
+                                            : t("crm.leads.drawer.markDone")
                                         }
                                       >
                                         <CheckCircle2 className="h-4 w-4" />
@@ -1756,7 +1775,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                     )}
 
                                     <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 ring-1 ring-slate-200">
-                                      {getActivityTypeLabel(activity.type)}
+                                      {getActivityTypeLabel(activity.type, t)}
                                     </span>
 
                                     {isTask && (
@@ -1768,18 +1787,18 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                             : "bg-blue-50 text-blue-700 ring-blue-100",
                                         ].join(" ")}
                                       >
-                                        {activity.taskDone ? "Completed" : "Open"}
+                                        {activity.taskDone ? t("crm.leads.drawer.completed") : t("crm.leads.drawer.open")}
                                       </span>
                                     )}
 
                                     <span className="text-xs font-black text-slate-500">
-                                      {activity.createdBy || "System User"}
+                                      {activity.createdBy || t("crm.common.systemUser")}
                                     </span>
                                   </div>
 
                                   <div className="flex items-center gap-1 text-xs font-bold text-slate-400">
                                     <Clock3 className="h-3.5 w-3.5" />
-                                    {formatDate(activity.createdAt)}
+                                    {formatDate(activity.createdAt, locale, emDash)}
                                   </div>
                                 </div>
 
@@ -1797,15 +1816,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 {isTask && (
                                   <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black">
                                     <span className="rounded-full bg-white px-3 py-1 text-amber-700 ring-1 ring-amber-100">
-                                      Due time: {formatDate(activity.taskDueAt)}
+                                      {t("crm.leads.drawer.dueTimeLabel", {
+                                        time: formatDate(activity.taskDueAt, locale, emDash),
+                                      })}
                                     </span>
 
                                     {activity.taskCompletedAt && (
                                       <span className="rounded-full bg-white px-3 py-1 text-sky-700 ring-1 ring-sky-100">
-                                        Completed by{" "}
-                                        {activity.taskCompletedBy ||
-                                          "System User"}{" "}
-                                        · {formatDate(activity.taskCompletedAt)}
+                                        {t("crm.leads.drawer.completedBy", {
+                                          name:
+                                            activity.taskCompletedBy ||
+                                            t("crm.common.systemUser"),
+                                          time: formatDate(
+                                            activity.taskCompletedAt,
+                                            locale,
+                                            emDash
+                                          ),
+                                        })}
                                       </span>
                                     )}
                                   </div>
@@ -1817,7 +1844,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       ) : (
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                           <p className="text-sm font-bold text-slate-400">
-                            There are no activities for this lead yet
+                            {t("crm.leads.drawer.noActivities")}
                           </p>
                         </div>
                       )}
@@ -1826,7 +1853,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     {selectedLead.message && (
                       <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
                         <h3 className="mb-4 text-lg font-black text-slate-800">
-                          Form note
+                          {t("crm.leads.drawer.formNote")}
                         </h3>
 
                         <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
@@ -1842,36 +1869,36 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
                       <div className="mb-3 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          Profile Summary
+                          {t("crm.leads.drawer.profileSummary")}
                         </h4>
                         <Sparkles className="h-5 w-5 text-pink-500" />
                       </div>
 
                       <p className="text-sm font-semibold leading-6 text-slate-500">
-                        All activities and tasks appear in the profile center in chronological order.
+                        {t("crm.leads.drawer.profileSummaryText")}
                       </p>
                     </section>
 
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          Source Details
+                          {t("crm.leads.drawer.sourceDetails")}
                         </h4>
                         <Webhook className="h-5 w-5 text-sky-600" />
                       </div>
 
                       <div className="space-y-3">
                         <DetailRow
-                          label="Source"
-                          value={getLeadSourceLabel(selectedLead)}
+                          label={t("crm.leads.drawer.source")}
+                          value={getLeadSourceLabel(selectedLead, t)}
                         />
                         <DetailRow
-                          label="Form"
-                          value={getLeadFormName(selectedLead)}
+                          label={t("crm.leads.drawer.form")}
+                          value={getLeadFormName(selectedLead, t)}
                           copyable
                         />
                         <DetailRow
-                          label="Lead ID"
+                          label={t("crm.leads.drawer.leadId")}
                           value={
                             selectedLead.externalLeadId ||
                             selectedLead.facebook?.leadId
@@ -1879,7 +1906,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           copyable
                         />
                         <DetailRow
-                          label="Form ID"
+                          label={t("crm.leads.drawer.formId")}
                           value={
                             selectedLead.externalFormId ||
                             selectedLead.facebook?.formId
@@ -1887,7 +1914,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           copyable
                         />
                         <DetailRow
-                          label="Page ID"
+                          label={t("crm.leads.drawer.pageId")}
                           value={
                             selectedLead.externalPageId ||
                             selectedLead.facebook?.pageId
@@ -1900,7 +1927,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
                       <div className="mb-4 flex items-center justify-between">
                         <h4 className="text-sm font-black text-slate-800">
-                          Handling Status
+                          {t("crm.leads.drawer.handlingStatus")}
                         </h4>
                         <UsersRound className="h-5 w-5 text-slate-400" />
                       </div>
@@ -1908,7 +1935,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <div className="space-y-3">
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Activities
+                            {t("crm.leads.drawer.activities")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
                             {selectedActivities.length}
@@ -1917,7 +1944,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Open Tasks
+                            {t("crm.leads.drawer.openTasks")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
                             {openTaskActivitiesCount}
@@ -1926,10 +1953,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
                           <p className="text-xs font-black text-slate-400">
-                            Status
+                            {t("crm.common.status")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
-                            {statusLabels[selectedStatus]}
+                            {getStatusLabel(selectedStatus, t)}
                           </p>
                         </div>
                       </div>

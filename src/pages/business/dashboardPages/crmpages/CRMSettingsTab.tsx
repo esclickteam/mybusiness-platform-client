@@ -20,7 +20,9 @@ import {
   Sparkles,
   Wrench,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 import WorkHoursTab from "./WorkHoursTab";
 
 type CRMSettingsState = {
@@ -99,52 +101,40 @@ const inputClass =
 const textareaClass =
   "w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100";
 
-const settingsTabs: {
+const settingsTabMeta: {
   key: SettingsTabKey;
-  label: string;
-  description: string;
+  labelKey: string;
   icon: React.ElementType;
 }[] = [
-  {
-    key: "general",
-    label: "General",
-    description: "Business details",
-    icon: Settings,
-  },
+  { key: "general", labelKey: "crm.settings.tabs.general.label", icon: Settings },
   {
     key: "working-hours",
-    label: "Working Hours",
-    description: "Weekly availability",
+    labelKey: "crm.settings.tabs.workingHours.label",
     icon: Clock,
   },
   {
     key: "special-dates",
-    label: "Special Dates",
-    description: "Closed dates & blocked hours",
+    labelKey: "crm.settings.tabs.specialDates.label",
     icon: CalendarX2,
   },
   {
     key: "booking-rules",
-    label: "Booking Rules",
-    description: "Booking limits",
+    labelKey: "crm.settings.tabs.bookingRules.label",
     icon: SlidersHorizontal,
   },
   {
     key: "notifications",
-    label: "Notifications",
-    description: "Reminders & messages",
+    labelKey: "crm.settings.tabs.notifications.label",
     icon: Bell,
   },
   {
     key: "branding",
-    label: "Branding",
-    description: "Colors & preview",
+    labelKey: "crm.settings.tabs.branding.label",
     icon: Palette,
   },
   {
     key: "security",
-    label: "Security",
-    description: "Protected CRM",
+    labelKey: "crm.settings.tabs.security.label",
     icon: ShieldCheck,
   },
 ];
@@ -154,6 +144,8 @@ function createId(prefix: string) {
 }
 
 export default function CRMSettingsTab() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [activeTab, setActiveTab] = useState<SettingsTabKey>("general");
   const [settings, setSettings] = useState<CRMSettingsState>(initialSettings);
   const [bookingRules, setBookingRules] =
@@ -207,14 +199,6 @@ export default function CRMSettingsTab() {
         specialDates,
       });
 
-      // Future API:
-      // await API.post("/crm/settings", {
-      //   settings,
-      //   bookingRules,
-      //   notifications,
-      //   specialDates,
-      // });
-
       setSaved(true);
 
       window.setTimeout(() => {
@@ -222,7 +206,7 @@ export default function CRMSettingsTab() {
       }, 2500);
     } catch (error) {
       console.error("Settings save error:", error);
-      alert("Failed to save settings");
+      alert(t("crm.settings.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -253,7 +237,7 @@ export default function CRMSettingsTab() {
   };
 
   return (
-    <div className="space-y-5">
+    <div dir={dir} className="space-y-5">
       <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
         <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
         <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
@@ -263,17 +247,15 @@ export default function CRMSettingsTab() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
               <Settings className="h-4 w-4" />
-              CRM Settings
+              {t("crm.settings.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Business and CRM preferences
+              {t("crm.settings.heroTitle")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              Manage your business profile, working hours, special dates,
-              booking rules, reminders, branding and security from one clean CRM
-              workspace.
+              {t("crm.settings.heroSubtitle")}
             </p>
 
             <div className="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -284,7 +266,9 @@ export default function CRMSettingsTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-5 text-sm font-black text-white shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Save className="h-5 w-5" />
-                {saving ? "Saving..." : "Save Settings"}
+                {saving
+                  ? t("crm.common.saving")
+                  : t("crm.settings.saveSettings")}
               </button>
 
               <button
@@ -293,7 +277,7 @@ export default function CRMSettingsTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <Clock className="h-5 w-5" />
-                Working Hours
+                {t("crm.settings.workingHoursCta")}
               </button>
             </div>
           </div>
@@ -304,31 +288,35 @@ export default function CRMSettingsTab() {
 
       <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="Profile completion"
+          label={t("crm.settings.stats.profileCompletion")}
           value={`${completionPercent}%`}
           icon={CheckCircle2}
-          helper="business details"
+          helper={t("crm.settings.stats.profileHelper")}
         />
 
         <StatCard
-          label="Business email"
-          value={settings.businessEmail ? "Active" : "Missing"}
+          label={t("crm.settings.stats.businessEmail")}
+          value={
+            settings.businessEmail
+              ? t("crm.common.active")
+              : t("crm.common.missing")
+          }
           icon={Mail}
-          helper="customer communication"
+          helper={t("crm.settings.stats.emailHelper")}
         />
 
         <StatCard
-          label="Working hours"
-          value="Ready"
+          label={t("crm.settings.stats.workingHours")}
+          value={t("crm.common.ready")}
           icon={Clock}
-          helper="booking availability"
+          helper={t("crm.settings.stats.hoursHelper")}
         />
 
         <StatCard
-          label="CRM security"
-          value="Protected"
+          label={t("crm.settings.stats.crmSecurity")}
+          value={t("crm.common.protected")}
           icon={ShieldCheck}
-          helper="system settings"
+          helper={t("crm.settings.stats.securityHelper")}
         />
       </section>
 
@@ -337,24 +325,24 @@ export default function CRMSettingsTab() {
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                CRM Setup
+                {t("crm.settings.setupTitle")}
               </h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                Choose which settings area you want to manage.
+                {t("crm.settings.setupSubtitle")}
               </p>
             </div>
 
             <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2">
               <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
               <span className="text-xs font-black text-emerald-700">
-                Live CRM
+                {t("crm.settings.liveCrm")}
               </span>
             </div>
           </div>
 
           <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-            {settingsTabs.map((tab) => {
+            {settingsTabMeta.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
 
@@ -364,7 +352,7 @@ export default function CRMSettingsTab() {
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
                   className={[
-                    "flex min-w-fit items-center gap-3 rounded-2xl border px-4 py-3 text-left transition",
+                    "flex min-w-fit items-center gap-3 rounded-2xl border px-4 py-3 text-start transition",
                     isActive
                       ? "border-slate-950 bg-slate-950 text-white shadow-lg shadow-slate-200"
                       : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
@@ -378,7 +366,7 @@ export default function CRMSettingsTab() {
                   />
 
                   <span className="whitespace-nowrap text-sm font-black">
-                    {tab.label}
+                    {t(tab.labelKey)}
                   </span>
                 </button>
               );
@@ -445,9 +433,9 @@ export default function CRMSettingsTab() {
       </section>
 
       {saved && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm font-black text-emerald-700 shadow-[0_20px_70px_rgba(15,23,42,0.18)]">
+        <div className="fixed bottom-6 end-6 z-50 flex items-center gap-3 rounded-2xl border border-emerald-100 bg-white px-5 py-4 text-sm font-black text-emerald-700 shadow-[0_20px_70px_rgba(15,23,42,0.18)]">
           <CheckCircle2 className="h-5 w-5" />
-          Settings saved successfully
+          {t("crm.settings.savedToast")}
         </div>
       )}
     </div>
@@ -467,50 +455,52 @@ function GeneralSettings({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={Settings}
-      eyebrow="General settings"
-      title="Business profile"
-      description="These details are used across your CRM, reminders and business profile."
-      actionLabel="Save Changes"
+      eyebrow={t("crm.settings.general.eyebrow")}
+      title={t("crm.settings.general.title")}
+      description={t("crm.settings.general.description")}
+      actionLabel={t("crm.common.saveChanges")}
       saving={saving}
       onSave={onSave}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <FormField
-          label="Business Name"
+          label={t("crm.settings.general.businessName")}
           icon={Building2}
-          helper="Displayed inside the CRM and business profile."
+          helper={t("crm.settings.general.businessNameHelper")}
         >
           <input
             name="businessName"
             value={settings.businessName}
             onChange={onChange}
-            placeholder="Business name"
+            placeholder={t("crm.settings.general.businessNamePlaceholder")}
             className={inputClass}
           />
         </FormField>
 
         <FormField
-          label="Business Email"
+          label={t("crm.settings.general.businessEmail")}
           icon={Mail}
-          helper="Used for client communication and alerts."
+          helper={t("crm.settings.general.businessEmailHelper")}
         >
           <input
             name="businessEmail"
             type="email"
             value={settings.businessEmail}
             onChange={onChange}
-            placeholder="business@example.com"
+            placeholder={t("crm.settings.general.businessEmailPlaceholder")}
             className={inputClass}
           />
         </FormField>
 
         <FormField
-          label="Business Phone"
+          label={t("crm.settings.general.businessPhone")}
           icon={Phone}
-          helper="Main phone number shown to clients."
+          helper={t("crm.settings.general.businessPhoneHelper")}
         >
           <input
             name="businessPhone"
@@ -522,45 +512,45 @@ function GeneralSettings({
         </FormField>
 
         <FormField
-          label="Address"
+          label={t("crm.settings.general.address")}
           icon={MapPin}
-          helper="Business location or service area."
+          helper={t("crm.settings.general.addressHelper")}
         >
           <input
             name="businessAddress"
             value={settings.businessAddress}
             onChange={onChange}
-            placeholder="Business address"
+            placeholder={t("crm.settings.general.addressPlaceholder")}
             className={inputClass}
           />
         </FormField>
 
         <FormField
-          label="Reminder Sending Email"
+          label={t("crm.settings.general.sendFromEmail")}
           icon={Bell}
-          helper="The email address used for CRM reminders."
+          helper={t("crm.settings.general.sendFromEmailHelper")}
         >
           <input
             name="sendFromEmail"
             type="email"
             value={settings.sendFromEmail}
             onChange={onChange}
-            placeholder="no-reply@example.com"
+            placeholder={t("crm.settings.general.sendFromEmailPlaceholder")}
             className={inputClass}
           />
         </FormField>
 
         <FormField
-          label="Services"
+          label={t("crm.settings.general.services")}
           icon={Wrench}
-          helper="Services stay as a main CRM module."
+          helper={t("crm.settings.general.servicesHelper")}
         >
           <a
             href="../services"
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-4 text-sm font-black text-sky-800 transition hover:bg-sky-100"
           >
             <ExternalLink className="h-4 w-4" />
-            Open Services
+            {t("crm.settings.general.openServices")}
           </a>
         </FormField>
       </div>
@@ -585,16 +575,18 @@ function SpecialDatesSettings({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={CalendarX2}
-      eyebrow="Special dates"
-      title="Exceptions and blocked dates"
-      description="Block full dates, block a specific time range, or define special opening hours for one date."
-      actionLabel="Add Exception"
+      eyebrow={t("crm.settings.specialDates.eyebrow")}
+      title={t("crm.settings.specialDates.title")}
+      description={t("crm.settings.specialDates.description")}
+      actionLabel={t("crm.settings.specialDates.addException")}
       saving={false}
       onSave={onAdd}
-      secondaryActionLabel="Save Exceptions"
+      secondaryActionLabel={t("crm.settings.specialDates.saveExceptions")}
       secondarySaving={saving}
       onSecondarySave={onSave}
     >
@@ -605,7 +597,7 @@ function SpecialDatesSettings({
             className="rounded-[1.7rem] border border-slate-100 bg-slate-50/60 p-4"
           >
             <div className="grid gap-4 xl:grid-cols-[180px_220px_1fr_auto] xl:items-end">
-              <FormSmall label="Date">
+              <FormSmall label={t("crm.common.date")}>
                 <input
                   type="date"
                   value={item.date}
@@ -616,7 +608,7 @@ function SpecialDatesSettings({
                 />
               </FormSmall>
 
-              <FormSmall label="Exception Type">
+              <FormSmall label={t("crm.settings.specialDates.exceptionType")}>
                 <select
                   value={item.type}
                   onChange={(event) =>
@@ -626,14 +618,20 @@ function SpecialDatesSettings({
                   }
                   className={inputClass}
                 >
-                  <option value="closed">Closed all day</option>
-                  <option value="blocked-hours">Block time range</option>
-                  <option value="custom-hours">Custom opening hours</option>
+                  <option value="closed">
+                    {t("crm.settings.specialDates.closedAllDay")}
+                  </option>
+                  <option value="blocked-hours">
+                    {t("crm.settings.specialDates.blockTimeRange")}
+                  </option>
+                  <option value="custom-hours">
+                    {t("crm.settings.specialDates.customOpeningHours")}
+                  </option>
                 </select>
               </FormSmall>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <FormSmall label="Start">
+                <FormSmall label={t("crm.settings.specialDates.start")}>
                   <input
                     type="time"
                     value={item.start}
@@ -645,7 +643,7 @@ function SpecialDatesSettings({
                   />
                 </FormSmall>
 
-                <FormSmall label="End">
+                <FormSmall label={t("crm.settings.specialDates.end")}>
                   <input
                     type="time"
                     value={item.end}
@@ -663,18 +661,18 @@ function SpecialDatesSettings({
                 onClick={() => onDelete(item.id)}
                 className="h-12 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
               >
-                Delete
+                {t("crm.common.delete")}
               </button>
             </div>
 
             <div className="mt-4">
-              <FormSmall label="Internal note">
+              <FormSmall label={t("crm.settings.specialDates.internalNote")}>
                 <textarea
                   value={item.note}
                   onChange={(event) =>
                     onUpdate(item.id, { note: event.target.value })
                   }
-                  placeholder="Example: holiday, vacation, private event..."
+                  placeholder={t("crm.settings.specialDates.notePlaceholder")}
                   rows={3}
                   className={textareaClass}
                 />
@@ -686,8 +684,8 @@ function SpecialDatesSettings({
 
       <SettingsTipCard
         icon={CalendarX2}
-        title="Availability exception"
-        text="Use this for holidays, vacations, private events or special opening hours."
+        title={t("crm.settings.specialDates.tipTitle")}
+        text={t("crm.settings.specialDates.tipText")}
       />
     </SettingsPanel>
   );
@@ -704,21 +702,23 @@ function BookingRulesSettings({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={SlidersHorizontal}
-      eyebrow="Booking rules"
-      title="Appointment booking limits"
-      description="Control how clients can book, cancel and schedule appointments."
-      actionLabel="Save Rules"
+      eyebrow={t("crm.settings.bookingRules.eyebrow")}
+      title={t("crm.settings.bookingRules.title")}
+      description={t("crm.settings.bookingRules.description")}
+      actionLabel={t("crm.settings.bookingRules.saveRules")}
       saving={saving}
       onSave={onSave}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <FormField
-          label="Minimum notice"
+          label={t("crm.settings.bookingRules.minNotice")}
           icon={CalendarClock}
-          helper="How many hours before an appointment clients can book."
+          helper={t("crm.settings.bookingRules.minNoticeHelper")}
         >
           <input
             type="number"
@@ -734,9 +734,9 @@ function BookingRulesSettings({
         </FormField>
 
         <FormField
-          label="Maximum booking window"
+          label={t("crm.settings.bookingRules.maxWindow")}
           icon={CalendarClock}
-          helper="How many days ahead clients can book."
+          helper={t("crm.settings.bookingRules.maxWindowHelper")}
         >
           <input
             type="number"
@@ -752,9 +752,9 @@ function BookingRulesSettings({
         </FormField>
 
         <FormField
-          label="Buffer between appointments"
+          label={t("crm.settings.bookingRules.buffer")}
           icon={Clock}
-          helper="Minutes to block between bookings."
+          helper={t("crm.settings.bookingRules.bufferHelper")}
         >
           <input
             type="number"
@@ -770,9 +770,9 @@ function BookingRulesSettings({
         </FormField>
 
         <FormField
-          label="Cancellation limit"
+          label={t("crm.settings.bookingRules.cancellation")}
           icon={CalendarX2}
-          helper="How many hours before the appointment clients can cancel."
+          helper={t("crm.settings.bookingRules.cancellationHelper")}
         >
           <input
             type="number"
@@ -788,9 +788,9 @@ function BookingRulesSettings({
         </FormField>
 
         <FormField
-          label="Approval mode"
+          label={t("crm.settings.bookingRules.approvalMode")}
           icon={SlidersHorizontal}
-          helper="Choose if bookings are approved automatically or manually."
+          helper={t("crm.settings.bookingRules.approvalModeHelper")}
         >
           <select
             value={bookingRules.approvalMode}
@@ -803,16 +803,20 @@ function BookingRulesSettings({
             }
             className={inputClass}
           >
-            <option value="automatic">Automatic approval</option>
-            <option value="manual">Manual approval</option>
+            <option value="automatic">
+              {t("crm.settings.bookingRules.automaticApproval")}
+            </option>
+            <option value="manual">
+              {t("crm.settings.bookingRules.manualApproval")}
+            </option>
           </select>
         </FormField>
       </div>
 
       <SettingsTipCard
         icon={Sparkles}
-        title="Booking logic"
-        text="These rules should later control the public booking slots and appointment approval flow."
+        title={t("crm.settings.bookingRules.tipTitle")}
+        text={t("crm.settings.bookingRules.tipText")}
       />
     </SettingsPanel>
   );
@@ -835,35 +839,39 @@ function NotificationsSettings({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={Bell}
-      eyebrow="Notifications"
-      title="Reminders and follow-ups"
-      description="Configure reminders, follow-ups and sender email."
-      actionLabel="Save Notifications"
+      eyebrow={t("crm.settings.notifications.eyebrow")}
+      title={t("crm.settings.notifications.title")}
+      description={t("crm.settings.notifications.description")}
+      actionLabel={t("crm.settings.notifications.saveNotifications")}
       saving={saving}
       onSave={onSave}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <FormField
-          label="Reminder Sending Email"
+          label={t("crm.settings.notifications.sendFromEmail")}
           icon={Mail}
-          helper="Used as the sender for reminder emails."
+          helper={t("crm.settings.notifications.sendFromEmailHelper")}
         >
           <input
             name="sendFromEmail"
             value={settings.sendFromEmail}
             onChange={onChange}
-            placeholder="no-reply@example.com"
+            placeholder={t(
+              "crm.settings.notifications.sendFromEmailPlaceholder"
+            )}
             className={inputClass}
           />
         </FormField>
 
         <FormField
-          label="Reminder before appointment"
+          label={t("crm.settings.notifications.reminderBefore")}
           icon={Bell}
-          helper="How many hours before the appointment to remind."
+          helper={t("crm.settings.notifications.reminderBeforeHelper")}
         >
           <input
             type="number"
@@ -879,9 +887,9 @@ function NotificationsSettings({
         </FormField>
 
         <FormField
-          label="Follow-up after"
+          label={t("crm.settings.notifications.followUpAfter")}
           icon={MessageSquareText}
-          helper="How many days after appointment to create follow-up."
+          helper={t("crm.settings.notifications.followUpAfterHelper")}
         >
           <input
             type="number"
@@ -898,8 +906,8 @@ function NotificationsSettings({
 
         <div className="grid gap-3">
           <ToggleBox
-            title="Email reminders"
-            text="Send reminder emails to clients."
+            title={t("crm.settings.notifications.emailReminders")}
+            text={t("crm.settings.notifications.emailRemindersText")}
             checked={notifications.emailReminders}
             onClick={() =>
               setNotifications((prev) => ({
@@ -910,8 +918,8 @@ function NotificationsSettings({
           />
 
           <ToggleBox
-            title="SMS reminders"
-            text="Prepare SMS reminder rules."
+            title={t("crm.settings.notifications.smsReminders")}
+            text={t("crm.settings.notifications.smsRemindersText")}
             checked={notifications.smsReminders}
             onClick={() =>
               setNotifications((prev) => ({
@@ -922,8 +930,8 @@ function NotificationsSettings({
           />
 
           <ToggleBox
-            title="WhatsApp reminders"
-            text="Prepare WhatsApp reminder rules."
+            title={t("crm.settings.notifications.whatsappReminders")}
+            text={t("crm.settings.notifications.whatsappRemindersText")}
             checked={notifications.whatsappReminders}
             onClick={() =>
               setNotifications((prev) => ({
@@ -937,8 +945,8 @@ function NotificationsSettings({
 
       <SettingsTipCard
         icon={MessageSquareText}
-        title="Client communication"
-        text="Later this tab can control automatic reminders, follow-up messages and campaign rules."
+        title={t("crm.settings.notifications.tipTitle")}
+        text={t("crm.settings.notifications.tipText")}
       />
     </SettingsPanel>
   );
@@ -957,21 +965,23 @@ function BrandingSettings({
   onSave: () => void;
   saving: boolean;
 }) {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={Palette}
-      eyebrow="Branding"
-      title="CRM brand preview"
-      description="Control CRM brand color and visual preview."
-      actionLabel="Save Branding"
+      eyebrow={t("crm.settings.branding.eyebrow")}
+      title={t("crm.settings.branding.title")}
+      description={t("crm.settings.branding.description")}
+      actionLabel={t("crm.settings.branding.saveBranding")}
       saving={saving}
       onSave={onSave}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <FormField
-          label="Primary Color"
+          label={t("crm.settings.branding.primaryColor")}
           icon={Palette}
-          helper="Brand color used for CRM customization."
+          helper={t("crm.settings.branding.primaryColorHelper")}
         >
           <div className="flex gap-3">
             <input
@@ -993,9 +1003,9 @@ function BrandingSettings({
         </FormField>
 
         <FormField
-          label="Business Name"
+          label={t("crm.settings.branding.businessName")}
           icon={Building2}
-          helper="Displayed in previews and client portal."
+          helper={t("crm.settings.branding.businessNameHelper")}
         >
           <input
             name="businessName"
@@ -1012,13 +1022,15 @@ function BrandingSettings({
 }
 
 function SecuritySettings() {
+  const { t } = useTranslation();
+
   return (
     <SettingsPanel
       icon={ShieldCheck}
-      eyebrow="Security"
-      title="CRM protection and permissions"
-      description="Keep business data protected and prepare worker permissions."
-      actionLabel="Protected"
+      eyebrow={t("crm.settings.security.eyebrow")}
+      title={t("crm.settings.security.title")}
+      description={t("crm.settings.security.description")}
+      actionLabel={t("crm.settings.security.protectedAction")}
       saving={false}
       onSave={() => undefined}
       hideAction
@@ -1026,27 +1038,27 @@ function SecuritySettings() {
       <div className="grid gap-5 lg:grid-cols-3">
         <SecurityCard
           icon={ShieldCheck}
-          title="Protected CRM"
-          text="Your CRM security settings are ready for protected client data."
+          title={t("crm.settings.security.protectedCrmTitle")}
+          text={t("crm.settings.security.protectedCrmText")}
         />
 
         <SecurityCard
           icon={LockKeyhole}
-          title="Private client files"
-          text="Client details and private portal variables should stay behind login."
+          title={t("crm.settings.security.privateFilesTitle")}
+          text={t("crm.settings.security.privateFilesText")}
         />
 
         <SecurityCard
           icon={Sparkles}
-          title="Future permissions"
-          text="Later you can add role permissions for workers, admins and clients."
+          title={t("crm.settings.security.futurePermissionsTitle")}
+          text={t("crm.settings.security.futurePermissionsText")}
         />
       </div>
 
       <SettingsTipCard
         icon={LockKeyhole}
-        title="Permission planning"
-        text="This area can later include employee roles, client portal access and admin controls."
+        title={t("crm.settings.security.tipTitle")}
+        text={t("crm.settings.security.tipText")}
       />
     </SettingsPanel>
   );
@@ -1079,6 +1091,8 @@ function SettingsPanel({
   hideAction?: boolean;
   children: React.ReactNode;
 }) {
+  const { t } = useTranslation();
+
   return (
     <section className="space-y-5">
       <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-violet-50/50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
@@ -1111,7 +1125,7 @@ function SettingsPanel({
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
-              {saving ? "Saving..." : actionLabel}
+              {saving ? t("crm.common.saving") : actionLabel}
             </button>
           )}
         </div>
@@ -1140,17 +1154,15 @@ function SettingsPanel({
           )}
         </div>
 
-        <SettingsTipCard
-          icon={Icon}
-          title={title}
-          text={description}
-        />
+        <SettingsTipCard icon={Icon} title={title} text={description} />
       </div>
     </section>
   );
 }
 
 function SettingsAside({ settings }: { settings: CRMSettingsState }) {
+  const { t } = useTranslation();
+
   return (
     <aside className="space-y-5">
       <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
@@ -1161,21 +1173,36 @@ function SettingsAside({ settings }: { settings: CRMSettingsState }) {
 
           <div>
             <h3 className="text-base font-black text-slate-950">
-              Settings Overview
+              {t("crm.settings.general.overviewTitle")}
             </h3>
 
             <p className="text-xs font-semibold text-slate-500">
-              Live status of this CRM setup
+              {t("crm.settings.general.overviewSubtitle")}
             </p>
           </div>
         </div>
 
         <div className="mt-5 space-y-3">
-          <OverviewRow label="Business name" value={settings.businessName} />
-          <OverviewRow label="Email" value={settings.businessEmail} />
-          <OverviewRow label="Phone" value={settings.businessPhone} />
-          <OverviewRow label="Address" value={settings.businessAddress} />
-          <OverviewRow label="Sender" value={settings.sendFromEmail} />
+          <OverviewRow
+            label={t("crm.settings.general.overviewBusinessName")}
+            value={settings.businessName}
+          />
+          <OverviewRow
+            label={t("crm.common.email")}
+            value={settings.businessEmail}
+          />
+          <OverviewRow
+            label={t("crm.common.phone")}
+            value={settings.businessPhone}
+          />
+          <OverviewRow
+            label={t("crm.common.address")}
+            value={settings.businessAddress}
+          />
+          <OverviewRow
+            label={t("crm.settings.general.overviewSender")}
+            value={settings.sendFromEmail}
+          />
         </div>
       </section>
 
@@ -1185,9 +1212,13 @@ function SettingsAside({ settings }: { settings: CRMSettingsState }) {
 }
 
 function BrandPreview({ settings }: { settings: CRMSettingsState }) {
+  const { t } = useTranslation();
+
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-      <h3 className="text-base font-black text-slate-950">Brand Preview</h3>
+      <h3 className="text-base font-black text-slate-950">
+        {t("crm.settings.branding.previewTitle")}
+      </h3>
 
       <div className="mt-4 rounded-[1.5rem] border border-slate-100 bg-slate-50 p-4">
         <div className="flex items-center gap-3">
@@ -1200,11 +1231,13 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
 
           <div className="min-w-0">
             <p className="truncate text-sm font-black text-slate-950">
-              {settings.businessName || "Business Name"}
+              {settings.businessName ||
+                t("crm.settings.branding.previewFallbackName")}
             </p>
 
             <p className="truncate text-xs font-semibold text-slate-500">
-              {settings.businessEmail || "business@example.com"}
+              {settings.businessEmail ||
+                t("crm.settings.branding.previewFallbackEmail")}
             </p>
           </div>
         </div>
@@ -1214,7 +1247,7 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
           className="mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
           style={{ backgroundColor: settings.themeColor }}
         >
-          Preview Button
+          {t("crm.settings.branding.previewButton")}
         </button>
       </div>
     </section>
@@ -1230,6 +1263,8 @@ function SettingsTipCard({
   title: string;
   text: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <aside className="h-fit rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5 shadow-[0_12px_36px_rgba(14,165,233,0.06)]">
       <div className="flex items-center gap-3">
@@ -1241,7 +1276,7 @@ function SettingsTipCard({
           <h3 className="text-base font-black text-slate-950">{title}</h3>
 
           <p className="text-xs font-semibold text-slate-500">
-            CRM setup section
+            {t("crm.settings.tipSectionLabel")}
           </p>
         </div>
       </div>
@@ -1354,6 +1389,8 @@ function StatCard({
   icon: React.ElementType;
   helper: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
       <div className="flex items-start justify-between gap-3">
@@ -1364,7 +1401,9 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">▲ Active</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">
+            {t("crm.common.statusActive")}
+          </p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -1378,6 +1417,8 @@ function StatCard({
 }
 
 function OverviewRow({ label, value }: { label: string; value: string }) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3">
       <span className="text-xs font-black uppercase tracking-[0.12em] text-slate-400">
@@ -1385,7 +1426,7 @@ function OverviewRow({ label, value }: { label: string; value: string }) {
       </span>
 
       <span className="max-w-[170px] truncate text-sm font-black text-slate-800">
-        {value || "Missing"}
+        {value || t("crm.common.missing")}
       </span>
     </div>
   );
@@ -1407,7 +1448,7 @@ function ToggleBox({
       type="button"
       onClick={onClick}
       className={[
-        "rounded-2xl border p-4 text-left transition",
+        "rounded-2xl border p-4 text-start transition",
         checked
           ? "border-sky-200 bg-sky-50"
           : "border-slate-200 bg-slate-50 hover:bg-white",
@@ -1446,6 +1487,8 @@ function SaveButton({
   saving: boolean;
   label: string;
 }) {
+  const { t } = useTranslation();
+
   return (
     <button
       type="button"
@@ -1454,7 +1497,7 @@ function SaveButton({
       className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Save className="h-5 w-5" />
-      {saving ? "Saving..." : label}
+      {saving ? t("crm.common.saving") : label}
     </button>
   );
 }

@@ -2,8 +2,10 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
+import { getTextDirection, isHebrewLanguage } from "../../i18n/localeUtils";
 import { BusinessServicesProvider } from "@context/BusinessServicesContext";
 import { AiProvider } from "../../context/AiContext";
 import API from "../../api";
@@ -162,10 +164,13 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
 export default function BusinessDashboardLayout() {
   const { user, loading, logout, isImpersonating, loginWithToken } =
     useAuth() as AuthContextValue;
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
   const businessId = useDashboardBusinessId();
   const isAdmin = user?.role === "admin";
+  const layoutDir = getTextDirection(i18n.language);
+  const isRtl = isHebrewLanguage(i18n.language);
 
   const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -439,7 +444,7 @@ export default function BusinessDashboardLayout() {
       navigate("/admin/dashboard", { replace: true });
     } catch (err) {
       console.error("Exit impersonation failed:", err);
-      alert("לא ניתן לחזור לפאנל האדמין כרגע");
+      alert(t("layout.exitImpersonationError"));
     } finally {
       setExitingImpersonation(false);
     }
@@ -457,22 +462,19 @@ export default function BusinessDashboardLayout() {
     <BusinessServicesProvider>
       <AiProvider>
         <div
-          dir="ltr"
+          dir={layoutDir}
           className="min-h-screen w-full bg-[#f5f6fb] text-slate-950"
         >
           {isImpersonating ? (
-            <div
-              dir="rtl"
-              className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6"
-            >
-              <div className="text-right">
+            <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
+              <div className="text-start">
                 <strong className="block text-sm font-black">
-                  מצב אדמין — כניסה לעסק
+                  {t("layout.adminImpersonationTitle")}
                 </strong>
                 <span className="block text-xs font-bold text-amber-900/70">
-                  את/ה פועל/ת עם הרשאות מלאות בעסק{" "}
-                  {user?.businessName || user?.name || ""}. כל הפעולות נשמרות
-                  בעסק זה.
+                  {t("layout.adminImpersonationText", {
+                    name: user?.businessName || user?.name || "",
+                  })}
                 </span>
               </div>
 
@@ -482,7 +484,9 @@ export default function BusinessDashboardLayout() {
                 onClick={handleExitImpersonation}
                 className="rounded-2xl bg-amber-900 px-4 py-2.5 text-xs font-black text-white transition hover:bg-amber-800 disabled:opacity-60"
               >
-                {exitingImpersonation ? "חוזר..." : "חזרה לפאנל אדמין"}
+                {exitingImpersonation
+                  ? t("layout.returning")
+                  : t("layout.backToAdmin")}
               </button>
             </div>
           ) : null}
@@ -499,15 +503,18 @@ export default function BusinessDashboardLayout() {
             <aside
               ref={sidebarRef}
               className={`
-                fixed left-0 z-50 flex w-[250px]
-                flex-col border-r border-slate-200 bg-white
+                fixed z-50 flex w-[250px]
+                flex-col bg-white
                 shadow-[0_20px_60px_rgba(15,23,42,0.10)]
                 transition-transform duration-300
+                ${isRtl ? "right-0 border-l border-slate-200" : "left-0 border-r border-slate-200"}
                 ${
                   isMobile
                     ? showSidebar
                       ? "translate-x-0"
-                      : "-translate-x-full"
+                      : isRtl
+                        ? "translate-x-full"
+                        : "-translate-x-full"
                     : "translate-x-0"
                 }
               `}
@@ -550,7 +557,7 @@ export default function BusinessDashboardLayout() {
                       transition hover:bg-slate-50
                     "
                   >
-                    Log out
+                    {t("common.logOut")}
                   </button>
                 </div>
               )}
@@ -560,16 +567,16 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && isAdmin && (
             <div
               className="
-                fixed left-0 top-0 z-[35] flex h-10 items-center justify-between
+                fixed top-0 z-[35] flex h-10 items-center justify-between
                 gap-3 bg-slate-900 px-4 text-sm text-white
               "
               style={{
-                left: isMobile ? 0 : SIDEBAR_WIDTH,
-                right: 0,
+                left: isMobile ? 0 : isRtl ? 0 : SIDEBAR_WIDTH,
+                right: isMobile ? 0 : isRtl ? SIDEBAR_WIDTH : 0,
               }}
             >
               <span className="truncate font-semibold">
-                מצב אדמין — צפייה וניהול בעסק
+                {t("layout.adminBarTitle")}
               </span>
               <button
                 type="button"
@@ -579,7 +586,7 @@ export default function BusinessDashboardLayout() {
                   transition hover:bg-white/25
                 "
               >
-                חזרה לפאנל אדמין
+                {t("layout.backToAdmin")}
               </button>
             </div>
           )}
@@ -587,15 +594,14 @@ export default function BusinessDashboardLayout() {
           {!isWebsiteFullScreen && (
             <header
               className="
-                fixed left-0 z-30 flex h-16 items-center justify-between
+                fixed z-30 flex h-16 items-center justify-between
                 border-b border-slate-200 bg-white/95 px-4 shadow-sm
                 backdrop-blur-xl transition-all duration-300 lg:px-6
               "
               style={{
-                top: isImpersonating ? 56 : 0,
-                left: isMobile ? 0 : SIDEBAR_WIDTH,
-                right: 0,
-                top: isAdmin ? 40 : 0,
+                top: isImpersonating ? 56 : isAdmin ? 40 : 0,
+                left: isMobile ? 0 : isRtl ? 0 : SIDEBAR_WIDTH,
+                right: isMobile ? 0 : isRtl ? SIDEBAR_WIDTH : 0,
               }}
             >
               <div className="flex min-w-0 items-center gap-3">
@@ -615,12 +621,13 @@ export default function BusinessDashboardLayout() {
                 )}
 
                 <div className="hidden min-w-0 text-sm font-semibold text-slate-700 sm:block">
-                  Hello,{" "}
                   <span className="font-black text-slate-950">
-                    {user?.businessName || user?.name}
+                    {t("common.hello", {
+                      name: user?.businessName || user?.name || "",
+                    })}
                   </span>
                   {isAdmin && (
-                    <span className="ml-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
+                    <span className="ms-2 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-600">
                       Admin
                     </span>
                   )}
@@ -725,7 +732,7 @@ export default function BusinessDashboardLayout() {
                       hover:bg-slate-50
                     "
                   >
-                    Log out
+                    {t("common.logOut")}
                   </button>
                 )}
               </div>
@@ -737,13 +744,13 @@ export default function BusinessDashboardLayout() {
               "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]",
               isWebsiteFullScreen
                 ? isImpersonating
-                  ? "pt-14 lg:pl-0"
-                  : "pt-0 lg:pl-0"
+                  ? "pt-14 lg:ps-0"
+                  : "pt-0 lg:ps-0"
                 : isAdmin
-                  ? "pt-[104px] lg:pl-[250px]"
+                  ? "pt-[104px] lg:ps-[250px]"
                   : isImpersonating
-                    ? "pt-[120px] lg:pl-[250px]"
-                    : "pt-16 lg:pl-[250px]",
+                    ? "pt-[120px] lg:ps-[250px]"
+                    : "pt-16 lg:ps-[250px]",
             ].join(" ")}
           >
             <div

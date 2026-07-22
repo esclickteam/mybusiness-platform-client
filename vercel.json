@@ -9,7 +9,7 @@
       "destination": "/api/google-html?file=:file.html"
     },
     {
-      "source": "/api/((?!google-html$).*)",
+      "source": "/api/((?!google-html$|geo$).*)",
       "destination": "https://api.bizuply.com/api/$1"
     },
     {

@@ -6,6 +6,10 @@ export type SitePluginDefinition = {
   description: string;
   category: string;
   icon: string;
+  priceMonthly?: number | null;
+  priceMax?: number | null;
+  priceLabel?: string;
+  accent?: string;
 };
 
 export type SitePluginsResponse = {

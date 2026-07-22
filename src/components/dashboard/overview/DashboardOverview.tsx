@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Area,
   AreaChart,
@@ -280,6 +281,7 @@ export default function DashboardOverview({
   onFiltersChange,
   onRetry,
 }: DashboardOverviewProps) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { businessId } = useParams();
   const basePath = `/business/${businessId}/dashboard`;
@@ -312,12 +314,12 @@ export default function DashboardOverview({
     if (!overview) return [];
 
     return [
-      { name: "Active Collaborations", value: overview.activeCollaborations },
-      { name: "Incoming Referrals", value: overview.incomingReferrals },
-      { name: "Outgoing Referrals", value: overview.outgoingReferrals },
-      { name: "Pending Requests", value: overview.pendingRequests },
+      { name: t("overview.activeCollaborations"), value: overview.activeCollaborations },
+      { name: t("overview.incomingReferrals"), value: overview.incomingReferrals },
+      { name: t("overview.outgoingReferrals"), value: overview.outgoingReferrals },
+      { name: t("overview.pendingRequests"), value: overview.pendingRequests },
     ].filter((item) => item.value > 0);
-  }, [data?.collaborations.overview]);
+  }, [data?.collaborations.overview, t]);
 
   const topTrafficMax = getMaxValue(
     (data?.website.trafficSources || []).map((item) => item.visitors)
@@ -336,17 +338,19 @@ export default function DashboardOverview({
         <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <h1 className="text-[2rem] font-black tracking-tight text-slate-950">
-              {buildBusinessGreeting(businessName)}
+              {t("overview.greeting", {
+                name: (businessName || t("overview.yourBusiness")).trim(),
+              })}
             </h1>
             <p className="mt-1 text-sm font-medium text-slate-500">
-              Here&apos;s your business performance overview.
+              {t("overview.subtitle")}
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {data?.customDomainConnected ? (
               <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
-                Custom domain connected
+                {t("overview.customDomainConnected")}
               </span>
             ) : null}
           </div>
@@ -366,7 +370,9 @@ export default function DashboardOverview({
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                   }`}
                 >
-                  {preset === "custom" ? "Custom Range" : preset}
+                  {preset === "custom"
+                    ? t("common.customRange")
+                    : t(`common.${preset}`)}
                 </button>
               ))}
             </div>
@@ -398,7 +404,7 @@ export default function DashboardOverview({
                 className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm"
               >
                 <Settings2 size={16} />
-                Customize Dashboard
+                {t("overview.customizeDashboard")}
               </button>
             </div>
           </div>
@@ -437,7 +443,7 @@ export default function DashboardOverview({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
               <p className="text-sm font-black text-rose-800">
-                Some dashboard data could not be loaded.
+                {t("overview.loadError")}
               </p>
               <p className="mt-1 text-sm font-medium text-rose-700">{error}</p>
             </div>
@@ -446,7 +452,7 @@ export default function DashboardOverview({
               onClick={onRetry}
               className="rounded-2xl bg-rose-600 px-4 py-2 text-sm font-bold text-white"
             >
-              Retry
+              {t("common.retry")}
             </button>
           </div>
         </Panel>
@@ -454,12 +460,14 @@ export default function DashboardOverview({
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          title="Website Views"
+          title={t("overview.websiteViews")}
           value={loading ? "—" : formatNumber(data?.website.totalViews || 0)}
           subtitle={
             loading
-              ? "Loading visitors..."
-              : `${formatNumber(data?.website.uniqueVisitors || 0)} unique visitors`
+              ? t("overview.loadingVisitors")
+              : t("overview.uniqueVisitors", {
+                  count: formatNumber(data?.website.uniqueVisitors || 0),
+                })
           }
           change={data?.website.viewsChange || 0}
           series={(data?.website.viewsSeries || []).map((item) => item.value)}
@@ -467,12 +475,14 @@ export default function DashboardOverview({
           accent="violet"
         />
         <KpiCard
-          title="New Leads"
+          title={t("overview.newLeads")}
           value={loading ? "—" : formatNumber(data?.leads.newCount || 0)}
           subtitle={
             loading
-              ? "Loading untreated leads..."
-              : `${formatNumber(data?.leads.untreatedCount || 0)} untreated leads`
+              ? t("overview.loadingLeads")
+              : t("overview.untreatedLeads", {
+                  count: formatNumber(data?.leads.untreatedCount || 0),
+                })
           }
           change={data?.leads.change || 0}
           series={(data?.leads.series || []).map((item) => item.value)}
@@ -480,7 +490,7 @@ export default function DashboardOverview({
           accent="blue"
         />
         <KpiCard
-          title="Reviews"
+          title={t("overview.reviews")}
           value={
             loading
               ? "—"
@@ -490,8 +500,11 @@ export default function DashboardOverview({
           }
           subtitle={
             loading
-              ? "Loading reviews..."
-              : `${formatNumber(data?.reviews.newCount || 0)} new this period · ${formatNumber(data?.reviews.totalCount || 0)} total`
+              ? t("overview.loadingReviews")
+              : t("overview.reviewsSubtitle", {
+                  newCount: formatNumber(data?.reviews.newCount || 0),
+                  totalCount: formatNumber(data?.reviews.totalCount || 0),
+                })
           }
           change={data?.reviews.change || 0}
           series={(data?.reviews.series || []).map((item) => item.value)}
@@ -499,7 +512,7 @@ export default function DashboardOverview({
           accent="amber"
         />
         <KpiCard
-          title="Collaborations"
+          title={t("overview.collaborations")}
           value={
             loading
               ? "—"
@@ -507,8 +520,11 @@ export default function DashboardOverview({
           }
           subtitle={
             loading
-              ? "Loading collaborations..."
-              : `${formatNumber(data?.collaborations.newInPeriod || 0)} approved in selected period · ${formatNumber(data?.collaborations.totalInPeriod || 0)} total`
+              ? t("overview.loadingCollaborations")
+              : t("overview.collabSubtitle", {
+                  approved: formatNumber(data?.collaborations.newInPeriod || 0),
+                  total: formatNumber(data?.collaborations.totalInPeriod || 0),
+                })
           }
           change={data?.collaborations.change || 0}
           series={(data?.collaborations.series || []).map((item) => item.value)}
@@ -532,15 +548,15 @@ export default function DashboardOverview({
       <Panel className="p-3">
         <div className="flex flex-wrap gap-2">
           {[
-            { label: "Add Lead", icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
+            { label: t("overview.addLead"), icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
             {
-              label: "New Appointment",
+              label: t("overview.newAppointment"),
               icon: <CalendarPlus size={16} />,
               to: `${basePath}/crm/appointments`,
             },
-            { label: "Edit Website", icon: <Pencil size={16} />, to: `${basePath}/website` },
+            { label: t("overview.editWebsite"), icon: <Pencil size={16} />, to: `${basePath}/website` },
             {
-              label: "Create Collaboration",
+              label: t("overview.createCollaboration"),
               icon: <Handshake size={16} />,
               to: `${basePath}/collab/find-partner`,
             },
@@ -558,7 +574,7 @@ export default function DashboardOverview({
           <button
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600"
-            aria-label="More actions"
+            aria-label={t("overview.moreActions")}
           >
             <MoreHorizontal size={16} />
           </button>
@@ -568,7 +584,9 @@ export default function DashboardOverview({
       <Panel className="p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <h2 className="text-xl font-black text-slate-950">Performance Overview</h2>
+            <h2 className="text-xl font-black text-slate-950">
+              {t("overview.performanceOverview")}
+            </h2>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -583,7 +601,9 @@ export default function DashboardOverview({
                     : "bg-slate-100 text-slate-600"
                 }`}
               >
-                {metric}
+                {t(
+                  `overview.metric${metric.charAt(0).toUpperCase()}${metric.slice(1)}`
+                )}
               </button>
             ))}
           </div>
@@ -600,7 +620,7 @@ export default function DashboardOverview({
                     : "border border-slate-200 bg-white text-slate-600"
                 }`}
               >
-                {resolution}
+                {t(`common.${resolution === "day" ? "day" : resolution}`)}
               </button>
             ))}
           </div>
@@ -620,7 +640,7 @@ export default function DashboardOverview({
                   stroke="#7c3aed"
                   strokeWidth={3}
                   dot={false}
-                  name="This period"
+                  name={t("overview.thisPeriod")}
                 />
                 <Line
                   type="monotone"
@@ -629,14 +649,14 @@ export default function DashboardOverview({
                   strokeWidth={2}
                   strokeDasharray="6 6"
                   dot={false}
-                  name="Previous period"
+                  name={t("overview.previousPeriod")}
                 />
               </LineChart>
             </ResponsiveContainer>
           ) : (
             <EmptyBlock
-              title="No performance data yet"
-              description="Activity in this range will appear here automatically."
+              title={t("overview.noPerformanceTitle")}
+              description={t("overview.noPerformanceText")}
             />
           )}
         </div>
@@ -646,26 +666,28 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">Latest Leads</h3>
+              <h3 className="text-lg font-black text-slate-950">
+                {t("overview.latestLeads")}
+              </h3>
             </div>
             <button
               type="button"
               onClick={() => navigate(`${basePath}/crm/leads`)}
               className="text-sm font-bold text-violet-700"
             >
-              View all
+              {t("common.viewAll")}
             </button>
           </div>
 
           {(data?.leads.latest || []).length ? (
             <div className="overflow-x-auto">
-              <table className="min-w-full text-left text-sm">
+              <table className="min-w-full text-start text-sm">
                 <thead>
                   <tr className="border-b border-slate-100 text-slate-500">
-                    <th className="py-3 pr-3 font-semibold">Name</th>
-                    <th className="py-3 pr-3 font-semibold">Source</th>
-                    <th className="py-3 pr-3 font-semibold">Status</th>
-                    <th className="py-3 font-semibold">Time</th>
+                    <th className="py-3 pe-3 font-semibold">{t("overview.name")}</th>
+                    <th className="py-3 pe-3 font-semibold">{t("overview.source")}</th>
+                    <th className="py-3 pe-3 font-semibold">{t("overview.status")}</th>
+                    <th className="py-3 font-semibold">{t("overview.time")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -691,8 +713,8 @@ export default function DashboardOverview({
             </div>
           ) : (
             <EmptyBlock
-              title="No leads yet"
-              description="New leads from your website, ads, and CRM will show up here."
+              title={t("overview.noLeadsTitle")}
+              description={t("overview.noLeadsText")}
             />
           )}
         </Panel>
@@ -700,9 +722,11 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">Upcoming Appointments</h3>
+              <h3 className="text-lg font-black text-slate-950">
+                {t("overview.upcomingAppointments")}
+              </h3>
               <p className="text-sm font-medium text-slate-500">
-                Next 7 days from your calendar
+                {t("overview.next7Days")}
               </p>
             </div>
             <button
@@ -710,7 +734,7 @@ export default function DashboardOverview({
               onClick={() => navigate(`${basePath}/crm/appointments`)}
               className="text-sm font-bold text-violet-700"
             >
-              View calendar
+              {t("overview.viewCalendar")}
             </button>
           </div>
 
@@ -718,6 +742,9 @@ export default function DashboardOverview({
             <div className="space-y-3">
               {upcomingAppointments.map((appointment) => {
                 const badge = formatAppointmentBadge(appointment.date);
+                const isConfirmed =
+                  appointment.status === "Confirmed" ||
+                  appointment.status === t("overview.confirmed");
 
                 return (
                   <div
@@ -734,7 +761,10 @@ export default function DashboardOverview({
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-base font-black text-slate-950">
                         {appointment.clientName
-                          ? `${appointment.title} with ${appointment.clientName}`
+                          ? t("overview.withClient", {
+                              title: appointment.title,
+                              client: appointment.clientName,
+                            })
                           : appointment.title}
                       </p>
                       <p className="mt-1 text-sm font-medium text-slate-500">
@@ -743,8 +773,14 @@ export default function DashboardOverview({
                     </div>
 
                     <StatusBadge
-                      label={appointment.status}
-                      tone={appointment.status === "Confirmed" ? "success" : "warning"}
+                      label={
+                        appointment.status === "Confirmed"
+                          ? t("overview.confirmed")
+                          : appointment.status === "Pending"
+                            ? t("overview.pending")
+                            : appointment.status
+                      }
+                      tone={isConfirmed ? "success" : "warning"}
                     />
                   </div>
                 );
@@ -752,8 +788,8 @@ export default function DashboardOverview({
             </div>
           ) : (
             <EmptyBlock
-              title="No upcoming appointments"
-              description="Appointments scheduled in the next 7 days will appear here."
+              title={t("overview.noAppointmentsTitle")}
+              description={t("overview.noAppointmentsText")}
             />
           )}
         </Panel>
@@ -763,14 +799,16 @@ export default function DashboardOverview({
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
-              <h3 className="text-lg font-black text-slate-950">Collaborations Overview</h3>
+              <h3 className="text-lg font-black text-slate-950">
+                {t("overview.collabOverview")}
+              </h3>
             </div>
             <button
               type="button"
               onClick={() => navigate(`${basePath}/collab/profile`)}
               className="text-sm font-bold text-violet-700"
             >
-              View all
+              {t("common.viewAll")}
             </button>
           </div>
 
@@ -820,15 +858,17 @@ export default function DashboardOverview({
             </>
           ) : (
             <EmptyBlock
-              title="No collaborations yet"
-              description="Partnerships and proposals will be summarized here."
+              title={t("overview.noCollabTitle")}
+              description={t("overview.noCollabText")}
             />
           )}
         </Panel>
 
         <Panel>
           <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-950">Top Pages</h3>
+            <h3 className="text-lg font-black text-slate-950">
+              {t("overview.topPages")}
+            </h3>
           </div>
 
           {(data?.website.topPages || []).length ? (
@@ -847,15 +887,17 @@ export default function DashboardOverview({
             </div>
           ) : (
             <EmptyBlock
-              title="No page views yet"
-              description="Publish your website and traffic will be tracked automatically."
+              title={t("overview.noPagesTitle")}
+              description={t("overview.noPagesText")}
             />
           )}
         </Panel>
 
         <Panel>
           <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-950">Traffic Sources</h3>
+            <h3 className="text-lg font-black text-slate-950">
+              {t("overview.trafficSources")}
+            </h3>
           </div>
 
           {(data?.website.trafficSources || []).some((item) => item.visitors > 0) ? (
@@ -874,8 +916,8 @@ export default function DashboardOverview({
             </div>
           ) : (
             <EmptyBlock
-              title="No traffic sources yet"
-              description="Referrers and UTM tags will appear after your first visits."
+              title={t("overview.noTrafficTitle")}
+              description={t("overview.noTrafficText")}
             />
           )}
         </Panel>

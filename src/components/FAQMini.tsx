@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type FaqBullet = {
   title: string;
@@ -16,111 +17,69 @@ type FaqItem = {
   };
 };
 
-const FAQS: FaqItem[] = [
-  {
-    q: "What is Bizuply?",
-    a: {
-      lead:
-        "Bizuply is an all-in-one platform that centralizes your business — business page, CRM, collaborations, and AI — so you can manage everything in one place.",
-      bullets: [
-        {
-          title: "Business Page",
-          text: "Turn visitors into leads with a professional profile.",
-        },
-        {
-          title: "CRM",
-          text: "Track leads, clients, follow-ups, and pipeline stages.",
-        },
-        {
-          title: "Collaborations",
-          text: "Work with other businesses and manage proposals & deals.",
-        },
-        {
-          title: "AI",
-          text: "Get smart suggestions and next-step actions to move faster.",
-        },
-      ],
-      footer:
-        "Everything stays connected — no more switching between scattered tools.",
-    },
-  },
-  {
-    q: "How does Bizuply help me get more clients?",
-    a: {
-      lead:
-        "Bizuply helps you capture leads, respond faster, and stay consistent — which increases conversions over time.",
-      bullets: [
-        {
-          title: "Capture leads",
-          text: "Your business page turns traffic into inquiries.",
-        },
-        {
-          title: "Follow up faster",
-          text: "CRM reminders and tasks keep leads warm.",
-        },
-        {
-          title: "Close more deals",
-          text: "A clear pipeline view helps you move opportunities forward.",
-        },
-      ],
-      footer:
-        "The result: fewer missed messages, faster follow-ups, and more closed clients.",
-    },
-  },
-  {
-    q: "What can I manage inside the CRM?",
-    a: {
-      lead:
-        "Your CRM is where everything about a lead or client stays organized — so you always know what’s next.",
-      bullets: [
-        {
-          title: "Leads & clients",
-          text: "Keep every contact and inquiry in one place.",
-        },
-        {
-          title: "Tasks & follow-ups",
-          text: "Set reminders, next steps, and due dates.",
-        },
-        {
-          title: "Notes & history",
-          text: "Track conversations, status, and progress over time.",
-        },
-        {
-          title: "Pipeline stages",
-          text: "Move deals through steps so nothing gets stuck.",
-        },
-      ],
-      footer:
-        "No more spreadsheets or forgotten follow-ups — it’s all structured and searchable.",
-    },
-  },
-  {
-    q: "How does AI help in Bizuply?",
-    a: {
-      lead:
-        "Bizuply AI helps you act faster by highlighting priorities and recommending next steps based on your activity.",
-      bullets: [
-        {
-          title: "Next-step suggestions",
-          text: "Get recommended actions for leads and deals.",
-        },
-        {
-          title: "Priority insights",
-          text: "See what needs attention now — before it’s too late.",
-        },
-        {
-          title: "Faster responses",
-          text: "Draft better replies and follow-ups in less time.",
-        },
-      ],
-      footer:
-        "It’s like having a smart assistant inside your CRM — focused on results.",
-    },
-  },
-];
-
 export default function FAQMini() {
+  const { t } = useTranslation();
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+
+  const FAQS: FaqItem[] = [
+    {
+      q: t("faqMini.q1"),
+      a: {
+        lead: t("faqMini.a1Lead"),
+        bullets: [
+          { title: t("faqMini.a1b1Title"), text: t("faqMini.a1b1Text") },
+          { title: t("faqMini.a1b2Title"), text: t("faqMini.a1b2Text") },
+          { title: t("faqMini.a1b3Title"), text: t("faqMini.a1b3Text") },
+          { title: t("faqMini.a1b4Title"), text: t("faqMini.a1b4Text") },
+        ],
+        footer: t("faqMini.a1Footer"),
+      },
+    },
+    {
+      q: t("faqMini.q2"),
+      a: {
+        lead: t("faqMini.a2Lead"),
+        bullets: [
+          { title: t("faqMini.a2b1Title"), text: t("faqMini.a2b1Text") },
+          { title: t("faqMini.a2b2Title"), text: t("faqMini.a2b2Text") },
+          { title: t("faqMini.a2b3Title"), text: t("faqMini.a2b3Text") },
+        ],
+        footer: t("faqMini.a2Footer"),
+      },
+    },
+    {
+      q: t("faqMini.q3"),
+      a: {
+        lead: t("faqMini.a3Lead"),
+        bullets: [
+          { title: t("faqMini.a3b1Title"), text: t("faqMini.a3b1Text") },
+          { title: t("faqMini.a3b2Title"), text: t("faqMini.a3b2Text") },
+          { title: t("faqMini.a3b3Title"), text: t("faqMini.a3b3Text") },
+          { title: t("faqMini.a3b4Title"), text: t("faqMini.a3b4Text") },
+        ],
+        footer: t("faqMini.a3Footer"),
+      },
+    },
+    {
+      q: t("faqMini.q4"),
+      a: {
+        lead: t("faqMini.a4Lead"),
+        bullets: [
+          { title: t("faqMini.a4b1Title"), text: t("faqMini.a4b1Text") },
+          { title: t("faqMini.a4b2Title"), text: t("faqMini.a4b2Text") },
+          { title: t("faqMini.a4b3Title"), text: t("faqMini.a4b3Text") },
+        ],
+        footer: t("faqMini.a4Footer"),
+      },
+    },
+  ];
+
+  const chips = [
+    "CRM",
+    t("faqMini.chipBusinessPage"),
+    t("faqMini.a1b3Title"),
+    t("faqMini.chipAiTools"),
+  ];
 
   return (
     <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-24 text-slate-950">
@@ -136,20 +95,19 @@ export default function FAQMini() {
           <div className="lg:sticky lg:top-24">
             <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
               <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-              FAQ
+              {t("faqMini.eyebrow")}
             </div>
 
             <h2 className="mt-7 text-4xl font-black leading-[1.02] tracking-[-0.04em] text-slate-950 sm:text-6xl">
-              Frequently asked
+              {t("faqMini.titleTop")}
               <br />
               <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-                questions.
+                {t("faqMini.titleHighlight")}
               </span>
             </h2>
 
             <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
-              Everything you need to know about managing your business,
-              clients, CRM, collaborations and AI inside Bizuply.
+              {t("faqMini.subtitle")}
             </p>
 
             <div className="mt-10 overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-3 shadow-[0_24px_70px_rgba(79,70,229,0.14)] backdrop-blur-xl">
@@ -163,26 +121,23 @@ export default function FAQMini() {
                   </div>
 
                   <h3 className="text-2xl font-black tracking-[-0.03em]">
-                    Still have questions?
+                    {t("faqMini.stillTitle")}
                   </h3>
 
                   <p className="mt-3 text-sm font-semibold leading-6 text-slate-300">
-                    Start with the FAQ, then explore how Bizuply can fit your
-                    workflow.
+                    {t("faqMini.stillText")}
                   </p>
 
                   <div className="mt-6 grid gap-3">
-                    {["CRM", "Business Page", "Collaborations", "AI Tools"].map(
-                      (item) => (
-                        <div
-                          key={item}
-                          className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black backdrop-blur"
-                        >
-                          <span>{item}</span>
-                          <span className="text-cyan-300">✓</span>
-                        </div>
-                      )
-                    )}
+                    {chips.map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-sm font-black backdrop-blur"
+                      >
+                        <span>{item}</span>
+                        <span className="text-cyan-300">✓</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -208,7 +163,7 @@ export default function FAQMini() {
                       type="button"
                       onClick={() => setOpenIndex(isOpen ? null : i)}
                       aria-expanded={isOpen}
-                      className="flex w-full items-center justify-between gap-6 px-6 py-6 text-left sm:px-8"
+                      className="flex w-full items-center justify-between gap-6 px-6 py-6 text-start sm:px-8"
                     >
                       <div className="flex items-start gap-4">
                         <span
@@ -249,7 +204,7 @@ export default function FAQMini() {
                     >
                       <div className="overflow-hidden">
                         <div className="px-6 pb-7 sm:px-8">
-                          <div className="ml-0 rounded-[1.5rem] border border-white/80 bg-white/80 p-5 shadow-sm sm:ml-14">
+                          <div className="ms-0 rounded-[1.5rem] border border-white/80 bg-white/80 p-5 shadow-sm sm:ms-14">
                             <p className="text-base font-semibold leading-8 text-slate-600">
                               {item.a.lead}
                             </p>
@@ -297,12 +252,11 @@ export default function FAQMini() {
         <div className="mt-14 overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-r from-indigo-600 via-violet-600 to-cyan-500 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
           <div className="rounded-[2rem] bg-white/10 px-8 py-9 text-center backdrop-blur-xl sm:px-12">
             <h3 className="text-3xl font-black tracking-[-0.03em] text-white">
-              Ready to manage your business in one place?
+              {t("faqMini.ctaTitle")}
             </h3>
 
             <p className="mx-auto mt-3 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
-              Build your business workspace with CRM, collaborations,
-              appointments and AI.
+              {t("faqMini.ctaText")}
             </p>
           </div>
         </div>
