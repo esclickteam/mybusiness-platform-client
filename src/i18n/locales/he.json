@@ -238,6 +238,8 @@
     "upgradeText": "פתחו אנליטיקה מתקדמת, אוטומציות AI וכלים נוספים לעסק.",
     "upgradeButton": "שדרגו עכשיו",
     "workspaceLabel": "סביבת עבודה",
+    "collapseSidebar": "כיווץ תפריט צד",
+    "expandSidebar": "הרחבת תפריט צד",
     "ariaLabel": "ניווט סביבת העבודה העסקית"
   },
   "layout": {

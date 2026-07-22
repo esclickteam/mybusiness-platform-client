@@ -238,6 +238,8 @@
     "upgradeText": "Unlock advanced analytics, AI automations, and more tools for your business.",
     "upgradeButton": "Upgrade Now",
     "workspaceLabel": "Workspace",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar",
     "ariaLabel": "Business workspace navigation"
   },
   "layout": {
