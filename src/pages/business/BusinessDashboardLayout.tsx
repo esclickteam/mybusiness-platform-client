@@ -85,7 +85,7 @@ type UnreadCountUpdatePayload = {
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
-const SIDEBAR_WIDTH_EXPANDED = 260;
+const SIDEBAR_WIDTH_EXPANDED = 300;
 const SIDEBAR_WIDTH_COLLAPSED = 72;
 const SIDEBAR_COLLAPSED_STORAGE_KEY = "bizuply-sidebar-collapsed";
 const MOBILE_BREAKPOINT = 768;
@@ -550,7 +550,7 @@ export default function BusinessDashboardLayout() {
                 className={`
                   relative flex shrink-0 flex-col items-center justify-center
                   border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/60
-                  ${sidebarCollapsed && !isMobile ? "gap-2 px-2 py-4" : "gap-3 px-4 py-5"}
+                  ${sidebarCollapsed && !isMobile ? "gap-2 px-2 py-4" : "gap-4 px-5 py-6"}
                 `}
               >
                 <img
@@ -560,8 +560,8 @@ export default function BusinessDashboardLayout() {
                     object-contain transition-all duration-300
                     ${
                       sidebarCollapsed && !isMobile
-                        ? "h-10 w-10"
-                        : "h-[72px] w-full max-w-[200px]"
+                        ? "h-14 w-14"
+                        : "h-[288px] w-full max-w-[280px]"
                     }
                   `}
                 />
