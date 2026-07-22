@@ -75,32 +75,49 @@ function NavItem({
       aria-label={label}
       className={({ isActive }) =>
         `
-          group relative flex items-center rounded-xl transition-all duration-200
+          group relative flex items-center rounded-md transition-all duration-200
           ${
             collapsed
               ? "mx-auto h-11 w-11 justify-center"
-              : "h-11 gap-3 px-3.5"
+              : "h-11 gap-3 px-3"
           }
-          text-[14px] font-semibold
+          text-[13.5px] font-medium tracking-[-0.01em]
           ${
             isActive
-              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_8px_24px_rgba(124,58,237,0.28)]"
-              : "text-slate-600 hover:bg-slate-50 hover:text-violet-700"
+              ? `
+                  border border-violet-200/70 bg-gradient-to-r
+                  from-violet-100/90 via-sky-100/80 to-cyan-100/70
+                  text-slate-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.85),0_4px_14px_rgba(99,102,241,0.08)]
+                `
+              : `
+                  border border-transparent text-slate-600
+                  hover:border-violet-100/80 hover:bg-white/55 hover:text-slate-800
+                `
           }
         `
       }
     >
       {({ isActive }) => (
         <>
+          {isActive && !collapsed && (
+            <span
+              aria-hidden
+              className="
+                absolute inset-y-1.5 start-0 w-[3px] rounded-full
+                bg-gradient-to-b from-violet-400 via-sky-400 to-cyan-400
+              "
+            />
+          )}
+
           <Icon
-            size={20}
+            size={19}
             strokeWidth={isActive ? 2.25 : 2}
             className={`
               shrink-0 transition-colors
               ${
                 isActive
-                  ? "text-white"
-                  : "text-slate-400 group-hover:text-violet-600"
+                  ? "text-violet-600"
+                  : "text-slate-400 group-hover:text-sky-600"
               }
             `}
           />
@@ -199,7 +216,7 @@ export default function BusinessWorkspaceNav({
       className="flex flex-col overflow-hidden text-start"
     >
       <div
-        className={`space-y-1 overflow-hidden ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
+        className={`space-y-0.5 overflow-hidden ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >
         {items.map((item) => (
           <NavItem
