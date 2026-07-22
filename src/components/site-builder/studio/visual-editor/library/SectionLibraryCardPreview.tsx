@@ -35,19 +35,29 @@ function collectImages(section: VisualLibrarySectionTemplate, count: number) {
     .map((n) => n.content?.src || n.content?.secureUrl || n.content?.url)
     .filter(Boolean) as string[];
 
-  const pool = [
+  const seen = new Set<string>();
+  const unique: string[] = [];
+  for (const url of [
     ...fromNodes,
     section.thumbnail || "",
-    VISUAL_LIBRARY_IMAGES.beauty,
-    VISUAL_LIBRARY_IMAGES.food,
-    VISUAL_LIBRARY_IMAGES.wellness,
-    VISUAL_LIBRARY_IMAGES.fashion,
+    VISUAL_LIBRARY_IMAGES.studio,
+    VISUAL_LIBRARY_IMAGES.laptop,
+    VISUAL_LIBRARY_IMAGES.cafe,
+    VISUAL_LIBRARY_IMAGES.city,
+    VISUAL_LIBRARY_IMAGES.meeting,
+    VISUAL_LIBRARY_IMAGES.nature,
     VISUAL_LIBRARY_IMAGES.tech,
-    VISUAL_LIBRARY_IMAGES.travel,
-    VISUAL_LIBRARY_IMAGES.realestate,
-  ].filter(Boolean);
+    VISUAL_LIBRARY_IMAGES.architecture,
+  ]) {
+    if (!url || seen.has(url)) continue;
+    seen.add(url);
+    unique.push(url);
+  }
 
-  return Array.from({ length: count }, (_, i) => pool[i % pool.length]);
+  return Array.from(
+    { length: count },
+    (_, i) => unique[i % Math.max(unique.length, 1)],
+  );
 }
 
 function Btn({

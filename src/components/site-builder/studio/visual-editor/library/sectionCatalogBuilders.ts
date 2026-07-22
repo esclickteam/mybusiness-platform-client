@@ -847,7 +847,7 @@ export function productsGrid(opts: {
   ];
   opts.items.slice(0, 4).forEach((item, i) => {
     const x = 60 + i * 255;
-    const key = item.image || (["product", "fashion", "beauty", "food"][i] as ImgKey);
+    const key = item.image || (["product", "skincare", "beauty", "kitchen"][i] as ImgKey);
     nodes.push(
       imageNode(
         `img${i + 1}`,
@@ -1344,7 +1344,7 @@ export function blogBlock(opts: {
 }): VisualLibrarySectionTemplate {
   const variant = opts.variant ?? (opts.featured ? "featured" : "cards");
   const cardRadius = opts.cardRadius ?? "18px";
-  const imgKeys = ["office", "fashion", "travel", "tech", "food", "wellness"] as const;
+  const imgKeys = ["writing", "bookshelf", "laptop", "cafe", "education", "workspace"] as const;
 
   const nodes: VisualLibraryNodeTemplate[] = [
     textNode(
@@ -1418,7 +1418,7 @@ export function blogBlock(opts: {
     nodes.push(
       imageNode(
         "featured-img",
-        img("fashion"),
+        img("bookshelf"),
         { borderRadius: "0px", objectFit: "cover" },
         absoluteLayout(60, 120, "520px", "360px", 10),
         "כתבה ראשית",
@@ -1788,11 +1788,11 @@ export function portfolioGrid(opts: {
   const count = opts.count || 6;
   const keys: ImgKey[] = [
     "construction",
-    "fashion",
-    "realestate",
-    "food",
+    "camera",
+    "interior",
+    "architecture",
     "travel",
-    "tech",
+    "studio",
   ];
   const radiusAt = (i: number) =>
     Array.isArray(opts.imageRadius)
@@ -2006,7 +2006,7 @@ export function heroCollage(opts: any): VisualLibrarySectionTemplate {
     heroSplit({
       ...opts,
       badge: opts.badge || opts.eyebrow || "נבחר במיוחד",
-      image: opts.images?.[0] || opts.image || "fashion",
+      image: opts.images?.[0] || opts.image || "architecture",
       secondary: opts.secondary,
     }),
     "hero-collage",

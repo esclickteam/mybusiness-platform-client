@@ -166,7 +166,7 @@ const editorial = welcome(
   "welcome-editorial-asymmetric",
   "#ffffff",
   "590px",
-  IMG.fashion,
+  IMG.architecture,
   [
     textNode(
       "title",
@@ -190,7 +190,7 @@ const editorial = welcome(
     buttonNode("primary", "לכל העבודות", button, absoluteLayout(365, 430, "160px", "48px", 22)),
     imageNode(
       "image",
-      IMG.fashion,
+      IMG.architecture,
       { objectFit: "cover", borderRadius: "0px" },
       absoluteLayout(560, 30, "510px", "520px", 10),
     ),
@@ -206,7 +206,7 @@ const overlap = welcome(
   IMG.ecommerce,
   [
     imageNode("image1", IMG.ecommerce, { objectFit: "cover" }, absoluteLayout(25, 25, "515px", "570px", 5)),
-    imageNode("image2", IMG.fashion, { objectFit: "cover" }, absoluteLayout(560, 25, "515px", "570px", 5)),
+    imageNode("image2", IMG.product, { objectFit: "cover" }, absoluteLayout(560, 25, "515px", "570px", 5)),
     boxNode(
       "card",
       { backgroundColor: "#ffffff", borderRadius: "10px", boxShadow: "0 24px 80px rgba(15,23,42,.16)" },

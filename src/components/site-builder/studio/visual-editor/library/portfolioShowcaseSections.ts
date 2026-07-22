@@ -61,7 +61,7 @@ const editorialCatalog = portfolio(
   "portfolio-showcase-editorial-catalog",
   "#ffffff",
   "760px",
-  IMG.fashion,
+  IMG.camera,
   [
     textNode(
       "eyebrow",
@@ -88,12 +88,12 @@ const editorialCatalog = portfolio(
       absoluteLayout(40, 72, "320px", "110px", 20),
     ),
     ...[
-      [IMG.fashion, 40, 220, 235, 210, "Identity 01"],
-      [IMG.abstract, 320, 105, 245, 210, "Digital 02"],
-      [IMG.product, 315, 370, 180, 145, "Object 03"],
-      [IMG.portrait, 70, 500, 210, 205, "Portrait 04"],
-      [IMG.skincare, 560, 45, 225, 300, "Campaign 05"],
-      [IMG.event, 800, 300, 250, 315, "Editorial 06"],
+      [IMG.camera, 40, 220, 235, 210, "Identity 01"],
+      [IMG.architecture, 320, 105, 245, 210, "Digital 02"],
+      [IMG.interior, 315, 370, 180, 145, "Object 03"],
+      [IMG.studio, 70, 500, 210, 205, "Portrait 04"],
+      [IMG.abstract, 560, 45, 225, 300, "Campaign 05"],
+      [IMG.nature, 800, 300, 250, 315, "Editorial 06"],
     ].flatMap(([src, x, y, width, height, label], index) => [
       imageNode(
         `image-${index}`,

@@ -1322,67 +1322,32 @@ const _MEGA_SECTION_IDS = new Set(
   SECTION_LIBRARY_MEGA.map((item) => item.id),
 );
 
+const I = VISUAL_LIBRARY_IMAGES;
+
+/** Wide, category-themed pools so section cards rarely share the same hero photo. */
 const CATEGORY_IMAGE_POOLS: Record<string, string[]> = {
-  hero: [
-    VISUAL_LIBRARY_IMAGES.architecture,
-    VISUAL_LIBRARY_IMAGES.portrait,
-    VISUAL_LIBRARY_IMAGES.workspace,
-    VISUAL_LIBRARY_IMAGES.nature,
-    VISUAL_LIBRARY_IMAGES.hospitality,
-    VISUAL_LIBRARY_IMAGES.fashion,
-  ],
-  about: [
-    VISUAL_LIBRARY_IMAGES.team,
-    VISUAL_LIBRARY_IMAGES.portrait,
-    VISUAL_LIBRARY_IMAGES.workspace,
-    VISUAL_LIBRARY_IMAGES.architecture,
-  ],
-  services: [
-    VISUAL_LIBRARY_IMAGES.workspace,
-    VISUAL_LIBRARY_IMAGES.legal,
-    VISUAL_LIBRARY_IMAGES.medical,
-    VISUAL_LIBRARY_IMAGES.skincare,
-    VISUAL_LIBRARY_IMAGES.fitness,
-  ],
-  portfolio: [
-    VISUAL_LIBRARY_IMAGES.architecture,
-    VISUAL_LIBRARY_IMAGES.interior,
-    VISUAL_LIBRARY_IMAGES.fashion,
-    VISUAL_LIBRARY_IMAGES.nature,
-    VISUAL_LIBRARY_IMAGES.tech,
-  ],
-  commerce: [
-    VISUAL_LIBRARY_IMAGES.ecommerce,
-    VISUAL_LIBRARY_IMAGES.product,
-    VISUAL_LIBRARY_IMAGES.fashion,
-    VISUAL_LIBRARY_IMAGES.skincare,
-    VISUAL_LIBRARY_IMAGES.food,
-  ],
-  contact: [
-    VISUAL_LIBRARY_IMAGES.legal,
-    VISUAL_LIBRARY_IMAGES.workspace,
-    VISUAL_LIBRARY_IMAGES.hospitality,
-    VISUAL_LIBRARY_IMAGES.architecture,
-  ],
-  team: [
-    VISUAL_LIBRARY_IMAGES.team,
-    VISUAL_LIBRARY_IMAGES.portrait,
-    VISUAL_LIBRARY_IMAGES.education,
-    VISUAL_LIBRARY_IMAGES.medical,
-  ],
-  events: [
-    VISUAL_LIBRARY_IMAGES.event,
-    VISUAL_LIBRARY_IMAGES.hospitality,
-    VISUAL_LIBRARY_IMAGES.travel,
-    VISUAL_LIBRARY_IMAGES.food,
-  ],
-  blog: [
-    VISUAL_LIBRARY_IMAGES.education,
-    VISUAL_LIBRARY_IMAGES.workspace,
-    VISUAL_LIBRARY_IMAGES.travel,
-    VISUAL_LIBRARY_IMAGES.nature,
-  ],
+  hero: [I.architecture, I.studio, I.workspace, I.nature, I.hospitality, I.city, I.meeting, I.laptop, I.interior, I.cafe],
+  about: [I.team, I.portrait, I.hands, I.meeting, I.workspace, I.studio, I.office, I.education],
+  services: [I.laptop, I.medical, I.legal, I.fitness, I.skincare, I.workspace, I.finance, I.tech],
+  portfolio: [I.architecture, I.interior, I.camera, I.construction, I.abstract, I.nature, I.studio, I.travel],
+  commerce: [I.ecommerce, I.product, I.skincare, I.kitchen, I.food, I.beauty, I.fashion, I.cafe],
+  contact: [I.office, I.city, I.hospitality, I.meeting, I.workspace, I.architecture, I.cafe, I.legal],
+  team: [I.team, I.portrait, I.hands, I.meeting, I.office, I.studio, I.education, I.cafe],
+  events: [I.event, I.stage, I.hospitality, I.travel, I.city, I.food, I.cafe, I.nature],
+  blog: [I.writing, I.bookshelf, I.laptop, I.education, I.cafe, I.workspace, I.nature, I.hands],
+  features: [I.tech, I.laptop, I.finance, I.product, I.workspace, I.abstract, I.studio, I.office],
+  cta: [I.abstract, I.city, I.nature, I.product, I.tech, I.hospitality, I.studio, I.meeting],
+  stats: [I.finance, I.tech, I.office, I.laptop, I.workspace, I.abstract, I.city, I.meeting],
+  pricing: [I.finance, I.product, I.tech, I.office, I.laptop, I.workspace, I.abstract, I.cafe],
+  faq: [I.education, I.laptop, I.office, I.workspace, I.writing, I.bookshelf, I.meeting, I.hands],
+  promote: [I.product, I.abstract, I.event, I.stage, I.tech, I.city, I.hospitality, I.yoga],
+  testimonials: [I.portrait, I.team, I.hands, I.cafe, I.office, I.meeting, I.wellness, I.hospitality],
+  resume: [I.portrait, I.office, I.laptop, I.workspace, I.writing, I.city, I.studio, I.hands],
+  footer: [I.architecture, I.city, I.nature, I.studio, I.office, I.abstract, I.cafe, I.travel],
+  gallery: [I.camera, I.architecture, I.interior, I.fashion, I.nature, I.travel, I.studio, I.abstract],
 };
+
+const FALLBACK_IMAGE_POOL = Object.values(VISUAL_LIBRARY_IMAGES);
 
 function stableHash(value: string) {
   return Array.from(value).reduce(
@@ -1391,21 +1356,54 @@ function stableHash(value: string) {
   );
 }
 
+const _categoryThumbCursor = new Map<string, number>();
+const _usedThumbnails = new Set<string>();
+
+function nextUniqueFromPool(
+  pool: string[],
+  used: Set<string>,
+  start = 0,
+): string {
+  if (!pool.length) return FALLBACK_IMAGE_POOL[0];
+  for (let step = 0; step < pool.length; step += 1) {
+    const url = pool[(start + step) % pool.length];
+    if (!used.has(url)) return url;
+  }
+  return pool[start % pool.length];
+}
+
+function assignCategoryThumbnail(category: string, preferred?: string) {
+  const pool = CATEGORY_IMAGE_POOLS[category] || FALLBACK_IMAGE_POOL;
+  if (preferred && !_usedThumbnails.has(preferred)) {
+    _usedThumbnails.add(preferred);
+    return preferred;
+  }
+  const cursor = _categoryThumbCursor.get(category) || 0;
+  const url = nextUniqueFromPool(pool, _usedThumbnails, cursor);
+  _categoryThumbCursor.set(category, cursor + 1);
+  _usedThumbnails.add(url);
+  return url;
+}
+
 /**
- * Keeps the large catalog visually consistent without flattening the unique
- * layouts. Older entries used extra-black typography and heavy button shadows;
- * this pass applies the calmer editorial treatment used by modern site
- * builders to every newly inserted section and to its library preview.
+ * Calmer editorial polish + image diversity:
+ * - unique thumbnail per library card
+ * - no repeated photo inside the same section
+ * - mega sections get a full category-themed image rotation
  */
 function polishSectionTemplate(
   item: VisualLibrarySectionTemplate,
 ): VisualLibrarySectionTemplate {
-  const imagePool = CATEGORY_IMAGE_POOLS[item.category] || [];
+  const imagePool = CATEGORY_IMAGE_POOLS[item.category] || FALLBACK_IMAGE_POOL;
+  const isMega = _MEGA_SECTION_IDS.has(item.id);
+  const thumbnail = assignCategoryThumbnail(
+    item.category,
+    isMega ? undefined : item.thumbnail,
+  );
+  // Track only node images so the hero can still match the card thumbnail.
+  const usedInSection = new Set<string>();
   let imageIndex = 0;
-  const thumbnail =
-    imagePool.length > 0 && _MEGA_SECTION_IDS.has(item.id)
-      ? imagePool[stableHash(item.id) % imagePool.length]
-      : item.thumbnail;
+  const sectionSeed = stableHash(item.id);
 
   return {
     ...item,
@@ -1452,20 +1450,31 @@ function polishSectionTemplate(
         style.objectPosition ??= "center";
       }
 
-      if (
-        node.type === "image" &&
-        imagePool.length > 0 &&
-        _MEGA_SECTION_IDS.has(item.id)
-      ) {
-        const image =
-          imagePool[(stableHash(item.id) + imageIndex) % imagePool.length];
-        imageIndex += 1;
-        content = {
-          ...(node.content || {}),
-          src: image,
-          url: image,
-          secureUrl: image,
-        };
+      if (node.type === "image" && imagePool.length > 0) {
+        const current =
+          (node.content?.src ||
+            node.content?.url ||
+            node.content?.secureUrl ||
+            "") as string;
+        const mustReplace =
+          isMega || !current || usedInSection.has(current);
+        if (mustReplace) {
+          const image = nextUniqueFromPool(
+            imagePool,
+            usedInSection,
+            sectionSeed + imageIndex,
+          );
+          imageIndex += 1;
+          usedInSection.add(image);
+          content = {
+            ...(node.content || {}),
+            src: image,
+            url: image,
+            secureUrl: image,
+          };
+        } else {
+          usedInSection.add(current);
+        }
       }
 
       return {
@@ -1501,7 +1510,7 @@ function previewFamily(item: VisualLibrarySectionTemplate) {
 
 function curateSectionLibrary(
   items: VisualLibrarySectionTemplate[],
-  limitPerCategory = 8,
+  limitPerCategory = 10,
 ) {
   const selected: VisualLibrarySectionTemplate[] = [];
   const counts = new Map<string, number>();
