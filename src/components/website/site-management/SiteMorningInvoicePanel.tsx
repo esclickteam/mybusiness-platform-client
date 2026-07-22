@@ -16,6 +16,8 @@ import {
   testMorningConnection,
   type MorningInvoiceSettings,
 } from "../../../api/morningInvoiceApi";
+import { SitePanelCard, SitePanelHero } from "./SitePanelShell";
+import { btnGhost, btnPrimary } from "./siteManagementUi";
 
 type SiteMorningInvoicePanelProps = {
   businessId: string;
@@ -164,24 +166,16 @@ export default function SiteMorningInvoicePanel({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="rounded-[28px] border border-emerald-100 bg-gradient-to-l from-emerald-50 via-white to-white p-5 md:p-6">
-        <div className="flex items-start gap-3">
-          <div className="grid h-11 w-11 place-items-center rounded-2xl bg-emerald-600 text-white shadow-lg">
-            <FileText size={20} />
-          </div>
-          <div>
-            <h2 className="text-xl font-black text-slate-950">Morning — חשבונית ירוקה</h2>
-            <p className="mt-1 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-              חיבור ל-API של Morning להפקת חשבוניות מס/קבלה אוטומטית על הזמנות
-              מהחנות. דורש מנוי Best ומעלה ב-Morning.
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="space-y-5">
+      <SitePanelHero
+        icon={FileText}
+        accent="#10B981"
+        title="Morning — חשבונית ירוקה"
+        description="חיבור ל-API של Morning להפקת חשבוניות מס/קבלה אוטומטית על הזמנות מהחנות. דורש מנוי Best ומעלה ב-Morning."
+      />
 
-      <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-        <h3 className="text-lg font-black text-slate-950">מדריך חיבור — 4 שלבים</h3>
+      <SitePanelCard>
+        <h3 className="text-base font-bold text-slate-900">מדריך חיבור — 4 שלבים</h3>
         <ol className="mt-4 space-y-4 text-sm font-bold leading-7 text-slate-600">
           <li className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
             <span className="font-black text-emerald-700">1. מנוי Best+</span>
@@ -220,7 +214,7 @@ export default function SiteMorningInvoicePanel({
           <ShieldCheck size={14} className="mb-1 inline" /> המפתח הסודי נשמר מוצפן בשרת
           BizUply ולא מוצג שוב. אם איבדתם אותו — צרו מפתח חדש ב-Morning.
         </div>
-      </div>
+      </SitePanelCard>
 
       {message ? (
         <div
@@ -235,9 +229,9 @@ export default function SiteMorningInvoicePanel({
         </div>
       ) : null}
 
-      <div className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <SitePanelCard>
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="text-lg font-black text-slate-950">הגדרות חיבור</h3>
+          <h3 className="text-base font-bold text-slate-900">הגדרות חיבור</h3>
           <span
             className={`rounded-full px-3 py-1 text-xs font-black ${
               settings.connectionStatus === "connected"
@@ -402,7 +396,7 @@ export default function SiteMorningInvoicePanel({
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-60"
+            className={btnPrimary + " h-11 disabled:opacity-60"}
           >
             {saving ? <BizuplyLoader size="xs" compact /> : <Save size={16} />}
             שמירה
@@ -412,7 +406,7 @@ export default function SiteMorningInvoicePanel({
             type="button"
             onClick={handleTestConnection}
             disabled={testing}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 disabled:opacity-60"
+            className={btnGhost + " h-11 disabled:opacity-60"}
           >
             {testing ? (
               <BizuplyLoader size="xs" compact />
@@ -422,9 +416,9 @@ export default function SiteMorningInvoicePanel({
             בדיקת חיבור
           </button>
         </div>
-      </div>
+      </SitePanelCard>
 
-      <div className="rounded-[28px] border border-dashed border-slate-200 bg-slate-50/80 p-5 text-sm font-bold leading-7 text-slate-500">
+      <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/30 p-4 text-sm leading-relaxed text-slate-600">
         <strong className="text-slate-800">API ידני (למפתחים):</strong>
         <br />
         Production: <code className="text-xs">POST https://api.greeninvoice.co.il/api/v1/account/token</code>

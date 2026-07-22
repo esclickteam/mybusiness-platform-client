@@ -4,8 +4,9 @@ import {
   ArrowRight,
   ExternalLink,
   Globe2,
-  Loader2,
+  Layers,
   Puzzle,
+  Sparkles,
 } from "lucide-react";
 
 import { getMySite } from "../api/mySitesApi";
@@ -21,6 +22,7 @@ import SiteMorningInvoicePanel from "../components/website/site-management/SiteM
 import SiteGenericPluginPanel from "../components/website/site-management/SiteGenericPluginPanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { btnPrimary, btnSecondary } from "../components/website/site-management/siteManagementUi";
 import {
   getPluginAccent,
   getPluginIcon,
@@ -145,7 +147,11 @@ export default function SiteManagementPanelPage() {
   }
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="טוען פאנל ניהול..." />;
+    return (
+      <div dir="rtl" className="grid min-h-[50vh] place-items-center bg-gradient-to-b from-violet-50/30 to-white">
+        <BizuplyLoader size="md" label="טוען פאנל ניהול..." />
+      </div>
+    );
   }
 
   if (error) {
@@ -155,7 +161,7 @@ export default function SiteManagementPanelPage() {
         <button
           type="button"
           onClick={() => navigate(`${basePath}/website`)}
-          className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white"
+          className={`mt-4 ${btnPrimary}`}
         >
           <ArrowRight size={16} />
           חזרה לאתרים שלי
@@ -165,14 +171,14 @@ export default function SiteManagementPanelPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-slate-50">
-      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white shadow-sm">
+    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-violet-50/20 via-slate-50 to-white">
+      <div className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => navigate(`${basePath}/website`)}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-600 transition hover:bg-violet-100"
               aria-label="חזרה לאתרים שלי"
             >
               <ArrowRight size={16} />
@@ -202,10 +208,7 @@ export default function SiteManagementPanelPage() {
           </div>
 
           <div className="flex shrink-0 items-center gap-2">
-            <Link
-              to={editorHref}
-              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-700"
-            >
+            <Link to={editorHref} className={btnSecondary + " h-9 px-3 text-xs"}>
               <ExternalLink size={14} />
               עורך
             </Link>
@@ -214,7 +217,7 @@ export default function SiteManagementPanelPage() {
                 href={publicUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:text-emerald-700"
+                className={btnSecondary + " h-9 px-3 text-xs hover:border-emerald-200 hover:text-emerald-700"}
               >
                 <Globe2 size={14} />
                 אתר חי
@@ -224,7 +227,7 @@ export default function SiteManagementPanelPage() {
         </div>
 
         <div className="mx-auto max-w-[1600px] overflow-x-auto px-4 md:px-6">
-          <nav className="flex min-w-max gap-1 border-t border-slate-100 pt-1">
+          <nav className="flex min-w-max gap-0.5 border-t border-violet-50 pt-0.5">
             {navSections.map((section) => {
               const Icon = getSectionIcon(section);
               const meta = SECTION_META[section];
@@ -235,16 +238,16 @@ export default function SiteManagementPanelPage() {
                   key={section}
                   type="button"
                   onClick={() => setActiveSection(section)}
-                  className={`relative inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition ${
+                  className={`relative inline-flex items-center gap-2 rounded-t-xl px-4 py-2.5 text-sm font-semibold transition ${
                     active
-                      ? "text-violet-700"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-violet-50 text-violet-700"
+                      : "text-slate-500 hover:bg-violet-50/50 hover:text-violet-600"
                   }`}
                 >
                   <Icon size={16} />
                   {meta.label}
                   {active ? (
-                    <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-violet-600" />
+                    <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gradient-to-l from-violet-600 to-indigo-600" />
                   ) : null}
                 </button>
               );
@@ -255,7 +258,7 @@ export default function SiteManagementPanelPage() {
 
       <div className="mx-auto max-w-[1600px] px-4 py-5 md:px-6 md:py-6">
         {activeSection !== "overview" && activeSection !== "plugins" ? (
-          <div className="mb-4">
+          <div className="mb-5 rounded-xl border border-violet-100 bg-white/80 px-4 py-3">
             <h2 className="text-base font-bold text-slate-900">{activeMeta.label}</h2>
             <p className="mt-0.5 text-sm text-slate-500">{activeMeta.description}</p>
           </div>
@@ -263,39 +266,54 @@ export default function SiteManagementPanelPage() {
 
         {activeSection === "overview" ? (
           <div className="space-y-5">
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="text-xs font-medium text-slate-500">תוספים פעילים</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">
-                  {enabledPlugins.length}
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="text-xs font-medium text-slate-500">סטטוס אתר</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">
-                  {sitePublished ? "מפורסם" : "טיוטה"}
-                </p>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-4">
-                <p className="text-xs font-medium text-slate-500">זמין בחנות</p>
-                <p className="mt-1 text-2xl font-bold text-slate-900">
-                  {catalog.length - enabledPlugins.length}
-                </p>
-              </div>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {[
+                {
+                  label: "תוספים פעילים",
+                  value: enabledPlugins.length,
+                  accent: "border-violet-400",
+                  bg: "from-violet-50/80",
+                },
+                {
+                  label: "סטטוס אתר",
+                  value: sitePublished ? "מפורסם" : "טיוטה",
+                  accent: sitePublished ? "border-emerald-400" : "border-amber-400",
+                  bg: sitePublished ? "from-emerald-50/80" : "from-amber-50/80",
+                },
+                {
+                  label: "זמין בחנות",
+                  value: catalog.length - enabledPlugins.length,
+                  accent: "border-indigo-400",
+                  bg: "from-indigo-50/80",
+                },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className={`rounded-2xl border-r-4 bg-gradient-to-l ${stat.bg} to-white p-5 shadow-sm ${stat.accent}`}
+                >
+                  <p className="text-xs font-medium text-slate-500">{stat.label}</p>
+                  <p className="mt-1 text-2xl font-bold text-slate-900">{stat.value}</p>
+                </div>
+              ))}
             </div>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-5">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-base font-bold text-slate-900">ניהול מהיר</h2>
-                  <p className="mt-0.5 text-sm text-slate-500">
-                    גישה מהירה לתוספים והגדרות של האתר
-                  </p>
+                <div className="flex items-start gap-3">
+                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white">
+                    <Sparkles size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-bold text-slate-900">ניהול מהיר</h2>
+                    <p className="mt-0.5 text-sm text-slate-500">
+                      גישה מהירה לתוספים והגדרות של האתר
+                    </p>
+                  </div>
                 </div>
                 <button
                   type="button"
                   onClick={() => setActiveSection("plugins")}
-                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-violet-600 px-4 text-xs font-semibold text-white transition hover:bg-violet-700"
+                  className={btnPrimary + " h-10 text-xs"}
                 >
                   <Puzzle size={14} />
                   חנות תוספים
@@ -303,7 +321,7 @@ export default function SiteManagementPanelPage() {
               </div>
 
               {enabledPlugins.length > 0 ? (
-                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
                   {enabledPlugins.map((key) => {
                     const plugin = catalog.find((item) => item.key === key);
                     if (!plugin) return null;
@@ -320,25 +338,38 @@ export default function SiteManagementPanelPage() {
                           if (canManage && section) setActiveSection(section);
                           else setActiveSection("plugins");
                         }}
-                        className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-right transition hover:border-violet-200 hover:bg-white"
+                        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-right transition hover:border-violet-200 hover:bg-white hover:shadow-md"
                       >
                         <div
-                          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white"
+                          className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white shadow-sm"
                           style={{ background: accent }}
                         >
-                          <Icon size={16} />
+                          <Icon size={18} />
                         </div>
-                        <span className="text-sm font-semibold text-slate-800">
-                          {plugin.name}
-                        </span>
+                        <div className="min-w-0 text-right">
+                          <span className="block truncate text-sm font-semibold text-slate-800">
+                            {plugin.name}
+                          </span>
+                          <span className="text-[11px] text-violet-600">לחצו לניהול</span>
+                        </div>
                       </button>
                     );
                   })}
                 </div>
               ) : (
-                <p className="mt-4 text-sm text-slate-500">
-                  עדיין לא הותקנו תוספים. פתחו את חנות התוספים כדי להתחיל.
-                </p>
+                <div className="mt-5 rounded-xl border border-dashed border-violet-200 bg-violet-50/30 py-8 text-center">
+                  <Layers size={28} className="mx-auto text-violet-300" />
+                  <p className="mt-2 text-sm text-slate-500">
+                    עדיין לא הותקנו תוספים
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setActiveSection("plugins")}
+                    className={`mt-3 ${btnSecondary} text-xs`}
+                  >
+                    גלו את חנות התוספים
+                  </button>
+                </div>
               )}
             </div>
           </div>
