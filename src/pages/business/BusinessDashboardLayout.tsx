@@ -85,7 +85,7 @@ type UnreadCountUpdatePayload = {
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
-const SIDEBAR_WIDTH_EXPANDED = 300;
+const SIDEBAR_WIDTH_EXPANDED = 260;
 const SIDEBAR_WIDTH_COLLAPSED = 72;
 const SIDEBAR_COLLAPSED_STORAGE_KEY = "bizuply-sidebar-collapsed";
 const MOBILE_BREAKPOINT = 768;
@@ -549,23 +549,34 @@ export default function BusinessDashboardLayout() {
             >
               <div
                 className={`
-                  relative flex shrink-0 flex-col items-center justify-center
-                  border-b border-violet-100/70 bg-white/35 backdrop-blur-sm
-                  ${sidebarCollapsed && !isMobile ? "gap-2 px-2 py-4" : "gap-4 px-5 py-6"}
+                  relative flex shrink-0 items-center border-b border-violet-100/70
+                  bg-white/35 backdrop-blur-sm
+                  ${
+                    sidebarCollapsed && !isMobile
+                      ? "h-[76px] flex-col justify-center gap-1.5 px-2"
+                      : "h-[80px] justify-between gap-2 px-3"
+                  }
                 `}
               >
-                <img
-                  src="/bizuply logo.png"
-                  alt="BizUply Logo"
+                <div
                   className={`
-                    object-contain transition-all duration-300
-                    ${
-                      sidebarCollapsed && !isMobile
-                        ? "h-14 w-14"
-                        : "h-[288px] w-full max-w-[280px]"
-                    }
+                    flex items-center justify-center overflow-hidden
+                    ${sidebarCollapsed && !isMobile ? "h-10 w-10" : "h-full min-w-0 flex-1"}
                   `}
-                />
+                >
+                  <img
+                    src="/bizuply logo.png"
+                    alt="BizUply Logo"
+                    className={`
+                      object-contain transition-transform duration-300
+                      ${
+                        sidebarCollapsed && !isMobile
+                          ? "h-10 w-10"
+                          : "h-[52px] w-auto max-w-full origin-center scale-[1.85]"
+                      }
+                    `}
+                  />
+                </div>
 
                 {!isMobile && (
                   <button
@@ -577,7 +588,7 @@ export default function BusinessDashboardLayout() {
                         : t("businessNav.collapseSidebar", "Collapse sidebar")
                     }
                     className="
-                      flex h-8 w-8 items-center justify-center rounded-md
+                      flex h-7 w-7 shrink-0 items-center justify-center rounded-md
                       border border-violet-200/70 bg-white/75 text-slate-500
                       shadow-[0_2px_8px_rgba(99,102,241,0.06)]
                       transition hover:border-sky-200 hover:bg-white
