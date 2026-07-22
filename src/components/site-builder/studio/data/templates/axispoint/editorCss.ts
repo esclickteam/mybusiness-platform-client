@@ -56,4 +56,8 @@ export const axispointEditorCss = `
 [data-template-id="axispoint"] .tpl-axis-line, [data-template-id="axispoint-preview"] .tpl-axis-line { animation:axispoint-axis 1.4s both; }
 [data-template-id="axispoint"] .tpl-skew-grid, [data-template-id="axispoint-preview"] .tpl-skew-grid { transform:skewY(-2deg); }
 [data-template-id="axispoint"] .tpl-skew-grid > *, [data-template-id="axispoint-preview"] .tpl-skew-grid > * { transform:skewY(2deg); }
+@keyframes axispoint-testi { to { transform:translateX(-50%); } }
+[data-template-id="axispoint"] .tpl-testi-track, [data-template-id="axispoint-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:axispoint-testi 28s linear infinite;
+}
 `;

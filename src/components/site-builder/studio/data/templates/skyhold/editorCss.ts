@@ -54,4 +54,8 @@ export const skyholdEditorCss = `
 }
 @keyframes skyhold-elevator { 0%,20%{transform:translateY(0)} 25%,45%{transform:translateY(-1.2em)} 50%,70%{transform:translateY(-2.4em)} 75%,100%{transform:translateY(-3.6em)} }
 [data-template-id="skyhold"] .tpl-elevator-digits, [data-template-id="skyhold-preview"] .tpl-elevator-digits { animation:skyhold-elevator 8s infinite; }
+@keyframes skyhold-testi { to { transform:translateX(-50%); } }
+[data-template-id="skyhold"] .tpl-testi-track, [data-template-id="skyhold-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:skyhold-testi 28s linear infinite;
+}
 `;

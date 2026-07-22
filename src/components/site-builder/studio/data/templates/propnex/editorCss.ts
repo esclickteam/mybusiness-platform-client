@@ -55,4 +55,8 @@ export const propnexEditorCss = `
 [data-template-id="propnex"] .tpl-bento, [data-template-id="propnex-preview"] .tpl-bento { display:grid;gap:.75rem;grid-template-columns:repeat(6,1fr); }
 @keyframes propnex-draw { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 [data-template-id="propnex"] .tpl-line-draw, [data-template-id="propnex-preview"] .tpl-line-draw { transform-origin:right;animation:propnex-draw 1.2s both; }
+@keyframes propnex-testi { to { transform:translateX(-50%); } }
+[data-template-id="propnex"] .tpl-testi-track, [data-template-id="propnex-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:propnex-testi 28s linear infinite;
+}
 `;

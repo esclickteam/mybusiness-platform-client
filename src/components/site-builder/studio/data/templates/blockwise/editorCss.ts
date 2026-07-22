@@ -54,4 +54,8 @@ export const blockwiseEditorCss = `
 }
 @keyframes blockwise-stack { from{transform:translateY(60px);opacity:0} to{transform:translateY(0);opacity:1} }
 [data-template-id="blockwise"] .tpl-block, [data-template-id="blockwise-preview"] .tpl-block { animation:blockwise-stack .7s both; }
+@keyframes blockwise-testi { to { transform:translateX(-50%); } }
+[data-template-id="blockwise"] .tpl-testi-track, [data-template-id="blockwise-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:blockwise-testi 28s linear infinite;
+}
 `;

@@ -54,4 +54,8 @@ export const primeviewEditorCss = `
 }
 @keyframes primeview-handle { 0%,100%{left:35%} 50%{left:65%} }
 [data-template-id="primeview"] .tpl-compare-handle, [data-template-id="primeview-preview"] .tpl-compare-handle { animation:primeview-handle 5s infinite; }
+@keyframes primeview-testi { to { transform:translateX(-50%); } }
+[data-template-id="primeview"] .tpl-testi-track, [data-template-id="primeview-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:primeview-testi 28s linear infinite;
+}
 `;

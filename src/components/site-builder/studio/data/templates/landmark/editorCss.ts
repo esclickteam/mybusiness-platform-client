@@ -54,4 +54,8 @@ export const landmarkEditorCss = `
 }
 @keyframes landmark-pin { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.4);opacity:1} }
 [data-template-id="landmark"] .tpl-pin, [data-template-id="landmark-preview"] .tpl-pin { animation:landmark-pin 2s infinite; }
+@keyframes landmark-testi { to { transform:translateX(-50%); } }
+[data-template-id="landmark"] .tpl-testi-track, [data-template-id="landmark-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:landmark-testi 28s linear infinite;
+}
 `;

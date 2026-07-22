@@ -54,4 +54,8 @@ export const signetEditorCss = `
 }
 @keyframes signet-stamp { 0%{transform:scale(2) rotate(-12deg);opacity:0} 100%{transform:scale(1);opacity:1} }
 [data-template-id="signet"] .tpl-stamp, [data-template-id="signet-preview"] .tpl-stamp { animation:signet-stamp .9s both; }
+@keyframes signet-testi { to { transform:translateX(-50%); } }
+[data-template-id="signet"] .tpl-testi-track, [data-template-id="signet-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:signet-testi 28s linear infinite;
+}
 `;

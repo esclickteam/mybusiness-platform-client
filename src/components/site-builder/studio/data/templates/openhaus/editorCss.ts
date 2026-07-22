@@ -56,4 +56,8 @@ export const openhausEditorCss = `
 [data-template-id="openhaus"] .tpl-rotate-stage, [data-template-id="openhaus-preview"] .tpl-rotate-stage { perspective:1200px; }
 [data-template-id="openhaus"] .tpl-rotate-track, [data-template-id="openhaus-preview"] .tpl-rotate-track { transform-style:preserve-3d;animation:openhaus-rotate 18s infinite; }
 [data-template-id="openhaus"] .tpl-masonry, [data-template-id="openhaus-preview"] .tpl-masonry { columns:2;column-gap:1rem; }
+@keyframes openhaus-testi { to { transform:translateX(-50%); } }
+[data-template-id="openhaus"] .tpl-testi-track, [data-template-id="openhaus-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:openhaus-testi 28s linear infinite;
+}
 `;

@@ -56,4 +56,8 @@ export const vaultureEditorCss = `
 [data-template-id="vaulture"] .tpl-curtain img, [data-template-id="vaulture-preview"] .tpl-curtain img { animation:vaulture-curtain 1.8s both; }
 @keyframes vaulture-testi { to { transform:translateX(-50%); } }
 [data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track { display:flex;width:max-content;animation:vaulture-testi 24s linear infinite; }
+@keyframes vaulture-testi { to { transform:translateX(-50%); } }
+[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:vaulture-testi 28s linear infinite;
+}
 `;

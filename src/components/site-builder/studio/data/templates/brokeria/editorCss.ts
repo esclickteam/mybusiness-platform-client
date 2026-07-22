@@ -55,4 +55,8 @@ export const brokeriaEditorCss = `
 @keyframes brokeria-ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 [data-template-id="brokeria"] .tpl-prop-ticker, [data-template-id="brokeria-preview"] .tpl-prop-ticker { display:flex;width:max-content;animation:brokeria-ticker 35s linear infinite; }
 [data-template-id="brokeria"] .tpl-zoom-card:hover img, [data-template-id="brokeria-preview"] .tpl-zoom-card:hover img { transform:scale(1.1); }
+@keyframes brokeria-testi { to { transform:translateX(-50%); } }
+[data-template-id="brokeria"] .tpl-testi-track, [data-template-id="brokeria-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:brokeria-testi 28s linear infinite;
+}
 `;

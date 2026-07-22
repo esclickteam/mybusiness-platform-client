@@ -54,4 +54,8 @@ export const nestiqEditorCss = `
 }
 @keyframes nestiq-count { from{opacity:.3;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 [data-template-id="nestiq"] .tpl-counter, [data-template-id="nestiq-preview"] .tpl-counter { animation:nestiq-count 1s both; }
+@keyframes nestiq-testi { to { transform:translateX(-50%); } }
+[data-template-id="nestiq"] .tpl-testi-track, [data-template-id="nestiq-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:nestiq-testi 28s linear infinite;
+}
 `;

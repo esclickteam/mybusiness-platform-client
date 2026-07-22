@@ -56,4 +56,8 @@ export const dwellistEditorCss = `
 [data-template-id="dwellist"] .tpl-hotspot, [data-template-id="dwellist-preview"] .tpl-hotspot { animation:dwellist-plan-pulse 2.4s infinite; }
 @keyframes dwellist-draw-plan { to { stroke-dashoffset:0; } }
 [data-template-id="dwellist"] .tpl-plan-line, [data-template-id="dwellist-preview"] .tpl-plan-line { stroke-dasharray:400;stroke-dashoffset:400;animation:dwellist-draw-plan 2s forwards; }
+@keyframes dwellist-testi { to { transform:translateX(-50%); } }
+[data-template-id="dwellist"] .tpl-testi-track, [data-template-id="dwellist-preview"] .tpl-testi-track {
+  display:flex;width:max-content;animation:dwellist-testi 28s linear infinite;
+}
 `;
