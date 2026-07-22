@@ -1,5 +1,7 @@
 export const GEO_LANG_COOKIE = "bizuply_geo_lang";
+/** @deprecated permanent override — cleared on load; kept for migration */
 export const MANUAL_LANG_FLAG = "bizuply_lang_manual";
+export const SESSION_LANG_KEY = "bizuply_lang_session";
 export const I18N_STORAGE_KEY = "i18nextLng";
 
 export function normalizeLanguage(lng) {
@@ -47,40 +49,91 @@ export function applyDocumentLocale(lng) {
   document.documentElement.dir = getTextDirection(language);
 }
 
-export function markManualLanguageChoice(lng) {
+/** Clear legacy permanent manual override so geo can win again. */
+export function clearLegacyManualLanguageChoice() {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(MANUAL_LANG_FLAG);
+}
+
+/**
+ * Temporary override for the current browser tab/session only.
+ * Cleared when the tab/session ends — next visit uses geo again.
+ */
+export function setSessionLanguageOverride(lng) {
   const language = normalizeLanguage(lng);
-  localStorage.setItem(I18N_STORAGE_KEY, language);
-  localStorage.setItem(MANUAL_LANG_FLAG, "1");
-  setCookie(GEO_LANG_COOKIE, language);
+  if (typeof sessionStorage !== "undefined") {
+    sessionStorage.setItem(SESSION_LANG_KEY, language);
+  }
+  if (typeof localStorage !== "undefined") {
+    localStorage.setItem(I18N_STORAGE_KEY, language);
+    localStorage.removeItem(MANUAL_LANG_FLAG);
+  }
   applyDocumentLocale(language);
 }
 
-export function hasManualLanguageChoice() {
-  return localStorage.getItem(MANUAL_LANG_FLAG) === "1";
+/** @deprecated use setSessionLanguageOverride */
+export function markManualLanguageChoice(lng) {
+  setSessionLanguageOverride(lng);
 }
 
+export function getSessionLanguageOverride() {
+  if (typeof sessionStorage === "undefined") return null;
+  const stored = normalizeLanguage(sessionStorage.getItem(SESSION_LANG_KEY) || "");
+  return stored === "he" || stored === "en" ? stored : null;
+}
+
+export function hasSessionLanguageOverride() {
+  return Boolean(getSessionLanguageOverride());
+}
+
+/** @deprecated */
+export function hasManualLanguageChoice() {
+  return hasSessionLanguageOverride();
+}
+
+export function detectLanguageFromTimezone() {
+  try {
+    if (Intl.DateTimeFormat().resolvedOptions().timeZone === "Asia/Jerusalem") {
+      return "he";
+    }
+  } catch {
+    // Ignore timezone lookup failures.
+  }
+  return "en";
+}
+
+/**
+ * Resolve UI language from geo API: Israel → he, everywhere else → en.
+ * Always refreshes the geo cookie when the API returns a known country language.
+ */
 export async function fetchGeoLanguage() {
   try {
     const response = await fetch("/api/geo", {
       credentials: "same-origin",
       headers: { accept: "application/json" },
+      cache: "no-store",
     });
 
-    if (!response.ok) return null;
+    if (response.ok) {
+      const data = await response.json();
+      const language = normalizeLanguage(
+        data?.language || languageFromCountry(data?.country)
+      );
 
-    const data = await response.json();
-    const language = normalizeLanguage(data?.language || languageFromCountry(data?.country));
-
-    if (language === "he" || language === "en") {
-      // Never overwrite an explicit user language choice with geo.
-      if (!hasManualLanguageChoice()) {
+      // Only trust API when country was resolved (or language explicitly returned).
+      if (
+        (data?.country || data?.language) &&
+        (language === "he" || language === "en")
+      ) {
         setCookie(GEO_LANG_COOKIE, language);
+        return language;
       }
-      return language;
     }
   } catch {
-    // Ignore network failures — fall back to cookie/navigator.
+    // Ignore network failures — fall back to timezone.
   }
 
-  return null;
+  const fallback = detectLanguageFromTimezone();
+  setCookie(GEO_LANG_COOKIE, fallback);
+  return fallback;
 }

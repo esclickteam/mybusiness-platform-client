@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { setSessionLanguageOverride } from "../i18n/localeUtils";
 
 const languages = [
   { code: "en", label: "English" },
@@ -24,13 +25,10 @@ export default function LanguageSwitcher() {
     languages.find((lang) => lang.code === currentLangCode) || languages[0];
 
   const changeLanguage = async (lng) => {
+    setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
-
-    localStorage.setItem("i18nextLng", lng);
-    document.documentElement.lang = lng;
-    document.documentElement.dir = lng === "he" ? "rtl" : "ltr";
-
     setOpen(false);
+    window.location.reload();
   };
 
   useEffect(() => {
