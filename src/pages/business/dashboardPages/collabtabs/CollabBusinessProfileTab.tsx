@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 import API from "../../../../api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import CollabChat from "./CollabChat";
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
@@ -289,7 +290,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   }, [profileData]);
 
   if (loading || !profileData) {
-    return <ProfileSkeleton />;
+    return <BizuplyLoadingState label="Loading profile..." />;
   }
 
   const safeProfile: SafeProfile = {

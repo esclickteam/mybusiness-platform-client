@@ -6,6 +6,7 @@ import { Helmet } from "react-helmet-async";
 import API from "@api";
 import BusinessCard from "../components/BusinessCard";
 import BusinessCardSkeleton from "../components/BusinessCardSkeleton";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 import ALL_CATEGORIES from "../data/categories";
 import { fetchCities } from "../data/cities";
 import CityAutocomplete from "@components/CityAutocomplete";
@@ -312,9 +313,9 @@ export default function SearchBusinesses({
 
         <div className="business-list">
           {loading || searching ? (
-            Array.from({ length: ITEMS_PER_PAGE }).map((_, index) => (
-              <BusinessCardSkeleton key={index} />
-            ))
+            <div className="col-span-full flex min-h-[50vh] items-center justify-center py-16">
+              <BizuplyLoader size="xl" label="Loading businesses..." />
+            </div>
           ) : pageItems.length ? (
             pageItems.map((business) => (
               <BusinessCard

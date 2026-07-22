@@ -1717,7 +1717,7 @@ export default function DashboardPage() {
   }
 
   if (overviewLoading && !overviewData && !stats) {
-    return <DashboardSkeleton />;
+    return <BizuplyLoader fullScreen label="Loading dashboard..." />;
   }
 
   if (error && !overviewData && !stats) {

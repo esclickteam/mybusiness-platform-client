@@ -623,7 +623,7 @@ export default function App() {
   if (location.pathname.startsWith("/embed/")) {
     return (
       <Suspense
-        fallback={<div style={{ minHeight: "100vh", background: "#fff" }} />}
+        fallback={<BizuplyLoader fullScreen />}
       >
         <Routes location={location}>
           <Route

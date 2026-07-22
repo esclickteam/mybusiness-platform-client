@@ -22,6 +22,7 @@ import {
 import { useLocation, useSearchParams } from "react-router-dom";
 
 import API from "../../../../api";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
@@ -1195,7 +1196,9 @@ export default function CollabChat({
 
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
           {loadingConversations ? (
-            <ConversationSkeleton />
+            <div className="flex min-h-[40vh] items-center justify-center py-8">
+              <BizuplyLoader size="lg" label="Loading conversations..." />
+            </div>
           ) : filteredConversations.length === 0 ? (
             <EmptySidebar onRefresh={fetchConversations} />
           ) : (

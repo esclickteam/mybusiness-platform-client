@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import logo from "../../images/logo_final.svg";
 import "./BizuplyLoader.css";
 
@@ -35,12 +36,14 @@ export function BizuplyLoader({
       role="status"
       aria-live="polite"
       aria-busy="true"
+      aria-label={label || "Loading"}
     >
       <div className="bizuply-loader__scan-container">
         <img
           src={logo}
           alt="Bizuply"
           className={`bizuply-loader__logo ${LOGO_SIZE_CLASS[size]}`}
+          draggable={false}
         />
         <div className="bizuply-loader__scan-beam" aria-hidden="true" />
         <div className="bizuply-loader__scan-line" aria-hidden="true" />
@@ -51,13 +54,19 @@ export function BizuplyLoader({
   );
 
   if (fullScreen) {
-    return (
+    const screen = (
       <div
         className={`bizuply-loader-screen ${overlay ? "bizuply-loader-screen--overlay" : ""}`.trim()}
       >
         {loader}
       </div>
     );
+
+    if (typeof document !== "undefined") {
+      return createPortal(screen, document.body);
+    }
+
+    return screen;
   }
 
   return loader;

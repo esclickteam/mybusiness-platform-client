@@ -669,9 +669,9 @@ export default function BusinessProfileView() {
               />
             )
           ) : (
-            <p className="text-center text-sm font-black text-slate-500">
-              טוען גלריה...
-            </p>
+            <div className="flex min-h-[30vh] items-center justify-center py-10">
+              <BizuplyLoader size="lg" label="טוען גלריה..." />
+            </div>
           )}
         </div>
       );
@@ -729,8 +729,8 @@ export default function BusinessProfileView() {
 
                       <Suspense
                         fallback={
-                          <div className="flex flex-1 items-center justify-center p-6 text-sm font-black text-slate-500">
-                            טוען טופס ביקורת...
+                          <div className="flex flex-1 items-center justify-center p-6">
+                            <BizuplyLoader size="lg" label="טוען טופס ביקורת..." />
                           </div>
                         }
                       >
@@ -784,9 +784,9 @@ export default function BusinessProfileView() {
               )}
             </div>
           ) : (
-            <p className="text-center text-sm font-black text-slate-500">
-              טוען ביקורות...
-            </p>
+            <div className="flex min-h-[30vh] items-center justify-center py-10">
+              <BizuplyLoader size="lg" label="טוען ביקורות..." />
+            </div>
           )}
         </div>
       );
