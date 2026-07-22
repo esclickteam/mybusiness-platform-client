@@ -27,6 +27,7 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
 import API from "@api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import {
@@ -1088,14 +1089,7 @@ export default function CRMAppointmentsTab() {
   const monthCells = getMonthCells(monthDate);
 
   if (isLoading) {
-    return (
-      <div dir={dir} className="rounded-[2rem] border border-slate-100 bg-white p-10 text-center shadow-sm">
-        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600" />
-        <p className="text-sm font-bold text-slate-500">
-          {t("crm.appointments.loading")}
-        </p>
-      </div>
-    );
+    return <BizuplyLoadingState label={t("crm.appointments.loading")} />;
   }
 
   if (isError) {
@@ -1150,12 +1144,11 @@ export default function CRMAppointmentsTab() {
                 onClick={refreshAll}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
               >
-                <RefreshCw
-                  className={[
-                    "h-4 w-4",
-                    isFetching ? "animate-spin" : "",
-                  ].join(" ")}
-                />
+                {isFetching ? (
+                  <BizuplyLoader size="xs" compact />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
                 {t("crm.appointments.refreshSync")}
               </button>
 
@@ -1353,7 +1346,7 @@ export default function CRMAppointmentsTab() {
               </div>
 
               {isFetching && (
-                <Loader2 className="h-5 w-5 animate-spin text-sky-700" />
+                <BizuplyLoader size="sm" compact />
               )}
             </div>
 
@@ -2189,7 +2182,7 @@ function AppointmentModal({
               className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-5 py-4 text-sm font-black text-white shadow-xl transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <BizuplyLoader size="xs" compact />
               ) : (
                 <CheckCircle2 className="h-4 w-4" />
               )}

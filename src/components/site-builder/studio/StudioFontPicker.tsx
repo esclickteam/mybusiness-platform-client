@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Check, ChevronDown, Loader2, RefreshCw, Search } from "lucide-react";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 type StudioFontPickerProps = {
   value: string;
@@ -405,7 +406,7 @@ export default function StudioFontPicker({
                   />
 
                   {loadingFonts && (
-                    <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                    <BizuplyLoader size="xs" compact />
                   )}
                 </div>
               </div>
@@ -463,12 +464,11 @@ export default function StudioFontPicker({
                     text-blue-600 hover:text-blue-700 disabled:opacity-50
                   "
                 >
-                  <RefreshCw
-                    className={[
-                      "h-3 w-3",
-                      loadingFonts ? "animate-spin" : "",
-                    ].join(" ")}
-                  />
+                  {loadingFonts ? (
+                    <BizuplyLoader size="xs" compact />
+                  ) : (
+                    <RefreshCw className="h-3 w-3" />
+                  )}
                   Refresh
                 </button>
               </div>

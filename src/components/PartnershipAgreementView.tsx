@@ -8,6 +8,7 @@ import React, {
 import SignatureCanvas from "react-signature-canvas";
 import html2pdf from "html2pdf.js";
 import API from "../api";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 type IdLike = string | { _id?: string } | null | undefined;
 
@@ -651,18 +652,7 @@ export default function PartnershipAgreementView({
   };
 
   if (loading) {
-    return (
-      <div
-        dir="rtl"
-        className="w-full rounded-3xl bg-white p-8 text-center shadow-xl"
-      >
-        <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-purple-600" />
-
-        <p className="text-sm font-medium text-gray-600">
-          טוען את ההסכם...
-        </p>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="טוען את ההסכם..." />;
   }
 
   if (!agreement) {

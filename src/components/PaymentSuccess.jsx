@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import API from "../api";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
@@ -29,5 +30,5 @@ export default function PaymentSuccess() {
     fetchUser();
   }, [navigate, setUser, setToken]);
 
-  return <div>Loading data after payment, please wait...</div>;
+  return <BizuplyLoader fullScreen label="Loading data after payment, please wait..." />;
 }

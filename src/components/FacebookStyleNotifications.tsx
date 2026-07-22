@@ -3,6 +3,7 @@ import API from "@api";
 import { AnimatePresence, motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import BizuplyLoader from "./ui/BizuplyLoader";
 import { useAuth } from "../context/AuthContext";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import i18n from "../i18n/i18n";
@@ -1433,9 +1434,11 @@ export default function FacebookStyleNotifications() {
                     className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
                     title={t("notifications.refresh")}
                   >
-                    <RefreshCw
-                      className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
-                    />
+                    {loading ? (
+                      <BizuplyLoader size="xs" compact />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
                   </button>
 
                   {unreadCount > 0 && (

@@ -23,6 +23,7 @@ import { useLocation, useSearchParams } from "react-router-dom";
 
 import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
@@ -1441,7 +1442,7 @@ function MessageBubble({
         >
           <span>{formatMessageTime(message)}</span>
 
-          {message.sending && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+          {message.sending && <BizuplyLoader size="xs" compact />}
           {message.failed && <span className="text-rose-500">נכשל</span>}
 
           {!message.sending && !message.failed && isMine && (

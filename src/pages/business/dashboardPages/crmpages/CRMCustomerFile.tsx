@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import API from "@api";
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 
 type CustomerTab = "appointments" | "extras";
 
@@ -661,14 +662,8 @@ function SmallTile({
 }
 
 function LoadingState() {
-  return (
-    <div className="rounded-[2rem] border border-slate-100 bg-slate-50 p-10 text-center">
-      <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-200 border-t-violet-600" />
-      <p className="text-sm font-bold text-slate-500">
-        Loading customer file...
-      </p>
-    </div>
-  );
+  const { t } = useTranslation();
+  return <BizuplyLoadingState label={t("crm.workHours.loading")} />;
 }
 
 function ErrorState({ text }: { text: string }) {

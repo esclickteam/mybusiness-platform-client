@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../../api";
 import "./MessagesPage.css";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState([]);
@@ -27,7 +28,7 @@ export default function MessagesPage() {
     fetchConversations();
   }, []);
 
-  if (loading) return <div className="messages-loading">Loading conversations…</div>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading conversations..." />;
   if (error) return <div className="messages-error">{error}</div>;
   if (conversations.length === 0)
     return (

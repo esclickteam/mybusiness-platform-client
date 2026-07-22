@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 
 import API from "@api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 
 type ProposalView = "active" | "sent" | "received";
 
@@ -784,14 +785,7 @@ function ReadinessCard({
 }
 
 function LoadingState() {
-  return (
-    <div className="p-12 text-center">
-      <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
-      <p className="mt-4 text-sm font-black text-slate-500">
-        Loading proposals...
-      </p>
-    </div>
-  );
+  return <BizuplyLoadingState label="Loading proposals..." />;
 }
 
 function ErrorState({ text }: { text: string }) {

@@ -25,6 +25,7 @@ import {
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 /* ============================
    Types
@@ -451,11 +452,7 @@ export default function BusinessDashboardLayout() {
   };
 
   if (loading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-[#f5f6fb]">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
-      </div>
-    );
+    return <BizuplyLoader fullScreen />;
   }
 
   return (

@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 
 import DashboardSkeleton from "@/components/DashboardSkeleton";
+import BizuplyLoader from "@/components/ui/BizuplyLoader";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
 import useAiInsights from "@/hooks/useAiInsights";
 
@@ -329,7 +330,7 @@ export default function DashboardOverview({
   );
 
   if (loading && !data) {
-    return <DashboardSkeleton />;
+    return <BizuplyLoader fullScreen label="Loading dashboard..." />;
   }
 
   return (

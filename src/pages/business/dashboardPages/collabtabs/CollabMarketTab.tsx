@@ -33,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 import API from "../../../../api";
+import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 
 type CollabFormState = {
@@ -335,7 +336,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
-            <Loader2 className="h-5 w-5 animate-spin" />
+            <BizuplyLoader size="sm" compact />
           ) : (
             <Plus className="h-5 w-5" />
           )}
@@ -729,7 +730,7 @@ function CollabCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-3 text-sm font-black text-sky-800 transition hover:bg-sky-100 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {chatLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <BizuplyLoader size="xs" compact />
               ) : (
                 <MessageCircle className="h-4 w-4" />
               )}
@@ -885,16 +886,7 @@ function FormField({
 
 function LoadingState() {
   const { t } = useTranslation();
-  const dir = useLocaleDir();
-  return (
-    <div dir={dir} className="p-10 text-center">
-      <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
-
-      <p className="mt-4 text-sm font-bold text-slate-500">
-        {t("collab.market.loading")}
-      </p>
-    </div>
-  );
+  return <BizuplyLoadingState label={t("collab.market.loading")} />;
 }
 
 function EmptyMarketState({ onCreate }: { onCreate: () => void }) {

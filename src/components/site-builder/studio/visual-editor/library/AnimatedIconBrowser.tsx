@@ -6,6 +6,7 @@ import React, {
 import { renderToStaticMarkup } from "react-dom/server";
 import { motion } from "motion/react";
 import * as TablerIcons from "@tabler/icons-react";
+import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
   Check,
@@ -877,7 +878,7 @@ export default function AnimatedIconBrowser({
                   >
                     <div className="flex h-[128px] items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white to-slate-50">
                       {isAdding ? (
-                        <Loader2 className="h-7 w-7 animate-spin text-violet-600" />
+                        <BizuplyLoader size="lg" />
                       ) : (
                         <motion.div
                           {...previewMotion}

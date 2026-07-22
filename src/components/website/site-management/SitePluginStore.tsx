@@ -10,6 +10,7 @@ import {
 
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 type SitePluginStoreProps = {
   catalog: SitePluginDefinition[];
@@ -226,7 +227,7 @@ export default function SitePluginStore({
                 }`}
               >
                 {saving ? (
-                  <Loader2 size={12} className="animate-spin" />
+                  <BizuplyLoader size="xs" compact />
                 ) : isEnabled ? (
                   <>
                     <X size={12} />

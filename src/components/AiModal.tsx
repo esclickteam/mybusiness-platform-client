@@ -12,6 +12,7 @@ import {
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAi } from "../context/AiContext";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 type AiSuggestion = {
   id: string;
@@ -184,7 +185,7 @@ export default function AiModal(props: AiModalProps) {
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <BizuplyLoader size="sm" compact />
               ) : (
                 <Send className="h-5 w-5" />
               )}

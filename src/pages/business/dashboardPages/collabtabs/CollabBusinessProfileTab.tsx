@@ -31,6 +31,7 @@ import CollabChat from "./CollabChat";
 import { useAi } from "../../../../context/AiContext";
 import AiModal from "../../../../components/AiModal";
 import { useCollabOutletContext } from "./useCollabOutletContext";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 type CollabBusinessProfileTabProps = Record<string, never>;
 
@@ -393,7 +394,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-5 text-sm font-black text-rose-700 transition hover:-translate-y-0.5 hover:bg-rose-100 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isDeletingLogo ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <BizuplyLoader size="sm" compact />
                   ) : (
                     <Trash2 className="h-5 w-5" />
                   )}
@@ -699,7 +700,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
-                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <BizuplyLoader size="sm" compact />
                   ) : (
                     <CheckCircle2 className="h-5 w-5" />
                   )}

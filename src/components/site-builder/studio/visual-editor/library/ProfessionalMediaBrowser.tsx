@@ -16,6 +16,7 @@ import {
   Upload,
 } from "lucide-react";
 
+import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 import {
   PEXELS_MEDIA_CATEGORIES,
   searchPexelsMedia,
@@ -257,7 +258,7 @@ export default function ProfessionalMediaBrowser({
         {!items.length && loading ? (
           <div className="flex min-h-[360px] items-center justify-center">
             <div className="text-center">
-              <Loader2 className="mx-auto h-8 w-8 animate-spin text-violet-600" />
+              <BizuplyLoader size="lg" />
               <p className="mt-3 text-sm font-black text-slate-700">
                 {mediaType === "videos"
                   ? "טוען סרטונים מקצועיים..."
@@ -380,7 +381,7 @@ export default function ProfessionalMediaBrowser({
             className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 shadow-sm transition hover:border-violet-300 hover:text-violet-700 disabled:opacity-50"
           >
             {loading ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
+              <BizuplyLoader size="xs" compact />
             ) : mediaType === "videos" ? (
               <Film className="h-4 w-4" />
             ) : (

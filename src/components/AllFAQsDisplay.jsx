@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { loadAllFAQs } from "./loadAllFAQs";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function AllFAQsDisplay() {
   const [faqs, setFaqs] = useState([]);
@@ -25,7 +26,7 @@ export default function AllFAQsDisplay() {
     setOpenIndex(openIndex === index ? null : index);
   };
 
-  if (loading) return <p>Loading FAQs...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
   if (error) return <p>An error occurred: {error}</p>;
 
   return (

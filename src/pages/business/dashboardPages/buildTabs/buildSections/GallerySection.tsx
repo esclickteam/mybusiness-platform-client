@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import ImageLoader from "@components/ImageLoader";
+import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
 
 type GalleryImage = {
   preview: string;
@@ -244,7 +245,7 @@ export default function GallerySection({
           {isSaving && (
             <div className="absolute inset-0 z-20 flex items-center justify-center bg-white/70 backdrop-blur-sm">
               <div className="rounded-[1.5rem] border border-white bg-white px-6 py-5 text-center shadow-2xl">
-                <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
+                <BizuplyLoader size="lg" />
                 <p className="text-sm font-black text-slate-950">
                   שומר שינויים…
                 </p>

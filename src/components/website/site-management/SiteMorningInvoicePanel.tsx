@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 import {
   getMorningInvoiceSettings,
   saveMorningInvoiceSettings,
@@ -155,7 +156,7 @@ export default function SiteMorningInvoicePanel({
     return (
       <div className="grid min-h-[280px] place-items-center">
         <div className="flex items-center gap-3 text-sm font-black text-slate-500">
-          <Loader2 size={22} className="animate-spin text-emerald-600" />
+          <BizuplyLoader size="sm" compact />
           טוען הגדרות Morning...
         </div>
       </div>
@@ -403,7 +404,7 @@ export default function SiteMorningInvoicePanel({
             disabled={saving}
             className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white disabled:opacity-60"
           >
-            {saving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
+            {saving ? <BizuplyLoader size="xs" compact /> : <Save size={16} />}
             שמירה
           </button>
 
@@ -414,7 +415,7 @@ export default function SiteMorningInvoicePanel({
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 disabled:opacity-60"
           >
             {testing ? (
-              <Loader2 size={16} className="animate-spin" />
+              <BizuplyLoader size="xs" compact />
             ) : (
               <RefreshCcw size={16} />
             )}

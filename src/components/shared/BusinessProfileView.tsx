@@ -19,6 +19,7 @@ import Icon from "@/components/UI/Icon";
 import ReviewCard from "../../components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { lockPageScroll } from "@/utils/pageScrollLock";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 const ReviewForm = lazy(
   () => import("../../pages/business/dashboardPages/buildTabs/ReviewForm")
@@ -533,20 +534,7 @@ export default function BusinessProfileView() {
   };
 
   if (isLoading) {
-    return (
-      <main
-        dir="rtl"
-        className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-16 text-right"
-      >
-        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/80 bg-white/90 p-10 text-center shadow-[0_24px_80px_rgba(15,23,42,0.10)] backdrop-blur">
-          <div className="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-violet-100 border-t-violet-600" />
-
-          <p className="text-sm font-black text-slate-600">
-            טוען את עמוד העסק...
-          </p>
-        </div>
-      </main>
-    );
+    return <BizuplyLoader fullScreen label="טוען את עמוד העסק..." />;
   }
 
   if (error) {

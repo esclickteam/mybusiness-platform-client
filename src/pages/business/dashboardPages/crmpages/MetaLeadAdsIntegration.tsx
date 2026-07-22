@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
   CheckCircle2,
@@ -357,9 +358,11 @@ export default function MetaLeadAdsIntegration() {
                 disabled={loading || busy}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
               >
-                <RefreshCw
-                  className={`h-5 w-5 ${loading ? "animate-spin" : ""}`}
-                />
+                {loading ? (
+                  <BizuplyLoader size="xs" compact />
+                ) : (
+                  <RefreshCw className="h-5 w-5" />
+                )}
                 Refresh
               </button>
             </div>
@@ -462,7 +465,7 @@ export default function MetaLeadAdsIntegration() {
                     className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl bg-sky-600 px-4 text-sm font-black text-white transition hover:bg-sky-700 disabled:opacity-60"
                   >
                     {busy ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <BizuplyLoader size="xs" compact />
                     ) : (
                       <Plug className="h-4 w-4" />
                     )}
@@ -754,7 +757,7 @@ export default function MetaLeadAdsIntegration() {
                       ].join(" ")}
                     >
                       {busy ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <BizuplyLoader size="xs" compact />
                       ) : selectedForm?.formId === form.id ? (
                         <CheckCircle2 className="h-4 w-4" />
                       ) : (

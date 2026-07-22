@@ -21,6 +21,7 @@ import SitePaymentsPanel from "../components/website/site-management/SitePayment
 import SiteMorningInvoicePanel from "../components/website/site-management/SiteMorningInvoicePanel";
 import SiteGenericPluginPanel from "../components/website/site-management/SiteGenericPluginPanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 import {
   getPluginAccent,
   getPluginIcon,
@@ -143,14 +144,7 @@ export default function SiteManagementPanelPage() {
   }
 
   if (loading) {
-    return (
-      <div dir="rtl" className="grid min-h-[60vh] place-items-center bg-[#F7F8FC]">
-        <div className="flex items-center gap-3 text-sm font-black text-slate-500">
-          <Loader2 size={24} className="animate-spin text-violet-600" />
-          טוען פאנל ניהול...
-        </div>
-      </div>
-    );
+    return <BizuplyLoader fullScreen label="טוען פאנל ניהול..." />;
   }
 
   if (error) {

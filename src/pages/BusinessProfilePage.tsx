@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 
 import API from "../api";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 import ProposalForm from "./business/dashboardPages/collabtabs/ProposalForm";
 
 type Business = {
@@ -591,7 +592,7 @@ export default function BusinessProfilePage({
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-6 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.20)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {sending ? (
-                      <Loader2 className="h-5 w-5 animate-spin" />
+                      <BizuplyLoader size="xs" compact />
                     ) : (
                       <Send className="h-5 w-5" />
                     )}
@@ -762,19 +763,7 @@ function QuickAction({
 }
 
 function LoadingState() {
-  return (
-    <div
-      dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-slate-50 p-4"
-    >
-      <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
-        <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
-        <p className="mt-4 text-sm font-black text-slate-500">
-          טוען את פרטי העסק...
-        </p>
-      </div>
-    </div>
-  );
+  return <BizuplyLoader fullScreen label="טוען את פרטי העסק..." />;
 }
 
 function ErrorState({ text }: { text: string }) {

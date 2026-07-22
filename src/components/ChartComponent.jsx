@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { Bar } from "react-chartjs-2";
 import API from '../api';
 import DashboardCards from "./DashboardCards";
+import BizuplyLoader from "./ui/BizuplyLoader";
 
 function ChartComponent({ businessId }) {
   const [stats, setStats] = useState(null);
@@ -34,7 +35,7 @@ function ChartComponent({ businessId }) {
   }, [fetchStats]);
 
   if (!businessId) return <p className="error-text">⚠️ Business ID is not available.</p>;
-  if (loading) return <p className="loading-text">⏳ Loading data...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading data..." />;
   if (error) return (
     <>
       <p className="error-text">{error}</p>

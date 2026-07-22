@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
 import API from "@api";
+import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 export default function SignAgreementPage({ currentUserBusinessId }) {
   const { agreementId } = useParams();
@@ -25,7 +26,7 @@ export default function SignAgreementPage({ currentUserBusinessId }) {
     fetchAgreement();
   }, [agreementId]);
 
-  if (loading) return <p>Loading agreement...</p>;
+  if (loading) return <BizuplyLoader fullScreen label="Loading..." />;
   if (error) return <p style={{ color: "red" }}>{error}</p>;
   if (!agreement) return <p>Agreement not found</p>;
 
