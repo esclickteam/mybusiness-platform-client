@@ -119,7 +119,7 @@ function NeighborhoodMarquee({ data }: { data: Record<string, any> }) {
   return (
     <section className="tpl-sweep overflow-hidden border-y py-3" style={{ borderColor:"rgba(17,24,39,0.1)", background:"#ffffff" }}>
       <div className="tpl-marquee-track gap-8 px-4 text-sm font-bold tracking-[0.2em]" style={{ color:"#2563eb" }}>
-        {tags.concat(tags).map((t,i)=><span key={i} className="whitespace-nowrap">{t} ·</span>)}
+        {tags.concat(tags).map((t,i)=><span key={`tag-${i}`} className="whitespace-nowrap">{t} ·</span>)}
       </div>
     </section>
   );

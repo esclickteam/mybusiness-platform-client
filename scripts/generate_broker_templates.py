@@ -350,7 +350,12 @@ def gen_pages(t):
     hero = hero_jsx(t)
     sections = home_sections_jsx(t)
     home_bits = "\n      ".join(HOME_SECTION_USE[layout])
-    inner_bits = "\n        ".join(s.replace("{data}", "{merged}") for s in HOME_SECTION_USE[layout])
+    inner_bits = "\n        ".join(
+        s.replace("{data}", "{merged}").replace(
+            "onCta={onCta}", "onCta={() => goTo(\"contact\")}"
+        )
+        for s in HOME_SECTION_USE[layout]
+    )
     inner_jsx = "{pg.id.includes(\"contact\") ? null : (<>\n        " + inner_bits + "\n        </>)}"
     return f'''import React, {{ useMemo, useState }} from "react";
 import {{ VisualPageStack }} from "../../../../runtime/VisualPageStack";

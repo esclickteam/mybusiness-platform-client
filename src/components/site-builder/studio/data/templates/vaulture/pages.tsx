@@ -110,7 +110,7 @@ function TestimonialStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="overflow-hidden border-t py-6" style={{ borderColor:"rgba(245,240,232,0.12)" }}>
       <div className="tpl-testi-track gap-8 px-4">
-        {quotes.concat(quotes).map((q,i)=>(<blockquote key={i} className="whitespace-nowrap border px-6 py-3 text-lg" style={{ borderColor:"rgba(245,240,232,0.12)", color:"#a89880" }}>{q}</blockquote>))}
+        {quotes.concat(quotes).map((q,i)=>(<blockquote key={`quote-${i}`} className="whitespace-nowrap border px-6 py-3 text-lg" style={{ borderColor:"rgba(245,240,232,0.12)", color:"#a89880" }}>{q}</blockquote>))}
       </div>
     </section>
   );

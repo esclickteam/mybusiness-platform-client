@@ -91,7 +91,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
         </div>
         <div className="absolute inset-x-0 bottom-0 z-20 border-t py-3" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#141c2aee" }}>
           <div className="tpl-prop-ticker gap-10 px-4 text-sm font-bold" style={{ color: "#c9a962" }}>
-            {[1,2,3,4,1,2,3,4].map((i) => (<span key={i} className="whitespace-nowrap">{v(data, `item${i}Title`)} · {v(data, `item${i}Price`)} ·</span>))}
+            {[1,2,3,4,1,2,3,4].map((i, idx) => (<span key={`ticker-${idx}`} className="whitespace-nowrap">{v(data, `item${i}Title`)} · {v(data, `item${i}Price`)} ·</span>))}
           </div>
         </div>
       </section>
@@ -130,7 +130,7 @@ function AgentStrip({ data }: { data: Record<string, any> }) {
   return (
     <section className="tpl-sweep overflow-hidden border-y py-4" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
       <div className="tpl-marquee-track gap-10 px-4 text-sm font-bold" style={{ color: "#f0f4fa" }}>
-        {agents.concat(agents).map((a, i) => <span key={i} className="whitespace-nowrap">{a} ·</span>)}
+        {agents.concat(agents).map((a, i) => <span key={`agent-${i}`} className="whitespace-nowrap">{a} ·</span>)}
       </div>
     </section>
   );
