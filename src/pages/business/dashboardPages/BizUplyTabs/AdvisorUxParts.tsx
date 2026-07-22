@@ -154,6 +154,7 @@ export function stripExecutedSummaryFromAnswer(content: string): string {
   return content
     .replace(/\n---\n\*\*פעולות שבוצעו:\*\*[\s\S]*$/i, "")
     .replace(/\n---\n\*\*Actions executed:\*\*[\s\S]*$/i, "")
+    .replace(/\n---\n\*\*Actions completed:\*\*[\s\S]*$/i, "")
     .trim();
 }
 
