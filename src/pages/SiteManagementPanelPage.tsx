@@ -171,14 +171,14 @@ export default function SiteManagementPanelPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-violet-50/20 via-slate-50 to-white">
-      <div className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/90 shadow-sm backdrop-blur-md">
+    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-[#faf7ff] via-[#f3f8ff] to-white">
+      <div className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/85 shadow-[0_4px_20px_rgba(99,102,241,0.05)] backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => navigate(`${basePath}/website`)}
-              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 text-violet-600 transition hover:bg-violet-100"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-violet-100/80 bg-gradient-to-br from-violet-50 to-sky-50 text-violet-700 transition hover:border-sky-200 hover:text-sky-700"
               aria-label="חזרה לאתרים שלי"
             >
               <ArrowRight size={16} />
@@ -238,16 +238,16 @@ export default function SiteManagementPanelPage() {
                   key={section}
                   type="button"
                   onClick={() => setActiveSection(section)}
-                  className={`relative inline-flex items-center gap-2 rounded-t-xl px-4 py-2.5 text-sm font-semibold transition ${
+                  className={`relative inline-flex items-center gap-2 rounded-t-md px-4 py-2.5 text-sm font-semibold transition ${
                     active
-                      ? "bg-violet-50 text-violet-700"
-                      : "text-slate-500 hover:bg-violet-50/50 hover:text-violet-600"
+                      ? "bg-gradient-to-b from-violet-50/80 to-sky-50/40 text-slate-800"
+                      : "text-slate-500 hover:bg-violet-50/40 hover:text-slate-700"
                   }`}
                 >
                   <Icon size={16} />
                   {meta.label}
                   {active ? (
-                    <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gradient-to-l from-violet-600 to-indigo-600" />
+                    <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-gradient-to-l from-violet-400 via-sky-400 to-cyan-400" />
                   ) : null}
                 </button>
               );
@@ -258,7 +258,7 @@ export default function SiteManagementPanelPage() {
 
       <div className="mx-auto max-w-[1600px] px-4 py-5 md:px-6 md:py-6">
         {activeSection !== "overview" && activeSection !== "plugins" ? (
-          <div className="mb-5 rounded-xl border border-violet-100 bg-white/80 px-4 py-3">
+          <div className="mb-5 rounded-md border border-violet-100/70 bg-white/80 px-4 py-3 backdrop-blur-sm">
             <h2 className="text-base font-bold text-slate-900">{activeMeta.label}</h2>
             <p className="mt-0.5 text-sm text-slate-500">{activeMeta.description}</p>
           </div>
@@ -289,7 +289,7 @@ export default function SiteManagementPanelPage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className={`rounded-2xl border-r-4 bg-gradient-to-l ${stat.bg} to-white p-5 shadow-sm ${stat.accent}`}
+                  className={`rounded-md border-r-4 bg-gradient-to-l ${stat.bg} to-white p-5 shadow-[0_4px_16px_rgba(99,102,241,0.05)] ${stat.accent}`}
                 >
                   <p className="text-xs font-medium text-slate-500">{stat.label}</p>
                   <p className="mt-1 text-2xl font-bold text-slate-900">{stat.value}</p>
@@ -297,10 +297,10 @@ export default function SiteManagementPanelPage() {
               ))}
             </div>
 
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-6">
+            <div className="rounded-md border border-violet-100/70 bg-white/90 p-5 shadow-[0_4px_18px_rgba(99,102,241,0.05)] md:p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div className="flex items-start gap-3">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 text-white">
+                  <div className="grid h-10 w-10 place-items-center rounded-md border border-violet-100/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-violet-700">
                     <Sparkles size={18} />
                   </div>
                   <div>
@@ -338,7 +338,7 @@ export default function SiteManagementPanelPage() {
                           if (canManage && section) setActiveSection(section);
                           else setActiveSection("plugins");
                         }}
-                        className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-right transition hover:border-violet-200 hover:bg-white hover:shadow-md"
+                        className="flex items-center gap-3 rounded-md border border-slate-200/80 bg-white/80 p-3 text-right transition hover:border-violet-200/70 hover:bg-white hover:shadow-[0_4px_14px_rgba(99,102,241,0.07)]"
                       >
                         <div
                           className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white shadow-sm"
@@ -350,15 +350,15 @@ export default function SiteManagementPanelPage() {
                           <span className="block truncate text-sm font-semibold text-slate-800">
                             {plugin.name}
                           </span>
-                          <span className="text-[11px] text-violet-600">לחצו לניהול</span>
+                          <span className="text-[11px] text-sky-700">לחצו לניהול</span>
                         </div>
                       </button>
                     );
                   })}
                 </div>
               ) : (
-                <div className="mt-5 rounded-xl border border-dashed border-violet-200 bg-violet-50/30 py-8 text-center">
-                  <Layers size={28} className="mx-auto text-violet-300" />
+                <div className="mt-5 rounded-md border border-dashed border-violet-200/70 bg-gradient-to-b from-violet-50/30 to-white py-8 text-center">
+                  <Layers size={28} className="mx-auto text-sky-400/70" />
                   <p className="mt-2 text-sm text-slate-500">
                     עדיין לא הותקנו תוספים
                   </p>

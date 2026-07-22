@@ -14,6 +14,9 @@ import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 import {
   btnGhost,
   btnPrimary,
+  btnSecondary,
+  panelHero,
+  panelSection,
   pillActive,
   pillInactive,
 } from "./siteManagementUi";
@@ -97,28 +100,32 @@ export default function SitePluginStore({
   }, [installed]);
 
   return (
-    <div className="space-y-6">
-      <div className="overflow-hidden rounded-2xl bg-gradient-to-l from-violet-600 via-violet-600 to-indigo-600 p-6 text-white shadow-lg shadow-violet-200/40 md:p-8">
+    <div className="space-y-5">
+      <div className={`${panelHero} p-6 md:p-7`}>
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-semibold backdrop-blur-sm">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-violet-100/80 bg-white/70 px-3 py-1 text-xs font-semibold text-violet-700 backdrop-blur-sm">
               <Package size={14} />
               BizUply App Store
             </div>
-            <h2 className="text-2xl font-bold md:text-3xl">חנות תוספים</h2>
-            <p className="mt-2 max-w-lg text-sm text-violet-100">
+            <h2 className="text-2xl font-bold text-slate-900 md:text-3xl">
+              חנות תוספים
+            </h2>
+            <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-600">
               הרחיבו את האתר עם כלים לחנות, תורים, סליקה, שיווק ו-AI — התקנה
               בלחיצה אחת.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
-              <div className="rounded-xl bg-white/15 px-4 py-2 backdrop-blur-sm">
-                <p className="text-[11px] text-violet-200">מותקנים</p>
-                <p className="text-lg font-bold">{installed.length}</p>
+              <div className="rounded-md border border-violet-100/80 bg-white/75 px-4 py-2 backdrop-blur-sm">
+                <p className="text-[11px] font-medium text-slate-500">מותקנים</p>
+                <p className="text-lg font-bold text-slate-900">{installed.length}</p>
               </div>
               {monthlyTotal > 0 ? (
-                <div className="rounded-xl bg-white/15 px-4 py-2 backdrop-blur-sm">
-                  <p className="text-[11px] text-violet-200">עלות חודשית</p>
-                  <p className="text-lg font-bold">~₪{monthlyTotal}</p>
+                <div className="rounded-md border border-violet-100/80 bg-white/75 px-4 py-2 backdrop-blur-sm">
+                  <p className="text-[11px] font-medium text-slate-500">
+                    עלות חודשית
+                  </p>
+                  <p className="text-lg font-bold text-slate-900">~₪{monthlyTotal}</p>
                 </div>
               ) : null}
             </div>
@@ -127,21 +134,21 @@ export default function SitePluginStore({
           <div className="relative w-full lg:max-w-sm">
             <Search
               size={18}
-              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-violet-300"
+              className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-sky-500/70"
             />
             <input
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="חיפוש תוסף..."
-              className="h-12 w-full rounded-xl border-0 bg-white/95 pr-11 pl-4 text-sm text-slate-800 shadow-inner outline-none placeholder:text-slate-400 focus:ring-2 focus:ring-white/50"
+              className="h-12 w-full rounded-md border border-violet-100/80 bg-white pr-11 pl-4 text-sm text-slate-800 shadow-[inset_0_1px_2px_rgba(15,23,42,0.04)] outline-none placeholder:text-slate-400 focus:border-sky-200 focus:ring-2 focus:ring-sky-100/80"
             />
           </div>
         </div>
       </div>
 
       {installed.length > 0 ? (
-        <section className="rounded-2xl border border-violet-100 bg-violet-50/40 p-4">
-          <h3 className="mb-3 text-sm font-semibold text-violet-800">
+        <section className={panelSection}>
+          <h3 className="mb-3 text-sm font-semibold text-slate-800">
             מותקנים באתר ({installed.length})
           </h3>
           <div className="flex gap-3 overflow-x-auto pb-1">
@@ -151,10 +158,10 @@ export default function SitePluginStore({
               return (
                 <div
                   key={plugin.key}
-                  className="flex min-w-[140px] shrink-0 items-center gap-3 rounded-xl border border-white bg-white px-3 py-2.5 shadow-sm"
+                  className="flex min-w-[140px] shrink-0 items-center gap-3 rounded-md border border-violet-100/70 bg-white/90 px-3 py-2.5 shadow-[0_2px_10px_rgba(99,102,241,0.05)]"
                 >
                   <div
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-xl text-white"
+                    className="grid h-10 w-10 shrink-0 place-items-center rounded-md text-white shadow-sm"
                     style={{ background: accent }}
                   >
                     <Icon size={18} />
@@ -181,7 +188,7 @@ export default function SitePluginStore({
             key={category}
             type="button"
             onClick={() => setFilter(category)}
-            className={`shrink-0 rounded-full px-4 py-2 text-xs font-semibold transition ${
+            className={`shrink-0 rounded-md px-4 py-2 text-xs font-semibold transition ${
               filter === category ? pillActive : pillInactive
             }`}
           >
@@ -201,28 +208,28 @@ export default function SitePluginStore({
           return (
             <article
               key={plugin.key}
-              className={`group relative flex flex-col rounded-2xl border p-4 transition duration-200 ${
+              className={`group relative flex flex-col rounded-md border p-4 transition duration-200 ${
                 isEnabled
-                  ? "border-violet-200 bg-gradient-to-b from-violet-50/80 to-white shadow-md shadow-violet-100/50"
-                  : "border-slate-200/80 bg-white hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-100/40"
+                  ? "border-violet-200/70 bg-gradient-to-b from-violet-50/70 via-sky-50/40 to-white shadow-[0_6px_20px_rgba(99,102,241,0.08)]"
+                  : "border-slate-200/80 bg-white/90 hover:-translate-y-0.5 hover:border-violet-200/70 hover:shadow-[0_8px_24px_rgba(99,102,241,0.08)]"
               }`}
             >
               {wasDetected && !isEnabled ? (
-                <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
+                <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-md border border-amber-200/80 bg-amber-50 px-2 py-0.5 text-[10px] font-semibold text-amber-800">
                   <Sparkles size={10} />
                   חדש
                 </span>
               ) : null}
 
               {isEnabled ? (
-                <span className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-full bg-emerald-500 text-white shadow-sm">
+                <span className="absolute right-3 top-3 grid h-6 w-6 place-items-center rounded-md bg-emerald-500 text-white shadow-sm">
                   <Check size={13} strokeWidth={3} />
                 </span>
               ) : null}
 
               <div className="flex items-start gap-3">
                 <div
-                  className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl text-white shadow-md"
+                  className="grid h-14 w-14 shrink-0 place-items-center rounded-md text-white shadow-sm"
                   style={{ background: `linear-gradient(135deg, ${accent}, ${accent}bb)` }}
                 >
                   <Icon size={26} />
@@ -233,7 +240,7 @@ export default function SitePluginStore({
                   </h3>
                   <p
                     className={`mt-1 text-xs font-semibold ${
-                      isPaid ? "text-violet-600" : "text-emerald-600"
+                      isPaid ? "text-violet-700" : "text-emerald-600"
                     }`}
                   >
                     {formatPrice(plugin)}
@@ -241,7 +248,7 @@ export default function SitePluginStore({
                 </div>
               </div>
 
-              <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed text-slate-500">
+              <p className="mt-3 line-clamp-2 min-h-[2.5rem] text-xs leading-relaxed text-slate-600">
                 {plugin.description}
               </p>
 
@@ -249,7 +256,7 @@ export default function SitePluginStore({
                 type="button"
                 disabled={saving}
                 onClick={() => onToggle(plugin.key, !isEnabled)}
-                className={`mt-4 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl text-xs font-semibold transition disabled:opacity-60 ${
+                className={`mt-4 inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md text-xs font-semibold transition disabled:opacity-60 ${
                   isEnabled
                     ? btnGhost + " hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                     : btnPrimary
@@ -275,9 +282,9 @@ export default function SitePluginStore({
       </div>
 
       {filteredCatalog.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-violet-200 bg-violet-50/30 py-16 text-center">
-          <Package size={32} className="mx-auto text-violet-300" />
-          <p className="mt-3 text-sm font-semibold text-slate-600">
+        <div className="rounded-md border border-dashed border-violet-200/80 bg-gradient-to-b from-violet-50/40 to-white py-16 text-center">
+          <Package size={32} className="mx-auto text-sky-400/70" />
+          <p className="mt-3 text-sm font-semibold text-slate-700">
             לא נמצאו תוספים לחיפוש הזה
           </p>
           <button
