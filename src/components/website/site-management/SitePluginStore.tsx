@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
   Check,
   Download,
+  HelpCircle,
   Package,
   Search,
   Sparkles,
@@ -11,6 +12,7 @@ import {
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import SitePluginHelpModal from "./SitePluginHelpModal";
 import {
   btnGhost,
   btnPrimary,
@@ -43,6 +45,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 function formatPrice(plugin: SitePluginDefinition) {
+  if (plugin.displayPriceLabel) return plugin.displayPriceLabel;
   if (plugin.priceLabel) return plugin.priceLabel;
   if (plugin.priceMonthly == null) return "כלול בחבילה";
   if (plugin.priceMax && plugin.priceMax > (plugin.priceMonthly || 0)) {
@@ -60,6 +63,7 @@ export default function SitePluginStore({
 }: SitePluginStoreProps) {
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
+  const [helpPlugin, setHelpPlugin] = useState<SitePluginDefinition | null>(null);
 
   const categories = useMemo(() => {
     const set = new Set(catalog.map((item) => item.category));
@@ -113,7 +117,7 @@ export default function SitePluginStore({
             </h2>
             <p className="mt-2 max-w-lg text-sm leading-relaxed text-slate-600">
               הרחיבו את האתר עם כלים לחנות, תורים, סליקה, שיווק ו-AI — התקנה
-              בלחיצה אחת.
+              בלחיצה אחת. {catalog.length} תוספים זמינים.
             </p>
             <div className="mt-4 flex flex-wrap gap-3">
               <div className="rounded-md border border-violet-100/80 bg-white/75 px-4 py-2 backdrop-blur-sm">
@@ -144,6 +148,11 @@ export default function SitePluginStore({
             />
           </div>
         </div>
+      </div>
+
+      <div className="rounded-xl border border-violet-200/80 bg-violet-50/40 px-4 py-3 text-sm text-violet-900">
+        כל התוספים גלויים וניתנים להתקנה <strong>בחינם</strong> בשלב הבנייה.
+        המחירים המוצגים הם לתצוגה בלבד — אין חסימה ואין חיוב כרגע.
       </div>
 
       {installed.length > 0 ? (
@@ -235,16 +244,33 @@ export default function SitePluginStore({
                   <Icon size={26} />
                 </div>
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <h3 className="text-sm font-bold leading-snug text-slate-900">
-                    {plugin.name}
-                  </h3>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <h3 className="text-sm font-bold leading-snug text-slate-900">
+                      {plugin.name}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setHelpPlugin(plugin)}
+                      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-violet-600 transition hover:bg-violet-50 hover:text-violet-800"
+                    >
+                      <HelpCircle size={11} />
+                      מה זה אומר?
+                    </button>
+                  </div>
                   <p
                     className={`mt-1 text-xs font-semibold ${
-                      isPaid ? "text-violet-700" : "text-emerald-600"
+                      isPaid && !plugin.displayPriceLabel?.includes("חינם")
+                        ? "text-violet-700"
+                        : "text-emerald-600"
                     }`}
                   >
                     {formatPrice(plugin)}
                   </p>
+                  {plugin.futurePriceLabel ? (
+                    <p className="mt-0.5 text-[10px] text-slate-400">
+                      מחיר עתידי: {plugin.futurePriceLabel}
+                    </p>
+                  ) : null}
                 </div>
               </div>
 
@@ -299,6 +325,12 @@ export default function SitePluginStore({
           </button>
         </div>
       ) : null}
+
+      <SitePluginHelpModal
+        plugin={helpPlugin}
+        open={Boolean(helpPlugin)}
+        onClose={() => setHelpPlugin(null)}
+      />
     </div>
   );
 }

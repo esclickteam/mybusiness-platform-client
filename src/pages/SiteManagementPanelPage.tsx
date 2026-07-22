@@ -19,9 +19,9 @@ import SitePluginStore from "../components/website/site-management/SitePluginSto
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
 import SiteMorningInvoicePanel from "../components/website/site-management/SiteMorningInvoicePanel";
-import SiteGenericPluginPanel from "../components/website/site-management/SiteGenericPluginPanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { PLUGIN_PANEL_MAP } from "../components/website/site-management/plugins/pluginPanels";
 import { btnPrimary, btnSecondary } from "../components/website/site-management/siteManagementUi";
 import {
   getPluginAccent,
@@ -32,12 +32,7 @@ import {
   type SitePanelSection,
 } from "../data/sitePluginNav";
 
-const MANAGEMENT_PANEL_KEYS = new Set([
-  "store",
-  "booking",
-  "payments",
-  "invoices",
-]);
+const CORE_PLUGIN_KEYS = new Set(["store", "booking", "payments", "invoices"]);
 
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
@@ -97,7 +92,6 @@ export default function SiteManagementPanelPage() {
     const items: SitePanelSection[] = ["overview", "plugins"];
 
     enabledPlugins.forEach((key) => {
-      if (!MANAGEMENT_PANEL_KEYS.has(key)) return;
       const section = PLUGIN_SECTION_MAP[key];
       if (section && !items.includes(section)) {
         items.push(section);
@@ -106,12 +100,6 @@ export default function SiteManagementPanelPage() {
 
     return items;
   }, [enabledPlugins]);
-
-  const activePluginDef = useMemo(() => {
-    const pluginKey = SECTION_META[activeSection]?.pluginKey;
-    if (!pluginKey) return null;
-    return catalog.find((item) => item.key === pluginKey) || null;
-  }, [activeSection, catalog]);
 
   const activeMeta = SECTION_META[activeSection];
 
@@ -128,10 +116,8 @@ export default function SiteManagementPanelPage() {
       setDetectedFromSite([]);
 
       if (enabled) {
-        if (MANAGEMENT_PANEL_KEYS.has(pluginKey)) {
-          const section = PLUGIN_SECTION_MAP[pluginKey];
-          if (section) setActiveSection(section);
-        }
+        const section = PLUGIN_SECTION_MAP[pluginKey];
+        if (section) setActiveSection(section);
       } else if (
         activeSection !== "overview" &&
         activeSection !== "plugins" &&
@@ -328,7 +314,7 @@ export default function SiteManagementPanelPage() {
                     const Icon = getPluginIcon(plugin.key);
                     const accent = getPluginAccent(plugin.key, plugin.accent);
                     const section = PLUGIN_SECTION_MAP[key];
-                    const canManage = MANAGEMENT_PANEL_KEYS.has(key);
+                    const canManage = Boolean(section);
 
                     return (
                       <button
@@ -401,14 +387,19 @@ export default function SiteManagementPanelPage() {
           <SiteMorningInvoicePanel businessId={businessId} />
         ) : null}
 
-        {activePluginDef &&
-        enabledSet.has(activePluginDef.key) &&
-        !MANAGEMENT_PANEL_KEYS.has(activePluginDef.key) ? (
-          <SiteGenericPluginPanel
-            plugin={activePluginDef}
-            editorHref={editorHref}
-          />
-        ) : null}
+        {(() => {
+          const PluginPanel = PLUGIN_PANEL_MAP[activeSection];
+          const pluginKey = SECTION_META[activeSection]?.pluginKey;
+          if (!PluginPanel || !pluginKey || !enabledSet.has(pluginKey)) return null;
+          if (CORE_PLUGIN_KEYS.has(pluginKey)) return null;
+          return (
+            <PluginPanel
+              siteId={siteId}
+              businessId={businessId}
+              editorHref={editorHref}
+            />
+          );
+        })()}
       </div>
     </div>
   );
