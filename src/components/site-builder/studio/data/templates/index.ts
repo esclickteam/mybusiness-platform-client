@@ -62,6 +62,18 @@ import { azurelineTemplate } from "./azureline/meta";
 import { seabloomTemplate } from "./seabloom/meta";
 import { saltforgeTemplate } from "./saltforge/meta";
 import { horizonixTemplate } from "./horizonix/meta";
+import { brokeriaTemplate } from "./brokeria/meta";
+import { propnexTemplate } from "./propnex/meta";
+import { dwellistTemplate } from "./dwellist/meta";
+import { vaultureTemplate } from "./vaulture/meta";
+import { blockwiseTemplate } from "./blockwise/meta";
+import { skyholdTemplate } from "./skyhold/meta";
+import { landmarkTemplate } from "./landmark/meta";
+import { openhausTemplate } from "./openhaus/meta";
+import { primeviewTemplate } from "./primeview/meta";
+import { nestiqTemplate } from "./nestiq/meta";
+import { signetTemplate } from "./signet/meta";
+import { axispointTemplate } from "./axispoint/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -125,6 +137,18 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   seabloomTemplate,
   saltforgeTemplate,
   horizonixTemplate,
+  brokeriaTemplate,
+  propnexTemplate,
+  dwellistTemplate,
+  vaultureTemplate,
+  blockwiseTemplate,
+  skyholdTemplate,
+  landmarkTemplate,
+  openhausTemplate,
+  primeviewTemplate,
+  nestiqTemplate,
+  signetTemplate,
+  axispointTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

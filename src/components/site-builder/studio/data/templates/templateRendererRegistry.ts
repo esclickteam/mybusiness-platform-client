@@ -293,6 +293,66 @@ import { horizonixEditorCss } from "./horizonix/editorCss";
 import { horizonixSchema } from "./horizonix/schema";
 import { horizonixDefaultData } from "./horizonix/defaultData";
 
+import BrokeriaPages, { brokeriaPages } from "./brokeria/pages";
+import { brokeriaEditorCss } from "./brokeria/editorCss";
+import { brokeriaSchema } from "./brokeria/schema";
+import { brokeriaDefaultData } from "./brokeria/defaultData";
+
+import PropnexPages, { propnexPages } from "./propnex/pages";
+import { propnexEditorCss } from "./propnex/editorCss";
+import { propnexSchema } from "./propnex/schema";
+import { propnexDefaultData } from "./propnex/defaultData";
+
+import DwellistPages, { dwellistPages } from "./dwellist/pages";
+import { dwellistEditorCss } from "./dwellist/editorCss";
+import { dwellistSchema } from "./dwellist/schema";
+import { dwellistDefaultData } from "./dwellist/defaultData";
+
+import VaulturePages, { vaulturePages } from "./vaulture/pages";
+import { vaultureEditorCss } from "./vaulture/editorCss";
+import { vaultureSchema } from "./vaulture/schema";
+import { vaultureDefaultData } from "./vaulture/defaultData";
+
+import BlockwisePages, { blockwisePages } from "./blockwise/pages";
+import { blockwiseEditorCss } from "./blockwise/editorCss";
+import { blockwiseSchema } from "./blockwise/schema";
+import { blockwiseDefaultData } from "./blockwise/defaultData";
+
+import SkyholdPages, { skyholdPages } from "./skyhold/pages";
+import { skyholdEditorCss } from "./skyhold/editorCss";
+import { skyholdSchema } from "./skyhold/schema";
+import { skyholdDefaultData } from "./skyhold/defaultData";
+
+import LandmarkPages, { landmarkPages } from "./landmark/pages";
+import { landmarkEditorCss } from "./landmark/editorCss";
+import { landmarkSchema } from "./landmark/schema";
+import { landmarkDefaultData } from "./landmark/defaultData";
+
+import OpenhausPages, { openhausPages } from "./openhaus/pages";
+import { openhausEditorCss } from "./openhaus/editorCss";
+import { openhausSchema } from "./openhaus/schema";
+import { openhausDefaultData } from "./openhaus/defaultData";
+
+import PrimeviewPages, { primeviewPages } from "./primeview/pages";
+import { primeviewEditorCss } from "./primeview/editorCss";
+import { primeviewSchema } from "./primeview/schema";
+import { primeviewDefaultData } from "./primeview/defaultData";
+
+import NestiqPages, { nestiqPages } from "./nestiq/pages";
+import { nestiqEditorCss } from "./nestiq/editorCss";
+import { nestiqSchema } from "./nestiq/schema";
+import { nestiqDefaultData } from "./nestiq/defaultData";
+
+import SignetPages, { signetPages } from "./signet/pages";
+import { signetEditorCss } from "./signet/editorCss";
+import { signetSchema } from "./signet/schema";
+import { signetDefaultData } from "./signet/defaultData";
+
+import AxispointPages, { axispointPages } from "./axispoint/pages";
+import { axispointEditorCss } from "./axispoint/editorCss";
+import { axispointSchema } from "./axispoint/schema";
+import { axispointDefaultData } from "./axispoint/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -1053,6 +1113,138 @@ export const studioTemplateRendererRegistry: Record<
     schema: horizonixSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: horizonixDefaultData as unknown as Record<string, any>,
     editorCss: horizonixEditorCss,
+  }),
+
+  brokeria: createRenderer({
+    key: "brokeria",
+    name: "Brokeria",
+    Component: BrokeriaPages,
+    pages: brokeriaPages,
+    editorMode: "visual-react",
+    schema: brokeriaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: brokeriaDefaultData as unknown as Record<string, any>,
+    editorCss: brokeriaEditorCss,
+  }),
+
+  propnex: createRenderer({
+    key: "propnex",
+    name: "Propnex",
+    Component: PropnexPages,
+    pages: propnexPages,
+    editorMode: "visual-react",
+    schema: propnexSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: propnexDefaultData as unknown as Record<string, any>,
+    editorCss: propnexEditorCss,
+  }),
+
+  dwellist: createRenderer({
+    key: "dwellist",
+    name: "Dwellist",
+    Component: DwellistPages,
+    pages: dwellistPages,
+    editorMode: "visual-react",
+    schema: dwellistSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dwellistDefaultData as unknown as Record<string, any>,
+    editorCss: dwellistEditorCss,
+  }),
+
+  vaulture: createRenderer({
+    key: "vaulture",
+    name: "Vaulture",
+    Component: VaulturePages,
+    pages: vaulturePages,
+    editorMode: "visual-react",
+    schema: vaultureSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vaultureDefaultData as unknown as Record<string, any>,
+    editorCss: vaultureEditorCss,
+  }),
+
+  blockwise: createRenderer({
+    key: "blockwise",
+    name: "Blockwise",
+    Component: BlockwisePages,
+    pages: blockwisePages,
+    editorMode: "visual-react",
+    schema: blockwiseSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: blockwiseDefaultData as unknown as Record<string, any>,
+    editorCss: blockwiseEditorCss,
+  }),
+
+  skyhold: createRenderer({
+    key: "skyhold",
+    name: "Skyhold",
+    Component: SkyholdPages,
+    pages: skyholdPages,
+    editorMode: "visual-react",
+    schema: skyholdSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: skyholdDefaultData as unknown as Record<string, any>,
+    editorCss: skyholdEditorCss,
+  }),
+
+  landmark: createRenderer({
+    key: "landmark",
+    name: "Landmark",
+    Component: LandmarkPages,
+    pages: landmarkPages,
+    editorMode: "visual-react",
+    schema: landmarkSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: landmarkDefaultData as unknown as Record<string, any>,
+    editorCss: landmarkEditorCss,
+  }),
+
+  openhaus: createRenderer({
+    key: "openhaus",
+    name: "Openhaus",
+    Component: OpenhausPages,
+    pages: openhausPages,
+    editorMode: "visual-react",
+    schema: openhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: openhausDefaultData as unknown as Record<string, any>,
+    editorCss: openhausEditorCss,
+  }),
+
+  primeview: createRenderer({
+    key: "primeview",
+    name: "Primeview",
+    Component: PrimeviewPages,
+    pages: primeviewPages,
+    editorMode: "visual-react",
+    schema: primeviewSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: primeviewDefaultData as unknown as Record<string, any>,
+    editorCss: primeviewEditorCss,
+  }),
+
+  nestiq: createRenderer({
+    key: "nestiq",
+    name: "Nestiq",
+    Component: NestiqPages,
+    pages: nestiqPages,
+    editorMode: "visual-react",
+    schema: nestiqSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nestiqDefaultData as unknown as Record<string, any>,
+    editorCss: nestiqEditorCss,
+  }),
+
+  signet: createRenderer({
+    key: "signet",
+    name: "Signet",
+    Component: SignetPages,
+    pages: signetPages,
+    editorMode: "visual-react",
+    schema: signetSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: signetDefaultData as unknown as Record<string, any>,
+    editorCss: signetEditorCss,
+  }),
+
+  axispoint: createRenderer({
+    key: "axispoint",
+    name: "Axispoint",
+    Component: AxispointPages,
+    pages: axispointPages,
+    editorMode: "visual-react",
+    schema: axispointSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: axispointDefaultData as unknown as Record<string, any>,
+    editorCss: axispointEditorCss,
   }),
 };
 

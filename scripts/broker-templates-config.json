@@ -1,0 +1,470 @@
+[
+  {
+    "id": "brokeria",
+    "name": "Brokeria",
+    "brand": "Brokeria",
+    "logo": "B",
+    "niche": "נדל״ן פרימיום · תל אביב",
+    "desc": "תבנית קולנועית: הירו מסך מלא, טיקר נכסים נגלל, כרטיסי נכס עם זום, צוות סוכנים וסטטיסטיקות מונפשות.",
+    "fonts": { "display": "Playfair+Display:wght@600;700;800", "displayCss": "\"Playfair Display\"" },
+    "palette": { "bg": "#0a0f18", "surface": "#141c2a", "text": "#f0f4fa", "muted": "#8b9cb5", "primary": "#c9a962", "primaryText": "#0a0f18", "line": "rgba(240,244,250,0.14)", "dark": "#050810" },
+    "layout": "propertyTicker",
+    "pages": [["home","בית","/"],["listings","נכסים","/listings"],["agents","סוכנים","/agents"],["about","אודות","/about"],["insights","תובנות","/insights"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "העיר נפתחת. הנכס מחכה.",
+      "subtitle": "ברוקריה מלווה קונים ומשקיעים בנכסי פרימיום — עם תמונה מדויקת, סיורים ממוקדים ועסקאות שקופות.",
+      "primary": "תיאום סיור",
+      "secondary": "לנכסים",
+      "aboutTitle": "סוכנות שמדברת בשפה של ערך.",
+      "aboutText": "צוות קטן, נכסים נבחרים וליווי אישי מרגע החיפוש ועד מסירת המפתחות.",
+      "contactTitle": "מוכנים לראות את הנכס הבא?",
+      "contactText": "ספרו תקציב, אזור ומספר חדרים — נחזור עם שלוש התאמות מדויקות.",
+      "quote": "נכס טוב מתחיל בשיחה ישירה — לא ברשימה ארוכה.",
+      "stat1Value": "180+", "stat1Label": "עסקאות שנסגרו",
+      "stat2Value": "12", "stat2Label": "שנות ניסיון",
+      "stat3Value": "48ש׳", "stat3Label": "מענה ממוצע",
+      "items": [
+        ["פנטהאוז רוטשילד", "5 חד׳ · 210 מ״ר", "מרפסת פנורמית, מעלית פרטית ונוף פתוח לים.", "₪14.2M"],
+        ["דירת גן נווה צדק", "4 חד׳ · 145 מ״ר", "חצר פרטית, תקרות גבוהות ושקט של שכונה היסטורית.", "₪8.7M"],
+        ["לופט יפו העתיקה", "3 חד׳ · 120 מ״ר", "תקרה גבוהה, אבן ירושלמית ואור מערבי.", "₪5.4M"],
+        ["דופלקס צפון הישן", "6 חד׳ · 240 מ״ר", "שתי קומות, מרפסת שמש וחניה כפולה.", "₪11.9M"]
+      ]
+    }
+  },
+  {
+    "id": "propnex",
+    "name": "Propnex",
+    "brand": "Propnex",
+    "logo": "P",
+    "niche": "סוכנות נדל״ן חכמה",
+    "desc": "תבנית בento אסימטרי: הירו מעורב תמונה/טקסט, תצוגת נכסים בento, מארקי שכונות ותהליך עם אנימציית קו.",
+    "fonts": { "display": "Space+Grotesk:wght@600;700", "displayCss": "\"Space Grotesk\"" },
+    "palette": { "bg": "#f4f6f9", "surface": "#ffffff", "text": "#111827", "muted": "#6b7280", "primary": "#2563eb", "primaryText": "#ffffff", "line": "rgba(17,24,39,0.1)", "dark": "#0f172a" },
+    "layout": "bentoGrid",
+    "pages": [["home","בית","/"],["listings","נכסים","/listings"],["neighborhoods","שכונות","/neighborhoods"],["process","תהליך","/process"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "נכסים. שכונות. תהליך ברור.",
+      "subtitle": "פרופנקס מחברת בין נתונים, עיצוב וליווי אישי — כדי שתמצאו נכס בלי רעש מיותר.",
+      "primary": "התחילו חיפוש",
+      "secondary": "גלו שכונות",
+      "aboutTitle": "נדל״ן שמסודר כמו מוצר.",
+      "aboutText": "כל נכס מקבל ציון התאמה, תמונות איכותיות ומידע שקוף על מחיר ומיקום.",
+      "contactTitle": "יש לכם דרישות?",
+      "contactText": "כתבו עיר, תקציב ומספר חדרים — נחזור עם רשימה ממוקדת.",
+      "quote": "פחות כרטיסים. יותר החלטות.",
+      "stat1Value": "320+", "stat1Label": "נכסים פעילים",
+      "stat2Value": "28", "stat2Label": "שכונות מכוסות",
+      "stat3Value": "94%", "stat3Label": "שביעות רצון",
+      "items": [
+        ["דירת 4 בלב העיר", "מרפסת · חניה · קומה 8", "בניין מחודש, חלוקה יעילה וכניסה מיידית.", "₪3.8M"],
+        ["פנטהאוז מגדל צפון", "נוף פתוח · ממ״ד", "חלל אירוח רחב ושתי מרפסות.", "₪7.2M"],
+        ["דופלקס שקט", "5 חד׳ · גינה פרטית", "מתאים למשפחה שרוצה עיר בלי לוותר על שקט.", "₪4.5M"],
+        ["לופט קו רכבת", "תקרה גבוהה · סטודיו", "תכנון פתוח, הרבה אור וקרבה למתחמי עבודה.", "₪2.9M"]
+      ]
+    }
+  },
+  {
+    "id": "dwellist",
+    "name": "Dwellist",
+    "brand": "Dwellist",
+    "logo": "D",
+    "niche": "תכנון מגורים · נדל״ן",
+    "desc": "תבנית תוכנית קומה: הירו מפוצל עם SVG מונפש, כרטיסי חדרים, השוואת נכסים ומחשבון משכנתא דקורטיבי.",
+    "fonts": { "display": "DM+Serif+Display&family=DM+Sans:wght@500;700", "displayCss": "\"DM Serif Display\", \"DM Sans\"" },
+    "palette": { "bg": "#faf8f5", "surface": "#ffffff", "text": "#2c2419", "muted": "#8a7d6e", "primary": "#5c7c6a", "primaryText": "#ffffff", "line": "rgba(44,36,25,0.12)", "dark": "#1a1510" },
+    "layout": "floorPlan",
+    "pages": [["home","בית","/"],["listings","נכסים","/listings"],["compare","השוואה","/compare"],["mortgage","משכנתא","/mortgage"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "תכנון שמספר סיפור.",
+      "subtitle": "דווליסט מציגה נכסים דרך תוכניות קומה, חלוקה חכמה והבנה של איך באמת חיים בבית.",
+      "primary": "גלו נכסים",
+      "secondary": "השוו דירות",
+      "aboutTitle": "נדל״ן שמתחיל מהחלל.",
+      "aboutText": "אנחנו בוחנים זרימה, אור, אחסון ושימוש יומיומי — לפני שמדברים על מחיר.",
+      "contactTitle": "רוצים לראות תוכנית?",
+      "contactText": "ספרו על הצרכים שלכם — נשלח תוכניות וסיורים מותאמים.",
+      "quote": "בית טוב נמדד בזרימה — לא רק במ״ר.",
+      "stat1Value": "450+", "stat1Label": "תוכניות נבדקו",
+      "stat2Value": "85%", "stat2Label": "התאמת חלוקה",
+      "stat3Value": "3.2", "stat3Label": "חדרים ממוצע",
+      "items": [
+        ["דירת 3 פתוחה", "92 מ״ר · מטבח פתוח", "סלון-מטבח זורם, חדר עבודה ומרפסת שמש.", "₪2.4M"],
+        ["דירת 4 משפחתית", "118 מ״ר · 2 מרפסות", "חדרי ילדים נפרדים, מחסן וחניה.", "₪3.6M"],
+        ["דופלקס עם גינה", "145 מ״ר · קומת קרקע", "גישה לגינה, חדר משפחה ומטבח שף.", "₪5.1M"],
+        ["פנטהאוז עם מרפסת", "180 מ״ר · 360°", "מרפסת עוטפת, חדר כושר ונוף פanorami.", "₪9.8M"]
+      ]
+    }
+  },
+  {
+    "id": "vaulture",
+    "name": "Vaulture",
+    "brand": "Vaulture",
+    "logo": "V",
+    "niche": "נדל״ן יוקרה · כסף וזהב",
+    "desc": "תבנית יוקרה כהה: הירו עם זהב, אנימציית curtain wipe, כרטיסי כספת וקרוסלת המלצות.",
+    "fonts": { "display": "Cormorant+Garamond:wght@600;700", "displayCss": "\"Cormorant Garamond\"" },
+    "palette": { "bg": "#0c0a08", "surface": "#1a1612", "text": "#f5f0e8", "muted": "#a89880", "primary": "#d4af37", "primaryText": "#0c0a08", "line": "rgba(245,240,232,0.12)", "dark": "#050403" },
+    "layout": "curtainReveal",
+    "pages": [["home","בית","/"],["collection","אוסף","/collection"],["exclusive","בלעדי","/exclusive"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "יוקרה ששומרת על ערך.",
+      "subtitle": "וולטור מציגה נכסי פרימיום בלעדיים — עם דיסקרטיות, ליווי VIP ועסקאות מדויקות.",
+      "primary": "בקשת גישה",
+      "secondary": "האוסף",
+      "aboutTitle": "כספת של נכסים נדירים.",
+      "aboutText": "מספר מצומצם של לקוחות, נכסים שלא מפורסמים ברשת וליווי משפטי מלא.",
+      "contactTitle": "מוכנים לשיחה פרטית?",
+      "contactText": "השאירו פרטים — נחזור בדיסקרטיות מלאה.",
+      "quote": "יוקרה אמיתית לא צריכה רעש — רק התאמה מושלמת.",
+      "stat1Value": "₪2.1B", "stat1Label": "שווי עסקאות",
+      "stat2Value": "47", "stat2Label": "נכסים בלעדיים",
+      "stat3Value": "100%", "stat3Label": "דיסקרטיות",
+      "items": [
+        ["וילת הרצליה פיתוח", "850 מ״ר · בריכה", "שטח פרטי, מרina view ועיצוב אדריכלי.", "לפי דרישה"],
+        ["פנטהאוז מגדל עזrieli", "320 מ״ר · 360°", "נוף עירוני, מעלית פרטית וטרסה.", "₪28M"],
+        ["דuplex יוקרה רמת אביב", "280 מ״ר · גינה", "שתי קומות, חדר יין וחדר כושר.", "₪16.5M"],
+        ["בית כפר שמריהו", "620 מ״ר · מגרש", "אדריכלות מודרנית, בריכה ושטח ירוק.", "₪22M"]
+      ]
+    }
+  },
+  {
+    "id": "blockwise",
+    "name": "Blockwise",
+    "brand": "Blockwise",
+    "logo": "BW",
+    "niche": "נדל״ן בrutalist · עיר",
+    "desc": "תבנית בrutalist: בלוקים מוערמים עם stagger climb, אינדקס נכסים ממוספר ופס קשר טיפוגרפי נועז.",
+    "fonts": { "display": "Archivo+Black&family=IBM+Plex+Sans+Hebrew:wght@500;700", "displayCss": "\"Archivo Black\", \"IBM Plex Sans Hebrew\"" },
+    "palette": { "bg": "#e8e4df", "surface": "#f5f2ee", "text": "#1a1a1a", "muted": "#666666", "primary": "#e63946", "primaryText": "#ffffff", "line": "rgba(26,26,26,0.18)", "dark": "#0d0d0d" },
+    "layout": "stackingBlocks",
+    "pages": [["home","בית","/"],["index","אינדקס","/index"],["listings","נכסים","/listings"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "נכסים. בלוקים. עסקאות.",
+      "subtitle": "בלוקווייז מציגה נדל״ן עירוני בפריסה נועזת — מספרים, מיקום ומחיר בלי עטיפות.",
+      "primary": "לאינדקס",
+      "secondary": "דברו איתנו",
+      "aboutTitle": "נדל״ן שמדבר בגדול.",
+      "aboutText": "אנחנו מתמחים בנכסי מגורים ומסחר בעיר — עם גישה ישירה, ללא שכבות.",
+      "contactTitle": "יש לכם נכס למכירה?",
+      "contactText": "כתבו כתובת, גודל ומחיר מבוקש — נחזור עם הערכה.",
+      "quote": "מספרים לא משקרים. עיצוב לא צריך.",
+      "stat1Value": "156", "stat1Label": "נכסים באינדקס",
+      "stat2Value": "23", "stat2Label": "בניינים מכוסים",
+      "stat3Value": "18", "stat3Label": "ימים ממוצע לסגירה",
+      "items": [
+        ["דירה 01 / פlorian", "3 חד׳ · קומה 4", "בניין Brutalist, חלונות גדולים ומרפסת.", "₪2.1M"],
+        ["דירה 02 / Rothschild", "4 חד׳ · קומה 12", "נוף לים, ממ״ד וחניה.", "₪4.8M"],
+        ["דירה 03 / Levontin", "2 חד׳ · קומה 2", "לופט תעשייתי, תקרה גבוהה.", "₪2.9M"],
+        ["דירה 04 / Sarona", "5 חד׳ · קומה 8", "מגדל חדש, בריכה וקונcierge.", "₪7.5M"]
+      ]
+    }
+  },
+  {
+    "id": "skyhold",
+    "name": "Skyhold",
+    "brand": "Skyhold",
+    "logo": "S",
+    "niche": "מגדלי מגורים · פנטהאוזים",
+    "desc": "תבנית מגדל: הירו אנכי עם מעלית קומות מונפשת, כרטיסי penthouse מוערמים וסטטיסטיקות skyline.",
+    "fonts": { "display": "Syne:wght@700;800", "displayCss": "\"Syne\"" },
+    "palette": { "bg": "#0f1419", "surface": "#1a2332", "text": "#e8edf5", "muted": "#7a8fa8", "primary": "#38bdf8", "primaryText": "#0f1419", "line": "rgba(232,237,245,0.14)", "dark": "#080c10" },
+    "layout": "elevatorTower",
+    "pages": [["home","בית","/"],["penthouses","פנטהאוזים","/penthouses"],["towers","מגדלים","/towers"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "עולים. רואים. קונים.",
+      "subtitle": "סקaihold מתמחה בפנטהאוזים ודירות גבוהות — עם נוף, שקט ואיכות בנייה.",
+      "primary": "לפנטהאוזים",
+      "secondary": "מגדלים",
+      "aboutTitle": "גובה שמשנה פרспектיבה.",
+      "aboutText": "אנחנו מכירים כל מגדל בעיר — קומות, כיוונים, רעש רוח וערך לשקל.",
+      "contactTitle": "מחפשים נוף?",
+      "contactText": "ספרו קומה מינימלית, תקציב ואזור — נציג אפשרויות.",
+      "quote": "מגדל טוב נמדד בנוף — לא רק בגובה.",
+      "stat1Value": "42", "stat1Label": "מגדלים מכוסים",
+      "stat2Value": "68", "stat2Label": "פנטהאוזים פעילים",
+      "stat3Value": "35+", "stat3Label": "קומות ממוצע",
+      "items": [
+        ["פנטהאוז Azrieli", "קומה 45 · 280 מ״ר", "360° נוף, מעלית פרטית וטרסה.", "₪24M"],
+        ["דירת 5 Midtown", "קומה 28 · 165 מ״ר", "נוף לים, בריכה וחדר כושר.", "₪8.2M"],
+        ["דuplex Sarona", "קומה 22 · 210 מ״ר", "שתי קומות, מרפסת ונוף פארק.", "₪12.5M"],
+        ["סtudio גבוה", "קומה 38 · 85 מ״ר", "נוף עיר, מעלית מהירה.", "₪3.4M"]
+      ]
+    }
+  },
+  {
+    "id": "landmark",
+    "name": "Landmark",
+    "brand": "Landmark",
+    "logo": "L",
+    "niche": "מדריך אזורים · נדל״ן",
+    "desc": "תבנית עיר: סילhouette עם נקודות map pin, כרטיסי מדריך אזורים ושורות נכסים עם תגי מיקום.",
+    "fonts": { "display": "Outfit:wght@600;700;800", "displayCss": "\"Outfit\"" },
+    "palette": { "bg": "#f0f4f8", "surface": "#ffffff", "text": "#1e293b", "muted": "#64748b", "primary": "#0ea5e9", "primaryText": "#ffffff", "line": "rgba(30,41,59,0.1)", "dark": "#0f172a" },
+    "layout": "cityPins",
+    "pages": [["home","בית","/"],["areas","אזורים","/areas"],["listings","נכסים","/listings"],["guide","מדריך","/guide"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1449824913935-59a10b8d2000?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1477959858607-180f657763b0?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1514565131-fce0801e5785?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1496442226666-8d0d0ae62ca6?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "כל שכונה. סיפור משלה.",
+      "subtitle": "לנדמרק מדריכה אתכם בין אזורים — עם נכסים, מחירים ותובנות על כל שכונה.",
+      "primary": "גלו אזורים",
+      "secondary": "לנכסים",
+      "aboutTitle": "נדל״ן שמתחיל מהמפה.",
+      "aboutText": "אנחנו מכירים כל פינה — בתי ספר, תחבורה, פארקים ומגמות מחיר.",
+      "contactTitle": "לאן אתם רוצים לעבור?",
+      "contactText": "ספרו על אורח החיים — נמליץ על אזורים ונכסים.",
+      "quote": "מיקום טוב הוא השקעה — לא רק כתובת.",
+      "stat1Value": "34", "stat1Label": "אזורים מכוסים",
+      "stat2Value": "890+", "stat2Label": "נכסים פעילים",
+      "stat3Value": "12", "stat3Label": "ערים",
+      "items": [
+        ["דירה נווה צדק", "נווה צדק · 4 חד׳", "שכונה היסטורית, בתי קפה ושקט.", "₪6.2M"],
+        ["דירה פlorian", "פlorian · 3 חד׳", "מרכז תל אביב, הליכה לים.", "₪3.9M"],
+        ["דירה רamat aviv", "רamat aviv · 5 חד׳", "משפחות, פארקים ובתי ספר.", "₪5.8M"],
+        ["דירה יפו", "יפו · 4 חד׳", "אווירה, נמל ואמנות.", "₪4.1M"]
+      ]
+    }
+  },
+  {
+    "id": "openhaus",
+    "name": "Openhaus",
+    "brand": "Openhaus",
+    "logo": "O",
+    "niche": "בתים פתוחים · סיורים",
+    "desc": "תבנית carousel 3D: הירו עם פאנלים מסתובבים, לוח open house וגלריית masonry.",
+    "fonts": { "display": "Manrope:wght@700;800", "displayCss": "\"Manrope\"" },
+    "palette": { "bg": "#fffbf7", "surface": "#ffffff", "text": "#292524", "muted": "#78716c", "primary": "#ea580c", "primaryText": "#ffffff", "line": "rgba(41,37,36,0.1)", "dark": "#1c1917" },
+    "layout": "rotatingPanels",
+    "pages": [["home","בית","/"],["openhouses","בתים פתוחים","/openhouses"],["gallery","גלריה","/gallery"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1600573472592-401b489a3cdc?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "בואו לראות. בואו להרגיש.",
+      "subtitle": "אopenhause מארגנת סיורי בתים פתוחים — כדי שתחוו את הנכס לפני שאתם מחליטים.",
+      "primary": "לוח סיורים",
+      "secondary": "גלריה",
+      "aboutTitle": "נדל״ן שצריך לראות.",
+      "aboutText": "אנחנו מאמינים שביקור בנכס מספר יותר מתמונות — ולכן מארגנים open house שבועי.",
+      "contactTitle": "רוצים להירשם לסיור?",
+      "contactText": "בחרו תאריך ונכס — נשלח אישור ופרטים.",
+      "quote": "בית טוב מורגש — לא רק נראה.",
+      "stat1Value": "24", "stat1Label": "סיורים בחודש",
+      "stat2Value": "340+", "stat2Label": "משתתפים",
+      "stat3Value": "78%", "stat3Label": "המרה לסיור פרטי",
+      "items": [
+        ["וilla הרצליה", "שבת 10:00 · הרצליה", "וילה עם בריכה, 6 חדרים וגינה.", "₪9.5M"],
+        ["דuplex רamat gan", "שישי 11:00 · רamat gan", "דuplex משפחתי, 5 חדרים.", "₪4.2M"],
+        ["דירת גן כפר סבא", "שבת 09:30 · כפר סבא", "בית עם חצר, 5 חדרים.", "₪3.8M"],
+        ["פenthouse ת״א", "שישי 17:00 · תל אביב", "פenthouse עם נוף, 4 חדרים.", "₪11M"]
+      ]
+    }
+  },
+  {
+    "id": "primeview",
+    "name": "Primeview",
+    "brand": "Primeview",
+    "logo": "PV",
+    "niche": "השוואת נכסים · before/after",
+    "desc": "תבנית compare slider: הירo מפוצל עם ידית CSS, תצוגת before/after ופסי value proposition.",
+    "fonts": { "display": "Libre+Baskerville:wght@700", "displayCss": "\"Libre Baskerville\"" },
+    "palette": { "bg": "#f8fafc", "surface": "#ffffff", "text": "#0f172a", "muted": "#64748b", "primary": "#059669", "primaryText": "#ffffff", "line": "rgba(15,23,42,0.1)", "dark": "#020617" },
+    "layout": "compareSlider",
+    "pages": [["home","בית","/"],["compare","השוואה","/compare"],["transformations","שיפוצים","/transformations"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1600585154526-990dced4db0d?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "לפני. אחרי. החלטה.",
+      "subtitle": "פרaimview מציגה נכסים לפני ואחרי — כדי שתראו פוטנציאל, לא רק מצב נוכחי.",
+      "primary": "השוו נכסים",
+      "secondary": "שיפוצים",
+      "aboutTitle": "נדל״ן שרואה מה אפשר.",
+      "aboutText": "אנחנו מתמחים בנכסים עם פוטנציאל — שיפוץ, הרחבה ועליית ערך.",
+      "contactTitle": "יש לכם נכס לשיפוץ?",
+      "contactText": "שלחו תמונות — נעריך עלות ופוטנציאל.",
+      "quote": "הערך האמיתי לפעמים מוסתר — עד שרואים.",
+      "stat1Value": "120+", "stat1Label": "שיפוצים מלווים",
+      "stat2Value": "+35%", "stat2Label": "עליית ערך ממוצעת",
+      "stat3Value": "8", "stat3Label": "חודשים ממוצע",
+      "items": [
+        ["דירה לפני שיפוץ", "85 מ״ר · ישן", "דירה עם פוטנציאל, דורשת עדכון.", "₪1.8M"],
+        ["דירה אחרי שיפוץ", "85 מ״ר · חדש", "מטבח חדש, ריצוף וחלונות.", "₪2.6M"],
+        ["בית לפני", "140 מ״ר · 90׳", "בית משפחתי, גינה גדולה.", "₪3.2M"],
+        ["בית אחרי", "140 מ״ר · מחודש", "הרחבה, מטבח שף ומרפסת.", "₪4.8M"]
+      ]
+    }
+  },
+  {
+    "id": "nestiq",
+    "name": "Nestiq",
+    "brand": "Nestiq",
+    "logo": "N",
+    "niche": "נדל״ן חכם · נתונים",
+    "desc": "תבנית counters: הירo עם סטטיסטיקות מונפשות, כרטיסי נכס עם badges ו-FAQ ויזואלי.",
+    "fonts": { "display": "Plus+Jakarta+Sans:wght@700;800", "displayCss": "\"Plus Jakarta Sans\"" },
+    "palette": { "bg": "#faf5ff", "surface": "#ffffff", "text": "#1e1b4b", "muted": "#6366f1", "primary": "#7c3aed", "primaryText": "#ffffff", "line": "rgba(30,27,75,0.1)", "dark": "#0f0a1e" },
+    "layout": "liveCounters",
+    "pages": [["home","בית","/"],["listings","נכסים","/listings"],["insights","תובנות","/insights"],["faq","שאלות","/faq"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1570129477492-45c003edd2be?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "נתונים. נכסים. החלטות.",
+      "subtitle": "נסטiq מציגה נדל״ן עם מספרים אמיתיים — מחירים, מגמות ותובנות שקופות.",
+      "primary": "גלו נכסים",
+      "secondary": "תובנות",
+      "aboutTitle": "נדל״ן מבוסס נתונים.",
+      "aboutText": "אנחנו אוספים מידע על מחירים, זמן בשוק ומגמות — כדי שתקבלו החלטות מושכלות.",
+      "contactTitle": "יש שאלות?",
+      "contactText": "כתבו — נחזור עם תשובות ונתונים.",
+      "quote": "מספרים טובים מובילים לעסקאות טובות.",
+      "stat1Value": "2,400+", "stat1Label": "נכסים במאגר",
+      "stat2Value": "₪4.2M", "stat2Label": "מחיר ממוצע",
+      "stat3Value": "42", "stat3Label": "ימים בשוק",
+      "items": [
+        ["דירה עם נוף", "נוף · 4 חד׳ · חניה", "נכס עם ציון גבוה, מחיר fair.", "₪3.5M"],
+        ["דירה משפחתית", "5 חד׳ · גינה · ממ״ד", "מתאים למשפחות, אזור שקט.", "₪4.8M"],
+        ["השקעה", "3 חד׳ · שכירות", "תשואה 4.2%, שכירות יציבה.", "₪2.1M"],
+        ["סtudio מרכז", "1 חד׳ · מרכז", "קרבה לתחבורה, ביקוש גבוה.", "₪1.6M"]
+      ]
+    }
+  },
+  {
+    "id": "signet",
+    "name": "Signet",
+    "brand": "Signet",
+    "logo": "Si",
+    "niche": "תהליך עסקה · חותמת",
+    "desc": "תבנית stamp: הירo עם אנימציית חותמת, 4 שלבי תהליך עם stamp reveal ונכס spotlight.",
+    "fonts": { "display": "Cinzel:wght@600;700", "displayCss": "\"Cinzel\"" },
+    "palette": { "bg": "#1a1814", "surface": "#2a2620", "text": "#f5f0e6", "muted": "#b8a898", "primary": "#b8860b", "primaryText": "#1a1814", "line": "rgba(245,240,230,0.12)", "dark": "#0d0c0a" },
+    "layout": "stampProcess",
+    "pages": [["home","בית","/"],["process","תהליך","/process"],["listings","נכסים","/listings"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1613490493576-7fde63acd811?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "עסקה חתומה. ביטחון מלא.",
+      "subtitle": "סignet מלווה כל שלב — מחיפוש ועד חתימה — עם תהליך ברור וחותמת איכות.",
+      "primary": "התחילו תהליך",
+      "secondary": "לנכסים",
+      "aboutTitle": "נדל״ן עם חותמת אמינות.",
+      "aboutText": "ארבעה שלבים, ליווי משפטי ושקיפות מלאה — כדי שתדעו בדיוק איפה אתם.",
+      "contactTitle": "מוכנים לחתום?",
+      "contactText": "ספרו על העסקה — נתחיל את התהליך.",
+      "quote": "עסקה טובה נחתמת בביטחון — לא בלחץ.",
+      "stat1Value": "520+", "stat1Label": "עסקאות חתומות",
+      "stat2Value": "4", "stat2Label": "שלבים ברורים",
+      "stat3Value": "0", "stat3Label": "הפתעות",
+      "items": [
+        ["נכס spotlight", "5 חד׳ · הרצליה", "נכס נבחר השבוע — וילה עם בריכה.", "₪12M"],
+        ["דירת 4 ת״א", "4 חד׳ · מרכז", "דירה מוכנה, כניסה מיידית.", "₪4.2M"],
+        ["דuplex רamat gan", "5 חד׳ · משפחתי", "דuplex עם גינה.", "₪5.5M"],
+        ["פenthouse", "4 חד׳ · נוף", "פenthouse עם מרפסת.", "₪9M"]
+      ]
+    }
+  },
+  {
+    "id": "axispoint",
+    "name": "Axispoint",
+    "brand": "Axispoint",
+    "logo": "A",
+    "niche": "נדל״ן גאומטרי · diagonal",
+    "desc": "תבנית diagonal: הירo מפוצל אלכסוני, כרטיסים על grid skewed וטופס קשר על פanel זווית.",
+    "fonts": { "display": "Bebas+Neue&family=Rubik:wght@500;700", "displayCss": "\"Bebas Neue\", \"Rubik\"" },
+    "palette": { "bg": "#0c1222", "surface": "#151d32", "text": "#e2e8f0", "muted": "#94a3b8", "primary": "#f43f5e", "primaryText": "#ffffff", "line": "rgba(226,232,240,0.12)", "dark": "#060a14" },
+    "layout": "diagonalAxis",
+    "pages": [["home","בית","/"],["listings","נכסים","/listings"],["axis","ציר","/axis"],["about","אודות","/about"],["contact","יצירת קשר","/contact"]],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1515263487850-5d890aff40a1?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1400&q=85"
+    },
+    "copy": {
+      "title": "הציר שלכם. הנכס שלכם.",
+      "subtitle": "אaxispoint מציגה נדל״ן בפריסה גאומטרית — חדה, מודern ומדויקת.",
+      "primary": "גלו נכסים",
+      "secondary": "הציר",
+      "aboutTitle": "נדל״ן בזווית אחרת.",
+      "aboutText": "אנחנו רואים נכסים דרך ציר של מיקום, ערך ועיצוב — לא רק מחיר.",
+      "contactTitle": "נקודת המפגש.",
+      "contactText": "השאירו פרטים — נחבר אתכם לנכס הנכון.",
+      "quote": "כל נכס יושב על ציר — של מיקום, תקציב וחיים.",
+      "stat1Value": "98", "stat1Label": "נכסים פעילים",
+      "stat2Value": "15°", "stat2Label": "זווית ייחודית",
+      "stat3Value": "100%", "stat3Label": "דיוק",
+      "items": [
+        ["דירה ציר A", "4 חד׳ · מרכז", "נכס על הציר המרכזי.", "₪4.5M"],
+        ["דירה ציר B", "3 חד׳ · צפון", "זווית שונה, אותה איכות.", "₪3.2M"],
+        ["דירה ציר C", "5 חד׳ · דרום", "משפחות, גינה, שקט.", "₪5.8M"],
+        ["דירה ציר D", "2 חד׳ · מזרח", "סtudio, מרכז, השקעה.", "₪2.4M"]
+      ]
+    }
+  }
+]
