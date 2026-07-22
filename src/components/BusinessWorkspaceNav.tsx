@@ -10,8 +10,6 @@ import {
   UserRound,
   CreditCard,
   HelpCircle,
-  ArrowRight,
-  ChevronDown,
   LayoutTemplate,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
@@ -27,7 +25,7 @@ type TFunction = (key: string, values?: TranslationValues) => string;
 type BusinessWorkspaceNavProps = {
   onNavigate?: () => void;
   t?: TFunction;
-  workspaceName?: string;
+  collapsed?: boolean;
 };
 
 type NavItemProps = {
@@ -36,6 +34,7 @@ type NavItemProps = {
   icon: React.ElementType;
   exact?: boolean;
   onNavigate?: () => void;
+  collapsed?: boolean;
 };
 
 type NavItemConfig = {
@@ -49,31 +48,6 @@ type NavItemConfig = {
 /* =========================
    Fallback Translation
 ========================= */
-
-const fallbackT: TFunction = (key) => {
-  const dictionary: Record<string, string> = {
-    "businessNav.dashboard": "Dashboard",
-    "businessNav.crmSystem": "CRM System",
-    "businessNav.collaborations": "Collaborations",
-    "businessNav.bizuplyAdvisor": "BizUply Advisor",
-    "businessNav.editBusinessPage": "Edit Business Page",
-    "businessNav.viewPublicProfile": "View Public Profile",
-
-    "businessNav.buildWebsite": "Build Website",
-
-    "businessNav.billing": "Billing & Subscription",
-    "businessNav.helpCenter": "Help Center",
-
-    "businessNav.upgradeTitle": "Upgrade to Bizuply Pro",
-    "businessNav.upgradeText":
-      "Unlock advanced analytics, AI automations, and more tools for your business.",
-    "businessNav.upgradeButton": "Upgrade Now",
-
-    "businessNav.workspaceLabel": "Workspace",
-  };
-
-  return dictionary[key] || key;
-};
 
 function translate(t: TFunction, key: string, fallback: string): string {
   const value = t(key);
@@ -90,20 +64,28 @@ function NavItem({
   icon: Icon,
   exact = false,
   onNavigate,
+  collapsed = false,
 }: NavItemProps) {
   return (
     <NavLink
       to={to}
       end={exact}
       onClick={onNavigate}
+      title={collapsed ? label : undefined}
+      aria-label={label}
       className={({ isActive }) =>
         `
-          group relative flex h-11 items-center gap-3 rounded-xl px-3
-          text-[14px] font-bold transition-all duration-200
+          group relative flex items-center rounded-xl transition-all duration-200
+          ${
+            collapsed
+              ? "mx-auto h-11 w-11 justify-center"
+              : "h-11 gap-3 px-3.5"
+          }
+          text-[14px] font-semibold
           ${
             isActive
-              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_12px_28px_rgba(124,58,237,0.25)]"
-              : "text-slate-700 hover:bg-violet-50 hover:text-violet-700"
+              ? "bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-[0_8px_24px_rgba(124,58,237,0.28)]"
+              : "text-slate-600 hover:bg-slate-50 hover:text-violet-700"
           }
         `
       }
@@ -111,104 +93,24 @@ function NavItem({
       {({ isActive }) => (
         <>
           <Icon
-            size={18}
-            strokeWidth={2}
+            size={20}
+            strokeWidth={isActive ? 2.25 : 2}
             className={`
-              shrink-0 transition
+              shrink-0 transition-colors
               ${
                 isActive
                   ? "text-white"
-                  : "text-slate-500 group-hover:text-violet-700"
+                  : "text-slate-400 group-hover:text-violet-600"
               }
             `}
           />
 
-          <span className="min-w-0 flex-1 truncate text-start">{label}</span>
+          {!collapsed && (
+            <span className="min-w-0 flex-1 truncate text-start">{label}</span>
+          )}
         </>
       )}
     </NavLink>
-  );
-}
-
-/* =========================
-   Upgrade Card
-========================= */
-
-function UpgradeCard({ t }: { t: TFunction }) {
-  return (
-    <div
-      className="
-        relative mt-8 overflow-hidden rounded-2xl bg-gradient-to-br
-        from-violet-500 via-purple-500 to-violet-600 p-4 text-white
-        shadow-[0_18px_40px_rgba(124,58,237,0.24)]
-      "
-    >
-      <div className="pointer-events-none absolute -left-8 -top-8 h-28 w-28 rounded-full bg-white/15 blur-xl" />
-      <div className="pointer-events-none absolute -bottom-10 right-4 h-28 w-28 rounded-full bg-white/10 blur-xl" />
-
-      <div className="relative z-10">
-        <h3 className="text-sm font-black">
-          {translate(t, "businessNav.upgradeTitle", "Upgrade to Bizuply Pro")}
-        </h3>
-
-        <p className="mt-2 text-xs leading-5 text-white/85">
-          {translate(
-            t,
-            "businessNav.upgradeText",
-            "Unlock advanced analytics, AI automations, and more tools for your business."
-          )}
-        </p>
-
-        <button
-          type="button"
-          className="
-            mt-4 inline-flex w-full items-center justify-center gap-2
-            rounded-xl bg-white px-4 py-3 text-sm font-black text-violet-700
-            shadow-sm transition hover:bg-violet-50
-          "
-        >
-          {translate(t, "businessNav.upgradeButton", "Upgrade Now")}
-          <ArrowRight size={15} />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-/* =========================
-   Workspace Card
-========================= */
-
-function WorkspaceCard({
-  t,
-  workspaceName,
-}: {
-  t: TFunction;
-  workspaceName?: string;
-}) {
-  return (
-    <div
-      className="
-        mt-6 flex items-center gap-3 rounded-2xl border border-slate-200
-        bg-white p-3 shadow-[0_10px_24px_rgba(15,23,42,0.04)]
-      "
-    >
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-700">
-        <Sparkles size={18} />
-      </div>
-
-      <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-black text-slate-900">
-          {workspaceName || "Bizuply"}
-        </p>
-
-        <p className="truncate text-xs font-medium text-slate-500">
-          {translate(t, "businessNav.workspaceLabel", "Workspace")}
-        </p>
-      </div>
-
-      <ChevronDown size={16} className="shrink-0 text-slate-400" />
-    </div>
   );
 }
 
@@ -219,7 +121,7 @@ function WorkspaceCard({
 export default function BusinessWorkspaceNav({
   onNavigate,
   t: tProp,
-  workspaceName,
+  collapsed = false,
 }: BusinessWorkspaceNavProps) {
   const { businessId } = useParams<{ businessId: string }>();
   const { t: tI18n, i18n } = useTranslation();
@@ -289,10 +191,16 @@ export default function BusinessWorkspaceNav({
   return (
     <nav
       dir={dir}
-      aria-label={translate(t, "businessNav.ariaLabel", "Business workspace navigation")}
-      className="flex h-full min-h-0 flex-col overflow-hidden text-start"
+      aria-label={translate(
+        t,
+        "businessNav.ariaLabel",
+        "Business workspace navigation"
+      )}
+      className="flex flex-col overflow-hidden text-start"
     >
-      <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-1 pb-3">
+      <div
+        className={`space-y-1 overflow-hidden ${collapsed ? "px-1.5 py-2" : "px-2 py-2"}`}
+      >
         {items.map((item) => (
           <NavItem
             key={item.to}
@@ -301,13 +209,10 @@ export default function BusinessWorkspaceNav({
             icon={item.icon}
             exact={item.exact}
             onNavigate={onNavigate}
+            collapsed={collapsed}
           />
         ))}
-
-        <UpgradeCard t={t} />
       </div>
-
-      <WorkspaceCard t={t} workspaceName={workspaceName} />
     </nav>
   );
 }

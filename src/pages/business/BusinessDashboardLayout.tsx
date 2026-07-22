@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../../context/AuthContext";
@@ -84,7 +85,9 @@ type UnreadCountUpdatePayload = {
 const SOCKET_URL = "https://api.bizuply.com";
 const socket = io(SOCKET_URL, { autoConnect: false });
 
-const SIDEBAR_WIDTH = 250;
+const SIDEBAR_WIDTH_EXPANDED = 260;
+const SIDEBAR_WIDTH_COLLAPSED = 72;
+const SIDEBAR_COLLAPSED_STORAGE_KEY = "bizuply-sidebar-collapsed";
 const MOBILE_BREAKPOINT = 768;
 
 function isBrowser() {
@@ -94,6 +97,11 @@ function isBrowser() {
 function getIsMobile() {
   if (!isBrowser()) return false;
   return window.innerWidth <= MOBILE_BREAKPOINT;
+}
+
+function getInitialSidebarCollapsed() {
+  if (!isBrowser()) return false;
+  return localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === "true";
 }
 
 /* ============================
@@ -178,8 +186,16 @@ export default function BusinessDashboardLayout() {
   const [messagesCount, setMessagesCount] = useState<number>(0);
   const [isMobile, setIsMobile] = useState<boolean>(() => getIsMobile());
   const [showSidebar, setShowSidebar] = useState<boolean>(() => !getIsMobile());
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() =>
+    getInitialSidebarCollapsed()
+  );
   const [timeLeft, setTimeLeft] = useState<string>("");
   const [exitingImpersonation, setExitingImpersonation] = useState(false);
+
+  const sidebarWidth =
+    !isMobile && sidebarCollapsed
+      ? SIDEBAR_WIDTH_COLLAPSED
+      : SIDEBAR_WIDTH_EXPANDED;
 
   const isWebsiteFullScreen = useMemo(() => {
     return isWebsiteFullScreenRoute(location.pathname, location.search);
@@ -434,6 +450,16 @@ export default function BusinessDashboardLayout() {
     navigate("/admin/users", { replace: false });
   };
 
+  const toggleSidebarCollapsed = () => {
+    setSidebarCollapsed((value) => {
+      const next = !value;
+      if (isBrowser()) {
+        localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(next));
+      }
+      return next;
+    });
+  };
+
   const handleExitImpersonation = async () => {
     if (exitingImpersonation) return;
     setExitingImpersonation(true);
@@ -500,11 +526,10 @@ export default function BusinessDashboardLayout() {
             <aside
               ref={sidebarRef}
               className={`
-                fixed z-50 flex w-[250px]
-                flex-col bg-white
-                shadow-[0_20px_60px_rgba(15,23,42,0.10)]
-                transition-transform duration-300
-                ${isRtl ? "right-0 border-l border-slate-200" : "left-0 border-r border-slate-200"}
+                fixed z-50 flex flex-col overflow-hidden
+                bg-white shadow-[0_8px_32px_rgba(15,23,42,0.08)]
+                transition-[width,transform] duration-300 ease-in-out
+                ${isRtl ? "right-0 border-l border-slate-100" : "left-0 border-r border-slate-100"}
                 ${
                   isMobile
                     ? showSidebar
@@ -518,19 +543,63 @@ export default function BusinessDashboardLayout() {
               style={{
                 top: isImpersonating ? 56 : 0,
                 height: isImpersonating ? "calc(100vh - 56px)" : "100vh",
+                width: isMobile ? SIDEBAR_WIDTH_EXPANDED : sidebarWidth,
               }}
             >
-              <div className="flex h-16 shrink-0 items-center justify-center border-b border-slate-100 px-6">
+              <div
+                className={`
+                  relative flex shrink-0 flex-col items-center justify-center
+                  border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/60
+                  ${sidebarCollapsed && !isMobile ? "gap-2 px-2 py-4" : "gap-3 px-4 py-5"}
+                `}
+              >
                 <img
                   src="/bizuply logo.png"
                   alt="BizUply Logo"
-                  className="h-9 w-auto object-contain"
+                  className={`
+                    object-contain transition-all duration-300
+                    ${
+                      sidebarCollapsed && !isMobile
+                        ? "h-10 w-10"
+                        : "h-[72px] w-full max-w-[200px]"
+                    }
+                  `}
                 />
+
+                {!isMobile && (
+                  <button
+                    type="button"
+                    onClick={toggleSidebarCollapsed}
+                    aria-label={
+                      sidebarCollapsed
+                        ? t("businessNav.expandSidebar", "Expand sidebar")
+                        : t("businessNav.collapseSidebar", "Collapse sidebar")
+                    }
+                    className="
+                      flex h-8 w-8 items-center justify-center rounded-lg
+                      border border-slate-200 bg-white text-slate-500
+                      shadow-sm transition hover:border-violet-200
+                      hover:bg-violet-50 hover:text-violet-600
+                    "
+                  >
+                    {sidebarCollapsed ? (
+                      isRtl ? (
+                        <ChevronLeft size={16} strokeWidth={2.5} />
+                      ) : (
+                        <ChevronRight size={16} strokeWidth={2.5} />
+                      )
+                    ) : isRtl ? (
+                      <ChevronRight size={16} strokeWidth={2.5} />
+                    ) : (
+                      <ChevronLeft size={16} strokeWidth={2.5} />
+                    )}
+                  </button>
+                )}
               </div>
 
-              <div className="min-h-0 flex-1 overflow-y-auto px-3 py-4">
+              <div className="flex min-h-0 flex-1 flex-col overflow-hidden px-2 py-3">
                 <BusinessWorkspaceNav
-                  workspaceName={user?.businessName || user?.name}
+                  collapsed={!isMobile && sidebarCollapsed}
                   onNavigate={() => {
                     if (isMobile) {
                       setShowSidebar(false);
@@ -568,8 +637,8 @@ export default function BusinessDashboardLayout() {
                 gap-3 bg-slate-900 px-4 text-sm text-white
               "
               style={{
-                left: isMobile ? 0 : isRtl ? 0 : SIDEBAR_WIDTH,
-                right: isMobile ? 0 : isRtl ? SIDEBAR_WIDTH : 0,
+                left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
+                right: isMobile ? 0 : isRtl ? sidebarWidth : 0,
               }}
             >
               <span className="truncate font-semibold">
@@ -597,8 +666,8 @@ export default function BusinessDashboardLayout() {
               "
               style={{
                 top: isImpersonating ? 56 : isAdmin ? 40 : 0,
-                left: isMobile ? 0 : isRtl ? 0 : SIDEBAR_WIDTH,
-                right: isMobile ? 0 : isRtl ? SIDEBAR_WIDTH : 0,
+                left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
+                right: isMobile ? 0 : isRtl ? sidebarWidth : 0,
               }}
             >
               <div className="flex min-w-0 items-center gap-3">
@@ -738,17 +807,24 @@ export default function BusinessDashboardLayout() {
 
           <main
             className={[
-              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb]",
+              "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb] transition-[padding] duration-300",
               isWebsiteFullScreen
                 ? isImpersonating
-                  ? "pt-14 lg:ps-0"
-                  : "pt-0 lg:ps-0"
+                  ? "pt-14"
+                  : "pt-0"
                 : isAdmin
-                  ? "pt-[104px] lg:ps-[250px]"
+                  ? "pt-[104px]"
                   : isImpersonating
-                    ? "pt-[120px] lg:ps-[250px]"
-                    : "pt-16 lg:ps-[250px]",
+                    ? "pt-[120px]"
+                    : "pt-16",
             ].join(" ")}
+            style={
+              isWebsiteFullScreen || isMobile
+                ? undefined
+                : isRtl
+                  ? { paddingRight: sidebarWidth }
+                  : { paddingLeft: sidebarWidth }
+            }
           >
             <div
               className={
