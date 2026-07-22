@@ -2,7 +2,9 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 /* =====================================================
    TYPES
@@ -42,23 +44,23 @@ type MessageState = {
    HELPERS
 ===================================================== */
 
-function formatDate(value?: string | Date) {
+function formatDate(value: string | Date | undefined, locale: string) {
   if (!value) return "—";
 
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
 
-  return date.toLocaleDateString("he-IL", {
+  return date.toLocaleDateString(locale, {
     year: "numeric",
     month: "short",
     day: "2-digit",
   });
 }
 
-function formatMoney(amount?: number) {
+function formatMoney(amount: number | undefined, locale: string) {
   const safeAmount = typeof amount === "number" ? amount : 0;
 
-  return new Intl.NumberFormat("he-IL", {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "USD",
   }).format(safeAmount);
@@ -78,31 +80,15 @@ function getPaymentStatusClass(status?: string) {
   return "bg-amber-50 text-amber-700 ring-1 ring-amber-200";
 }
 
-function getPlanLabel(plan?: string) {
-  if (plan === "trial") return "ניסיון";
-  if (plan === "monthly") return "חודשי";
-  if (plan === "yearly") return "שנתי";
-  return plan || "—";
-}
-
-function getPaymentStatusLabel(status?: string) {
-  const normalized = status?.toLowerCase() || "";
-
-  if (normalized === "paid") return "שולם";
-  if (normalized === "active") return "פעיל";
-  if (normalized === "pending") return "ממתין";
-  if (normalized.includes("cancelled") || normalized.includes("canceled")) {
-    return "בוטל";
-  }
-
-  return status || "ממתין";
-}
-
 /* =====================================================
    COMPONENT
 ===================================================== */
 
 export default function SubscriptionPlanCard() {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
+
   const { user, refreshUser, setUser } = useAuth() as {
     user: UserLike | null;
     refreshUser: (force?: boolean) => Promise<void>;
@@ -129,29 +115,49 @@ export default function SubscriptionPlanCard() {
   const isActive = Boolean(user?.isSubscriptionValid);
   const plan = user?.subscriptionPlan || "trial";
 
-  const endDate = formatDate(user?.subscriptionEnd);
+  const getPlanLabel = (planValue?: string) => {
+    if (planValue === "trial") return t("billing.plans.trial");
+    if (planValue === "monthly") return t("billing.plans.monthly");
+    if (planValue === "yearly") return t("billing.plans.yearly");
+    return planValue || "—";
+  };
+
+  const getPaymentStatusLabel = (status?: string) => {
+    const normalized = status?.toLowerCase() || "";
+
+    if (normalized === "paid") return t("billing.statusLabels.paid");
+    if (normalized === "active") return t("billing.statusLabels.active");
+    if (normalized === "pending") return t("billing.statusLabels.pending");
+    if (normalized.includes("cancelled") || normalized.includes("canceled")) {
+      return t("billing.statusLabels.cancelled");
+    }
+
+    return status || t("billing.statusLabels.pending");
+  };
+
+  const endDate = formatDate(user?.subscriptionEnd, dateLocale);
 
   const statusText = isActive
     ? isCancelled
-      ? "פעיל · חידוש אוטומטי כבוי"
-      : "פעיל"
-    : "פג תוקף";
+      ? t("billing.statusLabels.activeNoRenewal")
+      : t("billing.statusLabels.active")
+    : t("billing.statusLabels.expired");
 
   const planName =
     plan === "yearly"
-      ? "מסלול שנתי BizUply"
+      ? t("billing.planNames.yearly")
       : plan === "monthly"
-        ? "מסלול חודשי BizUply"
-        : "מסלול ניסיון";
+        ? t("billing.planNames.monthly")
+        : t("billing.planNames.trial");
 
   const billingType =
     plan === "monthly"
       ? isCancelled
-        ? "חיוב חודשי · חידוש אוטומטי כבוי"
-        : "חיוב חודשי · חידוש אוטומטי פעיל"
+        ? t("billing.billingTypes.monthlyCancelled")
+        : t("billing.billingTypes.monthlyActive")
       : plan === "yearly"
-        ? "תשלום שנתי חד־פעמי"
-        : "גישה לתקופת ניסיון";
+        ? t("billing.billingTypes.yearly")
+        : t("billing.billingTypes.trial");
 
   const statusBadgeClass = isActive
     ? isCancelled
@@ -169,10 +175,6 @@ export default function SubscriptionPlanCard() {
       return sum + paid;
     }, 0);
   }, [payments]);
-
-  /* =====================================================
-     CANCEL AUTO RENEW
-  ====================================================== */
 
   const handleCancel = async () => {
     if (!userId || loadingCancel) return;
@@ -204,23 +206,19 @@ export default function SubscriptionPlanCard() {
 
       setMessage({
         type: "success",
-        text: "החידוש האוטומטי בוטל. הגישה שלך תישאר פעילה עד סוף תקופת החיוב.",
+        text: t("billing.messages.cancelSuccess"),
       });
     } catch (err) {
       console.error(err);
 
       setMessage({
         type: "error",
-        text: "לא הצלחנו לבטל את החידוש. יש לפנות לתמיכה.",
+        text: t("billing.messages.cancelError"),
       });
     } finally {
       setLoadingCancel(false);
     }
   };
-
-  /* =====================================================
-     RESUME AUTO RENEW
-  ====================================================== */
 
   const handleResume = async () => {
     if (!userId || loadingResume) return;
@@ -252,23 +250,19 @@ export default function SubscriptionPlanCard() {
 
       setMessage({
         type: "success",
-        text: "החידוש האוטומטי הופעל מחדש בהצלחה.",
+        text: t("billing.messages.resumeSuccess"),
       });
     } catch (err) {
       console.error(err);
 
       setMessage({
         type: "error",
-        text: "לא הצלחנו להפעיל מחדש את המנוי. יש לפנות לתמיכה.",
+        text: t("billing.messages.resumeError"),
       });
     } finally {
       setLoadingResume(false);
     }
   };
-
-  /* =====================================================
-     PAYMENT HISTORY
-  ====================================================== */
 
   useEffect(() => {
     if (!userId) {
@@ -313,17 +307,12 @@ export default function SubscriptionPlanCard() {
     };
   }, [userId, API_BASE]);
 
-  /* =====================================================
-     RENDER
-  ====================================================== */
-
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-slate-50 px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-screen bg-slate-50 px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-6xl">
-        {/* HERO */}
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-violet-950 px-6 py-8 text-white sm:px-8 lg:px-10">
             <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
@@ -333,23 +322,22 @@ export default function SubscriptionPlanCard() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-xs font-black text-white/80 backdrop-blur">
                   <span className="h-2 w-2 rounded-full bg-emerald-400" />
-                  מרכז חיובים
+                  {t("billing.badge")}
                 </div>
 
                 <h1 className="mt-5 text-3xl font-black tracking-tight sm:text-4xl">
-                  חיובים ומנוי
+                  {t("billing.title")}
                 </h1>
 
                 <p className="mt-3 max-w-2xl text-sm leading-6 text-white/65">
-                  נהל את המסלול שלך, סטטוס החיוב, הגדרות החידוש והיסטוריית
-                  התשלומים במקום אחד ברור ונוח.
+                  {t("billing.subtitle")}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                   <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    מסלול נוכחי
+                    {t("billing.currentPlan")}
                   </p>
                   <p className="mt-1 truncate text-lg font-black">
                     {getPlanLabel(plan)}
@@ -358,10 +346,10 @@ export default function SubscriptionPlanCard() {
 
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
                   <p className="text-xs font-black uppercase tracking-wide text-white/45">
-                    סה״כ שולם
+                    {t("billing.totalPaid")}
                   </p>
                   <p className="mt-1 text-lg font-black">
-                    {formatMoney(totalPaid)}
+                    {formatMoney(totalPaid, dateLocale)}
                   </p>
                 </div>
               </div>
@@ -370,26 +358,25 @@ export default function SubscriptionPlanCard() {
         </section>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-          {/* SUBSCRIPTION CARD */}
           <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
             <div className="border-b border-slate-100 bg-gradient-to-br from-white via-slate-50 to-violet-50 px-6 py-7 sm:px-8">
               <div className="inline-flex rounded-full bg-violet-100 px-4 py-1.5 text-xs font-black text-violet-700">
-                מנוי
+                {t("billing.subscription")}
               </div>
 
               <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
-                המסלול שלך
+                {t("billing.yourPlan")}
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                בדוק את המסלול הנוכחי שלך ונהל את העדפות החידוש.
+                {t("billing.yourPlanHint")}
               </p>
             </div>
 
             <div className="space-y-4 p-5 sm:p-6">
               <div className="rounded-[1.5rem] border border-slate-100 bg-slate-50 p-5">
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  מסלול
+                  {t("billing.plan")}
                 </p>
                 <p className="mt-2 text-2xl font-black text-slate-950">
                   {planName}
@@ -399,7 +386,7 @@ export default function SubscriptionPlanCard() {
               <div className="grid gap-4 sm:grid-cols-2">
                 <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    סטטוס
+                    {t("billing.status")}
                   </p>
 
                   <span
@@ -414,7 +401,9 @@ export default function SubscriptionPlanCard() {
 
                 <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    {plan === "monthly" ? "החיוב הבא" : "בתוקף עד"}
+                    {plan === "monthly"
+                      ? t("billing.nextBilling")
+                      : t("billing.validUntil")}
                   </p>
 
                   <p className="mt-3 text-lg font-black text-slate-950">
@@ -425,7 +414,7 @@ export default function SubscriptionPlanCard() {
 
               <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                 <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                  סוג חיוב
+                  {t("billing.billingType")}
                 </p>
                 <p className="mt-2 text-sm font-bold leading-6 text-slate-700">
                   {billingType}
@@ -453,7 +442,9 @@ export default function SubscriptionPlanCard() {
                     disabled={loadingCancel || !userId}
                     className="flex h-13 w-full items-center justify-center rounded-2xl border border-rose-200 bg-white px-6 text-sm font-black text-rose-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-rose-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    {loadingCancel ? "מבטל..." : "כיבוי חידוש אוטומטי"}
+                    {loadingCancel
+                      ? t("billing.cancelling")
+                      : t("billing.cancelRenewal")}
                   </button>
                 )}
 
@@ -464,7 +455,9 @@ export default function SubscriptionPlanCard() {
                     disabled={loadingResume || !userId}
                     className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    {loadingResume ? "מפעיל מחדש..." : "הפעלת המנוי מחדש"}
+                    {loadingResume
+                      ? t("billing.resuming")
+                      : t("billing.resumeSubscription")}
                   </button>
                 )}
 
@@ -474,34 +467,33 @@ export default function SubscriptionPlanCard() {
                     onClick={() => navigate("/pricing")}
                     className="flex h-13 w-full items-center justify-center rounded-2xl bg-slate-950 px-6 text-sm font-black text-white shadow-xl shadow-slate-950/20 transition hover:-translate-y-0.5 hover:bg-violet-700"
                   >
-                    חידוש / שדרוג מסלול
+                    {t("billing.renewUpgrade")}
                   </button>
                 )}
               </div>
             </div>
           </section>
 
-          {/* PAYMENT HISTORY */}
           <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
             <div className="border-b border-slate-100 px-6 py-7 sm:px-8">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <div className="inline-flex rounded-full bg-slate-100 px-4 py-1.5 text-xs font-black text-slate-600">
-                    תשלומים
+                    {t("billing.payments")}
                   </div>
 
                   <h2 className="mt-4 text-2xl font-black tracking-tight text-slate-950">
-                    היסטוריית תשלומים
+                    {t("billing.paymentHistory")}
                   </h2>
 
                   <p className="mt-2 text-sm leading-6 text-slate-500">
-                    צפייה בחיובים האחרונים ובתשלומי המנוי שלך.
+                    {t("billing.paymentHistoryHint")}
                   </p>
                 </div>
 
                 <div className="rounded-2xl bg-slate-50 px-5 py-4">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    רשומות
+                    {t("billing.records")}
                   </p>
                   <p className="mt-1 text-2xl font-black text-slate-950">
                     {payments.length}
@@ -516,11 +508,11 @@ export default function SubscriptionPlanCard() {
                   <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-violet-600" />
 
                   <h3 className="mt-5 text-lg font-black text-slate-950">
-                    טוען תשלומים...
+                    {t("billing.loadingPayments")}
                   </h3>
 
                   <p className="mt-2 text-sm text-slate-500">
-                    שולף את רשומות החיוב שלך.
+                    {t("billing.loadingPaymentsHint")}
                   </p>
                 </div>
               ) : payments.length === 0 ? (
@@ -530,31 +522,30 @@ export default function SubscriptionPlanCard() {
                   </div>
 
                   <h3 className="mt-4 text-lg font-black text-slate-950">
-                    לא נמצאו תשלומים
+                    {t("billing.noPayments")}
                   </h3>
 
                   <p className="mt-2 max-w-sm text-sm leading-6 text-slate-500">
-                    היסטוריית התשלומים שלך תופיע כאן לאחר יצירת תשלום.
+                    {t("billing.noPaymentsHint")}
                   </p>
                 </div>
               ) : (
                 <>
-                  {/* DESKTOP TABLE */}
                   <div className="hidden overflow-hidden rounded-[1.5rem] border border-slate-100 md:block">
-                    <table className="w-full border-collapse text-right text-sm">
+                    <table className="w-full border-collapse text-start text-sm">
                       <thead className="bg-slate-50">
                         <tr>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            תאריך
+                            {t("billing.date")}
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            מסלול
+                            {t("billing.plan")}
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            סכום
+                            {t("billing.amount")}
                           </th>
                           <th className="px-5 py-4 text-xs font-black uppercase tracking-wide text-slate-400">
-                            סטטוס
+                            {t("billing.status")}
                           </th>
                         </tr>
                       </thead>
@@ -566,7 +557,7 @@ export default function SubscriptionPlanCard() {
                           return (
                             <tr key={key} className="hover:bg-slate-50/70">
                               <td className="px-5 py-4 font-bold text-slate-700">
-                                {formatDate(payment.createdAt)}
+                                {formatDate(payment.createdAt, dateLocale)}
                               </td>
 
                               <td className="px-5 py-4 font-black text-slate-950">
@@ -574,7 +565,7 @@ export default function SubscriptionPlanCard() {
                               </td>
 
                               <td className="px-5 py-4 font-black text-slate-950">
-                                {formatMoney(payment.amount)}
+                                {formatMoney(payment.amount, dateLocale)}
                               </td>
 
                               <td className="px-5 py-4">
@@ -594,7 +585,6 @@ export default function SubscriptionPlanCard() {
                     </table>
                   </div>
 
-                  {/* MOBILE CARDS */}
                   <div className="space-y-3 md:hidden">
                     {payments.map((payment, index) => {
                       const key = payment._id || payment.id || String(index);
@@ -607,7 +597,7 @@ export default function SubscriptionPlanCard() {
                           <div className="flex items-start justify-between gap-3">
                             <div>
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                מסלול
+                                {t("billing.plan")}
                               </p>
 
                               <p className="mt-1 text-base font-black text-slate-950">
@@ -628,19 +618,19 @@ export default function SubscriptionPlanCard() {
                           <div className="mt-4 grid grid-cols-2 gap-3">
                             <div className="rounded-2xl bg-slate-50 p-3">
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                תאריך
+                                {t("billing.date")}
                               </p>
                               <p className="mt-1 text-sm font-bold text-slate-700">
-                                {formatDate(payment.createdAt)}
+                                {formatDate(payment.createdAt, dateLocale)}
                               </p>
                             </div>
 
                             <div className="rounded-2xl bg-slate-50 p-3">
                               <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                                סכום
+                                {t("billing.amount")}
                               </p>
                               <p className="mt-1 text-sm font-black text-slate-950">
-                                {formatMoney(payment.amount)}
+                                {formatMoney(payment.amount, dateLocale)}
                               </p>
                             </div>
                           </div>
@@ -654,14 +644,13 @@ export default function SubscriptionPlanCard() {
           </section>
         </div>
 
-        {/* SUPPORT */}
         <div className="mt-6 rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 text-center text-sm font-bold text-slate-500 shadow-sm">
-          צריך עזרה?{" "}
+          {t("billing.needHelp")}{" "}
           <a
             href="/contact"
             className="font-black text-violet-700 underline-offset-4 hover:underline"
           >
-            פנייה לתמיכה
+            {t("billing.contactSupport")}
           </a>
         </div>
       </div>

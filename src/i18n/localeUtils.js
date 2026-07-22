@@ -72,7 +72,10 @@ export async function fetchGeoLanguage() {
     const language = normalizeLanguage(data?.language || languageFromCountry(data?.country));
 
     if (language === "he" || language === "en") {
-      setCookie(GEO_LANG_COOKIE, language);
+      // Never overwrite an explicit user language choice with geo.
+      if (!hasManualLanguageChoice()) {
+        setCookie(GEO_LANG_COOKIE, language);
+      }
       return language;
     }
   } catch {

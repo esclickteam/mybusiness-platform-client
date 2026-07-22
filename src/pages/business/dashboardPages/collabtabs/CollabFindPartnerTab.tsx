@@ -23,6 +23,8 @@ import {
 
 import API from "../../../../api";
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type BusinessPartner = {
   _id: string;
@@ -60,14 +62,17 @@ function PartnerCard({
   onStartChat,
   chatLoadingId,
 }: PartnerCardProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const logoUrl = business.logo || "/default-logo.png";
-  const locationText = business.area || business.city || "לא הוגדר מיקום";
+  const locationText =
+    business.area || business.city || t("collab.findPartner.noLocation");
 
   return (
     <article
-      dir="rtl"
+      dir={dir}
       className={[
-        "group flex h-full flex-col overflow-hidden rounded-[2rem] border bg-white text-right shadow-sm transition",
+        "group flex h-full flex-col overflow-hidden rounded-[2rem] border bg-white text-start shadow-sm transition",
         "hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_24px_80px_rgba(15,23,42,0.10)]",
         isMine ? "border-violet-200 ring-4 ring-violet-50" : "border-slate-100",
       ].join(" ")}
@@ -81,7 +86,7 @@ function PartnerCard({
             {business.logo ? (
               <img
                 src={logoUrl}
-                alt={`לוגו של ${business.businessName || "עסק"}`}
+                alt={t("collab.findPartner.logoAlt", { name: business.businessName || t("collab.findPartner.businessFallback") })}
                 className="h-full w-full object-cover"
               />
             ) : (
@@ -91,24 +96,24 @@ function PartnerCard({
 
           {isMine ? (
             <span className="rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-              העסק שלי
+              {t("collab.findPartner.myBusiness")}
             </span>
           ) : (
             <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
-              שותף פוטנציאלי
+              {t("collab.findPartner.potentialPartner")}
             </span>
           )}
         </div>
 
         <div className="relative mt-5">
           <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
-            {business.businessName || "עסק ללא שם"}
+            {business.businessName || t("collab.findPartner.unnamedBusiness")}
           </h3>
 
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-black text-slate-700 shadow-sm">
               <Store className="h-3.5 w-3.5 text-sky-700" />
-              {business.category || "לא הוגדרה קטגוריה"}
+              {business.category || t("collab.findPartner.noCategory")}
             </span>
 
             <span className="inline-flex items-center gap-1.5 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
@@ -122,18 +127,18 @@ function PartnerCard({
       <div className="flex flex-1 flex-col p-5">
         <div className="flex-1">
           <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-            תיאור העסק
+            {t("collab.findPartner.descriptionLabel")}
           </p>
 
           <p className="line-clamp-4 min-h-[96px] text-sm font-semibold leading-6 text-slate-600">
-            {business.description || "עדיין לא הוזן תיאור לעסק הזה."}
+            {business.description || t("collab.findPartner.noDescription")}
           </p>
         </div>
 
         {business.complementaryCategories?.length ? (
           <div className="mt-5">
             <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-              קטגוריות מתאימות
+              {t("collab.findPartner.complementary")}
             </p>
 
             <div className="flex flex-wrap gap-2">
@@ -150,18 +155,18 @@ function PartnerCard({
         ) : null}
 
         <div className="mt-5 grid grid-cols-2 gap-3">
-          <InfoTile icon={Target} label="התאמה" value="רלוונטי" />
+          <InfoTile icon={Target} label={t("collab.findPartner.match")} value={t("collab.findPartner.relevant")} />
 
           <InfoTile
             icon={Handshake}
-            label="פעולה"
-            value={isMine ? "לא זמין" : "פתיחה"}
+            label={t("collab.findPartner.action")}
+            value={isMine ? t("collab.findPartner.unavailable") : t("collab.findPartner.open")}
           />
         </div>
 
         {isMine ? (
           <div className="mt-5 flex h-12 items-center justify-center rounded-2xl bg-slate-100 px-5 text-sm font-black text-slate-500">
-            זה העסק שלך
+            {t("collab.findPartner.yourBusiness")}
           </div>
         ) : (
           <div className="mt-5 space-y-2">
@@ -171,7 +176,7 @@ function PartnerCard({
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
             >
               <Send className="h-5 w-5" />
-              שליחת הצעה
+              {t("collab.findPartner.sendProposal")}
             </button>
 
             <div className="grid grid-cols-2 gap-2">
@@ -186,7 +191,7 @@ function PartnerCard({
                 ) : (
                   <Handshake className="h-4 w-4" />
                 )}
-                צ׳אט
+                {t("collab.findPartner.chat")}
               </button>
 
               <button
@@ -195,7 +200,7 @@ function PartnerCard({
                 className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
               >
                 <Eye className="h-4 w-4" />
-                פרופיל
+                {t("collab.findPartner.profile")}
               </button>
             </div>
           </div>
@@ -210,6 +215,8 @@ export default function CollabFindPartnerTab({
   searchCategory,
   freeText,
 }: CollabFindPartnerTabProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const navigate = useNavigate();
 
   const [myBusinessId, setMyBusinessId] = useState<string | null>(null);
@@ -235,7 +242,7 @@ export default function CollabFindPartnerTab({
       setPartners(partnersRes.data.relevant || []);
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
-      setError("שגיאה בטעינת השותפים");
+      setError(t("collab.findPartner.loadError"));
     } finally {
       setLoading(false);
     }
@@ -335,7 +342,7 @@ export default function CollabFindPartnerTab({
       const businessId = myBusinessId || (await fetchMyBusinessId());
 
       if (!businessId) {
-        alert("לא נמצא מזהה עסק. נסו לרענן את הדף.");
+        alert(t("collab.findPartner.alerts.missingBusinessId"));
         return;
       }
 
@@ -348,7 +355,7 @@ export default function CollabFindPartnerTab({
       try {
         const res = await API.post("/business-chat/start", {
           otherBusinessId: business._id,
-          text: "שלום, אשמח לבדוק אפשרות לשיתוף פעולה בין העסקים שלנו.",
+          text: t("collab.findPartner.chatIntro"),
         });
 
         const conversationId = res.data?.conversationId;
@@ -360,24 +367,24 @@ export default function CollabFindPartnerTab({
         }
       } catch (chatError) {
         console.error("Failed to start chat:", chatError);
-        alert("לא הצלחנו להתחיל שיחה. נסו שוב.");
+        alert(t("collab.findPartner.alerts.chatFailed"));
       } finally {
         setChatLoadingId(null);
       }
     },
-    [myBusinessId, navigate]
+    [myBusinessId, navigate, t]
   );
 
   if (loading) {
     return (
       <div
-        dir="rtl"
+        dir={dir}
         className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
       >
         <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
 
         <p className="mt-4 text-sm font-black text-slate-500">
-          מחפש שותפים רלוונטיים...
+          {t("collab.findPartner.loading")}
         </p>
       </div>
     );
@@ -386,20 +393,20 @@ export default function CollabFindPartnerTab({
   if (error) {
     return (
       <div
-        dir="rtl"
+        dir={dir}
         className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center"
       >
         <p className="text-lg font-black text-rose-700">{error}</p>
 
         <p className="mt-2 text-sm font-semibold text-rose-500">
-          רענן את העמוד ונסה שוב.
+          {t("collab.findPartner.refreshHint")}
         </p>
       </div>
     );
   }
 
   return (
-    <div dir="rtl" className="space-y-6 text-right">
+    <div dir={dir} className="space-y-6 text-start">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
@@ -408,21 +415,21 @@ export default function CollabFindPartnerTab({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Sparkles className="h-4 w-4" />
-              איתור שותפים
+              {t("collab.findPartner.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              מציאת שותפים עסקיים
+              {t("collab.findPartner.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              גלה עסקים רלוונטיים, צפה בפרופילים שלהם והתחל שיתופי פעולה איכותיים מתוך מקום אחד מסודר.
+              {t("collab.findPartner.subtitle")}
             </p>
           </div>
 
           <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-              תוצאות מתאימות
+              {t("collab.findPartner.matchingResults")}
             </p>
 
             <p className="mt-2 text-3xl font-black text-violet-700">
@@ -434,33 +441,33 @@ export default function CollabFindPartnerTab({
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="סה״כ שותפים"
+          label={t("collab.findPartner.stats.total")}
           value={partners.length}
-          helper="עסקים שנמצאו"
+          helper={t("collab.findPartner.stats.totalHelper")}
           icon={UsersRound}
           tone="sky"
         />
 
         <StatCard
-          label="שותפים זמינים"
+          label={t("collab.findPartner.stats.available")}
           value={otherPartnersCount}
-          helper="לא כולל העסק שלך"
+          helper={t("collab.findPartner.stats.availableHelper")}
           icon={Handshake}
           tone="violet"
         />
 
         <StatCard
-          label="קטגוריות"
+          label={t("collab.findPartner.stats.categories")}
           value={categoriesCount}
-          helper="תחומי התאמה"
+          helper={t("collab.findPartner.stats.categoriesHelper")}
           icon={Target}
           tone="amber"
         />
 
         <StatCard
-          label="עם תיאור"
+          label={t("collab.findPartner.stats.withDescription")}
           value={withDescriptionCount}
-          helper="פרופילים מלאים"
+          helper={t("collab.findPartner.stats.withDescriptionHelper")}
           icon={CheckCircle2}
           tone="emerald"
         />
@@ -471,11 +478,11 @@ export default function CollabFindPartnerTab({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                שותפים רלוונטיים
+                {t("collab.findPartner.listTitle")}
               </h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {filteredPartners.length} מוצגים מתוך {partners.length} שותפים
+                {t("collab.findPartner.showing", { shown: filteredPartners.length, total: partners.length })}
               </p>
             </div>
 
@@ -485,7 +492,7 @@ export default function CollabFindPartnerTab({
               <input
                 value={localSearch}
                 onChange={(event) => setLocalSearch(event.target.value)}
-                placeholder="חיפוש שותפים..."
+                placeholder={t("collab.findPartner.searchPlaceholder")}
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
               />
             </div>
@@ -530,6 +537,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -547,7 +555,7 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">{t("collab.active")}</p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -587,9 +595,11 @@ function InfoTile({
 }
 
 function EmptyPartnersState() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center"
     >
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-violet-700 shadow-sm">
@@ -597,11 +607,11 @@ function EmptyPartnersState() {
       </div>
 
       <h4 className="text-xl font-black text-slate-950">
-        לא נמצאו שותפים מתאימים
+        {t("collab.findPartner.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        נסה לשנות את החיפוש או לבחור קטגוריה רחבה יותר.
+        {t("collab.findPartner.emptyHint")}
       </p>
     </div>
   );

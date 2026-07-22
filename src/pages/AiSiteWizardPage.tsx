@@ -6,6 +6,7 @@ import {
   Sparkles,
   Check,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import API from "../api";
 import { createMySite } from "../api/mySitesApi";
 import {
@@ -16,6 +17,7 @@ import {
   materializeAiSitePlan,
   type AiSitePlan,
 } from "../utils/materializeAiSitePlan";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WizardAnswers = {
   businessName: string;
@@ -29,39 +31,33 @@ type WizardAnswers = {
   preferredPages: string[];
 };
 
-const NICHES = [
-  "עסקים ושירותים",
-  "נדל״ן",
-  "יופי ובריאות",
-  "מזון ומסעדות",
-  "חינוך וקורסים",
-  "פורטפוליו / יצירה",
-  "חנות אונליין",
-  "אחר",
-];
+const NICHE_IDS = [
+  "businessServices",
+  "realEstate",
+  "beauty",
+  "food",
+  "education",
+  "portfolio",
+  "ecommerce",
+  "other",
+] as const;
 
-const STYLES = [
-  { id: "modern", label: "מודרני ונקי" },
-  { id: "luxury", label: "יוקרתי ואלגנטי" },
-  { id: "warm", label: "חם וביתי" },
-  { id: "bold", label: "נועז וצבעוני" },
-  { id: "minimal", label: "מינימליסטי" },
-];
+const STYLE_IDS = ["modern", "luxury", "warm", "bold", "minimal"] as const;
 
-const TONES = ["מקצועי", "ידידותי", "יוקרתי", "צעיר ואנרגטי"];
+const TONE_IDS = ["professional", "friendly", "luxury", "energetic"] as const;
 
-const PAGE_OPTIONS = [
-  "ראשי",
-  "אודות",
-  "שירותים",
-  "גלריה",
-  "מחירים",
-  "המלצות",
-  "שאלות נפוצות",
-  "צור קשר",
-];
+const PAGE_IDS = [
+  "home",
+  "about",
+  "services",
+  "gallery",
+  "pricing",
+  "testimonials",
+  "faq",
+  "contact",
+] as const;
 
-const STEPS = ["עסק", "עיצוב", "דפים", "סיכום"] as const;
+const STEP_IDS = ["business", "design", "pages", "summary"] as const;
 
 function randomHex() {
   const hues = ["#0f172a", "#4c1d95", "#0e7490", "#b45309", "#be123c", "#166534"];
@@ -69,6 +65,8 @@ function randomHex() {
 }
 
 export default function AiSiteWizardPage() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { businessId = "" } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
   const base = `/business/${businessId}/dashboard/website`;
@@ -79,20 +77,36 @@ export default function AiSiteWizardPage() {
   const [error, setError] = useState("");
   const [answers, setAnswers] = useState<WizardAnswers>({
     businessName: "",
-    niche: NICHES[0],
+    niche: NICHE_IDS[0],
     description: "",
     audience: "",
     style: "modern",
-    tone: TONES[0],
+    tone: TONE_IDS[0],
     primaryColor: "",
     secondaryColor: "",
-    preferredPages: ["ראשי", "אודות", "שירותים", "צור קשר"],
+    preferredPages: ["home", "about", "services", "contact"],
   });
 
   const progress = useMemo(
-    () => Math.round(((step + 1) / STEPS.length) * 100),
+    () => Math.round(((step + 1) / STEP_IDS.length) * 100),
     [step]
   );
+
+  function labelNiche(id: string) {
+    return t(`aiSiteWizard.niches.${id}`);
+  }
+
+  function labelStyle(id: string) {
+    return t(`aiSiteWizard.styles.${id}`);
+  }
+
+  function labelTone(id: string) {
+    return t(`aiSiteWizard.tones.${id}`);
+  }
+
+  function labelPage(id: string) {
+    return t(`aiSiteWizard.pages.${id}`);
+  }
 
   function togglePage(page: string) {
     setAnswers((prev) => {
@@ -125,9 +139,15 @@ export default function AiSiteWizardPage() {
     const secondary = answers.secondaryColor.trim() || randomHex();
     const planInput = {
       businessId,
-      ...answers,
+      businessName: answers.businessName,
+      niche: labelNiche(answers.niche),
+      description: answers.description,
+      audience: answers.audience,
+      style: answers.style,
+      tone: labelTone(answers.tone),
       primaryColor: primary,
       secondaryColor: secondary,
+      preferredPages: answers.preferredPages.map(labelPage),
     };
 
     let plan: AiSitePlan | null = null;
@@ -135,7 +155,7 @@ export default function AiSiteWizardPage() {
     let stage: "plan" | "materialize" | "create" | "save" = "plan";
 
     try {
-      setStatusText("ה־AI מתכנן עמודים וסקשנים...");
+      setStatusText(t("aiSiteWizard.status.planning"));
       try {
         const { data } = await API.post(
           "/site-builder/ai/generate-site",
@@ -144,7 +164,7 @@ export default function AiSiteWizardPage() {
         );
         plan = data?.plan as AiSitePlan;
         if (!plan?.pages?.length) {
-          throw new Error(data?.error || "ה־AI לא החזיר מבנה אתר תקף");
+          throw new Error(data?.error || t("aiSiteWizard.errors.invalidPlan"));
         }
       } catch (planErr: any) {
         const serverPlan = planErr?.response?.data?.plan as AiSitePlan | undefined;
@@ -180,14 +200,14 @@ export default function AiSiteWizardPage() {
       }
 
       if (!plan?.pages?.length) {
-        throw new Error("לא ניתן לבנות מבנה אתר");
+        throw new Error(t("aiSiteWizard.errors.cannotBuild"));
       }
 
       stage = "materialize";
       setStatusText(
         usedLocalFallback
-          ? "בונה אתר מהספרייה (מצב מקומי)..."
-          : "מרכיב סקשנים אמיתיים מהספרייה...",
+          ? t("aiSiteWizard.status.materializeLocal")
+          : t("aiSiteWizard.status.materialize"),
       );
       const built = materializeAiSitePlan({
         ...plan,
@@ -232,23 +252,26 @@ export default function AiSiteWizardPage() {
       );
 
       stage = "create";
-      setStatusText("יוצר את האתר...");
+      setStatusText(t("aiSiteWizard.status.creating"));
       const site = await createMySite({
         businessId,
-        name: plan.siteName || answers.businessName || "האתר שלי",
+        name:
+          plan.siteName ||
+          answers.businessName ||
+          t("aiSiteWizard.defaultSiteName"),
         templateKey: hostKey,
         templateName: plan.siteName || hostKey,
       });
 
       if (!site?._id) {
-        throw new Error("יצירת האתר נכשלה");
+        throw new Error(t("aiSiteWizard.errors.createFailed"));
       }
 
       const homeVisual = built.homeVisual || {};
       const editorUrl = `${base}/sites/${site._id}/edit?template=${encodeURIComponent(hostKey)}&ai=1`;
 
       stage = "save";
-      setStatusText("שומר את התוכן לשרת...");
+      setStatusText(t("aiSiteWizard.status.saving"));
       try {
         await API.put(
           "/site-builder/site",
@@ -304,19 +327,19 @@ export default function AiSiteWizardPage() {
 
       const stageHint =
         stage === "create"
-          ? "יצירת האתר"
+          ? t("aiSiteWizard.errors.stageCreate")
           : stage === "save"
-            ? "שמירת התוכן"
+            ? t("aiSiteWizard.errors.stageSave")
             : stage === "materialize"
-              ? "הרכבת הסקשנים"
-              : "תכנון האתר";
+              ? t("aiSiteWizard.errors.stageMaterialize")
+              : t("aiSiteWizard.errors.stagePlan");
 
       setError(
         isTimeout || isNetwork
-          ? `בעיית רשת ב${stageHint} — נסו שוב. אם זה ממשיך, בדקו חיבור או התחברות מחדש.`
+          ? t("aiSiteWizard.errors.network", { stage: stageHint })
           : err?.response?.data?.error ||
               err?.message ||
-              "יצירת האתר עם AI נכשלה",
+              t("aiSiteWizard.errors.generateFailed"),
       );
     } finally {
       setSubmitting(false);
@@ -326,7 +349,7 @@ export default function AiSiteWizardPage() {
 
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="min-h-screen bg-[#f5f6fb] px-4 py-8 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-2xl">
@@ -336,7 +359,7 @@ export default function AiSiteWizardPage() {
           className="mb-6 inline-flex items-center gap-1.5 text-sm font-semibold text-slate-600 hover:text-slate-900"
         >
           <ArrowRight className="h-4 w-4" />
-          חזרה לבחירת שיטה
+          {t("aiSiteWizard.back")}
         </button>
 
         <div className="mb-6 flex items-start gap-3">
@@ -344,10 +367,11 @@ export default function AiSiteWizardPage() {
             <Sparkles className="h-5 w-5" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">בניית אתר עם AI</h1>
+            <h1 className="text-2xl font-bold text-slate-900">
+              {t("aiSiteWizard.title")}
+            </h1>
             <p className="mt-1 text-sm text-slate-600">
-              ה־AI יבנה עמודים חדשים וסקשנים אמיתיים לפי הצבעים וההגדרות שלכם —
-              לא רק בחירת תבנית מוכנה.
+              {t("aiSiteWizard.subtitle")}
             </p>
           </div>
         </div>
@@ -355,7 +379,11 @@ export default function AiSiteWizardPage() {
         <div className="mb-6">
           <div className="mb-2 flex items-center justify-between text-xs font-semibold text-slate-500">
             <span>
-              שלב {step + 1} מתוך {STEPS.length}: {STEPS[step]}
+              {t("aiSiteWizard.stepOf", {
+                current: step + 1,
+                total: STEP_IDS.length,
+                label: t(`aiSiteWizard.steps.${STEP_IDS[step]}`),
+              })}
             </span>
             <span>{progress}%</span>
           </div>
@@ -370,18 +398,18 @@ export default function AiSiteWizardPage() {
         <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
           {step === 0 ? (
             <div className="space-y-4">
-              <Field label="שם העסק / האתר">
+              <Field label={t("aiSiteWizard.fields.businessName")}>
                 <input
                   value={answers.businessName}
                   onChange={(e) =>
                     setAnswers((a) => ({ ...a, businessName: e.target.value }))
                   }
                   className="field"
-                  placeholder="לדוגמה: סטודיו נועם"
+                  placeholder={t("aiSiteWizard.fields.businessNamePlaceholder")}
                 />
               </Field>
 
-              <Field label="תחום העסק">
+              <Field label={t("aiSiteWizard.fields.niche")}>
                 <select
                   value={answers.niche}
                   onChange={(e) =>
@@ -389,33 +417,33 @@ export default function AiSiteWizardPage() {
                   }
                   className="field"
                 >
-                  {NICHES.map((n) => (
-                    <option key={n} value={n}>
-                      {n}
+                  {NICHE_IDS.map((id) => (
+                    <option key={id} value={id}>
+                      {labelNiche(id)}
                     </option>
                   ))}
                 </select>
               </Field>
 
-              <Field label="תיאור קצר (אופציונלי)">
+              <Field label={t("aiSiteWizard.fields.description")}>
                 <textarea
                   value={answers.description}
                   onChange={(e) =>
                     setAnswers((a) => ({ ...a, description: e.target.value }))
                   }
                   className="field min-h-[88px] resize-y"
-                  placeholder="מה העסק עושה, למי הוא פונה, מה מייחד אותו..."
+                  placeholder={t("aiSiteWizard.fields.descriptionPlaceholder")}
                 />
               </Field>
 
-              <Field label="קהל יעד (אופציונלי)">
+              <Field label={t("aiSiteWizard.fields.audience")}>
                 <input
                   value={answers.audience}
                   onChange={(e) =>
                     setAnswers((a) => ({ ...a, audience: e.target.value }))
                   }
                   className="field"
-                  placeholder="לקוחות פרטיים, עסקים קטנים, משפחות..."
+                  placeholder={t("aiSiteWizard.fields.audiencePlaceholder")}
                 />
               </Field>
             </div>
@@ -425,49 +453,49 @@ export default function AiSiteWizardPage() {
             <div className="space-y-5">
               <div>
                 <p className="mb-2 text-sm font-semibold text-slate-700">
-                  סגנון עיצוב מועדף
+                  {t("aiSiteWizard.fields.style")}
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
-                  {STYLES.map((s) => (
+                  {STYLE_IDS.map((id) => (
                     <button
-                      key={s.id}
+                      key={id}
                       type="button"
                       onClick={() =>
-                        setAnswers((a) => ({ ...a, style: s.id }))
+                        setAnswers((a) => ({ ...a, style: id }))
                       }
-                      className={`rounded-xl border px-3 py-3 text-right text-sm font-semibold transition ${
-                        answers.style === s.id
+                      className={`rounded-xl border px-3 py-3 text-start text-sm font-semibold transition ${
+                        answers.style === id
                           ? "border-violet-500 bg-violet-50 text-violet-900"
                           : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
                       }`}
                     >
-                      {s.label}
+                      {labelStyle(id)}
                     </button>
                   ))}
                 </div>
               </div>
 
-              <Field label="טון כתיבה">
+              <Field label={t("aiSiteWizard.fields.tone")}>
                 <div className="flex flex-wrap gap-2">
-                  {TONES.map((t) => (
+                  {TONE_IDS.map((id) => (
                     <button
-                      key={t}
+                      key={id}
                       type="button"
-                      onClick={() => setAnswers((a) => ({ ...a, tone: t }))}
+                      onClick={() => setAnswers((a) => ({ ...a, tone: id }))}
                       className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
-                        answers.tone === t
+                        answers.tone === id
                           ? "bg-slate-900 text-white"
                           : "bg-slate-100 text-slate-600"
                       }`}
                     >
-                      {t}
+                      {labelTone(id)}
                     </button>
                   ))}
                 </div>
               </Field>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <Field label="צבע ראשי">
+                <Field label={t("aiSiteWizard.fields.primaryColor")}>
                   <input
                     type="color"
                     value={answers.primaryColor || "#4c1d95"}
@@ -480,7 +508,7 @@ export default function AiSiteWizardPage() {
                     className="h-11 w-full cursor-pointer rounded-xl border border-slate-200 bg-white p-1"
                   />
                 </Field>
-                <Field label="צבע משני">
+                <Field label={t("aiSiteWizard.fields.secondaryColor")}>
                   <input
                     type="color"
                     value={answers.secondaryColor || "#0ea5e9"}
@@ -495,7 +523,7 @@ export default function AiSiteWizardPage() {
                 </Field>
               </div>
               <p className="text-xs text-slate-500">
-                הצבעים יוטמעו בסקשנים שנבנים. אם תשאיר ריק — ה־AI ישלים אוטומטית.
+                {t("aiSiteWizard.fields.colorsHint")}
               </p>
             </div>
           ) : null}
@@ -503,13 +531,13 @@ export default function AiSiteWizardPage() {
           {step === 2 ? (
             <div>
               <p className="mb-2 text-sm font-semibold text-slate-700">
-                אילו עמודים לבנות?
+                {t("aiSiteWizard.fields.pagesTitle")}
               </p>
               <p className="mb-3 text-xs text-slate-500">
-                לכל עמוד ה־AI יבחר סקשנים מהספרייה וימלא תוכן מותאם.
+                {t("aiSiteWizard.fields.pagesHint")}
               </p>
               <div className="flex flex-wrap gap-2">
-                {PAGE_OPTIONS.map((page) => {
+                {PAGE_IDS.map((page) => {
                   const active = answers.preferredPages.includes(page);
                   return (
                     <button
@@ -523,7 +551,7 @@ export default function AiSiteWizardPage() {
                       }`}
                     >
                       {active ? <Check className="h-3.5 w-3.5" /> : null}
-                      {page}
+                      {labelPage(page)}
                     </button>
                   );
                 })}
@@ -533,20 +561,33 @@ export default function AiSiteWizardPage() {
 
           {step === 3 ? (
             <div className="space-y-3 text-sm text-slate-700">
-              <SummaryRow label="שם" value={answers.businessName} />
-              <SummaryRow label="תחום" value={answers.niche} />
               <SummaryRow
-                label="סגנון"
-                value={STYLES.find((s) => s.id === answers.style)?.label || ""}
+                label={t("aiSiteWizard.summary.name")}
+                value={answers.businessName}
+                emptyLabel={t("aiSiteWizard.summary.empty")}
               />
-              <SummaryRow label="טון" value={answers.tone} />
               <SummaryRow
-                label="עמודים"
-                value={answers.preferredPages.join(", ")}
+                label={t("aiSiteWizard.summary.niche")}
+                value={labelNiche(answers.niche)}
+                emptyLabel={t("aiSiteWizard.summary.empty")}
+              />
+              <SummaryRow
+                label={t("aiSiteWizard.summary.style")}
+                value={labelStyle(answers.style)}
+                emptyLabel={t("aiSiteWizard.summary.empty")}
+              />
+              <SummaryRow
+                label={t("aiSiteWizard.summary.tone")}
+                value={labelTone(answers.tone)}
+                emptyLabel={t("aiSiteWizard.summary.empty")}
+              />
+              <SummaryRow
+                label={t("aiSiteWizard.summary.pages")}
+                value={answers.preferredPages.map(labelPage).join(", ")}
+                emptyLabel={t("aiSiteWizard.summary.empty")}
               />
               <p className="rounded-xl bg-violet-50 px-3 py-3 text-xs leading-relaxed text-violet-900">
-                ייבנו עמודים חדשים עם סקשנים אמיתיים מהספרייה (Hero, אודות,
-                שירותים וכו׳), עם הצבעים שבחרתם, ואז ייפתח העורך לעריכה מלאה.
+                {t("aiSiteWizard.summary.note")}
               </p>
             </div>
           ) : null}
@@ -570,17 +611,17 @@ export default function AiSiteWizardPage() {
               onClick={() => setStep((s) => Math.max(0, s - 1))}
               className="rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-slate-100 disabled:opacity-40"
             >
-              הקודם
+              {t("aiSiteWizard.buttons.previous")}
             </button>
 
-            {step < STEPS.length - 1 ? (
+            {step < STEP_IDS.length - 1 ? (
               <button
                 type="button"
                 disabled={!canContinue()}
                 onClick={() => setStep((s) => s + 1)}
                 className="rounded-xl bg-slate-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-40"
               >
-                המשך
+                {t("aiSiteWizard.buttons.continue")}
               </button>
             ) : (
               <button
@@ -594,7 +635,9 @@ export default function AiSiteWizardPage() {
                 ) : (
                   <Sparkles className="h-4 w-4" />
                 )}
-                {submitting ? "בונה את האתר..." : "בנה אתר עם AI"}
+                {submitting
+                  ? t("aiSiteWizard.buttons.generating")
+                  : t("aiSiteWizard.buttons.generate")}
               </button>
             )}
           </div>
@@ -636,11 +679,19 @@ function Field({
   );
 }
 
-function SummaryRow({ label, value }: { label: string; value: string }) {
+function SummaryRow({
+  label,
+  value,
+  emptyLabel,
+}: {
+  label: string;
+  value: string;
+  emptyLabel: string;
+}) {
   return (
     <div className="flex gap-3 rounded-xl bg-slate-50 px-3 py-2">
       <span className="w-16 shrink-0 font-semibold text-slate-500">{label}</span>
-      <span className="text-slate-800">{value || "—"}</span>
+      <span className="text-slate-800">{value || emptyLabel}</span>
     </div>
   );
 }

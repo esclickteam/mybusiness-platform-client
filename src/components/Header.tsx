@@ -68,14 +68,15 @@ export default function Header() {
     };
   }, []);
 
-  const handleChangeLanguage = (lng: string) => {
+  const handleChangeLanguage = async (lng: string) => {
     if (normalizeLanguage(lng) === currentLangCode) {
       setLanguageOpen(false);
       return;
     }
 
-    // Persist choice, then reload so every page (including older hardcoded screens) picks up lang/dir.
+    // Persist explicit choice (beats geo), apply immediately, then reload so all screens pick it up.
     markManualLanguageChoice(lng);
+    await i18n.changeLanguage(lng);
     setLanguageOpen(false);
     window.location.reload();
   };

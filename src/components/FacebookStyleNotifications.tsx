@@ -1,8 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import API from "@api";
 import { AnimatePresence, motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useLocaleDir } from "../hooks/useLocaleDir";
+import i18n from "../i18n/i18n";
+import { getIntlLocale, getTextDirection } from "../i18n/localeUtils";
 import {
   buildReviewNotificationPath,
   getReviewIdFromNotification,
@@ -136,23 +140,25 @@ class NotificationPanelErrorBoundary extends React.Component<
 
   render() {
     if (this.state.hasError) {
+      const dir = getTextDirection(i18n.language);
+
       return (
         <div
-          dir="rtl"
-          className="fixed right-4 top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-right shadow-xl sm:right-6"
+          dir={dir}
+          className="fixed right-4 top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-start shadow-xl sm:right-6"
         >
           <p className="text-sm font-black text-slate-900">
-            לא ניתן להציג את ההתראות
+            {i18n.t("notifications.errorTitle")}
           </p>
           <p className="mt-1 text-xs font-semibold text-slate-500">
-            רענני את העמוד ונסי שוב.
+            {i18n.t("notifications.errorSubtitle")}
           </p>
           <button
             type="button"
             onClick={() => this.setState({ hasError: false })}
             className="mt-3 inline-flex h-9 items-center rounded-xl bg-sky-50 px-3 text-xs font-black text-sky-700"
           >
-            נסי שוב
+            {i18n.t("notifications.tryAgain")}
           </button>
         </div>
       );
@@ -163,6 +169,9 @@ class NotificationPanelErrorBoundary extends React.Component<
 }
 
 export default function FacebookStyleNotifications() {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+  const dateLocale = getIntlLocale(i18n.language);
   const { user, socket } = useAuth();
   const navigate = useNavigate();
 
@@ -201,7 +210,7 @@ export default function FacebookStyleNotifications() {
     const interval = window.setInterval(fetchAllNotifications, 60 * 1000);
 
     return () => window.clearInterval(interval);
-  }, [businessId]);
+  }, [businessId, i18n.language]);
 
   /* ============================
      Real-time notifications (Facebook style)
@@ -373,7 +382,7 @@ export default function FacebookStyleNotifications() {
   }
 
   function getLeadName(lead: Lead) {
-    return lead?.name || lead?.fullName || "ליד ללא שם";
+    return lead?.name || lead?.fullName || t("notifications.unnamedLead");
   }
 
   function isValidMongoId(value?: string) {
@@ -391,7 +400,7 @@ export default function FacebookStyleNotifications() {
     if (!nestedRaw || typeof nestedRaw !== "object") {
       return {
         ...item,
-        title: toDisplayString(item.title, "התראה"),
+        title: toDisplayString(item.title, t("notifications.defaultTitle")),
         text: pickNotificationText(item.text, item.message),
         message: pickNotificationText(item.message, item.text),
       };
@@ -414,7 +423,7 @@ export default function FacebookStyleNotifications() {
         item.notificationId ||
         nested.notificationId,
       _id: item._id || nested._id,
-      title: toDisplayString(item.title || nested.title, "התראה"),
+      title: toDisplayString(item.title || nested.title, t("notifications.defaultTitle")),
       text: pickNotificationText(item.text, nested.text, nested.message, item.message),
       message: pickNotificationText(nested.message, item.message, nested.text, item.text),
       read: item.read ?? nested.read,
@@ -572,7 +581,10 @@ export default function FacebookStyleNotifications() {
       text.includes("new collaboration request") ||
       text.includes("new collaboration request from") ||
       text.includes("הסכם") ||
-      text.includes("שיתוף פעולה")
+      text.includes("שיתוף פעולה") ||
+      text.includes("בקשת שיתוף") ||
+      text.includes("partnership agreement") ||
+      text.includes("collab request")
     );
   }
 
@@ -738,10 +750,10 @@ export default function FacebookStyleNotifications() {
     return {
       ...notification,
       id: toDisplayString(notification.id, `notification-${crypto.randomUUID()}`),
-      title: toDisplayString(notification.title, "התראה"),
+      title: toDisplayString(notification.title, t("notifications.defaultTitle")),
       text: toDisplayString(
         pickNotificationText(notification.text, notification.title),
-        "התראה חדשה"
+        t("notifications.defaultText")
       ),
       timestamp: toDisplayString(notification.timestamp, new Date().toISOString()),
       leadId: toDisplayString(notification.leadId),
@@ -779,7 +791,7 @@ export default function FacebookStyleNotifications() {
     return sanitizeUnifiedNotification({
       id: getNotificationId(source),
       kind,
-      title: toDisplayString(source.title, "התראה"),
+      title: toDisplayString(source.title, t("notifications.defaultTitle")),
       text: pickNotificationText(source.text, source.message),
       timestamp: normalizeDate(source.timestamp || source.createdAt),
       read: Boolean(source.read),
@@ -839,13 +851,15 @@ export default function FacebookStyleNotifications() {
         return {
           id,
           kind: "task_due",
-          title: `משימה ללקוח: ${item.leadName || "ליד ללא שם"}`,
-          text: item.text || "יש משימה שהגיע זמן הטיפול שלה",
+          title: t("notifications.taskTitle", {
+            name: item.leadName || t("notifications.unnamedLead"),
+          }),
+          text: item.text || t("notifications.taskDefaultText"),
           timestamp: normalizeDate(item.taskDueAt || item.createdAt),
           read: readLocal.includes(id),
           leadId: item.leadId,
           activityId: item.activityId,
-          leadName: item.leadName || "ליד ללא שם",
+          leadName: item.leadName || t("notifications.unnamedLead"),
           phone: item.phone || "",
           taskDueAt: item.taskDueAt,
           raw: item,
@@ -882,8 +896,8 @@ export default function FacebookStyleNotifications() {
       return newLeads.map((lead) => ({
         id: `lead-${lead._id}`,
         kind: "new_lead",
-        title: `ליד חדש: ${getLeadName(lead)}`,
-        text: "נכנס ליד חדש למערכת",
+        title: t("notifications.newLeadTitle", { name: getLeadName(lead) }),
+        text: t("notifications.newLeadText"),
         timestamp: normalizeDate(lead.createdAt),
         read: false,
         leadId: lead._id,
@@ -1085,11 +1099,15 @@ export default function FacebookStyleNotifications() {
   function timeAgo(timestamp: string) {
     const diff = (Date.now() - new Date(timestamp).getTime()) / 1000;
 
-    if (diff < 60) return "עכשיו";
-    if (diff < 3600) return `לפני ${Math.floor(diff / 60)} דק׳`;
-    if (diff < 86400) return `לפני ${Math.floor(diff / 3600)} שעות`;
+    if (diff < 60) return t("notifications.now");
+    if (diff < 3600) {
+      return t("notifications.minutesAgo", { count: Math.floor(diff / 60) });
+    }
+    if (diff < 86400) {
+      return t("notifications.hoursAgo", { count: Math.floor(diff / 3600) });
+    }
 
-    return new Date(timestamp).toLocaleDateString("he-IL", {
+    return new Date(timestamp).toLocaleDateString(dateLocale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -1099,7 +1117,7 @@ export default function FacebookStyleNotifications() {
   function formatDateTime(value?: string) {
     if (!value) return "";
 
-    return new Date(value).toLocaleString("he-IL", {
+    return new Date(value).toLocaleString(dateLocale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -1139,10 +1157,12 @@ export default function FacebookStyleNotifications() {
     kind: NotificationKind,
     notification?: UnifiedNotification
   ) {
-    if (notification && isReviewNotification(notification)) return "ביקורת חדשה";
-    if (kind === "task_due") return "משימה ללקוח";
-    if (kind === "new_lead") return "ליד חדש";
-    return "התראה";
+    if (notification && isReviewNotification(notification)) {
+      return t("notifications.typeReview");
+    }
+    if (kind === "task_due") return t("notifications.typeTask");
+    if (kind === "new_lead") return t("notifications.typeNewLead");
+    return t("notifications.typeDefault");
   }
 
   function closePanel() {
@@ -1165,7 +1185,7 @@ export default function FacebookStyleNotifications() {
       <button
         type="button"
         onClick={toggleOpen}
-        aria-label="התראות"
+        aria-label={t("notifications.ariaLabel")}
         className={[
           "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
           unreadCount > 0
@@ -1229,7 +1249,7 @@ export default function FacebookStyleNotifications() {
               return (
                 <motion.div
                   key={toast.id}
-                  dir="rtl"
+                  dir={dir}
                   layout
                   initial={{ opacity: 0, x: 90, scale: 0.92 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -1242,11 +1262,11 @@ export default function FacebookStyleNotifications() {
                     dismissToast(toast.id);
                   }}
                   className={[
-                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl border border-amber-100 bg-white p-4 text-right shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
+                    "group relative flex w-full items-start gap-3 overflow-hidden rounded-2xl border border-amber-100 bg-white p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.16)]",
                     isClickable ? "cursor-pointer" : "cursor-default",
                   ].join(" ")}
                 >
-                  <span className="pointer-events-none absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-amber-400 to-red-500" />
+                  <span className="pointer-events-none absolute inset-y-0 end-0 w-1 bg-gradient-to-b from-amber-400 to-red-500" />
 
                   <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
                     {getIcon(toast.kind)}
@@ -1254,21 +1274,21 @@ export default function FacebookStyleNotifications() {
 
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-black text-slate-800">
-                      {toDisplayString(toast.title, "התראה")}
+                      {toDisplayString(toast.title, t("notifications.defaultTitle"))}
                     </span>
 
                     <span className="mt-0.5 block text-sm font-semibold leading-5 text-slate-600 line-clamp-2">
-                      {toDisplayString(toast.text, "התראה חדשה")}
+                      {toDisplayString(toast.text, t("notifications.defaultText"))}
                     </span>
 
                     <span className="mt-1 block text-[11px] font-black text-amber-600">
-                      עכשיו
+                      {t("notifications.now")}
                     </span>
                   </span>
 
                   <button
                     type="button"
-                    aria-label="סגור"
+                    aria-label={t("common.close")}
                     onClick={(clickEvent) => {
                       clickEvent.stopPropagation();
                       dismissToast(toast.id);
@@ -1279,7 +1299,7 @@ export default function FacebookStyleNotifications() {
                   </button>
 
                   <motion.span
-                    className="pointer-events-none absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-amber-400 to-red-500"
+                    className="pointer-events-none absolute bottom-0 start-0 h-0.5 bg-gradient-to-r from-amber-400 to-red-500"
                     initial={{ width: "100%" }}
                     animate={{ width: "0%" }}
                     transition={{ duration: 5, ease: "linear" }}
@@ -1304,7 +1324,7 @@ export default function FacebookStyleNotifications() {
             />
 
             <motion.div
-              dir="rtl"
+              dir={dir}
               initial={{ opacity: 0, y: -10, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
@@ -1331,13 +1351,13 @@ export default function FacebookStyleNotifications() {
                       <div className="min-w-0 flex-1">
                         <div className="mb-2 inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
                           <Sparkles className="h-3.5 w-3.5" />
-                          מרכז התראות
+                          {t("notifications.centerBadge")}
                         </div>
 
-                        <h3 className="text-xl font-black">התראות</h3>
+                        <h3 className="text-xl font-black">{t("notifications.title")}</h3>
 
                         <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                          לידים חדשים, משימות לטיפול ועדכונים מהמערכת
+                          {t("notifications.subtitle")}
                         </p>
                       </div>
 
@@ -1345,8 +1365,8 @@ export default function FacebookStyleNotifications() {
                         <button
                           type="button"
                           onClick={() => setPanelView("settings")}
-                          aria-label="הגדרות התראות"
-                          title="הגדרות התראות"
+                          aria-label={t("notifications.settingsAria")}
+                          title={t("notifications.settingsAria")}
                           className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
                         >
                           <Settings className="h-4 w-4" />
@@ -1355,7 +1375,7 @@ export default function FacebookStyleNotifications() {
                         <button
                           type="button"
                           onClick={closePanel}
-                          aria-label="סגירה"
+                          aria-label={t("notifications.closePanelAria")}
                           className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
                         >
                           <X className="h-4 w-4" />
@@ -1375,7 +1395,7 @@ export default function FacebookStyleNotifications() {
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
-                  הכל
+                  {t("notifications.tabAll")}
                 </button>
 
                 <button
@@ -1388,20 +1408,20 @@ export default function FacebookStyleNotifications() {
                       : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
                   ].join(" ")}
                 >
-                  לא נקראו
+                  {t("notifications.tabUnread")}
                 </button>
               </div>
 
               <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
                 <div>
                   <p className="text-sm font-black text-slate-800">
-                    התראות אחרונות
+                    {t("notifications.recentTitle")}
                   </p>
 
                   <p className="mt-1 text-xs font-bold text-slate-400">
                     {unreadCount > 0
-                      ? `${unreadCount} התראות שלא נקראו`
-                      : "אין התראות שלא נקראו"}
+                      ? t("notifications.unreadCount", { count: unreadCount })
+                      : t("notifications.noUnread")}
                   </p>
                 </div>
 
@@ -1411,7 +1431,7 @@ export default function FacebookStyleNotifications() {
                     onClick={fetchAllNotifications}
                     disabled={loading}
                     className="inline-flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-700 disabled:opacity-50"
-                    title="רענון"
+                    title={t("notifications.refresh")}
                   >
                     <RefreshCw
                       className={`h-4 w-4 ${loading ? "animate-spin" : ""}`}
@@ -1425,7 +1445,7 @@ export default function FacebookStyleNotifications() {
                       className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50 hover:text-slate-800"
                     >
                       <CheckCheck className="h-4 w-4" />
-                      סמן הכל
+                      {t("notifications.markAll")}
                     </button>
                   )}
                 </div>
@@ -1439,11 +1459,11 @@ export default function FacebookStyleNotifications() {
                     </div>
 
                     <p className="text-base font-black text-slate-800">
-                      אין התראות חדשות
+                      {t("notifications.emptyTitle")}
                     </p>
 
                     <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
-                      כשייכנס ליד חדש או כשיגיע זמן טיפול במשימה, זה יופיע כאן.
+                      {t("notifications.emptySubtitle")}
                     </p>
                   </div>
                 ) : (
@@ -1464,7 +1484,7 @@ export default function FacebookStyleNotifications() {
                           key={notification.id}
                           onClick={() => openNotificationTarget(notification)}
                           className={[
-                            "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-right transition",
+                            "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
                             isClickable ? "cursor-pointer" : "cursor-default",
                             notification.read
                               ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
@@ -1497,16 +1517,22 @@ export default function FacebookStyleNotifications() {
                             </span>
 
                             <span className="block truncate text-sm font-black text-slate-800">
-                              {toDisplayString(notification.title, "התראה")}
+                              {toDisplayString(
+                                notification.title,
+                                t("notifications.defaultTitle")
+                              )}
                             </span>
 
                             <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
-                              {toDisplayString(notification.text, "התראה חדשה")}
+                              {toDisplayString(
+                                notification.text,
+                                t("notifications.defaultText")
+                              )}
                             </span>
 
                             {notification.leadName && (
                               <span className="mt-2 block text-xs font-bold text-slate-500">
-                                ליד:{" "}
+                                {t("notifications.leadLabel")}{" "}
                                 <strong className="text-slate-800">
                                   {notification.leadName}
                                 </strong>
@@ -1519,14 +1545,14 @@ export default function FacebookStyleNotifications() {
                             {notification.kind === "task_due" &&
                               notification.taskDueAt && (
                                 <span className="mt-2 inline-flex rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                                  זמן טיפול:{" "}
+                                  {t("notifications.dueTime")}{" "}
                                   {formatDateTime(notification.taskDueAt)}
                                 </span>
                               )}
                           </span>
 
                           {!notification.read && (
-                            <span className="absolute left-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
+                            <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
                           )}
                         </button>
                       );

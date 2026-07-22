@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -31,6 +32,7 @@ import TemplateCardPreview, {
 } from "../components/website/TemplateCardPreview";
 import { prefetchTemplatePreviewKeys } from "../utils/templatePreviewScheduler";
 import { getStudioTemplateRendererKeys } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -116,7 +118,6 @@ type TemplateCategoryId =
 
 type TemplateCategory = {
   id: TemplateCategoryId;
-  label: string;
   icon: React.ElementType;
 };
 
@@ -125,62 +126,18 @@ const RAW_API_BASE =
 
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
-const templateCategories: TemplateCategory[] = [
-  {
-    id: "all",
-    label: "הכל",
-    icon: Paintbrush,
-  },
-  {
-    id: "landing",
-    label: "דפי נחיתה",
-    icon: Home,
-  },
-  {
-    id: "business",
-    label: "עסקים ושירותים",
-    icon: BriefcaseBusiness,
-  },
-  {
-    id: "real-estate",
-    label: "נדל״ן",
-    icon: Building2,
-  },
-  {
-    id: "portfolio",
-    label: "פורטפוליו וסוכנות",
-    icon: LayoutTemplate,
-  },
-  {
-    id: "store",
-    label: "חנויות ומסחר",
-    icon: ShoppingBag,
-  },
-  {
-    id: "food",
-    label: "אוכל ומסעדות",
-    icon: Utensils,
-  },
-  {
-    id: "medical",
-    label: "רפואה ובריאות",
-    icon: HeartPulse,
-  },
-  {
-    id: "education",
-    label: "חינוך וקורסים",
-    icon: GraduationCap,
-  },
-  {
-    id: "beauty",
-    label: "יופי וטיפוח",
-    icon: Sparkles,
-  },
-  {
-    id: "service",
-    label: "שירותים לבית",
-    icon: Wrench,
-  },
+const templateCategoryDefs: TemplateCategory[] = [
+  { id: "all", icon: Paintbrush },
+  { id: "landing", icon: Home },
+  { id: "business", icon: BriefcaseBusiness },
+  { id: "real-estate", icon: Building2 },
+  { id: "portfolio", icon: LayoutTemplate },
+  { id: "store", icon: ShoppingBag },
+  { id: "food", icon: Utensils },
+  { id: "medical", icon: HeartPulse },
+  { id: "education", icon: GraduationCap },
+  { id: "beauty", icon: Sparkles },
+  { id: "service", icon: Wrench },
 ];
 
 function getToken() {
@@ -350,7 +307,7 @@ function mapDefinitionToGalleryTemplate(
 
   return {
     key: String(definition?.id || definition?.key || "").toLowerCase(),
-    name: definition?.name || definition?.id || "תבנית אתר",
+    name: definition?.name || definition?.id || "Website template",
     category: definition?.category || seed.category || "business",
     categoryLabel:
       definition?.categoryLabel || seed.categoryLabel || definition?.category,
@@ -456,7 +413,7 @@ function normalizeTemplateForMongo(template: any, index: number) {
       template.categoryLabel ||
       template.category ||
       seed?.category ||
-      "תבנית אתר",
+      "Website template",
 
     description: template.description || seed?.description || "",
 
@@ -474,13 +431,13 @@ function normalizeTemplateForMongo(template: any, index: number) {
       seed?.heroTitle ||
       template.heroTitle ||
       template.name ||
-      "אתר עסקי מוכן",
+      t("websiteTemplates.defaultHeroTitle"),
 
     heroSubtitle:
       seed?.heroSubtitle ||
       template.description ||
       seed?.description ||
-      "תבנית אתר מוכנה לעריכה מלאה.",
+      t("websiteTemplates.defaultHeroSubtitle"),
 
     palette: seed?.palette || {
       primary: "#111827",
@@ -532,7 +489,7 @@ async function syncExistingWebsiteTemplatesToMongo() {
   });
 
   if (!data?.success) {
-    throw new Error(data?.message || "שגיאה בסנכרון התבניות למונגו");
+    throw new Error(data?.message || "Failed to sync templates to Mongo");
   }
 
   return data;
@@ -541,6 +498,17 @@ async function syncExistingWebsiteTemplatesToMongo() {
 export default function WebsiteTemplatesPage() {
   const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+
+  const templateCategories = useMemo(
+    () =>
+      templateCategoryDefs.map((category) => ({
+        ...category,
+        label: t(`websiteTemplates.categories.${category.id}`),
+      })),
+    [t]
+  );
 
   const [templates, setTemplates] = useState<WebsiteTemplate[]>([]);
   const [activeCategory, setActiveCategory] =
@@ -566,7 +534,7 @@ export default function WebsiteTemplatesPage() {
       setTemplates(data);
     } catch (err: any) {
       console.error("Load website templates error:", err);
-      setError(err?.message || "שגיאה בטעינת התבניות");
+      setError(err?.message || t("websiteTemplates.alerts.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -590,7 +558,7 @@ export default function WebsiteTemplatesPage() {
 
         if (!isMounted) return;
 
-        setError(err?.message || "שגיאה בטעינת התבניות");
+        setError(err?.message || t("websiteTemplates.alerts.loadFailed"));
       } finally {
         if (isMounted) {
           setLoading(false);
@@ -646,7 +614,7 @@ export default function WebsiteTemplatesPage() {
 
     if (sortValue === "name") {
       return [...searchedTemplates].sort((a, b) =>
-        a.name.localeCompare(b.name, "he")
+        a.name.localeCompare(b.name, i18n.language || "en")
       );
     }
 
@@ -660,7 +628,7 @@ export default function WebsiteTemplatesPage() {
 
       return String(b._id || b.key).localeCompare(String(a._id || a.key));
     });
-  }, [activeCategory, search, sortValue, templates]);
+  }, [activeCategory, search, sortValue, templates, i18n.language]);
 
   // Webflow-style: start batch-loading ALL template previews as soon as the
   // gallery opens — do not wait for the user to scroll each card into view.
@@ -677,9 +645,9 @@ export default function WebsiteTemplatesPage() {
 
   const activeCategoryLabel =
     activeCategory === "all"
-      ? "כל תבניות האתרים"
+      ? t("websiteTemplates.allTemplatesTitle")
       : templateCategories.find((category) => category.id === activeCategory)
-          ?.label || "תבניות אתרים";
+          ?.label || t("websiteTemplates.templatesTitle");
 
   async function handleEditTemplate(templateKey: string) {
   const selectedTemplate = templates.find(
@@ -689,7 +657,7 @@ export default function WebsiteTemplatesPage() {
   );
 
   if (!selectedTemplate) {
-    alert("לא נמצאה התבנית לעריכה");
+    alert(t("websiteTemplates.alerts.templateNotFound"));
     return;
   }
 
@@ -719,14 +687,14 @@ export default function WebsiteTemplatesPage() {
       localSeedAny.heroTitle ||
       selectedTemplate.heroTitle ||
       selectedTemplate.name ||
-      "אתר עסקי מוכן",
+      t("websiteTemplates.defaultHeroTitle"),
 
     heroSubtitle:
       localSeedAny.heroSubtitle ||
       selectedTemplate.heroSubtitle ||
       selectedTemplate.description ||
       localSeed?.description ||
-      "תבנית אתר מוכנה לעריכה מלאה.",
+      t("websiteTemplates.defaultHeroSubtitle"),
 
     palette: localSeed?.palette || selectedTemplate.palette || {},
 
@@ -756,12 +724,12 @@ export default function WebsiteTemplatesPage() {
 
   try {
     if (!businessId) {
-      throw new Error("חסר מזהה עסק");
+      throw new Error(t("websiteTemplates.alerts.missingBusinessId"));
     }
 
     const site = await createMySite({
       businessId,
-      name: selectedTemplate.name || localSeed?.name || "האתר שלי",
+      name: selectedTemplate.name || localSeed?.name || t("websiteTemplates.defaultSiteName"),
       templateKey: cleanTemplateKey,
       templateName: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
     });
@@ -796,12 +764,12 @@ export default function WebsiteTemplatesPage() {
 
       const result = await syncExistingWebsiteTemplatesToMongo();
 
-      alert(`נשמרו ${result.count} תבניות במונגו`);
+      alert(t("websiteTemplates.alerts.syncedCount", { count: result.count }));
 
       await loadTemplates();
     } catch (err: any) {
       console.error("SYNC TEMPLATES TO MONGO ERROR:", err);
-      alert(err?.message || "שגיאה בסנכרון תבניות למונגו");
+      alert(err?.message || t("websiteTemplates.alerts.syncFailed"));
     } finally {
       setSyncingTemplates(false);
     }
@@ -809,8 +777,8 @@ export default function WebsiteTemplatesPage() {
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_28%)] text-[#111827]"
+      dir={dir}
+      className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_28%)] text-start text-[#111827]"
     >
       <section className="border-b border-slate-200/80 bg-white/95 px-5 py-6 backdrop-blur lg:px-10">
         <div className="mx-auto max-w-[1500px]">
@@ -821,16 +789,15 @@ export default function WebsiteTemplatesPage() {
               <div className="max-w-2xl">
                 <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
                   <Sparkles className="h-4 w-4" />
-                  הקמת אתר לעסק
+                  {t("websiteTemplates.badge")}
                 </div>
 
                 <h1 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-950 md:text-4xl">
-                  מה תרצו לעשות עכשיו?
+                  {t("websiteTemplates.title")}
                 </h1>
 
                 <p className="mt-3 text-sm font-semibold leading-7 text-slate-500 md:text-base">
-                  חפשו דומיין חדש לעסק או בחרו תבנית מוכנה והתחילו לערוך את
-                  האתר.
+                  {t("websiteTemplates.subtitle")}
                 </p>
               </div>
 
@@ -839,7 +806,7 @@ export default function WebsiteTemplatesPage() {
                   type="button"
                   onClick={() => setActiveWebsiteView("domains")}
                   className={[
-                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-right transition duration-200",
+                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-start transition duration-200",
                     activeWebsiteView === "domains"
                       ? "border-violet-300 bg-gradient-to-br from-violet-50 to-blue-50 text-violet-800 shadow-[0_16px_42px_rgba(124,58,237,0.14)]"
                       : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg",
@@ -858,10 +825,10 @@ export default function WebsiteTemplatesPage() {
 
                   <span>
                     <span className="block text-base font-black">
-                      חיפוש דומיין
+                      {t("websiteTemplates.domainSearch.title")}
                     </span>
                     <span className="mt-1 block text-xs font-semibold text-slate-400">
-                      בדיקת זמינות ב־OT&amp;E
+                      {t("websiteTemplates.domainSearch.subtitle")}
                     </span>
                   </span>
                 </button>
@@ -870,7 +837,7 @@ export default function WebsiteTemplatesPage() {
                   type="button"
                   onClick={() => setActiveWebsiteView("templates")}
                   className={[
-                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-right transition duration-200",
+                    "group flex min-h-[104px] items-center gap-4 rounded-[24px] border p-4 text-start transition duration-200",
                     activeWebsiteView === "templates"
                       ? "border-blue-300 bg-gradient-to-br from-blue-50 to-cyan-50 text-blue-800 shadow-[0_16px_42px_rgba(37,99,235,0.14)]"
                       : "border-slate-200 bg-white text-slate-700 hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-lg",
@@ -889,10 +856,10 @@ export default function WebsiteTemplatesPage() {
 
                   <span>
                     <span className="block text-base font-black">
-                      בחירת תבנית
+                      {t("websiteTemplates.templatePick.title")}
                     </span>
                     <span className="mt-1 block text-xs font-semibold text-slate-400">
-                      צפייה ועריכה של תבניות
+                      {t("websiteTemplates.templatePick.subtitle")}
                     </span>
                   </span>
                 </button>
@@ -910,23 +877,23 @@ export default function WebsiteTemplatesPage() {
         </section>
       ) : (
       <div className="flex min-h-[calc(100vh-64px)]">
-        <aside className="hidden w-[310px] shrink-0 border-l border-[#e5e7eb] bg-white lg:block">
+        <aside className="hidden w-[310px] shrink-0 border-e border-[#e5e7eb] bg-white lg:block">
           <div className="sticky top-16 h-[calc(100vh-64px)] overflow-y-auto px-7 py-8">
             <div className="rounded-2xl border border-[#e5e7eb] bg-white p-5">
               <h2 className="text-lg font-black tracking-[-0.03em] text-[#111827]">
-                קטגוריות
+                {t("websiteTemplates.categoriesTitle")}
               </h2>
 
               <label className="relative mt-4 block">
-                <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
+                <Search className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
 
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="חיפוש תבניות"
+                  placeholder={t("websiteTemplates.searchPlaceholder")}
                   className="
                     h-11 w-full rounded-xl border border-[#e5e7eb] bg-white
-                    pr-11 pl-4 text-sm font-medium outline-none transition
+                    pe-11 ps-4 text-sm font-medium outline-none transition
                     placeholder:text-[#9ca3af] focus:border-[#2563eb]
                     focus:ring-4 focus:ring-[#2563eb]/10
                   "
@@ -946,7 +913,7 @@ export default function WebsiteTemplatesPage() {
                         type="button"
                         onClick={() => setActiveCategory(category.id)}
                         className={[
-                          "flex w-full items-center justify-between rounded-xl px-3 py-3 text-right text-[15px] transition active:scale-[0.98]",
+                          "flex w-full items-center justify-between rounded-xl px-3 py-3 text-start text-[15px] transition active:scale-[0.98]",
                           isActive
                             ? "bg-[#eef4ff] font-bold text-[#2563eb]"
                             : "text-[#374151] hover:bg-[#f9fafb]",
@@ -957,7 +924,7 @@ export default function WebsiteTemplatesPage() {
                           <span className="truncate">{category.label}</span>
                         </span>
 
-                        <span className="mr-3 shrink-0 text-xs text-[#9ca3af]">
+                        <span className="me-3 shrink-0 text-xs text-[#9ca3af]">
                           {count.toLocaleString()}
                         </span>
                       </button>
@@ -973,9 +940,9 @@ export default function WebsiteTemplatesPage() {
           <div className="border-b border-[#e5e7eb] bg-white px-6 py-8 lg:px-10">
             <div className="mx-auto max-w-[1500px]">
               <div className="mb-5 flex items-center gap-2 text-sm font-semibold text-[#2563eb]">
-                <span>תבניות</span>
+                <span>{t("websiteTemplates.breadcrumbTemplates")}</span>
                 <span className="text-[#9ca3af]">›</span>
-                <span>קטגוריות</span>
+                <span>{t("websiteTemplates.breadcrumbCategories")}</span>
                 <span className="text-[#9ca3af]">›</span>
                 <span className="text-[#6b7280]">{activeCategoryLabel}</span>
               </div>
@@ -987,8 +954,7 @@ export default function WebsiteTemplatesPage() {
                   </h1>
 
                   <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#6b7280]">
-                    בחרו תבנית אתר מוכנה, צפו בעיצוב המלא, או פתחו אותה ישירות
-                    בעורך האתר כדי להתחיל לערוך אותה לעסק.
+                    {t("websiteTemplates.galleryIntro")}
                   </p>
 
                   <button
@@ -1003,27 +969,26 @@ export default function WebsiteTemplatesPage() {
                     "
                   >
                     {syncingTemplates
-                      ? "מסנכרן תבניות..."
-                      : "סנכרון תבניות למונגו"}
+                      ? t("websiteTemplates.syncing")
+                      : t("websiteTemplates.syncButton")}
                   </button>
 
                   <p className="mt-2 text-xs font-bold text-[#9ca3af]">
-                    כפתור זמני למנהל בלבד. אחרי שהתבניות נשמרות במונגו, למחוק
-                    אותו מהעמוד.
+                    {t("websiteTemplates.syncHint")}
                   </p>
                 </div>
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                   <label className="relative block w-full sm:w-[330px] lg:hidden">
-                    <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
+                    <Search className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#9ca3af]" />
 
                     <input
                       value={search}
                       onChange={(event) => setSearch(event.target.value)}
-                      placeholder="חיפוש תבניות"
+                      placeholder={t("websiteTemplates.searchPlaceholder")}
                       className="
                         h-11 w-full rounded-xl border border-[#d1d5db] bg-white
-                        pr-11 pl-4 text-sm outline-none transition
+                        pe-11 ps-4 text-sm outline-none transition
                         placeholder:text-[#9ca3af] focus:border-[#2563eb]
                       "
                     />
@@ -1042,7 +1007,7 @@ export default function WebsiteTemplatesPage() {
                       text-[#111827] transition hover:bg-[#f9fafb] active:scale-[0.98]
                     "
                   >
-                    {sortValue === "newest" ? "החדשות ביותר" : "לפי שם"}
+                    {sortValue === "newest" ? t("websiteTemplates.sortNewest") : t("websiteTemplates.sortName")}
                     <ChevronDown className="h-4 w-4 text-[#6b7280]" />
                   </button>
                 </div>
@@ -1073,7 +1038,7 @@ export default function WebsiteTemplatesPage() {
               {loading ? (
                 <>
                   <p className="mb-7 text-sm font-medium text-[#9ca3af]">
-                    טוען תבניות...
+                    {t("websiteTemplates.loading")}
                   </p>
 
                   <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
@@ -1093,7 +1058,7 @@ export default function WebsiteTemplatesPage() {
                   </div>
 
                   <h3 className="mt-5 text-xl font-black text-red-700">
-                    לא הצלחנו לטעון את התבניות
+                    {t("websiteTemplates.loadFailedTitle")}
                   </h3>
 
                   <p className="mt-2 text-sm text-red-600">{error}</p>
@@ -1103,13 +1068,13 @@ export default function WebsiteTemplatesPage() {
                     onClick={handleRetry}
                     className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
                   >
-                    נסי שוב
+                    {t("websiteTemplates.retry")}
                   </button>
                 </div>
               ) : (
                 <>
                   <p className="mb-7 text-sm font-medium text-[#9ca3af]">
-                    {filteredTemplates.length.toLocaleString()} תבניות
+                    {t("websiteTemplates.templatesCount", { count: filteredTemplates.length.toLocaleString() })}
                   </p>
 
                   {filteredTemplates.length > 0 ? (
@@ -1118,12 +1083,12 @@ export default function WebsiteTemplatesPage() {
                         const displayCategory =
                           template.categoryLabel ||
                           template.category ||
-                          "תבנית אתר";
+                          t("websiteTemplates.templateFallback");
 
                         const badge =
                           template.badge ||
                           (template.isNew ? "NEW" : "") ||
-                          (template.isFeatured ? "מומלץ" : "");
+                          (template.isFeatured ? t("websiteTemplates.featuredBadge") : "");
 
                         return (
                           <article key={template.key} className="group">
@@ -1151,8 +1116,8 @@ export default function WebsiteTemplatesPage() {
                                     handlePreviewTemplate(template.key);
                                   }
                                 }}
-                                className="block w-full cursor-pointer text-right"
-                                aria-label={`צפייה בתבנית ${template.name}`}
+                                className="block w-full cursor-pointer text-start"
+                                aria-label={t("websiteTemplates.previewAria", { name: template.name })}
                               >
                                 <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
                                   {canRenderTemplatePreview(template.key) ? (
@@ -1172,7 +1137,7 @@ export default function WebsiteTemplatesPage() {
                               </div>
 
                               {badge && (
-                                <div className="absolute right-3 top-3 rounded-md border border-[#bfdbfe] bg-[#dbeafe] px-2.5 py-1 text-xs font-bold text-[#2563eb]">
+                                <div className="absolute end-3 top-3 rounded-md border border-[#bfdbfe] bg-[#dbeafe] px-2.5 py-1 text-xs font-bold text-[#2563eb]">
                                   ✦ {badge}
                                 </div>
                               )}
@@ -1193,7 +1158,7 @@ export default function WebsiteTemplatesPage() {
                                     "
                                   >
                                     <Eye className="h-4 w-4" />
-                                    צפייה
+                                    {t("websiteTemplates.preview")}
                                   </button>
 
                                   <button
@@ -1209,7 +1174,7 @@ export default function WebsiteTemplatesPage() {
                                     "
                                   >
                                     <Wand2 className="h-4 w-4" />
-                                    ערוך תבנית
+                                    {t("websiteTemplates.editTemplate")}
                                   </button>
                                 </div>
                               </div>
@@ -1247,7 +1212,7 @@ export default function WebsiteTemplatesPage() {
                                     hover:text-white active:scale-[0.98]
                                   "
                                 >
-                                  צפייה
+                                  {t("websiteTemplates.preview")}
                                 </button>
 
                                 <button
@@ -1261,7 +1226,7 @@ export default function WebsiteTemplatesPage() {
                                     transition hover:bg-black active:scale-[0.98]
                                   "
                                 >
-                                  ערוך
+                                  {t("websiteTemplates.edit")}
                                 </button>
                               </div>
                             </div>
@@ -1276,11 +1241,11 @@ export default function WebsiteTemplatesPage() {
                       </div>
 
                       <h3 className="mt-5 text-xl font-black text-[#111827]">
-                        לא נמצאו תבניות
+                        {t("websiteTemplates.emptyTitle")}
                       </h3>
 
                       <p className="mt-2 text-sm text-[#6b7280]">
-                        נסו קטגוריה אחרת או מילת חיפוש אחרת.
+                        {t("websiteTemplates.emptyText")}
                       </p>
 
                       <button
@@ -1291,7 +1256,7 @@ export default function WebsiteTemplatesPage() {
                         }}
                         className="mt-6 rounded-xl bg-[#111827] px-5 py-3 text-sm font-bold text-white transition hover:bg-black"
                       >
-                        הצג את כל התבניות
+                        {t("websiteTemplates.showAll")}
                       </button>
                     </div>
                   )}

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "../../../../context/AuthContext";
@@ -14,17 +15,18 @@ import CategoryAutocomplete from "../../../../components/CategoryAutocomplete";
 import ReviewCard from "@/components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { REVIEW_RATING_PARAMETER_DEFINITIONS } from "@/utils/reviewDisplay";
+import { useLocaleDir } from "@/hooks/useLocaleDir";
 
 const TABS = ["Main", "Gallery", "Reviews", "Website", "FAQs"] as const;
 
 type BuildTab = (typeof TABS)[number];
 
-const TAB_LABELS: Record<BuildTab, string> = {
-  Main: "ראשי",
-  Gallery: "גלריה",
-  Reviews: "ביקורות",
-  Website: "אתר",
-  FAQs: "שאלות נפוצות",
+const TAB_LABEL_KEYS: Record<BuildTab, string> = {
+  Main: "buildPage.tabs.main",
+  Gallery: "buildPage.tabs.gallery",
+  Reviews: "buildPage.tabs.reviews",
+  Website: "buildPage.tabs.website",
+  FAQs: "buildPage.tabs.faqs",
 };
 
 const GALLERY_MAX = 12;
@@ -245,6 +247,8 @@ export default function Build() {
   const { user: currentUser } = useAuth() as any;
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
 
   const [currentTab, setCurrentTab] = useState<BuildTab>("Main");
   const [highlightedReviewId, setHighlightedReviewId] = useState("");
@@ -597,7 +601,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת הלוגו:", err);
-      alert("שגיאה בהעלאת הלוגו");
+      alert(t("buildPage.alerts.uploadLogoFailed"));
     } finally {
       setTimeout(() => URL.revokeObjectURL(previewUrl), 500);
       setLockAutosave(false);
@@ -607,7 +611,7 @@ export default function Build() {
   const handleDeleteLogo = async () => {
     if (isSaving || isDeletingLogo) return;
 
-    const approved = window.confirm("למחוק את הלוגו?");
+    const approved = window.confirm(t("buildPage.alerts.deleteLogoConfirm"));
     if (!approved) return;
 
     try {
@@ -623,7 +627,7 @@ export default function Build() {
 
       if (!response.ok) {
         const error = await response.json().catch(() => null);
-        alert("שגיאה במחיקת הלוגו: " + (error?.error || response.statusText));
+        alert(t("buildPage.alerts.deleteLogoFailedWith", { detail: error?.error || response.statusText }));
         return;
       }
 
@@ -636,7 +640,7 @@ export default function Build() {
       window.dispatchEvent(new Event("business-profile-updated"));
     } catch (err) {
       console.error(err);
-      alert("שגיאה במחיקת הלוגו");
+      alert(t("buildPage.alerts.deleteLogoFailed"));
     } finally {
       setIsDeletingLogo(false);
     }
@@ -682,7 +686,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת התמונות הראשיות:", err);
-      alert("שגיאה בהעלאת התמונות הראשיות");
+      alert(t("buildPage.alerts.uploadMainImagesFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -715,11 +719,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert("שגיאה במחיקת התמונה");
+        alert(t("buildPage.alerts.deleteImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה ראשית:", err);
-      alert("שגיאה במחיקת התמונה");
+      alert(t("buildPage.alerts.deleteImageFailed"));
     }
   };
 
@@ -767,7 +771,7 @@ export default function Build() {
       }
     } catch (err) {
       console.error("שגיאה בהעלאת גלריה:", err);
-      alert("שגיאה בהעלאת הגלריה");
+      alert(t("buildPage.alerts.uploadGalleryFailed"));
     } finally {
       tempPreviews.forEach((url) => URL.revokeObjectURL(url));
     }
@@ -801,11 +805,11 @@ export default function Build() {
 
         window.dispatchEvent(new Event("business-profile-updated"));
       } else {
-        alert("שגיאה במחיקת תמונה מהגלריה");
+        alert(t("buildPage.alerts.deleteGalleryImageFailed"));
       }
     } catch (err) {
       console.error("שגיאה במחיקת תמונה מהגלריה:", err);
-      alert("שגיאה במחיקת תמונה מהגלריה");
+      alert(t("buildPage.alerts.deleteGalleryImageFailed"));
     }
   };
 
@@ -884,13 +888,13 @@ export default function Build() {
 
         setShowViewProfile(true);
         window.dispatchEvent(new Event("business-profile-updated"));
-        alert("נשמר בהצלחה!");
+        alert(t("buildPage.alerts.saved"));
       } else {
-        alert("השמירה נכשלה: " + res.statusText);
+        alert(t("buildPage.alerts.saveFailedWith", { detail: res.statusText }));
       }
     } catch (err) {
       console.error("שגיאת שמירה:", err);
-      alert("השמירה נכשלה");
+      alert(t("buildPage.alerts.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -920,12 +924,12 @@ export default function Build() {
       setNewFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בהוספת שאלה:", err);
-      alert("שגיאה בהוספת שאלה");
+      alert(t("buildPage.alerts.addFaqFailed"));
     }
   };
 
   const handleDeleteFaq = async (id: string) => {
-    const approved = window.confirm("למחוק את השאלה?");
+    const approved = window.confirm(t("buildPage.alerts.deleteFaqConfirm"));
     if (!approved) return;
 
     try {
@@ -937,7 +941,7 @@ export default function Build() {
       }));
     } catch (err) {
       console.error("שגיאה במחיקת שאלה:", err);
-      alert("שגיאה במחיקת שאלה");
+      alert(t("buildPage.alerts.deleteFaqFailed"));
     }
   };
 
@@ -966,7 +970,7 @@ export default function Build() {
       setEditedFaq({ question: "", answer: "" });
     } catch (err) {
       console.error("שגיאה בעדכון שאלה:", err);
-      alert("שגיאה בעדכון שאלה");
+      alert(t("buildPage.alerts.updateFaqFailed"));
     }
   };
 
@@ -988,7 +992,7 @@ export default function Build() {
                   : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
               ].join(" ")}
             >
-              {TAB_LABELS[tab]}
+              {t(TAB_LABEL_KEYS[tab])}
             </button>
           );
         })}
@@ -1002,17 +1006,17 @@ export default function Build() {
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)]">
             <h2 className="text-lg font-black text-slate-950">
-              פרטים בסיסיים
+              {t("buildPage.main.title")}
             </h2>
 
             <p className="mt-1 text-sm text-slate-500">
-              מידע שיופיע בראש הפרופיל העסקי.
+              {t("buildPage.main.subtitle")}
             </p>
 
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  שם העסק <span className="text-violet-600">*</span>
+                  {t("buildPage.main.businessName")} <span className="text-violet-600">*</span>
                 </label>
 
                 <input
@@ -1021,14 +1025,14 @@ export default function Build() {
                   value={businessDetails.businessName}
                   onChange={handleInputChange}
                   disabled={isSaving}
-                  placeholder="שם העסק"
+                  placeholder={t("buildPage.main.businessNamePlaceholder")}
                   className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </div>
 
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  תיאור
+                  {t("buildPage.main.description")}
                 </label>
 
                 <textarea
@@ -1037,7 +1041,7 @@ export default function Build() {
                   onChange={handleInputChange}
                   rows={4}
                   disabled={isSaving}
-                  placeholder="כתוב ללקוחות מה העסק עושה..."
+                  placeholder={t("buildPage.main.descriptionPlaceholder")}
                   className="w-full resize-none rounded-2xl border border-violet-100 bg-white/90 px-4 py-3 text-sm font-medium leading-6 text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
               </div>
@@ -1045,7 +1049,7 @@ export default function Build() {
               <div className="md:col-span-2 grid grid-cols-2 gap-5">
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  טלפון
+                  {t("buildPage.main.phone")}
                 </label>
 
                 <div
@@ -1079,7 +1083,7 @@ export default function Build() {
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  אימייל
+                  {t("buildPage.main.email")}
                 </label>
 
                 <input
@@ -1097,7 +1101,7 @@ export default function Build() {
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  קטגוריה
+                  {t("buildPage.main.category")}
                 </label>
 
                 <div className="rounded-2xl border border-violet-100 bg-white/90 px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -1117,7 +1121,7 @@ export default function Build() {
 
               <div>
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  עיר
+                  {t("buildPage.main.city")}
                 </label>
 
                 <div className="rounded-2xl border border-violet-100 bg-white/90 px-3 py-2 shadow-sm transition focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
@@ -1134,7 +1138,7 @@ export default function Build() {
 
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  אתר העסק
+                  {t("buildPage.main.website")}
                 </label>
 
                 <input
@@ -1143,19 +1147,19 @@ export default function Build() {
                   value={businessDetails.websiteUrl || ""}
                   onChange={handleInputChange}
                   disabled={isSaving}
-                  placeholder="לדוגמה: https://www.example.com"
+                  placeholder={t("buildPage.main.websitePlaceholder")}
                   dir="ltr"
                   className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
 
                 <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-                  הקישור יתעדכן בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.
+                  {t("buildPage.main.websiteHint")}
                 </p>
               </div>
 
               <div className="md:col-span-2">
                 <label className="mb-2 block text-sm font-extrabold text-slate-800">
-                  קישור לוואטסאפ
+                  {t("buildPage.main.whatsapp")}
                 </label>
 
                 <input
@@ -1164,26 +1168,26 @@ export default function Build() {
                   value={businessDetails.whatsappUrl || ""}
                   onChange={handleInputChange}
                   disabled={isSaving}
-                  placeholder="לדוגמה: https://wa.me/972526850711 או 0526850711"
+                  placeholder={t("buildPage.main.whatsappPlaceholder")}
                   dir="ltr"
                   className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
 
                 <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-                  אפשר להדביק קישור WhatsApp מלא או מספר טלפון. הכפתור יופיע בתצוגה ובפרופיל הציבורי.
+                  {t("buildPage.main.whatsappHint")}
                 </p>
               </div>
             </div>
           </div>
 
           <div className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]">
-            <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-right">
+            <div className="flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-start">
               <div className="flex items-center gap-4">
                 <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl bg-violet-50 shadow-sm">
                   {logoPreview ? (
                     <ImageLoader
                       src={logoPreview}
-                      alt="לוגו העסק"
+                      alt={t("buildPage.preview.logoAlt")}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -1193,11 +1197,11 @@ export default function Build() {
 
                 <div>
                   <h3 className="text-base font-black text-slate-950">
-                    לוגו העסק
+                    {t("buildPage.main.logoTitle")}
                   </h3>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    מומלץ להעלות לוגו נקי וברור.
+                    {t("buildPage.main.logoHint")}
                   </p>
                 </div>
               </div>
@@ -1208,7 +1212,7 @@ export default function Build() {
                   onClick={() => logoInputRef.current?.click()}
                   className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20"
                 >
-                  העלאת לוגו
+                  {t("buildPage.main.uploadLogo")}
                 </button>
 
                 {logoPreview && (
@@ -1218,7 +1222,7 @@ export default function Build() {
                     disabled={isDeletingLogo}
                     className="rounded-2xl border border-rose-200 bg-white px-5 py-3 text-sm font-black text-rose-600 shadow-sm hover:bg-rose-50 disabled:opacity-60"
                   >
-                    {isDeletingLogo ? "מוחק..." : "מחיקת לוגו"}
+                    {isDeletingLogo ? t("buildPage.main.deletingLogo") : t("buildPage.main.deleteLogo")}
                   </button>
                 )}
               </div>
@@ -1232,19 +1236,19 @@ export default function Build() {
       return (
         <div className="mx-auto max-w-4xl space-y-6">
           <div className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]">
-            <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-right">
+            <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-start">
               <div>
                 <h2 className="text-lg font-black text-slate-950">
-                  תמונות ראשיות
+                  {t("buildPage.gallery.mainImagesTitle")}
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  התמונה הראשונה תהיה תמונת הקאבר.
+                  {t("buildPage.gallery.mainImagesSubtitle")}
                 </p>
               </div>
 
               <span className="rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                {businessDetails.mainImages.length}/6 הועלו
+                {t("buildPage.gallery.uploadedCount", { count: businessDetails.mainImages.length })}
               </span>
             </div>
 
@@ -1256,13 +1260,13 @@ export default function Build() {
                 >
                   <ImageLoader
                     src={url}
-                    alt={`תמונה ראשית ${index + 1}`}
+                    alt={t("buildPage.gallery.mainImageAlt", { index: index + 1 })}
                     className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
                   />
 
                   {index === 0 && (
                     <div className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-black text-violet-700 shadow-sm">
-                      קאבר
+                      {t("buildPage.gallery.coverBadge")}
                     </div>
                   )}
 
@@ -1291,7 +1295,7 @@ export default function Build() {
                   </span>
 
                   <span className="mt-3 text-sm font-black">
-                    הוספת תמונות
+                    {t("buildPage.gallery.addImages")}
                   </span>
                 </button>
               )}
@@ -1299,14 +1303,14 @@ export default function Build() {
           </div>
 
           <div className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]">
-            <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-right">
+            <div className="mb-4 flex flex-col items-center justify-between gap-3 text-center sm:flex-row sm:text-start">
               <div>
                 <h2 className="text-lg font-black text-slate-950">
-                  גלריית העסק
+                  {t("buildPage.gallery.galleryTitle")}
                 </h2>
 
                 <p className="mt-1 text-sm text-slate-500">
-                  תמונות נוספות שיופיעו בטאב הגלריה.
+                  {t("buildPage.gallery.gallerySubtitle")}
                 </p>
               </div>
 
@@ -1315,7 +1319,7 @@ export default function Build() {
                 onClick={() => galleryInputRef.current?.click()}
                 className="rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-5 py-3 text-sm font-black text-white shadow-lg shadow-violet-500/20"
               >
-                הוספת תמונות גלריה
+                {t("buildPage.gallery.addGalleryImages")}
               </button>
             </div>
 
@@ -1328,7 +1332,7 @@ export default function Build() {
                   >
                     <ImageLoader
                       src={url}
-                      alt={`תמונת גלריה ${index + 1}`}
+                      alt={t("buildPage.gallery.galleryImageAlt", { index: index + 1 })}
                       className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
                     />
 
@@ -1349,8 +1353,8 @@ export default function Build() {
             ) : (
               <EditorEmptyState
                 icon="📸"
-                title="אין תמונות בגלריה"
-                text="לחץ על הוספת תמונות כדי להתחיל."
+                title={t("buildPage.gallery.emptyTitle")}
+                text={t("buildPage.gallery.emptyText")}
               />
             )}
           </div>
@@ -1364,24 +1368,23 @@ export default function Build() {
         : "";
 
       return (
-        <div dir="rtl" className="mx-auto max-w-3xl space-y-6 text-right">
+        <div className="mx-auto max-w-3xl space-y-6 text-start">
           <div>
-            <h2 className="text-2xl font-black text-slate-950">ביקורות לקוחות</h2>
+            <h2 className="text-2xl font-black text-slate-950">{t("buildPage.reviews.title")}</h2>
 
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              הביקורות נכתבות על ידי לקוחות העסק ואינן נערכות מכאן. כל ביקורת
-              מדורגת לפי פרמטרים מוגדרים, וניתן לצפות בהן עם פירוט מלא בעמוד
-              הציבורי.
-              {reviewsCount > 0 ? ` (${reviewsCount} ביקורות)` : ""}
+              {t("buildPage.reviews.editorIntro")}
+              {reviewsCount > 0
+                ? t("buildPage.reviews.reviewsCountParen", { count: reviewsCount })
+                : ""}
             </p>
           </div>
 
           <div className="rounded-[1.75rem] border border-violet-100 bg-[linear-gradient(135deg,rgba(255,255,255,0.98)_0%,rgba(245,243,255,0.78)_100%)] p-5 shadow-[0_18px_50px_rgba(79,70,229,0.10)] sm:p-6">
-            <h3 className="text-lg font-black text-slate-950">פרמטרי דירוג</h3>
+            <h3 className="text-lg font-black text-slate-950">{t("buildPage.reviews.parametersTitle")}</h3>
 
             <p className="mt-2 text-sm leading-7 text-slate-600">
-              לקוחות מדרגים את העסק לפי הפרמטרים הבאים. פרמטרים מסומנים כחובה
-              נדרשים בכל ביקורת:
+              {t("buildPage.reviews.parametersIntro")}
             </p>
 
             <ul className="mt-4 space-y-2">
@@ -1402,15 +1405,14 @@ export default function Build() {
                         : "bg-slate-100 text-slate-500",
                     ].join(" ")}
                   >
-                    {parameter.required ? "חובה" : "אופציונלי"}
+                    {parameter.required ? t("buildPage.reviews.required") : t("buildPage.reviews.optional")}
                   </span>
                 </li>
               ))}
             </ul>
 
             <p className="mt-5 text-sm leading-7 text-slate-500">
-              לצפייה בביקורות ובפירוט הדירוגים של כל לקוח, עברו לעמוד הציבורי
-              בטאב ביקורות.
+              {t("buildPage.reviews.viewHint")}
             </p>
 
             {publicReviewsUrl ? (
@@ -1420,11 +1422,11 @@ export default function Build() {
                 rel="noreferrer"
                 className="mt-5 inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5 sm:w-auto"
               >
-                צפייה בביקורות בעמוד הציבורי
+                {t("buildPage.reviews.viewPublic")}
               </a>
             ) : (
               <p className="mt-4 text-sm font-bold text-slate-400">
-                שמרו את העסק כדי לקבל קישור לעמוד הציבורי.
+                {t("buildPage.reviews.saveForLink")}
               </p>
             )}
           </div>
@@ -1441,16 +1443,16 @@ export default function Build() {
             </div>
 
             <h2 className="mt-5 text-2xl font-black text-slate-950">
-              אתר העסק
+              {t("buildPage.website.title")}
             </h2>
 
             <p className="mx-auto mt-2 max-w-xl text-sm leading-7 text-slate-500">
-              כאן מחברים את אתר העסק. הקישור יוצג בתצוגה המקדימה ובפרופיל הציבורי.
+              {t("buildPage.website.editorSubtitle")}
             </p>
 
-            <div className="mt-6 text-right">
+            <div className="mt-6 text-start">
               <label className="mb-2 block text-sm font-black text-slate-800">
-                קישור לאתר
+                {t("buildPage.website.linkLabel")}
               </label>
 
               <input
@@ -1459,15 +1461,15 @@ export default function Build() {
                 value={businessDetails.websiteUrl || ""}
                 onChange={handleInputChange}
                 disabled={isSaving}
-                placeholder="לדוגמה: https://www.example.com"
+                placeholder={t("buildPage.main.websitePlaceholder")}
                 dir="ltr"
                 className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
               />
             </div>
 
-            <div className="mt-5 text-right">
+            <div className="mt-5 text-start">
               <label className="mb-2 block text-sm font-black text-slate-800">
-                קישור לוואטסאפ
+                {t("buildPage.website.whatsappLabel")}
               </label>
 
               <input
@@ -1476,7 +1478,7 @@ export default function Build() {
                 value={businessDetails.whatsappUrl || ""}
                 onChange={handleInputChange}
                 disabled={isSaving}
-                placeholder="לדוגמה: https://wa.me/972526850711 או 0526850711"
+                placeholder={t("buildPage.main.whatsappPlaceholder")}
                 dir="ltr"
                 className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-left text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
               />
@@ -1489,7 +1491,7 @@ export default function Build() {
                 rel="noreferrer"
                 className="mt-4 flex h-[52px] w-full items-center justify-center rounded-2xl border border-emerald-100 bg-white px-6 text-sm font-black text-emerald-700 shadow-sm transition hover:bg-emerald-50"
               >
-                פתיחת וואטסאפ בחלון חדש
+                {t("buildPage.website.openWhatsapp")}
               </a>
             )}
 
@@ -1500,7 +1502,7 @@ export default function Build() {
                 rel="noreferrer"
                 className="mt-4 flex h-[52px] w-full items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:bg-violet-50"
               >
-                פתיחת האתר בחלון חדש
+                {t("buildPage.website.openWebsite")}
               </a>
             )}
           </div>
@@ -1515,7 +1517,7 @@ export default function Build() {
           className="rounded-[1.75rem] border border-violet-100 bg-white/95 p-5 shadow-[0_18px_50px_rgba(79,70,229,0.08)]"
         >
           <h2 className="text-lg font-black text-slate-950">
-            הוספת שאלה נפוצה
+            {t("buildPage.faqs.addTitle")}
           </h2>
 
           <div className="mt-4 space-y-3">
@@ -1528,7 +1530,7 @@ export default function Build() {
                   question: event.target.value,
                 }))
               }
-              placeholder="שאלה"
+              placeholder={t("buildPage.faqs.questionPlaceholder")}
               className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-sm font-bold text-slate-900 shadow-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
             />
 
@@ -1541,7 +1543,7 @@ export default function Build() {
                 }))
               }
               rows={3}
-              placeholder="תשובה"
+              placeholder={t("buildPage.faqs.answerPlaceholder")}
               className="w-full resize-none rounded-2xl border border-violet-100 bg-white/90 px-4 py-3 text-sm font-medium text-slate-900 shadow-sm outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
             />
 
@@ -1549,7 +1551,7 @@ export default function Build() {
               type="submit"
               className="h-[48px] w-full rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 text-sm font-black text-white shadow-lg shadow-violet-500/20"
             >
-              הוספת שאלה
+              {t("buildPage.faqs.addButton")}
             </button>
           </div>
         </form>
@@ -1595,7 +1597,7 @@ export default function Build() {
                         onClick={() => handleSaveFaqEdit(id)}
                         className="h-11 flex-1 rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 text-sm font-black text-white"
                       >
-                        שמירה
+                        {t("buildPage.actions.save")}
                       </button>
 
                       <button
@@ -1603,7 +1605,7 @@ export default function Build() {
                         onClick={() => setEditFaqId(null)}
                         className="h-11 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-600"
                       >
-                        ביטול
+                        {t("buildPage.actions.cancel")}
                       </button>
                     </div>
                   </div>
@@ -1629,7 +1631,7 @@ export default function Build() {
                         }}
                         className="rounded-2xl bg-violet-50 px-4 py-2 text-xs font-black text-violet-700"
                       >
-                        עריכה
+                        {t("buildPage.actions.edit")}
                       </button>
 
                       <button
@@ -1637,7 +1639,7 @@ export default function Build() {
                         onClick={() => handleDeleteFaq(id)}
                         className="rounded-2xl bg-rose-50 px-4 py-2 text-xs font-black text-rose-600"
                       >
-                        מחיקה
+                        {t("buildPage.actions.delete")}
                       </button>
                     </div>
                   </>
@@ -1648,8 +1650,8 @@ export default function Build() {
         ) : (
           <EditorEmptyState
             icon="❔"
-            title="אין שאלות נפוצות"
-            text="אפשר להוסיף שאלות ותשובות שיופיעו בפרופיל."
+            title={t("buildPage.faqs.emptyEditorTitle")}
+            text={t("buildPage.faqs.emptyEditorText")}
           />
         )}
       </div>
@@ -1666,7 +1668,7 @@ export default function Build() {
                 <ImageLoader
                   key={`${url}-${index}`}
                   src={url}
-                  alt={`תמונה ראשית ${index + 1}`}
+                  alt={t("buildPage.gallery.mainImageAlt", { index: index + 1 })}
                   className="h-64 w-full max-w-sm rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
               ))}
@@ -1674,15 +1676,15 @@ export default function Build() {
           ) : (
             <PreviewEmptyState
               icon="🖼️"
-              title="אין תמונות ראשיות"
-              text="התמונות הראשיות שהעסק יעלה יופיעו כאן."
+              title={t("buildPage.previewEmpty.noMainImagesTitle")}
+              text={t("buildPage.previewEmpty.noMainImagesText")}
             />
           )}
 
-          <div className="mx-auto max-w-4xl text-right">
+          <div className="mx-auto max-w-4xl text-start">
             <div className="mb-4 flex flex-col items-center justify-center gap-3 text-center sm:flex-row sm:justify-between">
               <h2 className="text-xl font-black text-slate-950">
-                ביקורות אחרונות
+                {t("buildPage.reviews.recentTitle")}
               </h2>
             </div>
 
@@ -1695,8 +1697,8 @@ export default function Build() {
             ) : (
               <PreviewEmptyState
                 icon="⭐"
-                title="אין ביקורות עדיין"
-                text="ביקורות של לקוחות יופיעו כאן."
+                title={t("buildPage.reviews.emptyTitle")}
+                text={t("buildPage.reviews.emptyText")}
               />
             )}
           </div>
@@ -1713,7 +1715,7 @@ export default function Build() {
                 <ImageLoader
                   key={`${url}-${index}`}
                   src={url}
-                  alt={`תמונת גלריה ${index + 1}`}
+                  alt={t("buildPage.gallery.galleryImageAlt", { index: index + 1 })}
                   className="h-52 w-full max-w-xs rounded-[1.5rem] object-cover shadow-[0_16px_45px_rgba(79,70,229,0.14)]"
                 />
               ))}
@@ -1721,8 +1723,8 @@ export default function Build() {
           ) : (
             <PreviewEmptyState
               icon="📸"
-              title="אין תמונות בגלריה"
-              text="תמונות הגלריה שהעסק יעלה יופיעו כאן."
+              title={t("buildPage.previewEmpty.noGalleryTitle")}
+              text={t("buildPage.previewEmpty.noGalleryText")}
             />
           )}
         </div>
@@ -1731,10 +1733,10 @@ export default function Build() {
 
     if (currentTab === "Reviews") {
       return (
-        <div className="mx-auto max-w-5xl text-right">
-          <div className="mb-5 text-center sm:text-right">
-            <h2 className="text-2xl font-black text-slate-950">ביקורות לקוחות</h2>
-            <p className="mt-1 text-sm text-slate-500">{reviewsCount} ביקורות</p>
+        <div className="mx-auto max-w-5xl text-start">
+          <div className="mb-5 text-center sm:text-start">
+            <h2 className="text-2xl font-black text-slate-950">{t("buildPage.reviews.title")}</h2>
+            <p className="mt-1 text-sm text-slate-500">{t("buildPage.reviews.countLabel", { count: reviewsCount })}</p>
           </div>
 
           {sortedReviews.length ? (
@@ -1757,8 +1759,8 @@ export default function Build() {
           ) : (
             <PreviewEmptyState
               icon="⭐"
-              title="אין ביקורות עדיין"
-              text="ביקורות של לקוחות יופיעו כאן."
+              title={t("buildPage.reviews.emptyTitle")}
+              text={t("buildPage.reviews.emptyText")}
             />
           )}
         </div>
@@ -1775,11 +1777,11 @@ export default function Build() {
               </div>
 
               <h3 className="mt-5 text-2xl font-black text-slate-950">
-                אתר העסק
+                {t("buildPage.website.title")}
               </h3>
 
               <p className="mx-auto mt-2 max-w-md text-sm leading-7 text-slate-500">
-                כאן הלקוחות יכולים להיכנס לאתר שהעסק בנה דרך המערכת.
+                {t("buildPage.website.previewSubtitle")}
               </p>
 
               <a
@@ -1788,14 +1790,14 @@ export default function Build() {
                 rel="noreferrer"
                 className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
-                כניסה לאתר העסק
+                {t("buildPage.website.enterSite")}
               </a>
             </div>
           ) : (
             <PreviewEmptyState
               icon="🌐"
-              title="אין אתר מחובר"
-              text="כאשר יתווסף אתר עסק, הוא יופיע כאן."
+              title={t("buildPage.website.emptyTitle")}
+              text={t("buildPage.website.emptyText")}
             />
           )}
         </div>
@@ -1819,7 +1821,7 @@ export default function Build() {
                   className="flex w-full items-center justify-between gap-4 px-5 py-4 text-center text-sm font-black text-slate-950 hover:bg-violet-50"
                 >
                   <span className="flex-1 text-center">
-                    {faq.question || "שאלה נפוצה"}
+                    {faq.question || t("buildPage.faqs.questionFallback")}
                   </span>
 
                   <span
@@ -1834,7 +1836,7 @@ export default function Build() {
 
                 {isOpen && (
                   <div className="border-t border-violet-100 px-5 py-4 text-center text-sm leading-7 text-slate-600">
-                    {faq.answer || "תשובה תופיע כאן."}
+                    {faq.answer || t("buildPage.faqs.answerFallback")}
                   </div>
                 )}
               </div>
@@ -1843,8 +1845,8 @@ export default function Build() {
         ) : (
           <PreviewEmptyState
             icon="❔"
-            title="אין שאלות נפוצות"
-            text="שאלות ותשובות של העסק יופיעו כאן."
+            title={t("buildPage.faqs.emptyPreviewTitle")}
+            text={t("buildPage.faqs.emptyPreviewText")}
           />
         )}
       </div>
@@ -1853,8 +1855,8 @@ export default function Build() {
 
   return (
     <main
-      dir="rtl"
-      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-right text-slate-950 sm:px-6 lg:px-8"
+      dir={dir}
+      className="min-h-screen bg-[radial-gradient(circle_at_10%_10%,rgba(37,99,235,0.18),transparent_28%),radial-gradient(circle_at_88%_12%,rgba(124,58,237,0.26),transparent_32%),radial-gradient(circle_at_50%_100%,rgba(14,165,233,0.16),transparent_34%),linear-gradient(135deg,#e0e7ff_0%,#f8fafc_42%,#ede9fe_100%)] px-4 py-6 text-start text-slate-950 sm:px-6 lg:px-8"
     >
       <input
         type="file"
@@ -1891,20 +1893,20 @@ export default function Build() {
             <div className="relative">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  עריכת פרופיל עסקי
+                  {t("buildPage.header.badgeEdit")}
                 </div>
 
                 <div className="inline-flex rounded-full border border-blue-100 bg-white/80 px-4 py-1.5 text-xs font-bold text-blue-700 shadow-sm">
-                  תצוגה חיה בזמן אמת
+                  {t("buildPage.header.badgeLive")}
                 </div>
               </div>
 
               <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                עריכת עמוד עסקי
+                {t("buildPage.header.title")}
               </h1>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-600">
-                עדכן את פרטי העסק, התמונות, הביקורות, האתר והשאלות הנפוצות.
+                {t("buildPage.header.subtitle")}
               </p>
             </div>
           </div>
@@ -1922,7 +1924,7 @@ export default function Build() {
                   disabled={isSaving}
                   className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-600 to-blue-600 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
-                  {isSaving ? "שומר..." : "שמירת שינויים"}
+                  {isSaving ? t("buildPage.actions.saving") : t("buildPage.actions.saveChanges")}
                 </button>
 
                 {showViewProfile && businessDetails._id && (
@@ -1932,7 +1934,7 @@ export default function Build() {
                     disabled={isSaving}
                     className="flex h-[56px] items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
-                    צפייה בפרופיל
+                    {t("buildPage.actions.viewProfile")}
                   </button>
                 )}
               </div>
@@ -1941,14 +1943,14 @@ export default function Build() {
         </section>
 
         <aside className="order-2 w-full xl:w-[48%]">
-          <div className="sticky top-6 overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-right shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
+          <div className="sticky top-6 overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-start shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
             <div className="relative p-5 sm:p-7">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />
               <div className="pointer-events-none absolute -left-24 top-20 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
               <div className="relative mb-5 flex items-center justify-between gap-3">
                 <div className="inline-flex rounded-full border border-violet-100 bg-white/80 px-4 py-1.5 text-xs font-black text-violet-700 shadow-sm">
-                  תצוגה מקדימה
+                  {t("buildPage.preview.badge")}
                 </div>
 
                 <button
@@ -1956,7 +1958,7 @@ export default function Build() {
                   onClick={() => logoInputRef.current?.click()}
                   className="inline-flex h-10 items-center justify-center rounded-full border border-violet-100 bg-white/80 px-4 text-xs font-black text-violet-700 shadow-lg shadow-violet-500/10 backdrop-blur transition hover:-translate-y-0.5 hover:bg-violet-50"
                 >
-                  ✏️ עריכת לוגו
+                  {t("buildPage.preview.editLogo")}
                 </button>
               </div>
 
@@ -1964,7 +1966,7 @@ export default function Build() {
                 <div className="relative overflow-hidden rounded-[2rem] border border-white/80 shadow-[0_24px_70px_rgba(30,41,59,0.14)]">
                   <ImageLoader
                     src={coverImage}
-                    alt="תמונת קאבר"
+                    alt={t("buildPage.preview.coverAlt")}
                     className="h-64 w-full object-cover sm:h-80 lg:h-[360px]"
                   />
                 </div>
@@ -1976,7 +1978,7 @@ export default function Build() {
                     </div>
 
                     <p className="mt-4 text-lg font-black text-slate-950">
-                      הוסף תמונת קאבר
+                      {t("buildPage.preview.addCover")}
                     </p>
                   </div>
                 </div>
@@ -1987,7 +1989,7 @@ export default function Build() {
                   {logoPreview ? (
                     <ImageLoader
                       src={logoPreview}
-                      alt="לוגו העסק"
+                      alt={t("buildPage.preview.logoAlt")}
                       className="h-full w-full object-cover"
                     />
                   ) : (
@@ -1998,7 +2000,7 @@ export default function Build() {
                 </div>
 
                 <h2 className="mt-5 text-4xl font-black tracking-tight text-slate-950">
-                  {businessDetails.businessName || "שם העסק"}
+                  {businessDetails.businessName || t("buildPage.preview.businessNameFallback")}
                 </h2>
 
                 <div className="mt-4 flex flex-wrap items-center justify-center gap-3">
@@ -2016,7 +2018,7 @@ export default function Build() {
 
                   {reviewsCount > 0 && (
                     <span className="rounded-full border border-amber-100 bg-amber-50 px-4 py-2 text-sm font-black text-amber-700">
-                      ★ {avg.toFixed(1)} ({reviewsCount} ביקורות)
+                      ★ {avg.toFixed(1)} ({t("buildPage.preview.reviewsCount", { count: reviewsCount })})
                     </span>
                   )}
                 </div>
@@ -2040,7 +2042,7 @@ export default function Build() {
 
                 {!businessWebsiteUrl && !businessWhatsappUrl && (
                   <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-dashed border-violet-200 bg-violet-50/70 px-4 py-3 text-sm font-black text-violet-700">
-                    עדיין לא נוספו קישור לאתר או לוואטסאפ.
+                    {t("buildPage.preview.noLinksYet")}
                   </div>
                 )}
 
@@ -2048,7 +2050,7 @@ export default function Build() {
                   <div
                     className="flex flex-wrap items-center justify-center gap-3 text-center"
                     role="tablist"
-                    aria-label="טאבים של תצוגת הפרופיל"
+                    aria-label={t("buildPage.preview.tabsAria")}
                   >
                     {TABS.map((tab) => {
                       const active = tab === currentTab;
@@ -2067,7 +2069,7 @@ export default function Build() {
                               : "border border-violet-100 bg-white/90 text-slate-600 shadow-[0_8px_22px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:bg-violet-50 hover:text-violet-700",
                           ].join(" ")}
                         >
-                          {TAB_LABELS[tab]}
+                          {t(TAB_LABEL_KEYS[tab])}
                         </button>
                       );
                     })}

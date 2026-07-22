@@ -16,6 +16,8 @@ import API from "../../../../api";
 import PartnershipAgreementView from "../../../../components/PartnershipAgreementView";
 import CollabChat from "./CollabChat";
 import { useCollabOutletContext } from "./useCollabOutletContext";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 type MessageFilter = "sent" | "received" | "accepted" | "chat";
 
@@ -99,19 +101,25 @@ function normalizeProposalResponse(data: any): ProposalMessage | null {
   );
 }
 
-function translateStatus(status?: string) {
+function translateStatus(status: string | undefined, t: (key: string) => string) {
   const normalized = (status || "pending").toLowerCase();
 
-  if (normalized === "accepted") return "אושר";
-  if (normalized === "rejected") return "נדחה";
-  if (normalized === "pending") return "ממתין";
-  if (normalized === "cancelled" || normalized === "canceled") return "בוטל";
+  if (normalized === "accepted") return t("collab.messages.status.accepted");
+  if (normalized === "rejected") return t("collab.messages.status.rejected");
+  if (normalized === "pending") return t("collab.messages.status.pending");
+  if (normalized === "cancelled" || normalized === "canceled") {
+    return t("collab.messages.status.cancelled");
+  }
 
-  return status || "ממתין";
+  return status || t("collab.messages.status.pending");
 }
 
-function formatMoney(value?: string | number) {
-  if (value === undefined || value === null || value === "") return "—";
+function formatMoney(
+  value: string | number | undefined,
+  locale: string,
+  emDash: string
+) {
+  if (value === undefined || value === null || value === "") return emDash;
 
   const numericValue = Number(value);
 
@@ -119,7 +127,7 @@ function formatMoney(value?: string | number) {
     return `₪${value}`;
   }
 
-  return `₪${numericValue.toLocaleString("he-IL")}`;
+  return `₪${numericValue.toLocaleString(locale)}`;
 }
 
 function readConversationIdFromLocation(location: ReturnType<typeof useLocation>) {
@@ -149,6 +157,8 @@ export default function CollabMessagesTab({
   refreshFlag,
   onStatusChange,
 }: CollabMessagesTabProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { socket, userBusinessId } = useCollabOutletContext();
   const [messages, setMessages] = useState<MessagesState>({
     sent: [],
@@ -191,7 +201,7 @@ export default function CollabMessagesTab({
       setError(null);
     } catch (fetchError) {
       console.error("❌ Error loading proposals:", fetchError);
-      setError("שגיאה בטעינת ההצעות");
+      setError(t("collab.messages.loadError"));
     } finally {
       setLoading(false);
     }
@@ -324,7 +334,7 @@ export default function CollabMessagesTab({
   };
 
   const handleCancelProposal = async (proposalId: string) => {
-    if (!window.confirm("האם לבטל את ההצעה?")) {
+    if (!window.confirm(t("collab.messages.alerts.cancelConfirm"))) {
       return;
     }
 
@@ -341,7 +351,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (cancelError: any) {
       console.error("❌ Error cancelling proposal:", cancelError);
-      alert(getApiErrorMessage(cancelError, "שגיאה בביטול ההצעה"));
+      alert(getApiErrorMessage(cancelError, t("collab.messages.alerts.cancelError")));
     }
   };
 
@@ -366,7 +376,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (acceptError: any) {
       console.error("❌ Error accepting proposal:", acceptError);
-      alert(getApiErrorMessage(acceptError, "שגיאה באישור ההצעה"));
+      alert(getApiErrorMessage(acceptError, t("collab.messages.alerts.acceptError")));
     }
   };
 
@@ -390,7 +400,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (rejectError: any) {
       console.error("❌ Error rejecting proposal:", rejectError);
-      alert(getApiErrorMessage(rejectError, "שגיאה בדחיית ההצעה"));
+      alert(getApiErrorMessage(rejectError, t("collab.messages.alerts.rejectError")));
     }
   };
 
@@ -417,7 +427,7 @@ export default function CollabMessagesTab({
       onStatusChange?.();
     } catch (ensureError: any) {
       console.error("❌ Error creating agreement:", ensureError);
-      alert(getApiErrorMessage(ensureError, "שגיאה ביצירת ההסכם"));
+      alert(getApiErrorMessage(ensureError, t("collab.messages.alerts.ensureError")));
     }
   };
 
@@ -430,7 +440,7 @@ export default function CollabMessagesTab({
     });
 
     if (!agreementId) {
-      alert("חסר מזהה הסכם");
+      alert(t("collab.messages.alerts.missingAgreementId"));
       return;
     }
 
@@ -470,14 +480,14 @@ export default function CollabMessagesTab({
   if (filter === "chat") {
     return (
       <div
-        dir="rtl"
-        className="space-y-4 rounded-[2rem] border border-slate-100 bg-white p-4 text-right shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
+        dir={dir}
+        className="space-y-4 rounded-[2rem] border border-slate-100 bg-white p-4 text-start shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
       >
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="text-xl font-black text-slate-950">צ׳אט עסקי</h3>
+            <h3 className="text-xl font-black text-slate-950">{t("collab.messages.businessChat")}</h3>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              שיחות B2B עם עסקים אחרים
+              {t("collab.messages.businessChatHint")}
             </p>
           </div>
 
@@ -486,7 +496,7 @@ export default function CollabMessagesTab({
             onClick={() => setFilter("received")}
             className="inline-flex h-10 items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
           >
-            חזרה להצעות
+            {t("collab.messages.backToProposals")}
           </button>
         </div>
 
@@ -508,7 +518,7 @@ export default function CollabMessagesTab({
   }
 
   return (
-    <div dir="rtl" className="space-y-6 text-right">
+    <div dir={dir} className="space-y-6 text-start">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
@@ -517,21 +527,21 @@ export default function CollabMessagesTab({
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Inbox className="h-4 w-4" />
-              הצעות שיתוף פעולה
+              {t("collab.messages.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              הודעות והסכמי שיתוף פעולה
+              {t("collab.messages.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              כאן ניתן לראות הצעות שנשלחו, הצעות שהתקבלו והסכמים שאושרו במקום אחד מסודר.
+              {t("collab.messages.subtitle")}
             </p>
           </div>
 
           <div className="rounded-[1.5rem] border border-white/80 bg-white/75 p-4 shadow-[0_18px_50px_rgba(15,23,42,0.07)] backdrop-blur">
             <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
-              הצעות מוצגות
+              {t("collab.messages.shownLabel")}
             </p>
 
             <p className="mt-2 text-3xl font-black text-violet-700">
@@ -543,33 +553,33 @@ export default function CollabMessagesTab({
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="נשלחו"
+          label={t("collab.messages.stats.sent")}
           value={messages.sent.length}
-          helper="הצעות יוצאות"
+          helper={t("collab.messages.stats.sentHelper")}
           icon={Send}
           tone="sky"
         />
 
         <StatCard
-          label="התקבלו"
+          label={t("collab.messages.stats.received")}
           value={messages.received.length}
-          helper="הצעות נכנסות"
+          helper={t("collab.messages.stats.receivedHelper")}
           icon={Inbox}
           tone="violet"
         />
 
         <StatCard
-          label="ממתינות"
+          label={t("collab.messages.stats.pending")}
           value={pendingReceived}
-          helper="דורשות טיפול"
+          helper={t("collab.messages.stats.pendingHelper")}
           icon={Phone}
           tone="amber"
         />
 
         <StatCard
-          label="אושרו"
+          label={t("collab.messages.stats.accepted")}
           value={acceptedCount}
-          helper="שיתופי פעולה שאושרו"
+          helper={t("collab.messages.stats.acceptedHelper")}
           icon={CheckCircle2}
           tone="emerald"
         />
@@ -580,11 +590,11 @@ export default function CollabMessagesTab({
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                תיבת הצעות
+                {t("collab.messages.inboxTitle")}
               </h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {messagesToShow.length} הצעות מוצגות
+                {t("collab.messages.shownCount", { count: messagesToShow.length })}
               </p>
             </div>
 
@@ -592,21 +602,21 @@ export default function CollabMessagesTab({
               <FilterButton
                 active={filter === "sent"}
                 onClick={() => setFilter("sent")}
-                label="נשלחו"
+                label={t("collab.messages.filters.sent")}
                 count={messages.sent.length}
               />
 
               <FilterButton
                 active={filter === "received"}
                 onClick={() => setFilter("received")}
-                label="התקבלו"
+                label={t("collab.messages.filters.received")}
                 count={messages.received.length}
               />
 
               <FilterButton
                 active={filter === "accepted"}
                 onClick={() => setFilter("accepted")}
-                label="אושרו"
+                label={t("collab.messages.filters.accepted")}
                 count={acceptedCount}
               />
 
@@ -616,7 +626,7 @@ export default function CollabMessagesTab({
                   setFilter("chat");
                   setActiveConversationId(null);
                 }}
-                label="צ׳אט"
+                label={t("collab.messages.filters.chat")}
               />
             </div>
           </div>
@@ -674,14 +684,17 @@ function ProposalMessageCard({
   onOpenAgreement: () => void;
   onEnsureAgreement: () => void;
 }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
+  const emDash = t("collab.emDash");
   const agreementId = getAgreementIdFromMessage(message);
   const hasAgreement = Boolean(agreementId);
 
   const paymentValue = message.payment?.trim()
     ? message.payment
     : message.amount
-      ? formatMoney(message.amount)
-      : "—";
+      ? formatMoney(message.amount, dateLocale, emDash)
+      : emDash;
 
   return (
     <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
@@ -693,11 +706,11 @@ function ProposalMessageCard({
 
           <div className="min-w-0">
             <h4 className="truncate text-lg font-black text-slate-950">
-              {message.fromBusinessName || "הצעה"}
+              {message.fromBusinessName || t("collab.messages.proposalFallback")}
             </h4>
 
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              אל: {message.toBusinessName || "—"}
+              {t("collab.messages.to", { name: message.toBusinessName || emDash })}
             </p>
           </div>
         </div>
@@ -706,18 +719,18 @@ function ProposalMessageCard({
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <InfoTile label="איש קשר" value={message.contactName || "—"} />
-        <InfoTile label="טלפון" value={message.phone || "—"} />
-        <InfoTile label="מה נותן" value={message.giving?.join(", ") || "—"} />
+        <InfoTile label={t("collab.messages.contact")} value={message.contactName || emDash} />
+        <InfoTile label={t("collab.messages.phone")} value={message.phone || emDash} />
+        <InfoTile label={t("collab.messages.giving")} value={message.giving?.join(", ") || emDash} />
         <InfoTile
-          label="מה מקבל"
-          value={message.receiving?.join(", ") || "—"}
+          label={t("collab.messages.receiving")}
+          value={message.receiving?.join(", ") || emDash}
         />
-        <InfoTile label="תשלום" value={paymentValue} />
+        <InfoTile label={t("collab.messages.payment")} value={paymentValue} />
       </div>
 
       <p className="mt-4 rounded-2xl bg-slate-50 p-4 text-sm font-semibold leading-6 text-slate-600">
-        {message.description || "לא הוזן תיאור."}
+        {message.description || t("collab.messages.noDescription")}
       </p>
 
       <div className="mt-5 flex flex-wrap justify-end gap-2">
@@ -728,7 +741,7 @@ function ProposalMessageCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
           >
             <FileSignature className="h-4 w-4" />
-            צפייה בהסכם
+            {t("collab.messages.viewAgreement")}
           </button>
         )}
 
@@ -739,7 +752,7 @@ function ProposalMessageCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-800 transition hover:bg-amber-100"
           >
             <FileSignature className="h-4 w-4" />
-            צור הסכם
+            {t("collab.messages.createAgreement")}
           </button>
         )}
 
@@ -750,7 +763,7 @@ function ProposalMessageCard({
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
           >
             <Trash2 className="h-4 w-4" />
-            ביטול
+            {t("collab.messages.cancel")}
           </button>
         )}
 
@@ -762,7 +775,7 @@ function ProposalMessageCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
             >
               <XCircle className="h-4 w-4" />
-              דחייה
+              {t("collab.messages.reject")}
             </button>
 
             <button
@@ -771,7 +784,7 @@ function ProposalMessageCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
             >
               <CheckCircle2 className="h-4 w-4" />
-              אישור
+              {t("collab.messages.accept")}
             </button>
           </>
         )}
@@ -789,7 +802,7 @@ function FilterButton({
   active: boolean;
   onClick: () => void;
   label: string;
-  count: number;
+  count?: number;
 }) {
   return (
     <button
@@ -804,14 +817,16 @@ function FilterButton({
     >
       {label}
 
-      <span
-        className={[
-          "rounded-full px-2 py-0.5 text-xs",
-          active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
-        ].join(" ")}
-      >
-        {count}
-      </span>
+      {typeof count === "number" ? (
+        <span
+          className={[
+            "rounded-full px-2 py-0.5 text-xs",
+            active ? "bg-white/20 text-white" : "bg-slate-100 text-slate-500",
+          ].join(" ")}
+        >
+          {count}
+        </span>
+      ) : null}
     </button>
   );
 }
@@ -829,6 +844,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -846,7 +862,7 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">{t("collab.active")}</p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -882,6 +898,7 @@ function InfoTile({
 }
 
 function StatusBadge({ status }: { status: string }) {
+  const { t } = useTranslation();
   const normalized = status.toLowerCase();
 
   const statusClass =
@@ -895,42 +912,47 @@ function StatusBadge({ status }: { status: string }) {
     <span
       className={`rounded-full px-3 py-1.5 text-xs font-black ring-1 ${statusClass}`}
     >
-      {translateStatus(status)}
+      {translateStatus(status, t)}
     </span>
   );
 }
 
 function LoadingState() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-10 text-center shadow-[0_18px_60px_rgba(15,23,42,0.06)]"
     >
       <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
 
       <p className="mt-4 text-sm font-black text-slate-500">
-        טוען הצעות...
+        {t("collab.messages.loading")}
       </p>
     </div>
   );
 }
 
 function ErrorState({ text }: { text: string }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="rounded-[2rem] border border-rose-100 bg-rose-50 p-10 text-center"
     >
       <p className="text-lg font-black text-rose-700">{text}</p>
 
       <p className="mt-2 text-sm font-semibold text-rose-500">
-        רענן את העמוד ונסה שוב.
+        {t("collab.messages.refreshHint")}
       </p>
     </div>
   );
 }
 
 function EmptyState() {
+  const { t } = useTranslation();
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-violet-700 shadow-sm">
@@ -938,11 +960,11 @@ function EmptyState() {
       </div>
 
       <h4 className="mt-4 text-xl font-black text-slate-950">
-        אין הצעות להצגה
+        {t("collab.messages.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        הצעות שנשלחו, התקבלו או אושרו יופיעו כאן.
+        {t("collab.messages.emptyHint")}
       </p>
     </div>
   );

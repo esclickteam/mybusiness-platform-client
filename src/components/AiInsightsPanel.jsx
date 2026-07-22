@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
   Globe,
@@ -11,6 +12,7 @@ import {
   X,
 } from "lucide-react";
 import API from "@/api";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 function buildSiteEditorUrl(basePath, siteId, { templateKey, openSeo = false } = {}) {
   const params = new URLSearchParams();
@@ -39,25 +41,27 @@ const TYPE_ICONS = {
 const PRIORITY_STYLES = {
   high: {
     card: "border-rose-200 bg-gradient-to-br from-rose-50/80 to-white",
-    accent: "border-r-rose-500",
+    accent: "border-s-rose-500",
     badge: "bg-rose-100 text-rose-700",
-    badgeLabel: "דחוף",
+    badgeKey: "aiInsights.priorityUrgent",
   },
   medium: {
     card: "border-amber-200 bg-gradient-to-br from-amber-50/70 to-white",
-    accent: "border-r-amber-500",
+    accent: "border-s-amber-500",
     badge: "bg-amber-100 text-amber-700",
-    badgeLabel: "מומלץ",
+    badgeKey: "aiInsights.priorityRecommended",
   },
   low: {
     card: "border-emerald-200 bg-gradient-to-br from-emerald-50/70 to-white",
-    accent: "border-r-emerald-500",
+    accent: "border-s-emerald-500",
     badge: "bg-emerald-100 text-emerald-700",
-    badgeLabel: "מידע",
+    badgeKey: "aiInsights.priorityInfo",
   },
 };
 
 export default function AiInsightsPanel({ insights = [], loading, businessId }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const navigate = useNavigate();
   const [dismissedInsights, setDismissedInsights] = useState([]);
 
@@ -83,17 +87,21 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
   if (loading) {
     return (
       <section
-        dir="rtl"
+        dir={dir}
         className="rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
-        aria-label="טוען המלצות"
+        aria-label={t("aiInsights.loadingAria")}
       >
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-600">
             <Sparkles size={20} className="animate-pulse" />
           </div>
           <div>
-            <p className="text-sm font-black text-slate-900">טוען המלצות חכמות...</p>
-            <p className="text-xs font-medium text-slate-500">מנתחים את הנתונים של העסק</p>
+            <p className="text-sm font-black text-slate-900">
+              {t("aiInsights.loadingTitle")}
+            </p>
+            <p className="text-xs font-medium text-slate-500">
+              {t("aiInsights.loadingSubtitle")}
+            </p>
           </div>
         </div>
       </section>
@@ -186,9 +194,9 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
   return (
     <section
       id="ai-insights-panel"
-      dir="rtl"
+      dir={dir}
       className="rounded-[28px] border border-violet-100 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]"
-      aria-label="המלצות AI"
+      aria-label={t("aiInsights.panelAria")}
     >
       <div className="mb-4 flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
@@ -196,10 +204,11 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
             <Sparkles size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-black text-slate-950">המלצות חכמות</h3>
+            <h3 className="text-lg font-black text-slate-950">
+              {t("aiInsights.title")}
+            </h3>
             <p className="text-sm font-medium text-slate-500">
-              {visibleInsights.length}{" "}
-              {visibleInsights.length === 1 ? "פעולה מומלצת" : "פעולות מומלצות"} לשיפור העסק
+              {t("aiInsights.actionCount", { count: visibleInsights.length })}
             </p>
           </div>
         </div>
@@ -214,13 +223,13 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
             return (
               <article
                 key={insight.id}
-                className={`relative overflow-hidden rounded-[22px] border border-r-4 p-4 ${styles.card} ${styles.accent}`}
+                className={`relative overflow-hidden rounded-[22px] border border-s-4 p-4 ${styles.card} ${styles.accent}`}
               >
                 <button
                   type="button"
-                  className="absolute left-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-violet-600 hover:text-white"
+                  className="absolute end-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-violet-600 hover:text-white"
                   onClick={() => handleDismiss(insight)}
-                  aria-label="סגירת המלצה"
+                  aria-label={t("aiInsights.dismissAria")}
                 >
                   <X size={14} />
                 </button>
@@ -236,7 +245,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                       <span
                         className={`rounded-full px-2.5 py-0.5 text-[11px] font-black ${styles.badge}`}
                       >
-                        {styles.badgeLabel}
+                        {t(styles.badgeKey)}
                       </span>
                     </div>
 

@@ -12,6 +12,7 @@
     "learnMore": "Learn more",
     "loading": "Loading...",
     "retry": "Retry",
+    "close": "Close",
     "viewAll": "View all",
     "today": "Today",
     "week": "Week",
@@ -1526,5 +1527,1347 @@
         "updateFailed": "Client update failed"
       }
     }
+  },
+  "notifications": {
+    "ariaLabel": "Notifications",
+    "errorTitle": "Unable to display notifications",
+    "errorSubtitle": "Refresh the page and try again.",
+    "tryAgain": "Try again",
+    "defaultTitle": "Notification",
+    "defaultText": "New notification",
+    "unnamedLead": "Unnamed lead",
+    "taskTitle": "Task for client: {{name}}",
+    "taskDefaultText": "A task is due for follow-up",
+    "newLeadTitle": "New lead: {{name}}",
+    "newLeadText": "A new lead was added to the system",
+    "now": "Just now",
+    "minutesAgo": "{{count}} min ago",
+    "hoursAgo": "{{count}} hours ago",
+    "typeReview": "New review",
+    "typeTask": "Client task",
+    "typeNewLead": "New lead",
+    "typeDefault": "Notification",
+    "centerBadge": "Notification center",
+    "title": "Notifications",
+    "subtitle": "New leads, tasks to handle, and system updates",
+    "settingsAria": "Notification settings",
+    "closePanelAria": "Close",
+    "tabAll": "All",
+    "tabUnread": "Unread",
+    "recentTitle": "Recent notifications",
+    "unreadCount": "{{count}} unread notifications",
+    "noUnread": "No unread notifications",
+    "refresh": "Refresh",
+    "markAll": "Mark all",
+    "emptyTitle": "No new notifications",
+    "emptySubtitle": "When a new lead comes in or a task is due, it will show up here.",
+    "leadLabel": "Lead:",
+    "dueTime": "Due:"
+  },
+  "chatbot": {
+    "openAria": "Open Bizuply smart assistant",
+    "title": "Bizuply Assistant",
+    "available247": "Available 24/7",
+    "closeAria": "Close chat",
+    "greeting": "Hi! How can I help?",
+    "greetingHint": "Ask anything about Bizuply",
+    "placeholder": "Ask a question...",
+    "inputAria": "Question for the smart assistant",
+    "sendAria": "Send question",
+    "noAnswer": "Sorry, I couldn't find a suitable answer. Try rephrasing.",
+    "error": "Something went wrong. Please try again later.",
+    "quickPrompts": {
+      "createSite": "How do I create a new website?",
+      "dashboard": "What's in the dashboard?",
+      "crmLeads": "How do I get leads into CRM?",
+      "publishSite": "How do I publish my website?"
+    },
+    "fallbackSuggestions": {
+      "editSite": "How do I edit the site in the editor?",
+      "seo": "How do I set up SEO for the site?",
+      "dashboardStuck": "What if the dashboard isn't updating?"
+    }
+  },
+  "aiInsights": {
+    "loadingAria": "Loading recommendations",
+    "loadingTitle": "Loading smart recommendations...",
+    "loadingSubtitle": "Analyzing your business data",
+    "panelAria": "AI recommendations",
+    "title": "Smart recommendations",
+    "actionCount_one": "{{count}} recommended action to improve your business",
+    "actionCount_other": "{{count}} recommended actions to improve your business",
+    "dismissAria": "Dismiss recommendation",
+    "priorityUrgent": "Urgent",
+    "priorityRecommended": "Recommended",
+    "priorityInfo": "Info"
+  },
+  "mySites": {
+    "badge": "Website builder",
+    "managementCenter": "Management hub",
+    "title": "My sites",
+    "subtitle": "All of your business websites in one place — edit, organize in folders, publish, and manage everything easily.",
+    "newSite": "New site",
+    "newFolder": "New folder",
+    "searchPlaceholder": "Search by site name, domain, or keyword...",
+    "moreFilters": "More filters",
+    "allSites": "All sites",
+    "noFolder": "No folder",
+    "rightClickDelete": "Right-click to delete",
+    "loadError": "Unable to load sites right now",
+    "emptyTitle": "No sites here yet",
+    "emptyText": "Create your first site from a professional template or with AI, and manage everything from here.",
+    "createFirstSite": "Create first site",
+    "openInEditor": "Open in editor",
+    "defaultSiteName": "My site",
+    "siteFallback": "site",
+    "updated": "Updated {{date}}",
+    "notUpdated": "Not updated yet",
+    "published": "Published",
+    "draft": "Draft",
+    "actionsMenu": "Actions menu",
+    "status": {
+      "active": "Active",
+      "draft": "Draft"
+    },
+    "statusLabel": {
+      "publishedNeedUrl": "Published — choose a permanent address",
+      "published": "Published",
+      "draft": "Draft — not published yet"
+    },
+    "menu": {
+      "rename": "Rename",
+      "openEditor": "Open in editor",
+      "managePanel": "Management panel",
+      "shareTransfer": "Share / transfer",
+      "viewLive": "View live site",
+      "duplicate": "Duplicate site",
+      "moveToFolder": "Move to folder",
+      "delete": "Delete"
+    },
+    "prompts": {
+      "newFolderName": "New folder name",
+      "renameSite": "New site name",
+      "deleteSite": "Delete \"{{name}}\"? The site will be removed from the list.",
+      "noFoldersCreate": "No folders yet. Create a new folder now?",
+      "moveToFolder": "Move to folder — enter a number:\n{{options}}",
+      "noFolderOption": "No folder (root)",
+      "deleteFolder": "Delete folder \"{{name}}\"? Sites inside it will return to the main list."
+    },
+    "errors": {
+      "createFolder": "Failed to create folder",
+      "rename": "Failed to rename",
+      "duplicate": "Failed to duplicate site",
+      "delete": "Failed to delete site",
+      "moveToFolder": "Failed to move to folder",
+      "deleteFolder": "Failed to delete folder"
+    }
+  },
+  "createWebsite": {
+    "backToMySites": "Back to my sites",
+    "eyebrow": "New site",
+    "title": "How would you like to build the site?",
+    "subtitle": "Choose whether to start from a ready-made template, or let AI build a tailored site for you from a few short questions.",
+    "template": {
+      "title": "Ready-made template",
+      "description": "Pick a design from the gallery, then continue straight to full editing in the Bizuply editor.",
+      "cta": "Go to templates →"
+    },
+    "ai": {
+      "title": "Build with AI",
+      "description": "Answer a few questions — AI will choose structure, content, design, and SEO, then open the site in the editor ready to customize.",
+      "cta": "Start questionnaire →"
+    }
+  },
+  "websiteTemplates": {
+    "badge": "Set up a business website",
+    "title": "What would you like to do now?",
+    "subtitle": "Search for a new domain for your business or choose a ready-made template and start editing the site.",
+    "domainSearch": {
+      "title": "Domain search",
+      "subtitle": "Check availability in OT&E"
+    },
+    "templatePick": {
+      "title": "Choose a template",
+      "subtitle": "Browse and edit templates"
+    },
+    "categoriesTitle": "Categories",
+    "searchPlaceholder": "Search templates",
+    "breadcrumbTemplates": "Templates",
+    "breadcrumbCategories": "Categories",
+    "allTemplatesTitle": "All website templates",
+    "templatesTitle": "Website templates",
+    "galleryIntro": "Choose a ready-made website template, preview the full design, or open it directly in the site editor to start customizing it for your business.",
+    "syncButton": "Sync templates to Mongo",
+    "syncing": "Syncing templates...",
+    "syncHint": "Temporary admin-only button. After templates are saved to Mongo, remove it from the page.",
+    "sortNewest": "Newest",
+    "sortName": "By name",
+    "loading": "Loading templates...",
+    "loadFailedTitle": "We couldn't load the templates",
+    "retry": "Try again",
+    "templatesCount": "{{count}} templates",
+    "templateFallback": "Website template",
+    "featuredBadge": "Featured",
+    "previewAria": "Preview template {{name}}",
+    "preview": "Preview",
+    "editTemplate": "Edit template",
+    "edit": "Edit",
+    "emptyTitle": "No templates found",
+    "emptyText": "Try another category or search term.",
+    "showAll": "Show all templates",
+    "defaultHeroTitle": "Ready business website",
+    "defaultHeroSubtitle": "A website template ready for full editing.",
+    "defaultSiteName": "My site",
+    "alerts": {
+      "syncFailed": "Failed to sync templates to Mongo",
+      "loadFailed": "Failed to load templates",
+      "templateNotFound": "Template not found for editing",
+      "missingBusinessId": "Business ID is missing",
+      "syncedCount": "Saved {{count}} templates to Mongo"
+    },
+    "categories": {
+      "all": "All",
+      "landing": "Landing pages",
+      "business": "Business & services",
+      "real-estate": "Real estate",
+      "portfolio": "Portfolio & agency",
+      "store": "Stores & commerce",
+      "food": "Food & restaurants",
+      "medical": "Medical & health",
+      "education": "Education & courses",
+      "beauty": "Beauty & care",
+      "service": "Home services"
+    }
+  },
+  "buildPage": {
+    "tabs": {
+      "main": "Main",
+      "gallery": "Gallery",
+      "reviews": "Reviews",
+      "website": "Website",
+      "faqs": "FAQs"
+    },
+    "header": {
+      "badgeEdit": "Business profile editing",
+      "badgeLive": "Live real-time preview",
+      "title": "Edit business page",
+      "subtitle": "Update business details, images, reviews, website, and FAQs."
+    },
+    "actions": {
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "viewProfile": "View profile",
+      "cancel": "Cancel",
+      "save": "Save",
+      "edit": "Edit",
+      "delete": "Delete"
+    },
+    "preview": {
+      "badge": "Preview",
+      "editLogo": "✏️ Edit logo",
+      "coverAlt": "Cover image",
+      "addCover": "Add a cover image",
+      "businessNameFallback": "Business name",
+      "reviewsCount": "{{count}} reviews",
+      "noLinksYet": "No website or WhatsApp link added yet.",
+      "tabsAria": "Profile preview tabs",
+      "logoAlt": "Business logo"
+    },
+    "main": {
+      "title": "Basic details",
+      "subtitle": "Information shown at the top of the business profile.",
+      "businessName": "Business name",
+      "businessNamePlaceholder": "Business name",
+      "description": "Description",
+      "descriptionPlaceholder": "Tell customers what your business does...",
+      "phone": "Phone",
+      "email": "Email",
+      "category": "Category",
+      "city": "City",
+      "website": "Business website",
+      "websitePlaceholder": "Example: https://www.example.com",
+      "websiteHint": "The link will update in the preview and public profile after saving.",
+      "whatsapp": "WhatsApp link",
+      "whatsappPlaceholder": "Example: https://wa.me/972526850711 or 0526850711",
+      "whatsappHint": "Paste a full WhatsApp link or a phone number. The button will appear in the preview and public profile.",
+      "logoTitle": "Business logo",
+      "logoHint": "Upload a clean, clear logo.",
+      "uploadLogo": "Upload logo",
+      "deletingLogo": "Deleting...",
+      "deleteLogo": "Delete logo"
+    },
+    "gallery": {
+      "mainImagesTitle": "Main images",
+      "mainImagesSubtitle": "The first image will be the cover image.",
+      "uploadedCount": "{{count}}/6 uploaded",
+      "mainImageAlt": "Main image {{index}}",
+      "coverBadge": "Cover",
+      "addImages": "Add images",
+      "galleryTitle": "Business gallery",
+      "gallerySubtitle": "Additional images that appear in the gallery tab.",
+      "addGalleryImages": "Add gallery images",
+      "galleryImageAlt": "Gallery image {{index}}",
+      "emptyTitle": "No gallery images",
+      "emptyText": "Click Add images to get started."
+    },
+    "reviews": {
+      "title": "Customer reviews",
+      "editorIntro": "Reviews are written by customers and are not edited from here. Each review is rated by defined parameters, and you can view them with full detail on the public page.",
+      "reviewsCountParen": " ({{count}} reviews)",
+      "parametersTitle": "Rating parameters",
+      "parametersIntro": "Customers rate the business by the following parameters. Parameters marked as required are needed on every review:",
+      "required": "Required",
+      "optional": "Optional",
+      "viewHint": "To view reviews and each customer's rating details, go to the public page Reviews tab.",
+      "viewPublic": "View reviews on the public page",
+      "saveForLink": "Save the business to get a public page link.",
+      "countLabel": "{{count}} reviews",
+      "emptyTitle": "No reviews yet",
+      "emptyText": "Customer reviews will appear here.",
+      "recentTitle": "Recent reviews"
+    },
+    "website": {
+      "title": "Business website",
+      "editorSubtitle": "Connect the business website here. The link will appear in the preview and public profile.",
+      "linkLabel": "Website link",
+      "whatsappLabel": "WhatsApp link",
+      "websitePlaceholder": "Example: https://www.example.com",
+      "whatsappPlaceholder": "Example: https://wa.me/972526850711 or 0526850711",
+      "openWhatsapp": "Open WhatsApp in a new window",
+      "openWebsite": "Open website in a new window",
+      "previewSubtitle": "Customers can open the website the business built through the platform.",
+      "enterSite": "Enter business website",
+      "emptyTitle": "No website connected",
+      "emptyText": "When a business website is added, it will appear here."
+    },
+    "faqs": {
+      "addTitle": "Add FAQ",
+      "questionPlaceholder": "Question",
+      "answerPlaceholder": "Answer",
+      "addButton": "Add question",
+      "emptyEditorTitle": "No FAQs",
+      "emptyEditorText": "You can add questions and answers that appear on the profile.",
+      "questionFallback": "FAQ",
+      "answerFallback": "Answer will appear here.",
+      "emptyPreviewTitle": "No FAQs",
+      "emptyPreviewText": "Business questions and answers will appear here."
+    },
+    "previewEmpty": {
+      "noMainImagesTitle": "No main images",
+      "noMainImagesText": "Main images uploaded by the business will appear here.",
+      "noGalleryTitle": "No gallery images",
+      "noGalleryText": "Gallery images uploaded by the business will appear here."
+    },
+    "alerts": {
+      "uploadLogoFailed": "Failed to upload logo",
+      "deleteLogoConfirm": "Delete the logo?",
+      "deleteLogoFailed": "Failed to delete logo",
+      "deleteLogoFailedWith": "Failed to delete logo: {{detail}}",
+      "uploadMainImagesFailed": "Failed to upload main images",
+      "deleteImageFailed": "Failed to delete image",
+      "uploadGalleryFailed": "Failed to upload gallery",
+      "deleteGalleryImageFailed": "Failed to delete gallery image",
+      "saved": "Saved successfully!",
+      "saveFailedWith": "Save failed: {{detail}}",
+      "saveFailed": "Save failed",
+      "addFaqFailed": "Failed to add question",
+      "deleteFaqConfirm": "Delete this question?",
+      "deleteFaqFailed": "Failed to delete question",
+      "updateFaqFailed": "Failed to update question"
+    }
+  },
+  "helpCenter": {
+    "badge": "Bizuply Help Center",
+    "title": "How can we help?",
+    "subtitle": "Search guides, FAQs, or ask Bizuply's smart assistant",
+    "searchPlaceholder": "Search guides, categories, or topics...",
+    "searchAria": "Search the help center",
+    "clearSearchAria": "Clear search",
+    "guides": "Guides",
+    "categories": "Categories",
+    "noResults": "No results found",
+    "askAssistant": "Ask Bizuply's smart assistant",
+    "askAssistantShort": "Ask the smart assistant",
+    "quickSearchHint": "For quick search press",
+    "resultsFor": "Results for \"{{term}}\"",
+    "backToTopics": "Back to all topics",
+    "guidesCount": "Guides ({{count}})",
+    "categoriesCount": "Categories ({{count}})",
+    "noResultsTitle": "We couldn't find results",
+    "noResultsHint": "Try different search terms or ask Bizuply's smart assistant",
+    "searchingFor": "I'm looking for: {{term}}",
+    "searchingHelpFor": "I'm looking for help with: {{term}}",
+    "popularTopics": "Popular topics",
+    "popularTopicsHint": "The most popular guides and questions on Bizuply",
+    "browseByTopic": "Browse by topic",
+    "browseByTopicHint": "Choose a category and find answers to the most common questions",
+    "moreHelp": "More ways to get help",
+    "contactSupport": "Contact support",
+    "contactSupportHint": "Send a request to the support team and we'll get back to you soon",
+    "sendRequest": "Send request",
+    "troubleshooting": "Common troubleshooting",
+    "troubleshootingHint": "A guide for fixing technical issues and system errors",
+    "viewGuide": "View guide",
+    "suggested": {
+      "buildSite": {
+        "label": "How do I build a website?",
+        "query": "website building"
+      },
+      "publishSite": {
+        "label": "How do I publish the site?",
+        "query": "publish website"
+      },
+      "crmAppointments": {
+        "label": "How do I manage appointments in CRM?",
+        "query": "CRM appointments"
+      },
+      "useAi": {
+        "label": "How do I use AI?",
+        "query": "AI advisor"
+      },
+      "editProfile": {
+        "label": "Edit business profile",
+        "query": "business profile"
+      },
+      "seo": {
+        "label": "Website SEO settings",
+        "query": "SEO"
+      },
+      "dashboard": {
+        "label": "What's in the dashboard?",
+        "query": "dashboard"
+      },
+      "leads": {
+        "label": "How do I get leads?",
+        "query": "CRM leads"
+      }
+    },
+    "articles": {
+      "buildBusinessPage": {
+        "title": "Building a business page",
+        "description": "A step-by-step guide to creating a professional, attractive business page that brings in new customers.",
+        "keywords": [
+          "page",
+          "profile",
+          "logo",
+          "gallery",
+          "category",
+          "עמוד",
+          "פרופיל"
+        ]
+      },
+      "websiteBuilding": {
+        "title": "Website building",
+        "description": "A complete guide to creating a professional website — from a template, with AI, editing, and publishing.",
+        "keywords": [
+          "website",
+          "template",
+          "AI",
+          "editor",
+          "publish",
+          "SEO",
+          "אתר",
+          "תבנית"
+        ]
+      },
+      "dashboard": {
+        "title": "Business dashboard",
+        "description": "See how the dashboard gives you full control and a clear view of everything happening in your business.",
+        "keywords": [
+          "dashboard",
+          "stats",
+          "charts",
+          "analytics",
+          "דשבורד",
+          "סטטיסטיקות"
+        ]
+      },
+      "crmAppointments": {
+        "title": "Appointments / CRM",
+        "description": "Manage appointments and clients in one place — simply, clearly, and efficiently.",
+        "keywords": [
+          "CRM",
+          "appointments",
+          "clients",
+          "calendar",
+          "booking",
+          "leads",
+          "תורים",
+          "לקוחות"
+        ]
+      },
+      "aiCompanion": {
+        "title": "Bizuply AI advisor",
+        "description": "Meet the digital assistant that strengthens your business with artificial intelligence.",
+        "keywords": [
+          "AI",
+          "artificial intelligence",
+          "advisor",
+          "assistant",
+          "Bizuply",
+          "יועץ",
+          "עוזר"
+        ]
+      },
+      "collaborations": {
+        "title": "Business collaborations",
+        "description": "Learn how to grow your business through strong partnerships with other businesses.",
+        "keywords": [
+          "collaboration",
+          "partnership",
+          "growth",
+          "שיתוף",
+          "שותפות"
+        ]
+      }
+    },
+    "faq": {
+      "profile": {
+        "title": "Business profile",
+        "description": "Edit details, gallery, category, and location",
+        "keywords": [
+          "profile",
+          "page",
+          "gallery",
+          "logo",
+          "פרופיל",
+          "עמוד"
+        ]
+      },
+      "dashboard": {
+        "title": "Dashboard",
+        "description": "Stats, charts, calendar, and data analysis",
+        "keywords": [
+          "dashboard",
+          "charts",
+          "stats",
+          "דשבורד",
+          "גרפים"
+        ]
+      },
+      "websiteBuilding": {
+        "title": "Website building",
+        "description": "Create, edit, SEO, and publish websites",
+        "keywords": [
+          "website",
+          "template",
+          "AI",
+          "editor",
+          "publish",
+          "SEO",
+          "אתר"
+        ]
+      },
+      "collaborations": {
+        "title": "Collaborations",
+        "description": "Create partnerships and grow your business",
+        "keywords": [
+          "collaboration",
+          "partnership",
+          "שיתוף",
+          "שותפות"
+        ]
+      },
+      "crm": {
+        "title": "CRM",
+        "description": "Manage clients, appointments, and follow-ups",
+        "keywords": [
+          "CRM",
+          "appointments",
+          "clients",
+          "leads",
+          "booking",
+          "תורים",
+          "לקוחות"
+        ]
+      },
+      "advisor": {
+        "title": "Bizuply advisor",
+        "description": "Use the AI assistant to grow your business",
+        "keywords": [
+          "AI",
+          "advisor",
+          "assistant",
+          "Bizuply",
+          "יועץ"
+        ]
+      },
+      "settings": {
+        "title": "System settings",
+        "description": "Account settings, notifications, and security",
+        "keywords": [
+          "settings",
+          "account",
+          "security",
+          "הגדרות",
+          "חשבון"
+        ]
+      },
+      "troubleshooting": {
+        "title": "Issues and errors",
+        "description": "Fix common problems and system errors",
+        "keywords": [
+          "issue",
+          "error",
+          "problem",
+          "broken",
+          "תקלה",
+          "שגיאה"
+        ]
+      },
+      "support": {
+        "title": "Technical support",
+        "description": "Contact the support team",
+        "keywords": [
+          "support",
+          "help",
+          "team",
+          "תמיכה",
+          "עזרה"
+        ]
+      }
+    }
+  },
+  "billing": {
+    "badge": "Billing center",
+    "title": "Billing & subscription",
+    "subtitle": "Manage your plan, billing status, renewal settings, and payment history in one clear place.",
+    "currentPlan": "Current plan",
+    "totalPaid": "Total paid",
+    "subscription": "Subscription",
+    "yourPlan": "Your plan",
+    "yourPlanHint": "Check your current plan and manage renewal preferences.",
+    "plan": "Plan",
+    "status": "Status",
+    "nextBilling": "Next billing",
+    "validUntil": "Valid until",
+    "billingType": "Billing type",
+    "cancelRenewal": "Turn off auto-renewal",
+    "cancelling": "Cancelling...",
+    "resumeSubscription": "Resume subscription",
+    "resuming": "Resuming...",
+    "renewUpgrade": "Renew / upgrade plan",
+    "payments": "Payments",
+    "paymentHistory": "Payment history",
+    "paymentHistoryHint": "View your recent charges and subscription payments.",
+    "records": "Records",
+    "loadingPayments": "Loading payments...",
+    "loadingPaymentsHint": "Fetching your billing records.",
+    "noPayments": "No payments found",
+    "noPaymentsHint": "Your payment history will appear here after a payment is made.",
+    "date": "Date",
+    "amount": "Amount",
+    "needHelp": "Need help?",
+    "contactSupport": "Contact support",
+    "plans": {
+      "trial": "Trial",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    },
+    "planNames": {
+      "yearly": "BizUply yearly plan",
+      "monthly": "BizUply monthly plan",
+      "trial": "Trial plan"
+    },
+    "statusLabels": {
+      "active": "Active",
+      "activeNoRenewal": "Active · auto-renewal off",
+      "expired": "Expired",
+      "paid": "Paid",
+      "pending": "Pending",
+      "cancelled": "Cancelled"
+    },
+    "billingTypes": {
+      "monthlyActive": "Monthly billing · auto-renewal on",
+      "monthlyCancelled": "Monthly billing · auto-renewal off",
+      "yearly": "One-time yearly payment",
+      "trial": "Trial access"
+    },
+    "messages": {
+      "cancelSuccess": "Auto-renewal was cancelled. Your access will remain active until the end of the billing period.",
+      "cancelError": "We couldn't cancel renewal. Please contact support.",
+      "resumeSuccess": "Auto-renewal was successfully resumed.",
+      "resumeError": "We couldn't resume the subscription. Please contact support."
+    }
+  },
+  "collab": {
+    "tabs": {
+      "profile": "Business profile",
+      "findPartner": "Find a business partner",
+      "messages": "Collaboration proposals",
+      "market": "Collaboration market"
+    },
+    "navAria": "Collaborations",
+    "loading": "Loading data...",
+    "loginRequired": "Please sign in to access this page.",
+    "upgradeOnly": "Collaborations are available only on the advanced plan",
+    "active": "Active",
+    "emDash": "—",
+    "market": {
+      "badge": "Collaboration market",
+      "title": "Find business collaboration opportunities",
+      "subtitle": "Publish opportunities, discover partners, view business profiles, and build quality collaborations from one organized place.",
+      "publish": "Publish collaboration",
+      "publishNew": "New listing",
+      "stats": {
+        "total": "Total opportunities",
+        "totalHelper": "Published listings",
+        "active": "Active listings",
+        "activeHelper": "Available now",
+        "withBudget": "With budget",
+        "withBudgetHelper": "Includes a budget",
+        "tags": "Market tags",
+        "tagsHelper": "Needs and offers"
+      },
+      "listTitle": "Collaboration opportunities",
+      "showing": "{{shown}} shown of {{total}} opportunities",
+      "searchPlaceholder": "Search opportunities...",
+      "loading": "Loading the collaboration market...",
+      "emptyTitle": "No collaborations yet",
+      "emptyHint": "Publish your first collaboration opportunity and start connecting with relevant businesses.",
+      "timeLimited": "Time-limited",
+      "open": "Open",
+      "untitled": "Untitled collaboration",
+      "need": "Needs",
+      "offer": "Offers",
+      "description": "Description",
+      "noDescription": "No description provided.",
+      "budget": "Budget",
+      "notSpecified": "Not specified",
+      "expiry": "Expires",
+      "noExpiry": "No expiry",
+      "sendProposal": "Submit proposal",
+      "chat": "Chat",
+      "profile": "Profile",
+      "alerts": {
+        "unknownPublisher": "Couldn't identify the business that published this opportunity.",
+        "missingBusinessId": "Business ID not found. Try refreshing the page.",
+        "chatFailed": "Couldn't start a chat. Please try again."
+      },
+      "chatIntro": "Hi, I saw the listing \"{{title}}\" and would love to talk.",
+      "form": {
+        "badge": "New opportunity",
+        "title": "Publish a collaboration",
+        "subtitle": "Create a professional collaboration listing so relevant businesses can reach out.",
+        "closeAria": "Close",
+        "fieldTitle": "Title",
+        "titlePlaceholder": "e.g. Looking for a marketing partner",
+        "contact": "Contact person",
+        "contactPlaceholder": "Contact name",
+        "description": "Description",
+        "descriptionPlaceholder": "Describe the collaboration you're looking for...",
+        "needs": "What the business needs",
+        "needsPlaceholder": "Marketing, investor, supplier",
+        "offers": "What the business offers",
+        "offersPlaceholder": "Commission, partnership, exposure",
+        "tagsHint": "Separate tags with commas.",
+        "phone": "Phone",
+        "budget": "Budget",
+        "budgetPlaceholder": "Budget in ILS",
+        "setExpiry": "Set expiry date",
+        "setExpiryHint": "Optional. The listing will be hidden after the selected date.",
+        "expiryDate": "Expiry date",
+        "cancel": "Cancel",
+        "publishing": "Publishing...",
+        "submit": "Publish collaboration",
+        "requiredFields": "Please fill in all required fields",
+        "publishError": "Error publishing the collaboration"
+      }
+    },
+    "messages": {
+      "badge": "Collaboration proposals",
+      "title": "Collaboration messages & agreements",
+      "subtitle": "View sent proposals, received proposals, and approved agreements in one organized place.",
+      "shownLabel": "Proposals shown",
+      "inboxTitle": "Proposal inbox",
+      "shownCount": "{{count}} proposals shown",
+      "businessChat": "Business chat",
+      "businessChatHint": "B2B conversations with other businesses",
+      "backToProposals": "Back to proposals",
+      "stats": {
+        "sent": "Sent",
+        "sentHelper": "Outgoing proposals",
+        "received": "Received",
+        "receivedHelper": "Incoming proposals",
+        "pending": "Pending",
+        "pendingHelper": "Need attention",
+        "accepted": "Accepted",
+        "acceptedHelper": "Approved collaborations"
+      },
+      "filters": {
+        "sent": "Sent",
+        "received": "Received",
+        "accepted": "Accepted",
+        "chat": "Chat"
+      },
+      "proposalFallback": "Proposal",
+      "to": "To: {{name}}",
+      "contact": "Contact",
+      "phone": "Phone",
+      "giving": "Giving",
+      "receiving": "Receiving",
+      "payment": "Payment",
+      "noDescription": "No description provided.",
+      "viewAgreement": "View agreement",
+      "createAgreement": "Create agreement",
+      "cancel": "Cancel",
+      "reject": "Reject",
+      "accept": "Accept",
+      "loading": "Loading proposals...",
+      "loadError": "Error loading proposals",
+      "refreshHint": "Refresh the page and try again.",
+      "emptyTitle": "No proposals to show",
+      "emptyHint": "Sent, received, or accepted proposals will appear here.",
+      "status": {
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "pending": "Pending",
+        "cancelled": "Cancelled"
+      },
+      "alerts": {
+        "cancelConfirm": "Cancel this proposal?",
+        "cancelError": "Error cancelling the proposal",
+        "acceptError": "Error accepting the proposal",
+        "rejectError": "Error rejecting the proposal",
+        "ensureError": "Error creating the agreement",
+        "missingAgreementId": "Missing agreement ID"
+      }
+    },
+    "findPartner": {
+      "badge": "Partner discovery",
+      "title": "Find business partners",
+      "subtitle": "Discover relevant businesses, view their profiles, and start quality collaborations from one organized place.",
+      "matchingResults": "Matching results",
+      "listTitle": "Relevant partners",
+      "showing": "{{shown}} shown of {{total}} partners",
+      "searchPlaceholder": "Search partners...",
+      "loading": "Looking for relevant partners...",
+      "loadError": "Error loading partners",
+      "refreshHint": "Refresh the page and try again.",
+      "emptyTitle": "No matching partners found",
+      "emptyHint": "Try changing your search or choosing a broader category.",
+      "stats": {
+        "total": "Total partners",
+        "totalHelper": "Businesses found",
+        "available": "Available partners",
+        "availableHelper": "Excluding your business",
+        "categories": "Categories",
+        "categoriesHelper": "Matching fields",
+        "withDescription": "With description",
+        "withDescriptionHelper": "Complete profiles"
+      },
+      "myBusiness": "My business",
+      "potentialPartner": "Potential partner",
+      "unnamedBusiness": "Unnamed business",
+      "noCategory": "No category set",
+      "noLocation": "No location set",
+      "logoAlt": "Logo of {{name}}",
+      "businessFallback": "business",
+      "descriptionLabel": "Business description",
+      "noDescription": "No description has been added for this business yet.",
+      "complementary": "Matching categories",
+      "match": "Match",
+      "relevant": "Relevant",
+      "action": "Action",
+      "unavailable": "Unavailable",
+      "open": "Open",
+      "yourBusiness": "This is your business",
+      "sendProposal": "Send proposal",
+      "chat": "Chat",
+      "profile": "Profile",
+      "alerts": {
+        "missingBusinessId": "Business ID not found. Try refreshing the page.",
+        "chatFailed": "Couldn't start a chat. Please try again."
+      },
+      "chatIntro": "Hi, I'd love to explore a collaboration between our businesses."
+    },
+    "profile": {
+      "badge": "Business profile",
+      "editProfile": "Edit profile",
+      "businessMessages": "Business messages",
+      "deleteLogo": "Delete logo",
+      "deleting": "Deleting...",
+      "logoAlt": "Business logo",
+      "myBusinessFallback": "My business",
+      "stats": {
+        "status": "Profile status",
+        "statusValue": "Active",
+        "statusHelper": "Visible to businesses",
+        "category": "Category",
+        "categoryHelper": "Business type",
+        "area": "Operating area",
+        "areaHelper": "Activity location",
+        "collabs": "Collaborations",
+        "collabsHelper": "Sharing preferences"
+      },
+      "areaTitle": "Operating area",
+      "aboutTitle": "About the business",
+      "fromProfile": "Info from the business profile",
+      "preferredCollabs": "Preferred collaborations",
+      "preferredCollabsHint": "What the business looks for in collaborations",
+      "noCollabPrefs": "No collaboration preferences have been set yet.",
+      "contactDetails": "Contact details",
+      "contactDetailsHint": "Primary contact for the business",
+      "name": "Name",
+      "phone": "Phone",
+      "email": "Email",
+      "quickActions": "Quick actions",
+      "openMessages": "Open messages",
+      "editBusinessDetails": "Edit business details",
+      "editBadge": "Edit profile",
+      "editTitle": "Edit business profile",
+      "editSubtitle": "Update business details, collaborations, and contact info.",
+      "fields": {
+        "businessName": "Business name",
+        "category": "Category",
+        "area": "Operating area",
+        "contact": "Contact person",
+        "phone": "Phone",
+        "email": "Email",
+        "about": "About the business",
+        "preferredCollabs": "Preferred collaborations"
+      },
+      "cancel": "Cancel",
+      "saving": "Saving...",
+      "saveProfile": "Save profile",
+      "chatNotReady": "Business chat isn't ready yet.",
+      "alerts": {
+        "loadError": "Error loading business details",
+        "deleteLogoConfirm": "Delete the logo?",
+        "deleteLogoError": "Error deleting the logo",
+        "saveError": "Error saving the profile"
+      }
+    }
+  },
+  "earlyAccess": {
+    "cta": {
+      "takeMeToSignup": "Take me to signup"
+    },
+    "hero": {
+      "headline": "What if everything your business needs lived in one place?"
+    },
+    "countdown": {
+      "days": "DAYS",
+      "hours": "HOURS",
+      "minutes": "MINS",
+      "seconds": "SECS"
+    },
+    "marquee": {
+      "crm": "CRM",
+      "metaLeads": "Meta Leads",
+      "calendar": "Calendar & appointments",
+      "website": "Website & landing pages",
+      "automations": "Automations",
+      "ai": "AI",
+      "humanServices": "Human services",
+      "collaborations": "Collaborations",
+      "community": "Business community",
+      "salesTracking": "Sales tracking"
+    },
+    "problem": {
+      "eyebrow": "The problem Bizuply solves",
+      "title": "Your business shouldn't be scattered across ten tools",
+      "subtitle": "Meta leads, WhatsApp messages, calendar meetings, customers in a spreadsheet, a website, tasks, reminders, and collaborations — when everything lives elsewhere, it's easy to miss customers.",
+      "beforeLabel": "Before Bizuply",
+      "beforeTitle": "Everything in a different place",
+      "beforeText": "The business works, but information is scattered across different tools. That creates overload, missed opportunities, and less control.",
+      "afterLabel": "After Bizuply",
+      "afterTitle": "Everything lands in one system",
+      "afterText": "Every inquiry, customer, appointment, task, and collaboration gets a clear place, a clear status, and an orderly next step.",
+      "commandCenter": "Bizuply Command Center",
+      "controlTitle": "Full control of the business",
+      "scattered": {
+        "metaLeads": {
+          "title": "Meta leads",
+          "text": "Facebook and Instagram"
+        },
+        "whatsapp": {
+          "title": "WhatsApp",
+          "text": "Messages that aren't organized"
+        },
+        "calendar": {
+          "title": "Calendar",
+          "text": "Meetings and appointments"
+        },
+        "store": {
+          "title": "Website & store",
+          "text": "Digital presence"
+        },
+        "automations": {
+          "title": "Automations",
+          "text": "Reminders and follow-ups"
+        },
+        "ai": {
+          "title": "AI",
+          "text": "Content and decisions"
+        }
+      },
+      "outcomes": {
+        "onePlace": "Every lead enters one place",
+        "clearStatus": "Every customer gets a clear status",
+        "savedTasks": "Every appointment and task is saved in the system",
+        "followUps": "Every follow-up happens on time"
+      }
+    },
+    "conversion": {
+      "eyebrow": "What Bizuply does in practice",
+      "title": "Turns a new lead into an orderly process that moves forward on its own",
+      "subtitle": "The customer doesn't need to understand technology. They need to understand one thing: every inquiry enters the system, gets handled, reminders, tasks, and follow-ups — until the business closes more deals.",
+      "stepLabel": "Step {{num}}",
+      "steps": {
+        "leadIn": {
+          "title": "Lead comes in",
+          "text": "A new inquiry from Meta, the website, or WhatsApp enters the system immediately"
+        },
+        "fastReply": {
+          "title": "Fast response",
+          "text": "The system flags, reminds, and starts the next handling process"
+        },
+        "crm": {
+          "title": "Managed in CRM",
+          "text": "Status, source, notes, tasks, and all tracking in one place"
+        },
+        "appointment": {
+          "title": "Meeting or appointment",
+          "text": "Book in the calendar, send reminders, and reduce cancellations"
+        },
+        "closes": {
+          "title": "More closes",
+          "text": "Fewer leads fall through the cracks and more inquiries become customers"
+        }
+      }
+    },
+    "allInOne": {
+      "eyebrow": "What's inside Bizuply",
+      "title": "Everything the business needs — together it's a winning system",
+      "subtitle": "Instead of splitting across a website, leads, WhatsApp, calendar, campaigns, spreadsheets, and reminders — Bizuply connects everything in one place, with a clear path from inquiry to handling to closing.",
+      "cards": {
+        "calendar": {
+          "title": "Calendar & appointments",
+          "text": "Manage availability, meetings, appointments, and reminders — so every inquiry can become a real meeting"
+        },
+        "metaLeads": {
+          "title": "Meta leads",
+          "text": "Inquiries from Facebook and Instagram enter the system in an organized way, with source, status, and next steps"
+        },
+        "crm": {
+          "title": "Smart CRM",
+          "text": "All leads, customers, statuses, tasks, and tracking in one place"
+        },
+        "automations": {
+          "title": "Automations",
+          "text": "Reminders, follow-ups, tasks, and alerts that work for you in the background"
+        },
+        "ai": {
+          "title": "AI for business",
+          "text": "Help with content, marketing, ideas, organization, sales, and daily management"
+        },
+        "website": {
+          "title": "Website, landing pages & store",
+          "text": "A professional digital presence for the business that connects directly to the system"
+        },
+        "collaborations": {
+          "title": "Collaborations",
+          "text": "Connections, vendors, partners, and team — all connected, organized, and up to date"
+        }
+      }
+    },
+    "human": {
+      "agentAria": "Human agent with headset",
+      "eyebrow": "Human services layer",
+      "title": "A human agent who handles leads and looks for opportunities",
+      "subtitle": "Alongside the system, Bizuply can give the business a human layer that removes real load: answering leads, meetings, filling details, campaigns, and collaborations — all connected to your system.",
+      "features": {
+        "sales": {
+          "title": "Handling & sales",
+          "text": "Conversation, needs discovery, explanation, next-step coordination, and moving the lead forward"
+        },
+        "details": {
+          "title": "Collecting details",
+          "text": "Gathering and guiding accurate details before handing off for further handling"
+        },
+        "reminders": {
+          "title": "Reminders & alerts",
+          "text": "Smart reminders and follow-up on inquiries that weren't closed"
+        },
+        "campaigns": {
+          "title": "Smart campaigns",
+          "text": "Help building campaigns, content, and calls to action for customers"
+        },
+        "collaborations": {
+          "title": "Collaborations",
+          "text": "Finding partners, vendors, and connections that can help the business grow"
+        },
+        "fastReply": {
+          "title": "Fast response",
+          "text": "Quick answers to hot leads so they don't go to competitors"
+        }
+      },
+      "floating": {
+        "fastLeads": {
+          "title": "Fast lead response",
+          "text": "Human reply within seconds"
+        },
+        "salesHelp": {
+          "title": "Sales assistance",
+          "text": "Explain, match, and guide to close"
+        },
+        "scheduling": {
+          "title": "Meeting coordination",
+          "text": "Straight into your calendar"
+        },
+        "partnerships": {
+          "title": "Partnership opportunities",
+          "text": "Quality connections and referrals"
+        }
+      }
+    },
+    "launchValue": {
+      "eyebrow": "Why sign up now",
+      "title": "Not another small tool — a full business layer built to move you forward",
+      "subtitle": "Bizuply is built from testing with businesses, sales processes, lead management, customer service, and collaborations — to give owners one place that centralizes work, reduces load, and increases control.",
+      "cards": {
+        "launch": {
+          "label": "Launch advantage",
+          "title": "Get in before everyone and receive an early price",
+          "text": "Early registrants will get updates, demos, and access to launch pricing before the system opens to the wider audience.",
+          "points": {
+            "price": "Launch pricing for the group only",
+            "preview": "First look at the system",
+            "updates": "Updates before everyone else"
+          }
+        },
+        "american": {
+          "label": "American backing",
+          "title": "An American company with advanced business-layer thinking",
+          "text": "The goal isn't to build another landing page. The goal is to build a full layer that connects leads, appointments, CRM, sales, service, and collaborations.",
+          "points": {
+            "standard": "High product standard",
+            "longTerm": "Long-term thinking",
+            "local": "Adapted for the Israeli market"
+          }
+        },
+        "beyond": {
+          "label": "Beyond the system",
+          "title": "Not only software — also services, community, and collaborations",
+          "text": "The system is meant to help the business work more orderly, but also open options: agents, campaigns, coordination, vendors, and a closed community of businesses growing together.",
+          "points": {
+            "human": "Human services",
+            "community": "Closed business community",
+            "ops": "Connections and operations in one place"
+          }
+        }
+      }
+    },
+    "launchSteps": {
+      "eyebrow": "How to join",
+      "title": "Three steps — and you're in before everyone",
+      "subtitle": "Registration doesn't require a purchase. It reserves your place for updates, a first look, and launch pricing. Later the group will serve as a closed community for businesses growing together.",
+      "step01": {
+        "label": "Step 01",
+        "title": "Leave details in a short, clear form",
+        "fields": {
+          "fullName": "Full name",
+          "fullNameValue": "Your next customer",
+          "phone": "Phone",
+          "phoneValue": "05X-XXX-XXXX",
+          "niche": "Business field",
+          "nicheValue": "Studio / clinic / store"
+        },
+        "text": "Fill in name, email, phone, and business field — so we know who to send the first updates and group invite to."
+      },
+      "step02": {
+        "label": "Step 02",
+        "title": "Get updates before everyone",
+        "notifications": {
+          "groupSoon": "The group opens soon",
+          "demoReady": "A new demo is available",
+          "pricingSent": "Launch pricing was sent"
+        },
+        "text": "When the group and updates open — you get a notification, an explanation, and a first look before a wider launch."
+      },
+      "step03": {
+        "label": "Step 03",
+        "title": "Join launch pricing",
+        "earlyAccess": "EARLY ACCESS",
+        "launchPrice": "Launch price",
+        "text": "Early registrants get access to launch pricing for the group only, for a limited time."
+      }
+    },
+    "form": {
+      "eyebrow": "Early access is open",
+      "title": "Want to be among the first to get launch pricing and first access to the system?",
+      "subtitle": "Leave details and we'll get back to you before everyone. A WhatsApp group will open soon with all the details, demos, updates, and launch pricing for the group only. Later the group will serve as a closed community for businesses growing together.",
+      "perks": {
+        "noCommitment": "No commitment",
+        "earlyUpdates": "Updates before everyone",
+        "closedCommunity": "Closed community",
+        "launchPricing": "Launch pricing"
+      },
+      "cardEyebrow": "Early access",
+      "cardTitle": "Join the first list",
+      "cardSubtitle": "Fill in details and we'll update you when the WhatsApp group opens.",
+      "name": "Full name",
+      "namePlaceholder": "What's your name?",
+      "email": "Email",
+      "emailPlaceholder": "Your email for registration confirmation",
+      "phone": "Phone",
+      "phonePlaceholder": "Number for the group invite",
+      "business": "Business field",
+      "businessPlaceholder": "For example: clinic, store, studio, consulting",
+      "interestsLabel": "What could help your business most right now?",
+      "budgetLabel": "Estimated monthly budget",
+      "budgetOptional": "Optional",
+      "budgetPlaceholder": "Choose an estimated monthly budget",
+      "submit": "Send me details and a group invite",
+      "submitting": "Sending and saving details...",
+      "disclaimer": "Registration doesn't require a purchase. Launch pricing will be given to the early-access group only.",
+      "successTitle": "We received your launch registration",
+      "successText": "We saved your details. Soon we'll open a WhatsApp group and send an invite with all the details and launch pricing.",
+      "successAgain": "Submit another registration",
+      "saveFailed": "We couldn't save your details",
+      "submitFailed": "Error submitting the form. Please try again in a moment."
+    },
+    "interests": {
+      "crm": "CRM, lead management & automations",
+      "website": "Website / landing page / store",
+      "calendar": "Meeting calendar / appointments / arrival confirmations",
+      "humanService": "Human service for leads and sales",
+      "ads": "Paid campaigns",
+      "content": "Posts and content",
+      "reviews": "Reviews, reputation & customer win-back",
+      "collaborations": "Business collaborations",
+      "community": "Closed business community",
+      "everything": "Everything together"
+    },
+    "budgets": {
+      "under500": "Up to ₪500",
+      "500to1500": "₪500–1,500",
+      "1500to3000": "₪1,500–3,000",
+      "3000to6000": "₪3,000–6,000",
+      "over6000": "₪6,000 and up",
+      "unknown": "Not sure yet"
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "Everything you need to know before joining",
+      "items": {
+        "whatIs": {
+          "q": "What is Bizuply",
+          "a": "Bizuply is a full business layer: CRM, leads, website, landing pages, automations, calendar, store, AI, collaborations, and human services that remove real load from the business owner."
+        },
+        "different": {
+          "q": "What makes Bizuply different",
+          "a": "Bizuply isn't built only as a technical system. It combines technology, collaborations, and human services to help the business not only receive inquiries — but also manage, respond, follow up, and sell in a more organized way."
+        },
+        "forBusinesses": {
+          "q": "Why do you say it's built for real businesses",
+          "a": "Because along the way we examined processes, needs, pains, and work habits of businesses in different markets around the world, to understand what business owners are truly missing day to day: less overload, more order, faster response, and more control."
+        },
+        "american": {
+          "q": "What does American company mean",
+          "a": "Bizuply comes from an American company, with advanced product thinking for businesses and adaptation to the Israeli market — language, pace, leads, WhatsApp, and the way businesses work here."
+        },
+        "earlyAccess": {
+          "q": "What do you get with early registration",
+          "a": "Early registrants will get first updates, an invite to a WhatsApp group opening soon, launch pricing for the group only, and later the group will serve as a closed community for businesses growing together."
+        }
+      }
+    }
+  },
+  "aiSiteWizard": {
+    "back": "Back to method selection",
+    "title": "Build a site with AI",
+    "subtitle": "AI will build new pages and real sections based on your colors and settings — not just pick a ready-made template.",
+    "stepOf": "Step {{current}} of {{total}}: {{label}}",
+    "steps": {
+      "business": "Business",
+      "design": "Design",
+      "pages": "Pages",
+      "summary": "Summary"
+    },
+    "fields": {
+      "businessName": "Business / site name",
+      "businessNamePlaceholder": "For example: Noam Studio",
+      "niche": "Business field",
+      "description": "Short description (optional)",
+      "descriptionPlaceholder": "What the business does, who it serves, what makes it unique...",
+      "audience": "Target audience (optional)",
+      "audiencePlaceholder": "Private clients, small businesses, families...",
+      "style": "Preferred design style",
+      "tone": "Writing tone",
+      "primaryColor": "Primary color",
+      "secondaryColor": "Secondary color",
+      "colorsHint": "Colors will be applied to the sections that are built. If left empty — AI will fill them in automatically.",
+      "pagesTitle": "Which pages should we build?",
+      "pagesHint": "For each page, AI will choose sections from the library and fill adapted content."
+    },
+    "niches": {
+      "businessServices": "Business & services",
+      "realEstate": "Real estate",
+      "beauty": "Beauty & wellness",
+      "food": "Food & restaurants",
+      "education": "Education & courses",
+      "portfolio": "Portfolio / creative",
+      "ecommerce": "Online store",
+      "other": "Other"
+    },
+    "styles": {
+      "modern": "Modern & clean",
+      "luxury": "Luxury & elegant",
+      "warm": "Warm & homey",
+      "bold": "Bold & colorful",
+      "minimal": "Minimalist"
+    },
+    "tones": {
+      "professional": "Professional",
+      "friendly": "Friendly",
+      "luxury": "Luxury",
+      "energetic": "Young & energetic"
+    },
+    "pages": {
+      "home": "Home",
+      "about": "About",
+      "services": "Services",
+      "gallery": "Gallery",
+      "pricing": "Pricing",
+      "testimonials": "Testimonials",
+      "faq": "FAQ",
+      "contact": "Contact"
+    },
+    "summary": {
+      "name": "Name",
+      "niche": "Field",
+      "style": "Style",
+      "tone": "Tone",
+      "pages": "Pages",
+      "empty": "—",
+      "note": "New pages will be built with real library sections (Hero, About, Services, etc.), with the colors you chose, and then the editor will open for full editing."
+    },
+    "buttons": {
+      "previous": "Previous",
+      "continue": "Continue",
+      "generate": "Build site with AI",
+      "generating": "Building the site..."
+    },
+    "status": {
+      "planning": "AI is planning pages and sections...",
+      "materializeLocal": "Building site from the library (local mode)...",
+      "materialize": "Assembling real sections from the library...",
+      "creating": "Creating the site...",
+      "saving": "Saving content to the server..."
+    },
+    "errors": {
+      "invalidPlan": "AI did not return a valid site structure",
+      "cannotBuild": "Unable to build a site structure",
+      "createFailed": "Site creation failed",
+      "generateFailed": "AI site generation failed",
+      "network": "Network issue during {{stage}} — try again. If it continues, check your connection or sign in again.",
+      "stageCreate": "site creation",
+      "stageSave": "content saving",
+      "stageMaterialize": "section assembly",
+      "stagePlan": "site planning"
+    },
+    "defaultSiteName": "My site"
   }
 }

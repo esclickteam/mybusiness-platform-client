@@ -12,6 +12,7 @@
     "learnMore": "למידע נוסף",
     "loading": "טוען...",
     "retry": "נסה שוב",
+    "close": "סגור",
     "viewAll": "הצג הכל",
     "today": "היום",
     "week": "שבוע",
@@ -1526,5 +1527,1336 @@
         "updateFailed": "עדכון הלקוח נכשל"
       }
     }
+  },
+  "notifications": {
+    "ariaLabel": "התראות",
+    "errorTitle": "לא ניתן להציג את ההתראות",
+    "errorSubtitle": "רעננו את העמוד ונסו שוב.",
+    "tryAgain": "נסו שוב",
+    "defaultTitle": "התראה",
+    "defaultText": "התראה חדשה",
+    "unnamedLead": "ליד ללא שם",
+    "taskTitle": "משימה ללקוח: {{name}}",
+    "taskDefaultText": "יש משימה שהגיע זמן הטיפול שלה",
+    "newLeadTitle": "ליד חדש: {{name}}",
+    "newLeadText": "נכנס ליד חדש למערכת",
+    "now": "עכשיו",
+    "minutesAgo": "לפני {{count}} דק׳",
+    "hoursAgo": "לפני {{count}} שעות",
+    "typeReview": "ביקורת חדשה",
+    "typeTask": "משימה ללקוח",
+    "typeNewLead": "ליד חדש",
+    "typeDefault": "התראה",
+    "centerBadge": "מרכז התראות",
+    "title": "התראות",
+    "subtitle": "לידים חדשים, משימות לטיפול ועדכונים מהמערכת",
+    "settingsAria": "הגדרות התראות",
+    "closePanelAria": "סגירה",
+    "tabAll": "הכל",
+    "tabUnread": "לא נקראו",
+    "recentTitle": "התראות אחרונות",
+    "unreadCount": "{{count}} התראות שלא נקראו",
+    "noUnread": "אין התראות שלא נקראו",
+    "refresh": "רענון",
+    "markAll": "סמן הכל",
+    "emptyTitle": "אין התראות חדשות",
+    "emptySubtitle": "כשייכנס ליד חדש או כשיגיע זמן טיפול במשימה, זה יופיע כאן.",
+    "leadLabel": "ליד:",
+    "dueTime": "זמן טיפול:"
+  },
+  "chatbot": {
+    "openAria": "פתיחת העוזר החכם של Bizuply",
+    "title": "עוזר Bizuply",
+    "available247": "זמין 24/7",
+    "closeAria": "סגירת הצ'אט",
+    "greeting": "שלום! איך אפשר לעזור?",
+    "greetingHint": "שאלו כל שאלה על Bizuply",
+    "placeholder": "שאלו שאלה...",
+    "inputAria": "שאלה לעוזר החכם",
+    "sendAria": "שליחת שאלה",
+    "noAnswer": "מצטערים, לא מצאנו תשובה מתאימה. נסו לנסח אחרת.",
+    "error": "אירעה שגיאה, אנא נסו שוב מאוחר יותר.",
+    "quickPrompts": {
+      "createSite": "איך ליצור אתר חדש?",
+      "dashboard": "מה יש בדשבורד?",
+      "crmLeads": "איך לקבל לידים ל-CRM?",
+      "publishSite": "איך לפרסם את האתר?"
+    },
+    "fallbackSuggestions": {
+      "editSite": "איך עורכים את האתר בעורך?",
+      "seo": "איך מגדירים SEO לאתר?",
+      "dashboardStuck": "מה לעשות אם הדשבורד לא מתעדכן?"
+    }
+  },
+  "aiInsights": {
+    "loadingAria": "טוען המלצות",
+    "loadingTitle": "טוען המלצות חכמות...",
+    "loadingSubtitle": "מנתחים את הנתונים של העסק",
+    "panelAria": "המלצות AI",
+    "title": "המלצות חכמות",
+    "actionCount_one": "פעולה מומלצת אחת לשיפור העסק",
+    "actionCount_other": "{{count}} פעולות מומלצות לשיפור העסק",
+    "dismissAria": "סגירת המלצה",
+    "priorityUrgent": "דחוף",
+    "priorityRecommended": "מומלץ",
+    "priorityInfo": "מידע"
+  },
+  "mySites": {
+    "badge": "בניית אתרים",
+    "managementCenter": "מרכז ניהול",
+    "title": "האתרים שלי",
+    "subtitle": "כל האתרים של העסק במקום אחד — עריכה, ארגון בתיקיות, פרסום וניהול שוטף בקלות.",
+    "newSite": "אתר חדש",
+    "newFolder": "תיקייה חדשה",
+    "searchPlaceholder": "חיפוש לפי שם אתר, דומיין או מילת מפתח...",
+    "moreFilters": "סינון נוסף",
+    "allSites": "כל האתרים",
+    "noFolder": "ללא תיקייה",
+    "rightClickDelete": "לחיצה ימנית למחיקה",
+    "loadError": "לא ניתן לטעון את האתרים כרגע",
+    "emptyTitle": "עדיין אין כאן אתרים",
+    "emptyText": "צרו את האתר הראשון שלכם מתבנית מקצועית או באמצעות AI, ונהלו הכול מכאן.",
+    "createFirstSite": "צרו אתר ראשון",
+    "openInEditor": "פתיחה בעורך",
+    "defaultSiteName": "האתר שלי",
+    "siteFallback": "האתר",
+    "updated": "עודכן {{date}}",
+    "notUpdated": "טרם עודכן",
+    "published": "מפורסם",
+    "draft": "טיוטה",
+    "actionsMenu": "תפריט פעולות",
+    "status": {
+      "active": "פעיל",
+      "draft": "טיוטה"
+    },
+    "statusLabel": {
+      "publishedNeedUrl": "מפורסם — יש לבחור כתובת קבועה",
+      "published": "מפורסם",
+      "draft": "טיוטה — טרם פורסם"
+    },
+    "menu": {
+      "rename": "שינוי שם",
+      "openEditor": "פתיחה בעורך",
+      "managePanel": "פאנל ניהול",
+      "shareTransfer": "שיתוף / העברה",
+      "viewLive": "צפייה באתר החי",
+      "duplicate": "שכפול אתר",
+      "moveToFolder": "העברה לתיקייה",
+      "delete": "מחיקה"
+    },
+    "prompts": {
+      "newFolderName": "שם התיקייה החדשה",
+      "renameSite": "שם חדש לאתר",
+      "deleteSite": "למחוק את \"{{name}}\"? האתר יוסר מהרשימה.",
+      "noFoldersCreate": "אין עדיין תיקיות. ליצור תיקייה חדשה עכשיו?",
+      "moveToFolder": "העברה לתיקייה — הזינו מספר:\n{{options}}",
+      "noFolderOption": "ללא תיקייה (ראשי)",
+      "deleteFolder": "למחוק את התיקייה \"{{name}}\"? האתרים שבה יחזרו לרשימה הראשית."
+    },
+    "errors": {
+      "createFolder": "יצירת תיקייה נכשלה",
+      "rename": "שינוי השם נכשל",
+      "duplicate": "שכפול האתר נכשל",
+      "delete": "מחיקת האתר נכשלה",
+      "moveToFolder": "העברה לתיקייה נכשלה",
+      "deleteFolder": "מחיקת תיקייה נכשלה"
+    }
+  },
+  "createWebsite": {
+    "backToMySites": "חזרה לאתרים שלי",
+    "eyebrow": "אתר חדש",
+    "title": "איך תרצו לבנות את האתר?",
+    "subtitle": "בחרו אם להתחיל מתבנית מוכנה, או לתת ל־AI לבנות עבורכם אתר מותאם לפי כמה שאלות קצרות.",
+    "template": {
+      "title": "תבנית מוכנה",
+      "description": "בחרו עיצוב מוכן מהגלריה, והמשיכו ישר לעריכה מלאה בעורך Bizuply.",
+      "cta": "מעבר לתבניות ←"
+    },
+    "ai": {
+      "title": "בנייה עם AI",
+      "description": "ענו על כמה שאלות — ה־AI יבחר מבנה, תוכן, עיצוב ו־SEO, ויפתח את האתר בעורך מוכן לעריכה.",
+      "cta": "התחלת שאלון ←"
+    }
+  },
+  "websiteTemplates": {
+    "badge": "הקמת אתר לעסק",
+    "title": "מה תרצו לעשות עכשיו?",
+    "subtitle": "חפשו דומיין חדש לעסק או בחרו תבנית מוכנה והתחילו לערוך את האתר.",
+    "domainSearch": {
+      "title": "חיפוש דומיין",
+      "subtitle": "בדיקת זמינות ב־OT&E"
+    },
+    "templatePick": {
+      "title": "בחירת תבנית",
+      "subtitle": "צפייה ועריכה של תבניות"
+    },
+    "categoriesTitle": "קטגוריות",
+    "searchPlaceholder": "חיפוש תבניות",
+    "breadcrumbTemplates": "תבניות",
+    "breadcrumbCategories": "קטגוריות",
+    "allTemplatesTitle": "כל תבניות האתרים",
+    "templatesTitle": "תבניות אתרים",
+    "galleryIntro": "בחרו תבנית אתר מוכנה, צפו בעיצוב המלא, או פתחו אותה ישירות בעורך האתר כדי להתחיל לערוך אותה לעסק.",
+    "syncButton": "סנכרון תבניות למונגו",
+    "syncing": "מסנכרן תבניות...",
+    "syncHint": "כפתור זמני למנהל בלבד. אחרי שהתבניות נשמרות במונגו, למחוק אותו מהעמוד.",
+    "sortNewest": "החדשות ביותר",
+    "sortName": "לפי שם",
+    "loading": "טוען תבניות...",
+    "loadFailedTitle": "לא הצלחנו לטעון את התבניות",
+    "retry": "נסי שוב",
+    "templatesCount": "{{count}} תבניות",
+    "templateFallback": "תבנית אתר",
+    "featuredBadge": "מומלץ",
+    "previewAria": "צפייה בתבנית {{name}}",
+    "preview": "צפייה",
+    "editTemplate": "ערוך תבנית",
+    "edit": "ערוך",
+    "emptyTitle": "לא נמצאו תבניות",
+    "emptyText": "נסו קטגוריה אחרת או מילת חיפוש אחרת.",
+    "showAll": "הצג את כל התבניות",
+    "defaultHeroTitle": "אתר עסקי מוכן",
+    "defaultHeroSubtitle": "תבנית אתר מוכנה לעריכה מלאה.",
+    "defaultSiteName": "האתר שלי",
+    "alerts": {
+      "syncFailed": "שגיאה בסנכרון תבניות למונגו",
+      "loadFailed": "שגיאה בטעינת התבניות",
+      "templateNotFound": "לא נמצאה התבנית לעריכה",
+      "missingBusinessId": "חסר מזהה עסק",
+      "syncedCount": "נשמרו {{count}} תבניות במונגו"
+    },
+    "categories": {
+      "all": "הכל",
+      "landing": "דפי נחיתה",
+      "business": "עסקים ושירותים",
+      "real-estate": "נדל״ן",
+      "portfolio": "פורטפוליו וסוכנות",
+      "store": "חנויות ומסחר",
+      "food": "אוכל ומסעדות",
+      "medical": "רפואה ובריאות",
+      "education": "חינוך וקורסים",
+      "beauty": "יופי וטיפוח",
+      "service": "שירותים לבית"
+    }
+  },
+  "buildPage": {
+    "tabs": {
+      "main": "ראשי",
+      "gallery": "גלריה",
+      "reviews": "ביקורות",
+      "website": "אתר",
+      "faqs": "שאלות נפוצות"
+    },
+    "header": {
+      "badgeEdit": "עריכת פרופיל עסקי",
+      "badgeLive": "תצוגה חיה בזמן אמת",
+      "title": "עריכת עמוד עסקי",
+      "subtitle": "עדכן את פרטי העסק, התמונות, הביקורות, האתר והשאלות הנפוצות."
+    },
+    "actions": {
+      "saving": "שומר...",
+      "saveChanges": "שמירת שינויים",
+      "viewProfile": "צפייה בפרופיל",
+      "cancel": "ביטול",
+      "save": "שמירה",
+      "edit": "עריכה",
+      "delete": "מחיקה"
+    },
+    "preview": {
+      "badge": "תצוגה מקדימה",
+      "editLogo": "✏️ עריכת לוגו",
+      "coverAlt": "תמונת קאבר",
+      "addCover": "הוסף תמונת קאבר",
+      "businessNameFallback": "שם העסק",
+      "reviewsCount": "{{count}} ביקורות",
+      "noLinksYet": "עדיין לא נוספו קישור לאתר או לוואטסאפ.",
+      "tabsAria": "טאבים של תצוגת הפרופיל",
+      "logoAlt": "לוגו העסק"
+    },
+    "main": {
+      "title": "פרטים בסיסיים",
+      "subtitle": "מידע שיופיע בראש הפרופיל העסקי.",
+      "businessName": "שם העסק",
+      "businessNamePlaceholder": "שם העסק",
+      "description": "תיאור",
+      "descriptionPlaceholder": "כתוב ללקוחות מה העסק עושה...",
+      "phone": "טלפון",
+      "email": "אימייל",
+      "category": "קטגוריה",
+      "city": "עיר",
+      "website": "אתר העסק",
+      "websitePlaceholder": "לדוגמה: https://www.example.com",
+      "websiteHint": "הקישור יתעדכן בתצוגה המקדימה ובפרופיל הציבורי לאחר שמירה.",
+      "whatsapp": "קישור לוואטסאפ",
+      "whatsappPlaceholder": "לדוגמה: https://wa.me/972526850711 או 0526850711",
+      "whatsappHint": "אפשר להדביק קישור WhatsApp מלא או מספר טלפון. הכפתור יופיע בתצוגה ובפרופיל הציבורי.",
+      "logoTitle": "לוגו העסק",
+      "logoHint": "מומלץ להעלות לוגו נקי וברור.",
+      "uploadLogo": "העלאת לוגו",
+      "deletingLogo": "מוחק...",
+      "deleteLogo": "מחיקת לוגו"
+    },
+    "gallery": {
+      "mainImagesTitle": "תמונות ראשיות",
+      "mainImagesSubtitle": "התמונה הראשונה תהיה תמונת הקאבר.",
+      "uploadedCount": "{{count}}/6 הועלו",
+      "mainImageAlt": "תמונה ראשית {{index}}",
+      "coverBadge": "קאבר",
+      "addImages": "הוספת תמונות",
+      "galleryTitle": "גלריית העסק",
+      "gallerySubtitle": "תמונות נוספות שיופיעו בטאב הגלריה.",
+      "addGalleryImages": "הוספת תמונות גלריה",
+      "galleryImageAlt": "תמונת גלריה {{index}}",
+      "emptyTitle": "אין תמונות בגלריה",
+      "emptyText": "לחץ על הוספת תמונות כדי להתחיל."
+    },
+    "reviews": {
+      "title": "ביקורות לקוחות",
+      "editorIntro": "הביקורות נכתבות על ידי לקוחות העסק ואינן נערכות מכאן. כל ביקורת מדורגת לפי פרמטרים מוגדרים, וניתן לצפות בהן עם פירוט מלא בעמוד הציבורי.",
+      "reviewsCountParen": " ({{count}} ביקורות)",
+      "parametersTitle": "פרמטרי דירוג",
+      "parametersIntro": "לקוחות מדרגים את העסק לפי הפרמטרים הבאים. פרמטרים מסומנים כחובה נדרשים בכל ביקורת:",
+      "required": "חובה",
+      "optional": "אופציונלי",
+      "viewHint": "לצפייה בביקורות ובפירוט הדירוגים של כל לקוח, עברו לעמוד הציבורי בטאב ביקורות.",
+      "viewPublic": "צפייה בביקורות בעמוד הציבורי",
+      "saveForLink": "שמרו את העסק כדי לקבל קישור לעמוד הציבורי.",
+      "countLabel": "{{count}} ביקורות",
+      "emptyTitle": "אין ביקורות עדיין",
+      "emptyText": "ביקורות של לקוחות יופיעו כאן.",
+      "recentTitle": "ביקורות אחרונות"
+    },
+    "website": {
+      "title": "אתר העסק",
+      "editorSubtitle": "כאן מחברים את אתר העסק. הקישור יוצג בתצוגה המקדימה ובפרופיל הציבורי.",
+      "linkLabel": "קישור לאתר",
+      "whatsappLabel": "קישור לוואטסאפ",
+      "websitePlaceholder": "לדוגמה: https://www.example.com",
+      "whatsappPlaceholder": "לדוגמה: https://wa.me/972526850711 או 0526850711",
+      "openWhatsapp": "פתיחת וואטסאפ בחלון חדש",
+      "openWebsite": "פתיחת האתר בחלון חדש",
+      "previewSubtitle": "כאן הלקוחות יכולים להיכנס לאתר שהעסק בנה דרך המערכת.",
+      "enterSite": "כניסה לאתר העסק",
+      "emptyTitle": "אין אתר מחובר",
+      "emptyText": "כאשר יתווסף אתר עסק, הוא יופיע כאן."
+    },
+    "faqs": {
+      "addTitle": "הוספת שאלה נפוצה",
+      "questionPlaceholder": "שאלה",
+      "answerPlaceholder": "תשובה",
+      "addButton": "הוספת שאלה",
+      "emptyEditorTitle": "אין שאלות נפוצות",
+      "emptyEditorText": "אפשר להוסיף שאלות ותשובות שיופיעו בפרופיל.",
+      "questionFallback": "שאלה נפוצה",
+      "answerFallback": "תשובה תופיע כאן.",
+      "emptyPreviewTitle": "אין שאלות נפוצות",
+      "emptyPreviewText": "שאלות ותשובות של העסק יופיעו כאן."
+    },
+    "previewEmpty": {
+      "noMainImagesTitle": "אין תמונות ראשיות",
+      "noMainImagesText": "התמונות הראשיות שהעסק יעלה יופיעו כאן.",
+      "noGalleryTitle": "אין תמונות בגלריה",
+      "noGalleryText": "תמונות הגלריה שהעסק יעלה יופיעו כאן."
+    },
+    "alerts": {
+      "uploadLogoFailed": "שגיאה בהעלאת הלוגו",
+      "deleteLogoConfirm": "למחוק את הלוגו?",
+      "deleteLogoFailed": "שגיאה במחיקת הלוגו",
+      "deleteLogoFailedWith": "שגיאה במחיקת הלוגו: {{detail}}",
+      "uploadMainImagesFailed": "שגיאה בהעלאת התמונות הראשיות",
+      "deleteImageFailed": "שגיאה במחיקת התמונה",
+      "uploadGalleryFailed": "שגיאה בהעלאת הגלריה",
+      "deleteGalleryImageFailed": "שגיאה במחיקת תמונה מהגלריה",
+      "saved": "נשמר בהצלחה!",
+      "saveFailedWith": "השמירה נכשלה: {{detail}}",
+      "saveFailed": "השמירה נכשלה",
+      "addFaqFailed": "שגיאה בהוספת שאלה",
+      "deleteFaqConfirm": "למחוק את השאלה?",
+      "deleteFaqFailed": "שגיאה במחיקת שאלה",
+      "updateFaqFailed": "שגיאה בעדכון שאלה"
+    }
+  },
+  "helpCenter": {
+    "badge": "מרכז העזרה של Bizuply",
+    "title": "איך אפשר לעזור?",
+    "subtitle": "חפשו מדריכים, שאלות נפוצות או שאלו את העוזר החכם של Bizuply",
+    "searchPlaceholder": "חפש מדריכים, קטגוריות או נושאים...",
+    "searchAria": "חיפוש במרכז העזרה",
+    "clearSearchAria": "נקה חיפוש",
+    "guides": "מדריכים",
+    "categories": "קטגוריות",
+    "noResults": "לא נמצאו תוצאות",
+    "askAssistant": "שאל את העוזר החכם של Bizuply",
+    "askAssistantShort": "שאלו את העוזר החכם",
+    "quickSearchHint": "לחיפוש מהיר לחצו",
+    "resultsFor": "תוצאות עבור \"{{term}}\"",
+    "backToTopics": "חזרה לכל הנושאים",
+    "guidesCount": "מדריכים ({{count}})",
+    "categoriesCount": "קטגוריות ({{count}})",
+    "noResultsTitle": "לא מצאנו תוצאות",
+    "noResultsHint": "נסו מילות חיפוש אחרות או שאלו את העוזר החכם של Bizuply",
+    "searchingFor": "אני מחפש: {{term}}",
+    "searchingHelpFor": "אני מחפש עזרה בנושא: {{term}}",
+    "popularTopics": "נושאים פופולריים",
+    "popularTopicsHint": "המדריכים והשאלות הפופולריים ביותר ב-Bizuply",
+    "browseByTopic": "עיון לפי נושא",
+    "browseByTopicHint": "בחרו קטגוריה ומצאו תשובות לשאלות הנפוצות ביותר",
+    "moreHelp": "דרכים נוספות לקבלת עזרה",
+    "contactSupport": "פנייה לתמיכה",
+    "contactSupportHint": "שלחו פנייה לצוות התמיכה ונחזור אליכם בהקדם",
+    "sendRequest": "שליחת פנייה",
+    "troubleshooting": "פתרון תקלות נפוצות",
+    "troubleshootingHint": "מדריך לפתרון בעיות טכניות ושגיאות מערכת",
+    "viewGuide": "צפייה במדריך",
+    "suggested": {
+      "buildSite": {
+        "label": "איך לבנות אתר?",
+        "query": "בניית אתר"
+      },
+      "publishSite": {
+        "label": "איך לפרסם את האתר?",
+        "query": "פרסום אתר"
+      },
+      "crmAppointments": {
+        "label": "איך לנהל תורים ב-CRM?",
+        "query": "CRM תורים"
+      },
+      "useAi": {
+        "label": "איך להשתמש ב-AI?",
+        "query": "יועץ AI"
+      },
+      "editProfile": {
+        "label": "עריכת פרופיל עסקי",
+        "query": "פרופיל עסקי"
+      },
+      "seo": {
+        "label": "הגדרות SEO לאתר",
+        "query": "SEO"
+      },
+      "dashboard": {
+        "label": "מה יש בדשבורד?",
+        "query": "דשבורד"
+      },
+      "leads": {
+        "label": "איך לקבל לידים?",
+        "query": "לידים CRM"
+      }
+    },
+    "articles": {
+      "buildBusinessPage": {
+        "title": "בניית עמוד עסקי",
+        "description": "מדריך שלב־אחר־שלב ליצירת עמוד עסקי מקצועי ומושך שמביא לקוחות חדשים.",
+        "keywords": [
+          "עמוד",
+          "פרופיל",
+          "לוגו",
+          "גלריה",
+          "קטגוריה",
+          "page",
+          "profile"
+        ]
+      },
+      "websiteBuilding": {
+        "title": "בניית אתר",
+        "description": "מדריך מלא ליצירת אתר מקצועי — מתבנית, עם AI, עריכה ופרסום.",
+        "keywords": [
+          "אתר",
+          "תבנית",
+          "AI",
+          "עורך",
+          "פרסום",
+          "SEO",
+          "website",
+          "template"
+        ]
+      },
+      "dashboard": {
+        "title": "דשבורד העסק",
+        "description": "גלה איך הדשבורד נותן לך שליטה מלאה ותצוגה ברורה על כל מה שקורה בעסק.",
+        "keywords": [
+          "דשבורד",
+          "סטטיסטיקות",
+          "גרפים",
+          "ניתוח",
+          "dashboard",
+          "stats"
+        ]
+      },
+      "crmAppointments": {
+        "title": "קביעת תורים / CRM",
+        "description": "נהל תורים ולקוחות במקום אחד — בצורה פשוטה, מסודרת ויעילה.",
+        "keywords": [
+          "CRM",
+          "תורים",
+          "לקוחות",
+          "יומן",
+          "קביעה",
+          "לידים",
+          "ניהול",
+          "appointments"
+        ]
+      },
+      "aiCompanion": {
+        "title": "יועץ ה־AI של Bizuply",
+        "description": "הכירו את העוזר הדיגיטלי שמחזק את העסק בעזרת בינה מלאכותית.",
+        "keywords": [
+          "AI",
+          "בינה מלאכותית",
+          "יועץ",
+          "עוזר",
+          "Bizuply",
+          "advisor"
+        ]
+      },
+      "collaborations": {
+        "title": "שיתופי פעולה עסקיים",
+        "description": "למד איך להרחיב את העסק באמצעות שיתופי פעולה חזקים עם עסקים אחרים.",
+        "keywords": [
+          "שיתוף",
+          "שותפות",
+          "הרחבה",
+          "collaboration",
+          "partnership"
+        ]
+      }
+    },
+    "faq": {
+      "profile": {
+        "title": "פרופיל עסקי",
+        "description": "עריכת פרטים, גלריה, קטגוריה ומיקום",
+        "keywords": [
+          "פרופיל",
+          "עמוד",
+          "גלריה",
+          "לוגו",
+          "profile"
+        ]
+      },
+      "dashboard": {
+        "title": "דשבורד",
+        "description": "סטטיסטיקות, גרפים, יומן וניתוח נתונים",
+        "keywords": [
+          "דשבורד",
+          "גרפים",
+          "סטטיסטיקות",
+          "dashboard"
+        ]
+      },
+      "websiteBuilding": {
+        "title": "בניית אתר",
+        "description": "יצירה, עריכה, SEO ופרסום אתרים",
+        "keywords": [
+          "אתר",
+          "תבנית",
+          "AI",
+          "עורך",
+          "פרסום",
+          "SEO"
+        ]
+      },
+      "collaborations": {
+        "title": "שיתופי פעולה",
+        "description": "יצירת שותפויות והרחבת העסק",
+        "keywords": [
+          "שיתוף",
+          "שותפות",
+          "collaboration"
+        ]
+      },
+      "crm": {
+        "title": "CRM",
+        "description": "ניהול לקוחות, תורים ומעקב",
+        "keywords": [
+          "CRM",
+          "תורים",
+          "לקוחות",
+          "לידים",
+          "קביעה"
+        ]
+      },
+      "advisor": {
+        "title": "יועץ Bizuply",
+        "description": "שימוש בעוזר AI לקידום העסק",
+        "keywords": [
+          "AI",
+          "יועץ",
+          "בינה מלאכותית",
+          "עוזר",
+          "Bizuply"
+        ]
+      },
+      "settings": {
+        "title": "הגדרות מערכת",
+        "description": "הגדרות חשבון, התראות ואבטחה",
+        "keywords": [
+          "הגדרות",
+          "חשבון",
+          "אבטחה",
+          "settings"
+        ]
+      },
+      "troubleshooting": {
+        "title": "תקלות ושגיאות",
+        "description": "פתרון בעיות נפוצות ושגיאות מערכת",
+        "keywords": [
+          "תקלה",
+          "שגיאה",
+          "בעיה",
+          "לא עובד"
+        ]
+      },
+      "support": {
+        "title": "תמיכה טכנית",
+        "description": "יצירת קשר עם צוות התמיכה",
+        "keywords": [
+          "תמיכה",
+          "עזרה",
+          "צוות",
+          "support"
+        ]
+      }
+    }
+  },
+  "billing": {
+    "badge": "מרכז חיובים",
+    "title": "חיובים ומנוי",
+    "subtitle": "נהל את המסלול שלך, סטטוס החיוב, הגדרות החידוש והיסטוריית התשלומים במקום אחד ברור ונוח.",
+    "currentPlan": "מסלול נוכחי",
+    "totalPaid": "סה״כ שולם",
+    "subscription": "מנוי",
+    "yourPlan": "המסלול שלך",
+    "yourPlanHint": "בדוק את המסלול הנוכחי שלך ונהל את העדפות החידוש.",
+    "plan": "מסלול",
+    "status": "סטטוס",
+    "nextBilling": "החיוב הבא",
+    "validUntil": "בתוקף עד",
+    "billingType": "סוג חיוב",
+    "cancelRenewal": "כיבוי חידוש אוטומטי",
+    "cancelling": "מבטל...",
+    "resumeSubscription": "הפעלת המנוי מחדש",
+    "resuming": "מפעיל מחדש...",
+    "renewUpgrade": "חידוש / שדרוג מסלול",
+    "payments": "תשלומים",
+    "paymentHistory": "היסטוריית תשלומים",
+    "paymentHistoryHint": "צפייה בחיובים האחרונים ובתשלומי המנוי שלך.",
+    "records": "רשומות",
+    "loadingPayments": "טוען תשלומים...",
+    "loadingPaymentsHint": "שולף את רשומות החיוב שלך.",
+    "noPayments": "לא נמצאו תשלומים",
+    "noPaymentsHint": "היסטוריית התשלומים שלך תופיע כאן לאחר יצירת תשלום.",
+    "date": "תאריך",
+    "amount": "סכום",
+    "needHelp": "צריך עזרה?",
+    "contactSupport": "פנייה לתמיכה",
+    "plans": {
+      "trial": "ניסיון",
+      "monthly": "חודשי",
+      "yearly": "שנתי"
+    },
+    "planNames": {
+      "yearly": "מסלול שנתי BizUply",
+      "monthly": "מסלול חודשי BizUply",
+      "trial": "מסלול ניסיון"
+    },
+    "statusLabels": {
+      "active": "פעיל",
+      "activeNoRenewal": "פעיל · חידוש אוטומטי כבוי",
+      "expired": "פג תוקף",
+      "paid": "שולם",
+      "pending": "ממתין",
+      "cancelled": "בוטל"
+    },
+    "billingTypes": {
+      "monthlyActive": "חיוב חודשי · חידוש אוטומטי פעיל",
+      "monthlyCancelled": "חיוב חודשי · חידוש אוטומטי כבוי",
+      "yearly": "תשלום שנתי חד־פעמי",
+      "trial": "גישה לתקופת ניסיון"
+    },
+    "messages": {
+      "cancelSuccess": "החידוש האוטומטי בוטל. הגישה שלך תישאר פעילה עד סוף תקופת החיוב.",
+      "cancelError": "לא הצלחנו לבטל את החידוש. יש לפנות לתמיכה.",
+      "resumeSuccess": "החידוש האוטומטי הופעל מחדש בהצלחה.",
+      "resumeError": "לא הצלחנו להפעיל מחדש את המנוי. יש לפנות לתמיכה."
+    }
+  },
+  "collab": {
+    "tabs": {
+      "profile": "פרופיל עסקי",
+      "findPartner": "מציאת שותף עסקי",
+      "messages": "הצעות שיתוף פעולה",
+      "market": "שוק שיתופי פעולה"
+    },
+    "navAria": "שיתופי פעולה",
+    "loading": "טוען נתונים...",
+    "loginRequired": "יש להתחבר כדי לגשת לעמוד הזה.",
+    "upgradeOnly": "שיתופי פעולה זמינים רק במסלול המתקדם",
+    "active": "פעיל",
+    "emDash": "—",
+    "market": {
+      "badge": "שוק שיתופי פעולה",
+      "title": "מציאת הזדמנויות לשיתופי פעולה עסקיים",
+      "subtitle": "פרסם הזדמנויות, גלה שותפים, צפה בפרופילים עסקיים ובנה שיתופי פעולה איכותיים ממקום אחד מסודר.",
+      "publish": "פרסום שיתוף פעולה",
+      "publishNew": "פרסום חדש",
+      "stats": {
+        "total": "סה״כ הזדמנויות",
+        "totalHelper": "פרסומים שעלו",
+        "active": "פרסומים פעילים",
+        "activeHelper": "זמינים עכשיו",
+        "withBudget": "עם תקציב",
+        "withBudgetHelper": "כולל תקציב",
+        "tags": "תגיות שוק",
+        "tagsHelper": "צרכים והצעות"
+      },
+      "listTitle": "הזדמנויות לשיתופי פעולה",
+      "showing": "{{shown}} מוצגות מתוך {{total}} הזדמנויות",
+      "searchPlaceholder": "חיפוש הזדמנויות...",
+      "loading": "טוען את שוק שיתופי הפעולה...",
+      "emptyTitle": "עדיין אין שיתופי פעולה",
+      "emptyHint": "פרסם את הזדמנות שיתוף הפעולה הראשונה והתחל להתחבר לעסקים רלוונטיים.",
+      "timeLimited": "מוגבל בזמן",
+      "open": "פתוח",
+      "untitled": "שיתוף פעולה ללא כותרת",
+      "need": "צריך",
+      "offer": "מציע",
+      "description": "תיאור",
+      "noDescription": "לא הוזן תיאור.",
+      "budget": "תקציב",
+      "notSpecified": "לא צוין",
+      "expiry": "תפוגה",
+      "noExpiry": "ללא תפוגה",
+      "sendProposal": "הגש הצעה",
+      "chat": "צ׳אט",
+      "profile": "פרופיל",
+      "alerts": {
+        "unknownPublisher": "לא ניתן לזהות את העסק שפרסם את ההזדמנות.",
+        "missingBusinessId": "לא נמצא מזהה עסק. נסו לרענן את הדף.",
+        "chatFailed": "לא הצלחנו להתחיל שיחה. נסו שוב."
+      },
+      "chatIntro": "שלום, ראיתי את הפרסום \"{{title}}\" ואשמח לדבר.",
+      "form": {
+        "badge": "הזדמנות חדשה",
+        "title": "פרסום שיתוף פעולה",
+        "subtitle": "צור פרסום מקצועי לשיתוף פעולה כדי שעסקים רלוונטיים יוכלו לפנות אליך.",
+        "closeAria": "סגירה",
+        "fieldTitle": "כותרת",
+        "titlePlaceholder": "לדוגמה: מחפש שותף לשיווק",
+        "contact": "איש קשר",
+        "contactPlaceholder": "שם איש קשר",
+        "description": "תיאור",
+        "descriptionPlaceholder": "תאר איזה שיתוף פעולה אתה מחפש...",
+        "needs": "מה העסק צריך",
+        "needsPlaceholder": "שיווק, משקיע, ספק",
+        "offers": "מה העסק מציע",
+        "offersPlaceholder": "עמלה, שותפות, חשיפה",
+        "tagsHint": "יש להפריד תגיות באמצעות פסיקים.",
+        "phone": "טלפון",
+        "budget": "תקציב",
+        "budgetPlaceholder": "תקציב בשקלים",
+        "setExpiry": "הגדרת תאריך תפוגה",
+        "setExpiryHint": "אופציונלי. הפרסום יוסתר לאחר התאריך שנבחר.",
+        "expiryDate": "תאריך תפוגה",
+        "cancel": "ביטול",
+        "publishing": "מפרסם...",
+        "submit": "פרסום שיתוף פעולה",
+        "requiredFields": "נא למלא את כל שדות החובה",
+        "publishError": "שגיאה בפרסום שיתוף הפעולה"
+      }
+    },
+    "messages": {
+      "badge": "הצעות שיתוף פעולה",
+      "title": "הודעות והסכמי שיתוף פעולה",
+      "subtitle": "כאן ניתן לראות הצעות שנשלחו, הצעות שהתקבלו והסכמים שאושרו במקום אחד מסודר.",
+      "shownLabel": "הצעות מוצגות",
+      "inboxTitle": "תיבת הצעות",
+      "shownCount": "{{count}} הצעות מוצגות",
+      "businessChat": "צ׳אט עסקי",
+      "businessChatHint": "שיחות B2B עם עסקים אחרים",
+      "backToProposals": "חזרה להצעות",
+      "stats": {
+        "sent": "נשלחו",
+        "sentHelper": "הצעות יוצאות",
+        "received": "התקבלו",
+        "receivedHelper": "הצעות נכנסות",
+        "pending": "ממתינות",
+        "pendingHelper": "דורשות טיפול",
+        "accepted": "אושרו",
+        "acceptedHelper": "שיתופי פעולה שאושרו"
+      },
+      "filters": {
+        "sent": "נשלחו",
+        "received": "התקבלו",
+        "accepted": "אושרו",
+        "chat": "צ׳אט"
+      },
+      "proposalFallback": "הצעה",
+      "to": "אל: {{name}}",
+      "contact": "איש קשר",
+      "phone": "טלפון",
+      "giving": "מה נותן",
+      "receiving": "מה מקבל",
+      "payment": "תשלום",
+      "noDescription": "לא הוזן תיאור.",
+      "viewAgreement": "צפייה בהסכם",
+      "createAgreement": "צור הסכם",
+      "cancel": "ביטול",
+      "reject": "דחייה",
+      "accept": "אישור",
+      "loading": "טוען הצעות...",
+      "loadError": "שגיאה בטעינת ההצעות",
+      "refreshHint": "רענן את העמוד ונסה שוב.",
+      "emptyTitle": "אין הצעות להצגה",
+      "emptyHint": "הצעות שנשלחו, התקבלו או אושרו יופיעו כאן.",
+      "status": {
+        "accepted": "אושר",
+        "rejected": "נדחה",
+        "pending": "ממתין",
+        "cancelled": "בוטל"
+      },
+      "alerts": {
+        "cancelConfirm": "האם לבטל את ההצעה?",
+        "cancelError": "שגיאה בביטול ההצעה",
+        "acceptError": "שגיאה באישור ההצעה",
+        "rejectError": "שגיאה בדחיית ההצעה",
+        "ensureError": "שגיאה ביצירת ההסכם",
+        "missingAgreementId": "חסר מזהה הסכם"
+      }
+    },
+    "findPartner": {
+      "badge": "איתור שותפים",
+      "title": "מציאת שותפים עסקיים",
+      "subtitle": "גלה עסקים רלוונטיים, צפה בפרופילים שלהם והתחל שיתופי פעולה איכותיים מתוך מקום אחד מסודר.",
+      "matchingResults": "תוצאות מתאימות",
+      "listTitle": "שותפים רלוונטיים",
+      "showing": "{{shown}} מוצגים מתוך {{total}} שותפים",
+      "searchPlaceholder": "חיפוש שותפים...",
+      "loading": "מחפש שותפים רלוונטיים...",
+      "loadError": "שגיאה בטעינת השותפים",
+      "refreshHint": "רענן את העמוד ונסה שוב.",
+      "emptyTitle": "לא נמצאו שותפים מתאימים",
+      "emptyHint": "נסה לשנות את החיפוש או לבחור קטגוריה רחבה יותר.",
+      "stats": {
+        "total": "סה״כ שותפים",
+        "totalHelper": "עסקים שנמצאו",
+        "available": "שותפים זמינים",
+        "availableHelper": "לא כולל העסק שלך",
+        "categories": "קטגוריות",
+        "categoriesHelper": "תחומי התאמה",
+        "withDescription": "עם תיאור",
+        "withDescriptionHelper": "פרופילים מלאים"
+      },
+      "myBusiness": "העסק שלי",
+      "potentialPartner": "שותף פוטנציאלי",
+      "unnamedBusiness": "עסק ללא שם",
+      "noCategory": "לא הוגדרה קטגוריה",
+      "noLocation": "לא הוגדר מיקום",
+      "logoAlt": "לוגו של {{name}}",
+      "businessFallback": "עסק",
+      "descriptionLabel": "תיאור העסק",
+      "noDescription": "עדיין לא הוזן תיאור לעסק הזה.",
+      "complementary": "קטגוריות מתאימות",
+      "match": "התאמה",
+      "relevant": "רלוונטי",
+      "action": "פעולה",
+      "unavailable": "לא זמין",
+      "open": "פתיחה",
+      "yourBusiness": "זה העסק שלך",
+      "sendProposal": "שליחת הצעה",
+      "chat": "צ׳אט",
+      "profile": "פרופיל",
+      "alerts": {
+        "missingBusinessId": "לא נמצא מזהה עסק. נסו לרענן את הדף.",
+        "chatFailed": "לא הצלחנו להתחיל שיחה. נסו שוב."
+      },
+      "chatIntro": "שלום, אשמח לבדוק אפשרות לשיתוף פעולה בין העסקים שלנו."
+    },
+    "profile": {
+      "badge": "פרופיל עסקי",
+      "editProfile": "עריכת פרופיל",
+      "businessMessages": "הודעות עסקיות",
+      "deleteLogo": "מחיקת לוגו",
+      "deleting": "מוחק...",
+      "logoAlt": "לוגו העסק",
+      "myBusinessFallback": "העסק שלי",
+      "stats": {
+        "status": "סטטוס פרופיל",
+        "statusValue": "פעיל",
+        "statusHelper": "גלוי לעסקים",
+        "category": "קטגוריה",
+        "categoryHelper": "סוג העסק",
+        "area": "אזור פעילות",
+        "areaHelper": "מיקום פעילות",
+        "collabs": "שיתופי פעולה",
+        "collabsHelper": "העדפות שיתוף"
+      },
+      "areaTitle": "אזור פעילות",
+      "aboutTitle": "על העסק",
+      "fromProfile": "מידע מתוך פרופיל העסק",
+      "preferredCollabs": "שיתופי פעולה מועדפים",
+      "preferredCollabsHint": "מה העסק מחפש במסגרת שיתופי פעולה",
+      "noCollabPrefs": "לא הוגדרו עדיין העדפות לשיתופי פעולה.",
+      "contactDetails": "פרטי קשר",
+      "contactDetailsHint": "איש הקשר הראשי של העסק",
+      "name": "שם",
+      "phone": "טלפון",
+      "email": "אימייל",
+      "quickActions": "פעולות מהירות",
+      "openMessages": "פתיחת הודעות",
+      "editBusinessDetails": "עריכת פרטי העסק",
+      "editBadge": "עריכת פרופיל",
+      "editTitle": "עריכת פרופיל עסקי",
+      "editSubtitle": "עדכן את פרטי העסק, שיתופי הפעולה ופרטי הקשר.",
+      "fields": {
+        "businessName": "שם העסק",
+        "category": "קטגוריה",
+        "area": "אזור פעילות",
+        "contact": "איש קשר",
+        "phone": "טלפון",
+        "email": "אימייל",
+        "about": "על העסק",
+        "preferredCollabs": "שיתופי פעולה מועדפים"
+      },
+      "cancel": "ביטול",
+      "saving": "שומר...",
+      "saveProfile": "שמירת פרופיל",
+      "chatNotReady": "הצ׳אט העסקי עדיין לא מוכן.",
+      "alerts": {
+        "loadError": "שגיאה בטעינת פרטי העסק",
+        "deleteLogoConfirm": "האם למחוק את הלוגו?",
+        "deleteLogoError": "שגיאה במחיקת הלוגו",
+        "saveError": "שגיאה בשמירת הפרופיל"
+      }
+    }
+  },
+  "earlyAccess": {
+    "cta": {
+      "takeMeToSignup": "קחו אותי להרשמה"
+    },
+    "hero": {
+      "headline": "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?"
+    },
+    "countdown": {
+      "days": "ימים",
+      "hours": "שעות",
+      "minutes": "דקות",
+      "seconds": "שניות"
+    },
+    "marquee": {
+      "crm": "CRM",
+      "metaLeads": "Meta Leads",
+      "calendar": "יומן ותורים",
+      "website": "אתר ודפי נחיתה",
+      "automations": "אוטומציות",
+      "ai": "AI",
+      "humanServices": "שירותים אנושיים",
+      "collaborations": "שיתופי פעולה",
+      "community": "קהילת עסקים",
+      "salesTracking": "מעקב מכירות"
+    },
+    "problem": {
+      "eyebrow": "מה הבעיה ש־Bizuply פותרת",
+      "title": "העסק לא אמור להתפזר בין עשרה כלים",
+      "subtitle": "לידים ממטא, הודעות בוואטסאפ, פגישות ביומן, לקוחות בטבלה, אתר, משימות, תזכורות ושיתופי פעולה — כשכל דבר נמצא במקום אחר, קל לפספס לקוחות.",
+      "beforeLabel": "לפני Bizuply",
+      "beforeTitle": "כל דבר במקום אחר",
+      "beforeText": "העסק עובד, אבל המידע מפוזר בין כלים שונים. זה יוצר עומס, פספוסים וחוסר שליטה.",
+      "afterLabel": "אחרי Bizuply",
+      "afterTitle": "הכל נכנס למערכת אחת",
+      "afterText": "כל פנייה, לקוח, תור, משימה ושיתוף פעולה מקבלים מקום ברור, סטטוס ברור והמשך טיפול מסודר.",
+      "commandCenter": "Bizuply Command Center",
+      "controlTitle": "שליטה מלאה בעסק",
+      "scattered": {
+        "metaLeads": {
+          "title": "לידים ממטא",
+          "text": "פייסבוק ואינסטגרם"
+        },
+        "whatsapp": {
+          "title": "וואטסאפ",
+          "text": "הודעות שלא מסודרות"
+        },
+        "calendar": {
+          "title": "יומן",
+          "text": "פגישות ותורים"
+        },
+        "store": {
+          "title": "אתר וחנות",
+          "text": "נוכחות דיגיטלית"
+        },
+        "automations": {
+          "title": "אוטומציות",
+          "text": "תזכורות ופולואפים"
+        },
+        "ai": {
+          "title": "AI",
+          "text": "תוכן והחלטות"
+        }
+      },
+      "outcomes": {
+        "onePlace": "כל ליד נכנס למקום אחד",
+        "clearStatus": "כל לקוח מקבל סטטוס ברור",
+        "savedTasks": "כל תור ומשימה נשמרים במערכת",
+        "followUps": "כל פולואפ קורה בזמן"
+      }
+    },
+    "conversion": {
+      "eyebrow": "מה Bizuply עושה בפועל",
+      "title": "הופכת ליד חדש לתהליך מסודר שמתקדם לבד",
+      "subtitle": "הלקוח לא צריך להבין טכנולוגיה. הוא צריך להבין דבר אחד: כל פנייה נכנסת למערכת, מקבלת טיפול, תזכורות, משימות ופולואפים — עד שהעסק סוגר יותר.",
+      "stepLabel": "שלב {{num}}",
+      "steps": {
+        "leadIn": {
+          "title": "ליד נכנס",
+          "text": "פנייה חדשה ממטא, אתר או וואטסאפ נכנסת ישר למערכת"
+        },
+        "fastReply": {
+          "title": "תגובה מהירה",
+          "text": "המערכת מסמנת, מתזכרת ומפעילה תהליך המשך טיפול"
+        },
+        "crm": {
+          "title": "ניהול ב־CRM",
+          "text": "סטטוס, מקור, הערות, משימות וכל המעקב במקום אחד"
+        },
+        "appointment": {
+          "title": "פגישה או תור",
+          "text": "קובעים ביומן, שולחים תזכורות ומקטינים ביטולים"
+        },
+        "closes": {
+          "title": "יותר סגירות",
+          "text": "פחות לידים נופלים בדרך ויותר פניות הופכות ללקוחות"
+        }
+      }
+    },
+    "allInOne": {
+      "eyebrow": "מה יש בביזאפלי",
+      "title": "כל מה שהעסק צריך — וביחד זו מערכת מנצחת",
+      "subtitle": "במקום לפצל בין אתר, לידים, וואטסאפ, יומן, קמפיינים, טבלאות ותזכורות — Bizuply מחברת הכל למקום אחד, עם תנועה ברורה בין פנייה, טיפול וסגירה.",
+      "cards": {
+        "calendar": {
+          "title": "יומן ותורים",
+          "text": "ניהול זמינות, פגישות, תורים ותזכורות — כדי שכל פנייה תוכל להפוך לפגישה אמיתית"
+        },
+        "metaLeads": {
+          "title": "לידים ממטא",
+          "text": "פניות מפייסבוק ואינסטגרם נכנסות למערכת בצורה מסודרת, עם מקור, סטטוס והמשך טיפול"
+        },
+        "crm": {
+          "title": "CRM חכם",
+          "text": "כל הלידים, הלקוחות, הסטטוסים, המשימות והמעקבים במקום אחד"
+        },
+        "automations": {
+          "title": "אוטומציות",
+          "text": "תזכורות, פולואפים, משימות והתראות שעובדים בשבילכם ברקע"
+        },
+        "ai": {
+          "title": "AI לעסק",
+          "text": "עזרה בתוכן, שיווק, רעיונות, סדר, מכירות וניהול יומיומי"
+        },
+        "website": {
+          "title": "אתר, דפי נחיתה וחנות",
+          "text": "נוכחות דיגיטלית מקצועית לעסק שמתחברת ישירות למערכת"
+        },
+        "collaborations": {
+          "title": "שיתופי פעולה",
+          "text": "חיבורים, ספקים, שותפים וצוות — הכל מחובר, מסודר ועדכני"
+        }
+      }
+    },
+    "human": {
+      "agentAria": "נציג אנושי עם אוזניות",
+      "eyebrow": "שכבת שירותים אנושית",
+      "title": "נציג אנושי שמטפל בלידים ומחפש הזדמנויות",
+      "subtitle": "לצד המערכת, Bizuply יכולה לתת לעסק שכבה אנושית שמורידה עומס אמיתי: מענה ללידים, פגישות, מילוי פרטים, קמפיינים ושיתופי פעולה — הכל מחובר למערכת שלך.",
+      "features": {
+        "sales": {
+          "title": "טיפול ומכירה",
+          "text": "שיחה, בירור צורך, הסבר, תיאום המשך והובלת הליד לשלב הבא"
+        },
+        "details": {
+          "title": "מילוי פרטים",
+          "text": "איסוף וליווי פרטים מדויקים לפני העברה להמשך טיפול"
+        },
+        "reminders": {
+          "title": "תזכורות והתראות",
+          "text": "תזכורות חכמות ומעקב אחרי פניות שלא נסגרו"
+        },
+        "campaigns": {
+          "title": "קמפיינים חכמים",
+          "text": "עזרה בבניית קמפיינים, תוכן והנעה לפעולה מול לקוחות"
+        },
+        "collaborations": {
+          "title": "שיתופי פעולה",
+          "text": "איתור שותפים, ספקים וחיבורים שיכולים לעזור לעסק לצמוח"
+        },
+        "fastReply": {
+          "title": "תגובה מהירה",
+          "text": "מענה מהיר ללידים חמים כדי שלא יעברו למתחרים"
+        }
+      },
+      "floating": {
+        "fastLeads": {
+          "title": "תגובה מהירה ללידים",
+          "text": "מענה אנושי תוך שניות"
+        },
+        "salesHelp": {
+          "title": "סיוע במכירות",
+          "text": "הסבר, התאמה והובלה לסגירה"
+        },
+        "scheduling": {
+          "title": "תיאום פגישות",
+          "text": "ישירות ליומן שלך"
+        },
+        "partnerships": {
+          "title": "הזדמנויות שותפות",
+          "text": "חיבורים והפניות איכותיות"
+        }
+      }
+    },
+    "launchValue": {
+      "eyebrow": "למה להירשם עכשיו",
+      "title": "לא עוד כלי קטן — מעטפת מלאה לעסק שנבנית כדי להזיז אותו קדימה",
+      "subtitle": "Bizuply נבנית מתוך בדיקות עם עסקים, תהליכי מכירה, ניהול לידים, שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מקום אחד שמרכז את העבודה, מוריד עומס ומגדיל שליטה.",
+      "cards": {
+        "launch": {
+          "label": "יתרון השקה",
+          "title": "נכנסים לפני כולם ומקבלים מחיר מוקדם",
+          "text": "הנרשמים הראשונים יקבלו עדכונים, הדגמות וגישה למחירי השקה לפני שהמערכת נפתחת לקהל הרחב.",
+          "points": {
+            "price": "מחיר השקה לקבוצה בלבד",
+            "preview": "הצצה ראשונה למערכת",
+            "updates": "עדכונים לפני כולם"
+          }
+        },
+        "american": {
+          "label": "גב אמריקאי",
+          "title": "חברה אמריקאית עם חשיבה של מעטפת עסקית מתקדמת",
+          "text": "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות מעטפת מלאה שמחברת בין לידים, תורים, CRM, מכירות, שירות ושיתופי פעולה.",
+          "points": {
+            "standard": "סטנדרט מוצר גבוה",
+            "longTerm": "חשיבה לטווח ארוך",
+            "local": "התאמה לשוק הישראלי"
+          }
+        },
+        "beyond": {
+          "label": "מעבר למערכת",
+          "title": "לא רק תוכנה — גם שירותים, קהילה ושיתופי פעולה",
+          "text": "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים וקהילה סגורה של עסקים שצומחים ביחד.",
+          "points": {
+            "human": "שירותים אנושיים",
+            "community": "קהילה עסקית סגורה",
+            "ops": "חיבורים ותפעול במקום אחד"
+          }
+        }
+      }
+    },
+    "launchSteps": {
+      "eyebrow": "איך מצטרפים",
+      "title": "שלושה צעדים — ואתם בפנים לפני כולם",
+      "subtitle": "ההרשמה לא מחייבת רכישה. היא שומרת לכם מקום לקבלת עדכונים, הצצה ראשונה ומחירי השקה. בהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.",
+      "step01": {
+        "label": "שלב 01",
+        "title": "משאירים פרטים בטופס קצר וברור",
+        "fields": {
+          "fullName": "שם מלא",
+          "fullNameValue": "הלקוח הבא",
+          "phone": "טלפון",
+          "phoneValue": "05X-XXX-XXXX",
+          "niche": "תחום העסק",
+          "nicheValue": "סטודיו / קליניקה / חנות"
+        },
+        "text": "ממלאים שם, מייל, טלפון ותחום העסק — כדי שנדע למי לשלוח את העדכונים הראשונים וההזמנה לקבוצה."
+      },
+      "step02": {
+        "label": "שלב 02",
+        "title": "מקבלים עדכון לפני כולם",
+        "notifications": {
+          "groupSoon": "הקבוצה נפתחת בקרוב",
+          "demoReady": "הדגמה חדשה זמינה",
+          "pricingSent": "מחירי השקה נשלחו"
+        },
+        "text": "כשהקבוצה והעדכונים ייפתחו — אתם מקבלים התראה, הסבר והצצה ראשונה לפני פתיחה רחבה."
+      },
+      "step03": {
+        "label": "שלב 03",
+        "title": "מצטרפים למחירי ההשקה",
+        "earlyAccess": "EARLY ACCESS",
+        "launchPrice": "מחיר השקה",
+        "text": "הנרשמים הראשונים יקבלו גישה למחירי השקה לקבוצה בלבד ולזמן מוגבל."
+      }
+    },
+    "form": {
+      "eyebrow": "הרשמה מוקדמת פתוחה",
+      "title": "רוצים להיות בין הראשונים שמקבלים מחיר השקה וגישה ראשונה למערכת?",
+      "subtitle": "השאירו פרטים ונחזור אליכם לפני כולם. בקרוב תיפתח קבוצת וואטסאפ עם כל הפרטים, ההדגמות, העדכונים ומחירי ההשקה לקבוצה בלבד. בהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.",
+      "perks": {
+        "noCommitment": "בלי התחייבות",
+        "earlyUpdates": "עדכונים לפני כולם",
+        "closedCommunity": "קהילה סגורה",
+        "launchPricing": "מחירי השקה"
+      },
+      "cardEyebrow": "הרשמה מוקדמת",
+      "cardTitle": "הצטרפות לרשימת הראשונים",
+      "cardSubtitle": "מלאו פרטים ונעדכן כשקבוצת הוואטסאפ תיפתח.",
+      "name": "שם מלא",
+      "namePlaceholder": "איך קוראים לך?",
+      "email": "מייל",
+      "emailPlaceholder": "המייל שלך לקבלת אישור הרשמה",
+      "phone": "טלפון",
+      "phonePlaceholder": "מספר לקבלת הזמנה לקבוצה",
+      "business": "תחום העסק",
+      "businessPlaceholder": "לדוגמה: קליניקה, חנות, סטודיו, ייעוץ",
+      "interestsLabel": "מה הכי יכול לעזור לעסק שלך כרגע?",
+      "budgetLabel": "תקציב חודשי משוער",
+      "budgetOptional": "לא חובה",
+      "budgetPlaceholder": "בחרו תקציב חודשי משוער",
+      "submit": "שלחו לי פרטים והזמנה לקבוצה",
+      "submitting": "שולח ושומר פרטים...",
+      "disclaimer": "ההרשמה לא מחייבת רכישה. מחירי ההשקה יינתנו לקבוצת ההרשמה המוקדמת בלבד.",
+      "successTitle": "קיבלנו את הרשמתך להשקה",
+      "successText": "שמרנו את הפרטים. בקרוב נפתח קבוצת וואטסאפ ונשלח הזמנה עם כל הפרטים ומחירי ההשקה.",
+      "successAgain": "שליחת הרשמה נוספת",
+      "saveFailed": "לא הצלחנו לשמור את הפרטים",
+      "submitFailed": "שגיאה בשליחת הטופס. נסו שוב בעוד רגע."
+    },
+    "interests": {
+      "crm": "CRM וניהול לידים ואוטומציות",
+      "website": "אתר / עמוד נחיתה / חנות",
+      "calendar": "יומן פגישות / תורים / אישורי הגעה",
+      "humanService": "שירות אנושי ללידים ומכירות",
+      "ads": "קמפיינים ממומנים",
+      "content": "פוסטים ותוכן",
+      "reviews": "ביקורות, מוניטין והחזרת לקוחות",
+      "collaborations": "שיתופי פעולה עסקיים",
+      "community": "קהילת עסקים סגורה",
+      "everything": "הכל ביחד"
+    },
+    "budgets": {
+      "under500": "עד 500 ₪",
+      "500to1500": "500–1,500 ₪",
+      "1500to3000": "1,500–3,000 ₪",
+      "3000to6000": "3,000–6,000 ₪",
+      "over6000": "6,000 ₪ ומעלה",
+      "unknown": "עוד לא יודע/ת"
+    },
+    "faq": {
+      "eyebrow": "שאלות נפוצות",
+      "title": "כל מה שצריך לדעת לפני ההצטרפות",
+      "items": {
+        "whatIs": {
+          "q": "מה זה Bizuply",
+          "a": "Bizuply היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק."
+        },
+        "different": {
+          "q": "מה הופך את Bizuply לשונה",
+          "a": "Bizuply לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה, שיתופי פעולה ושירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר."
+        },
+        "forBusinesses": {
+          "q": "למה אתם אומרים שזה נבנה לעסקים באמת",
+          "a": "כי לאורך הדרך בדקנו תהליכים, צרכים, כאבים והרגלי עבודה של עסקים בשווקים שונים בעולם, כדי להבין מה באמת חסר לבעלי עסקים ביום־יום: פחות עומס, יותר סדר, יותר תגובה מהירה ויותר שליטה."
+        },
+        "american": {
+          "q": "מה הכוונה חברה אמריקאית",
+          "a": "Bizuply מגיעה מבית חברה אמריקאית, עם חשיבה של מוצר מתקדם לעסקים ועם התאמה לשוק הישראלי — לשפה, לקצב, ללידים, לוואטסאפ ולדרך שבה עסקים כאן עובדים."
+        },
+        "earlyAccess": {
+          "q": "מה מקבלים בהרשמה מוקדמת",
+          "a": "נרשמים מוקדמים יקבלו עדכונים ראשונים, הזמנה לקבוצת וואטסאפ שתיפתח בקרוב, מחירי השקה לקבוצה בלבד, ובהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד."
+        }
+      }
+    }
+  },
+  "aiSiteWizard": {
+    "back": "חזרה לבחירת שיטה",
+    "title": "בניית אתר עם AI",
+    "subtitle": "ה־AI יבנה עמודים חדשים וסקשנים אמיתיים לפי הצבעים וההגדרות שלכם — לא רק בחירת תבנית מוכנה.",
+    "stepOf": "שלב {{current}} מתוך {{total}}: {{label}}",
+    "steps": {
+      "business": "עסק",
+      "design": "עיצוב",
+      "pages": "דפים",
+      "summary": "סיכום"
+    },
+    "fields": {
+      "businessName": "שם העסק / האתר",
+      "businessNamePlaceholder": "לדוגמה: סטודיו נועם",
+      "niche": "תחום העסק",
+      "description": "תיאור קצר (אופציונלי)",
+      "descriptionPlaceholder": "מה העסק עושה, למי הוא פונה, מה מייחד אותו...",
+      "audience": "קהל יעד (אופציונלי)",
+      "audiencePlaceholder": "לקוחות פרטיים, עסקים קטנים, משפחות...",
+      "style": "סגנון עיצוב מועדף",
+      "tone": "טון כתיבה",
+      "primaryColor": "צבע ראשי",
+      "secondaryColor": "צבע משני",
+      "colorsHint": "הצבעים יוטמעו בסקשנים שנבנים. אם תשאיר ריק — ה־AI ישלים אוטומטית.",
+      "pagesTitle": "אילו עמודים לבנות?",
+      "pagesHint": "לכל עמוד ה־AI יבחר סקשנים מהספרייה וימלא תוכן מותאם."
+    },
+    "niches": {
+      "businessServices": "עסקים ושירותים",
+      "realEstate": "נדל״ן",
+      "beauty": "יופי ובריאות",
+      "food": "מזון ומסעדות",
+      "education": "חינוך וקורסים",
+      "portfolio": "פורטפוליו / יצירה",
+      "ecommerce": "חנות אונליין",
+      "other": "אחר"
+    },
+    "styles": {
+      "modern": "מודרני ונקי",
+      "luxury": "יוקרתי ואלגנטי",
+      "warm": "חם וביתי",
+      "bold": "נועז וצבעוני",
+      "minimal": "מינימליסטי"
+    },
+    "tones": {
+      "professional": "מקצועי",
+      "friendly": "ידידותי",
+      "luxury": "יוקרתי",
+      "energetic": "צעיר ואנרגטי"
+    },
+    "pages": {
+      "home": "ראשי",
+      "about": "אודות",
+      "services": "שירותים",
+      "gallery": "גלריה",
+      "pricing": "מחירים",
+      "testimonials": "המלצות",
+      "faq": "שאלות נפוצות",
+      "contact": "צור קשר"
+    },
+    "summary": {
+      "name": "שם",
+      "niche": "תחום",
+      "style": "סגנון",
+      "tone": "טון",
+      "pages": "עמודים",
+      "empty": "—",
+      "note": "ייבנו עמודים חדשים עם סקשנים אמיתיים מהספרייה (Hero, אודות, שירותים וכו׳), עם הצבעים שבחרתם, ואז ייפתח העורך לעריכה מלאה."
+    },
+    "buttons": {
+      "previous": "הקודם",
+      "continue": "המשך",
+      "generate": "בנה אתר עם AI",
+      "generating": "בונה את האתר..."
+    },
+    "status": {
+      "planning": "ה־AI מתכנן עמודים וסקשנים...",
+      "materializeLocal": "בונה אתר מהספרייה (מצב מקומי)...",
+      "materialize": "מרכיב סקשנים אמיתיים מהספרייה...",
+      "creating": "יוצר את האתר...",
+      "saving": "שומר את התוכן לשרת..."
+    },
+    "errors": {
+      "invalidPlan": "ה־AI לא החזיר מבנה אתר תקף",
+      "cannotBuild": "לא ניתן לבנות מבנה אתר",
+      "createFailed": "יצירת האתר נכשלה",
+      "generateFailed": "יצירת האתר עם AI נכשלה",
+      "network": "בעיית רשת ב{{stage}} — נסו שוב. אם זה ממשיך, בדקו חיבור או התחברות מחדש.",
+      "stageCreate": "יצירת האתר",
+      "stageSave": "שמירת התוכן",
+      "stageMaterialize": "הרכבת הסקשנים",
+      "stagePlan": "תכנון האתר"
+    },
+    "defaultSiteName": "האתר שלי"
   }
 }

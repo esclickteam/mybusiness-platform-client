@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   CheckCircle2,
   ChevronDown,
@@ -11,7 +12,6 @@ import {
   FolderInput,
   FolderPlus,
   Globe2,
-  LayoutTemplate,
   MoreHorizontal,
   Pencil,
   Plus,
@@ -46,14 +46,16 @@ type MenuState = {
   left: number;
 } | null;
 
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
 const MENU_WIDTH = 220;
 const MENU_ESTIMATED_HEIGHT = 360;
 
-function formatUpdatedAt(value?: string) {
+function formatUpdatedAt(value: string | undefined, locale: string) {
   if (!value) return "";
 
   try {
-    return new Intl.DateTimeFormat("he-IL", {
+    return new Intl.DateTimeFormat(locale, {
       day: "numeric",
       month: "long",
       year: "numeric",
@@ -63,31 +65,31 @@ function formatUpdatedAt(value?: string) {
   }
 }
 
-function statusLabel(site: MySiteSummary) {
+function statusLabel(site: MySiteSummary, t: TranslateFn) {
   if (site.published || site.status === "published") {
     const url = String(site.publicUrl || site.slug || "").trim();
     if (/draft-/i.test(url)) {
-      return "מפורסם — יש לבחור כתובת קבועה";
+      return t("mySites.statusLabel.publishedNeedUrl");
     }
-    return url || "מפורסם";
+    return url || t("mySites.statusLabel.published");
   }
 
-  return "טיוטה — טרם פורסם";
+  return t("mySites.statusLabel.draft");
 }
 
-function siteStatus(site: MySiteSummary) {
+function siteStatus(site: MySiteSummary, t: TranslateFn) {
   const published = site.published || site.status === "published";
 
   if (published) {
     return {
-      label: "פעיל",
+      label: t("mySites.status.active"),
       wrapper: "border-emerald-200 bg-emerald-50 text-emerald-700",
       dot: "bg-emerald-500",
     };
   }
 
   return {
-    label: "טיוטה",
+    label: t("mySites.status.draft"),
     wrapper: "border-amber-200 bg-amber-50 text-amber-700",
     dot: "bg-amber-500",
   };
@@ -128,7 +130,9 @@ function dedupeSitesForDisplay(sites: MySiteSummary[]) {
 export default function MySitesPage() {
   const { businessId = "" } = useParams<{ businessId: string }>();
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
+  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
 
   const [sites, setSites] = useState<MySiteSummary[]>([]);
   const [folders, setFolders] = useState<SiteFolder[]>([]);
@@ -166,11 +170,11 @@ export default function MySitesPage() {
       setSites(dedupeSitesForDisplay(nextSites));
       setFolders(nextFolders);
     } catch (err: any) {
-      setError(err?.message || "לא ניתן לטעון את האתרים כרגע");
+      setError(err?.message || t("mySites.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [businessId, query, activeFolderId]);
+  }, [businessId, query, activeFolderId, t]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -214,7 +218,7 @@ export default function MySitesPage() {
   }
 
   async function handleCreateFolder() {
-    const name = window.prompt("שם התיקייה החדשה");
+    const name = window.prompt(t("mySites.prompts.newFolderName"));
     if (!name?.trim()) return;
 
     try {
@@ -222,7 +226,7 @@ export default function MySitesPage() {
       await createSiteFolder(businessId, name.trim());
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "יצירת תיקייה נכשלה");
+      alert(err?.message || t("mySites.errors.createFolder"));
     } finally {
       setBusyId(null);
     }
@@ -251,7 +255,10 @@ export default function MySitesPage() {
   async function handleRename(site: MySiteSummary) {
     setMenu(null);
 
-    const name = window.prompt("שם חדש לאתר", site.name || "האתר שלי");
+    const name = window.prompt(
+      t("mySites.prompts.renameSite"),
+      site.name || t("mySites.defaultSiteName")
+    );
     if (!name?.trim()) return;
 
     try {
@@ -259,7 +266,7 @@ export default function MySitesPage() {
       await renameMySite(site._id, name.trim());
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "שינוי השם נכשל");
+      alert(err?.message || t("mySites.errors.rename"));
     } finally {
       setBusyId(null);
     }
@@ -273,7 +280,7 @@ export default function MySitesPage() {
       await duplicateMySite(site._id);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "שכפול האתר נכשל");
+      alert(err?.message || t("mySites.errors.duplicate"));
     } finally {
       setBusyId(null);
     }
@@ -283,7 +290,9 @@ export default function MySitesPage() {
     setMenu(null);
 
     const approved = window.confirm(
-      `למחוק את "${site.name || "האתר"}"? האתר יוסר מהרשימה.`
+      t("mySites.prompts.deleteSite", {
+        name: site.name || t("mySites.siteFallback"),
+      })
     );
     if (!approved) return;
 
@@ -292,7 +301,7 @@ export default function MySitesPage() {
       await deleteMySite(site._id);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "מחיקת האתר נכשלה");
+      alert(err?.message || t("mySites.errors.delete"));
     } finally {
       setBusyId(null);
     }
@@ -302,9 +311,7 @@ export default function MySitesPage() {
     setMenu(null);
 
     if (!folders.length) {
-      const shouldCreate = window.confirm(
-        "אין עדיין תיקיות. ליצור תיקייה חדשה עכשיו?"
-      );
+      const shouldCreate = window.confirm(t("mySites.prompts.noFoldersCreate"));
 
       if (!shouldCreate) return;
       await handleCreateFolder();
@@ -313,11 +320,11 @@ export default function MySitesPage() {
 
     const options = folders
       .map((folder, index) => `${index + 1}. ${folder.name}`)
-      .concat(`${folders.length + 1}. ללא תיקייה (ראשי)`)
+      .concat(`${folders.length + 1}. ${t("mySites.prompts.noFolderOption")}`)
       .join("\n");
 
     const choice = window.prompt(
-      `העברה לתיקייה — הזינו מספר:\n${options}`,
+      t("mySites.prompts.moveToFolder", { options }),
       "1"
     );
 
@@ -332,7 +339,7 @@ export default function MySitesPage() {
       await moveMySiteToFolder(site._id, folderId);
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "העברה לתיקייה נכשלה");
+      alert(err?.message || t("mySites.errors.moveToFolder"));
     } finally {
       setBusyId(null);
     }
@@ -340,7 +347,7 @@ export default function MySitesPage() {
 
   async function handleDeleteFolder(folder: SiteFolder) {
     const approved = window.confirm(
-      `למחוק את התיקייה "${folder.name}"? האתרים שבה יחזרו לרשימה הראשית.`
+      t("mySites.prompts.deleteFolder", { name: folder.name })
     );
 
     if (!approved) return;
@@ -355,7 +362,7 @@ export default function MySitesPage() {
 
       await loadAll();
     } catch (err: any) {
-      alert(err?.message || "מחיקת תיקייה נכשלה");
+      alert(err?.message || t("mySites.errors.deleteFolder"));
     } finally {
       setBusyId(null);
     }
@@ -389,24 +396,24 @@ export default function MySitesPage() {
   return (
     <div
       dir={dir}
-      className="min-h-screen bg-[#f7f8fc] px-4 py-6 sm:px-6 lg:px-8"
+      className="min-h-screen bg-[#f7f8fc] px-4 py-6 text-start sm:px-6 lg:px-8"
     >
       <div className="mx-auto w-full max-w-[1480px]">
         <header className="mb-7 flex flex-col gap-5 xl:flex-row xl:items-start xl:justify-between">
           <div className="order-1 xl:order-2">
             <div className="mb-2 flex items-center gap-2">
               <span className="text-sm font-bold text-slate-400">
-                בניית אתרים
+                {t("mySites.badge")}
               </span>
               <span className="h-1 w-1 rounded-full bg-violet-400" />
               <span className="text-sm font-bold text-violet-600">
-                מרכז ניהול
+                {t("mySites.managementCenter")}
               </span>
             </div>
 
             <div className="flex items-center gap-3">
               <h1 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-                האתרים שלי
+                {t("mySites.title")}
               </h1>
 
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-violet-100 bg-violet-50 shadow-sm">
@@ -415,8 +422,7 @@ export default function MySitesPage() {
             </div>
 
             <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500 sm:text-base">
-              כל האתרים של העסק במקום אחד — עריכה, ארגון בתיקיות, פרסום
-              וניהול שוטף בקלות.
+              {t("mySites.subtitle")}
             </p>
           </div>
 
@@ -427,7 +433,7 @@ export default function MySitesPage() {
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-950 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
             >
               <Plus className="h-4 w-4" />
-              אתר חדש
+              {t("mySites.newSite")}
             </button>
 
             <button
@@ -437,7 +443,7 @@ export default function MySitesPage() {
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-violet-700 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
             >
               <FolderPlus className="h-4 w-4" />
-              תיקייה חדשה
+              {t("mySites.newFolder")}
             </button>
           </div>
         </header>
@@ -445,13 +451,13 @@ export default function MySitesPage() {
         <section className="mb-6 rounded-[24px] border border-slate-200/80 bg-white p-3 shadow-sm">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center">
             <div className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
 
               <input
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
-                placeholder="חיפוש לפי שם אתר, דומיין או מילת מפתח..."
-                className="h-12 w-full rounded-2xl border border-transparent bg-slate-50 pr-11 pl-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-200 focus:bg-white focus:ring-4 focus:ring-violet-100/70"
+                placeholder={t("mySites.searchPlaceholder")}
+                className="h-12 w-full rounded-2xl border border-transparent bg-slate-50 pe-11 ps-4 text-sm font-medium text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-200 focus:bg-white focus:ring-4 focus:ring-violet-100/70"
               />
             </div>
 
@@ -461,19 +467,19 @@ export default function MySitesPage() {
                 className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:border-violet-200 hover:text-violet-700"
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                סינון נוסף
+                {t("mySites.moreFilters")}
               </button>
 
               <FolderFilterButton
                 active={activeFolderId === "all"}
                 onClick={() => setActiveFolderId("all")}
-                label="כל האתרים"
+                label={t("mySites.allSites")}
               />
 
               <FolderFilterButton
                 active={activeFolderId === "root"}
                 onClick={() => setActiveFolderId("root")}
-                label="ללא תיקייה"
+                label={t("mySites.noFolder")}
               />
 
               {folders.map((folder) => (
@@ -485,7 +491,7 @@ export default function MySitesPage() {
                     event.preventDefault();
                     handleDeleteFolder(folder);
                   }}
-                  title="לחיצה ימנית למחיקה"
+                  title={t("mySites.rightClickDelete")}
                   className={`inline-flex h-11 items-center gap-2 rounded-2xl px-4 text-xs font-black transition ${
                     activeFolderId === folder._id
                       ? "bg-slate-950 text-white shadow-lg"
@@ -532,12 +538,11 @@ export default function MySitesPage() {
               </div>
 
               <h2 className="text-2xl font-black text-slate-950">
-                עדיין אין כאן אתרים
+                {t("mySites.emptyTitle")}
               </h2>
 
               <p className="mt-2 text-sm leading-7 text-slate-500">
-                צרו את האתר הראשון שלכם מתבנית מקצועית או באמצעות AI, ונהלו
-                הכול מכאן.
+                {t("mySites.emptyText")}
               </p>
 
               <button
@@ -546,7 +551,7 @@ export default function MySitesPage() {
                 className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-600 to-indigo-950 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
               >
                 <Plus className="h-4 w-4" />
-                צרו אתר ראשון
+                {t("mySites.createFirstSite")}
               </button>
             </div>
           </div>
@@ -558,7 +563,7 @@ export default function MySitesPage() {
               const folderLabel = site.folderId
                 ? folderNameById.get(String(site.folderId))
                 : null;
-              const status = siteStatus(site);
+              const status = siteStatus(site, t);
 
               return (
                 <article
@@ -568,7 +573,7 @@ export default function MySitesPage() {
                   <button
                     type="button"
                     onClick={() => openSite(site)}
-                    className="block w-full text-right"
+                    className="block w-full text-start"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
                       <MySiteCardPreview site={site} />
@@ -576,11 +581,11 @@ export default function MySitesPage() {
                       <div className="absolute inset-0 flex items-center justify-center bg-slate-950/0 opacity-0 transition duration-300 group-hover:bg-slate-950/35 group-hover:opacity-100">
                         <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-950 shadow-xl">
                           <Pencil className="h-4 w-4" />
-                          פתיחה בעורך
+                          {t("mySites.openInEditor")}
                         </span>
                       </div>
 
-                      <div className="absolute right-4 top-4">
+                      <div className="absolute end-4 top-4">
                         <span
                           className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-black shadow-sm backdrop-blur ${status.wrapper}`}
                         >
@@ -592,7 +597,7 @@ export default function MySitesPage() {
                       </div>
 
                       {folderLabel ? (
-                        <div className="absolute bottom-4 right-4">
+                        <div className="absolute bottom-4 end-4">
                           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/60 bg-white/90 px-3 py-1.5 text-[11px] font-black text-slate-700 shadow-sm backdrop-blur">
                             <Folder className="h-3.5 w-3.5" />
                             {folderLabel}
@@ -612,11 +617,11 @@ export default function MySitesPage() {
 
                           <div className="min-w-0">
                             <h3 className="truncate text-base font-black text-slate-950">
-                              {site.name || "האתר שלי"}
+                              {site.name || t("mySites.defaultSiteName")}
                             </h3>
 
                             <p className="mt-0.5 truncate text-xs font-medium text-slate-400">
-                              {statusLabel(site)}
+                              {statusLabel(site, t)}
                             </p>
                           </div>
                         </div>
@@ -624,7 +629,7 @@ export default function MySitesPage() {
 
                       <button
                         type="button"
-                        aria-label="תפריט פעולות"
+                        aria-label={t("mySites.actionsMenu")}
                         disabled={busyId === site._id}
                         onClick={(event) => openActionsMenu(event, site._id)}
                         className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-700 shadow-sm transition hover:border-violet-200 hover:bg-violet-50 hover:text-violet-700 disabled:cursor-not-allowed disabled:opacity-50"
@@ -638,8 +643,10 @@ export default function MySitesPage() {
                         <Clock3 className="h-4 w-4" />
                         <span>
                           {site.updatedAt
-                            ? `עודכן ${formatUpdatedAt(site.updatedAt)}`
-                            : "טרם עודכן"}
+                            ? t("mySites.updated", {
+                                date: formatUpdatedAt(site.updatedAt, dateLocale),
+                              })
+                            : t("mySites.notUpdated")}
                         </span>
                       </div>
 
@@ -651,7 +658,7 @@ export default function MySitesPage() {
                               : "text-slate-300"
                           }`}
                         />
-                        {published ? "מפורסם" : "טיוטה"}
+                        {published ? t("mySites.published") : t("mySites.draft")}
                       </div>
                     </div>
                   </div>
@@ -679,14 +686,14 @@ export default function MySitesPage() {
               {selectedSite.access !== "shared" ? (
                 <MenuButton
                   icon={Pencil}
-                  label="שינוי שם"
+                  label={t("mySites.menu.rename")}
                   onClick={() => handleRename(selectedSite)}
                 />
               ) : null}
 
               <MenuButton
                 icon={ExternalLink}
-                label="פתיחה בעורך"
+                label={t("mySites.menu.openEditor")}
                 onClick={() => {
                   setMenu(null);
                   openSite(selectedSite);
@@ -695,14 +702,14 @@ export default function MySitesPage() {
 
               <MenuButton
                 icon={Settings2}
-                label="פאנל ניהול"
+                label={t("mySites.menu.managePanel")}
                 onClick={() => openSiteManagement(selectedSite)}
               />
 
               {selectedSite.access !== "shared" ? (
                 <MenuButton
                   icon={UserPlus}
-                  label="שיתוף / העברה"
+                  label={t("mySites.menu.shareTransfer")}
                   onClick={() => {
                     setMenu(null);
                     setShareSite(selectedSite);
@@ -715,7 +722,7 @@ export default function MySitesPage() {
                 selectedSite.status === "published") ? (
                 <MenuButton
                   icon={Globe2}
-                  label="צפייה באתר החי"
+                  label={t("mySites.menu.viewLive")}
                   onClick={() => {
                     setMenu(null);
                     window.open(selectedSite.publicUrl, "_blank", "noopener");
@@ -727,7 +734,7 @@ export default function MySitesPage() {
 
               <MenuButton
                 icon={Copy}
-                label="שכפול אתר"
+                label={t("mySites.menu.duplicate")}
                 onClick={() => handleDuplicate(selectedSite)}
               />
 
@@ -735,13 +742,13 @@ export default function MySitesPage() {
                 <>
                   <MenuButton
                     icon={FolderInput}
-                    label="העברה לתיקייה"
+                    label={t("mySites.menu.moveToFolder")}
                     onClick={() => handleMoveToFolder(selectedSite)}
                   />
 
                   <MenuButton
                     icon={Trash2}
-                    label="מחיקה"
+                    label={t("mySites.menu.delete")}
                     danger
                     onClick={() => handleDelete(selectedSite)}
                   />
@@ -803,7 +810,7 @@ function MenuButton({
     <button
       type="button"
       onClick={onClick}
-      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-right text-sm transition ${
+      className={`flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-start text-sm transition ${
         danger
           ? "text-rose-600 hover:bg-rose-50"
           : "text-slate-700 hover:bg-slate-50"

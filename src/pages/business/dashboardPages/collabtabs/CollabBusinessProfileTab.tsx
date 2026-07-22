@@ -23,6 +23,8 @@ import {
 } from "lucide-react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 import API from "../../../../api";
 import CollabChat from "./CollabChat";
@@ -81,6 +83,8 @@ const phoneButtonClass =
   "!left-0 !right-auto !rounded-l-2xl !rounded-r-none !border-slate-200 !bg-white";
 
 export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTabProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { socket } = useCollabOutletContext();
   const [profileData, setProfileData] = useState<BusinessProfile | null>(null);
 
@@ -134,7 +138,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
           setLogoPreview(null);
         }
 
-        setMyBusinessName(businessData.businessName || "העסק שלי");
+        setMyBusinessName(businessData.businessName || t("collab.profile.myBusinessFallback"));
       }
 
       if (businessIdRes.data.myBusinessId) {
@@ -142,11 +146,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
       }
     } catch (error) {
       console.error("Error loading business details:", error);
-      alert("שגיאה בטעינת פרטי העסק");
+      alert(t("collab.profile.alerts.loadError"));
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchData();
@@ -196,7 +200,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   const handleDeleteLogo = useCallback(async () => {
     if (saving || isDeletingLogo) return;
 
-    if (!window.confirm("האם למחוק את הלוגו?")) return;
+    if (!window.confirm(t("collab.profile.alerts.deleteLogoConfirm"))) return;
 
     try {
       setIsDeletingLogo(true);
@@ -204,7 +208,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
       const res = await API.delete("/business/my/logo");
 
       if (res.status !== 200 && res.status !== 204) {
-        alert("שגיאה במחיקת הלוגו");
+        alert(t("collab.profile.alerts.deleteLogoError"));
         return;
       }
 
@@ -214,11 +218,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
       await fetchData();
     } catch (error) {
       console.error("Error deleting logo:", error);
-      alert("שגיאה במחיקת הלוגו");
+      alert(t("collab.profile.alerts.deleteLogoError"));
     } finally {
       setIsDeletingLogo(false);
     }
-  }, [saving, isDeletingLogo, fetchData]);
+  }, [saving, isDeletingLogo, fetchData, t]);
 
   const handleSaveProfile = useCallback(
     async (event: FormEvent<HTMLFormElement>) => {
@@ -262,11 +266,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
           await fetchData();
           setShowEditProfile(false);
         } else {
-          alert("שגיאה בשמירת הפרופיל");
+          alert(t("collab.profile.alerts.saveError"));
         }
       } catch (error) {
         console.error("Error saving profile:", error);
-        alert("שגיאה בשמירת הפרופיל");
+        alert(t("collab.profile.alerts.saveError"));
       } finally {
         setSaving(false);
       }
@@ -302,7 +306,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 
   return (
     <>
-      <section dir="rtl" className="space-y-6 text-right">
+      <section dir={dir} className="space-y-6 text-start">
         <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
           <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
           <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
@@ -316,7 +320,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 {logoPreview ? (
                   <img
                     src={logoPreview}
-                    alt="לוגו העסק"
+                    alt={t("collab.profile.logoAlt")}
                     className="h-full w-full object-cover"
                   />
                 ) : (
@@ -339,7 +343,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               <div className="min-w-0">
                 <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
                   <Sparkles className="h-4 w-4" />
-                  פרופיל עסקי
+                  {t("collab.profile.badge")}
                 </div>
 
                 <h1 className="mt-4 truncate text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
@@ -369,7 +373,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
               >
                 <Edit3 className="h-5 w-5" />
-                עריכת פרופיל
+                {t("collab.profile.editProfile")}
               </button>
 
               <button
@@ -378,7 +382,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-sky-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
               >
                 <MessageCircle className="h-5 w-5" />
-                הודעות עסקיות
+                {t("collab.profile.businessMessages")}
               </button>
 
               {logoPreview && (
@@ -393,7 +397,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   ) : (
                     <Trash2 className="h-5 w-5" />
                   )}
-                  {isDeletingLogo ? "מוחק..." : "מחיקת לוגו"}
+                  {isDeletingLogo ? t("collab.profile.deleting") : t("collab.profile.deleteLogo")}
                 </button>
               )}
             </div>
@@ -402,33 +406,33 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 
         <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <StatCard
-            label="סטטוס פרופיל"
-            value="פעיל"
-            helper="גלוי לעסקים"
+            label={t("collab.profile.stats.status")}
+            value={t("collab.profile.stats.statusValue")}
+            helper={t("collab.profile.stats.statusHelper")}
             icon={CheckCircle2}
             tone="emerald"
           />
 
           <StatCard
-            label="קטגוריה"
+            label={t("collab.profile.stats.category")}
             value={safeProfile.category}
-            helper="סוג העסק"
+            helper={t("collab.profile.stats.categoryHelper")}
             icon={Building2}
             tone="sky"
           />
 
           <StatCard
-            label="אזור פעילות"
+            label={t("collab.profile.stats.area")}
             value={safeProfile.area}
-            helper="מיקום פעילות"
+            helper={t("collab.profile.stats.areaHelper")}
             icon={MapPin}
             tone="violet"
           />
 
           <StatCard
-            label="שיתופי פעולה"
+            label={t("collab.profile.stats.collabs")}
             value={safeProfile.collabPref.length}
-            helper="העדפות שיתוף"
+            helper={t("collab.profile.stats.collabsHelper")}
             icon={Handshake}
             tone="amber"
           />
@@ -438,13 +442,13 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
           <div className="space-y-5">
             <InfoSection
               icon={MapPin}
-              title="אזור פעילות"
+              title={t("collab.profile.areaTitle")}
               value={safeProfile.area}
             />
 
             <InfoSection
               icon={Building2}
-              title="על העסק"
+              title={t("collab.profile.aboutTitle")}
               value={safeProfile.about}
             />
 
@@ -456,11 +460,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 
                 <div>
                   <h3 className="text-base font-black text-slate-950">
-                    שיתופי פעולה מועדפים
+                    {t("collab.profile.preferredCollabs")}
                   </h3>
 
                   <p className="text-xs font-semibold text-slate-500">
-                    מה העסק מחפש במסגרת שיתופי פעולה
+                    {t("collab.profile.preferredCollabsHint")}
                   </p>
                 </div>
               </div>
@@ -484,7 +488,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 </div>
               ) : (
                 <p className="rounded-2xl bg-slate-50 p-4 text-sm font-semibold text-slate-500">
-                  לא הוגדרו עדיין העדפות לשיתופי פעולה.
+                  {t("collab.profile.noCollabPrefs")}
                 </p>
               )}
             </section>
@@ -499,11 +503,11 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 
                 <div>
                   <h3 className="text-base font-black text-slate-950">
-                    פרטי קשר
+                    {t("collab.profile.contactDetails")}
                   </h3>
 
                   <p className="text-xs font-semibold text-slate-500">
-                    איש הקשר הראשי של העסק
+                    {t("collab.profile.contactDetailsHint")}
                   </p>
                 </div>
               </div>
@@ -511,19 +515,19 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               <div className="mt-5 space-y-3">
                 <ContactRow
                   icon={UserRound}
-                  label="שם"
+                  label={t("collab.profile.name")}
                   value={safeProfile.contact}
                 />
 
                 <ContactRow
                   icon={Phone}
-                  label="טלפון"
+                  label={t("collab.profile.phone")}
                   value={safeProfile.phone}
                 />
 
                 <ContactRow
                   icon={Mail}
-                  label="אימייל"
+                  label={t("collab.profile.email")}
                   value={safeProfile.email}
                 />
               </div>
@@ -531,7 +535,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 
             <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <h3 className="text-base font-black text-slate-950">
-                פעולות מהירות
+                {t("collab.profile.quickActions")}
               </h3>
 
               <div className="mt-4 grid gap-3">
@@ -541,7 +545,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
                 >
                   <MessageCircle className="h-5 w-5" />
-                  פתיחת הודעות
+                  {t("collab.profile.openMessages")}
                 </button>
 
                 <button
@@ -550,7 +554,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-sky-50 px-5 text-sm font-black text-sky-700 transition hover:-translate-y-0.5 hover:bg-sky-100"
                 >
                   <Edit3 className="h-5 w-5" />
-                  עריכת פרטי העסק
+                  {t("collab.profile.editBusinessDetails")}
                 </button>
               </div>
             </section>
@@ -561,21 +565,21 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
       {showEditProfile && (
         <AppModal onClose={() => setShowEditProfile(false)}>
           <div
-            dir="rtl"
-            className="mx-auto max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
+            dir={dir}
+            className="mx-auto max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] bg-white p-5 text-start shadow-2xl sm:p-6"
           >
             <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-700">
-                  עריכת פרופיל
+                  {t("collab.profile.editBadge")}
                 </p>
 
                 <h2 className="mt-1 text-2xl font-black text-slate-950">
-                  עריכת פרופיל עסקי
+                  {t("collab.profile.editTitle")}
                 </h2>
 
                 <p className="mt-1 text-sm font-semibold text-slate-500">
-                  עדכן את פרטי העסק, שיתופי הפעולה ופרטי הקשר.
+                  {t("collab.profile.editSubtitle")}
                 </p>
               </div>
 
@@ -592,7 +596,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               onSubmit={handleSaveProfile}
               className="grid gap-4 lg:grid-cols-2"
             >
-              <FormField label="שם העסק" required>
+              <FormField label={t("collab.profile.fields.businessName")} required>
                 <input
                   name="businessName"
                   defaultValue={safeProfile.businessName}
@@ -601,7 +605,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 />
               </FormField>
 
-              <FormField label="קטגוריה" required>
+              <FormField label={t("collab.profile.fields.category")} required>
                 <input
                   name="category"
                   defaultValue={safeProfile.category}
@@ -610,7 +614,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 />
               </FormField>
 
-              <FormField label="אזור פעילות" required>
+              <FormField label={t("collab.profile.fields.area")} required>
                 <input
                   name="area"
                   defaultValue={safeProfile.area}
@@ -619,7 +623,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 />
               </FormField>
 
-              <FormField label="איש קשר" required>
+              <FormField label={t("collab.profile.fields.contact")} required>
                 <input
                   name="contact"
                   defaultValue={safeProfile.contact}
@@ -628,7 +632,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 />
               </FormField>
 
-              <FormField label="טלפון" required>
+              <FormField label={t("collab.profile.fields.phone")} required>
                 <div dir="ltr" className="text-left">
                   <PhoneInput
                     country="il"
@@ -648,7 +652,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 </div>
               </FormField>
 
-              <FormField label="אימייל" required>
+              <FormField label={t("collab.profile.fields.email")} required>
                 <input
                   name="email"
                   defaultValue={safeProfile.email}
@@ -658,7 +662,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               </FormField>
 
               <div className="lg:col-span-2">
-                <FormField label="על העסק">
+                <FormField label={t("collab.profile.fields.about")}>
                   <textarea
                     name="about"
                     defaultValue={safeProfile.about}
@@ -669,7 +673,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
               </div>
 
               <div className="lg:col-span-2">
-                <FormField label="שיתופי פעולה מועדפים">
+                <FormField label={t("collab.profile.fields.preferredCollabs")}>
                   <textarea
                     name="collabPref"
                     defaultValue={profileData.collabPref || ""}
@@ -686,7 +690,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                   disabled={saving}
                   className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
                 >
-                  ביטול
+                  {t("collab.profile.cancel")}
                 </button>
 
                 <button
@@ -700,7 +704,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                     <CheckCircle2 className="h-5 w-5" />
                   )}
 
-                  {saving ? "שומר..." : "שמירת פרופיל"}
+                  {saving ? t("collab.profile.saving") : t("collab.profile.saveProfile")}
                 </button>
               </div>
             </form>
@@ -719,9 +723,9 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 onClose={() => setShowBusinessChat(false)}
               />
             ) : (
-              <div dir="rtl" className="p-10 text-center">
+              <div dir={dir} className="p-10 text-center">
                 <p className="text-sm font-black text-slate-500">
-                  הצ׳אט העסקי עדיין לא מוכן.
+                  {t("collab.profile.chatNotReady")}
                 </p>
               </div>
             )}
@@ -741,8 +745,9 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
 }
 
 function ProfileSkeleton() {
+  const dir = useLocaleDir();
   return (
-    <section dir="rtl" className="space-y-5 text-right">
+    <section dir={dir} className="space-y-5 text-start">
       <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <div className="flex animate-pulse gap-5">
           <div className="h-24 w-24 rounded-[1.8rem] bg-white/80 shadow-sm" />
@@ -780,6 +785,7 @@ function StatCard({
   icon: React.ElementType;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -797,7 +803,7 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">{t("collab.active")}</p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -821,6 +827,7 @@ function InfoSection({
   title: string;
   value: string;
 }) {
+  const { t } = useTranslation();
   return (
     <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="mb-4 flex items-center gap-3">
@@ -832,7 +839,7 @@ function InfoSection({
           <h3 className="text-base font-black text-slate-950">{title}</h3>
 
           <p className="text-xs font-semibold text-slate-500">
-            מידע מתוך פרופיל העסק
+            {t("collab.profile.fromProfile")}
           </p>
         </div>
       </div>

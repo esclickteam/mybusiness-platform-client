@@ -21,6 +21,8 @@ import {
   Users,
   Zap,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type LeadForm = {
   name: string;
@@ -35,30 +37,49 @@ type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
 const LOGO_SRC = "/bizuply%20logo.png";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
-const headline = "מה אם כל מה שהעסק שלך צריך נמצא במקום אחד?";
 
-const interestOptions = [
-  "CRM וניהול לידים ואוטומציות",
-  "אתר / עמוד נחיתה / חנות",
-  "יומן פגישות / תורים / אישורי הגעה",
-  "שירות אנושי ללידים ומכירות",
-  "קמפיינים ממומנים",
-  "פוסטים ותוכן",
-  "ביקורות, מוניטין והחזרת לקוחות",
-  "שיתופי פעולה עסקיים",
-  "קהילת עסקים סגורה",
-  "הכל ביחד",
-];
+const INTEREST_KEYS = [
+  "crm",
+  "website",
+  "calendar",
+  "humanService",
+  "ads",
+  "content",
+  "reviews",
+  "collaborations",
+  "community",
+  "everything",
+] as const;
 
-const budgetOptions = [
-  "עד 500 ₪",
-  "500–1,500 ₪",
-  "1,500–3,000 ₪",
-  "3,000–6,000 ₪",
-  "6,000 ₪ ומעלה",
-  "עוד לא יודע/ת",
-];
+const BUDGET_KEYS = [
+  "under500",
+  "500to1500",
+  "1500to3000",
+  "3000to6000",
+  "over6000",
+  "unknown",
+] as const;
 
+const FAQ_KEYS = [
+  "whatIs",
+  "different",
+  "forBusinesses",
+  "american",
+  "earlyAccess",
+] as const;
+
+const MARQUEE_KEYS = [
+  "crm",
+  "metaLeads",
+  "calendar",
+  "website",
+  "automations",
+  "ai",
+  "humanServices",
+  "collaborations",
+  "community",
+  "salesTracking",
+] as const;
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
@@ -86,29 +107,6 @@ async function apiRequest<T>(
 
   return data as T;
 }
-
-const faqs = [
-  {
-    q: "מה זה Bizuply",
-    a: "Bizuply היא מערכת שהיא מעטפת מלאה לעסק: CRM, לידים, אתר, דפי נחיתה, אוטומציות, יומן, חנות, AI, שיתופי פעולה ושירותים אנושיים שמורידים עומס אמיתי מבעל העסק.",
-  },
-  {
-    q: "מה הופך את Bizuply לשונה",
-    a: "Bizuply לא נבנית רק כמערכת טכנית. היא משלבת טכנולוגיה, שיתופי פעולה ושירותים אנושיים, כדי לעזור לעסק לא רק לקבל פניות — אלא גם לנהל, להגיב, לעקוב ולמכור בצורה מסודרת יותר.",
-  },
-  {
-    q: "למה אתם אומרים שזה נבנה לעסקים באמת",
-    a: "כי לאורך הדרך בדקנו תהליכים, צרכים, כאבים והרגלי עבודה של עסקים בשווקים שונים בעולם, כדי להבין מה באמת חסר לבעלי עסקים ביום־יום: פחות עומס, יותר סדר, יותר תגובה מהירה ויותר שליטה.",
-  },
-  {
-    q: "מה הכוונה חברה אמריקאית",
-    a: "Bizuply מגיעה מבית חברה אמריקאית, עם חשיבה של מוצר מתקדם לעסקים ועם התאמה לשוק הישראלי — לשפה, לקצב, ללידים, לוואטסאפ ולדרך שבה עסקים כאן עובדים.",
-  },
-  {
-    q: "מה מקבלים בהרשמה מוקדמת",
-    a: "נרשמים מוקדמים יקבלו עדכונים ראשונים, הזמנה לקבוצת וואטסאפ שתיפתח בקרוב, מחירי השקה לקבוצה בלבד, ובהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.",
-  },
-];
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
@@ -156,12 +154,15 @@ function Reveal({
 function PulseCTA({
   dark = false,
   className,
-  label = "קחו אותי להרשמה",
+  label,
 }: {
   dark?: boolean;
   className?: string;
   label?: string;
 }) {
+  const { t } = useTranslation();
+  const ctaLabel = label ?? t("earlyAccess.cta.takeMeToSignup");
+
   return (
     <a
       href="#early-access"
@@ -171,13 +172,15 @@ function PulseCTA({
         className,
       )}
     >
-      <span className="!text-black">{label}</span>
+      <span className="!text-black">{ctaLabel}</span>
       <ArrowUpRight className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
     </a>
   );
 }
 
 function FallingHeadline() {
+  const { t } = useTranslation();
+  const headline = t("earlyAccess.hero.headline");
   let charIndex = 0;
   const words = headline.split(" ");
 
@@ -288,6 +291,7 @@ function BigLogo() {
 }
 
 function Countdown() {
+  const { t } = useTranslation();
   const [time, setTime] = useState(getCountdownParts());
 
   useEffect(() => {
@@ -299,10 +303,10 @@ function Countdown() {
   }, []);
 
   const items = [
-    { label: "ימים", value: time.days },
-    { label: "שעות", value: time.hours },
-    { label: "דקות", value: time.minutes },
-    { label: "שניות", value: time.seconds },
+    { label: t("earlyAccess.countdown.days"), value: time.days },
+    { label: t("earlyAccess.countdown.hours"), value: time.hours },
+    { label: t("earlyAccess.countdown.minutes"), value: time.minutes },
+    { label: t("earlyAccess.countdown.seconds"), value: time.seconds },
   ];
 
   return (
@@ -336,20 +340,12 @@ function Countdown() {
 }
 
 
-const launchMarqueeItems = [
-  "CRM",
-  "Meta Leads",
-  "יומן ותורים",
-  "אתר ודפי נחיתה",
-  "אוטומציות",
-  "AI",
-  "שירותים אנושיים",
-  "שיתופי פעולה",
-  "קהילת עסקים",
-  "מעקב מכירות",
-];
-
 function LaunchMarquee({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  const launchMarqueeItems = MARQUEE_KEYS.map((key) =>
+    t(`earlyAccess.marquee.${key}`),
+  );
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 22 }}
@@ -382,30 +378,57 @@ function LaunchMarquee({ className }: { className?: string }) {
 }
 
 function ProblemToSolutionSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
   const scatteredItems: Array<{
     icon: IconType;
     title: string;
     text: string;
   }> = [
-    { icon: MessageCircle, title: "לידים ממטא", text: "פייסבוק ואינסטגרם" },
-    { icon: Phone, title: "וואטסאפ", text: "הודעות שלא מסודרות" },
-    { icon: CalendarCheck, title: "יומן", text: "פגישות ותורים" },
-    { icon: Store, title: "אתר וחנות", text: "נוכחות דיגיטלית" },
-    { icon: Zap, title: "אוטומציות", text: "תזכורות ופולואפים" },
-    { icon: Bot, title: "AI", text: "תוכן והחלטות" },
+    {
+      icon: MessageCircle,
+      title: t("earlyAccess.problem.scattered.metaLeads.title"),
+      text: t("earlyAccess.problem.scattered.metaLeads.text"),
+    },
+    {
+      icon: Phone,
+      title: t("earlyAccess.problem.scattered.whatsapp.title"),
+      text: t("earlyAccess.problem.scattered.whatsapp.text"),
+    },
+    {
+      icon: CalendarCheck,
+      title: t("earlyAccess.problem.scattered.calendar.title"),
+      text: t("earlyAccess.problem.scattered.calendar.text"),
+    },
+    {
+      icon: Store,
+      title: t("earlyAccess.problem.scattered.store.title"),
+      text: t("earlyAccess.problem.scattered.store.text"),
+    },
+    {
+      icon: Zap,
+      title: t("earlyAccess.problem.scattered.automations.title"),
+      text: t("earlyAccess.problem.scattered.automations.text"),
+    },
+    {
+      icon: Bot,
+      title: t("earlyAccess.problem.scattered.ai.title"),
+      text: t("earlyAccess.problem.scattered.ai.text"),
+    },
   ];
 
   const outcomes = [
-    "כל ליד נכנס למקום אחד",
-    "כל לקוח מקבל סטטוס ברור",
-    "כל תור ומשימה נשמרים במערכת",
-    "כל פולואפ קורה בזמן",
+    t("earlyAccess.problem.outcomes.onePlace"),
+    t("earlyAccess.problem.outcomes.clearStatus"),
+    t("earlyAccess.problem.outcomes.savedTasks"),
+    t("earlyAccess.problem.outcomes.followUps"),
   ];
 
   return (
     <section
       id="about"
-      dir="rtl"
+      dir={dir}
       className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
     >
       <div className="pointer-events-none absolute left-[-12%] top-[-14%] -z-10 h-[620px] w-[620px] rounded-full bg-[#eadcff] blur-3xl" />
@@ -416,17 +439,15 @@ function ProblemToSolutionSection() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Sparkles className="h-4 w-4" />
-              מה הבעיה ש־Bizuply פותרת
+              {t("earlyAccess.problem.eyebrow")}
             </p>
 
             <h2 className="text-5xl font-black leading-[0.9] tracking-[-0.035em] sm:text-7xl">
-              העסק לא אמור להתפזר בין עשרה כלים
+              {t("earlyAccess.problem.title")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
-              לידים ממטא, הודעות בוואטסאפ, פגישות ביומן, לקוחות בטבלה, אתר,
-              משימות, תזכורות ושיתופי פעולה — כשכל דבר נמצא במקום אחר, קל
-              לפספס לקוחות.
+              {t("earlyAccess.problem.subtitle")}
             </p>
 
             <PulseCTA className="mt-8" />
@@ -435,19 +456,18 @@ function ProblemToSolutionSection() {
 
         <div className="mt-16 grid gap-8 lg:grid-cols-[1fr_0.18fr_1fr] lg:items-center">
           <Reveal>
-            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-6 text-right shadow-[0_28px_90px_rgba(111,39,190,0.08)]">
+            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-white p-6 text-start shadow-[0_28px_90px_rgba(111,39,190,0.08)]">
               <div className="absolute -left-16 -top-16 h-44 w-44 rounded-full bg-[#eadcff] blur-3xl" />
 
               <div className="relative mb-6">
                 <p className="text-sm font-black text-[#7b2ee8]">
-                  לפני Bizuply
+                  {t("earlyAccess.problem.beforeLabel")}
                 </p>
                 <h3 className="mt-2 text-4xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
-                  כל דבר במקום אחר
+                  {t("earlyAccess.problem.beforeTitle")}
                 </h3>
                 <p className="mt-3 text-base font-semibold leading-8 text-[#6b587c]">
-                  העסק עובד, אבל המידע מפוזר בין כלים שונים. זה יוצר עומס,
-                  פספוסים וחוסר שליטה.
+                  {t("earlyAccess.problem.beforeText")}
                 </p>
               </div>
 
@@ -497,20 +517,19 @@ function ProblemToSolutionSection() {
           </Reveal>
 
           <Reveal delay={0.12}>
-            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#14071f] p-6 text-right text-white shadow-[0_34px_110px_rgba(42,16,60,0.32)]">
+            <div className="relative h-full overflow-hidden rounded-[38px] border border-[#eadcff] bg-[#14071f] p-6 text-start text-white shadow-[0_34px_110px_rgba(42,16,60,0.32)]">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(123,46,232,0.32),transparent_34%),radial-gradient(circle_at_88%_78%,rgba(243,221,165,0.18),transparent_30%)]" />
               <div className="biz-dashboard-scan absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/10 to-transparent" />
 
               <div className="relative mb-6">
                 <p className="text-sm font-black text-[#f3dda5]">
-                  אחרי Bizuply
+                  {t("earlyAccess.problem.afterLabel")}
                 </p>
                 <h3 className="mt-2 text-4xl font-black leading-[1.05] tracking-[-0.025em] text-white">
-                  הכל נכנס למערכת אחת
+                  {t("earlyAccess.problem.afterTitle")}
                 </h3>
                 <p className="mt-3 text-base font-semibold leading-8 text-[#d8c9ef]">
-                  כל פנייה, לקוח, תור, משימה ושיתוף פעולה מקבלים מקום ברור,
-                  סטטוס ברור והמשך טיפול מסודר.
+                  {t("earlyAccess.problem.afterText")}
                 </p>
               </div>
 
@@ -518,10 +537,10 @@ function ProblemToSolutionSection() {
                 <div className="mb-5 flex items-center justify-between gap-4">
                   <div>
                     <p className="text-xs font-black text-[#cdb8ff]">
-                      Bizuply Command Center
+                      {t("earlyAccess.problem.commandCenter")}
                     </p>
                     <h4 className="mt-1 text-2xl font-black tracking-[-0.02em] text-white">
-                      שליטה מלאה בעסק
+                      {t("earlyAccess.problem.controlTitle")}
                     </h4>
                   </div>
 
@@ -560,6 +579,9 @@ function ProblemToSolutionSection() {
 }
 
 function ConversionMachineSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
   const pipelineSteps: Array<{
     icon: IconType;
     title: string;
@@ -567,34 +589,34 @@ function ConversionMachineSection() {
   }> = [
     {
       icon: MessageCircle,
-      title: "ליד נכנס",
-      text: "פנייה חדשה ממטא, אתר או וואטסאפ נכנסת ישר למערכת",
+      title: t("earlyAccess.conversion.steps.leadIn.title"),
+      text: t("earlyAccess.conversion.steps.leadIn.text"),
     },
     {
       icon: Zap,
-      title: "תגובה מהירה",
-      text: "המערכת מסמנת, מתזכרת ומפעילה תהליך המשך טיפול",
+      title: t("earlyAccess.conversion.steps.fastReply.title"),
+      text: t("earlyAccess.conversion.steps.fastReply.text"),
     },
     {
       icon: LayoutDashboard,
-      title: "ניהול ב־CRM",
-      text: "סטטוס, מקור, הערות, משימות וכל המעקב במקום אחד",
+      title: t("earlyAccess.conversion.steps.crm.title"),
+      text: t("earlyAccess.conversion.steps.crm.text"),
     },
     {
       icon: CalendarCheck,
-      title: "פגישה או תור",
-      text: "קובעים ביומן, שולחים תזכורות ומקטינים ביטולים",
+      title: t("earlyAccess.conversion.steps.appointment.title"),
+      text: t("earlyAccess.conversion.steps.appointment.text"),
     },
     {
       icon: Rocket,
-      title: "יותר סגירות",
-      text: "פחות לידים נופלים בדרך ויותר פניות הופכות ללקוחות",
+      title: t("earlyAccess.conversion.steps.closes.title"),
+      text: t("earlyAccess.conversion.steps.closes.text"),
     },
   ];
 
   return (
     <section
-      dir="rtl"
+      dir={dir}
       className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
     >
       <div className="pointer-events-none absolute left-[-10%] top-[-18%] -z-10 h-[560px] w-[560px] rounded-full bg-[#7b2ee8]/22 blur-3xl" />
@@ -604,15 +626,13 @@ function ConversionMachineSection() {
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-black text-[#f3dda5]">
-              מה Bizuply עושה בפועל
+              {t("earlyAccess.conversion.eyebrow")}
             </p>
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] sm:text-7xl">
-              הופכת ליד חדש לתהליך מסודר שמתקדם לבד
+              {t("earlyAccess.conversion.title")}
             </h2>
             <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-8 text-[#cdbde4]">
-              הלקוח לא צריך להבין טכנולוגיה. הוא צריך להבין דבר אחד: כל פנייה
-              נכנסת למערכת, מקבלת טיפול, תזכורות, משימות ופולואפים — עד שהעסק
-              סוגר יותר.
+              {t("earlyAccess.conversion.subtitle")}
             </p>
 
             <PulseCTA dark className="mt-8" />
@@ -622,7 +642,7 @@ function ConversionMachineSection() {
         <div className="relative mt-16">
           <div className="biz-pipeline-line pointer-events-none absolute left-[8%] right-[8%] top-[78px] hidden h-px bg-gradient-to-l from-transparent via-[#f3dda5]/40 to-transparent lg:block" />
 
-          <div className="grid gap-5 lg:grid-cols-5" dir="rtl">
+          <div className="grid gap-5 lg:grid-cols-5" dir={dir}>
             {pipelineSteps.map((step, index) => {
               const Icon = step.icon;
 
@@ -642,7 +662,9 @@ function ConversionMachineSection() {
 
                     <div className="relative mt-5">
                       <p className="mb-2 text-xs font-black text-[#f3dda5]">
-                        שלב {String(index + 1).padStart(2, "0")}
+                        {t("earlyAccess.conversion.stepLabel", {
+                          num: String(index + 1).padStart(2, "0"),
+                        })}
                       </p>
                       <h3 className="text-2xl font-black tracking-[-0.02em] text-white">
                         {step.title}
@@ -663,6 +685,9 @@ function ConversionMachineSection() {
 }
 
 function AllInOneOrbitSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
   const orbitCards: Array<{
     icon: IconType;
     title: string;
@@ -673,56 +698,56 @@ function AllInOneOrbitSection() {
   }> = [
     {
       icon: CalendarCheck,
-      title: "יומן ותורים",
-      text: "ניהול זמינות, פגישות, תורים ותזכורות — כדי שכל פנייה תוכל להפוך לפגישה אמיתית",
+      title: t("earlyAccess.allInOne.cards.calendar.title"),
+      text: t("earlyAccess.allInOne.cards.calendar.text"),
       number: "01",
       position: "left-1/2 top-0 -translate-x-1/2",
       lineClass: "biz-connector-top",
     },
     {
       icon: MessageCircle,
-      title: "לידים ממטא",
-      text: "פניות מפייסבוק ואינסטגרם נכנסות למערכת בצורה מסודרת, עם מקור, סטטוס והמשך טיפול",
+      title: t("earlyAccess.allInOne.cards.metaLeads.title"),
+      text: t("earlyAccess.allInOne.cards.metaLeads.text"),
       number: "02",
       position: "right-0 top-[22%]",
       lineClass: "biz-connector-right-top",
     },
     {
       icon: LayoutDashboard,
-      title: "CRM חכם",
-      text: "כל הלידים, הלקוחות, הסטטוסים, המשימות והמעקבים במקום אחד",
+      title: t("earlyAccess.allInOne.cards.crm.title"),
+      text: t("earlyAccess.allInOne.cards.crm.text"),
       number: "03",
       position: "right-2 bottom-[21%]",
       lineClass: "biz-connector-right-bottom",
     },
     {
       icon: Zap,
-      title: "אוטומציות",
-      text: "תזכורות, פולואפים, משימות והתראות שעובדים בשבילכם ברקע",
+      title: t("earlyAccess.allInOne.cards.automations.title"),
+      text: t("earlyAccess.allInOne.cards.automations.text"),
       number: "04",
       position: "left-[56%] bottom-0",
       lineClass: "biz-connector-bottom-right",
     },
     {
       icon: Bot,
-      title: "AI לעסק",
-      text: "עזרה בתוכן, שיווק, רעיונות, סדר, מכירות וניהול יומיומי",
+      title: t("earlyAccess.allInOne.cards.ai.title"),
+      text: t("earlyAccess.allInOne.cards.ai.text"),
       number: "05",
       position: "left-[16%] bottom-0",
       lineClass: "biz-connector-bottom-left",
     },
     {
       icon: Store,
-      title: "אתר, דפי נחיתה וחנות",
-      text: "נוכחות דיגיטלית מקצועית לעסק שמתחברת ישירות למערכת",
+      title: t("earlyAccess.allInOne.cards.website.title"),
+      text: t("earlyAccess.allInOne.cards.website.text"),
       number: "06",
       position: "left-0 bottom-[26%]",
       lineClass: "biz-connector-left-bottom",
     },
     {
       icon: Handshake,
-      title: "שיתופי פעולה",
-      text: "חיבורים, ספקים, שותפים וצוות — הכל מחובר, מסודר ועדכני",
+      title: t("earlyAccess.allInOne.cards.collaborations.title"),
+      text: t("earlyAccess.allInOne.cards.collaborations.text"),
       number: "07",
       position: "left-0 top-[24%]",
       lineClass: "biz-connector-left-top",
@@ -731,7 +756,7 @@ function AllInOneOrbitSection() {
 
   return (
     <section
-      dir="rtl"
+      dir={dir}
       className="relative isolate overflow-hidden bg-white px-4 py-16 text-[#2a103c] sm:px-5 sm:py-20 lg:px-8 lg:py-24"
     >
       <div className="pointer-events-none absolute left-[-18%] top-[-20%] -z-10 h-[520px] w-[520px] rounded-full bg-[#eee2ff] blur-3xl sm:h-[760px] sm:w-[760px]" />
@@ -740,20 +765,18 @@ function AllInOneOrbitSection() {
       <div className="mx-auto grid max-w-[1540px] gap-10 2xl:grid-cols-[1.08fr_0.72fr] 2xl:items-center 2xl:gap-14">
         {/* Text - appears first until huge desktop */}
         <Reveal className="order-1 2xl:order-2">
-          <div className="mx-auto max-w-4xl text-center 2xl:text-right">
+          <div className="mx-auto max-w-4xl text-center 2xl:text-start">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-[#f3eaff] px-4 py-2 text-xs font-black text-[#7b2ee8] sm:px-5 sm:py-3">
               <Sparkles className="h-4 w-4" />
-              מה יש בביזאפלי
+              {t("earlyAccess.allInOne.eyebrow")}
             </p>
 
             <h2 className="text-[clamp(2.45rem,9vw,4.7rem)] font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c]">
-              כל מה שהעסק צריך — וביחד זו מערכת מנצחת
+              {t("earlyAccess.allInOne.title")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-2xl text-base font-semibold leading-8 text-[#6b587c] sm:text-lg sm:leading-9 2xl:mx-0">
-              במקום לפצל בין אתר, לידים, וואטסאפ, יומן, קמפיינים, טבלאות
-              ותזכורות — Bizuply מחברת הכל למקום אחד, עם תנועה ברורה בין פנייה,
-              טיפול וסגירה.
+              {t("earlyAccess.allInOne.subtitle")}
             </p>
 
             <PulseCTA className="mt-8" />
@@ -802,7 +825,7 @@ function AllInOneOrbitSection() {
                       duration: 0.55,
                       ease: [0.22, 1, 0.36, 1],
                     }}
-                    className="biz-orbit-feature-card relative w-full rounded-[24px] border border-[#eadcff] bg-white/90 p-4 text-right shadow-[0_18px_55px_rgba(111,39,190,0.09)] backdrop-blur-2xl sm:rounded-[28px] sm:p-5"
+                    className="biz-orbit-feature-card relative w-full rounded-[24px] border border-[#eadcff] bg-white/90 p-4 text-start shadow-[0_18px_55px_rgba(111,39,190,0.09)] backdrop-blur-2xl sm:rounded-[28px] sm:p-5"
                     style={{ animationDelay: `${index * 0.22}s` }}
                   >
                     <div className="flex items-start gap-3 sm:gap-4">
@@ -881,7 +904,7 @@ function AllInOneOrbitSection() {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   className={cx(
-                    "biz-orbit-feature-card absolute z-30 w-[310px] rounded-[28px] border border-[#eadcff] bg-white/90 p-5 text-right shadow-[0_22px_70px_rgba(111,39,190,0.10)] backdrop-blur-2xl",
+                    "biz-orbit-feature-card absolute z-30 w-[310px] rounded-[28px] border border-[#eadcff] bg-white/90 p-5 text-start shadow-[0_22px_70px_rgba(111,39,190,0.10)] backdrop-blur-2xl",
                     card.position,
                   )}
                   style={{ animationDelay: `${index * 0.22}s` }}
@@ -930,6 +953,8 @@ function AllInOneOrbitSection() {
 
 
 function HologramAgentIllustration() {
+  const { t } = useTranslation();
+
   return (
     <div className="biz-agent-shell">
       <div className="biz-agent-orbit biz-agent-orbit-one" />
@@ -940,7 +965,7 @@ function HologramAgentIllustration() {
         viewBox="0 0 520 680"
         className="biz-agent-svg"
         role="img"
-        aria-label="נציג אנושי עם אוזניות"
+        aria-label={t("earlyAccess.human.agentAria")}
       >
         <defs>
           <linearGradient id="agentHair" x1="0" x2="1" y1="0" y2="1">
@@ -1156,6 +1181,9 @@ function HologramAgentIllustration() {
 }
 
 function HologramHumanSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
   const featureCards: Array<{
     icon: IconType;
     title: string;
@@ -1163,58 +1191,58 @@ function HologramHumanSection() {
   }> = [
     {
       icon: MessageCircle,
-      title: "טיפול ומכירה",
-      text: "שיחה, בירור צורך, הסבר, תיאום המשך והובלת הליד לשלב הבא",
+      title: t("earlyAccess.human.features.sales.title"),
+      text: t("earlyAccess.human.features.sales.text"),
     },
     {
       icon: Users,
-      title: "מילוי פרטים",
-      text: "איסוף וליווי פרטים מדויקים לפני העברה להמשך טיפול",
+      title: t("earlyAccess.human.features.details.title"),
+      text: t("earlyAccess.human.features.details.text"),
     },
     {
       icon: Clock3,
-      title: "תזכורות והתראות",
-      text: "תזכורות חכמות ומעקב אחרי פניות שלא נסגרו",
+      title: t("earlyAccess.human.features.reminders.title"),
+      text: t("earlyAccess.human.features.reminders.text"),
     },
     {
       icon: Megaphone,
-      title: "קמפיינים חכמים",
-      text: "עזרה בבניית קמפיינים, תוכן והנעה לפעולה מול לקוחות",
+      title: t("earlyAccess.human.features.campaigns.title"),
+      text: t("earlyAccess.human.features.campaigns.text"),
     },
     {
       icon: Handshake,
-      title: "שיתופי פעולה",
-      text: "איתור שותפים, ספקים וחיבורים שיכולים לעזור לעסק לצמוח",
+      title: t("earlyAccess.human.features.collaborations.title"),
+      text: t("earlyAccess.human.features.collaborations.text"),
     },
     {
       icon: Zap,
-      title: "תגובה מהירה",
-      text: "מענה מהיר ללידים חמים כדי שלא יעברו למתחרים",
+      title: t("earlyAccess.human.features.fastReply.title"),
+      text: t("earlyAccess.human.features.fastReply.text"),
     },
   ];
 
   const floatingCards = [
     {
-      title: "תגובה מהירה ללידים",
-      text: "מענה אנושי תוך שניות",
+      title: t("earlyAccess.human.floating.fastLeads.title"),
+      text: t("earlyAccess.human.floating.fastLeads.text"),
       icon: Zap,
       className: "left-0 top-[16%]",
     },
     {
-      title: "סיוע במכירות",
-      text: "הסבר, התאמה והובלה לסגירה",
+      title: t("earlyAccess.human.floating.salesHelp.title"),
+      text: t("earlyAccess.human.floating.salesHelp.text"),
       icon: Rocket,
       className: "right-0 top-[20%]",
     },
     {
-      title: "תיאום פגישות",
-      text: "ישירות ליומן שלך",
+      title: t("earlyAccess.human.floating.scheduling.title"),
+      text: t("earlyAccess.human.floating.scheduling.text"),
       icon: CalendarCheck,
       className: "left-0 bottom-[24%]",
     },
     {
-      title: "הזדמנויות שותפות",
-      text: "חיבורים והפניות איכותיות",
+      title: t("earlyAccess.human.floating.partnerships.title"),
+      text: t("earlyAccess.human.floating.partnerships.text"),
       icon: Handshake,
       className: "right-0 bottom-[20%]",
     },
@@ -1222,7 +1250,7 @@ function HologramHumanSection() {
 
   return (
     <section
-      dir="rtl"
+      dir={dir}
       className="biz-human-hologram relative isolate overflow-hidden px-5 py-24 text-white lg:px-8"
     >
       <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
@@ -1251,7 +1279,7 @@ function HologramHumanSection() {
                     ease: [0.22, 1, 0.36, 1],
                   }}
                   className={cx(
-                    "biz-agent-floating-card absolute z-30 w-[230px] rounded-[26px] border border-white/12 bg-white/[0.075] p-5 text-right shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl",
+                    "biz-agent-floating-card absolute z-30 w-[230px] rounded-[26px] border border-white/12 bg-white/[0.075] p-5 text-start shadow-[0_24px_70px_rgba(0,0,0,0.22)] backdrop-blur-2xl",
                     card.className,
                   )}
                 >
@@ -1276,20 +1304,18 @@ function HologramHumanSection() {
         </Reveal>
 
         <Reveal delay={0.12}>
-          <div dir="rtl" className="text-right">
+          <div dir={dir} className="text-start">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.07] px-5 py-3 text-xs font-black text-[#f3dda5] shadow-[0_18px_55px_rgba(0,0,0,0.18)]">
               <Sparkles className="h-4 w-4" />
-              שכבת שירותים אנושית
+              {t("earlyAccess.human.eyebrow")}
             </p>
 
             <h2 className="max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
-              נציג אנושי שמטפל בלידים ומחפש הזדמנויות
+              {t("earlyAccess.human.title")}
             </h2>
 
             <p className="mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
-              לצד המערכת, Bizuply יכולה לתת לעסק שכבה אנושית שמורידה עומס
-              אמיתי: מענה ללידים, פגישות, מילוי פרטים, קמפיינים ושיתופי פעולה —
-              הכל מחובר למערכת שלך.
+              {t("earlyAccess.human.subtitle")}
             </p>
 
             <PulseCTA dark className="mt-8" />
@@ -1305,7 +1331,7 @@ function HologramHumanSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: index * 0.06, duration: 0.55 }}
-                    className="group rounded-[30px] border border-white/10 bg-white/[0.065] p-6 text-right shadow-[0_22px_70px_rgba(0,0,0,0.18)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#f3dda5]/40 hover:bg-white/[0.09]"
+                    className="group rounded-[30px] border border-white/10 bg-white/[0.065] p-6 text-start shadow-[0_22px_70px_rgba(0,0,0,0.18)] backdrop-blur-xl transition hover:-translate-y-1 hover:border-[#f3dda5]/40 hover:bg-white/[0.09]"
                   >
                     <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-[#f3dda5] text-[#2a103c] shadow-[0_16px_38px_rgba(243,221,165,0.16)]">
                       <Icon className="h-7 w-7" />
@@ -1329,6 +1355,9 @@ function HologramHumanSection() {
 }
 
 function LaunchValueSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
   const cards: Array<{
     icon: IconType;
     label: string;
@@ -1338,29 +1367,44 @@ function LaunchValueSection() {
   }> = [
     {
       icon: Rocket,
-      label: "יתרון השקה",
-      title: "נכנסים לפני כולם ומקבלים מחיר מוקדם",
-      text: "הנרשמים הראשונים יקבלו עדכונים, הדגמות וגישה למחירי השקה לפני שהמערכת נפתחת לקהל הרחב.",
-      points: ["מחיר השקה לקבוצה בלבד", "הצצה ראשונה למערכת", "עדכונים לפני כולם"],
+      label: t("earlyAccess.launchValue.cards.launch.label"),
+      title: t("earlyAccess.launchValue.cards.launch.title"),
+      text: t("earlyAccess.launchValue.cards.launch.text"),
+      points: [
+        t("earlyAccess.launchValue.cards.launch.points.price"),
+        t("earlyAccess.launchValue.cards.launch.points.preview"),
+        t("earlyAccess.launchValue.cards.launch.points.updates"),
+      ],
     },
     {
       icon: ShieldCheck,
-      label: "גב אמריקאי",
-      title: "חברה אמריקאית עם חשיבה של מעטפת עסקית מתקדמת",
-      text: "המטרה היא לא לבנות עוד דף נחיתה. המטרה היא לבנות מעטפת מלאה שמחברת בין לידים, תורים, CRM, מכירות, שירות ושיתופי פעולה.",
-      points: ["סטנדרט מוצר גבוה", "חשיבה לטווח ארוך", "התאמה לשוק הישראלי"],
+      label: t("earlyAccess.launchValue.cards.american.label"),
+      title: t("earlyAccess.launchValue.cards.american.title"),
+      text: t("earlyAccess.launchValue.cards.american.text"),
+      points: [
+        t("earlyAccess.launchValue.cards.american.points.standard"),
+        t("earlyAccess.launchValue.cards.american.points.longTerm"),
+        t("earlyAccess.launchValue.cards.american.points.local"),
+      ],
     },
     {
       icon: Handshake,
-      label: "מעבר למערכת",
-      title: "לא רק תוכנה — גם שירותים, קהילה ושיתופי פעולה",
-      text: "המערכת נועדה לעזור לעסק לעבוד מסודר יותר, אבל גם לפתוח אפשרויות: נציגים, קמפיינים, תיאומים, ספקים וקהילה סגורה של עסקים שצומחים ביחד.",
-      points: ["שירותים אנושיים", "קהילה עסקית סגורה", "חיבורים ותפעול במקום אחד"],
+      label: t("earlyAccess.launchValue.cards.beyond.label"),
+      title: t("earlyAccess.launchValue.cards.beyond.title"),
+      text: t("earlyAccess.launchValue.cards.beyond.text"),
+      points: [
+        t("earlyAccess.launchValue.cards.beyond.points.human"),
+        t("earlyAccess.launchValue.cards.beyond.points.community"),
+        t("earlyAccess.launchValue.cards.beyond.points.ops"),
+      ],
     },
   ];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8">
+    <section
+      dir={dir}
+      className="relative isolate overflow-hidden bg-[#fbf8ff] px-5 py-24 text-[#2a103c] lg:px-8"
+    >
       <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#ead7ff] blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-20%] right-[-10%] -z-10 h-[620px] w-[620px] rounded-full bg-[#fff0bd] blur-3xl" />
 
@@ -1369,17 +1413,15 @@ function LaunchValueSection() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-xs font-black text-[#7b2ee8] shadow-[0_16px_45px_rgba(111,39,190,0.08)]">
               <Crown className="h-4 w-4" />
-              למה להירשם עכשיו
+              {t("earlyAccess.launchValue.eyebrow")}
             </p>
 
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
-              לא עוד כלי קטן — מעטפת מלאה לעסק שנבנית כדי להזיז אותו קדימה
+              {t("earlyAccess.launchValue.title")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#6b587c]">
-              Bizuply נבנית מתוך בדיקות עם עסקים, תהליכי מכירה, ניהול לידים,
-              שירות לקוחות ושיתופי פעולה — כדי לתת לבעל עסק מקום אחד שמרכז את
-              העבודה, מוריד עומס ומגדיל שליטה.
+              {t("earlyAccess.launchValue.subtitle")}
             </p>
 
             <PulseCTA className="mt-8" />
@@ -1395,7 +1437,7 @@ function LaunchValueSection() {
                 <motion.div
                   whileHover={{ y: -10, scale: 1.01 }}
                   transition={{ duration: 0.25 }}
-                  className="group relative h-full overflow-hidden rounded-[38px] border border-[#2a103c]/15 bg-[#16091f] p-7 text-right text-white shadow-[0_28px_90px_rgba(42,16,60,0.18)]"
+                  className="group relative h-full overflow-hidden rounded-[38px] border border-[#2a103c]/15 bg-[#16091f] p-7 text-start text-white shadow-[0_28px_90px_rgba(42,16,60,0.18)]"
                 >
                   <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-white/[0.08] to-transparent" />
                   <div className="absolute -left-12 -top-12 h-32 w-32 rounded-full bg-[#7b2ee8]/20 blur-2xl transition group-hover:bg-[#f3dda5]/20" />
@@ -1446,8 +1488,35 @@ function LaunchValueSection() {
 }
 
 function LaunchStepsSection() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+
+  const demoFields = [
+    [
+      t("earlyAccess.launchSteps.step01.fields.fullName"),
+      t("earlyAccess.launchSteps.step01.fields.fullNameValue"),
+    ],
+    [
+      t("earlyAccess.launchSteps.step01.fields.phone"),
+      t("earlyAccess.launchSteps.step01.fields.phoneValue"),
+    ],
+    [
+      t("earlyAccess.launchSteps.step01.fields.niche"),
+      t("earlyAccess.launchSteps.step01.fields.nicheValue"),
+    ],
+  ];
+
+  const notifications = [
+    t("earlyAccess.launchSteps.step02.notifications.groupSoon"),
+    t("earlyAccess.launchSteps.step02.notifications.demoReady"),
+    t("earlyAccess.launchSteps.step02.notifications.pricingSent"),
+  ];
+
   return (
-    <section className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8">
+    <section
+      dir={dir}
+      className="relative isolate overflow-hidden bg-[#0f0619] px-5 py-24 text-white lg:px-8"
+    >
       <div className="pointer-events-none absolute left-[-12%] top-[-18%] -z-10 h-[620px] w-[620px] rounded-full bg-[#7b2ee8]/20 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-18%] right-[-12%] -z-10 h-[620px] w-[620px] rounded-full bg-[#f3dda5]/10 blur-3xl" />
 
@@ -1456,17 +1525,15 @@ function LaunchStepsSection() {
           <div className="mx-auto max-w-4xl text-center">
             <p className="mb-4 inline-flex items-center gap-2 rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-5 py-3 text-xs font-black text-[#f3dda5]">
               <Sparkles className="h-4 w-4" />
-              איך מצטרפים
+              {t("earlyAccess.launchSteps.eyebrow")}
             </p>
 
             <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
-              שלושה צעדים — ואתם בפנים לפני כולם
+              {t("earlyAccess.launchSteps.title")}
             </h2>
 
             <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-9 text-[#d8c9ef]">
-              ההרשמה לא מחייבת רכישה. היא שומרת לכם מקום לקבלת עדכונים,
-              הצצה ראשונה ומחירי השקה. בהמשך הקבוצה תשמש כקהילה סגורה לעסקים
-              שצומחים ביחד.
+              {t("earlyAccess.launchSteps.subtitle")}
             </p>
 
             <PulseCTA dark className="mt-8" />
@@ -1485,9 +1552,11 @@ function LaunchStepsSection() {
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-base font-black text-[#7b2ee8]">שלב 01</p>
+                    <p className="text-base font-black text-[#7b2ee8]">
+                      {t("earlyAccess.launchSteps.step01.label")}
+                    </p>
                     <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
-                      משאירים פרטים בטופס קצר וברור
+                      {t("earlyAccess.launchSteps.step01.title")}
                     </h3>
                   </div>
 
@@ -1499,18 +1568,14 @@ function LaunchStepsSection() {
                 <div className="biz-step-hologram relative mt-8 rounded-[32px] border border-[#eadcff] bg-white p-5">
                   <div className="biz-step-scan absolute inset-x-4 top-4 h-12 rounded-full bg-gradient-to-b from-[#7b2ee8]/16 to-transparent" />
 
-                  {[
-                    ["שם מלא", "הלקוח הבא"],
-                    ["טלפון", "05X-XXX-XXXX"],
-                    ["תחום העסק", "סטודיו / קליניקה / חנות"],
-                  ].map(([label, value], index) => (
+                  {demoFields.map(([label, value], index) => (
                     <motion.div
                       key={label}
                       initial={{ opacity: 0, x: 18 }}
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true }}
                       transition={{ delay: index * 0.12, duration: 0.55 }}
-                      className="relative mb-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3 text-right shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
+                      className="relative mb-3 rounded-2xl border border-[#eadcff] bg-[#fbf8ff] px-4 py-3 text-start shadow-[0_12px_30px_rgba(111,39,190,0.05)]"
                     >
                       <p className="text-sm font-black text-[#7b2ee8]">
                         {label}
@@ -1527,8 +1592,7 @@ function LaunchStepsSection() {
                 </div>
 
                 <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
-                  ממלאים שם, מייל, טלפון ותחום העסק — כדי שנדע למי לשלוח את העדכונים
-                  הראשונים וההזמנה לקבוצה.
+                  {t("earlyAccess.launchSteps.step01.text")}
                 </p>
               </div>
             </motion.div>
@@ -1545,9 +1609,11 @@ function LaunchStepsSection() {
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-base font-black text-[#7b2ee8]">שלב 02</p>
+                    <p className="text-base font-black text-[#7b2ee8]">
+                      {t("earlyAccess.launchSteps.step02.label")}
+                    </p>
                     <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
-                      מקבלים עדכון לפני כולם
+                      {t("earlyAccess.launchSteps.step02.title")}
                     </h3>
                   </div>
 
@@ -1560,14 +1626,10 @@ function LaunchStepsSection() {
                   <div className="biz-notification-phone mx-auto rounded-[34px] border border-[#eadcff] bg-[#150720] p-4 shadow-[0_24px_70px_rgba(42,16,60,0.18)]">
                     <div className="mx-auto mb-4 h-1.5 w-16 rounded-full bg-white/20" />
                     <div className="space-y-3">
-                      {[
-                        "הקבוצה נפתחת בקרוב",
-                        "הדגמה חדשה זמינה",
-                        "מחירי השקה נשלחו",
-                      ].map((item, index) => (
+                      {notifications.map((item, index) => (
                         <div
                           key={item}
-                          className="biz-notification-pop rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-right"
+                          className="biz-notification-pop rounded-2xl border border-white/10 bg-white/[0.08] px-4 py-3 text-start"
                           style={{ animationDelay: `${index * 0.55}s` }}
                         >
                           <div className="flex items-center gap-3">
@@ -1585,8 +1647,7 @@ function LaunchStepsSection() {
                 </div>
 
                 <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
-                  כשהקבוצה והעדכונים ייפתחו — אתם מקבלים התראה, הסבר והצצה
-                  ראשונה לפני פתיחה רחבה.
+                  {t("earlyAccess.launchSteps.step02.text")}
                 </p>
               </div>
             </motion.div>
@@ -1603,9 +1664,11 @@ function LaunchStepsSection() {
               <div className="relative">
                 <div className="mb-6 flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-base font-black text-[#7b2ee8]">שלב 03</p>
+                    <p className="text-base font-black text-[#7b2ee8]">
+                      {t("earlyAccess.launchSteps.step03.label")}
+                    </p>
                     <h3 className="mt-3 text-3xl font-black leading-[1.05] tracking-[-0.025em] text-[#2a103c]">
-                      מצטרפים למחירי ההשקה
+                      {t("earlyAccess.launchSteps.step03.title")}
                     </h3>
                   </div>
 
@@ -1620,13 +1683,13 @@ function LaunchStepsSection() {
                   <div className="relative mx-auto grid h-36 w-36 place-items-center rounded-full border border-[#f3dda5] bg-white text-center shadow-[0_22px_65px_rgba(243,221,165,0.22)]">
                     <div>
                       <p className="text-sm font-black text-[#7b2ee8]">
-                        EARLY ACCESS
+                        {t("earlyAccess.launchSteps.step03.earlyAccess")}
                       </p>
                       <p className="mt-2 text-4xl font-black text-[#2a103c]">
                         ₪$
                       </p>
                       <p className="mt-1 text-sm font-black text-[#b8872c]">
-                        מחיר השקה
+                        {t("earlyAccess.launchSteps.step03.launchPrice")}
                       </p>
                     </div>
                   </div>
@@ -1646,8 +1709,7 @@ function LaunchStepsSection() {
                 </div>
 
                 <p className="mt-6 text-base font-bold leading-8 text-[#6b587c]">
-                  הנרשמים הראשונים יקבלו גישה למחירי השקה לקבוצה בלבד ולזמן
-                  מוגבל.
+                  {t("earlyAccess.launchSteps.step03.text")}
                 </p>
               </div>
             </motion.div>
@@ -1659,6 +1721,10 @@ function LaunchStepsSection() {
 }
 
 export default function BizuplyEarlyAccessLanding() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const textAlign = dir === "rtl" ? "right" : "left";
+
   const [form, setForm] = useState<LeadForm>({
     name: "",
     email: "",
@@ -1706,6 +1772,13 @@ export default function BizuplyEarlyAccessLanding() {
     try {
       setSubmitting(true);
 
+      const interestLabels = form.interests.map((key) =>
+        t(`earlyAccess.interests.${key}`),
+      );
+      const budgetLabel = form.monthlyBudget
+        ? t(`earlyAccess.budgets.${form.monthlyBudget}`)
+        : "";
+
       const data = await apiRequest<{
         success: boolean;
         message?: string;
@@ -1728,14 +1801,14 @@ export default function BizuplyEarlyAccessLanding() {
           email: form.email,
           phone: form.phone,
           business: form.business,
-          interest: form.interests.join(", "),
-          interests: form.interests,
-          monthlyBudget: form.monthlyBudget,
+          interest: interestLabels.join(", "),
+          interests: interestLabels,
+          monthlyBudget: budgetLabel,
         }),
       });
 
       if (!data?.success) {
-        alert(data?.message || "לא הצלחנו לשמור את הפרטים");
+        alert(data?.message || t("earlyAccess.form.saveFailed"));
         return;
       }
 
@@ -1751,7 +1824,7 @@ export default function BizuplyEarlyAccessLanding() {
       });
     } catch (error: any) {
       console.error("EARLY ACCESS FORM ERROR:", error);
-      alert(error?.message || "שגיאה בשליחת הטופס. נסו שוב בעוד רגע.");
+      alert(error?.message || t("earlyAccess.form.submitFailed"));
     } finally {
       setSubmitting(false);
     }
@@ -1759,7 +1832,7 @@ export default function BizuplyEarlyAccessLanding() {
 
   return (
     <main
-      dir="rtl"
+      dir={dir}
       className="biz-readable min-h-screen overflow-x-hidden bg-[#fbf8ff] text-[#2a103c]"
     >
       <style>{`
@@ -1769,12 +1842,12 @@ export default function BizuplyEarlyAccessLanding() {
 
         .biz-readable section:not(.biz-hero-bg),
         .biz-readable section:not(.biz-hero-bg) * {
-          direction: rtl;
+          direction: ${dir};
           font-family: "Heebo", "Assistant", "Rubik", Arial, sans-serif;
         }
 
         .biz-readable section:not(.biz-hero-bg) {
-          text-align: right;
+          text-align: ${textAlign};
         }
 
         .biz-readable section:not(.biz-hero-bg) .text-center {
@@ -2757,25 +2830,23 @@ export default function BizuplyEarlyAccessLanding() {
             <div>
               <p className="mb-4 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-[#7b2ee8] shadow-[0_12px_34px_rgba(111,39,190,0.06)]">
                 <Clock3 className="h-4 w-4" />
-                הרשמה מוקדמת פתוחה
+                {t("earlyAccess.form.eyebrow")}
               </p>
 
               <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-[#2a103c] sm:text-7xl">
-                רוצים להיות בין הראשונים שמקבלים מחיר השקה וגישה ראשונה למערכת?
+                {t("earlyAccess.form.title")}
               </h2>
 
               <p className="mt-6 max-w-xl text-lg font-semibold leading-9 text-[#6b587c]">
-                השאירו פרטים ונחזור אליכם לפני כולם. בקרוב תיפתח קבוצת וואטסאפ
-                עם כל הפרטים, ההדגמות, העדכונים ומחירי ההשקה לקבוצה בלבד.
-                בהמשך הקבוצה תשמש כקהילה סגורה לעסקים שצומחים ביחד.
+                {t("earlyAccess.form.subtitle")}
               </p>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 {[
-                  { label: "בלי התחייבות", icon: ShieldCheck },
-                  { label: "עדכונים לפני כולם", icon: Zap },
-                  { label: "קהילה סגורה", icon: Users },
-                  { label: "מחירי השקה", icon: Crown },
+                  { label: t("earlyAccess.form.perks.noCommitment"), icon: ShieldCheck },
+                  { label: t("earlyAccess.form.perks.earlyUpdates"), icon: Zap },
+                  { label: t("earlyAccess.form.perks.closedCommunity"), icon: Users },
+                  { label: t("earlyAccess.form.perks.launchPricing"), icon: Crown },
                 ].map((item) => {
                   const Icon = item.icon;
                   return (
@@ -2806,18 +2877,17 @@ export default function BizuplyEarlyAccessLanding() {
                       <Check className="h-10 w-10" />
                     </div>
                     <h3 className="mt-6 text-4xl font-black tracking-[-0.02em] text-[#2a103c]">
-                      קיבלנו את הרשמתך להשקה
+                      {t("earlyAccess.form.successTitle")}
                     </h3>
                     <p className="mx-auto mt-4 max-w-md text-base font-semibold leading-8 text-[#6b587c]">
-                      שמרנו את הפרטים. בקרוב נפתח קבוצת וואטסאפ ונשלח הזמנה עם
-                      כל הפרטים ומחירי ההשקה.
+                      {t("earlyAccess.form.successText")}
                     </p>
                     <button
                       type="button"
                       onClick={() => setSent(false)}
                       className="mt-8 rounded-full bg-[#7b2ee8] px-7 py-4 text-sm font-black text-white transition hover:bg-[#6724c9]"
                     >
-                      שליחת הרשמה נוספת
+                      {t("earlyAccess.form.successAgain")}
                     </button>
                   </div>
                 </div>
@@ -2825,41 +2895,41 @@ export default function BizuplyEarlyAccessLanding() {
                 <>
                   <div className="mb-6 rounded-[30px] border border-[#eadcff] bg-[#fbf8ff] p-5">
                     <p className="text-sm font-black text-[#7b2ee8]">
-                      הרשמה מוקדמת
+                      {t("earlyAccess.form.cardEyebrow")}
                     </p>
                     <h3 className="mt-2 text-4xl font-black leading-none tracking-[-0.02em] text-[#2a103c]">
-                      הצטרפות לרשימת הראשונים
+                      {t("earlyAccess.form.cardTitle")}
                     </h3>
                     <p className="mt-3 text-sm font-semibold leading-7 text-[#6b587c]">
-                      מלאו פרטים ונעדכן כשקבוצת הוואטסאפ תיפתח.
+                      {t("earlyAccess.form.cardSubtitle")}
                     </p>
                   </div>
 
                   <div className="grid gap-4">
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        שם מלא
+                        {t("earlyAccess.form.name")}
                       </span>
                       <input
                         value={form.name}
                         onChange={(event) =>
                           updateField("name", event.target.value)
                         }
-                        placeholder="איך קוראים לך?"
+                        placeholder={t("earlyAccess.form.namePlaceholder")}
                         className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        מייל
+                        {t("earlyAccess.form.email")}
                       </span>
                       <input
                         value={form.email}
                         onChange={(event) =>
                           updateField("email", event.target.value)
                         }
-                        placeholder="המייל שלך לקבלת אישור הרשמה"
+                        placeholder={t("earlyAccess.form.emailPlaceholder")}
                         type="email"
                         autoComplete="email"
                         className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
@@ -2868,14 +2938,14 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                       טלפון
+                        {t("earlyAccess.form.phone")}
                       </span>
                       <input
                         value={form.phone}
                         onChange={(event) =>
                           updateField("phone", event.target.value)
                         }
-                        placeholder="מספר לקבלת הזמנה לקבוצה"
+                        placeholder={t("earlyAccess.form.phonePlaceholder")}
                         inputMode="tel"
                         className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
@@ -2883,25 +2953,25 @@ export default function BizuplyEarlyAccessLanding() {
 
                     <label className="block">
                       <span className="mb-2 block text-sm font-black text-[#2a103c]">
-                        תחום העסק
+                        {t("earlyAccess.form.business")}
                       </span>
                       <input
                         value={form.business}
                         onChange={(event) =>
                           updateField("business", event.target.value)
                         }
-                        placeholder="לדוגמה: קליניקה, חנות, סטודיו, ייעוץ"
+                        placeholder={t("earlyAccess.form.businessPlaceholder")}
                         className="min-h-14 w-full rounded-2xl border border-[#eadcff] bg-white px-5 text-base font-bold text-[#2a103c] outline-none transition placeholder:text-[#b39ccf] focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#f0e3ff]"
                       />
                     </label>
 
-<div className="block">
+                    <div className="block">
                       <span className="mb-3 block text-sm font-black text-[#2a103c]">
-                        מה הכי יכול לעזור לעסק שלך כרגע?
+                        {t("earlyAccess.form.interestsLabel")}
                       </span>
 
                       <div className="grid gap-3 sm:grid-cols-2">
-                        {interestOptions.map((option) => {
+                        {INTEREST_KEYS.map((option) => {
                           const checked = form.interests.includes(option);
 
                           return (
@@ -2910,13 +2980,13 @@ export default function BizuplyEarlyAccessLanding() {
                               type="button"
                               onClick={() => toggleInterest(option)}
                               className={cx(
-                                "flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-right text-sm font-black transition active:scale-[0.98]",
+                                "flex min-h-[58px] items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-start text-sm font-black transition active:scale-[0.98]",
                                 checked
                                   ? "border-[#7b2ee8] bg-[#f3eaff] text-[#2a103c] shadow-[0_14px_32px_rgba(123,46,232,0.12)]"
                                   : "border-[#eadcff] bg-white text-[#2a103c] hover:border-[#c996ff] hover:bg-[#fbf8ff]",
                               )}
                             >
-                              <span>{option}</span>
+                              <span>{t(`earlyAccess.interests.${option}`)}</span>
 
                               <span
                                 className={cx(
@@ -2935,10 +3005,10 @@ export default function BizuplyEarlyAccessLanding() {
                     </div>
 
                     <div className="block">
-                      <label className="mb-3 block text-right text-sm font-black text-[#2a103c]">
-                        תקציב חודשי משוער
-                        <span className="mr-2 text-xs font-bold text-[#7a668f]">
-                          לא חובה
+                      <label className="mb-3 block text-start text-sm font-black text-[#2a103c]">
+                        {t("earlyAccess.form.budgetLabel")}
+                        <span className="ms-2 text-xs font-bold text-[#7a668f]">
+                          {t("earlyAccess.form.budgetOptional")}
                         </span>
                       </label>
 
@@ -2948,18 +3018,20 @@ export default function BizuplyEarlyAccessLanding() {
                           onChange={(event) =>
                             updateField("monthlyBudget", event.target.value)
                           }
-                          className="h-[64px] w-full appearance-none rounded-[22px] border border-[#eadcff] bg-white px-5 pl-12 text-right text-base font-black text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#7b2ee8]/10"
+                          className="h-[64px] w-full appearance-none rounded-[22px] border border-[#eadcff] bg-white px-5 pe-5 ps-12 text-start text-base font-black text-[#2a103c] outline-none transition focus:border-[#7b2ee8] focus:ring-4 focus:ring-[#7b2ee8]/10"
                         >
-                          <option value="">בחרו תקציב חודשי משוער</option>
+                          <option value="">
+                            {t("earlyAccess.form.budgetPlaceholder")}
+                          </option>
 
-                          {budgetOptions.map((option) => (
+                          {BUDGET_KEYS.map((option) => (
                             <option key={option} value={option}>
-                              {option}
+                              {t(`earlyAccess.budgets.${option}`)}
                             </option>
                           ))}
                         </select>
 
-                        <ChevronDown className="pointer-events-none absolute left-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#7b2ee8]" />
+                        <ChevronDown className="pointer-events-none absolute start-5 top-1/2 h-5 w-5 -translate-y-1/2 text-[#7b2ee8]" />
                       </div>
                     </div>
                   </div>
@@ -2974,13 +3046,14 @@ export default function BizuplyEarlyAccessLanding() {
                         : "cursor-not-allowed bg-zinc-200 text-zinc-400",
                     )}
                   >
-                    {submitting ? "שולח ושומר פרטים..." : "שלחו לי פרטים והזמנה לקבוצה"}
+                    {submitting
+                      ? t("earlyAccess.form.submitting")
+                      : t("earlyAccess.form.submit")}
                     <Phone className="h-5 w-5 shrink-0 !text-black sm:h-6 sm:w-6" />
                   </button>
 
                   <p className="mt-4 text-center text-xs font-semibold leading-6 text-[#8b78a2]">
-                    ההרשמה לא מחייבת רכישה. מחירי ההשקה יינתנו לקבוצת ההרשמה
-                    המוקדמת בלבד.
+                    {t("earlyAccess.form.disclaimer")}
                   </p>
                 </>
               )}
@@ -2997,10 +3070,10 @@ export default function BizuplyEarlyAccessLanding() {
           <Reveal>
             <div>
               <p className="mb-4 inline-flex rounded-full border border-[#f3dda5]/20 bg-[#f3dda5]/10 px-4 py-2 text-xs font-black text-[#f3dda5]">
-                שאלות נפוצות
+                {t("earlyAccess.faq.eyebrow")}
               </p>
               <h2 className="text-5xl font-black leading-[0.95] tracking-[-0.035em] text-white sm:text-7xl">
-                כל מה שצריך לדעת לפני ההצטרפות
+                {t("earlyAccess.faq.title")}
               </h2>
 
               <PulseCTA dark className="mt-8" />
@@ -3008,16 +3081,16 @@ export default function BizuplyEarlyAccessLanding() {
           </Reveal>
 
           <div className="space-y-3">
-            {faqs.map((faq, index) => (
-              <Reveal key={faq.q} delay={index * 0.05}>
+            {FAQ_KEYS.map((faqKey, index) => (
+              <Reveal key={faqKey} delay={index * 0.05}>
                 <button
                   type="button"
                   onClick={() => setOpenFaq(openFaq === index ? -1 : index)}
-                  className="w-full rounded-[28px] border border-white/10 bg-white/[0.06] p-5 text-right transition hover:bg-white/[0.09] hover:shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
+                  className="w-full rounded-[28px] border border-white/10 bg-white/[0.06] p-5 text-start transition hover:bg-white/[0.09] hover:shadow-[0_16px_40px_rgba(0,0,0,0.18)]"
                 >
                   <div className="flex items-center justify-between gap-5">
                     <h3 className="text-xl font-black tracking-[-0.02em] text-white">
-                      {faq.q}
+                      {t(`earlyAccess.faq.items.${faqKey}.q`)}
                     </h3>
                     <ChevronDown
                       className={cx(
@@ -3029,7 +3102,7 @@ export default function BizuplyEarlyAccessLanding() {
 
                   {openFaq === index ? (
                     <p className="mt-4 max-w-3xl text-base font-semibold leading-8 text-[#d8c9ef]">
-                      {faq.a}
+                      {t(`earlyAccess.faq.items.${faqKey}.a`)}
                     </p>
                   ) : null}
                 </button>

@@ -29,6 +29,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { useTranslation } from "react-i18next";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 import API from "../../../../api";
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
@@ -85,6 +87,8 @@ const phoneButtonClass =
   "!left-0 !right-auto !rounded-l-2xl !rounded-r-none !border-slate-200 !bg-white";
 
 function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [formData, setFormData] = useState<CollabFormState>(emptyForm);
   const [useExpiry, setUseExpiry] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -111,7 +115,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
       const { title, description, contactName } = formData;
 
       if (!title.trim() || !description.trim() || !contactName.trim() || !phone) {
-        setError("נא למלא את כל שדות החובה");
+        setError(t("collab.market.form.requiredFields"));
         return;
       }
 
@@ -139,29 +143,29 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
         onSuccess?.();
       } catch (submitError) {
         console.error("Publish collaboration error:", submitError);
-        setError("שגיאה בפרסום שיתוף הפעולה");
+        setError(t("collab.market.form.publishError"));
       } finally {
         setLoading(false);
       }
     },
-    [formData, useExpiry, phone, onSuccess]
+    [formData, useExpiry, phone, onSuccess, t]
   );
 
   return (
-    <form onSubmit={handleSubmit} dir="rtl" className="space-y-5 text-right">
+    <form onSubmit={handleSubmit} dir={dir} className="space-y-5 text-start">
       <div className="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
             <Sparkles className="h-4 w-4" />
-            הזדמנות חדשה
+            {t("collab.market.form.badge")}
           </div>
 
           <h3 className="mt-3 text-2xl font-black text-slate-950">
-            פרסום שיתוף פעולה
+            {t("collab.market.form.title")}
           </h3>
 
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-            צור פרסום מקצועי לשיתוף פעולה כדי שעסקים רלוונטיים יוכלו לפנות אליך.
+            {t("collab.market.form.subtitle")}
           </p>
         </div>
 
@@ -169,7 +173,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           type="button"
           onClick={onCancel}
           className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-slate-100 bg-white text-slate-600 shadow-sm transition hover:-translate-y-0.5 hover:bg-slate-50"
-          aria-label="סגירה"
+          aria-label={t("collab.market.form.closeAria")}
         >
           <X className="h-5 w-5" />
         </button>
@@ -182,68 +186,68 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
       )}
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <FormField label="כותרת" required icon={Megaphone}>
+        <FormField label={t("collab.market.form.fieldTitle")} required icon={Megaphone}>
           <input
             name="title"
             value={formData.title}
             onChange={handleChange}
-            placeholder="לדוגמה: מחפש שותף לשיווק"
+            placeholder={t("collab.market.form.titlePlaceholder")}
             className={inputClass}
           />
         </FormField>
 
-        <FormField label="איש קשר" required icon={UserRound}>
+        <FormField label={t("collab.market.form.contact")} required icon={UserRound}>
           <input
             name="contactName"
             value={formData.contactName}
             onChange={handleChange}
-            placeholder="שם איש קשר"
+            placeholder={t("collab.market.form.contactPlaceholder")}
             className={inputClass}
           />
         </FormField>
 
         <div className="lg:col-span-2">
-          <FormField label="תיאור" required icon={BriefcaseBusiness}>
+          <FormField label={t("collab.market.form.description")} required icon={BriefcaseBusiness}>
             <textarea
               name="description"
               value={formData.description}
               onChange={handleChange}
               rows={4}
-              placeholder="תאר איזה שיתוף פעולה אתה מחפש..."
+              placeholder={t("collab.market.form.descriptionPlaceholder")}
               className={textareaClass}
             />
           </FormField>
         </div>
 
-        <FormField label="מה העסק צריך" icon={Target}>
+        <FormField label={t("collab.market.form.needs")} icon={Target}>
           <input
             name="needs"
-            placeholder="שיווק, משקיע, ספק"
+            placeholder={t("collab.market.form.needsPlaceholder")}
             value={formData.needs}
             onChange={handleChange}
             className={inputClass}
           />
 
           <p className="mt-2 text-xs font-semibold text-slate-400">
-            יש להפריד תגיות באמצעות פסיקים.
+            {t("collab.market.form.tagsHint")}
           </p>
         </FormField>
 
-        <FormField label="מה העסק מציע" icon={Tags}>
+        <FormField label={t("collab.market.form.offers")} icon={Tags}>
           <input
             name="offers"
-            placeholder="עמלה, שותפות, חשיפה"
+            placeholder={t("collab.market.form.offersPlaceholder")}
             value={formData.offers}
             onChange={handleChange}
             className={inputClass}
           />
 
           <p className="mt-2 text-xs font-semibold text-slate-400">
-            יש להפריד תגיות באמצעות פסיקים.
+            {t("collab.market.form.tagsHint")}
           </p>
         </FormField>
 
-        <FormField label="טלפון" required icon={Phone}>
+        <FormField label={t("collab.market.form.phone")} required icon={Phone}>
           <div dir="ltr" className="text-left">
             <PhoneInput
               country="il"
@@ -264,7 +268,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           </div>
         </FormField>
 
-        <FormField label="תקציב" icon={DollarSign}>
+        <FormField label={t("collab.market.form.budget")} icon={DollarSign}>
           <div className="relative">
             <span className="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-lg font-black text-slate-400">
               ₪
@@ -273,7 +277,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             <input
               type="number"
               name="budget"
-              placeholder="תקציב בשקלים"
+              placeholder={t("collab.market.form.budgetPlaceholder")}
               value={formData.budget}
               onChange={handleChange}
               className={`${inputClass} pr-10`}
@@ -292,18 +296,18 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
 
             <div>
               <p className="text-sm font-black text-slate-900">
-                הגדרת תאריך תפוגה
+                {t("collab.market.form.setExpiry")}
               </p>
 
               <p className="text-xs font-semibold text-slate-500">
-                אופציונלי. הפרסום יוסתר לאחר התאריך שנבחר.
+                {t("collab.market.form.setExpiryHint")}
               </p>
             </div>
           </label>
         </div>
 
         {useExpiry && (
-          <FormField label="תאריך תפוגה" icon={CalendarClock}>
+          <FormField label={t("collab.market.form.expiryDate")} icon={CalendarClock}>
             <input
               type="date"
               name="expiryDate"
@@ -322,7 +326,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
           disabled={loading}
           className="rounded-2xl bg-slate-100 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-200 disabled:cursor-not-allowed disabled:opacity-60"
         >
-          ביטול
+          {t("collab.market.form.cancel")}
         </button>
 
         <button
@@ -336,7 +340,7 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
             <Plus className="h-5 w-5" />
           )}
 
-          {loading ? "מפרסם..." : "פרסום שיתוף פעולה"}
+          {loading ? t("collab.market.form.publishing") : t("collab.market.form.submit")}
         </button>
       </div>
     </form>
@@ -344,6 +348,8 @@ function CreateCollabForm({ onSuccess, onCancel }: CreateCollabFormProps) {
 }
 
 export default function CollabMarketTab() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const [collabMarket, setCollabMarket] = useState<CollabMarketItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -428,12 +434,12 @@ export default function CollabMarketTab() {
       const businessId = myBusinessId || (await fetchMyBusinessId());
 
       if (!publisherId) {
-        alert("לא ניתן לזהות את העסק שפרסם את ההזדמנות.");
+        alert(t("collab.market.alerts.unknownPublisher"));
         return;
       }
 
       if (!businessId) {
-        alert("לא נמצא מזהה עסק. נסו לרענן את הדף.");
+        alert(t("collab.market.alerts.missingBusinessId"));
         return;
       }
 
@@ -446,7 +452,7 @@ export default function CollabMarketTab() {
       try {
         const res = await API.post("/business-chat/start", {
           otherBusinessId: publisherId,
-          text: `שלום, ראיתי את הפרסום "${item.title || "שיתוף פעולה"}" ואשמח לדבר.`,
+          text: t("collab.market.chatIntro", { title: item.title || t("collab.market.untitled") }),
         });
 
         const conversationId = res.data?.conversationId;
@@ -458,16 +464,16 @@ export default function CollabMarketTab() {
         }
       } catch (chatError) {
         console.error("Failed to start chat:", chatError);
-        alert("לא הצלחנו להתחיל שיחה. נסו שוב.");
+        alert(t("collab.market.alerts.chatFailed"));
       } finally {
         setChatLoadingId(null);
       }
     },
-    [myBusinessId, navigate]
+    [myBusinessId, navigate, t]
   );
 
   return (
-    <div dir="rtl" className="space-y-6 text-right">
+    <div dir={dir} className="space-y-6 text-start">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
@@ -476,15 +482,15 @@ export default function CollabMarketTab() {
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-white/80 px-4 py-2 text-xs font-black text-violet-700 shadow-sm">
               <Handshake className="h-4 w-4" />
-              שוק שיתופי פעולה
+              {t("collab.market.badge")}
             </div>
 
             <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              מציאת הזדמנויות לשיתופי פעולה עסקיים
+              {t("collab.market.title")}
             </h2>
 
             <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-              פרסם הזדמנויות, גלה שותפים, צפה בפרופילים עסקיים ובנה שיתופי פעולה איכותיים ממקום אחד מסודר.
+              {t("collab.market.subtitle")}
             </p>
           </div>
 
@@ -494,40 +500,40 @@ export default function CollabMarketTab() {
             className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
           >
             <Plus className="h-5 w-5" />
-            פרסום שיתוף פעולה
+            {t("collab.market.publish")}
           </button>
         </div>
       </section>
 
       <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
-          label="סה״כ הזדמנויות"
+          label={t("collab.market.stats.total")}
           value={collabMarket.length}
-          helper="פרסומים שעלו"
+          helper={t("collab.market.stats.totalHelper")}
           icon={Handshake}
           tone="sky"
         />
 
         <StatCard
-          label="פרסומים פעילים"
+          label={t("collab.market.stats.active")}
           value={activeCount}
-          helper="זמינים עכשיו"
+          helper={t("collab.market.stats.activeHelper")}
           icon={CheckCircle2}
           tone="emerald"
         />
 
         <StatCard
-          label="עם תקציב"
+          label={t("collab.market.stats.withBudget")}
           value={withBudgetCount}
-          helper="כולל תקציב"
+          helper={t("collab.market.stats.withBudgetHelper")}
           icon={DollarSign}
           tone="amber"
         />
 
         <StatCard
-          label="תגיות שוק"
+          label={t("collab.market.stats.tags")}
           value={totalTagsCount}
-          helper="צרכים והצעות"
+          helper={t("collab.market.stats.tagsHelper")}
           icon={Tags}
           tone="violet"
         />
@@ -538,11 +544,11 @@ export default function CollabMarketTab() {
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-950">
-                הזדמנויות לשיתופי פעולה
+                {t("collab.market.listTitle")}
               </h3>
 
               <p className="mt-1 text-sm font-semibold text-slate-500">
-                {filteredCollabs.length} מוצגות מתוך {collabMarket.length} הזדמנויות
+                {t("collab.market.showing", { shown: filteredCollabs.length, total: collabMarket.length })}
               </p>
             </div>
 
@@ -553,7 +559,7 @@ export default function CollabMarketTab() {
                 <input
                   value={search}
                   onChange={(event) => setSearch(event.target.value)}
-                  placeholder="חיפוש הזדמנויות..."
+                  placeholder={t("collab.market.searchPlaceholder")}
                   className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
                 />
               </div>
@@ -564,7 +570,7 @@ export default function CollabMarketTab() {
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
               >
                 <Plus className="h-5 w-5" />
-                פרסום חדש
+                {t("collab.market.publishNew")}
               </button>
             </div>
           </div>
@@ -602,8 +608,8 @@ export default function CollabMarketTab() {
       {showCreateModal && (
         <AppModal onClose={() => setShowCreateModal(false)}>
           <div
-            dir="rtl"
-            className="mx-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 text-right shadow-2xl sm:p-6"
+            dir={dir}
+            className="mx-auto max-h-[92vh] w-full max-w-4xl overflow-y-auto rounded-[2rem] bg-white p-5 text-start shadow-2xl sm:p-6"
           >
             <CreateCollabForm
               onSuccess={() => {
@@ -634,11 +640,13 @@ function CollabCard({
   onStartChat: () => void;
   chatLoading?: boolean;
 }) {
+  const { t, i18n } = useTranslation();
+  const dateLocale = i18n.language?.startsWith("he") ? "he-IL" : "en-US";
   const needs = item.needs || [];
   const offers = item.offers || [];
 
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white text-right shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+    <article className="group flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-100 bg-white text-start shadow-sm transition hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5">
         <div className="pointer-events-none absolute -left-12 -top-14 h-40 w-40 rounded-full bg-violet-200/40 blur-3xl" />
 
@@ -649,12 +657,12 @@ function CollabCard({
             </div>
 
             <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 shadow-sm">
-              {item.validUntil ? "מוגבל בזמן" : "פתוח"}
+              {item.validUntil ? t("collab.market.timeLimited") : t("collab.market.open")}
             </span>
           </div>
 
           <h3 className="line-clamp-2 min-h-[56px] text-xl font-black leading-7 text-slate-950">
-            {item.title || "שיתוף פעולה ללא כותרת"}
+            {item.title || t("collab.market.untitled")}
           </h3>
         </div>
       </div>
@@ -662,20 +670,20 @@ function CollabCard({
       <div className="flex flex-1 flex-col p-5">
         <div className="space-y-4">
           {needs.length > 0 && (
-            <TagBlock label="צריך" tags={needs} tone="need" />
+            <TagBlock label={t("collab.market.need")} tags={needs} tone="need" />
           )}
 
           {offers.length > 0 && (
-            <TagBlock label="מציע" tags={offers} tone="offer" />
+            <TagBlock label={t("collab.market.offer")} tags={offers} tone="offer" />
           )}
 
           <div>
             <p className="mb-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-              תיאור
+              {t("collab.market.description")}
             </p>
 
             <p className="line-clamp-4 text-sm font-semibold leading-6 text-slate-600">
-              {item.description || "לא הוזן תיאור."}
+              {item.description || t("collab.market.noDescription")}
             </p>
           </div>
         </div>
@@ -683,21 +691,21 @@ function CollabCard({
         <div className="mt-5 grid gap-3 sm:grid-cols-2">
           <InfoTile
             icon={DollarSign}
-            label="תקציב"
+            label={t("collab.market.budget")}
             value={
               item.budget
-                ? `₪${Number(item.budget).toLocaleString("he-IL")}`
-                : "לא צוין"
+                ? `₪${Number(item.budget).toLocaleString(dateLocale)}`
+                : t("collab.market.notSpecified")
             }
           />
 
           <InfoTile
             icon={CalendarClock}
-            label="תפוגה"
+            label={t("collab.market.expiry")}
             value={
               item.validUntil
-                ? new Date(item.validUntil).toLocaleDateString("he-IL")
-                : "ללא תפוגה"
+                ? new Date(item.validUntil).toLocaleDateString(dateLocale)
+                : t("collab.market.noExpiry")
             }
           />
         </div>
@@ -710,7 +718,7 @@ function CollabCard({
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="h-5 w-5" />
-            הגש הצעה
+            {t("collab.market.sendProposal")}
           </button>
 
           <div className="grid grid-cols-2 gap-2">
@@ -725,7 +733,7 @@ function CollabCard({
               ) : (
                 <MessageCircle className="h-4 w-4" />
               )}
-              צ׳אט
+              {t("collab.market.chat")}
             </button>
 
             <button
@@ -735,7 +743,7 @@ function CollabCard({
               className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
             >
               <Eye className="h-5 w-5" />
-              פרופיל
+              {t("collab.market.profile")}
             </button>
           </div>
         </div>
@@ -815,6 +823,7 @@ function StatCard({
   helper: string;
   tone: "sky" | "violet" | "amber" | "emerald";
 }) {
+  const { t } = useTranslation();
   const toneClass = {
     sky: "bg-sky-50 text-sky-700",
     violet: "bg-violet-50 text-violet-700",
@@ -832,7 +841,7 @@ function StatCard({
             {value}
           </p>
 
-          <p className="mt-2 text-xs font-black text-emerald-600">פעיל</p>
+          <p className="mt-2 text-xs font-black text-emerald-600">{t("collab.active")}</p>
 
           <p className="mt-1 text-xs font-semibold text-slate-400">{helper}</p>
         </div>
@@ -875,18 +884,21 @@ function FormField({
 }
 
 function LoadingState() {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
-    <div dir="rtl" className="p-10 text-center">
+    <div dir={dir} className="p-10 text-center">
       <Loader2 className="mx-auto h-10 w-10 animate-spin text-violet-700" />
 
       <p className="mt-4 text-sm font-bold text-slate-500">
-        טוען את שוק שיתופי הפעולה...
+        {t("collab.market.loading")}
       </p>
     </div>
   );
 }
 
 function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
   return (
     <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-gradient-to-br from-sky-50/70 to-violet-50/70 px-6 py-14 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-violet-700 shadow-sm">
@@ -894,11 +906,11 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
       </div>
 
       <h4 className="text-xl font-black text-slate-950">
-        עדיין אין שיתופי פעולה
+        {t("collab.market.emptyTitle")}
       </h4>
 
       <p className="mx-auto mt-2 max-w-md text-sm font-semibold leading-6 text-slate-500">
-        פרסם את הזדמנות שיתוף הפעולה הראשונה והתחל להתחבר לעסקים רלוונטיים.
+        {t("collab.market.emptyHint")}
       </p>
 
       <button
@@ -907,7 +919,7 @@ function EmptyMarketState({ onCreate }: { onCreate: () => void }) {
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-violet-700 to-fuchsia-600 px-5 py-3 text-sm font-black text-white shadow-[0_14px_30px_rgba(124,58,237,0.18)] transition hover:-translate-y-0.5"
       >
         <Plus className="h-5 w-5" />
-        פרסום שיתוף פעולה
+        {t("collab.market.publish")}
       </button>
     </div>
   );

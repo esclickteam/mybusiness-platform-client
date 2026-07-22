@@ -1,6 +1,7 @@
 // Collab.tsx
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { io, Socket } from "socket.io-client";
 import API from "@api";
 import { useAuth } from "../../../context/AuthContext";
@@ -38,29 +39,18 @@ type AuthContextValue = {
 
 type TabItem = {
   to: string;
-  label: string;
+  labelKey: string;
 };
 
-const tabs: TabItem[] = [
-  {
-    to: "profile",
-    label: "פרופיל עסקי",
-  },
-  {
-    to: "find-partner",
-    label: "מציאת שותף עסקי",
-  },
-  {
-    to: "messages",
-    label: "הצעות שיתוף פעולה",
-  },
-  {
-    to: "market",
-    label: "שוק שיתופי פעולה",
-  },
+const tabDefs: TabItem[] = [
+  { to: "profile", labelKey: "collab.tabs.profile" },
+  { to: "find-partner", labelKey: "collab.tabs.findPartner" },
+  { to: "messages", labelKey: "collab.tabs.messages" },
+  { to: "market", labelKey: "collab.tabs.market" },
 ];
 
 export default function Collab() {
+  const { t } = useTranslation();
   const dir = useLocaleDir();
   const { user, loading, isImpersonating } = useAuth() as AuthContextValue;
   const location = useLocation();
@@ -72,6 +62,15 @@ export default function Collab() {
 
   const [resolvedBusinessId, setResolvedBusinessId] = useState<string | null>(
     null
+  );
+
+  const tabs = useMemo(
+    () =>
+      tabDefs.map((tab) => ({
+        to: tab.to,
+        label: t(tab.labelKey),
+      })),
+    [t]
   );
 
   const devMode = false;
@@ -110,7 +109,7 @@ export default function Collab() {
           email: data.email || "",
         });
       } catch (err) {
-        console.error("שגיאה בטעינת הפרופיל:", err);
+        console.error("Error loading profile:", err);
       } finally {
         if (isMounted) {
           setLoadingProfile(false);
@@ -150,25 +149,25 @@ export default function Collab() {
 
   if (loading) {
     return (
-      <div className="p-6 text-center text-sm font-bold text-slate-700">
-        🔄 טוען נתונים...
+      <div dir={dir} className="p-6 text-center text-sm font-bold text-slate-700">
+        🔄 {t("collab.loading")}
       </div>
     );
   }
 
   if (!user && !devMode) {
     return (
-      <div className="p-6 text-center text-sm font-bold text-slate-700">
-        ⚠️ יש להתחבר כדי לגשת לעמוד הזה.
+      <div dir={dir} className="p-6 text-center text-sm font-bold text-slate-700">
+        ⚠️ {t("collab.loginRequired")}
       </div>
     );
   }
 
   if (!hasCollabAccess && !devMode) {
     return (
-      <div className="p-6 text-center">
+      <div dir={dir} className="p-6 text-center">
         <h2 className="text-xl font-black text-slate-950">
-          שיתופי פעולה זמינים רק במסלול המתקדם
+          {t("collab.upgradeOnly")}
         </h2>
 
         <div className="mt-4">
@@ -187,7 +186,7 @@ export default function Collab() {
         <div className="mx-auto w-full max-w-7xl">
           <nav
             role="tablist"
-            aria-label="שיתופי פעולה"
+            aria-label={t("collab.navAria")}
             className="mb-8 flex flex-row justify-center gap-5 overflow-x-auto rounded-[2rem] border border-slate-100 bg-white/85 px-4 py-5 shadow-[0_18px_60px_rgba(15,23,42,0.07)] backdrop-blur-xl"
           >
             {tabs.map((tab) => (
