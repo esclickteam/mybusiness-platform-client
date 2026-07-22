@@ -1178,8 +1178,18 @@ export default function StoreProductsManager({
       )}
 
       {nav.length > 1 ? (
-      <div className="mb-6 rounded-[28px] border border-slate-200 bg-white p-2 shadow-sm">
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-6">
+      <div
+        className={cx(
+          embedded ? "mb-4 border-b border-slate-200" : "mb-6 rounded-[28px] border border-slate-200 bg-white p-2 shadow-sm"
+        )}
+      >
+        <div
+          className={cx(
+            embedded
+              ? "flex gap-1 overflow-x-auto pb-0"
+              : "grid grid-cols-2 gap-2 md:grid-cols-6"
+          )}
+        >
           {nav.map((item) => (
             <button
               key={item.id}
@@ -1189,21 +1199,37 @@ export default function StoreProductsManager({
                 setView(item.id);
               }}
               className={cx(
-                "flex min-h-12 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
-                view === item.id
-                  ? "bg-slate-950 text-white shadow-lg"
-                  : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700"
+                "flex items-center justify-center gap-2 text-sm font-semibold transition",
+                embedded
+                  ? "relative shrink-0 px-4 py-2.5"
+                  : "min-h-12 rounded-2xl px-4 font-black",
+                embedded
+                  ? view === item.id
+                    ? "text-violet-700"
+                    : "text-slate-500 hover:text-slate-800"
+                  : view === item.id
+                    ? "bg-slate-950 text-white shadow-lg"
+                    : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700"
               )}
             >
               {item.icon}
               {item.label}
+              {embedded && view === item.id ? (
+                <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-violet-600" />
+              ) : null}
             </button>
           ))}
         </div>
       </div>
       ) : null}
 
-      <div className="min-h-[520px] rounded-[34px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_22px_80px_rgba(15,23,42,0.06)] md:p-6">
+      <div
+        className={cx(
+          embedded
+            ? "rounded-xl border border-slate-200 bg-white p-4 md:p-5"
+            : "min-h-[520px] rounded-[34px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_22px_80px_rgba(15,23,42,0.06)] md:p-6"
+        )}
+      >
         {loading ? (
           <div className="grid min-h-[420px] place-items-center">
             <div className="flex items-center gap-3 text-sm font-black text-slate-500">

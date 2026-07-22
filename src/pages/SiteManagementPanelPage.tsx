@@ -6,7 +6,6 @@ import {
   Globe2,
   Loader2,
   Puzzle,
-  Settings2,
 } from "lucide-react";
 
 import { getMySite } from "../api/mySitesApi";
@@ -111,6 +110,8 @@ export default function SiteManagementPanelPage() {
     return catalog.find((item) => item.key === pluginKey) || null;
   }, [activeSection, catalog]);
 
+  const activeMeta = SECTION_META[activeSection];
+
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const next = enabled
       ? [...enabledPlugins, pluginKey]
@@ -144,9 +145,9 @@ export default function SiteManagementPanelPage() {
 
   if (loading) {
     return (
-      <div dir="rtl" className="grid min-h-[60vh] place-items-center bg-[#F7F8FC]">
-        <div className="flex items-center gap-3 text-sm font-black text-slate-500">
-          <Loader2 size={24} className="animate-spin text-violet-600" />
+      <div dir="rtl" className="grid min-h-[50vh] place-items-center bg-white">
+        <div className="flex items-center gap-3 text-sm font-semibold text-slate-500">
+          <Loader2 size={22} className="animate-spin text-violet-600" />
           טוען פאנל ניהול...
         </div>
       </div>
@@ -155,12 +156,12 @@ export default function SiteManagementPanelPage() {
 
   if (error) {
     return (
-      <div dir="rtl" className="mx-auto max-w-xl px-4 py-16 text-center">
-        <p className="text-sm font-black text-rose-600">{error}</p>
+      <div dir="rtl" className="mx-auto max-w-xl px-6 py-16 text-center">
+        <p className="text-sm font-semibold text-rose-600">{error}</p>
         <button
           type="button"
           onClick={() => navigate(`${basePath}/website`)}
-          className="mt-4 inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-950 px-5 text-sm font-black text-white"
+          className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-semibold text-white"
         >
           <ArrowRight size={16} />
           חזרה לאתרים שלי
@@ -170,102 +171,145 @@ export default function SiteManagementPanelPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#F7F8FC] px-4 py-6 md:px-8 md:py-8">
-      <div className="mx-auto flex w-full max-w-[1400px] flex-col gap-6 xl:flex-row">
-        <aside className="w-full shrink-0 xl:w-[280px]">
-          <div className="sticky top-6 overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.06)]">
-            <div className="border-b border-slate-100 p-5">
-              <button
-                type="button"
-                onClick={() => navigate(`${basePath}/website`)}
-                className="mb-4 inline-flex items-center gap-2 text-xs font-black text-slate-500 transition hover:text-violet-700"
-              >
-                <ArrowRight size={14} />
-                חזרה לאתרים שלי
-              </button>
+    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-slate-50">
+      <div className="sticky top-0 z-20 border-b border-slate-200 bg-white shadow-sm">
+        <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => navigate(`${basePath}/website`)}
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+              aria-label="חזרה לאתרים שלי"
+            >
+              <ArrowRight size={16} />
+            </button>
 
-              <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-3 py-1.5 text-[11px] font-black text-violet-700 ring-1 ring-violet-100">
-                <Settings2 size={13} />
-                פאנל ניהול
-              </div>
-
-              <h1 className="mt-3 text-2xl font-black tracking-tight text-slate-950">
-                {siteName}
-              </h1>
-
-              <p className="mt-1 text-xs font-bold text-slate-400">
-                {sitePublished ? "מפורסם" : "טיוטה"}
-                {publicUrl ? ` · ${publicUrl.replace(/^https?:\/\//, "")}` : ""}
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-2">
-                <Link
-                  to={editorHref}
-                  className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-slate-200 px-3 text-xs font-black text-slate-700 transition hover:border-violet-200 hover:text-violet-700"
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="truncate text-lg font-bold text-slate-900 md:text-xl">
+                  {siteName}
+                </h1>
+                <span
+                  className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                    sitePublished
+                      ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
+                      : "bg-amber-50 text-amber-700 ring-1 ring-amber-100"
+                  }`}
                 >
-                  <ExternalLink size={13} />
-                  עורך
-                </Link>
-                {sitePublished && publicUrl ? (
-                  <a
-                    href={publicUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-slate-200 px-3 text-xs font-black text-slate-700 transition hover:border-emerald-200 hover:text-emerald-700"
-                  >
-                    <Globe2 size={13} />
-                    אתר חי
-                  </a>
-                ) : null}
+                  {sitePublished ? "מפורסם" : "טיוטה"}
+                </span>
+              </div>
+              {publicUrl ? (
+                <p className="truncate text-xs text-slate-400">
+                  {publicUrl.replace(/^https?:\/\//, "")}
+                </p>
+              ) : null}
+            </div>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-2">
+            <Link
+              to={editorHref}
+              className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:border-violet-200 hover:text-violet-700"
+            >
+              <ExternalLink size={14} />
+              עורך
+            </Link>
+            {sitePublished && publicUrl ? (
+              <a
+                href={publicUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:border-emerald-200 hover:text-emerald-700"
+              >
+                <Globe2 size={14} />
+                אתר חי
+              </a>
+            ) : null}
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-[1600px] overflow-x-auto px-4 md:px-6">
+          <nav className="flex min-w-max gap-1 border-t border-slate-100 pt-1">
+            {navSections.map((section) => {
+              const Icon = getSectionIcon(section);
+              const meta = SECTION_META[section];
+              const active = activeSection === section;
+
+              return (
+                <button
+                  key={section}
+                  type="button"
+                  onClick={() => setActiveSection(section)}
+                  className={`relative inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold transition ${
+                    active
+                      ? "text-violet-700"
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <Icon size={16} />
+                  {meta.label}
+                  {active ? (
+                    <span className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-violet-600" />
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-[1600px] px-4 py-5 md:px-6 md:py-6">
+        {activeSection !== "overview" && activeSection !== "plugins" ? (
+          <div className="mb-4">
+            <h2 className="text-base font-bold text-slate-900">{activeMeta.label}</h2>
+            <p className="mt-0.5 text-sm text-slate-500">{activeMeta.description}</p>
+          </div>
+        ) : null}
+
+        {activeSection === "overview" ? (
+          <div className="space-y-5">
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <p className="text-xs font-medium text-slate-500">תוספים פעילים</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {enabledPlugins.length}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <p className="text-xs font-medium text-slate-500">סטטוס אתר</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {sitePublished ? "מפורסם" : "טיוטה"}
+                </p>
+              </div>
+              <div className="rounded-xl border border-slate-200 bg-white p-4">
+                <p className="text-xs font-medium text-slate-500">זמין בחנות</p>
+                <p className="mt-1 text-2xl font-bold text-slate-900">
+                  {catalog.length - enabledPlugins.length}
+                </p>
               </div>
             </div>
 
-            <nav className="p-2">
-              {navSections.map((section) => {
-                const Icon = getSectionIcon(section);
-                const meta = SECTION_META[section];
-                const active = activeSection === section;
-
-                return (
-                  <button
-                    key={section}
-                    type="button"
-                    onClick={() => setActiveSection(section)}
-                    className={`mb-1 flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-right text-sm font-black transition ${
-                      active
-                        ? "bg-slate-950 text-white shadow-lg"
-                        : "text-slate-600 hover:bg-violet-50 hover:text-violet-700"
-                    }`}
-                  >
-                    <Icon size={17} />
-                    <span>{meta.label}</span>
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </aside>
-
-        <main className="min-w-0 flex-1">
-          {activeSection === "overview" ? (
-            <div className="mx-auto max-w-5xl space-y-4">
-              <div className="rounded-[20px] border border-slate-200 bg-white p-5 shadow-sm">
-                <h2 className="text-lg font-black text-slate-950">סקירה</h2>
-                <p className="mt-1 text-xs font-bold text-slate-500">
-                  {enabledPlugins.length} תוספים פעילים · ניהול מרוכז לאתר הזה
-                </p>
+            <div className="rounded-xl border border-slate-200 bg-white p-5">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-base font-bold text-slate-900">ניהול מהיר</h2>
+                  <p className="mt-0.5 text-sm text-slate-500">
+                    גישה מהירה לתוספים והגדרות של האתר
+                  </p>
+                </div>
                 <button
                   type="button"
                   onClick={() => setActiveSection("plugins")}
-                  className="mt-4 inline-flex h-9 items-center gap-2 rounded-xl bg-slate-950 px-4 text-xs font-black text-white"
+                  className="inline-flex h-9 items-center gap-2 rounded-lg bg-violet-600 px-4 text-xs font-semibold text-white transition hover:bg-violet-700"
                 >
                   <Puzzle size={14} />
-                  פתיחת חנות תוספים
+                  חנות תוספים
                 </button>
               </div>
 
               {enabledPlugins.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
+                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
                   {enabledPlugins.map((key) => {
                     const plugin = catalog.find((item) => item.key === key);
                     if (!plugin) return null;
@@ -282,60 +326,64 @@ export default function SiteManagementPanelPage() {
                           if (canManage && section) setActiveSection(section);
                           else setActiveSection("plugins");
                         }}
-                        className="rounded-[16px] border border-slate-200 bg-white p-3 text-right transition hover:border-violet-200"
+                        className="flex items-center gap-3 rounded-lg border border-slate-200 bg-slate-50 p-3 text-right transition hover:border-violet-200 hover:bg-white"
                       >
                         <div
-                          className="grid h-10 w-10 place-items-center rounded-[12px] text-white"
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-white"
                           style={{ background: accent }}
                         >
-                          <Icon size={18} />
+                          <Icon size={16} />
                         </div>
-                        <p className="mt-2 text-[11px] font-black text-slate-900">
+                        <span className="text-sm font-semibold text-slate-800">
                           {plugin.name}
-                        </p>
+                        </span>
                       </button>
                     );
                   })}
                 </div>
-              ) : null}
+              ) : (
+                <p className="mt-4 text-sm text-slate-500">
+                  עדיין לא הותקנו תוספים. פתחו את חנות התוספים כדי להתחיל.
+                </p>
+              )}
             </div>
-          ) : null}
+          </div>
+        ) : null}
 
-          {activeSection === "plugins" ? (
-            <SitePluginStore
-              catalog={catalog}
-              enabledPlugins={enabledPlugins}
-              detectedFromSite={detectedFromSite}
-              saving={savingPlugins}
-              onToggle={handleTogglePlugin}
-            />
-          ) : null}
+        {activeSection === "plugins" ? (
+          <SitePluginStore
+            catalog={catalog}
+            enabledPlugins={enabledPlugins}
+            detectedFromSite={detectedFromSite}
+            saving={savingPlugins}
+            onToggle={handleTogglePlugin}
+          />
+        ) : null}
 
-          {activeSection === "store" && enabledSet.has("store") ? (
-            <StoreProductsManager businessId={businessId} embedded />
-          ) : null}
+        {activeSection === "store" && enabledSet.has("store") ? (
+          <StoreProductsManager businessId={businessId} embedded />
+        ) : null}
 
-          {activeSection === "booking" && enabledSet.has("booking") ? (
-            <SiteBookingPanel businessId={businessId} siteId={siteId} />
-          ) : null}
+        {activeSection === "booking" && enabledSet.has("booking") ? (
+          <SiteBookingPanel businessId={businessId} siteId={siteId} />
+        ) : null}
 
-          {activeSection === "payments" && enabledSet.has("payments") ? (
-            <SitePaymentsPanel businessId={businessId} />
-          ) : null}
+        {activeSection === "payments" && enabledSet.has("payments") ? (
+          <SitePaymentsPanel businessId={businessId} />
+        ) : null}
 
-          {activeSection === "invoices" && enabledSet.has("invoices") ? (
-            <SiteMorningInvoicePanel businessId={businessId} />
-          ) : null}
+        {activeSection === "invoices" && enabledSet.has("invoices") ? (
+          <SiteMorningInvoicePanel businessId={businessId} />
+        ) : null}
 
-          {activePluginDef &&
-          enabledSet.has(activePluginDef.key) &&
-          !MANAGEMENT_PANEL_KEYS.has(activePluginDef.key) ? (
-            <SiteGenericPluginPanel
-              plugin={activePluginDef}
-              editorHref={editorHref}
-            />
-          ) : null}
-        </main>
+        {activePluginDef &&
+        enabledSet.has(activePluginDef.key) &&
+        !MANAGEMENT_PANEL_KEYS.has(activePluginDef.key) ? (
+          <SiteGenericPluginPanel
+            plugin={activePluginDef}
+            editorHref={editorHref}
+          />
+        ) : null}
       </div>
     </div>
   );
