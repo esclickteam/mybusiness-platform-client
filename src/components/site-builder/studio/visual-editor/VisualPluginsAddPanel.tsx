@@ -1,0 +1,206 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { Download, Puzzle, Search } from "lucide-react";
+
+import {
+  getSitePlugins,
+  type SitePluginDefinition,
+} from "../../../../api/sitePluginsApi";
+import { getPluginAccent, getPluginIcon } from "../../../../data/sitePluginNav";
+import {
+  buildPluginWidgetMarker,
+  getPluginEditorAction,
+} from "../../../../data/pluginEditorRegistry";
+import { getPageTemplateById } from "./library/pageLibrary";
+import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+import BizuplyLoader from "../../../ui/BizuplyLoader";
+
+type VisualPluginsAddPanelProps = {
+  siteId?: string;
+  editor: any;
+  onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
+  onAddHtml?: (html: string) => string | void | Promise<string | void>;
+  onAdded?: (title: string) => void;
+};
+
+export default function VisualPluginsAddPanel({
+  siteId,
+  editor,
+  onAddLibraryPage,
+  onAddHtml,
+  onAdded,
+}: VisualPluginsAddPanelProps) {
+  const [loading, setLoading] = useState(Boolean(siteId));
+  const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
+  const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!siteId) {
+      setLoading(false);
+      return;
+    }
+
+    setLoading(true);
+    getSitePlugins(siteId)
+      .then((data) => {
+        setCatalog(data.catalog);
+        setEnabledPlugins(data.enabledPlugins);
+      })
+      .catch(() => {
+        setCatalog([]);
+        setEnabledPlugins([]);
+      })
+      .finally(() => setLoading(false));
+  }, [siteId]);
+
+  const installed = useMemo(() => {
+    const set = new Set(enabledPlugins);
+    const q = query.trim().toLowerCase();
+    return catalog
+      .filter((p) => set.has(p.key))
+      .filter((p) => {
+        if (!q) return true;
+        return (
+          p.name.toLowerCase().includes(q) ||
+          p.description.toLowerCase().includes(q)
+        );
+      });
+  }, [catalog, enabledPlugins, query]);
+
+  function insertPlugin(plugin: SitePluginDefinition) {
+    const action = getPluginEditorAction(plugin.key);
+
+    if (action.kind === "page" && action.pageTemplateId) {
+      const page = getPageTemplateById(action.pageTemplateId);
+      if (page && typeof onAddLibraryPage === "function") {
+        onAddLibraryPage(page);
+        onAdded?.(`עמוד «${page.title}» נוסף — ${plugin.name}`);
+        return;
+      }
+    }
+
+    if (action.kind === "section" && action.sectionId) {
+      if (typeof editor?.addLibrarySection === "function") {
+        editor.addLibrarySection(action.sectionId);
+      } else {
+        editor?.addSection?.("after", undefined, action.sectionId);
+      }
+      onAdded?.(`«${plugin.name}» נוסף לעמוד`);
+      return;
+    }
+
+    const html = buildPluginWidgetMarker(plugin.key, plugin.name);
+    if (typeof onAddHtml === "function") {
+      onAddHtml(html);
+    } else if (typeof editor?.insertHtmlAtSelection === "function") {
+      editor.insertHtmlAtSelection(html);
+    } else if (typeof editor?.addSection === "function") {
+      editor.addSection("append");
+      onAdded?.(`«${plugin.name}» — הוסיפו את הרכיב מהסקשן החדש`);
+      return;
+    }
+    onAdded?.(`«${plugin.name}» — נשמר; הוסיפו דרך סקשן מתאים`);
+  }
+
+  if (!siteId) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+        <Puzzle className="h-10 w-10 text-violet-400" />
+        <p className="mt-3 text-sm font-bold text-slate-700">תוספים</p>
+        <p className="mt-1 max-w-xs text-xs text-slate-500">
+          שמרו את האתר כדי להוסיף תוספים מהעורך
+        </p>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="grid flex-1 place-items-center">
+        <BizuplyLoader size="sm" label="טוען תוספים..." />
+      </div>
+    );
+  }
+
+  if (enabledPlugins.length === 0) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
+        <Puzzle className="h-10 w-10 text-violet-400" />
+        <p className="mt-3 text-sm font-bold text-slate-700">אין תוספים מותקנים</p>
+        <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-500">
+          התקינו תוספים מפאנל הניהול → חנות תוספים, ואז חזרו לכאן להוספה לעמוד
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
+        <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4">
+          <Search className="h-5 w-5 shrink-0 text-slate-400" />
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="חיפוש תוסף..."
+            className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none"
+          />
+        </label>
+        <p className="mt-3 text-xs font-bold text-slate-500">
+          {installed.length} תוספים מותקנים — לחצו להוספה לעמוד הנוכחי
+        </p>
+      </div>
+
+      <div className="min-h-0 flex-1 overflow-y-auto p-6">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {installed.map((plugin) => {
+            const Icon = getPluginIcon(plugin.key);
+            const accent = getPluginAccent(plugin.key, plugin.accent);
+            const action = getPluginEditorAction(plugin.key);
+
+            return (
+              <button
+                key={plugin.key}
+                type="button"
+                onClick={() => insertPlugin(plugin)}
+                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-right transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg"
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="grid h-11 w-11 shrink-0 place-items-center rounded-xl text-white"
+                    style={{ background: accent }}
+                  >
+                    <Icon size={20} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-sm font-black text-slate-800">
+                      {plugin.name}
+                    </h4>
+                    <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-5 text-slate-400">
+                      {plugin.description}
+                    </p>
+                  </div>
+                </div>
+                <span className="mt-3 inline-flex items-center gap-1 self-start rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
+                  <Download className="h-3 w-3" />
+                  {action.kind === "page"
+                    ? "הוספת עמוד"
+                    : action.kind === "section"
+                      ? "הוספת סקשן"
+                      : "הוספת רכיב"}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {installed.length === 0 ? (
+          <p className="py-12 text-center text-sm font-bold text-slate-500">
+            לא נמצאו תוספים לחיפוש
+          </p>
+        ) : null}
+      </div>
+    </div>
+  );
+}

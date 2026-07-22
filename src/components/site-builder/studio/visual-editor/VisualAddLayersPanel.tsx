@@ -39,6 +39,7 @@ import {
   MousePointer2,
   PanelTop,
   Plus,
+  Puzzle,
   RefreshCw,
   Save,
   Search,
@@ -76,11 +77,14 @@ import type {
   VisualLibrarySectionTemplate,
 } from "./library/visualLibraryTypes";
 
+import VisualPluginsAddPanel from "./VisualPluginsAddPanel";
+
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
   | "elements"
   | "sections"
   | "pages"
+  | "plugins"
   | "icons"
   | "animations"
   | "media";
@@ -120,6 +124,7 @@ type VisualAddLayersPanelProps = {
   ) => string | void | Promise<string | void>;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   preferredAddTab?: AddPanelTab;
+  siteId?: string;
 };
 
 type LayerItem = {
@@ -408,6 +413,7 @@ export default function VisualAddLayersPanel({
   onAddHtml,
   onAddLibraryPage,
   preferredAddTab = "sections",
+  siteId,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
@@ -924,7 +930,9 @@ export default function VisualAddLayersPanel({
         ? "הוספת סקשן"
         : addTab === "pages"
           ? "הוספת עמוד"
-          : "הוספת אלמנטים"
+          : addTab === "plugins"
+            ? "תוספים"
+            : "הוספת אלמנטים"
       : mode === "layers"
         ? "שכבות"
         : "קוד מותאם";
@@ -988,6 +996,13 @@ export default function VisualAddLayersPanel({
                 }
                 label="עמודים"
                 onClick={() => setAddTab("pages")}
+              />
+
+              <NavigationButton
+                active={addTab === "plugins"}
+                icon={<Puzzle className="h-5 w-5" />}
+                label="תוספים"
+                onClick={() => setAddTab("plugins")}
               />
 
               <NavigationButton
@@ -1112,6 +1127,14 @@ export default function VisualAddLayersPanel({
                   );
                   onClose();
                 }}
+              />
+            ) : addTab === "plugins" ? (
+              <VisualPluginsAddPanel
+                siteId={siteId}
+                editor={editor}
+                onAddLibraryPage={onAddLibraryPage}
+                onAddHtml={onAddHtml}
+                onAdded={(title) => setLastAddedTitle(title)}
               />
             ) : addTab === "pages" ? (
               <div className="flex min-h-0 flex-1 flex-col">

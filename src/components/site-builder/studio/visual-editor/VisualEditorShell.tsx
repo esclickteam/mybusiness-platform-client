@@ -70,6 +70,7 @@ type VisualEditorShellProps = {
   editor: VisualEditorRuntime;
   onBack?: () => void;
   className?: string;
+  siteId?: string;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   sitePages?: VisualSitePageItem[];
   activeSitePageId?: string;
@@ -116,6 +117,7 @@ export default function VisualEditorShell({
   editor,
   onBack,
   className = "",
+  siteId,
   onAddLibraryPage,
   sitePages = [],
   activeSitePageId = "",
@@ -127,7 +129,7 @@ export default function VisualEditorShell({
     "add" | "layers" | "code" | "pages" | null
   >(null);
   const [preferredAddTab, setPreferredAddTab] = useState<
-    "sections" | "pages"
+    "sections" | "pages" | "plugins"
   >("sections");
 
   const templateName =
@@ -183,6 +185,27 @@ export default function VisualEditorShell({
 
     setActionError(editor.saveError);
   }, [editor.saveError]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const addPlugin = params.get("addPlugin");
+    const addPage = params.get("addPage");
+
+    if (addPlugin || addPage) {
+      setPreferredAddTab(addPage ? "pages" : "plugins");
+      setSidePanelMode("add");
+    }
+
+    if (addPage && typeof onAddLibraryPage === "function") {
+      import("./library/pageLibrary").then(({ getPageTemplateById }) => {
+        const page = getPageTemplateById(addPage);
+        if (page) {
+          window.setTimeout(() => onAddLibraryPage(page), 600);
+        }
+      });
+    }
+  }, [onAddLibraryPage]);
 
   async function runAction(
     action: () => void | Promise<void> | Promise<any>,
@@ -545,6 +568,7 @@ export default function VisualEditorShell({
             onClose={() => setSidePanelMode(null)}
             onAddLibraryPage={onAddLibraryPage}
             preferredAddTab={preferredAddTab}
+            siteId={siteId}
           />
         ) : null}
 

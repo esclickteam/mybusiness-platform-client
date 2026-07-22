@@ -42,6 +42,11 @@ const CATEGORY_LABELS: Record<string, string> = {
   conversion: "המרות",
   ai: "AI",
   accessibility: "נגישות",
+  navigation: "ניווט",
+  content: "תוכן",
+  trust: "אמון",
+  media: "מדיה",
+  utility: "כלים",
 };
 
 function formatPrice(plugin: SitePluginDefinition) {

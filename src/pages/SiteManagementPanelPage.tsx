@@ -22,12 +22,15 @@ import SiteMorningInvoicePanel from "../components/website/site-management/SiteM
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { PLUGIN_PANEL_MAP } from "../components/website/site-management/plugins/pluginPanels";
+import SiteDynamicPluginPanel from "../components/website/site-management/plugins/SiteDynamicPluginPanel";
 import { btnPrimary, btnSecondary } from "../components/website/site-management/siteManagementUi";
 import {
   getPluginAccent,
   getPluginIcon,
   getSectionIcon,
+  getSectionMetaForPlugin,
   PLUGIN_SECTION_MAP,
+  resolvePluginSection,
   SECTION_META,
   type SitePanelSection,
 } from "../data/sitePluginNav";
@@ -92,7 +95,7 @@ export default function SiteManagementPanelPage() {
     const items: SitePanelSection[] = ["overview", "plugins"];
 
     enabledPlugins.forEach((key) => {
-      const section = PLUGIN_SECTION_MAP[key];
+      const section = resolvePluginSection(key);
       if (section && !items.includes(section)) {
         items.push(section);
       }
@@ -101,7 +104,7 @@ export default function SiteManagementPanelPage() {
     return items;
   }, [enabledPlugins]);
 
-  const activeMeta = SECTION_META[activeSection];
+  const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
 
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const next = enabled
@@ -116,14 +119,28 @@ export default function SiteManagementPanelPage() {
       setDetectedFromSite([]);
 
       if (enabled) {
-        const section = PLUGIN_SECTION_MAP[pluginKey];
+        const section = resolvePluginSection(pluginKey);
         if (section) setActiveSection(section);
       } else if (
         activeSection !== "overview" &&
         activeSection !== "plugins" &&
-        SECTION_META[activeSection]?.pluginKey === pluginKey
+        (activeMeta.pluginKey === pluginKey ||
+          resolvePluginSection(pluginKey) === activeSection)
       ) {
         setActiveSection("plugins");
+      }
+
+      const hints = result.editorHints || [];
+      const storeHint = hints.find((h) => h.action === "add-products-page");
+      if (storeHint && enabled) {
+        const go = window.confirm(
+          `${storeHint.message || "להוסיף עמוד מוצרים?"}\n\nלחצו אישור לפתיחת העורך עם עמוד חנות שיסתנכרן עם המוצרים.`
+        );
+        if (go) {
+          navigate(
+            `${editorHref}?addPlugin=store&addPage=${encodeURIComponent(storeHint.pageTemplateId || "page-products-01")}`
+          );
+        }
       }
     } catch (err: any) {
       alert(err?.response?.data?.error || err?.message || "עדכון התוסף נכשל");
@@ -313,7 +330,7 @@ export default function SiteManagementPanelPage() {
                     if (!plugin) return null;
                     const Icon = getPluginIcon(plugin.key);
                     const accent = getPluginAccent(plugin.key, plugin.accent);
-                    const section = PLUGIN_SECTION_MAP[key];
+                    const section = resolvePluginSection(key);
                     const canManage = Boolean(section);
 
                     return (
@@ -388,15 +405,33 @@ export default function SiteManagementPanelPage() {
         ) : null}
 
         {(() => {
-          const PluginPanel = PLUGIN_PANEL_MAP[activeSection];
-          const pluginKey = SECTION_META[activeSection]?.pluginKey;
-          if (!PluginPanel || !pluginKey || !enabledSet.has(pluginKey)) return null;
+          const pluginKey =
+            activeMeta.pluginKey ||
+            (catalog.find((p) => resolvePluginSection(p.key) === activeSection)
+              ?.key ??
+              "");
+          const PluginPanel = PLUGIN_PANEL_MAP[activeSection as keyof typeof PLUGIN_PANEL_MAP];
+          if (!pluginKey || !enabledSet.has(pluginKey)) return null;
           if (CORE_PLUGIN_KEYS.has(pluginKey)) return null;
+
+          if (PluginPanel) {
+            return (
+              <PluginPanel
+                siteId={siteId}
+                businessId={businessId}
+                editorHref={editorHref}
+              />
+            );
+          }
+
+          const plugin = catalog.find((item) => item.key === pluginKey);
           return (
-            <PluginPanel
+            <SiteDynamicPluginPanel
               siteId={siteId}
               businessId={businessId}
               editorHref={editorHref}
+              pluginKey={pluginKey}
+              plugin={plugin}
             />
           );
         })()}

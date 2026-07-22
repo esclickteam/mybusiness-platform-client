@@ -18,10 +18,19 @@ export type SitePluginDefinition = {
   helpExamples?: string[];
 };
 
+export type SitePluginEditorHint = {
+  pluginKey: string;
+  action: string;
+  pageTemplateId?: string;
+  sectionId?: string;
+  message?: string;
+};
+
 export type SitePluginsResponse = {
   catalog: SitePluginDefinition[];
   enabledPlugins: string[];
   detectedFromSite?: string[];
+  editorHints?: SitePluginEditorHint[];
 };
 
 export async function getSitePlugins(siteId: string) {
@@ -40,5 +49,6 @@ export async function updateSitePlugins(siteId: string, enabledPlugins: string[]
   return {
     enabledPlugins: (data?.enabledPlugins || []) as string[],
     catalog: (data?.catalog || []) as SitePluginDefinition[],
+    editorHints: (data?.editorHints || []) as SitePluginEditorHint[],
   };
 }
