@@ -56,7 +56,7 @@ export default function Footer() {
       <div className="relative mx-auto max-w-7xl px-5 pb-8 pt-16 sm:px-6 lg:px-8 lg:pt-20">
         <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_28px_90px_rgba(79,70,229,0.14)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
           <div className="rounded-[1.6rem] border border-slate-100 bg-white/90 px-5 py-8 sm:rounded-[2rem] sm:px-8 sm:py-10 lg:px-10">
-            <div className="grid gap-10 lg:grid-cols-[1.2fr_0.75fr_0.75fr_0.8fr_1.1fr]">
+            <div className="grid gap-10 lg:grid-cols-[1.4fr_0.9fr_0.9fr_0.9fr]">
               <div>
                 <Link to="/" className="inline-flex items-center gap-3">
                   <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-black shadow-xl shadow-indigo-100">
@@ -89,28 +89,6 @@ export default function Footer() {
               <FooterColumn title={t("footer.product")} links={productLinks} />
               <FooterColumn title={t("footer.company")} links={companyLinks} />
               <FooterColumn title={t("footer.support")} links={supportLinks} />
-
-              <div className="rounded-[1.75rem] border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-xl shadow-violet-100/40">
-                <div className="mb-5 grid h-12 w-12 place-items-center rounded-2xl border border-violet-100/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-xl text-violet-700">
-                  ✦
-                </div>
-
-                <h4 className="text-xl font-black tracking-[-0.03em]">
-                  {t("footer.ctaTitle")}
-                </h4>
-
-                <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
-                  {t("footer.ctaText")}
-                </p>
-
-                <Link
-                  to="/register"
-                  className="mt-6 inline-flex w-full items-center justify-center rounded-full bg-white px-6 py-3.5 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-950/20 transition hover:-translate-y-0.5"
-                >
-                  {t("footer.ctaButton")}
-                  <span className="ms-2">→</span>
-                </Link>
-              </div>
             </div>
 
             <div className="my-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
