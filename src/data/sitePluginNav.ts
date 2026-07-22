@@ -41,7 +41,36 @@ export type SitePanelSection =
   | "benefits-wheel"
   | "sales-agent"
   | "service-finder"
-  | "accessibility";
+  | "accessibility"
+  | (string & {});
+
+export function resolvePluginSection(pluginKey: string): SitePanelSection {
+  return (PLUGIN_SECTION_MAP[pluginKey] as SitePanelSection) || pluginKey;
+}
+
+export function getSectionMetaForPlugin(
+  section: SitePanelSection,
+  catalog?: Array<{ key: string; name: string; description: string }>
+) {
+  const known = SECTION_META[section as keyof typeof SECTION_META];
+  if (known) return known;
+
+  const fromCatalog = catalog?.find(
+    (p) => p.key === section || PLUGIN_SECTION_MAP[p.key] === section
+  );
+  if (fromCatalog) {
+    return {
+      label: fromCatalog.name,
+      description: fromCatalog.description,
+      pluginKey: fromCatalog.key,
+    };
+  }
+
+  return {
+    label: String(section),
+    description: "",
+  };
+}
 
 export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   store: "store",
@@ -238,7 +267,7 @@ export function getPluginIcon(key: string) {
 export function getSectionIcon(section: SitePanelSection) {
   if (section === "overview") return LayoutGrid;
   if (section === "plugins") return Puzzle;
-  const pluginKey = SECTION_META[section]?.pluginKey;
-  if (pluginKey) return getPluginIcon(pluginKey);
-  return Puzzle;
+  const meta = SECTION_META[section as keyof typeof SECTION_META];
+  if (meta?.pluginKey) return getPluginIcon(meta.pluginKey);
+  return getPluginIcon(String(section));
 }

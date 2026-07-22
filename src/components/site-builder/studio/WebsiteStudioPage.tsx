@@ -8019,6 +8019,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         ) : null}
 
         <TemplateVisualEditor
+  siteId={siteId}
   renderer={selectedTemplateRenderer}
   businessId={businessId}
   key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
