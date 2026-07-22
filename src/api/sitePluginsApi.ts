@@ -14,6 +14,8 @@ export type SitePluginDefinition = {
   installable?: boolean;
   displayPriceLabel?: string;
   futurePriceLabel?: string | null;
+  helpText?: string;
+  helpExamples?: string[];
 };
 
 export type SitePluginsResponse = {

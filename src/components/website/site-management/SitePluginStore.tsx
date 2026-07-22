@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import {
   Check,
   Download,
+  HelpCircle,
   Package,
   Search,
   Sparkles,
@@ -11,6 +12,7 @@ import {
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import SitePluginHelpModal from "./SitePluginHelpModal";
 import {
   btnGhost,
   btnPrimary,
@@ -61,6 +63,7 @@ export default function SitePluginStore({
 }: SitePluginStoreProps) {
   const [filter, setFilter] = useState("all");
   const [query, setQuery] = useState("");
+  const [helpPlugin, setHelpPlugin] = useState<SitePluginDefinition | null>(null);
 
   const categories = useMemo(() => {
     const set = new Set(catalog.map((item) => item.category));
@@ -241,9 +244,19 @@ export default function SitePluginStore({
                   <Icon size={26} />
                 </div>
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <h3 className="text-sm font-bold leading-snug text-slate-900">
-                    {plugin.name}
-                  </h3>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+                    <h3 className="text-sm font-bold leading-snug text-slate-900">
+                      {plugin.name}
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={() => setHelpPlugin(plugin)}
+                      className="inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold text-violet-600 transition hover:bg-violet-50 hover:text-violet-800"
+                    >
+                      <HelpCircle size={11} />
+                      מה זה אומר?
+                    </button>
+                  </div>
                   <p
                     className={`mt-1 text-xs font-semibold ${
                       isPaid && !plugin.displayPriceLabel?.includes("חינם")
@@ -312,6 +325,12 @@ export default function SitePluginStore({
           </button>
         </div>
       ) : null}
+
+      <SitePluginHelpModal
+        plugin={helpPlugin}
+        open={Boolean(helpPlugin)}
+        onClose={() => setHelpPlugin(null)}
+      />
     </div>
   );
 }
