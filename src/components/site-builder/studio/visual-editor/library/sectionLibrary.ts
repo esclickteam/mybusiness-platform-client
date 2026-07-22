@@ -14,6 +14,20 @@ import { SECTION_LIBRARY_MEGA } from "./sectionCatalogMega";
 import { WELCOME_SHOWCASE_SECTIONS } from "./welcomeShowcaseSections";
 import { ABOUT_SHOWCASE_SECTIONS } from "./aboutShowcaseSections";
 import { ABOUT_PAGE_SHOWCASE_SECTIONS } from "./aboutPageShowcaseSections";
+import { HOME_PAGE_SHOWCASE_SECTIONS } from "./homePageShowcaseSections";
+import { SERVICES_PAGE_SHOWCASE_SECTIONS } from "./servicesPageShowcaseSections";
+import { GALLERY_PAGE_SHOWCASE_SECTIONS } from "./galleryPageShowcaseSections";
+import { CONTACT_PAGE_SHOWCASE_SECTIONS } from "./contactPageShowcaseSections";
+import { LANDING_PAGE_SHOWCASE_SECTIONS } from "./landingPageShowcaseSections";
+import { PRODUCTS_PAGE_SHOWCASE_SECTIONS } from "./productsPageShowcaseSections";
+import { PRICING_PAGE_SHOWCASE_SECTIONS } from "./pricingPageShowcaseSections";
+import { BLOG_PAGE_SHOWCASE_SECTIONS } from "./blogPageShowcaseSections";
+import { EVENTS_PAGE_SHOWCASE_SECTIONS } from "./eventsPageShowcaseSections";
+import { TESTIMONIALS_PAGE_SHOWCASE_SECTIONS } from "./testimonialsPageShowcaseSections";
+import { TEAM_PAGE_SHOWCASE_SECTIONS } from "./teamPageShowcaseSections";
+import { FAQ_PAGE_SHOWCASE_SECTIONS } from "./faqPageShowcaseSections";
+import { RESUME_PAGE_SHOWCASE_SECTIONS } from "./resumePageShowcaseSections";
+
 import { PORTFOLIO_SHOWCASE_SECTIONS } from "./portfolioShowcaseSections";
 import { SERVICES_SHOWCASE_SECTIONS } from "./servicesShowcaseSections";
 import { CONTACT_SHOWCASE_SECTIONS } from "./contactShowcaseSections";
@@ -1271,6 +1285,19 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...WELCOME_SHOWCASE_SECTIONS,
   ...ABOUT_SHOWCASE_SECTIONS,
   ...ABOUT_PAGE_SHOWCASE_SECTIONS,
+  ...HOME_PAGE_SHOWCASE_SECTIONS,
+  ...SERVICES_PAGE_SHOWCASE_SECTIONS,
+  ...GALLERY_PAGE_SHOWCASE_SECTIONS,
+  ...CONTACT_PAGE_SHOWCASE_SECTIONS,
+  ...LANDING_PAGE_SHOWCASE_SECTIONS,
+  ...PRODUCTS_PAGE_SHOWCASE_SECTIONS,
+  ...PRICING_PAGE_SHOWCASE_SECTIONS,
+  ...BLOG_PAGE_SHOWCASE_SECTIONS,
+  ...EVENTS_PAGE_SHOWCASE_SECTIONS,
+  ...TESTIMONIALS_PAGE_SHOWCASE_SECTIONS,
+  ...TEAM_PAGE_SHOWCASE_SECTIONS,
+  ...FAQ_PAGE_SHOWCASE_SECTIONS,
+  ...RESUME_PAGE_SHOWCASE_SECTIONS,
   ...PORTFOLIO_SHOWCASE_SECTIONS,
   ...SERVICES_SHOWCASE_SECTIONS,
   ...CONTACT_SHOWCASE_SECTIONS,
