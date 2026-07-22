@@ -55,43 +55,8 @@ export const propnexEditorCss = `
 [data-template-id="propnex"] .tpl-bento, [data-template-id="propnex-preview"] .tpl-bento { display:grid;gap:.75rem;grid-template-columns:repeat(6,1fr); }
 @keyframes propnex-draw { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 [data-template-id="propnex"] .tpl-line-draw, [data-template-id="propnex-preview"] .tpl-line-draw { transform-origin:right;animation:propnex-draw 1.2s both; }
-
-@keyframes propnex-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
-@keyframes propnex-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
-@keyframes propnex-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
-
-[data-template-id="propnex"] .tpl-glass, [data-template-id="propnex-preview"] .tpl-glass {{
-  backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.04);
-}}
-[data-template-id="propnex"] .tpl-glow, [data-template-id="propnex-preview"] .tpl-glow {{
-  background: radial-gradient(circle, #2563eb44, transparent 70%);
-  animation: propnex-glow 3s ease-in-out infinite;
-}}
-[data-template-id="propnex"] .tpl-shimmer, [data-template-id="propnex-preview"] .tpl-shimmer {{
-  background: linear-gradient(110deg, transparent 30%, #2563eb18 50%, transparent 70%);
-  background-size: 200% 100%;
-  animation: propnex-shimmer 4s linear infinite;
-}}
-[data-template-id="propnex"] .tpl-parallax, [data-template-id="propnex-preview"] .tpl-parallax {{
-  animation: propnex-parallax 8s ease-in-out infinite;
-}}
-[data-template-id="propnex"] .tpl-magnetic, [data-template-id="propnex-preview"] .tpl-magnetic {{
-  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
-}}
-[data-template-id="propnex"] .tpl-magnetic:hover, [data-template-id="propnex-preview"] .tpl-magnetic:hover {{
-  transform: scale(1.04);
-}}
-[data-template-id="propnex"] details[open] summary, [data-template-id="propnex-preview"] details[open] summary {{
-  color: #2563eb;
-}}
-@keyframes propnex-testi {{ to {{ transform:translateX(-50%); }} }}
-@keyframes propnex-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
-[data-template-id="propnex"] .tpl-testi-track, [data-template-id="propnex-preview"] .tpl-testi-track {{
+@keyframes propnex-testi { to { transform:translateX(-50%); } }
+[data-template-id="propnex"] .tpl-testi-track, [data-template-id="propnex-preview"] .tpl-testi-track {
   display:flex;width:max-content;animation:propnex-testi 28s linear infinite;
-}}
-[data-template-id="propnex"] .tpl-line-draw, [data-template-id="propnex-preview"] .tpl-line-draw {{
-  transform-origin:right;animation:propnex-draw 1.2s both;
-}}
-
+}
 `;

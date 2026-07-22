@@ -234,110 +234,110 @@ EXTRA_CSS = {'bentoGrid': '[data-template-id="{tid}"] .tpl-bento, [data-template
                  '.tpl-stamp {{ animation:{tid}-stamp .9s both; }}'}
 
 HOME_LAYOUT_SECTIONS = {
- 'bentoGrid': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps', 'ParallaxShowcase'],
- 'cityPins': ['AreaGuides', 'LocationRows', 'ParallaxShowcase', 'StatsRow'],
- 'compareSlider': ['BeforeAfterShowcase', 'ValueBands', 'ParallaxShowcase', 'TrustBadges'],
- 'curtainReveal': ['VaultCards', 'TestimonialStrip', 'ParallaxShowcase', 'FeaturedListings'],
- 'diagonalAxis': ['SkewedGrid', 'ParallaxShowcase', 'TrustBadges', 'ProcessTimeline'],
- 'elevatorTower': ['PenthouseStack', 'SkylineStats', 'ParallaxShowcase', 'AgentGrid'],
- 'floorPlan': ['HotspotCards', 'CompareStrip', 'MortgageVisual', 'ParallaxShowcase'],
- 'liveCounters': ['BadgeCards', 'FaqVisual', 'MarketInsights', 'ParallaxShowcase'],
- 'propertyTicker': ['FeaturedCards', 'AgentStrip', 'AnimatedStats', 'ParallaxShowcase'],
- 'rotatingPanels': ['OpenHouseTimeline', 'MasonryGallery', 'ParallaxShowcase', 'TrustBadges'],
- 'stackingBlocks': ['NumberedIndex', 'ParallaxShowcase', 'TrustBadges', 'ProcessTimeline'],
- 'stampProcess': ['StampSteps', 'ListingSpotlight', 'ParallaxShowcase', 'MarketInsights'],
+ 'bentoGrid': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps'],
+ 'cityPins': ['AreaGuides', 'LocationRows'],
+ 'compareSlider': ['BeforeAfterShowcase', 'ValueBands'],
+ 'curtainReveal': ['VaultCards', 'TestimonialStrip'],
+ 'diagonalAxis': ['SkewedGrid'],
+ 'elevatorTower': ['PenthouseStack', 'SkylineStats'],
+ 'floorPlan': ['HotspotCards', 'CompareStrip', 'MortgageVisual'],
+ 'liveCounters': ['BadgeCards', 'FaqVisual'],
+ 'propertyTicker': ['FeaturedCards', 'AgentStrip', 'AnimatedStats'],
+ 'rotatingPanels': ['OpenHouseTimeline', 'MasonryGallery'],
+ 'stackingBlocks': ['NumberedIndex'],
+ 'stampProcess': ['StampSteps', 'ListingSpotlight'],
 }
 
-HOME_SHARED_TAIL = ['AwardsStrip', 'TestimonialsBlock', 'CtaBand']
+HOME_SHARED_TAIL = ['AwardsLane', 'QuoteRail', 'CtaRibbon']
 
-CONTACT_SECTIONS = ['OfficeMap', 'AgentGrid', 'FaqBlock', 'TrustBadges', 'AwardsStrip']
+CONTACT_SECTIONS = ['OfficeMap', 'AgentRoster', 'FaqPanel', 'TrustMetrics', 'AwardsLane']
 
 PAGE_SECTION_MAP = {
  'propertyTicker': {
-  '_default': ['FeaturedCards', 'ParallaxShowcase', 'AnimatedStats', 'AgentGrid', 'FaqBlock'],
-  'listings': ['FeaturedCards', 'ParallaxShowcase', 'AnimatedStats', 'TrustBadges', 'CtaBand'],
-  'agents': ['AgentGrid', 'AwardsStrip', 'TestimonialsBlock', 'AnimatedStats', 'CtaBand'],
-  'about': ['AboutBlock', 'ProcessTimeline', 'TrustBadges', 'TestimonialsBlock', 'AwardsStrip'],
-  'insights': ['MarketInsights', 'FaqBlock', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
+  '_default': ['FeaturedCards', 'GalleryWall', 'AnimatedStats', 'AgentRoster', 'FaqPanel'],
+  'listings': ['FeaturedCards', 'GalleryWall', 'AnimatedStats', 'TrustMetrics', 'CtaRibbon'],
+  'agents': ['AgentRoster', 'AwardsLane', 'QuoteRail', 'AnimatedStats', 'CtaRibbon'],
+  'about': ['AboutBlock', 'ProcessRail', 'TrustMetrics', 'QuoteRail', 'AwardsLane'],
+  'insights': ['MarketPulse', 'FaqPanel', 'GalleryWall', 'TrustMetrics', 'CtaRibbon'],
   'contact': CONTACT_SECTIONS,
  },
  'bentoGrid': {
-  '_default': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps', 'ParallaxShowcase', 'FaqBlock'],
-  'listings': ['BentoShowcase', 'ParallaxShowcase', 'StatsRow', 'TrustBadges', 'CtaBand'],
-  'neighborhoods': ['NeighborhoodMarquee', 'ParallaxShowcase', 'MarketInsights', 'StatsRow', 'CtaBand'],
-  'process': ['ProcessSteps', 'ProcessTimeline', 'FaqBlock', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['BentoShowcase', 'NeighborhoodMarquee', 'ProcessSteps', 'GalleryWall', 'FaqPanel'],
+  'listings': ['BentoShowcase', 'GalleryWall', 'StatsRow', 'TrustMetrics', 'CtaRibbon'],
+  'neighborhoods': ['NeighborhoodMarquee', 'GalleryWall', 'MarketPulse', 'StatsRow', 'CtaRibbon'],
+  'process': ['ProcessSteps', 'ProcessRail', 'FaqPanel', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'floorPlan': {
-  '_default': ['HotspotCards', 'CompareStrip', 'MortgageVisual', 'ParallaxShowcase', 'FaqBlock'],
-  'listings': ['FeaturedListings', 'HotspotCards', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
-  'compare': ['CompareStrip', 'ParallaxShowcase', 'FaqBlock', 'TrustBadges', 'CtaBand'],
-  'mortgage': ['MortgageVisual', 'StatsRow', 'FaqBlock', 'MarketInsights', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['HotspotCards', 'CompareStrip', 'MortgageVisual', 'GalleryWall', 'FaqPanel'],
+  'listings': ['ListingGrid', 'HotspotCards', 'GalleryWall', 'StatsRow', 'CtaRibbon'],
+  'compare': ['CompareStrip', 'GalleryWall', 'FaqPanel', 'TrustMetrics', 'CtaRibbon'],
+  'mortgage': ['MortgageVisual', 'StatsRow', 'FaqPanel', 'MarketPulse', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'curtainReveal': {
-  '_default': ['VaultCards', 'ParallaxShowcase', 'TestimonialStrip', 'TrustBadges', 'FaqBlock'],
-  'collection': ['VaultCards', 'ParallaxShowcase', 'FeaturedListings', 'StatsRow', 'CtaBand'],
-  'exclusive': ['VaultCards', 'FeaturedListings', 'TestimonialsBlock', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['VaultCards', 'GalleryWall', 'TestimonialStrip', 'TrustMetrics', 'FaqPanel'],
+  'collection': ['VaultCards', 'GalleryWall', 'ListingGrid', 'StatsRow', 'CtaRibbon'],
+  'exclusive': ['VaultCards', 'ListingGrid', 'QuoteRail', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'stackingBlocks': {
-  '_default': ['NumberedIndex', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock', 'CtaBand'],
-  'listings': ['FeaturedListings', 'NumberedIndex', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
-  'index': ['NumberedIndex', 'ParallaxShowcase', 'MarketInsights', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ProcessTimeline', 'AwardsStrip'],
+  '_default': ['NumberedIndex', 'GalleryWall', 'TrustMetrics', 'FaqPanel', 'CtaRibbon'],
+  'listings': ['ListingGrid', 'NumberedIndex', 'GalleryWall', 'StatsRow', 'CtaRibbon'],
+  'index': ['NumberedIndex', 'GalleryWall', 'MarketPulse', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'ProcessRail', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'elevatorTower': {
-  '_default': ['PenthouseStack', 'SkylineStats', 'ParallaxShowcase', 'AgentGrid', 'FaqBlock'],
-  'listings': ['PenthouseStack', 'ParallaxShowcase', 'StatsRow', 'TrustBadges', 'CtaBand'],
-  'penthouses': ['PenthouseStack', 'FeaturedListings', 'ParallaxShowcase', 'TestimonialsBlock', 'CtaBand'],
-  'about': ['AboutBlock', 'SkylineStats', 'AgentGrid', 'TestimonialsBlock', 'AwardsStrip'],
+  '_default': ['PenthouseStack', 'SkylineStats', 'GalleryWall', 'AgentRoster', 'FaqPanel'],
+  'listings': ['PenthouseStack', 'GalleryWall', 'StatsRow', 'TrustMetrics', 'CtaRibbon'],
+  'penthouses': ['PenthouseStack', 'ListingGrid', 'GalleryWall', 'QuoteRail', 'CtaRibbon'],
+  'about': ['AboutBlock', 'SkylineStats', 'AgentRoster', 'QuoteRail', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'cityPins': {
-  '_default': ['AreaGuides', 'LocationRows', 'ParallaxShowcase', 'StatsRow', 'FaqBlock'],
-  'listings': ['LocationRows', 'FeaturedListings', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
-  'areas': ['AreaGuides', 'ParallaxShowcase', 'MarketInsights', 'StatsRow', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['AreaGuides', 'LocationRows', 'GalleryWall', 'StatsRow', 'FaqPanel'],
+  'listings': ['LocationRows', 'ListingGrid', 'GalleryWall', 'TrustMetrics', 'CtaRibbon'],
+  'areas': ['AreaGuides', 'GalleryWall', 'MarketPulse', 'StatsRow', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'rotatingPanels': {
-  '_default': ['OpenHouseTimeline', 'MasonryGallery', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
-  'schedule': ['OpenHouseTimeline', 'ParallaxShowcase', 'AgentGrid', 'TestimonialsBlock', 'CtaBand'],
-  'gallery': ['MasonryGallery', 'ParallaxShowcase', 'FeaturedListings', 'StatsRow', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['OpenHouseTimeline', 'MasonryGallery', 'GalleryWall', 'TrustMetrics', 'FaqPanel'],
+  'schedule': ['OpenHouseTimeline', 'GalleryWall', 'AgentRoster', 'QuoteRail', 'CtaRibbon'],
+  'gallery': ['MasonryGallery', 'GalleryWall', 'ListingGrid', 'StatsRow', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'compareSlider': {
-  '_default': ['BeforeAfterShowcase', 'ValueBands', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
-  'listings': ['BeforeAfterShowcase', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
-  'showcase': ['BeforeAfterShowcase', 'ParallaxShowcase', 'FeaturedListings', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ValueBands', 'AwardsStrip'],
+  '_default': ['BeforeAfterShowcase', 'ValueBands', 'GalleryWall', 'TrustMetrics', 'FaqPanel'],
+  'listings': ['BeforeAfterShowcase', 'ListingGrid', 'GalleryWall', 'StatsRow', 'CtaRibbon'],
+  'showcase': ['BeforeAfterShowcase', 'GalleryWall', 'ListingGrid', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'ValueBands', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'liveCounters': {
-  '_default': ['BadgeCards', 'FaqVisual', 'MarketInsights', 'ParallaxShowcase', 'TrustBadges'],
-  'listings': ['BadgeCards', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
-  'data': ['MarketInsights', 'StatsRow', 'FaqBlock', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'TrustBadges', 'AwardsStrip'],
+  '_default': ['BadgeCards', 'FaqVisual', 'MarketPulse', 'GalleryWall', 'TrustMetrics'],
+  'listings': ['BadgeCards', 'ListingGrid', 'GalleryWall', 'StatsRow', 'CtaRibbon'],
+  'data': ['MarketPulse', 'StatsRow', 'FaqPanel', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'TrustMetrics', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'stampProcess': {
-  '_default': ['StampSteps', 'ListingSpotlight', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock'],
-  'process': ['StampSteps', 'ProcessTimeline', 'FaqBlock', 'StatsRow', 'CtaBand'],
-  'listings': ['ListingSpotlight', 'FeaturedListings', 'ParallaxShowcase', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'StampSteps', 'AwardsStrip'],
+  '_default': ['StampSteps', 'ListingSpotlight', 'GalleryWall', 'TrustMetrics', 'FaqPanel'],
+  'process': ['StampSteps', 'ProcessRail', 'FaqPanel', 'StatsRow', 'CtaRibbon'],
+  'listings': ['ListingSpotlight', 'ListingGrid', 'GalleryWall', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'StampSteps', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
  'diagonalAxis': {
-  '_default': ['SkewedGrid', 'ParallaxShowcase', 'TrustBadges', 'FaqBlock', 'CtaBand'],
-  'listings': ['SkewedGrid', 'FeaturedListings', 'ParallaxShowcase', 'StatsRow', 'CtaBand'],
-  'grid': ['SkewedGrid', 'ParallaxShowcase', 'FeaturedListings', 'TrustBadges', 'CtaBand'],
-  'about': ['AboutBlock', 'AgentGrid', 'TestimonialsBlock', 'ProcessTimeline', 'AwardsStrip'],
+  '_default': ['SkewedGrid', 'GalleryWall', 'TrustMetrics', 'FaqPanel', 'CtaRibbon'],
+  'listings': ['SkewedGrid', 'ListingGrid', 'GalleryWall', 'StatsRow', 'CtaRibbon'],
+  'grid': ['SkewedGrid', 'GalleryWall', 'ListingGrid', 'TrustMetrics', 'CtaRibbon'],
+  'about': ['AboutBlock', 'AgentRoster', 'QuoteRail', 'ProcessRail', 'AwardsLane'],
   'contact': CONTACT_SECTIONS,
  },
 }
@@ -353,14 +353,33 @@ HERO_JSX = _snip.HERO_JSX
 SECTIONS_JSX = _snip.SECTIONS_JSX
 THUMBNAIL_JSX = _snip.THUMBNAIL_JSX
 
-_prem_path = Path(__file__).parent / "_broker_premium_sections.py"
-_prem_spec = importlib.util.spec_from_file_location("_broker_premium_sections", _prem_path)
+_prem_path = Path(__file__).parent / "_broker_layout_extras.py"
+_prem_spec = importlib.util.spec_from_file_location("_broker_layout_extras", _prem_path)
 _prem = importlib.util.module_from_spec(_prem_spec)
 assert _prem_spec.loader is not None
 _prem_spec.loader.exec_module(_prem)
-SHARED_SECTIONS_JSX = _prem.SHARED_SECTIONS_JSX
-SHARED_EXTRA_CSS = _prem.SHARED_EXTRA_CSS
+LAYOUT_EXTRAS_JSX = _prem.LAYOUT_EXTRAS_JSX
+LAYOUT_PREFIX = _prem.LAYOUT_PREFIX
 CTA_SECTIONS = _prem.CTA_SECTIONS
+
+_GENERIC_TO_SUFFIX = {
+    'GalleryWall': 'GalleryWall', 'AgentRoster': 'AgentRoster', 'QuoteRail': 'QuoteRail',
+    'TrustMetrics': 'TrustMetrics', 'MarketPulse': 'MarketPulse', 'CtaRibbon': 'CtaRibbon',
+    'FaqPanel': 'FaqPanel', 'OfficeBlock': 'OfficeBlock', 'AwardsLane': 'AwardsLane',
+    'ProcessRail': 'ProcessRail', 'ListingGrid': 'ListingGrid', 'StatsRow': 'StatsRow',
+}
+
+
+def _prefixed(layout: str, name: str) -> str:
+    if name == 'AboutBlock':
+        return name
+    if name in _GENERIC_TO_SUFFIX:
+        return f"{LAYOUT_PREFIX[layout]}{name}"
+    return name
+
+
+def _map_sections(layout: str, names: list[str]) -> list[str]:
+    return [_prefixed(layout, n) for n in names]
 
 
 def sections_to_jsx(section_names: list[str], data_var: str = "data", on_cta_expr: str = "onCta") -> str:
@@ -376,14 +395,18 @@ def sections_to_jsx(section_names: list[str], data_var: str = "data", on_cta_exp
 
 
 def page_sections_for(layout: str, page_id: str) -> list[str]:
-    layout_map = PAGE_SECTION_MAP.get(layout, {})
+    p = LAYOUT_PREFIX[layout]
     if page_id == "contact":
-        return layout_map.get("contact", CONTACT_SECTIONS)
-    return layout_map.get(page_id, layout_map.get("_default", HOME_LAYOUT_SECTIONS.get(layout, [])[:5]))
+        return [f"{p}OfficeBlock", f"{p}AgentRoster", f"{p}FaqPanel", f"{p}TrustMetrics", f"{p}AwardsLane"]
+    layout_map = PAGE_SECTION_MAP.get(layout, {})
+    names = layout_map.get(page_id, layout_map.get("_default", HOME_LAYOUT_SECTIONS.get(layout, [])[:5]))
+    return _map_sections(layout, names)
 
 
 def home_sections_for(layout: str) -> list[str]:
-    return HOME_LAYOUT_SECTIONS.get(layout, []) + HOME_SHARED_TAIL
+    core = HOME_LAYOUT_SECTIONS.get(layout, [])[:3]
+    tail = ['GalleryWall', 'AwardsLane', 'QuoteRail', 'CtaRibbon']
+    return _map_sections(layout, core + tail)
 
 
 def _apply_palette(s: str, p: dict, extra: dict | None = None) -> str:
@@ -401,7 +424,7 @@ def hero_jsx(t):
 
 def home_sections_jsx(t):
     layout = t["layout"]
-    combined = SECTIONS_JSX[layout] + "\n" + SHARED_SECTIONS_JSX
+    combined = SECTIONS_JSX[layout] + "\n" + LAYOUT_EXTRAS_JSX[layout]
     return _apply_palette(combined, t["palette"])
 
 def thumbnail_body(t):
@@ -517,7 +540,6 @@ def gen_editor_css(t):
     p = t["palette"]
     tid = t["id"]
     extra = EXTRA_CSS[t["layout"]].format(tid=tid)
-    shared = _apply_palette(SHARED_EXTRA_CSS.replace("{tid}", tid), p)
     return f'''export const {tid}EditorCss = `
 @import url("https://fonts.googleapis.com/css2?family={t["fonts"]["display"]}&family=Heebo:wght@400;500;700&display=swap");
 
@@ -573,7 +595,10 @@ def gen_editor_css(t):
   animation: {tid}-climb .85s cubic-bezier(.22,1,.36,1) both;
 }}
 {extra}
-{shared}
+@keyframes {tid}-testi {{ to {{ transform:translateX(-50%); }} }}
+[data-template-id="{tid}"] .tpl-testi-track, [data-template-id="{tid}-preview"] .tpl-testi-track {{
+  display:flex;width:max-content;animation:{tid}-testi 28s linear infinite;
+}}
 `;
 '''
 

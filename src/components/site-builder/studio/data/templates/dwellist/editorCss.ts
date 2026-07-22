@@ -56,43 +56,8 @@ export const dwellistEditorCss = `
 [data-template-id="dwellist"] .tpl-hotspot, [data-template-id="dwellist-preview"] .tpl-hotspot { animation:dwellist-plan-pulse 2.4s infinite; }
 @keyframes dwellist-draw-plan { to { stroke-dashoffset:0; } }
 [data-template-id="dwellist"] .tpl-plan-line, [data-template-id="dwellist-preview"] .tpl-plan-line { stroke-dasharray:400;stroke-dashoffset:400;animation:dwellist-draw-plan 2s forwards; }
-
-@keyframes dwellist-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
-@keyframes dwellist-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
-@keyframes dwellist-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
-
-[data-template-id="dwellist"] .tpl-glass, [data-template-id="dwellist-preview"] .tpl-glass {{
-  backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.04);
-}}
-[data-template-id="dwellist"] .tpl-glow, [data-template-id="dwellist-preview"] .tpl-glow {{
-  background: radial-gradient(circle, #5c7c6a44, transparent 70%);
-  animation: dwellist-glow 3s ease-in-out infinite;
-}}
-[data-template-id="dwellist"] .tpl-shimmer, [data-template-id="dwellist-preview"] .tpl-shimmer {{
-  background: linear-gradient(110deg, transparent 30%, #5c7c6a18 50%, transparent 70%);
-  background-size: 200% 100%;
-  animation: dwellist-shimmer 4s linear infinite;
-}}
-[data-template-id="dwellist"] .tpl-parallax, [data-template-id="dwellist-preview"] .tpl-parallax {{
-  animation: dwellist-parallax 8s ease-in-out infinite;
-}}
-[data-template-id="dwellist"] .tpl-magnetic, [data-template-id="dwellist-preview"] .tpl-magnetic {{
-  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
-}}
-[data-template-id="dwellist"] .tpl-magnetic:hover, [data-template-id="dwellist-preview"] .tpl-magnetic:hover {{
-  transform: scale(1.04);
-}}
-[data-template-id="dwellist"] details[open] summary, [data-template-id="dwellist-preview"] details[open] summary {{
-  color: #5c7c6a;
-}}
-@keyframes dwellist-testi {{ to {{ transform:translateX(-50%); }} }}
-@keyframes dwellist-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
-[data-template-id="dwellist"] .tpl-testi-track, [data-template-id="dwellist-preview"] .tpl-testi-track {{
+@keyframes dwellist-testi { to { transform:translateX(-50%); } }
+[data-template-id="dwellist"] .tpl-testi-track, [data-template-id="dwellist-preview"] .tpl-testi-track {
   display:flex;width:max-content;animation:dwellist-testi 28s linear infinite;
-}}
-[data-template-id="dwellist"] .tpl-line-draw, [data-template-id="dwellist-preview"] .tpl-line-draw {{
-  transform-origin:right;animation:dwellist-draw 1.2s both;
-}}
-
+}
 `;

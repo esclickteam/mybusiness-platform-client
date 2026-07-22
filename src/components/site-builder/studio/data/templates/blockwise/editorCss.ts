@@ -54,43 +54,8 @@ export const blockwiseEditorCss = `
 }
 @keyframes blockwise-stack { from{transform:translateY(60px);opacity:0} to{transform:translateY(0);opacity:1} }
 [data-template-id="blockwise"] .tpl-block, [data-template-id="blockwise-preview"] .tpl-block { animation:blockwise-stack .7s both; }
-
-@keyframes blockwise-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
-@keyframes blockwise-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
-@keyframes blockwise-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
-
-[data-template-id="blockwise"] .tpl-glass, [data-template-id="blockwise-preview"] .tpl-glass {{
-  backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.04);
-}}
-[data-template-id="blockwise"] .tpl-glow, [data-template-id="blockwise-preview"] .tpl-glow {{
-  background: radial-gradient(circle, #e6394644, transparent 70%);
-  animation: blockwise-glow 3s ease-in-out infinite;
-}}
-[data-template-id="blockwise"] .tpl-shimmer, [data-template-id="blockwise-preview"] .tpl-shimmer {{
-  background: linear-gradient(110deg, transparent 30%, #e6394618 50%, transparent 70%);
-  background-size: 200% 100%;
-  animation: blockwise-shimmer 4s linear infinite;
-}}
-[data-template-id="blockwise"] .tpl-parallax, [data-template-id="blockwise-preview"] .tpl-parallax {{
-  animation: blockwise-parallax 8s ease-in-out infinite;
-}}
-[data-template-id="blockwise"] .tpl-magnetic, [data-template-id="blockwise-preview"] .tpl-magnetic {{
-  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
-}}
-[data-template-id="blockwise"] .tpl-magnetic:hover, [data-template-id="blockwise-preview"] .tpl-magnetic:hover {{
-  transform: scale(1.04);
-}}
-[data-template-id="blockwise"] details[open] summary, [data-template-id="blockwise-preview"] details[open] summary {{
-  color: #e63946;
-}}
-@keyframes blockwise-testi {{ to {{ transform:translateX(-50%); }} }}
-@keyframes blockwise-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
-[data-template-id="blockwise"] .tpl-testi-track, [data-template-id="blockwise-preview"] .tpl-testi-track {{
+@keyframes blockwise-testi { to { transform:translateX(-50%); } }
+[data-template-id="blockwise"] .tpl-testi-track, [data-template-id="blockwise-preview"] .tpl-testi-track {
   display:flex;width:max-content;animation:blockwise-testi 28s linear infinite;
-}}
-[data-template-id="blockwise"] .tpl-line-draw, [data-template-id="blockwise-preview"] .tpl-line-draw {{
-  transform-origin:right;animation:blockwise-draw 1.2s both;
-}}
-
+}
 `;

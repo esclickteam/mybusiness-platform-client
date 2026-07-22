@@ -54,43 +54,8 @@ export const landmarkEditorCss = `
 }
 @keyframes landmark-pin { 0%,100%{transform:scale(1);opacity:.6} 50%{transform:scale(1.4);opacity:1} }
 [data-template-id="landmark"] .tpl-pin, [data-template-id="landmark-preview"] .tpl-pin { animation:landmark-pin 2s infinite; }
-
-@keyframes landmark-glow {{ 0%,100% {{ opacity: 0; }} 50% {{ opacity: 1; }} }}
-@keyframes landmark-shimmer {{ 0% {{ background-position: -200% 0; }} 100% {{ background-position: 200% 0; }} }}
-@keyframes landmark-parallax {{ 0%,100% {{ transform: translateY(0); }} 50% {{ transform: translateY(-12px); }} }}
-
-[data-template-id="landmark"] .tpl-glass, [data-template-id="landmark-preview"] .tpl-glass {{
-  backdrop-filter: blur(12px);
-  background: rgba(255,255,255,0.04);
-}}
-[data-template-id="landmark"] .tpl-glow, [data-template-id="landmark-preview"] .tpl-glow {{
-  background: radial-gradient(circle, #0ea5e944, transparent 70%);
-  animation: landmark-glow 3s ease-in-out infinite;
-}}
-[data-template-id="landmark"] .tpl-shimmer, [data-template-id="landmark-preview"] .tpl-shimmer {{
-  background: linear-gradient(110deg, transparent 30%, #0ea5e918 50%, transparent 70%);
-  background-size: 200% 100%;
-  animation: landmark-shimmer 4s linear infinite;
-}}
-[data-template-id="landmark"] .tpl-parallax, [data-template-id="landmark-preview"] .tpl-parallax {{
-  animation: landmark-parallax 8s ease-in-out infinite;
-}}
-[data-template-id="landmark"] .tpl-magnetic, [data-template-id="landmark-preview"] .tpl-magnetic {{
-  transition: transform 0.25s cubic-bezier(.22,1,.36,1);
-}}
-[data-template-id="landmark"] .tpl-magnetic:hover, [data-template-id="landmark-preview"] .tpl-magnetic:hover {{
-  transform: scale(1.04);
-}}
-[data-template-id="landmark"] details[open] summary, [data-template-id="landmark-preview"] details[open] summary {{
-  color: #0ea5e9;
-}}
-@keyframes landmark-testi {{ to {{ transform:translateX(-50%); }} }}
-@keyframes landmark-draw {{ from {{ transform:scaleX(0); }} to {{ transform:scaleX(1); }} }}
-[data-template-id="landmark"] .tpl-testi-track, [data-template-id="landmark-preview"] .tpl-testi-track {{
+@keyframes landmark-testi { to { transform:translateX(-50%); } }
+[data-template-id="landmark"] .tpl-testi-track, [data-template-id="landmark-preview"] .tpl-testi-track {
   display:flex;width:max-content;animation:landmark-testi 28s linear infinite;
-}}
-[data-template-id="landmark"] .tpl-line-draw, [data-template-id="landmark-preview"] .tpl-line-draw {{
-  transform-origin:right;animation:landmark-draw 1.2s both;
-}}
-
+}
 `;
