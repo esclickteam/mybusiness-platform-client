@@ -11,49 +11,43 @@ import nl from "./locales/nl.json";
 import it from "./locales/it.json";
 import {
   GEO_LANG_COOKIE,
-  I18N_STORAGE_KEY,
   applyDocumentLocale,
+  clearLegacyManualLanguageChoice,
+  detectLanguageFromTimezone,
   fetchGeoLanguage,
   getCookie,
-  hasManualLanguageChoice,
+  getSessionLanguageOverride,
+  hasSessionLanguageOverride,
   normalizeLanguage,
 } from "./localeUtils";
 
 const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
 
-const manualPreferenceDetector = {
-  name: "manualPreference",
+clearLegacyManualLanguageChoice();
+
+const sessionPreferenceDetector = {
+  name: "sessionPreference",
   lookup() {
-    if (!hasManualLanguageChoice()) return undefined;
-    const stored = normalizeLanguage(localStorage.getItem(I18N_STORAGE_KEY) || "");
-    return supportedLanguages.includes(stored) ? stored : undefined;
+    return getSessionLanguageOverride() || undefined;
   },
 };
 
 const geoCountryDetector = {
   name: "geoCountry",
   lookup() {
-    if (hasManualLanguageChoice()) return undefined;
+    if (hasSessionLanguageOverride()) return undefined;
 
     const cookieLang = normalizeLanguage(getCookie(GEO_LANG_COOKIE) || "");
     if (cookieLang === "he" || cookieLang === "en") {
       return cookieLang;
     }
 
-    try {
-      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-      if (timeZone === "Asia/Jerusalem") return "he";
-    } catch {
-      // Ignore timezone lookup failures.
-    }
-
-    // Location-first product default: English outside Israel.
-    return "en";
+    return detectLanguageFromTimezone();
   },
 };
 
 const languageDetector = new LanguageDetector();
-languageDetector.addDetector(manualPreferenceDetector);
+languageDetector.addDetector(sessionPreferenceDetector);
 languageDetector.addDetector(geoCountryDetector);
 
 i18n
@@ -78,8 +72,8 @@ i18n
     },
 
     detection: {
-      // Explicit user choice → geo/timezone (IL=he, else=en).
-      order: ["manualPreference", "geoCountry"],
+      // Session override (current tab) → geo/timezone (IL=he, else=en).
+      order: ["sessionPreference", "geoCountry"],
       caches: [],
     },
 
@@ -95,7 +89,9 @@ applyDocumentLocale(i18n.language);
 
 async function syncLanguageFromGeo() {
   if (typeof window === "undefined") return;
-  if (hasManualLanguageChoice()) return;
+
+  // Keep an explicit choice only for this browser session/tab.
+  if (hasSessionLanguageOverride()) return;
 
   const geoLanguage = await fetchGeoLanguage();
   if (!geoLanguage) return;

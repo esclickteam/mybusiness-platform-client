@@ -249,6 +249,7 @@ export default function MySitesPage() {
 
   function openSiteManagement(site: MySiteSummary) {
     setMenu(null);
+    void import("./SiteManagementPanelPage");
     navigate(`${basePath}/website/sites/${site._id}/manage`);
   }
 

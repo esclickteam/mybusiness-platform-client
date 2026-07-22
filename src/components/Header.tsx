@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
-import { markManualLanguageChoice, normalizeLanguage } from "../i18n/localeUtils";
+import { normalizeLanguage, setSessionLanguageOverride } from "../i18n/localeUtils";
 
 type NavLink = {
   to: string;
@@ -74,8 +74,8 @@ export default function Header() {
       return;
     }
 
-    // Persist explicit choice (beats geo), apply immediately, then reload so all screens pick it up.
-    markManualLanguageChoice(lng);
+    // Session-only override; next visit re-detects from location (IL=he, else=en).
+    setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
     setLanguageOpen(false);
     window.location.reload();

@@ -59,6 +59,39 @@ const PRIORITY_STYLES = {
   },
 };
 
+function localizeInsight(insight, t) {
+  if (!insight?.id) return insight;
+
+  const base = `aiInsights.cards.${insight.id}`;
+  const title = t(`${base}.title`, { defaultValue: insight.title });
+  const description = t(`${base}.description`, {
+    defaultValue: insight.description,
+    days: 7,
+    name: insight?.meta?.siteName || "",
+  });
+  const actionLabel = t(`${base}.actionLabel`, {
+    defaultValue: insight.actionLabel || insight?.cta?.label || "",
+  });
+
+  let metric = insight.metric;
+  if (metric && typeof metric.value === "number") {
+    const metricKey =
+      metric.value === 1 ? `${base}.metricOne` : `${base}.metricOther`;
+    metric = {
+      ...metric,
+      label: t(metricKey, { defaultValue: metric.label }),
+    };
+  }
+
+  return {
+    ...insight,
+    title,
+    description,
+    actionLabel,
+    metric,
+  };
+}
+
 export default function AiInsightsPanel({ insights = [], loading, businessId }) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
@@ -216,7 +249,8 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
 
       <div className="space-y-3">
         {groupedInsights.map(({ priority, items }) =>
-          items.map((insight) => {
+          items.map((rawInsight) => {
+            const insight = localizeInsight(rawInsight, t);
             const styles = PRIORITY_STYLES[priority] || PRIORITY_STYLES.medium;
             const Icon = TYPE_ICONS[insight.type] || Sparkles;
 
@@ -228,7 +262,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                 <button
                   type="button"
                   className="absolute end-3 top-3 flex h-8 w-8 items-center justify-center rounded-xl bg-white/80 text-slate-400 transition hover:bg-violet-600 hover:text-white"
-                  onClick={() => handleDismiss(insight)}
+                  onClick={() => handleDismiss(rawInsight)}
                   aria-label={t("aiInsights.dismissAria")}
                 >
                   <X size={14} />
@@ -264,7 +298,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
                       <button
                         type="button"
                         className="mt-3 rounded-xl bg-violet-600 px-4 py-2 text-xs font-black text-white transition hover:bg-violet-700"
-                        onClick={() => handleAction(insight)}
+                        onClick={() => handleAction(rawInsight)}
                       >
                         {insight.actionLabel || insight.cta?.label}
                       </button>

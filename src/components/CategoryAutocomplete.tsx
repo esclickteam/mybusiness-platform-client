@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ALL_CATEGORIES from "../data/categories";
 
 type CategoryAutocompleteProps = {
@@ -11,8 +12,11 @@ type CategoryAutocompleteProps = {
   className?: string;
 };
 
-const OTHER_CATEGORY_LABEL = "אחר / קטגוריה מותאמת";
-const CUSTOM_PREFIX = "השתמש בקטגוריה מותאמת:";
+const KNOWN_OTHER_LABELS = ["אחר / קטגוריה מותאמת", "Other / custom category"];
+const KNOWN_CUSTOM_PREFIXES = [
+  "השתמש בקטגוריה מותאמת:",
+  "Use custom category:",
+];
 
 function normalizeCategoryValue(value: unknown): string {
   if (value === undefined || value === null) return "";
@@ -57,22 +61,43 @@ function uniqueCategories(categories: string[]) {
   });
 }
 
-function isOtherCategory(value: string) {
-  return value.trim() === OTHER_CATEGORY_LABEL;
+function isOtherCategory(value: string, otherLabel: string) {
+  const clean = value.trim();
+  return KNOWN_OTHER_LABELS.includes(clean) || clean === otherLabel.trim();
 }
 
-function stripCustomSuggestion(value: string) {
-  return value.replace(CUSTOM_PREFIX, "").trim();
+function stripCustomSuggestion(value: string, customPrefix: string) {
+  const prefixes = [...KNOWN_CUSTOM_PREFIXES, customPrefix];
+  let next = value.trim();
+
+  for (const prefix of prefixes) {
+    if (next.startsWith(prefix)) {
+      next = next.slice(prefix.length).trim();
+    }
+  }
+
+  return next;
+}
+
+function hasCustomPrefix(value: string, customPrefix: string) {
+  return [...KNOWN_CUSTOM_PREFIXES, customPrefix].some((prefix) =>
+    value.startsWith(prefix)
+  );
 }
 
 export default function CategoryAutocomplete({
   value = "",
   onChange,
-  placeholder = "בחר או חפש קטגוריה",
+  placeholder,
   disabled = false,
   className = "",
 }: CategoryAutocompleteProps) {
+  const { t } = useTranslation();
   const wrapperRef = useRef<HTMLDivElement | null>(null);
+
+  const otherLabel = t("categoryAutocomplete.otherLabel");
+  const customPrefix = t("categoryAutocomplete.customPrefix");
+  const inputPlaceholder = placeholder || t("categoryAutocomplete.placeholder");
 
   const [query, setQuery] = useState<string>("");
   const [customCategory, setCustomCategory] = useState<string>("");
@@ -85,8 +110,8 @@ export default function CategoryAutocomplete({
       .map((category) => normalizeCategoryValue(category))
       .filter(Boolean);
 
-    return uniqueCategories([OTHER_CATEGORY_LABEL, ...cleaned]);
-  }, []);
+    return uniqueCategories([otherLabel, ...cleaned]);
+  }, [otherLabel]);
 
   useEffect(() => {
     const cleanValue = normalizeCategoryValue(value);
@@ -99,7 +124,7 @@ export default function CategoryAutocomplete({
       return;
     }
 
-    if (isOtherCategory(cleanValue)) {
+    if (isOtherCategory(cleanValue, otherLabel)) {
       setQuery("");
       setCustomCategory("");
       setCustomMode(true);
@@ -115,7 +140,7 @@ export default function CategoryAutocomplete({
     setCustomCategory(existsInCategories ? "" : cleanValue);
     setCustomMode(!existsInCategories);
     setActiveIndex(-1);
-  }, [categories, value]);
+  }, [categories, otherLabel, value]);
 
   const searchValue = customMode ? customCategory : query;
 
@@ -148,12 +173,12 @@ export default function CategoryAutocomplete({
     if (!exactMatch && searchValue.trim()) {
       return [
         ...filtered,
-        `${CUSTOM_PREFIX} ${searchValue.trim()}`,
+        `${customPrefix} ${searchValue.trim()}`,
       ].slice(0, 30);
     }
 
     return filtered.slice(0, 30);
-  }, [categories, searchValue]);
+  }, [categories, customPrefix, searchValue]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -177,8 +202,8 @@ export default function CategoryAutocomplete({
 
     if (!cleanValue) return;
 
-    if (cleanValue.startsWith(CUSTOM_PREFIX)) {
-      const custom = stripCustomSuggestion(cleanValue);
+    if (hasCustomPrefix(cleanValue, customPrefix)) {
+      const custom = stripCustomSuggestion(cleanValue, customPrefix);
 
       setQuery(custom);
       setCustomCategory(custom);
@@ -189,7 +214,7 @@ export default function CategoryAutocomplete({
       return;
     }
 
-    if (isOtherCategory(cleanValue)) {
+    if (isOtherCategory(cleanValue, otherLabel)) {
       setQuery("");
       setCustomCategory("");
       setCustomMode(true);
@@ -277,7 +302,7 @@ export default function CategoryAutocomplete({
     }
   };
 
-  const selectedText = customMode ? OTHER_CATEGORY_LABEL : query;
+  const selectedText = customMode ? otherLabel : query;
   const showSuggestions = open && suggestions.length > 0;
   const showNoResults = open && searchValue.trim() && suggestions.length === 0;
 
@@ -291,15 +316,15 @@ export default function CategoryAutocomplete({
           onFocus={() => setOpen(true)}
           onKeyDown={handleKeyDown}
           disabled={disabled}
-          placeholder={placeholder}
+          placeholder={inputPlaceholder}
           autoComplete="off"
-          className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-right text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-start text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
         />
 
         {customMode && (
           <div>
             <label className="mb-2 block text-xs font-black text-slate-500">
-              כתוב את הקטגוריה שלך
+              {t("categoryAutocomplete.writeCategory")}
             </label>
 
             <input
@@ -309,27 +334,27 @@ export default function CategoryAutocomplete({
               onFocus={() => setOpen(true)}
               onKeyDown={handleKeyDown}
               disabled={disabled}
-              placeholder="לדוגמה: מומחית תוכן לעסקים קטנים"
+              placeholder={t("categoryAutocomplete.customPlaceholder")}
               autoComplete="off"
-              className="h-12 w-full rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 text-right text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
+              className="h-12 w-full rounded-2xl border border-emerald-100 bg-emerald-50/60 px-4 text-start text-sm font-bold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-emerald-400 focus:ring-4 focus:ring-emerald-100 disabled:cursor-not-allowed disabled:opacity-60"
             />
 
             <p className="mt-2 text-xs font-semibold leading-5 text-slate-400">
-              אפשר להקליד אות כמו א, ב, ג ולקבל התאמות מתוך הקטגוריות. אם אין התאמה — הקטגוריה המותאמת תישמר ותופיע בפרופיל העסק.
+              {t("categoryAutocomplete.helper")}
             </p>
           </div>
         )}
       </div>
 
       {showSuggestions && (
-        <div className="absolute right-0 top-[calc(100%+8px)] z-[9999] w-full overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
+        <div className="absolute start-0 top-[calc(100%+8px)] z-[9999] w-full overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
           <ul className="max-h-80 overflow-y-auto py-2">
             {suggestions.map((category, index) => {
               const active = index === activeIndex;
               const selected =
                 !customMode &&
                 query.trim().toLowerCase() === category.toLowerCase();
-              const customSuggestion = category.startsWith(CUSTOM_PREFIX);
+              const customSuggestion = hasCustomPrefix(category, customPrefix);
 
               return (
                 <li key={`${category}-${index}`}>
@@ -339,7 +364,7 @@ export default function CategoryAutocomplete({
                     onClick={() => commitValue(category)}
                     onMouseEnter={() => setActiveIndex(index)}
                     className={[
-                      "flex w-full items-center justify-between gap-3 px-4 py-3 text-right text-sm font-bold transition",
+                      "flex w-full items-center justify-between gap-3 px-4 py-3 text-start text-sm font-bold transition",
                       active
                         ? "bg-violet-50 text-violet-700"
                         : "bg-white text-slate-700 hover:bg-violet-50 hover:text-violet-700",
@@ -350,13 +375,13 @@ export default function CategoryAutocomplete({
 
                     {selected && (
                       <span className="text-xs font-black text-violet-600">
-                        נבחר
+                        {t("categoryAutocomplete.selected")}
                       </span>
                     )}
 
                     {customSuggestion && (
                       <span className="text-xs font-black text-emerald-600">
-                        מותאם
+                        {t("categoryAutocomplete.customBadge")}
                       </span>
                     )}
                   </button>
@@ -368,9 +393,9 @@ export default function CategoryAutocomplete({
       )}
 
       {showNoResults && (
-        <div className="absolute right-0 top-[calc(100%+8px)] z-[9999] w-full rounded-2xl border border-violet-100 bg-white p-4 text-center shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
+        <div className="absolute start-0 top-[calc(100%+8px)] z-[9999] w-full rounded-2xl border border-violet-100 bg-white p-4 text-center shadow-[0_20px_60px_rgba(15,23,42,0.16)]">
           <p className="text-sm font-bold text-slate-500">
-            לא נמצאו קטגוריות מתאימות
+            {t("categoryAutocomplete.noResults")}
           </p>
 
           <button
@@ -379,7 +404,7 @@ export default function CategoryAutocomplete({
             onClick={() => commitValue(searchValue)}
             className="mt-3 rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-700 transition hover:bg-emerald-100"
           >
-            השתמש ב־“{searchValue}”
+            {t("categoryAutocomplete.useCustom", { value: searchValue })}
           </button>
         </div>
       )}

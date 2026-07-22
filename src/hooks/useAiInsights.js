@@ -1,13 +1,16 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@/api";
 
 /**
  * Fetches AI insights for a given business id (Business._id).
  */
 export default function useAiInsights(businessId) {
+  const { t, i18n } = useTranslation();
   const [insights, setInsights] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const language = String(i18n.language || "en").split("-")[0];
 
   const fetchInsights = useCallback(async () => {
     if (!businessId || typeof businessId !== "string" || businessId.length !== 24) {
@@ -19,7 +22,7 @@ export default function useAiInsights(businessId) {
     setError(null);
 
     try {
-      const res = await API.post("/ai/insights", { businessId });
+      const res = await API.post("/ai/insights", { businessId, language });
 
       if (Array.isArray(res.data)) {
         setInsights(res.data);
@@ -29,12 +32,12 @@ export default function useAiInsights(businessId) {
         setInsights([]);
       }
     } catch {
-      setError("לא ניתן לטעון המלצות כרגע");
+      setError(t("aiInsights.loadError"));
       setInsights([]);
     } finally {
       setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, language, t]);
 
   useEffect(() => {
     let isMounted = true;

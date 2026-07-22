@@ -6,11 +6,13 @@
     <script>
       (function () {
         try {
-          var manual = localStorage.getItem("bizuply_lang_manual") === "1";
-          var lang = null;
+          // Clear legacy permanent override so location can win on every visit.
+          localStorage.removeItem("bizuply_lang_manual");
 
-          if (manual) {
-            lang = String(localStorage.getItem("i18nextLng") || "en").split("-")[0];
+          var lang = null;
+          var session = sessionStorage.getItem("bizuply_lang_session");
+          if (session === "he" || session === "en") {
+            lang = session;
           } else {
             var match = document.cookie.match(/(?:^|; )bizuply_geo_lang=([^;]+)/);
             if (match) {
