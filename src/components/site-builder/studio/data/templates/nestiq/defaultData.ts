@@ -35,7 +35,7 @@ export const nestiqDefaultData = {
   item1Meta: "נוף · 4 חד׳ · חניה",
   item1Text: "נכס עם ציון גבוה, מחיר fair.",
   item1Price: "₪3.5M",
-  item1Image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d936bb?auto=format&fit=crop&w=1400&q=85",
+  item1Image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=85",
   item2Title: "דירה משפחתית",
   item2Meta: "5 חד׳ · גינה · ממ״ד",
   item2Text: "מתאים למשפחות, אזור שקט.",

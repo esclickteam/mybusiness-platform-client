@@ -4,12 +4,11 @@ import {
   getStudioTemplateRenderer,
   hasStudioTemplateRenderer,
 } from "../site-builder/studio/data/templates/templateRendererRegistry";
-import { scheduleTemplatePreview } from "../../utils/templatePreviewScheduler";
 
 type TemplateCardPreviewProps = {
   templateKey: string;
   title?: string;
-  /** Kept for API compat — gallery now batch-loads all cards on open */
+  /** First row cards mount live preview immediately */
   eager?: boolean;
 };
 
@@ -20,6 +19,12 @@ function normalizeKey(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
 }
 
+function pickHeroImage(data: Record<string, unknown> | undefined) {
+  if (!data) return "";
+  const direct = data.heroImage ?? data.image ?? data.hero?.image;
+  return typeof direct === "string" && direct.trim() ? direct.trim() : "";
+}
+
 export function canRenderTemplatePreview(
   templateKey: string | null | undefined,
 ) {
@@ -27,23 +32,26 @@ export function canRenderTemplatePreview(
 }
 
 /**
- * Live scaled homepage of the real template (site content, not stock photos).
- * Activation is scheduled in fast batches for the whole gallery so cards fill
- * within seconds like Webflow — without waiting for scroll.
+ * Gallery card preview: hero image shows instantly; full live homepage mounts
+ * only when the card is near the viewport (or eager for first row).
  */
 export default function TemplateCardPreview({
   templateKey,
   title,
+  eager = false,
 }: TemplateCardPreviewProps) {
   const key = normalizeKey(templateKey);
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(320);
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(eager);
 
   const renderer = useMemo(
     () => (key ? getStudioTemplateRenderer(key) : null),
     [key],
   );
+
+  const data = (renderer?.defaultData || {}) as Record<string, unknown>;
+  const heroImage = pickHeroImage(data);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -62,11 +70,30 @@ export default function TemplateCardPreview({
   }, []);
 
   useEffect(() => {
-    if (!key) return;
+    if (eager) {
+      setActive(true);
+      return undefined;
+    }
 
-    const subscribe = scheduleTemplatePreview(key);
-    return subscribe((isActive) => setActive(isActive));
-  }, [key]);
+    const frame = frameRef.current;
+    if (!frame || typeof IntersectionObserver === "undefined") {
+      setActive(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setActive(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "480px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, [eager, key]);
 
   const scale = Math.max(frameWidth / DESIGN_WIDTH, 0.05);
   const shouldMount = Boolean(renderer?.Component && active);
@@ -74,7 +101,6 @@ export default function TemplateCardPreview({
   const homePage = renderer?.pages?.[0];
   const pageId = homePage?.id || "home";
   const pageSlug = homePage?.slug || "/";
-  const data = (renderer?.defaultData || {}) as Record<string, unknown>;
   const Component = renderer?.Component as
     | React.ComponentType<Record<string, unknown>>
     | undefined;
@@ -86,8 +112,20 @@ export default function TemplateCardPreview({
       aria-label={title || key || "תצוגה מקדימה"}
       aria-hidden={!title}
     >
+      {heroImage ? (
+        <img
+          src={heroImage}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover object-top"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : (
+        <div className="absolute inset-0 bg-slate-100" />
+      )}
+
       {!shouldMount ? (
-        <div className="absolute inset-0 animate-pulse bg-slate-100" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent" />
       ) : null}
 
       {shouldMount && Component ? (
@@ -117,7 +155,6 @@ export default function TemplateCardPreview({
               animation-iteration-count: 1 !important;
               animation-fill-mode: both !important;
             }
-            /* Keep continuous motion (ken burns / marquee / float) alive in gallery cards */
             [data-template-card-live="${key}"] .tpl-ken,
             [data-template-card-live="${key}"] .tpl-marquee-track,
             [data-template-card-live="${key}"] .tpl-float,

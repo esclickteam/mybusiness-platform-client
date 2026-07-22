@@ -2,7 +2,7 @@ import React from "react";
 export default function SeabloomThumbnail() {
   return (
     <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden">
-      <div className="relative h-full min-h-[260px] overflow-hidden" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1506929562872-bb421503efea?auto=format&fit=crop&w=2000&q=85)", backgroundSize: "cover" }}>
+      <div className="relative h-full min-h-[260px] overflow-hidden" style={{ backgroundImage: "url(https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2000&q=85)", backgroundSize: "cover" }}>
         <div className="absolute inset-0" style={{ background: "#f5faf599" }} />
         <div className="absolute top-2 left-[15%] h-2 w-2 rounded-full" style={{ background: "#2d8a6e" }} />
         <div className="absolute top-4 left-[40%] h-2 w-2 rounded-full" style={{ background: "#2d8a6e" }} />

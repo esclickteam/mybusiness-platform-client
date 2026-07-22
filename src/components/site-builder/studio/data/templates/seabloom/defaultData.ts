@@ -13,7 +13,7 @@ export const seabloomDefaultData = {
   heroSubtitle: "Seabloom — spa טרופי עם טיפולי גוף, ארומatherapy וגן צמחי מרפא מול הים.",
   heroPrimary: "הזמינו טיפול",
   heroSecondary: "לטיפולים",
-  heroImage: "https://images.unsplash.com/photo-1506929562872-bb421503efea?auto=format&fit=crop&w=2000&q=85",
+  heroImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=2000&q=85",
   aboutTitle: "הגוף זוכר את הים.",
   aboutText: "שמנים טבעיים, מטפלים מוסמכים וחללים פתוחים לרוח הים.",
   aboutImage: "https://images.unsplash.com/photo-1544161515-4ab6ce6db874?auto=format&fit=crop&w=1400&q=85",

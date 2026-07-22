@@ -13,7 +13,7 @@ export const sunriftDefaultData = {
   heroSubtitle: "Sunrift — מועדון חוף עם DJ sets, בר קוקטיילים ושולחנות VIP מול הים.",
   heroPrimary: "הזמינו שולחן",
   heroSecondary: "לוח אירועים",
-  heroImage: "https://images.unsplash.com/photo-1473496165774-b890209ef8aa?auto=format&fit=crop&w=2000&q=85",
+  heroImage: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=2000&q=85",
   aboutTitle: "כל ערב מתחיל בזהב.",
   aboutText: "משקיעה ראשונה ועד אחרונה — אוכל, מוזיקה ואווירה שמחזיקה עד הלילה.",
   aboutImage: "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85",

@@ -25,7 +25,7 @@ export const homaraDefaultData = {
   item3Title: "בית גן כפר סבא",
   item3Meta: "5 חד׳ · עצי פרי · שכנים קבועים",
   item3Text: "מגרש ירוק, הרבה אור טבעי ושביל אופניים שמגיע לפארק.",
-  item3Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+  item3Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
   place1: "רמת השרון",
   place2: "הוד השרון",
   place3: "כפר סבא",

@@ -49,5 +49,5 @@ export const signetDefaultData = {
   item4Meta: "4 חד׳ · נוף",
   item4Text: "פenthouse עם מרפסת.",
   item4Price: "₪9M",
-  item4Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+  item4Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
 };

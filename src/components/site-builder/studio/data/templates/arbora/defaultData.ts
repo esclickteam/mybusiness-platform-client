@@ -23,7 +23,7 @@ export const arboraDefaultData = {
   roomsTitle: 'פרויקטים נבחרים',
   aboutTitle: 'סטודיו קטן. נופים גדולים.',
   aboutText: 'ארבורה הוא סטודיו לאדריכלות נוף שפועל ממרכז הארץ. אנחנו עובדים צמוד עם אדריכלים, קבלנים ולקוחות פרטיים.',
-  aboutImage: 'https://images.unsplash.com/photo-1466692476866-aef1dfb1e735?auto=format&fit=crop&w=1400&q=85',
+  aboutImage: 'https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=1400&q=85',
   contactTitle: 'בואו נתכנן יחד',
   contactText: 'ספרו על השטח, הכיוון והתקציב — ונחזור עם הצעת תהליך.',
   cta: 'תיאום פגישה',

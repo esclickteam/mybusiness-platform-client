@@ -34,7 +34,7 @@ export const openhausDefaultData = {
   item1Meta: "שבת 10:00 · הרצליה",
   item1Text: "וילה עם בריכה, 6 חדרים וגינה.",
   item1Price: "₪9.5M",
-  item1Image: "https://images.unsplash.com/photo-1600047509807-ba8f99d2cd00?auto=format&fit=crop&w=1400&q=85",
+  item1Image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1400&q=85",
   item2Title: "דuplex רamat gan",
   item2Meta: "שישי 11:00 · רamat gan",
   item2Text: "דuplex משפחתי, 5 חדרים.",
