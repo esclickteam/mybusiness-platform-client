@@ -527,9 +527,10 @@ export default function BusinessDashboardLayout() {
               ref={sidebarRef}
               className={`
                 fixed z-50 flex flex-col overflow-hidden
-                bg-white shadow-[0_8px_32px_rgba(15,23,42,0.08)]
+                bg-gradient-to-b from-[#faf7ff] via-[#f3f8ff] to-[#eefcff]
+                shadow-[4px_0_28px_rgba(99,102,241,0.07)]
                 transition-[width,transform] duration-300 ease-in-out
-                ${isRtl ? "right-0 border-l border-slate-100" : "left-0 border-r border-slate-100"}
+                ${isRtl ? "right-0 border-l border-violet-100/80" : "left-0 border-r border-violet-100/80"}
                 ${
                   isMobile
                     ? showSidebar
@@ -549,7 +550,7 @@ export default function BusinessDashboardLayout() {
               <div
                 className={`
                   relative flex shrink-0 flex-col items-center justify-center
-                  border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/60
+                  border-b border-violet-100/70 bg-white/35 backdrop-blur-sm
                   ${sidebarCollapsed && !isMobile ? "gap-2 px-2 py-4" : "gap-4 px-5 py-6"}
                 `}
               >
@@ -576,10 +577,11 @@ export default function BusinessDashboardLayout() {
                         : t("businessNav.collapseSidebar", "Collapse sidebar")
                     }
                     className="
-                      flex h-8 w-8 items-center justify-center rounded-lg
-                      border border-slate-200 bg-white text-slate-500
-                      shadow-sm transition hover:border-violet-200
-                      hover:bg-violet-50 hover:text-violet-600
+                      flex h-8 w-8 items-center justify-center rounded-md
+                      border border-violet-200/70 bg-white/75 text-slate-500
+                      shadow-[0_2px_8px_rgba(99,102,241,0.06)]
+                      transition hover:border-sky-200 hover:bg-white
+                      hover:text-sky-600
                     "
                   >
                     {sidebarCollapsed ? (
@@ -609,8 +611,8 @@ export default function BusinessDashboardLayout() {
               </div>
 
               {isMobile && (
-                <div className="border-t border-slate-100 p-4">
-                  <div className="mb-3 truncate text-sm font-bold text-slate-900">
+                <div className="border-t border-violet-100/70 bg-white/30 p-4 backdrop-blur-sm">
+                  <div className="mb-3 truncate text-sm font-semibold text-slate-800">
                     {user?.businessName || user?.name}
                   </div>
 
@@ -618,9 +620,9 @@ export default function BusinessDashboardLayout() {
                     type="button"
                     onClick={handleLogout}
                     className="
-                      w-full rounded-2xl border border-slate-200 bg-white
-                      px-4 py-3 text-sm font-bold text-slate-700
-                      transition hover:bg-slate-50
+                      w-full rounded-md border border-violet-200/70 bg-white/80
+                      px-4 py-3 text-sm font-semibold text-slate-700
+                      transition hover:border-sky-200 hover:bg-white
                     "
                   >
                     {t("common.logOut")}
