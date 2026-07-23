@@ -953,6 +953,9 @@ export default function FacebookStyleNotifications() {
         ];
         setStoredArray(alertedKey, nextAlerted);
 
+        // Refresh CRM list once (heal + silent fetch). Do not re-open a socket loop.
+        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+
         for (const lead of leadsToAlert) {
           const name = getLeadName(lead);
           void showLocalNotification({
