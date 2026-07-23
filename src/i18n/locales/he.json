@@ -1265,11 +1265,13 @@
         "source": "מקור",
         "mainDetails": "פרטים עיקריים",
         "status": "סטטוס",
+        "nextTask": "משימה הבאה",
         "createdDate": "תאריך יצירה",
         "actions": "פעולות"
       },
       "noContactDetails": "אין פרטי קשר",
       "noAdditionalData": "אין נתונים נוספים",
+      "noNextTask": "אין משימה",
       "statuses": {
         "new": "חדש",
         "contacted": "נוצר קשר",

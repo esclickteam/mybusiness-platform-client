@@ -1265,11 +1265,13 @@
         "source": "Source",
         "mainDetails": "Main Details",
         "status": "Status",
+        "nextTask": "Next Task",
         "createdDate": "Created Date",
         "actions": "Actions"
       },
       "noContactDetails": "No contact details",
       "noAdditionalData": "No additional data",
+      "noNextTask": "No task",
       "statuses": {
         "new": "New",
         "contacted": "Contacted",

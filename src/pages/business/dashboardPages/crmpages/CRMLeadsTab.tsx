@@ -19,6 +19,7 @@ import {
   Search,
   Send,
   Sparkles,
+  Trophy,
   UserRound,
   UsersRound,
   Webhook,
@@ -159,20 +160,83 @@ function getStatusLabel(status: LeadStatus, t: TFunction) {
 }
 
 const statusBadgeClasses: Record<LeadStatus, string> = {
-  new: "border-sky-400 bg-sky-600 text-white",
-  contacted: "border-slate-500 bg-slate-800 text-white",
-  interested: "border-amber-400 bg-amber-500 text-slate-950",
-  converted: "border-cyan-500 bg-cyan-700 text-white",
-  lost: "border-rose-400 bg-rose-600 text-white",
+  new: "border-sky-200 bg-sky-100 text-sky-700",
+  contacted: "border-amber-200 bg-amber-100 text-amber-800",
+  interested: "border-violet-200 bg-violet-100 text-violet-700",
+  converted: "border-emerald-200 bg-emerald-100 text-emerald-700",
+  lost: "border-rose-200 bg-rose-100 text-rose-700",
 };
 
 const statusDotClasses: Record<LeadStatus, string> = {
-  new: "bg-sky-200",
-  contacted: "bg-slate-300",
-  interested: "bg-amber-100",
-  converted: "bg-cyan-200",
-  lost: "bg-rose-200",
+  new: "bg-sky-500",
+  contacted: "bg-amber-500",
+  interested: "bg-violet-500",
+  converted: "bg-emerald-500",
+  lost: "bg-rose-500",
 };
+
+const AVATAR_TONES = [
+  "bg-violet-100 text-violet-700",
+  "bg-sky-100 text-sky-700",
+  "bg-amber-100 text-amber-800",
+  "bg-emerald-100 text-emerald-700",
+  "bg-rose-100 text-rose-700",
+  "bg-cyan-100 text-cyan-700",
+] as const;
+
+function getAvatarTone(seed?: string) {
+  const text = String(seed || "lead");
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = (hash + text.charCodeAt(i) * (i + 1)) % AVATAR_TONES.length;
+  }
+  return AVATAR_TONES[hash];
+}
+
+function formatDaySeparatorLabel(value?: string, locale = "he-IL", fallback = "—") {
+  if (!value) return fallback;
+
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(value));
+  } catch {
+    return fallback;
+  }
+}
+
+function getLeadCreatedTime(lead: Lead) {
+  const raw = lead.createdAt || lead.facebook?.createdTime || "";
+  const time = new Date(raw).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function getLeadDateKey(lead: Lead) {
+  const time = getLeadCreatedTime(lead);
+  if (!time) return "unknown";
+  const date = new Date(time);
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function getNextOpenTask(lead: Lead) {
+  const tasks = (lead.activities || []).filter(
+    (activity) => activity.type === "task" && !activity.taskDone
+  );
+
+  if (!tasks.length) return null;
+
+  return [...tasks].sort((a, b) => {
+    const aTime = new Date(a.taskDueAt || a.createdAt || 0).getTime();
+    const bTime = new Date(b.taskDueAt || b.createdAt || 0).getTime();
+    return aTime - bTime;
+  })[0];
+}
 
 function getCurrentUserName(t: TFunction) {
   const fallback = t("crm.common.systemUser");
@@ -607,7 +671,7 @@ function LeadStatusBadge({ status }: { status: LeadStatus }) {
   return (
     <span
       className={[
-        "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-black",
+        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black",
         statusBadgeClasses[status],
       ].join(" ")}
     >
@@ -896,23 +960,60 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase();
 
-    return leads.filter((lead) => {
-      const matchesSearch = !q || getLeadSearchText(lead, t).includes(q);
+    return leads
+      .filter((lead) => {
+        const matchesSearch = !q || getLeadSearchText(lead, t).includes(q);
 
-      const matchesStatus =
-        statusFilter === "all" || (lead.status || "new") === statusFilter;
+        const matchesStatus =
+          statusFilter === "all" || (lead.status || "new") === statusFilter;
 
-      return matchesSearch && matchesStatus;
-    });
+        return matchesSearch && matchesStatus;
+      })
+      .sort((a, b) => getLeadCreatedTime(b) - getLeadCreatedTime(a));
   }, [leads, search, statusFilter, t]);
 
+  const leadDateGroups = useMemo(() => {
+    const groups: Array<{ key: string; label: string; leads: Lead[] }> = [];
+
+    for (const lead of filteredLeads) {
+      const key = getLeadDateKey(lead);
+      const last = groups[groups.length - 1];
+
+      if (last && last.key === key) {
+        last.leads.push(lead);
+        continue;
+      }
+
+      groups.push({
+        key,
+        label:
+          key === "unknown"
+            ? emDash
+            : formatDaySeparatorLabel(lead.createdAt || lead.facebook?.createdTime, locale, emDash),
+        leads: [lead],
+      });
+    }
+
+    return groups;
+  }, [filteredLeads, locale, emDash]);
+
   const stats = useMemo(() => {
+    const openTasks = leads.reduce(
+      (sum, lead) =>
+        sum +
+        (lead.activities || []).filter(
+          (activity) => activity.type === "task" && !activity.taskDone
+        ).length,
+      0
+    );
+
     return {
       total: leads.length,
       new: leads.filter((lead) => lead.status === "new" || !lead.status).length,
       contacted: leads.filter((lead) => lead.status === "contacted").length,
       interested: leads.filter((lead) => lead.status === "interested").length,
       converted: leads.filter((lead) => lead.status === "converted").length,
+      openTasks,
       integration: leads.filter((lead) => {
         const label = getLeadSourceLabel(lead, t).toLowerCase();
         return (
@@ -1136,352 +1237,348 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   };
 
   return (
-    <div
-      className="w-full min-w-0 space-y-6 bg-[linear-gradient(165deg,#dbe7f3_0%,#e8eef5_35%,#d5dee8_100%)] p-3 sm:p-4"
-      dir={dir}
-    >
+    <div className="w-full min-w-0 bg-[#F4F5F8] p-3 sm:p-4" dir={dir}>
       {showMetaSetup ? (
         <MetaLeadAdsIntegration
           businessId={businessId}
           onBack={closeMetaSetup}
         />
       ) : (
-        <>
-      <section className="overflow-hidden rounded-[1.75rem] border border-slate-300/90 bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
-        <div className="relative overflow-hidden border-b border-slate-800 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a6e_55%,#0369a1_100%)] p-6 text-white sm:p-7">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.28),transparent_42%),radial-gradient(circle_at_85%_10%,rgba(14,165,233,0.22),transparent_38%)]" />
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.12]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)",
-              backgroundSize: "28px 28px",
-            }}
-          />
+        <div className="flex h-[calc(100vh-7.5rem)] min-h-[640px] flex-col gap-4">
+          <div className="grid shrink-0 gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            {[
+              {
+                key: "total",
+                label: t("crm.leads.stats.total"),
+                value: stats.total,
+                icon: UsersRound,
+                card: "border-violet-100 bg-white",
+                iconWrap: "bg-violet-100 text-violet-700",
+              },
+              {
+                key: "new",
+                label: t("crm.leads.stats.new"),
+                value: stats.new,
+                icon: Sparkles,
+                card: "border-sky-100 bg-white",
+                iconWrap: "bg-sky-100 text-sky-700",
+              },
+              {
+                key: "contacted",
+                label: t("crm.leads.stats.contacted"),
+                value: stats.contacted,
+                icon: Phone,
+                card: "border-amber-100 bg-white",
+                iconWrap: "bg-amber-100 text-amber-700",
+              },
+              {
+                key: "converted",
+                label: t("crm.leads.stats.converted"),
+                value: stats.converted,
+                icon: Trophy,
+                card: "border-emerald-100 bg-white",
+                iconWrap: "bg-emerald-100 text-emerald-700",
+              },
+              {
+                key: "openTasks",
+                label: t("crm.leads.stats.openTasks"),
+                value: stats.openTasks,
+                icon: Clock3,
+                card: "border-rose-100 bg-white",
+                iconWrap: "bg-rose-100 text-rose-700",
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={item.key}
+                  className={[
+                    "rounded-2xl border p-4 shadow-[0_10px_30px_rgba(15,23,42,0.04)]",
+                    item.card,
+                  ].join(" ")}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-xs font-bold text-slate-500">{item.label}</p>
+                      <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
+                        {item.value}
+                      </p>
+                    </div>
+                    <div
+                      className={[
+                        "flex h-11 w-11 items-center justify-center rounded-xl",
+                        item.iconWrap,
+                      ].join(" ")}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
 
-          <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-sky-300/40 bg-sky-500/20 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-sky-100">
-                <Sparkles className="h-4 w-4" />
-                {t("crm.leads.badge")}
+          {error && (
+            <div className="flex shrink-0 items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+              <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+              <p>{error}</p>
+            </div>
+          )}
+
+          <section className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
+            <div className="shrink-0 space-y-3 border-b border-slate-100 p-4">
+              <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={openMetaSetup}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white shadow-sm transition hover:bg-violet-500"
+                  >
+                    <Facebook className="h-4 w-4" />
+                    {t("crm.leads.connectMeta")}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => fetchLeads()}
+                    disabled={loading}
+                    className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                  >
+                    {loading ? (
+                      <BizuplyLoader size="xs" compact />
+                    ) : (
+                      <RefreshCw className="h-4 w-4" />
+                    )}
+                    {t("crm.leads.refreshLeads")}
+                  </button>
+                </div>
+
+                <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 xl:max-w-md">
+                  <Search className="h-4 w-4 shrink-0 text-slate-400" />
+                  <input
+                    value={search}
+                    onChange={(event) => setSearch(event.target.value)}
+                    placeholder={t("crm.leads.searchPlaceholder")}
+                    className="w-full bg-transparent text-sm font-semibold text-slate-700 outline-none placeholder:text-slate-400"
+                  />
+                </div>
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">
-                {t("crm.leads.title")}
-              </h1>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
+                  <Filter className="h-3.5 w-3.5" />
+                  {t("crm.common.filter")}
+                </div>
 
-              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-sky-100/90 sm:text-base">
-                {t("crm.leads.subtitle")}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={openMetaSetup}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-white/25 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/20"
-              >
-                <Facebook className="h-5 w-5" />
-                {t("crm.leads.connectMeta")}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => fetchLeads()}
-                disabled={loading}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-sky-400 px-5 text-sm font-black text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                {loading ? (
-                  <BizuplyLoader size="xs" compact />
-                ) : (
-                  <RefreshCw className="h-5 w-5" />
-                )}
-                {t("crm.leads.refreshLeads")}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid gap-3 bg-slate-100/80 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm">
-            <p className="text-xs font-black uppercase tracking-wide text-slate-500">{t("crm.leads.stats.total")}</p>
-            <p className="mt-2 text-3xl font-black text-slate-900">
-              {stats.total}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-sky-300 bg-sky-600 p-5 text-white shadow-sm">
-            <p className="text-xs font-black uppercase tracking-wide text-sky-100">{t("crm.leads.stats.new")}</p>
-            <p className="mt-2 text-3xl font-black">
-              {stats.new}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-300 bg-slate-800 p-5 text-white shadow-sm">
-            <p className="text-xs font-black uppercase tracking-wide text-slate-300">{t("crm.leads.stats.contacted")}</p>
-            <p className="mt-2 text-3xl font-black">
-              {stats.contacted}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-cyan-300 bg-cyan-700 p-5 text-white shadow-sm">
-            <p className="text-xs font-black uppercase tracking-wide text-cyan-100">{t("crm.leads.stats.converted")}</p>
-            <p className="mt-2 text-3xl font-black">
-              {stats.converted}
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm">
-            <p className="text-xs font-black uppercase tracking-wide text-slate-500">{t("crm.leads.stats.openTasks")}</p>
-            <p className="mt-2 text-3xl font-black text-slate-900">
-              {leads.reduce(
-                (sum, lead) =>
-                  sum +
-                  (lead.activities || []).filter(
-                    (activity) =>
-                      activity.type === "task" && !activity.taskDone
-                  ).length,
-                0
-              )}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {error && (
-        <div className="flex items-start gap-3 rounded-2xl border border-rose-300 bg-rose-100 p-4 text-sm font-bold text-rose-800 shadow-sm">
-          <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-          <p>{error}</p>
-        </div>
-      )}
-
-      <section className="w-full min-w-0 overflow-hidden rounded-[1.75rem] border border-slate-300/90 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
-        <div className="border-b border-slate-200 bg-slate-50 p-4 sm:p-5">
-          <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-sm transition focus-within:border-sky-500 focus-within:ring-4 focus-within:ring-sky-200">
-              <Search className="h-5 w-5 shrink-0 text-slate-500" />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={t("crm.leads.searchPlaceholder")}
-                className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
-              />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm">
-                <Filter className="h-4 w-4" />
-                {t("crm.common.filter")}
-              </div>
-
-              {(["all", "new", "contacted", "interested", "converted", "lost"] as const).map(
-                (status) => (
+                {(
+                  ["all", "new", "contacted", "interested", "converted", "lost"] as const
+                ).map((status) => (
                   <button
                     key={status}
                     type="button"
                     onClick={() => setStatusFilter(status)}
                     className={[
-                      "rounded-xl px-4 py-2 text-xs font-black transition",
+                      "rounded-full px-3.5 py-1.5 text-xs font-black transition",
                       statusFilter === status
-                        ? "bg-slate-900 text-white shadow-sm"
-                        : "border border-slate-300 bg-white text-slate-600 hover:border-sky-400 hover:text-sky-800",
+                        ? "bg-violet-600 text-white shadow-sm"
+                        : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700",
                     ].join(" ")}
                   >
-                    {status === "all" ? t("crm.common.all") : getStatusLabel(status, t)}
+                    {status === "all"
+                      ? t("crm.common.all")
+                      : getStatusLabel(status, t)}
                   </button>
-                )
-              )}
-            </div>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="space-y-3 bg-slate-100/50 p-4 sm:p-5">
-            {Array.from({ length: 7 }).map((_, index) => (
-              <div
-                key={index}
-                className="h-16 animate-pulse rounded-xl bg-slate-200"
-              />
-            ))}
-          </div>
-        ) : filteredLeads.length === 0 ? (
-          <div className="flex min-h-[420px] flex-col items-center justify-center bg-slate-50 p-8 text-center">
-            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-900 text-sky-300 shadow-lg">
-              <Webhook className="h-9 w-9" />
+                ))}
+              </div>
             </div>
 
-            <h3 className="text-2xl font-black text-slate-900">
-              {t("crm.leads.emptyTitle")}
-            </h3>
-
-            <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-600">
-              {t("crm.leads.emptyDescription")}
-            </p>
-          </div>
-        ) : (
-          <div className="w-full">
-            <div className="hidden border-b border-slate-300 bg-slate-200/80 px-4 py-4 text-xs font-black uppercase tracking-[0.08em] text-slate-600 xl:grid xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:gap-4">
+            <div className="hidden shrink-0 border-b border-slate-100 bg-slate-50/80 px-4 py-3 text-[11px] font-black uppercase tracking-[0.08em] text-slate-400 xl:grid xl:grid-cols-[1.3fr_1.1fr_0.85fr_0.75fr_1.1fr_0.85fr_0.9fr] xl:gap-3">
               <div>{t("crm.leads.table.lead")}</div>
               <div>{t("crm.leads.table.contactDetails")}</div>
               <div>{t("crm.leads.table.source")}</div>
-              <div>{t("crm.leads.table.mainDetails")}</div>
               <div>{t("crm.leads.table.status")}</div>
+              <div>{t("crm.leads.table.nextTask")}</div>
               <div>{t("crm.leads.table.createdDate")}</div>
               <div>{t("crm.leads.table.actions")}</div>
             </div>
 
-            <div className="divide-y divide-slate-200 bg-white">
-              {filteredLeads.map((lead) => {
-                const status = lead.status || "new";
-                const leadName = getLeadName(lead, t);
-                const details = getLeadDetails(lead, t);
-                const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
-                const mainDetails = details.slice(0, 3);
-
-                return (
-                  <article
-                    key={lead._id}
-                    onClick={() => setSelectedLead(lead)}
-                    className={[
-                      "cursor-pointer px-4 py-4 transition hover:bg-sky-50",
-                      selectedLead?._id === lead._id ? "bg-sky-100" : "",
-                      "grid gap-4 xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:items-center",
-                    ].join(" ")}
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-sm font-black text-sky-300 shadow-sm">
-                        {getInitials(leadName)}
-                      </div>
-
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-800">
-                          {leadName}
-                        </p>
-                        <p className="mt-1 truncate text-xs font-bold text-slate-400">
-                          {lead.email || lead.phone || t("crm.leads.noContactDetails")}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="min-w-0 space-y-1">
-                      <p className="text-xs font-black text-slate-400 xl:hidden">
-                        {t("crm.leads.table.contactDetails")}
-                      </p>
-
-                      {lead.phone ? (
-                        <p className="flex min-w-0 items-center gap-2 text-sm font-black text-slate-800">
-                          <Phone className="h-4 w-4 shrink-0 text-sky-600" />
-                          <span className="truncate" dir="ltr">
-                            {lead.phone}
-                          </span>
-                        </p>
-                      ) : (
-                        <p className="text-sm font-bold text-slate-300">
-                          {t("crm.common.noPhone")}
-                        </p>
-                      )}
-
-                      {lead.email && (
-                        <p className="flex min-w-0 items-center gap-2 text-xs font-bold text-slate-500">
-                          <Mail className="h-3.5 w-3.5 shrink-0 text-slate-400" />
-                          <span className="truncate" dir="ltr">
-                            {lead.email}
-                          </span>
-                        </p>
-                      )}
-                    </div>
-
-                    <SourceBadge lead={lead} />
-
-                    <div className="min-w-0">
-                      <p className="mb-2 text-xs font-black text-slate-400 xl:hidden">
-                        {t("crm.leads.table.mainDetails")}
-                      </p>
-
-                      {mainDetails.length > 0 ? (
-                        <div className="flex min-w-0 flex-wrap gap-2">
-                          {mainDetails.map((detail, index) => (
-                            <span
-                              key={`${lead._id}-main-${detail.label}-${index}`}
-                              className="max-w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-700 xl:max-w-[180px]"
-                              title={`${detail.label}: ${detail.value}`}
-                            >
-                              <span className="line-clamp-2 break-words">
-                                {detail.label}: {detail.value}
-                              </span>
-                            </span>
-                          ))}
-
-                          {details.length > 3 && (
-                            <span className="rounded-md border border-sky-300 bg-sky-100 px-3 py-1.5 text-xs font-black text-sky-800">
-                              +{details.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <span className="text-sm font-bold text-slate-300">
-                          {t("crm.leads.noAdditionalData")}
-                        </span>
-                      )}
-                    </div>
-
-                    <div>
-                      <LeadStatusBadge status={status} />
-                    </div>
-
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
-                      <CalendarDays className="h-4 w-4 shrink-0 text-slate-400" />
-                      <span className="leading-5">
-                        {formatShortDate(lead.createdAt, locale, emDash)}
-                      </span>
-                    </div>
-
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {loading ? (
+                <div className="space-y-3 p-4">
+                  {Array.from({ length: 8 }).map((_, index) => (
                     <div
-                      className="flex items-center gap-2"
-                      onClick={(event) => event.stopPropagation()}
-                    >
-                      {whatsAppPhone && (
-                        <a
-                          href={`https://wa.me/${whatsAppPhone}`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 hover:text-sky-800"
-                          title={t("crm.common.whatsapp")}
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                        </a>
-                      )}
-
-                      {lead.phone && (
-                        <a
-                          href={`tel:${lead.phone}`}
-                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 hover:text-sky-800"
-                          title={t("crm.common.call")}
-                        >
-                          <Phone className="h-4 w-4" />
-                        </a>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => setSelectedLead(lead)}
-                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-slate-900 px-4 text-xs font-black text-white transition hover:bg-slate-800"
-                      >
-                        {t("crm.common.open")}
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      </button>
+                      key={index}
+                      className="h-16 animate-pulse rounded-xl bg-slate-100"
+                    />
+                  ))}
+                </div>
+              ) : filteredLeads.length === 0 ? (
+                <div className="flex min-h-full flex-col items-center justify-center p-10 text-center">
+                  <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
+                    <Webhook className="h-7 w-7" />
+                  </div>
+                  <h3 className="text-xl font-black text-slate-800">
+                    {t("crm.leads.emptyTitle")}
+                  </h3>
+                  <p className="mt-2 max-w-md text-sm font-semibold text-slate-500">
+                    {t("crm.leads.emptyDescription")}
+                  </p>
+                </div>
+              ) : (
+                leadDateGroups.map((group) => (
+                  <div key={group.key}>
+                    <div className="sticky top-0 z-10 border-y border-slate-200/80 bg-[#EEF0F5] px-4 py-2">
+                      <div className="flex items-center gap-2 text-xs font-black text-slate-600">
+                        <CalendarDays className="h-3.5 w-3.5 text-violet-600" />
+                        <span className="capitalize">{group.label}</span>
+                        <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-black text-slate-500 ring-1 ring-slate-200">
+                          {group.leads.length}
+                        </span>
+                      </div>
                     </div>
-                  </article>
-                );
-              })}
+
+                    <div className="divide-y divide-slate-100">
+                      {group.leads.map((lead) => {
+                        const status = lead.status || "new";
+                        const leadName = getLeadName(lead, t);
+                        const whatsAppPhone = normalizePhoneForWhatsApp(lead.phone);
+                        const nextTask = getNextOpenTask(lead);
+
+                        return (
+                          <article
+                            key={lead._id}
+                            onClick={() => setSelectedLead(lead)}
+                            className={[
+                              "cursor-pointer px-4 py-3.5 transition hover:bg-violet-50/50",
+                              selectedLead?._id === lead._id ? "bg-violet-50" : "bg-white",
+                              "grid gap-3 xl:grid-cols-[1.3fr_1.1fr_0.85fr_0.75fr_1.1fr_0.85fr_0.9fr] xl:items-center",
+                            ].join(" ")}
+                          >
+                            <div className="flex min-w-0 items-center gap-3">
+                              <div
+                                className={[
+                                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-black",
+                                  getAvatarTone(leadName),
+                                ].join(" ")}
+                              >
+                                {getInitials(leadName)}
+                              </div>
+                              <div className="min-w-0">
+                                <p className="truncate text-sm font-black text-slate-800">
+                                  {leadName}
+                                </p>
+                                <p className="mt-0.5 truncate text-xs font-semibold text-slate-400">
+                                  {getLeadFormName(lead, t)}
+                                </p>
+                              </div>
+                            </div>
+
+                            <div className="min-w-0 space-y-1">
+                              {lead.phone ? (
+                                <p className="flex min-w-0 items-center gap-2 text-sm font-bold text-slate-700">
+                                  <Phone className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                                  <span className="truncate" dir="ltr">
+                                    {lead.phone}
+                                  </span>
+                                </p>
+                              ) : (
+                                <p className="text-sm font-semibold text-slate-300">
+                                  {t("crm.common.noPhone")}
+                                </p>
+                              )}
+                              {lead.email && (
+                                <p className="flex min-w-0 items-center gap-2 text-xs font-semibold text-slate-500">
+                                  <Mail className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+                                  <span className="truncate" dir="ltr">
+                                    {lead.email}
+                                  </span>
+                                </p>
+                              )}
+                            </div>
+
+                            <SourceBadge lead={lead} />
+
+                            <div>
+                              <LeadStatusBadge status={status} />
+                            </div>
+
+                            <div className="min-w-0">
+                              {nextTask ? (
+                                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                                  <p className="truncate text-xs font-black text-slate-700">
+                                    {nextTask.text}
+                                  </p>
+                                  <p className="mt-1 flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                                    <CalendarDays className="h-3 w-3" />
+                                    {formatShortDate(
+                                      nextTask.taskDueAt || nextTask.createdAt || undefined,
+                                      locale,
+                                      emDash
+                                    )}
+                                  </p>
+                                </div>
+                              ) : (
+                                <span className="text-xs font-bold text-slate-300">
+                                  {t("crm.leads.noNextTask")}
+                                </span>
+                              )}
+                            </div>
+
+                            <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
+                              <Clock3 className="h-4 w-4 shrink-0 text-slate-400" />
+                              <span>
+                                {formatShortDate(lead.createdAt, locale, emDash)}
+                              </span>
+                            </div>
+
+                            <div
+                              className="flex items-center gap-1.5"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              {whatsAppPhone && (
+                                <a
+                                  href={"https://wa.me/" + whatsAppPhone}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-emerald-600 transition hover:bg-emerald-50"
+                                  title={t("crm.common.whatsapp")}
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </a>
+                              )}
+                              {lead.phone && (
+                                <a
+                                  href={"tel:" + lead.phone}
+                                  className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-sky-600 transition hover:bg-sky-50"
+                                  title={t("crm.common.call")}
+                                >
+                                  <Phone className="h-4 w-4" />
+                                </a>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => setSelectedLead(lead)}
+                                className="inline-flex h-9 items-center gap-1.5 rounded-full bg-violet-600 px-3 text-xs font-black text-white transition hover:bg-violet-500"
+                              >
+                                {t("crm.common.open")}
+                                <ExternalLink className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </article>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
-          </div>
-        )}
-      </section>
+          </section>
+        </div>
+      )}
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] bg-slate-950/55 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] bg-slate-900/40 backdrop-blur-sm"
           dir={dir}
         >
           <div
@@ -1489,29 +1586,34 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="absolute inset-4 overflow-hidden rounded-[1.75rem] border border-slate-300 bg-slate-100 shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+          <section className="absolute inset-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#F4F5F8] shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
             <div className="flex h-full flex-col">
-              <header className="flex shrink-0 items-center justify-between border-b border-slate-300 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a6e_100%)] px-5 py-4 text-white">
+              <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
                 <div className="flex min-w-0 items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setSelectedLead(null)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition hover:bg-white/20"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
                     title={t("crm.common.close")}
                   >
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-400 text-lg font-black text-slate-950 shadow-sm">
+                  <div
+                    className={[
+                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-black",
+                      getAvatarTone(getLeadName(selectedLead, t)),
+                    ].join(" ")}
+                  >
                     {getInitials(getLeadName(selectedLead, t))}
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-2xl font-black text-white">
+                    <h2 className="truncate text-2xl font-black text-slate-800">
                       {getLeadName(selectedLead, t)}
                     </h2>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-sky-100/90">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
                       <span>{selectedLead.phone || t("crm.common.noPhone")}</span>
                       <span>•</span>
                       <span>{getLeadSourceLabel(selectedLead, t)}</span>
@@ -2083,8 +2185,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
           </section>
         </div>
-      )}
-        </>
       )}
     </div>
   );
