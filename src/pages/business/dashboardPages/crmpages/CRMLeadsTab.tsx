@@ -213,9 +213,27 @@ function formatDaySeparatorLabel(value?: string, locale = "he-IL", fallback = "â
 }
 
 function getLeadCreatedTime(lead: Lead) {
-  const raw = lead.createdAt || lead.facebook?.createdTime || "";
-  const time = new Date(raw).getTime();
-  return Number.isFinite(time) ? time : 0;
+  const candidates = [lead.createdAt, lead.facebook?.createdTime];
+
+  for (const raw of candidates) {
+    if (!raw) continue;
+    const time = new Date(raw).getTime();
+    if (Number.isFinite(time) && time > 0) return time;
+  }
+
+  // Mongo ObjectId embeds creation time â€” reliable newest-first tiebreaker.
+  const id = String(lead._id || "");
+  if (/^[a-f\d]{24}$/i.test(id)) {
+    return parseInt(id.slice(0, 8), 16) * 1000;
+  }
+
+  return 0;
+}
+
+function compareLeadsNewestFirst(a: Lead, b: Lead) {
+  const timeDiff = getLeadCreatedTime(b) - getLeadCreatedTime(a);
+  if (timeDiff !== 0) return timeDiff;
+  return String(b._id || "").localeCompare(String(a._id || ""));
 }
 
 function getLeadDateKey(lead: Lead) {
@@ -994,7 +1012,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
         return matchesSearch && matchesStatus && matchesSource;
       })
-      .sort((a, b) => getLeadCreatedTime(b) - getLeadCreatedTime(a));
+      .sort(compareLeadsNewestFirst);
   }, [leads, search, statusFilter, sourceFilter, t]);
 
   const leadDateGroups = useMemo(() => {
@@ -1014,12 +1032,26 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         label:
           key === "unknown"
             ? emDash
-            : formatDaySeparatorLabel(lead.createdAt || lead.facebook?.createdTime, locale, emDash),
+            : formatDaySeparatorLabel(
+                lead.createdAt || lead.facebook?.createdTime,
+                locale,
+                emDash
+              ),
         leads: [lead],
       });
     }
 
-    return groups;
+    // Newest day first; keep unknown dates at the bottom.
+    return groups
+      .map((group) => ({
+        ...group,
+        leads: [...group.leads].sort(compareLeadsNewestFirst),
+      }))
+      .sort((a, b) => {
+        if (a.key === "unknown") return 1;
+        if (b.key === "unknown") return -1;
+        return b.key.localeCompare(a.key);
+      });
   }, [filteredLeads, locale, emDash]);
 
   const stats = useMemo(() => {
@@ -1545,7 +1577,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   <div>{t("crm.leads.table.actions")}</div>
                 </div>
 
-                <div className="min-h-0 flex-1 overflow-y-auto">
+                <div
+                  className="min-h-0 flex-1 overflow-y-auto"
+                  style={{ direction: "ltr" }}
+                  ref={(node) => {
+                    // RTL overflow containers often start scrolled to the bottom.
+                    if (node) node.scrollTop = 0;
+                  }}
+                >
+                  <div dir={dir}>
                   {loading ? (
                     <div className="space-y-3 p-4">
                       {Array.from({ length: 8 }).map((_, index) => (
@@ -1722,6 +1762,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
                     ))
                   )}
+                  </div>
                 </div>
               </>
             )}
