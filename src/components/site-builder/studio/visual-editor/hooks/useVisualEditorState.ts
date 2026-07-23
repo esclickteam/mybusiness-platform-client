@@ -3316,7 +3316,7 @@ export function useVisualEditorState({
           height: `${height}px`,
           minWidth: "160px",
           minHeight: "80px",
-          zIndex: 860,
+          zIndex: 9000,
         });
 
         next = writeVisualStyleItem(next, id, {

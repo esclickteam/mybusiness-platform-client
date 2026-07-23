@@ -39,6 +39,11 @@ import {
 import { applySavedFormBuildersToDom } from "./visualForms";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
 import { shouldApplyLibraryBlankMode } from "../../../runtime/visualLibraryPage";
+import {
+  ensurePluginWidgetsLayering,
+  sanitizePluginWidgetEditorNodes,
+  shouldSkipPluginWidgetRegistration,
+} from "./visualPluginWidgets";
 
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
@@ -130,6 +135,7 @@ const NON_EDITABLE_SELECTOR = [
   ".visual-floating-toolbar",
   ".visual-context-menu",
   ".visual-inspector-panel",
+  "[data-bizuply-plugin-runtime='true']",
 ].join(",");
 
 function normalizeVisualIdPart(value: unknown) {
@@ -349,6 +355,7 @@ function shouldRegisterVisualNode(root: HTMLElement, node: HTMLElement) {
   if (!root.contains(node)) return false;
   if (node.matches(NON_EDITABLE_SELECTOR)) return false;
   if (isEditorOnlyNode(node)) return false;
+  if (shouldSkipPluginWidgetRegistration(node)) return false;
 
   return node.matches(AUTO_EDITABLE_SELECTOR);
 }
@@ -2590,39 +2597,7 @@ function syncInsertedSectionArtboards(root: HTMLElement) {
         ),
       );
       section.style.overflow = hasPluginWidget ? "visible" : "hidden";
-    });
-}
-
-function ensurePluginWidgetsLayering(root: HTMLElement) {
-  const isPublicRuntime = Boolean(
-    root.closest?.("[data-bizuply-public-render-root='true']") ||
-      root.matches?.("[data-bizuply-public-render-root='true']"),
-  );
-
-  root
-    .querySelectorAll<HTMLElement>(
-      '[data-bizuply-plugin-widget="true"], [data-visual-inserted-element="true"][data-visual-edit-type="html"]',
-    )
-    .forEach((node) => {
-      if (!node.querySelector('[data-bizuply-widget]')) return;
-
-      node.style.setProperty("overflow", "visible", "important");
-
-      if (!isPublicRuntime) {
-        const currentZ = Number.parseInt(window.getComputedStyle(node).zIndex, 10);
-        if (!Number.isFinite(currentZ) || currentZ < 500) {
-          node.style.setProperty("z-index", "860", "important");
-        }
-      }
-
-      let parent = node.parentElement;
-      while (parent && parent !== root) {
-        const computed = window.getComputedStyle(parent);
-        if (computed.overflow === "hidden" || computed.overflow === "clip") {
-          parent.style.setProperty("overflow", "visible", "important");
-        }
-        parent = parent.parentElement;
-      }
+      artboard.style.overflow = hasPluginWidget ? "visible" : "";
     });
 }
 
@@ -3443,6 +3418,7 @@ export function applyAllVisualDataToDom(
   prepareAllVideosInDom(root);
   syncInsertedSectionArtboards(root);
   observeInsertedSectionArtboards(root);
+  sanitizePluginWidgetEditorNodes(root);
   ensurePluginWidgetsLayering(root);
 
   const isPublicRuntime = Boolean(
