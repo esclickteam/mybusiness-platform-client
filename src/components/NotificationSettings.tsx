@@ -26,6 +26,7 @@ import {
   isSubscribed,
   subscribeToPush,
   unsubscribeFromPush,
+  ensurePushSubscription,
   type PushPermission,
 } from "../utils/push";
 
@@ -153,6 +154,9 @@ export function NotificationSettingsPanel({
   const [supported, setSupported] = useState(true);
   const [permission, setPermission] = useState<PushPermission>("default");
   const [subscribed, setSubscribed] = useState(false);
+  const [serverReady, setServerReady] = useState(false);
+  const [deviceCount, setDeviceCount] = useState(0);
+  const [testMessage, setTestMessage] = useState("");
   const [installEvent, setInstallEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showGuide, setShowGuide] = useState(false);
@@ -177,15 +181,24 @@ export function NotificationSettingsPanel({
         setLoading(true);
         setSupported(isPushSupported());
         setPermission(getPermission());
+        setTestMessage("");
 
-        const [subscribedNow, res] = await Promise.all([
+        // Re-bind this device to the current business before reading status.
+        if (getPermission() === "granted") {
+          await ensurePushSubscription();
+        }
+
+        const [subscribedNow, res, statusRes] = await Promise.all([
           isSubscribed(),
           API.get("/business/my/notification-settings"),
+          API.get("/push/status").catch(() => null),
         ]);
 
         if (cancelled) return;
 
         setSubscribed(subscribedNow);
+        setServerReady(Boolean(statusRes?.data?.ready));
+        setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
 
         if (res.data?.ok && res.data.settings) {
           setSettings({ ...DEFAULT_SETTINGS, ...res.data.settings });
@@ -248,6 +261,10 @@ export function NotificationSettingsPanel({
         const next = { ...settings, master: true };
         setSettings(next);
         await persist(next);
+
+        const statusRes = await API.get("/push/status").catch(() => null);
+        setServerReady(Boolean(statusRes?.data?.ready));
+        setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
       } else if (result.reason === "unsupported") {
         setSupported(false);
       }
@@ -260,6 +277,26 @@ export function NotificationSettingsPanel({
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
     persist(next);
+  }
+
+  async function handleTestPush() {
+    if (busy) return;
+    setBusy(true);
+    setTestMessage("");
+
+    try {
+      await ensurePushSubscription();
+      const res = await API.post("/push/test");
+      setServerReady(Boolean(res.data?.ok || res.data?.sent > 0));
+      setDeviceCount(Number(res.data?.devices || deviceCount));
+      setTestMessage(res.data?.message || "נשלחה התראת בדיקה");
+    } catch (err) {
+      setTestMessage(
+        err instanceof Error ? err.message : "שליחת בדיקה נכשלה"
+      );
+    } finally {
+      setBusy(false);
+    }
   }
 
   async function handleInstall() {
@@ -349,7 +386,11 @@ export function NotificationSettingsPanel({
                   התראות Push במכשיר
                 </p>
                 <p className="text-[11px] font-semibold text-slate-500">
-                  {pushOn ? "מופעל" : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
+                  {pushOn
+                    ? serverReady
+                      ? `מופעל · ${deviceCount} מכשיר רשום`
+                      : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
+                    : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
                 </p>
               </div>
             </div>
@@ -360,6 +401,25 @@ export function NotificationSettingsPanel({
               onChange={handleMasterToggle}
             />
           </div>
+
+          {pushOn && (
+            <div className="mb-2 rounded-2xl border border-sky-100 bg-sky-50 p-3">
+              <button
+                type="button"
+                onClick={handleTestPush}
+                disabled={busy}
+                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-white px-3 text-xs font-black text-sky-800 ring-1 ring-sky-100 transition hover:bg-sky-100 disabled:opacity-60"
+              >
+                <Smartphone className="h-4 w-4" />
+                שלח התראת בדיקה לטלפון
+              </button>
+              {testMessage && (
+                <p className="mt-2 text-[11px] font-bold text-sky-800">
+                  {testMessage}
+                </p>
+              )}
+            </div>
+          )}
 
           <div className="space-y-1.5">
             {CATEGORIES.map((category) => (
