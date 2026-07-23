@@ -936,6 +936,23 @@ export default function FacebookStyleNotifications() {
 
       if (newLeads.length > 0) {
         window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+
+        // Device alert + ask server to push from the lead document itself.
+        for (const lead of newLeads) {
+          const name = getLeadName(lead);
+          void showLocalNotification({
+            title: t("notifications.newLeadTitle", { name }),
+            body: t("notifications.newLeadText"),
+            url: businessId
+              ? `/business/${businessId}/dashboard/crm/leads`
+              : "/",
+            tag: `bizuply-lead-${lead._id}`,
+          });
+
+          void API.post("/push/notify-lead", { leadId: lead._id }).catch(
+            () => undefined
+          );
+        }
       }
 
       return newLeads.map((lead) => ({
