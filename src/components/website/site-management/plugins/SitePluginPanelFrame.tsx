@@ -11,6 +11,7 @@ export type PluginPanelProps = {
   siteId: string;
   businessId: string;
   editorHref: string;
+  onPluginUninstalled?: (pluginKey: string) => void;
 };
 
 export function Toggle({

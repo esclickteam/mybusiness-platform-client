@@ -163,7 +163,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
   async function handleRemovePlugin() {
     if (
       !window.confirm(
-        "להסיר את גלגל ההטבות מהאתר? התוסף יוסר מרשימת התוספים הפעילים."
+        "להסיר את גלגל ההטבות מהאתר? התוסף יוסר לגמרי מרשימת התוספים וההגדרות."
       )
     ) {
       return;
@@ -173,11 +173,16 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
     setRemoveMessage("");
     try {
       const { enabledPlugins } = await getSitePlugins(props.siteId);
-      await updateSitePlugins(
+      const result = await updateSitePlugins(
         props.siteId,
         enabledPlugins.filter((key) => key !== "benefits-wheel")
       );
-      setRemoveMessage("התוסף הוסר מהאתר. חזרו לחנות תוספים להתקנה מחדש.");
+      props.onPluginUninstalled?.("benefits-wheel");
+      setRemoveMessage(
+        result.enabledPlugins.includes("benefits-wheel")
+          ? "שגיאה בהסרת התוסף. נסו שוב."
+          : ""
+      );
     } catch {
       setRemoveMessage("שגיאה בהסרת התוסף. נסו שוב.");
     } finally {

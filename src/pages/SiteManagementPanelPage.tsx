@@ -89,6 +89,17 @@ export default function SiteManagementPanelPage() {
     loadPanel();
   }, [loadPanel]);
 
+  useEffect(() => {
+    if (activeSection === "overview" || activeSection === "plugins") return;
+    const pluginKey =
+      getSectionMetaForPlugin(activeSection, catalog).pluginKey ||
+      catalog.find((p) => resolvePluginSection(p.key) === activeSection)?.key ||
+      "";
+    if (pluginKey && !enabledPlugins.includes(pluginKey)) {
+      setActiveSection("plugins");
+    }
+  }, [activeSection, catalog, enabledPlugins]);
+
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
   const navSections = useMemo(() => {
@@ -106,6 +117,19 @@ export default function SiteManagementPanelPage() {
 
   const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
 
+  function handlePluginUninstalled(pluginKey: string) {
+    setEnabledPlugins((prev) => prev.filter((key) => key !== pluginKey));
+    setDetectedFromSite([]);
+    const section = resolvePluginSection(pluginKey);
+    if (
+      activeSection !== "overview" &&
+      activeSection !== "plugins" &&
+      (activeMeta.pluginKey === pluginKey || section === activeSection)
+    ) {
+      setActiveSection("plugins");
+    }
+  }
+
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const next = enabled
       ? [...enabledPlugins, pluginKey]
@@ -121,13 +145,8 @@ export default function SiteManagementPanelPage() {
       if (enabled) {
         const section = resolvePluginSection(pluginKey);
         if (section) setActiveSection(section);
-      } else if (
-        activeSection !== "overview" &&
-        activeSection !== "plugins" &&
-        (activeMeta.pluginKey === pluginKey ||
-          resolvePluginSection(pluginKey) === activeSection)
-      ) {
-        setActiveSection("plugins");
+      } else {
+        handlePluginUninstalled(pluginKey);
       }
 
       const hints = result.editorHints || [];
@@ -420,6 +439,7 @@ export default function SiteManagementPanelPage() {
                 siteId={siteId}
                 businessId={businessId}
                 editorHref={editorHref}
+                onPluginUninstalled={handlePluginUninstalled}
               />
             );
           }
@@ -432,6 +452,7 @@ export default function SiteManagementPanelPage() {
               editorHref={editorHref}
               pluginKey={pluginKey}
               plugin={plugin}
+              onPluginUninstalled={handlePluginUninstalled}
             />
           );
         })()}

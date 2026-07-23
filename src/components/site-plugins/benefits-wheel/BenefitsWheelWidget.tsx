@@ -358,7 +358,7 @@ export default function BenefitsWheelWidget({
                           }}
                           className="text-[11px] font-bold text-rose-600 underline-offset-2 hover:underline"
                         >
-                          הסרת התוסף מהעמוד
+                          הסרת התוסף מהאתר
                         </button>
                       ) : null}
                     </div>

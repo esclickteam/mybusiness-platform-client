@@ -3,6 +3,7 @@ import { Download, Puzzle, Search, Trash2 } from "lucide-react";
 
 import {
   getSitePlugins,
+  updateSitePlugins,
   type SitePluginDefinition,
 } from "../../../../api/sitePluginsApi";
 import { saveSitePluginSettings, getSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
@@ -116,16 +117,23 @@ export default function VisualPluginsAddPanel({
 
   async function removeOverlay(plugin: SitePluginDefinition) {
     if (!siteId) return;
+    if (
+      !window.confirm(
+        `להסיר את «${plugin.name}» מהאתר לגמרי?\nהתוסף יוסר גם מהגדרות ומחנות התוספים.`
+      )
+    ) {
+      return;
+    }
     try {
-      const current = await getSitePluginSettings(siteId, plugin.key);
-      await saveSitePluginSettings(siteId, plugin.key, {
-        ...current,
-        isActive: false,
-        showTrigger: false,
-      });
+      const { enabledPlugins: currentEnabled } = await getSitePlugins(siteId);
+      const result = await updateSitePlugins(
+        siteId,
+        currentEnabled.filter((key) => key !== plugin.key)
+      );
+      setEnabledPlugins(result.enabledPlugins);
       setOverlayActive((prev) => ({ ...prev, [plugin.key]: false }));
       onOverlayInstalled?.();
-      onAdded?.(`«${plugin.name}» הוסר מהעמוד`);
+      onAdded?.(`«${plugin.name}» הוסר מהאתר`);
     } catch {
       onAdded?.(`שגיאה בהסרת ${plugin.name}`);
     }
@@ -258,7 +266,7 @@ export default function VisualPluginsAddPanel({
                       ? "הוספת סקשן"
                       : action.kind === "overlay"
                         ? isOverlayActive
-                          ? "פעיל בעמוד"
+                          ? "פעיל — הסרה מוחקת לגמרי"
                           : "הפעלת תוסף צף"
                         : "הוספת רכיב"}
                 </span>
@@ -272,7 +280,7 @@ export default function VisualPluginsAddPanel({
                         className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black text-rose-600 transition hover:bg-rose-100"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        הסרה
+                        הסרה מהאתר
                       </button>
                       <button
                         type="button"
