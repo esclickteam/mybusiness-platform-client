@@ -4,12 +4,13 @@ import { GripVertical } from "lucide-react";
 import CountdownEffects, { COUNTDOWN_EFFECT_STYLES } from "./CountdownEffects";
 import {
   padUnit,
-  previewCountdownUnits,
   resolveFontFamily,
   resolveSizeClasses,
   type CountdownSettings,
   type CountdownUnit,
 } from "./countdownUtils";
+import { useCountdownFitScale } from "./useCountdownFitScale";
+import { useCountdownPreviewSettings } from "./useCountdownPreviewSettings";
 import { useCountdownTimer } from "./useCountdownTimer";
 
 type CountdownWidgetProps = {
@@ -131,7 +132,7 @@ function CountdownBody({
 
   return (
     <div
-      className={`relative h-full w-full min-h-0 overflow-hidden rounded-2xl px-3 py-4 sm:px-4 sm:py-5 ${
+      className={`relative w-full min-h-0 overflow-visible rounded-2xl px-3 py-4 sm:px-4 sm:py-5 ${
         preset === "cards" ? "bg-transparent" : ""
       } ${isNeon ? "ring-1 ring-cyan-500/20" : ""}`}
       style={{ background: preset === "cards" ? "transparent" : bg }}
@@ -192,13 +193,15 @@ export default function CountdownWidget({
   editorMode = false,
   onFloatingPositionChange,
 }: CountdownWidgetProps) {
-  const normalized = settings;
-  const { units, expired, endMs } = useCountdownTimer(normalized);
-  const font = resolveFontFamily(normalized.fontPreset);
-  const sizeClasses = resolveSizeClasses(normalized.sizePreset);
-  const layoutMode = normalized.layoutMode || "compact";
+  const timerSettings = useCountdownPreviewSettings(settings, preview);
+  const { units, expired, endMs } = useCountdownTimer(timerSettings);
+  const font = resolveFontFamily(timerSettings.fontPreset);
+  const layoutMode = timerSettings.layoutMode || "compact";
   const isFloating = layoutMode === "floating";
-  const position = normalized.floatingPosition || { x: 12, y: 78 };
+  const position = timerSettings.floatingPosition || { x: 12, y: 78 };
+  const containerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const fitScale = useCountdownFitScale(containerRef, contentRef);
 
   const [dragPos, setDragPos] = useState(position);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
@@ -209,8 +212,7 @@ export default function CountdownWidget({
     setDragPos(position);
   }, [position.x, position.y]);
 
-  const displayUnits =
-    preview && units.length === 0 ? previewCountdownUnits(normalized) : units;
+  const displayUnits = units;
 
   const onPointerDown = useCallback(
     (event: React.PointerEvent) => {
@@ -257,7 +259,7 @@ export default function CountdownWidget({
 
   const body = (
     <CountdownBody
-      settings={normalized}
+      settings={timerSettings}
       preview={preview}
       displayUnits={displayUnits}
       expired={expired}
@@ -321,14 +323,21 @@ export default function CountdownWidget({
 
   return (
     <div
+      ref={containerRef}
       dir="rtl"
-      className="bizuply-countdown-widget h-full w-full min-h-0"
+      className="bizuply-countdown-widget flex h-full w-full min-h-0 items-center justify-center overflow-visible"
       data-bizuply-countdown="true"
       data-countdown-layout={layoutMode}
-      style={{ fontFamily: font }}
+      style={{ fontFamily: font, pointerEvents: editorMode ? "none" : "auto" }}
     >
       {sharedStyles}
-      {body}
+      <div
+        ref={contentRef}
+        className="inline-flex w-max max-w-none origin-center"
+        style={{ transform: `scale(${fitScale})` }}
+      >
+        {body}
+      </div>
     </div>
   );
 }

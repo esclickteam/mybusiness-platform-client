@@ -2584,7 +2584,45 @@ function syncInsertedSectionArtboards(root: HTMLElement) {
       (artboard.style as any).zoom = String(scale);
 
       section.style.minHeight = `${Math.ceil(designHeight * scale)}px`;
-      section.style.overflow = "hidden";
+      const hasPluginWidget = Boolean(
+        section.querySelector(
+          '[data-bizuply-plugin-widget="true"], [data-bizuply-widget]',
+        ),
+      );
+      section.style.overflow = hasPluginWidget ? "visible" : "hidden";
+    });
+}
+
+function ensurePluginWidgetsLayering(root: HTMLElement) {
+  const isPublicRuntime = Boolean(
+    root.closest?.("[data-bizuply-public-render-root='true']") ||
+      root.matches?.("[data-bizuply-public-render-root='true']"),
+  );
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-bizuply-plugin-widget="true"], [data-visual-inserted-element="true"][data-visual-edit-type="html"]',
+    )
+    .forEach((node) => {
+      if (!node.querySelector('[data-bizuply-widget]')) return;
+
+      node.style.setProperty("overflow", "visible", "important");
+
+      if (!isPublicRuntime) {
+        const currentZ = Number.parseInt(window.getComputedStyle(node).zIndex, 10);
+        if (!Number.isFinite(currentZ) || currentZ < 500) {
+          node.style.setProperty("z-index", "860", "important");
+        }
+      }
+
+      let parent = node.parentElement;
+      while (parent && parent !== root) {
+        const computed = window.getComputedStyle(parent);
+        if (computed.overflow === "hidden" || computed.overflow === "clip") {
+          parent.style.setProperty("overflow", "visible", "important");
+        }
+        parent = parent.parentElement;
+      }
     });
 }
 
@@ -3344,6 +3382,10 @@ export function renderVisualInsertedElementsToDom(
     if (node.parentElement !== parent) {
       parent.appendChild(node);
     }
+
+    if (item.pluginWidget) {
+      node.setAttribute("data-bizuply-plugin-widget", "true");
+    }
   });
 }
 
@@ -3401,6 +3443,7 @@ export function applyAllVisualDataToDom(
   prepareAllVideosInDom(root);
   syncInsertedSectionArtboards(root);
   observeInsertedSectionArtboards(root);
+  ensurePluginWidgetsLayering(root);
 
   const isPublicRuntime = Boolean(
     root.closest?.("[data-bizuply-public-render-root='true']") ||

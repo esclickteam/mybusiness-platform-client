@@ -43,7 +43,7 @@ export function mountCountdownWidgets(
       node.style.width = "100%";
       node.style.height = "100%";
       node.style.minHeight = "0";
-      node.style.overflow = "hidden";
+      node.style.overflow = "visible";
     }
 
     let reactRoot = roots.get(node);
