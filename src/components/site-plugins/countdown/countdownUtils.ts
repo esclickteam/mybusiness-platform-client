@@ -4,7 +4,7 @@ export type CountdownFontPreset = "system" | "rounded" | "bold" | "mono";
 
 export type CountdownSizePreset = "sm" | "md" | "lg";
 
-export type CountdownLayoutMode = "section" | "compact" | "floating";
+export type CountdownLayoutMode = "compact" | "floating";
 
 export type CountdownEffectMode = "none" | "sparkle" | "fireworks" | "confetti" | "glow";
 
@@ -66,9 +66,16 @@ export const COUNTDOWN_LAYOUT_MODES: {
   label: string;
   description: string;
 }[] = [
-  { value: "section", label: "בלוק מלא", description: "סקשן רחב בעמוד" },
-  { value: "compact", label: "קומפקטי", description: "גודל קטן יותר, ממורכז" },
-  { value: "floating", label: "צף ונגרר", description: "ווידג'ט קטן שניתן לגרור" },
+  {
+    value: "compact",
+    label: "רכיב בעמוד",
+    description: "גודל ומיקום — גררו ושנו גודל בעורך כמו תמונה",
+  },
+  {
+    value: "floating",
+    label: "צף קבוע",
+    description: "ווידג'ט קטן צף באתר החי (לא בעריכה)",
+  },
 ];
 
 export const COUNTDOWN_SIZE_PRESETS: {
@@ -216,7 +223,7 @@ export function normalizeCountdownSettings(raw: unknown): CountdownSettings {
     showSeconds: true,
     unitOrderReversed: true,
     stylePreset: "cards",
-    layoutMode: "section",
+    layoutMode: "compact",
     sizePreset: "md",
     floatingPosition: { x: 12, y: 78 },
     fontPreset: "rounded",
@@ -238,6 +245,10 @@ export function normalizeCountdownSettings(raw: unknown): CountdownSettings {
     ...presetColors,
     ...s,
     stylePreset: preset,
+    layoutMode:
+      s.layoutMode === "floating"
+        ? "floating"
+        : "compact",
     floatingPosition: s.floatingPosition || base.floatingPosition,
   };
 }

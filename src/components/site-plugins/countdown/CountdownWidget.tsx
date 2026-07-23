@@ -131,7 +131,7 @@ function CountdownBody({
 
   return (
     <div
-      className={`relative overflow-visible rounded-2xl px-4 py-6 sm:px-6 sm:py-8 ${
+      className={`relative h-full w-full min-h-0 overflow-hidden rounded-2xl px-3 py-4 sm:px-4 sm:py-5 ${
         preset === "cards" ? "bg-transparent" : ""
       } ${isNeon ? "ring-1 ring-cyan-500/20" : ""}`}
       style={{ background: preset === "cards" ? "transparent" : bg }}
@@ -196,7 +196,7 @@ export default function CountdownWidget({
   const { units, expired, endMs } = useCountdownTimer(normalized);
   const font = resolveFontFamily(normalized.fontPreset);
   const sizeClasses = resolveSizeClasses(normalized.sizePreset);
-  const layoutMode = normalized.layoutMode || "section";
+  const layoutMode = normalized.layoutMode || "compact";
   const isFloating = layoutMode === "floating";
   const position = normalized.floatingPosition || { x: 12, y: 78 };
 
@@ -319,15 +319,10 @@ export default function CountdownWidget({
     );
   }
 
-  const layoutClass =
-    layoutMode === "compact"
-      ? `mx-auto w-full ${sizeClasses.wrapper}`
-      : "w-full";
-
   return (
     <div
       dir="rtl"
-      className={`bizuply-countdown-widget ${layoutClass}`}
+      className="bizuply-countdown-widget h-full w-full min-h-0"
       data-bizuply-countdown="true"
       data-countdown-layout={layoutMode}
       style={{ fontFamily: font }}

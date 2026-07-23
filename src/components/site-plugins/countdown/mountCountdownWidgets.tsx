@@ -7,7 +7,7 @@ import { normalizeCountdownSettings, type CountdownSettings } from "./countdownU
 const roots = new WeakMap<Element, Root>();
 
 export function buildCountdownWidgetMarker(label = "ספירה לאחור") {
-  return `<div data-bizuply-plugin="countdown" data-bizuply-widget="countdown" data-countdown-mount="true" style="min-height:120px;width:100%;direction:rtl"><div style="padding:32px 16px;text-align:center;border:2px dashed #c4b5fd;border-radius:16px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);font-family:system-ui,sans-serif"><div style="font-size:12px;font-weight:700;color:#7c3aed;margin-bottom:4px">תוסף Bizuply</div><div style="font-size:16px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:11px;color:#64748b;margin-top:6px">יוצג כטיימר חי באתר</div></div></div>`;
+  return `<div data-bizuply-plugin="countdown" data-bizuply-widget="countdown" data-countdown-mount="true" style="width:100%;height:100%;min-height:120px;direction:rtl;box-sizing:border-box"><div style="width:100%;height:100%;padding:20px 12px;text-align:center;border:2px dashed #c4b5fd;border-radius:16px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);font-family:system-ui,sans-serif;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:11px;font-weight:700;color:#7c3aed;margin-bottom:4px">תוסף Bizuply</div><div style="font-size:15px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:10px;color:#64748b;margin-top:4px">גררו ושנו גודל בעורך</div></div></div>`;
 }
 
 export function pageHasCountdownWidget(root: ParentNode | null | undefined) {
@@ -40,9 +40,10 @@ export function mountCountdownWidgets(
       node.style.height = "0";
       node.style.overflow = "visible";
     } else {
-      node.style.minHeight = "";
-      node.style.height = "";
-      node.style.overflow = "";
+      node.style.width = "100%";
+      node.style.height = "100%";
+      node.style.minHeight = "0";
+      node.style.overflow = "hidden";
     }
 
     let reactRoot = roots.get(node);

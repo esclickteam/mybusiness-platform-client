@@ -168,7 +168,7 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                 type="button"
                 onClick={() => updateField("layoutMode", mode.value as CountdownLayoutMode)}
                 className={`rounded-xl border p-3 text-right transition ${
-                  (settings.layoutMode || "section") === mode.value
+                  (settings.layoutMode || "compact") === mode.value
                     ? "border-violet-400 bg-violet-50 ring-2 ring-violet-200"
                     : "border-slate-200 bg-white hover:border-violet-200"
                 }`}
@@ -421,7 +421,8 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
 
       <p className="text-xs leading-relaxed text-slate-500">
         בעורך: <strong className="text-slate-700">הוספה → תוספים → ספירה לאחור</strong>.
-        בחרו <strong className="text-slate-700">בלוק מלא</strong> לסקשן, או <strong className="text-slate-700">צף ונגרר</strong> לווידג'ט קטן — גררו אותו בעורך למיקום הרצוי.
+        הרכיב יופיע בגודל ברירת מחדל — <strong className="text-slate-700">גררו ושנו גודל</strong> כמו תמונה.
+        «צף קבוע» — רק לאתר החי.
       </p>
     </SitePluginPanelFrame>
   );

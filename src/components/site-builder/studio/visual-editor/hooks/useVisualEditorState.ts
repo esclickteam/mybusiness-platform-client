@@ -3264,7 +3264,7 @@ export function useVisualEditorState({
   );
 
   const insertHtmlWidget = useCallback(
-    async (html: string, options?: { label?: string }) => {
+    async (html: string, options?: { label?: string; width?: number; height?: number }) => {
       const root = canvasRef.current;
       if (!root) return "";
 
@@ -3285,6 +3285,10 @@ export function useVisualEditorState({
       const id = createVisualCustomId("custom-html");
       const now = new Date().toISOString();
       const label = String(options?.label || "תוסף").trim() || "תוסף";
+      const width = Math.max(240, Number(options?.width) || 520);
+      const height = Math.max(120, Number(options?.height) || 148);
+      const x = 72;
+      const y = 96;
 
       setData((current) => {
         let next = writeVisualInsertedElement(current || {}, {
@@ -3295,21 +3299,33 @@ export function useVisualEditorState({
           label,
           tagName: "div",
           html,
-          cloneMode: "flow",
+          cloneMode: "free",
+          pluginWidget: true,
           createdAt: now,
           updatedAt: now,
         });
 
         next = writeVisualLayoutItem(next, id, {
-          position: "relative",
-          width: "100%",
+          position: "absolute",
+          freePosition: true,
+          x,
+          y,
+          translateX: x,
+          translateY: y,
+          width: `${width}px`,
+          height: `${height}px`,
+          minWidth: "240px",
           minHeight: "120px",
-          zIndex: 5,
+          zIndex: 24,
         });
 
         next = writeVisualStyleItem(next, id, {
           display: "block",
-          width: "100%",
+          width: `${width}px`,
+          height: `${height}px`,
+          overflow: "hidden",
+          borderRadius: "16px",
+          boxSizing: "border-box",
         } as StylePatch);
 
         dataRef.current = next;
