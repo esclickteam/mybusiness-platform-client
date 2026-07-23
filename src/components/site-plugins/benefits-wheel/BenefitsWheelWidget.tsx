@@ -23,6 +23,12 @@ type BenefitsWheelWidgetProps = {
   onPositionChange?: (pos: { x: number; y: number }) => void;
 };
 
+type WonPrize = {
+  label: string;
+  index: number;
+  couponCode?: string;
+};
+
 export default function BenefitsWheelWidget({
   siteId,
   slug,
@@ -42,37 +48,52 @@ export default function BenefitsWheelWidget({
   const [open, setOpen] = useState(false);
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
-  const [wonPrize, setWonPrize] = useState<{
-    label: string;
-    index: number;
-    couponCode?: string;
-  } | null>(null);
+  const [wonPrize, setWonPrize] = useState<WonPrize | null>(null);
   const [lastWinIndex, setLastWinIndex] = useState<number | null>(null);
+  const [spinsUsed, setSpinsUsed] = useState(0);
   const rotationRef = useRef(0);
   const [dragPos, setDragPos] = useState(position);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
     null
   );
 
+  const syncSpinsUsed = useCallback(() => {
+    if (isEditor) return;
+    setSpinsUsed(readVisitorSpinCount(siteId));
+  }, [isEditor, siteId]);
+
+  const loadSavedPrize = useCallback((): WonPrize | null => {
+    if (isEditor) return null;
+    const saved = readVisitorSavedPrize(siteId);
+    if (!saved?.label) return null;
+    const index = typeof saved.index === "number" ? saved.index : 0;
+    return {
+      label: saved.label,
+      index,
+      couponCode: saved.couponCode || segments[index]?.couponCode || "",
+    };
+  }, [isEditor, segments, siteId]);
+
   useEffect(() => {
     setDragPos(position);
   }, [position.x, position.y]);
 
   useEffect(() => {
+    syncSpinsUsed();
+  }, [syncSpinsUsed, open]);
+
+  useEffect(() => {
     if (isEditor || !settings.isActive) return;
 
-    const spinsUsed = readVisitorSpinCount(siteId);
-    const canSpinNow = spinsUsed < spinsAllowed;
+    const used = readVisitorSpinCount(siteId);
+    setSpinsUsed(used);
+    const canSpinNow = used < spinsAllowed;
 
     if (!canSpinNow) {
-      const saved = readVisitorSavedPrize(siteId);
-      if (saved?.label) {
-        setWonPrize({
-          label: saved.label,
-          index: saved.index ?? 0,
-          couponCode: saved.couponCode || segments[saved.index ?? 0]?.couponCode,
-        });
-        setLastWinIndex(typeof saved.index === "number" ? saved.index : null);
+      const saved = loadSavedPrize();
+      if (saved) {
+        setWonPrize(saved);
+        setLastWinIndex(saved.index);
       }
     }
 
@@ -84,10 +105,17 @@ export default function BenefitsWheelWidget({
       }, 800);
       return () => window.clearTimeout(t);
     }
-  }, [isEditor, settings.autoOpenOnFirstVisit, settings.isActive, siteId, spinsAllowed, segments]);
+  }, [
+    isEditor,
+    loadSavedPrize,
+    settings.autoOpenOnFirstVisit,
+    settings.isActive,
+    siteId,
+    spinsAllowed,
+  ]);
 
-  const spinsUsed = isEditor ? 0 : readVisitorSpinCount(siteId);
-  const canSpin = isEditor || spinsUsed < spinsAllowed;
+  const canSpin = spinsUsed < spinsAllowed;
+  const hasMoreSpins = canSpin && spinsAllowed > 1;
 
   const handleSpin = useCallback(async () => {
     if (spinning || !canSpin) return;
@@ -100,7 +128,7 @@ export default function BenefitsWheelWidget({
       segments.length,
       extraSpins
     );
-    const prize = {
+    const prize: WonPrize = {
       label: segments[winIndex]?.label || "הטבה",
       index: winIndex,
       couponCode: segments[winIndex]?.couponCode?.trim() || "",
@@ -118,6 +146,7 @@ export default function BenefitsWheelWidget({
 
       if (!isEditor) {
         writeVisitorSpin(siteId, prize);
+        setSpinsUsed(readVisitorSpinCount(siteId));
         if (slug) {
           try {
             await saveBenefitsWheelSpin(slug, {
@@ -129,12 +158,19 @@ export default function BenefitsWheelWidget({
             // prize still saved locally
           }
         }
+      } else {
+        setSpinsUsed((prev) => prev + 1);
       }
     }, 4300);
   }, [canSpin, isEditor, lastWinIndex, segments, siteId, slug, spinning]);
 
   function openModal() {
-    if (canSpin) setWonPrize(null);
+    if (canSpin) {
+      setWonPrize(null);
+    } else {
+      const saved = loadSavedPrize();
+      if (saved) setWonPrize(saved);
+    }
     setOpen(true);
   }
 
@@ -239,64 +275,66 @@ export default function BenefitsWheelWidget({
                 <p className="mt-1 text-sm text-slate-500">סובבו וגלו מה זכיתם!</p>
               )}
 
-              <div className="my-5 overflow-visible px-2">
+              <div className="mx-auto my-4 flex h-[284px] items-end justify-center">
                 <BenefitsWheelSpinWheel
                   segments={segments}
                   rotation={rotation}
                   spinning={spinning}
-                  size={280}
+                  size={260}
                 />
               </div>
 
-              {wonPrize && !spinning ? (
-                <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-                  <p className="text-xs font-semibold text-emerald-700">🎉 מזל טוב!</p>
-                  <p className="mt-1 text-lg font-black text-emerald-900">{wonPrize.label}</p>
-                  {wonPrize.couponCode ? (
-                    <div className="mt-3 rounded-lg border border-dashed border-emerald-300 bg-white px-3 py-2">
-                      <p className="text-[11px] font-semibold text-emerald-600">קוד ההטבה שלך</p>
-                      <p className="mt-0.5 font-mono text-base font-black tracking-wider text-emerald-900">
-                        {wonPrize.couponCode}
+              <div className="min-h-[148px]">
+                {wonPrize && !spinning ? (
+                  <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                    <p className="text-xs font-semibold text-emerald-700">🎉 מזל טוב!</p>
+                    <p className="mt-1 text-lg font-black text-emerald-900">{wonPrize.label}</p>
+                    {wonPrize.couponCode ? (
+                      <p className="mt-3 text-sm text-emerald-800">
+                        <span className="font-bold">קוד הטבה: </span>
+                        <span className="font-mono text-base font-black tracking-wider text-emerald-900">
+                          {wonPrize.couponCode}
+                        </span>
                       </p>
-                    </div>
-                  ) : null}
-                  <p className="mt-2 text-[11px] text-emerald-600">ההטבה נשמרה עבורך</p>
-                </div>
-              ) : null}
+                    ) : null}
+                    <p className="mt-2 text-[11px] text-emerald-600">ההטבה נשמרה עבורך</p>
+                  </div>
+                ) : null}
 
-              {wonPrize && !spinning && canSpin ? (
-                <button
-                  type="button"
-                  onClick={() => setWonPrize(null)}
-                  className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
-                >
-                  סובבו שוב!
-                </button>
-              ) : null}
+                {wonPrize && !spinning && hasMoreSpins ? (
+                  <button
+                    type="button"
+                    onClick={() => setWonPrize(null)}
+                    className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
+                  >
+                    סובבו שוב!
+                  </button>
+                ) : null}
 
-              {canSpin && !wonPrize ? (
-                <button
-                  type="button"
-                  disabled={spinning}
-                  onClick={handleSpin}
-                  className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg disabled:opacity-60"
-                >
-                  {spinning ? "מסתובב..." : "סובבו את הגלגל!"}
-                </button>
-              ) : !canSpin && !wonPrize ? (
-                <p className="text-sm font-semibold text-slate-500">כבר השתמשתם בסיבובים שלכם</p>
-              ) : wonPrize ? (
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
-                >
-                  סגירה
-                </button>
-              ) : null}
+                {canSpin && !wonPrize ? (
+                  <button
+                    type="button"
+                    disabled={spinning}
+                    onClick={handleSpin}
+                    className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg disabled:opacity-60"
+                  >
+                    {spinning ? "מסתובב..." : "סובבו את הגלגל!"}
+                  </button>
+                ) : !canSpin && !wonPrize ? (
+                  <p className="text-sm font-semibold text-slate-500">כבר השתמשתם בסיבובים שלכם</p>
+                ) : wonPrize ? (
+                  <button
+                    type="button"
+                    onClick={closeModal}
+                    className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
+                  >
+                    סגירה
+                  </button>
+                ) : null}
+              </div>
 
               {isEditor ? (
-                <p className="mt-3 text-[11px] text-violet-600">
+                <p className="mt-2 text-[11px] text-violet-600">
                   מצב עורך — גררו את הכפתור הצף למיקום הרצוי
                 </p>
               ) : null}
