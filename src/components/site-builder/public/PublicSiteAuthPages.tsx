@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteAuthLoginForm from "../../site-plugins/site-auth/SiteAuthLoginForm";
 import {
