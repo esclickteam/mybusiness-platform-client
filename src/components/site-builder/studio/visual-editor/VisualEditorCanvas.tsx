@@ -17,6 +17,10 @@ import {
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { resolveFormContext } from "./utils/visualForms";
+import { getSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
+import { getSitePlugins } from "../../../../api/sitePluginsApi";
+import { mountCountdownWidgets } from "../../../site-plugins/countdown/mountCountdownWidgets";
+import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
   injectHtmlIntoElement,
@@ -112,6 +116,7 @@ function syncSelectionBoxElement(
 type VisualEditorCanvasProps = {
   editor: ReturnType<typeof useVisualEditorState>;
   className?: string;
+  siteId?: string;
 };
 
 type SelectionBox = {
@@ -678,6 +683,7 @@ const HANDLE_POSITIONS: Array<{
 export default function VisualEditorCanvas({
   editor,
   className = "",
+  siteId,
 }: VisualEditorCanvasProps) {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const editingNodeRef = useRef<HTMLElement | null>(null);
@@ -1146,6 +1152,41 @@ export default function VisualEditorCanvas({
     editorAny.isInlineEditing,
     inlineEditingElementId,
     refreshSelectionBox,
+  ]);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root || !siteId) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const plugins = await getSitePlugins(siteId);
+        if (cancelled || !plugins.enabledPlugins.includes("countdown")) return;
+
+        const stored = await getSitePluginSettings(siteId, "countdown");
+        if (cancelled) return;
+
+        mountCountdownWidgets(root, mergeCountdownSettings(stored), {
+          preview: true,
+        });
+      } catch {
+        // editor preview still works with placeholder markup
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    siteId,
+    domPatchEpoch,
+    templateEpoch,
+    sectionOrderEpoch,
+    editorAny.activePageId,
+    editorAny.activePageID,
+    editorAny.data,
   ]);
 
   useEffect(() => {

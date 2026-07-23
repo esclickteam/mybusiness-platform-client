@@ -23,6 +23,8 @@ import {
 } from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
 import PublicSitePluginOverlays from "./PublicSitePluginOverlays";
+import { mergeCountdownSettings } from "./countdownPublicUtils";
+import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
 import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
@@ -1674,7 +1676,7 @@ function syncPublicNavActiveState(root, pathname) {
   });
 }
 
-function applyPublicVisualData(root, visualData, pathname) {
+function applyPublicVisualData(root, visualData, pathname, site) {
   if (!root) return;
 
   const data = asPlainObject(visualData);
@@ -1700,6 +1702,14 @@ function applyPublicVisualData(root, visualData, pathname) {
   removeEditorArtifacts(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
+
+  const enabledPlugins = Array.isArray(site?.enabledPlugins) ? site.enabledPlugins : [];
+  if (enabledPlugins.includes("countdown")) {
+    mountCountdownWidgets(
+      root,
+      mergeCountdownSettings(site?.pluginSettings?.countdown),
+    );
+  }
 }
 
 function getFallbackPageId(activePage, pathname) {
@@ -2155,6 +2165,7 @@ export default function PublicVisualSiteRenderer({
           root,
           visualData,
           pathname || getCurrentPathname(),
+          site,
         );
       } finally {
         applying = false;
@@ -2348,6 +2359,7 @@ export default function PublicVisualSiteRenderer({
     preferTemplateRender,
     pageId,
     pathname,
+    site,
   ]);
 
   if (hasSavedHtml && !preferTemplateRender) {

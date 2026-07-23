@@ -12,7 +12,6 @@ import {
   Mail,
   Route,
   Star,
-  Timer,
   Users,
   CircleDot,
 } from "lucide-react";
@@ -20,6 +19,7 @@ import {
 import type { SitePanelSection } from "../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
+import SiteCountdownPanel from "./CountdownPanel";
 import {
   bool,
   Field,
@@ -392,41 +392,6 @@ export const SiteWaitlistPanel = makePanel(
         label="התראה ב-SMS"
         checked={bool(settings.notifyBySms)}
         onChange={(v) => updateField("notifyBySms", v)}
-      />
-    </>
-  )
-);
-
-export const SiteCountdownPanel = makePanel(
-  "countdown",
-  Timer,
-  "#A855F7",
-  "ספירה לאחור",
-  "טיימר דינמי למבצעים, השקות ואירועים.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="כותרת">
-        <TextInput
-          value={str(settings.title, "המבצע מסתיים בעוד")}
-          onChange={(v) => updateField("title", v)}
-        />
-      </Field>
-      <Field label="תאריך סיום">
-        <TextInput
-          value={str(settings.endDate)}
-          onChange={(v) => updateField("endDate", v)}
-          type="datetime-local"
-        />
-      </Field>
-      <Toggle
-        label="הצגת ימים"
-        checked={bool(settings.showDays, true)}
-        onChange={(v) => updateField("showDays", v)}
-      />
-      <Toggle
-        label="הצגת שעות"
-        checked={bool(settings.showHours, true)}
-        onChange={(v) => updateField("showHours", v)}
       />
     </>
   )

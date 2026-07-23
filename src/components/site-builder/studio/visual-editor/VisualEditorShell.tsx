@@ -468,7 +468,7 @@ export default function VisualEditorShell({
 
       <main className="relative min-h-0 flex-1 overflow-hidden">
         <section className="absolute inset-0 min-h-0 overflow-hidden">
-          <VisualEditorCanvas editor={editor as any} />
+          <VisualEditorCanvas editor={editor as any} siteId={siteId} />
         </section>
 
         {shouldShowFloatingToolbar ? (

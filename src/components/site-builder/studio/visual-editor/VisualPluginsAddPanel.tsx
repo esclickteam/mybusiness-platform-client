@@ -12,6 +12,7 @@ import {
   buildPluginWidgetMarker,
   getPluginEditorAction,
 } from "../../../../data/pluginEditorRegistry";
+import { pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
 import { getPageTemplateById } from "./library/pageLibrary";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
 import BizuplyLoader from "../../../ui/BizuplyLoader";
@@ -38,6 +39,7 @@ export default function VisualPluginsAddPanel({
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [overlayActive, setOverlayActive] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
+  const [pageWidgetsEpoch, setPageWidgetsEpoch] = useState(0);
 
   const loadOverlayStates = useCallback(
     async (plugins: SitePluginDefinition[], enabled: string[]) => {
@@ -96,6 +98,17 @@ export default function VisualPluginsAddPanel({
         );
       });
   }, [catalog, enabledPlugins, query]);
+
+  const countdownOnPage = useMemo(() => {
+    void pageWidgetsEpoch;
+    return pageHasCountdownWidget(editor?.canvasRef?.current);
+  }, [
+    editor?.canvasRef,
+    editor?.data,
+    editor?.activePageId,
+    editor?.activePageID,
+    pageWidgetsEpoch,
+  ]);
 
   async function activateOverlay(plugin: SitePluginDefinition) {
     if (!siteId) return;
@@ -168,15 +181,19 @@ export default function VisualPluginsAddPanel({
 
     const html = buildPluginWidgetMarker(plugin.key, plugin.name);
     if (typeof onAddHtml === "function") {
-      onAddHtml(html);
+      await onAddHtml(html);
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);
     } else if (typeof editor?.addSection === "function") {
       editor.addSection("append");
       onAdded?.(`«${plugin.name}» — הוסיפו את הרכיב מהסקשן החדש`);
       return;
+    } else {
+      onAdded?.(`«${plugin.name}» — נשמר; הוסיפו דרך סקשן מתאים`);
+      return;
     }
-    onAdded?.(`«${plugin.name}» — נשמר; הוסיפו דרך סקשן מתאים`);
+    setPageWidgetsEpoch((epoch) => epoch + 1);
+    onAdded?.(`«${plugin.name}» נוסף לעמוד`);
   }
 
   if (!siteId) {
@@ -237,6 +254,8 @@ export default function VisualPluginsAddPanel({
             const action = getPluginEditorAction(plugin.key);
             const isOverlay = action.kind === "overlay";
             const isOverlayActive = isOverlay && overlayActive[plugin.key];
+            const isCountdownOnPage =
+              plugin.key === "countdown" && action.kind === "widget" && countdownOnPage;
 
             return (
               <div
@@ -272,6 +291,12 @@ export default function VisualPluginsAddPanel({
                 </span>
 
                 <div className="mt-3 flex flex-wrap gap-2">
+                  {isCountdownOnPage ? (
+                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-700">
+                      כבר בעמוד הנוכחי
+                    </span>
+                  ) : null}
+
                   {isOverlay && isOverlayActive ? (
                     <>
                       <button
@@ -294,9 +319,13 @@ export default function VisualPluginsAddPanel({
                     <button
                       type="button"
                       onClick={() => insertPlugin(plugin)}
-                      className="inline-flex w-full items-center justify-center rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+                      className={`inline-flex w-full items-center justify-center rounded-xl px-3 py-2 text-[11px] font-black transition ${
+                        isCountdownOnPage
+                          ? "border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
+                          : "bg-violet-600 text-white hover:bg-violet-700"
+                      }`}
                     >
-                      {isOverlay ? "הוספה לעמוד" : "הוספה"}
+                      {isOverlay ? "הוספה לעמוד" : isCountdownOnPage ? "הוספה שוב" : "הוספה"}
                     </button>
                   )}
                 </div>
