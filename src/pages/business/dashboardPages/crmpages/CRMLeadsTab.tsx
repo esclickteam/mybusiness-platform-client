@@ -1,15 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
-  Bell,
   CalendarDays,
-  CheckCircle2,
-  ChevronDown,
   Clock3,
-  Copy,
   ExternalLink,
   Facebook,
-  FileText,
   Filter,
   Globe2,
   LayoutGrid,
@@ -19,13 +14,11 @@ import {
   Phone,
   RefreshCw,
   Search,
-  Send,
   Sparkles,
   Trophy,
   UserRound,
   UsersRound,
   Webhook,
-  X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
@@ -711,18 +704,17 @@ function DetailRow({
   const emDash = t("crm.common.emDash");
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <div className="mb-1 flex items-center justify-between gap-3">
-        <p className="text-xs font-black text-slate-400">{label}</p>
+    <div className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm">
+      <div className="mb-1 flex items-center justify-between gap-2">
+        <p className="text-[11px] font-black text-slate-400">{label}</p>
 
         {copyable && cleanValue && (
           <button
             type="button"
             onClick={() => copyText(cleanValue)}
-            className="inline-flex h-7 w-7 items-center justify-center rounded-xl bg-slate-50 text-slate-400 transition hover:bg-sky-50 hover:text-sky-700"
-            title={t("crm.common.copy")}
+            className="rounded-lg bg-slate-50 px-2 py-1 text-[11px] font-black text-sky-700 transition hover:bg-sky-50"
           >
-            <Copy className="h-3.5 w-3.5" />
+            {t("crm.common.copy")}
           </button>
         )}
       </div>
@@ -1962,7 +1954,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] bg-slate-900/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/40 p-3 backdrop-blur-sm sm:p-4"
           dir={dir}
         >
           <div
@@ -1970,22 +1962,22 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="absolute inset-4 overflow-hidden rounded-2xl border border-slate-200 bg-[#F4F5F8] shadow-[0_30px_100px_rgba(15,23,42,0.25)]">
-            <div className="flex h-full flex-col">
-              <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+          <section className="relative flex max-h-[88vh] w-full max-w-[1180px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-[#F4F5F8] shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
+            <div className="flex min-h-0 flex-1 flex-col">
+              <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 py-3">
                 <div className="flex min-w-0 items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setSelectedLead(null)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
-                    title={t("crm.common.close")}
+                    className="inline-flex h-9 min-w-9 items-center justify-center rounded-xl border border-slate-200 bg-white px-2 text-lg font-black leading-none text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+                    aria-label={t("crm.common.close")}
                   >
-                    <X className="h-5 w-5" />
+                    ×
                   </button>
 
                   <div
                     className={[
-                      "flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-lg font-black",
+                      "flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black",
                       getAvatarTone(getLeadName(selectedLead, t)),
                     ].join(" ")}
                   >
@@ -1993,11 +1985,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-2xl font-black text-slate-800">
+                    <h2 className="truncate text-xl font-black text-slate-800">
                       {getLeadName(selectedLead, t)}
                     </h2>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
+                    <div className="mt-0.5 flex flex-wrap items-center gap-2 text-[11px] font-bold text-slate-500">
                       <span>{selectedLead.phone || t("crm.common.noPhone")}</span>
                       <span>•</span>
                       <span>{getLeadSourceLabel(selectedLead, t)}</span>
@@ -2031,41 +2023,43 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     onClick={() => {
                       void fetchLeads();
                     }}
-                    className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+                    className="inline-flex h-9 items-center rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                   >
-                    <RefreshCw className="h-4 w-4" />
                     {t("crm.common.refresh")}
                   </button>
                 </div>
               </header>
 
-              <div className="grid min-h-0 flex-1 grid-cols-[340px_minmax(0,1fr)_360px] overflow-hidden">
-                <aside className="min-h-0 overflow-y-auto border-l border-slate-200 bg-white">
-                  <div className="p-5">
-                    <div className="mb-5 flex flex-col items-center text-center">
-                      <div className="flex h-20 w-20 items-center justify-center rounded-[1.7rem] bg-sky-600 text-2xl font-black text-black shadow-lg">
+              <div className="grid min-h-0 flex-1 grid-cols-1 overflow-hidden lg:grid-cols-[250px_minmax(0,1fr)_250px]">
+                <aside className="min-h-0 overflow-y-auto border-b border-slate-200 bg-white lg:border-b-0 lg:border-l">
+                  <div className="p-4">
+                    <div className="mb-4 flex flex-col items-center text-center">
+                      <div
+                        className={[
+                          "flex h-16 w-16 items-center justify-center rounded-2xl text-xl font-black shadow-md",
+                          getAvatarTone(getLeadName(selectedLead, t)),
+                        ].join(" ")}
+                      >
                         {getInitials(getLeadName(selectedLead, t))}
                       </div>
 
-                      <h3 className="mt-4 max-w-full truncate text-2xl font-black text-slate-800">
+                      <h3 className="mt-3 max-w-full truncate text-lg font-black text-slate-800">
                         {getLeadName(selectedLead, t)}
                       </h3>
 
-                      <p className="mt-1 text-sm font-bold text-slate-400">
+                      <p className="mt-1 text-xs font-bold text-slate-400">
                         {getLeadFormName(selectedLead, t)}
                       </p>
                     </div>
 
-                    <div className="mb-5 grid grid-cols-4 gap-2">
+                    <div className="mb-4 flex flex-wrap gap-2">
                       {selectedWhatsAppPhone && (
                         <a
                           href={`https://wa.me/${selectedWhatsAppPhone}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title={t("crm.common.whatsapp")}
+                          className="inline-flex flex-1 items-center justify-center rounded-xl bg-sky-50 px-3 py-2.5 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                         >
-                          <MessageCircle className="mb-1 h-5 w-5" />
                           {t("crm.common.whatsapp")}
                         </a>
                       )}
@@ -2073,22 +2067,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       {selectedLead.phone && (
                         <a
                           href={`tel:${selectedLead.phone}`}
-                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-sky-50 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
-                          title={t("crm.common.call")}
+                          className="inline-flex flex-1 items-center justify-center rounded-xl bg-sky-50 px-3 py-2.5 text-xs font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
                         >
-                          <Phone className="mb-1 h-5 w-5" />
                           {t("crm.common.call")}
-                        </a>
-                      )}
-
-                      {selectedLead.email && (
-                        <a
-                          href={`mailto:${selectedLead.email}`}
-                          className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                          title={t("crm.common.email")}
-                        >
-                          <Mail className="mb-1 h-5 w-5" />
-                          {t("crm.common.email")}
                         </a>
                       )}
 
@@ -2101,20 +2082,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               getLeadName(selectedLead, t)
                           )
                         }
-                        className="flex h-14 flex-col items-center justify-center rounded-2xl bg-slate-50 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
-                        title={t("crm.common.copy")}
+                        className="inline-flex flex-1 items-center justify-center rounded-xl bg-slate-50 px-3 py-2.5 text-xs font-black text-slate-700 ring-1 ring-slate-100 transition hover:bg-slate-100"
                       >
-                        <Copy className="mb-1 h-5 w-5" />
                         {t("crm.common.copy")}
                       </button>
                     </div>
 
-                    <section className="mb-5 rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                      <div className="mb-4 flex items-center justify-between">
+                    <section className="mb-4 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="mb-3">
                         <h4 className="text-sm font-black text-slate-800">
                           {t("crm.leads.drawer.leadDetails")}
                         </h4>
-                        <UserRound className="h-5 w-5 text-slate-300" />
                       </div>
 
                       <div className="space-y-3">
@@ -2144,12 +2122,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
                     </section>
 
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                      <div className="mb-4 flex items-center justify-between">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="mb-3">
                         <h4 className="text-sm font-black text-slate-800">
                           {t("crm.leads.drawer.updateStatus")}
                         </h4>
-                        <ChevronDown className="h-5 w-5 text-slate-300" />
                       </div>
 
                       <select
@@ -2161,7 +2138,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           )
                         }
                         className={[
-                          "h-12 w-full rounded-2xl border px-4 text-sm font-black outline-none transition focus:ring-4 focus:ring-sky-100",
+                          "h-10 w-full rounded-xl border px-3 text-sm font-black outline-none transition focus:ring-4 focus:ring-sky-100",
                           statusBadgeClasses[selectedStatus],
                         ].join(" ")}
                       >
@@ -2176,52 +2153,51 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 </aside>
 
                 <main className="min-h-0 overflow-y-auto bg-slate-50">
-                  <div className="space-y-5 p-6">
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                      <div className="mb-5 flex items-center justify-between">
-                        <h3 className="text-lg font-black text-slate-800">
+                  <div className="space-y-4 p-4">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4">
+                        <h3 className="text-base font-black text-slate-800">
                           {t("crm.leads.drawer.dataSummary")}
                         </h3>
-                        <CheckCircle2 className="h-5 w-5 text-sky-500" />
                       </div>
 
-                      <div className="grid gap-4 md:grid-cols-3">
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <p className="text-xs font-black text-slate-400">
+                      <div className="grid gap-3 sm:grid-cols-3">
+                        <div className="rounded-xl bg-slate-50 p-3">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.common.createdDate")}
                           </p>
-                          <p className="mt-2 text-sm font-black text-slate-900">
+                          <p className="mt-1.5 text-sm font-black text-slate-900">
                             {formatDate(selectedLead.createdAt, locale, emDash)}
                           </p>
                         </div>
 
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <p className="text-xs font-black text-slate-400">
+                        <div className="rounded-xl bg-slate-50 p-3">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.leads.drawer.clientStage")}
                           </p>
-                          <p className="mt-2 text-sm font-black text-slate-900">
+                          <p className="mt-1.5 text-sm font-black text-slate-900">
                             {t("crm.leads.drawer.clientStageLead")}
                           </p>
                         </div>
 
-                        <div className="rounded-2xl bg-slate-50 p-4">
-                          <p className="text-xs font-black text-slate-400">
+                        <div className="rounded-xl bg-slate-50 p-3">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.leads.drawer.leadStatus")}
                           </p>
-                          <p className="mt-2 text-sm font-black text-slate-900">
+                          <p className="mt-1.5 text-sm font-black text-slate-900">
                             {getStatusLabel(selectedStatus, t)}
                           </p>
                         </div>
                       </div>
                     </section>
 
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                      <div className="mb-5 flex items-center justify-between">
-                        <h3 className="text-lg font-black text-slate-800">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+                        <h3 className="text-base font-black text-slate-800">
                           {t("crm.leads.drawer.allFormData")}
                         </h3>
 
-                        <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                        <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
                           {t("crm.leads.drawer.fieldsCount", { count: selectedDetails.length })}
                         </span>
                       </div>
@@ -2246,22 +2222,18 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       )}
                     </section>
 
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                      <div className="mb-5 flex items-center justify-between">
-                        <div>
-                          <h3 className="text-lg font-black text-slate-800">
-                            {t("crm.leads.drawer.documentationTitle")}
-                          </h3>
-                          <p className="mt-1 text-xs font-bold text-slate-400">
-                            {t("crm.leads.drawer.documentationSubtitle")}
-                          </p>
-                        </div>
-
-                        <FileText className="h-5 w-5 text-slate-400" />
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-4">
+                        <h3 className="text-base font-black text-slate-800">
+                          {t("crm.leads.drawer.documentationTitle")}
+                        </h3>
+                        <p className="mt-1 text-[11px] font-bold text-slate-400">
+                          {t("crm.leads.drawer.documentationSubtitle")}
+                        </p>
                       </div>
 
-                      <div className="mb-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
+                      <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                        <div className="mb-3 grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)]">
                           <select
                             value={newActivityType}
                             onChange={(event) =>
@@ -2269,7 +2241,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 event.target.value as LeadActivityType
                               )
                             }
-                            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
                             <option value="note">{t("crm.common.note")}</option>
                             <option value="call">{t("crm.common.call")}</option>
@@ -2287,14 +2259,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 ? t("crm.leads.drawer.taskPlaceholder")
                                 : t("crm.leads.drawer.notePlaceholder")
                             }
-                            className="min-h-[96px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold leading-7 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
+                            className="min-h-[80px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
                         </div>
 
                         {newActivityType === "task" && (
-                          <div className="mb-3 grid gap-3 md:grid-cols-[180px_minmax(0,1fr)]">
-                            <div className="flex h-12 items-center gap-2 rounded-2xl bg-amber-50 px-4 text-sm font-black text-amber-700 ring-1 ring-amber-100">
-                              <Bell className="h-4 w-4" />
+                          <div className="mb-3 grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)]">
+                            <div className="flex h-10 items-center rounded-xl bg-amber-50 px-3 text-xs font-black text-amber-700 ring-1 ring-amber-100">
                               {t("crm.leads.drawer.dueTime")}
                             </div>
 
@@ -2304,13 +2275,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               onChange={(event) =>
                                 setNewTaskDueAt(event.target.value)
                               }
-                              className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                             />
                           </div>
                         )}
 
-                        <div className="flex flex-wrap items-center justify-between gap-3">
-                          <p className="text-xs font-bold text-slate-400">
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <p className="text-[11px] font-bold text-slate-400">
                             {t("crm.leads.drawer.recordedBy")}{" "}
                             <span className="font-black text-slate-700">
                               {getCurrentUserName(t)}
@@ -2325,9 +2296,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               !newActivityText.trim() ||
                               (newActivityType === "task" && !newTaskDueAt)
                             }
-                            className="inline-flex h-11 items-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-50"
+                            className="inline-flex h-9 items-center rounded-xl border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-xs font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            <Send className="h-4 w-4" />
                             {newActivityType === "task"
                               ? t("crm.leads.drawer.savingTask")
                               : t("crm.leads.drawer.savingActivity")}
@@ -2336,8 +2306,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
 
                       {selectedActivities.length > 0 ? (
-                        <div className="relative space-y-3 pr-6">
-                          <span className="absolute right-2 top-2 h-[calc(100%-16px)] w-px bg-slate-200" />
+                        <div className="relative space-y-2.5 pr-5">
+                          <span className="absolute right-2 top-2 h-[calc(100%-12px)] w-px bg-slate-200" />
 
                           {selectedActivities.map((activity) => {
                             const isTask = activity.type === "task";
@@ -2347,7 +2317,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 key={activity._id || activity.id}
                                 data-activity-id={activity._id || activity.id}
                                 className={[
-                                  "relative rounded-2xl border p-4 transition",
+                                  "relative rounded-xl border p-3 transition",
                                   highlightedActivityId &&
                                   highlightedActivityId ===
                                     (activity._id || activity.id)
@@ -2361,7 +2331,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                               >
                                 <span
                                   className={[
-                                    "absolute -right-[27px] top-4 h-4 w-4 rounded-full ring-4 ring-white",
+                                    "absolute -right-[23px] top-3.5 h-3 w-3 rounded-full ring-4 ring-white",
                                     isTask
                                       ? activity.taskDone
                                         ? "bg-sky-500"
@@ -2370,7 +2340,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                   ].join(" ")}
                                 />
 
-                                <div className="flex flex-wrap items-center justify-between gap-3">
+                                <div className="flex flex-wrap items-center justify-between gap-2">
                                   <div className="flex flex-wrap items-center gap-2">
                                     {isTask && (
                                       <button
@@ -2379,29 +2349,26 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                           handleToggleTaskActivity(activity)
                                         }
                                         className={[
-                                          "flex h-7 w-7 items-center justify-center rounded-lg border transition",
+                                          "rounded-lg border px-2 py-0.5 text-[10px] font-black transition",
                                           activity.taskDone
                                             ? "border-sky-400 bg-sky-100 text-sky-700"
-                                            : "border-blue-300 bg-white text-transparent hover:text-blue-600",
+                                            : "border-blue-300 bg-white text-blue-700 hover:bg-blue-50",
                                         ].join(" ")}
-                                        title={
-                                          activity.taskDone
-                                            ? t("crm.leads.drawer.reopenTask")
-                                            : t("crm.leads.drawer.markDone")
-                                        }
                                       >
-                                        <CheckCircle2 className="h-4 w-4" />
+                                        {activity.taskDone
+                                          ? t("crm.leads.drawer.reopenTask")
+                                          : t("crm.leads.drawer.markDone")}
                                       </button>
                                     )}
 
-                                    <span className="rounded-full bg-white px-3 py-1 text-xs font-black text-slate-600 ring-1 ring-slate-200">
+                                    <span className="rounded-full bg-white px-2.5 py-0.5 text-[11px] font-black text-slate-600 ring-1 ring-slate-200">
                                       {getActivityTypeLabel(activity.type, t)}
                                     </span>
 
                                     {isTask && (
                                       <span
                                         className={[
-                                          "rounded-full px-3 py-1 text-xs font-black ring-1",
+                                          "rounded-full px-2.5 py-0.5 text-[11px] font-black ring-1",
                                           activity.taskDone
                                             ? "bg-sky-50 text-sky-700 ring-sky-100"
                                             : "bg-blue-50 text-blue-700 ring-blue-100",
@@ -2411,20 +2378,19 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                       </span>
                                     )}
 
-                                    <span className="text-xs font-black text-slate-500">
+                                    <span className="text-[11px] font-black text-slate-500">
                                       {activity.createdBy || t("crm.common.systemUser")}
                                     </span>
                                   </div>
 
-                                  <div className="flex items-center gap-1 text-xs font-bold text-slate-400">
-                                    <Clock3 className="h-3.5 w-3.5" />
+                                  <span className="text-[11px] font-bold text-slate-400">
                                     {formatDate(activity.createdAt, locale, emDash)}
-                                  </div>
+                                  </span>
                                 </div>
 
                                 <p
                                   className={[
-                                    "mt-3 whitespace-pre-wrap text-sm font-semibold leading-7",
+                                    "mt-2 whitespace-pre-wrap text-sm font-semibold leading-6",
                                     activity.taskDone
                                       ? "text-slate-400 line-through"
                                       : "text-slate-700",
@@ -2434,15 +2400,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 </p>
 
                                 {isTask && (
-                                  <div className="mt-3 flex flex-wrap items-center gap-2 text-xs font-black">
-                                    <span className="rounded-full bg-white px-3 py-1 text-amber-700 ring-1 ring-amber-100">
+                                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black">
+                                    <span className="rounded-full bg-white px-2.5 py-0.5 text-amber-700 ring-1 ring-amber-100">
                                       {t("crm.leads.drawer.dueTimeLabel", {
                                         time: formatDate(activity.taskDueAt, locale, emDash),
                                       })}
                                     </span>
 
                                     {activity.taskCompletedAt && (
-                                      <span className="rounded-full bg-white px-3 py-1 text-sky-700 ring-1 ring-sky-100">
+                                      <span className="rounded-full bg-white px-2.5 py-0.5 text-sky-700 ring-1 ring-sky-100">
                                         {t("crm.leads.drawer.completedBy", {
                                           name:
                                             activity.taskCompletedBy ||
@@ -2471,12 +2437,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     </section>
 
                     {selectedLead.message && (
-                      <section className="rounded-[1.7rem] border border-slate-200 bg-white p-5 shadow-sm">
-                        <h3 className="mb-4 text-lg font-black text-slate-800">
+                      <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                        <h3 className="mb-3 text-base font-black text-slate-800">
                           {t("crm.leads.drawer.formNote")}
                         </h3>
 
-                        <p className="rounded-2xl bg-slate-50 p-4 text-sm font-bold leading-7 text-slate-600">
+                        <p className="rounded-xl bg-slate-50 p-3 text-sm font-bold leading-6 text-slate-600">
                           {selectedLead.message}
                         </p>
                       </section>
@@ -2484,27 +2450,25 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
                 </main>
 
-                <aside className="min-h-0 overflow-y-auto border-r border-slate-200 bg-white">
-                  <div className="space-y-4 p-5">
-                    <section className="rounded-[1.7rem] border border-pink-100 bg-pink-50/50 p-4">
-                      <div className="mb-3 flex items-center justify-between">
+                <aside className="min-h-0 overflow-y-auto border-t border-slate-200 bg-white lg:border-t-0 lg:border-r">
+                  <div className="space-y-3 p-4">
+                    <section className="rounded-2xl border border-pink-100 bg-pink-50/50 p-3">
+                      <div className="mb-2">
                         <h4 className="text-sm font-black text-slate-800">
                           {t("crm.leads.drawer.profileSummary")}
                         </h4>
-                        <Sparkles className="h-5 w-5 text-pink-500" />
                       </div>
 
-                      <p className="text-sm font-semibold leading-6 text-slate-500">
+                      <p className="text-xs font-semibold leading-5 text-slate-500">
                         {t("crm.leads.drawer.profileSummaryText")}
                       </p>
                     </section>
 
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                      <div className="mb-4 flex items-center justify-between">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="mb-3">
                         <h4 className="text-sm font-black text-slate-800">
                           {t("crm.leads.drawer.sourceDetails")}
                         </h4>
-                        <Webhook className="h-5 w-5 text-sky-600" />
                       </div>
 
                       <div className="space-y-3">
@@ -2561,17 +2525,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </div>
                     </section>
 
-                    <section className="rounded-[1.7rem] border border-slate-200 bg-white p-4 shadow-sm">
-                      <div className="mb-4 flex items-center justify-between">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm">
+                      <div className="mb-3">
                         <h4 className="text-sm font-black text-slate-800">
                           {t("crm.leads.drawer.handlingStatus")}
                         </h4>
-                        <UsersRound className="h-5 w-5 text-slate-400" />
                       </div>
 
-                      <div className="space-y-3">
-                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
-                          <p className="text-xs font-black text-slate-400">
+                      <div className="space-y-2">
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3 text-center">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.leads.drawer.activities")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
@@ -2579,8 +2542,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           </p>
                         </div>
 
-                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
-                          <p className="text-xs font-black text-slate-400">
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3 text-center">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.leads.drawer.openTasks")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
@@ -2588,8 +2551,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           </p>
                         </div>
 
-                        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
-                          <p className="text-xs font-black text-slate-400">
+                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3 text-center">
+                          <p className="text-[11px] font-black text-slate-400">
                             {t("crm.common.status")}
                           </p>
                           <p className="mt-1 text-sm font-bold text-slate-500">
