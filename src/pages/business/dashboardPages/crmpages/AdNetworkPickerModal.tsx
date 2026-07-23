@@ -46,28 +46,6 @@ function LinkedInLogo() {
   );
 }
 
-function TikTokLogo() {
-  return (
-    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
-      <circle cx="24" cy="24" r="24" fill="#111111" />
-      <path
-        fill="#25F4EE"
-        d="M30.6 14.2c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8-1.6 0-3.1-.5-4.3-1.3 1.1 1.4 2.9 2.3 4.9 2.3 3.7 0 6.7-3 6.7-6.7V14.2h.5z"
-        transform="translate(1.2 1.2)"
-      />
-      <path
-        fill="#FE2C55"
-        d="M30.6 14.2c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8-1.6 0-3.1-.5-4.3-1.3 1.1 1.4 2.9 2.3 4.9 2.3 3.7 0 6.7-3 6.7-6.7V14.2h.5z"
-        transform="translate(-1.2 -0.6)"
-      />
-      <path
-        fill="#fff"
-        d="M29.4 13.4c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8S9.8 30.5 9.8 26.2c0-3.5 2.3-6.4 5.5-7.4v3.9c-1.2.8-2 2.1-2 3.5 0 2.4 1.9 4.3 4.3 4.3s4.3-1.9 4.3-4.3V13.4h7.5z"
-      />
-    </svg>
-  );
-}
-
 const NETWORKS: Array<{
   id: AdNetworkId;
   labelKey: string;
@@ -96,7 +74,7 @@ const NETWORKS: Array<{
     id: "tiktok",
     labelKey: "tiktok",
     available: false,
-    logo: <TikTokLogo />,
+    logo: <NetworkLogo src="/tiktok.svg" alt="TikTok" />,
   },
 ];
 
@@ -112,7 +90,7 @@ export default function AdNetworkPickerModal({
 
   return (
     <div
-      className="fixed inset-0 z-[95] flex items-end justify-center bg-slate-900/45 p-0 sm:items-center sm:p-4"
+      className="fixed inset-0 z-[95] flex items-end justify-center bg-slate-900/45 p-0 sm:items-start sm:p-4 sm:pt-10"
       dir={dir}
     >
       <button
