@@ -27,6 +27,7 @@ export function mergeSiteAuthSettings(
     registerSubtitle: String(stored.registerSubtitle ?? base.registerSubtitle),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
+    showTrigger: stored?.showTrigger !== false,
     useLoginModal: Boolean(stored.useLoginModal ?? base.useLoginModal),
     buttonMode: normalizeButtonMode(stored.buttonMode ?? base.buttonMode),
     buttonDisplay: normalizeButtonDisplay(stored.buttonDisplay ?? base.buttonDisplay),
@@ -71,6 +72,7 @@ function readPartialSettings(
     registerSubtitle: String(fallback?.registerSubtitle || ""),
     forgotPasswordEnabled: fallback?.forgotPasswordEnabled !== false,
     showLoginButton: fallback?.showLoginButton !== false,
+    showTrigger: fallback?.showTrigger !== false,
     useLoginModal: Boolean(fallback?.useLoginModal),
     buttonMode: normalizeButtonMode(fallback?.buttonMode),
     buttonDisplay: normalizeButtonDisplay(fallback?.buttonDisplay),
@@ -96,9 +98,9 @@ function readPartialSettings(
 }
 
 function normalizeButtonMode(value: unknown): SiteAuthWidgetSettings["buttonMode"] {
-  const mode = String(value || "inline");
+  const mode = String(value || "floating");
   if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "inline";
+  return "floating";
 }
 
 function normalizeButtonDisplay(
@@ -119,7 +121,8 @@ export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {
 }
 
 export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
-  if (!settings.isActive || !settings.showLoginButton) return false;
+  if (!settings.isActive || settings.showLoginButton === false) return false;
+  if (settings.showTrigger === false) return false;
   return settings.buttonMode === "floating" || settings.buttonMode === "both";
 }
 

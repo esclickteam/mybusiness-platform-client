@@ -34,6 +34,7 @@ export type SiteAuthSettings = {
   registerSubtitle: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
+  showTrigger?: boolean;
   useLoginModal: boolean;
   buttonMode: "floating" | "inline" | "both";
   buttonDisplay: "button" | "icon" | "text";

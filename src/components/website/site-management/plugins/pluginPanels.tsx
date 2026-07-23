@@ -236,6 +236,11 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
           onChange={(v) => updateField("showLoginButton", v)}
         />
         <Toggle
+          label="הצג כפתור צף (גרירה בעורך — כמו גלגל המזל)"
+          checked={bool(settings.showTrigger, true)}
+          onChange={(v) => updateField("showTrigger", v)}
+        />
+        <Toggle
           label="טופס התחברות במודאל (לא מומלץ — ברירת מחדל: דף ייעודי)"
           checked={bool(settings.useLoginModal)}
           onChange={(v) => updateField("useLoginModal", v)}
@@ -266,12 +271,12 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
         <Field label="מיקום הכפתור">
           <select
             className={inputBase}
-            value={str(settings.buttonMode, "inline")}
+            value={str(settings.buttonMode, "floating")}
             onChange={(e) => updateField("buttonMode", e.target.value)}
           >
-            <option value="inline">בתוך העמוד (גרירה בעורך)</option>
-            <option value="floating">כפתור צף</option>
-            <option value="both">צף + בתוך העמוד</option>
+            <option value="floating">כפתור צף (מומלץ — כמו גלגל המזל)</option>
+            <option value="inline">ישן: בתוך העמוד (HTML בעורך)</option>
+            <option value="both">שניהם</option>
           </select>
         </Field>
         <Toggle

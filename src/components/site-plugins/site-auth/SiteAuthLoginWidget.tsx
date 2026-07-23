@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { GripVertical, LogIn, LogOut, UserRound } from "lucide-react";
 
@@ -48,8 +48,17 @@ export default function SiteAuthLoginWidget({
     auth?.member?.email ||
     "";
 
-  const position = settings.triggerPosition || { x: 92, y: 6 };
+  const position = settings.triggerPosition || { x: 92, y: 8 };
   const [dragPos, setDragPos] = useState(position);
+  const dragPosRef = useRef(dragPos);
+
+  useEffect(() => {
+    setDragPos(position);
+  }, [position.x, position.y]);
+
+  useEffect(() => {
+    dragPosRef.current = dragPos;
+  }, [dragPos]);
 
   function handlePrimaryClick() {
     if (isEditor) return;
@@ -90,7 +99,7 @@ export default function SiteAuthLoginWidget({
   function onPointerUp() {
     if (!dragRef.current || !isEditor || variant !== "floating") return;
     dragRef.current = null;
-    onPositionChange?.(dragPos);
+    onPositionChange?.(dragPosRef.current);
   }
 
   const buttonLabel = isAuthenticated
@@ -102,50 +111,52 @@ export default function SiteAuthLoginWidget({
     settings.buttonTextColor ||
     (settings.buttonTransparent ? accent : settings.formButtonTextColor || "#ffffff");
 
-  const editorRing = isEditor
-    ? "ring-2 ring-violet-400 ring-offset-1 cursor-grab"
-    : "cursor-pointer hover:opacity-85";
-
   const transparent = settings.buttonTransparent;
   const display = settings.buttonDisplay;
 
-  const buttonStyle: React.CSSProperties = transparent
-    ? {
-        background: "transparent",
-        color: textColor,
-        boxShadow: "none",
-        border: "none",
-      }
-    : {
-        backgroundColor: accent,
-        color: settings.formButtonTextColor || "#ffffff",
-      };
+  const shapeClass =
+    display === "icon"
+      ? "h-12 w-12 rounded-full"
+      : display === "text"
+        ? "rounded-lg px-2 py-1"
+        : "rounded-full px-4 py-2.5";
 
-  const button = (
+  const buttonStyle: React.CSSProperties = {
+    right: `${(isEditor ? dragPos : position).x}%`,
+    bottom: `${100 - (isEditor ? dragPos : position).y}%`,
+    transform: "translate(50%, 50%)",
+    background: transparent ? "transparent" : accent,
+    color: transparent ? textColor : settings.formButtonTextColor || "#ffffff",
+    boxShadow: transparent ? "none" : undefined,
+    border: transparent ? "none" : undefined,
+  };
+
+  const floatingButton = (
     <button
       type="button"
       onClick={handlePrimaryClick}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className={`inline-flex items-center justify-center gap-2 transition ${editorRing} ${
-        display === "icon"
-          ? "rounded-full p-1.5"
-          : display === "text"
-            ? "rounded-lg px-1 py-0.5 text-sm font-black underline-offset-2 hover:underline"
-            : "rounded-full px-4 py-2.5 text-sm font-black shadow-md"
-      }`}
+      className={`fixed z-[99990] flex items-center justify-center gap-2 text-sm font-black transition hover:scale-105 ${shapeClass} ${
+        isEditor ? "cursor-grab ring-2 ring-violet-400 ring-offset-2" : "cursor-pointer"
+      } ${!transparent && display !== "text" ? "shadow-[0_8px_32px_rgba(99,102,241,0.35)]" : ""}`}
       style={buttonStyle}
       data-bizuply-site-auth-button="true"
       aria-label={buttonLabel}
+      dir="rtl"
     >
-      {isEditor && variant === "floating" ? (
-        <GripVertical size={14} className="opacity-70" />
+      {isEditor ? (
+        <GripVertical size={16} className="opacity-80" />
       ) : display !== "text" ? (
         <ButtonIcon size={display === "icon" ? 22 : 16} />
       ) : null}
-      {display !== "icon" ? <span>{buttonLabel}</span> : null}
-      {isAuthenticated && settings.showMemberName && memberLabel && display !== "icon" ? (
+      {!isEditor && display !== "icon" ? <span>{buttonLabel}</span> : null}
+      {!isEditor &&
+      isAuthenticated &&
+      settings.showMemberName &&
+      memberLabel &&
+      display !== "icon" ? (
         <span className="inline-flex items-center gap-1 rounded-full bg-black/10 px-2 py-0.5 text-[11px] font-bold">
           <UserRound size={12} />
           {memberLabel}
@@ -155,32 +166,41 @@ export default function SiteAuthLoginWidget({
   );
 
   if (variant === "inline") {
+    const inlineButton = (
+      <button
+        type="button"
+        onClick={handlePrimaryClick}
+        className={`inline-flex items-center justify-center gap-2 transition ${shapeClass} ${
+          isEditor ? "cursor-default" : "cursor-pointer hover:opacity-85"
+        }`}
+        style={{
+          background: transparent ? "transparent" : accent,
+          color: transparent ? textColor : settings.formButtonTextColor || "#ffffff",
+          boxShadow: transparent ? "none" : undefined,
+          border: transparent ? "none" : undefined,
+        }}
+        data-bizuply-site-auth-button="true"
+        aria-label={buttonLabel}
+        dir="rtl"
+      >
+        {display !== "text" ? <ButtonIcon size={display === "icon" ? 22 : 16} /> : null}
+        {display !== "icon" ? <span>{buttonLabel}</span> : null}
+      </button>
+    );
+
     return (
       <div
         className="bizuply-site-auth-widget pointer-events-none inline-flex items-center justify-center"
-        dir="rtl"
         data-bizuply-plugin-runtime="true"
       >
-        <div className="pointer-events-auto">{button}</div>
+        <div className="pointer-events-auto">{inlineButton}</div>
       </div>
     );
   }
 
-  const pos = isEditor ? dragPos : position;
+  if (settings.showTrigger === false) return null;
 
-  return (
-    <div
-      className="pointer-events-none fixed z-[9998]"
-      style={{
-        left: `${pos.x}%`,
-        top: `${pos.y}%`,
-        transform: "translate(-50%, 0)",
-      }}
-      dir="rtl"
-    >
-      <div className="pointer-events-auto">{button}</div>
-    </div>
-  );
+  return floatingButton;
 }
 
 export function SiteAuthLoginWidgetPreview({
@@ -198,7 +218,7 @@ export function SiteAuthLoginWidgetPreview({
   if (settings.buttonDisplay === "icon") {
     return (
       <span
-        className="inline-flex items-center justify-center rounded-full p-1.5"
+        className="inline-flex h-12 w-12 items-center justify-center rounded-full"
         style={{
           background: settings.buttonTransparent ? "transparent" : accent,
           color: textColor,

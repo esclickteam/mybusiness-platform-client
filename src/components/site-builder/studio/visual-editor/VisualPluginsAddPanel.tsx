@@ -114,15 +114,30 @@ export default function VisualPluginsAddPanel({
     if (!siteId) return;
     try {
       const current = await getSitePluginSettings(siteId, plugin.key);
+      const isSiteAuth = plugin.key === "site-auth";
+      const defaultPosition = isSiteAuth
+        ? { x: 92, y: 8 }
+        : { x: 88, y: 82 };
+
       await saveSitePluginSettings(siteId, plugin.key, {
         ...current,
         isActive: true,
         showTrigger: true,
-        triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
+        ...(isSiteAuth
+          ? {
+              showLoginButton: true,
+              buttonMode: "floating",
+            }
+          : {}),
+        triggerPosition: current?.triggerPosition || defaultPosition,
       });
       setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
       onOverlayInstalled?.();
-      onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
+      onAdded?.(
+        isSiteAuth
+          ? `«${plugin.name}» הופעל — גררו את האייקון הצף למיקום הרצוי (כמו גלגל המזל)`
+          : `«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`
+      );
     } catch {
       onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
     }
