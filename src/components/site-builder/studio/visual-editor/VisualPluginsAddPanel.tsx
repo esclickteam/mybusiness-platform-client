@@ -182,6 +182,8 @@ export default function VisualPluginsAddPanel({
     const html = buildPluginWidgetMarker(plugin.key, plugin.name);
     if (typeof onAddHtml === "function") {
       await onAddHtml(html);
+    } else if (typeof editor?.insertHtmlWidget === "function") {
+      await editor.insertHtmlWidget(html, { label: plugin.name });
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);
     } else if (typeof editor?.addSection === "function") {

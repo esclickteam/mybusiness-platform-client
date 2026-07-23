@@ -3263,6 +3263,71 @@ export function useVisualEditorState({
     ],
   );
 
+  const insertHtmlWidget = useCallback(
+    async (html: string, options?: { label?: string }) => {
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      let sectionId = getDirectVisualId(
+        getClosestVisualSectionNode(root, getSelectedDomNode(selection.selectedElement)),
+      );
+
+      if (!sectionId) {
+        sectionId = addSection("append");
+        if (!sectionId) return "";
+        await new Promise<void>((resolve) => {
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => resolve());
+          });
+        });
+      }
+
+      const id = createVisualCustomId("custom-html");
+      const now = new Date().toISOString();
+      const label = String(options?.label || "תוסף").trim() || "תוסף";
+
+      setData((current) => {
+        let next = writeVisualInsertedElement(current || {}, {
+          id,
+          type: "html",
+          parentId: sectionId,
+          sectionId,
+          label,
+          tagName: "div",
+          html,
+          cloneMode: "flow",
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        next = writeVisualLayoutItem(next, id, {
+          position: "relative",
+          width: "100%",
+          minHeight: "120px",
+          zIndex: 5,
+        });
+
+        next = writeVisualStyleItem(next, id, {
+          display: "block",
+          width: "100%",
+        } as StylePatch);
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(id, { keepPreviousOnMissing: true });
+        });
+      });
+
+      return id;
+    },
+    [addSection, canvasRef, selection, setData],
+  );
+
   const getLayerItems = useCallback(() => {
     const root = canvasRef.current;
     if (!root) return [];
@@ -4345,6 +4410,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      insertHtmlWidget,
       addLibrarySection,
       replaceSelectedSectionWithLibrary,
       addLibraryElement,
@@ -4486,6 +4552,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addSection,
+      insertHtmlWidget,
       addLibrarySection,
       replaceSelectedSectionWithLibrary,
       addLibraryElement,
