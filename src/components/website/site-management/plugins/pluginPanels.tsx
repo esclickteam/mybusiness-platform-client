@@ -19,6 +19,7 @@ import {
 
 import type { SitePanelSection } from "../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
+import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import {
   bool,
   Field,
@@ -427,34 +428,6 @@ export const SiteCountdownPanel = makePanel(
         checked={bool(settings.showHours, true)}
         onChange={(v) => updateField("showHours", v)}
       />
-    </>
-  )
-);
-
-export const SiteBenefitsWheelPanel = makePanel(
-  "benefits-wheel",
-  CircleDot,
-  "#D946EF",
-  "גלגל הטבות",
-  "משחק אינטראקטיבי שמגדיל המרות והרשמות.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="כותרת">
-        <TextInput
-          value={str(settings.title, "גלגל ההטבות")}
-          onChange={(v) => updateField("title", v)}
-        />
-      </Field>
-      <Field label="סיבובים לכל משתמש">
-        <TextInput
-          value={String(num(settings.spinsPerUser, 1))}
-          onChange={(v) => updateField("spinsPerUser", Number(v) || 1)}
-          type="number"
-        />
-      </Field>
-      <p className="text-xs text-slate-500">
-        פרסים: 10% הנחה, משלוח חינם, מתנה, נסו שוב — ניתן לערוך בעורך.
-      </p>
     </>
   )
 );

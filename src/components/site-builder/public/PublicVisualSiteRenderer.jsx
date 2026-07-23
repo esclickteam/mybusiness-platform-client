@@ -22,6 +22,7 @@ import {
   mergeCustomCodeLayers,
 } from "../studio/visual-editor/utils/visualCustomCodeRuntime";
 
+import PublicSitePluginOverlays from "./PublicSitePluginOverlays";
 import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
@@ -2391,6 +2392,8 @@ export default function PublicVisualSiteRenderer({
             html={customCode.bodyEndHtml}
           />
         ) : null}
+
+        <PublicSitePluginOverlays site={site} />
       </div>
     );
   }
@@ -2461,6 +2464,8 @@ export default function PublicVisualSiteRenderer({
             html={customCode.bodyEndHtml}
           />
         ) : null}
+
+        <PublicSitePluginOverlays site={site} />
       </div>
     );
   }
