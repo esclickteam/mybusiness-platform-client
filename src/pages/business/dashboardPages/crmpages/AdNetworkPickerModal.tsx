@@ -11,6 +11,71 @@ type AdNetworkPickerModalProps = {
   onSelect: (network: AdNetworkId) => void;
 };
 
+function MetaLogo() {
+  return (
+    <svg viewBox="0 0 48 32" className="h-11 w-16" aria-hidden>
+      <path
+        fill="#0081FB"
+        d="M24.1 4.2c-4.2 0-7 2.3-8.3 6.7 1.7-2.2 3.6-3 5.8-2.5 1.2.3 2.1 1.1 3.1 2.1 1.6 1.6 3.5 3.5 7.4 3.5 4.2 0 7-2.3 8.3-6.7-1.7 2.2-3.6 3-5.8 2.5-1.2-.3-2.1-1.1-3.1-2.1-1.6-1.6-3.5-3.5-7.4-3.5zm-8.3 9c-4.2 0-7 2.3-8.3 6.7 1.7-2.2 3.6-3 5.8-2.5 1.2.3 2.1 1.1 3.1 2.1 1.6 1.6 3.5 3.5 7.4 3.5 4.2 0 7-2.3 8.3-6.7-1.7 2.2-3.6 3-5.8 2.5-1.2-.3-2.1-1.1-3.1-2.1-1.6-1.6-3.5-3.5-7.4-3.5z"
+      />
+    </svg>
+  );
+}
+
+/** Official-style Google Ads "A" mark (not the Google G). */
+function GoogleAdsLogo() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
+      {/* Yellow right bar of the A */}
+      <path
+        fill="#FBBC04"
+        d="M33.6 6.5c1.5-2.7 5.2-3.7 7.9-2.1 2.5 1.4 3.4 4.7 2 7.2L28.2 40.8c-.9 1.7-2.7 2.7-4.6 2.7h-.4L33.6 6.5z"
+      />
+      {/* Blue left bar of the A */}
+      <path
+        fill="#4285F4"
+        d="M20.2 6.5C18.7 3.8 15 2.8 12.3 4.4 9.8 5.8 8.9 9.1 10.3 11.6l15.3 29.2c.9 1.7 2.7 2.7 4.6 2.7h.5L20.2 6.5z"
+      />
+      {/* Green circle */}
+      <circle cx="12.8" cy="35.2" r="7.6" fill="#34A853" />
+    </svg>
+  );
+}
+
+function LinkedInLogo() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
+      <rect width="48" height="48" rx="10" fill="#0A66C2" />
+      <path
+        fill="#fff"
+        d="M14.2 19.4h4.3v14.4h-4.3V19.4zm2.2-7c1.4 0 2.5 1.1 2.5 2.5S17.8 17.4 16.4 17.4 13.9 16.3 13.9 14.9 15 12.4 16.4 12.4zm7 7h4.1v2h.1c.6-1.1 2-2.3 4.2-2.3 4.5 0 5.3 2.9 5.3 6.8v7.9h-4.3v-7c0-1.7 0-3.8-2.3-3.8s-2.7 1.8-2.7 3.7v7.1h-4.3V19.4z"
+      />
+    </svg>
+  );
+}
+
+function TikTokLogo() {
+  return (
+    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
+      <circle cx="24" cy="24" r="24" fill="#111111" />
+      <path
+        fill="#25F4EE"
+        d="M30.6 14.2c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8-1.6 0-3.1-.5-4.3-1.3 1.1 1.4 2.9 2.3 4.9 2.3 3.7 0 6.7-3 6.7-6.7V14.2h.5z"
+        transform="translate(1.2 1.2)"
+      />
+      <path
+        fill="#FE2C55"
+        d="M30.6 14.2c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8-1.6 0-3.1-.5-4.3-1.3 1.1 1.4 2.9 2.3 4.9 2.3 3.7 0 6.7-3 6.7-6.7V14.2h.5z"
+        transform="translate(-1.2 -0.6)"
+      />
+      <path
+        fill="#fff"
+        d="M29.4 13.4c1.1 1 2.5 1.7 4.1 1.9v3.7c-1.5-.1-2.9-.5-4.1-1.2v8.4c0 4.3-3.5 7.8-7.8 7.8S9.8 30.5 9.8 26.2c0-3.5 2.3-6.4 5.5-7.4v3.9c-1.2.8-2 2.1-2 3.5 0 2.4 1.9 4.3 4.3 4.3s4.3-1.9 4.3-4.3V13.4h7.5z"
+      />
+    </svg>
+  );
+}
+
 const NETWORKS: Array<{
   id: AdNetworkId;
   labelKey: string;
@@ -21,47 +86,25 @@ const NETWORKS: Array<{
     id: "meta",
     labelKey: "meta",
     available: true,
-    logo: (
-      <svg viewBox="0 0 36 24" className="h-10 w-14" aria-hidden>
-        <path
-          fill="#0082FB"
-          d="M18.5 3.2c-3.4 0-5.6 1.8-6.6 5.4 1.3-1.8 2.9-2.5 4.6-2.1 1 .2 1.7.9 2.5 1.7 1.3 1.3 2.8 2.8 5.9 2.8 3.4 0 5.6-1.8 6.6-5.4-1.3 1.8-2.9 2.5-4.6 2.1-1-.2-1.7-.9-2.5-1.7-1.3-1.3-2.8-2.8-5.9-2.8zm-6.6 7.2c-3.4 0-5.6 1.8-6.6 5.4 1.3-1.8 2.9-2.5 4.6-2.1 1 .2 1.7.9 2.5 1.7 1.3 1.3 2.8 2.8 5.9 2.8 3.4 0 5.6-1.8 6.6-5.4-1.3 1.8-2.9 2.5-4.6 2.1-1-.2-1.7-.9-2.5-1.7-1.3-1.3-2.8-2.8-5.9-2.8z"
-        />
-      </svg>
-    ),
+    logo: <MetaLogo />,
   },
   {
     id: "google",
     labelKey: "google",
     available: true,
-    logo: (
-      <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
-        <path fill="#34A853" d="M24 8c4.4 0 8.4 1.6 11.5 4.3l-4.9 4.9C28.6 15.5 26.4 14.6 24 14.6c-5.1 0-9.4 3.4-10.9 8.1l-5.7-4.4C10.1 11.7 16.5 8 24 8z" />
-        <path fill="#FBBC05" d="M13.1 22.7c-.5 1.5-.8 3.1-.8 4.8s.3 3.3.8 4.8l-5.7 4.4C6.5 33.7 6 31 6 27.5s.5-6.2 1.4-9l5.7 4.2z" />
-        <path fill="#EA4335" d="M24 40.4c-7.5 0-13.9-3.7-16.6-9.5l5.7-4.4c1.5 4.7 5.8 8.1 10.9 8.1 2.6 0 5-.9 6.8-2.4l5.1 5.1C32.7 39.1 28.6 40.4 24 40.4z" />
-        <path fill="#4285F4" d="M42.2 24c0-1.2-.1-2.4-.4-3.5H24v7h10.3c-.5 2.4-1.8 4.4-3.8 5.7l5.1 5.1C39.6 35.1 42.2 30 42.2 24z" />
-      </svg>
-    ),
+    logo: <GoogleAdsLogo />,
   },
   {
     id: "linkedin",
     labelKey: "linkedin",
     available: false,
-    logo: (
-      <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#0A66C2] text-xl font-black text-white">
-        in
-      </div>
-    ),
+    logo: <LinkedInLogo />,
   },
   {
     id: "tiktok",
     labelKey: "tiktok",
     available: false,
-    logo: (
-      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-black text-lg font-black text-white">
-        ♪
-      </div>
-    ),
+    logo: <TikTokLogo />,
   },
 ];
 
