@@ -13,6 +13,11 @@ import {
   Unplug,
   Webhook,
 } from "lucide-react";
+import API from "@api";
+import {
+  isAdminUser,
+  setAdminActiveBusinessId,
+} from "../../../../utils/adminTenant";
 
 type ConnectedPage = {
   pageId: string;
@@ -58,37 +63,9 @@ type RecentLead = {
   };
 };
 
-const RAW_API_BASE =
-  import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
-
-const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
-
-function getToken() {
-  if (typeof window === "undefined") return "";
-  return localStorage.getItem("token") || "";
-}
-
-async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-
-  const res = await fetch(`${API_BASE}${url}`, {
-    ...options,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
-
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    throw new Error(data?.message || data?.error || "Request failed");
-  }
-
-  return data as T;
-}
+type MetaLeadAdsIntegrationProps = {
+  businessId?: string;
+};
 
 function formatDate(value?: string) {
   if (!value) return "—";
@@ -110,7 +87,9 @@ function leadName(lead: RecentLead) {
   return lead.name || lead.fullName || "Test Lead";
 }
 
-export default function MetaLeadAdsIntegration() {
+export default function MetaLeadAdsIntegration({
+  businessId,
+}: MetaLeadAdsIntegrationProps) {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -124,6 +103,7 @@ export default function MetaLeadAdsIntegration() {
   const [selectedPageId, setSelectedPageId] = useState("");
 
   const isConnected = Boolean(connectedPage?.pageId);
+  const tenantParams = businessId ? { businessId } : undefined;
 
   const selectedPage = useMemo(
     () => pages.find((page) => page.id === selectedPageId),
@@ -144,14 +124,16 @@ export default function MetaLeadAdsIntegration() {
       setLoading(true);
       setError("");
 
-      const data = await apiRequest<{
+      const { data } = await API.get<{
         success: boolean;
         connectedPage: ConnectedPage | null;
         pages?: MetaPage[];
         forms?: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
         recentLeads?: RecentLead[];
-      }>("/api/meta-leads/status");
+      }>("/meta-leads/status", {
+        params: tenantParams,
+      });
 
       const nextConnectedPage = data.connectedPage || null;
 
@@ -176,8 +158,11 @@ export default function MetaLeadAdsIntegration() {
   };
 
   useEffect(() => {
+    if (businessId && isAdminUser()) {
+      setAdminActiveBusinessId(businessId);
+    }
     loadStatus();
-  }, []);
+  }, [businessId]);
 
   const connectFacebook = async () => {
     try {
@@ -185,8 +170,9 @@ export default function MetaLeadAdsIntegration() {
       setError("");
       setSuccess("");
 
-      const data = await apiRequest<{ success: boolean; url: string }>(
-        "/api/meta-leads/auth-url"
+      const { data } = await API.get<{ success: boolean; url: string }>(
+        "/meta-leads/auth-url",
+        { params: tenantParams }
       );
 
       window.location.href = data.url;
@@ -209,15 +195,16 @@ export default function MetaLeadAdsIntegration() {
       setError("");
       setSuccess("");
 
-      const data = await apiRequest<{
+      const { data } = await API.post<{
         success: boolean;
         connectedPage: ConnectedPage;
         forms: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
-      }>("/api/meta-leads/connect-page", {
-        method: "POST",
-        body: JSON.stringify({ pageId: selectedPageId }),
-      });
+      }>(
+        "/meta-leads/connect-page",
+        { pageId: selectedPageId },
+        { params: tenantParams }
+      );
 
       setConnectedPage(data.connectedPage);
       setForms(data.forms || []);
@@ -244,9 +231,7 @@ export default function MetaLeadAdsIntegration() {
       setError("");
       setSuccess("");
 
-      await apiRequest<{ success: boolean }>("/api/meta-leads/disconnect", {
-        method: "POST",
-      });
+      await API.post("/meta-leads/disconnect", {}, { params: tenantParams });
 
       setConnectedPage(null);
       setPages([]);
@@ -273,11 +258,13 @@ export default function MetaLeadAdsIntegration() {
       setBusy(true);
       setError("");
 
-      const data = await apiRequest<{
+      const { data } = await API.get<{
         success: boolean;
         forms: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
-      }>("/api/meta-leads/forms");
+      }>("/meta-leads/forms", {
+        params: tenantParams,
+      });
 
       setForms(data.forms || []);
       if ("selectedForm" in data) {
@@ -303,13 +290,14 @@ export default function MetaLeadAdsIntegration() {
       setError("");
       setSuccess("");
 
-      const data = await apiRequest<{
+      const { data } = await API.post<{
         success: boolean;
         selectedForm: SelectedForm;
-      }>("/api/meta-leads/select-form", {
-        method: "POST",
-        body: JSON.stringify({ formId: form.id }),
-      });
+      }>(
+        "/meta-leads/select-form",
+        { formId: form.id },
+        { params: tenantParams }
+      );
 
       setSelectedForm(data.selectedForm);
       setSuccess(

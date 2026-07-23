@@ -29,6 +29,11 @@ import type { TFunction } from "i18next";
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import API from "@api";
+import {
+  isAdminUser,
+  setAdminActiveBusinessId,
+} from "../../../../utils/adminTenant";
 
 type LeadStatus =
   | "new"
@@ -146,13 +151,6 @@ type OpenLeadNotificationDetail = {
   kind?: "regular" | "task_due" | "new_lead";
 };
 
-const RAW_API_BASE =
-  import.meta.env.VITE_API_URL ||
-  import.meta.env.VITE_API_BASE_URL ||
-  "";
-
-const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
-
 function getStatusLabel(status: LeadStatus, t: TFunction) {
   return t(`crm.leads.statuses.${status}`);
 }
@@ -172,11 +170,6 @@ const statusDotClasses: Record<LeadStatus, string> = {
   converted: "bg-sky-500",
   lost: "bg-rose-500",
 };
-
-function getToken() {
-  if (typeof window === "undefined") return null;
-  return localStorage.getItem("token");
-}
 
 function getCurrentUserName(t: TFunction) {
   const fallback = t("crm.common.systemUser");
@@ -210,28 +203,6 @@ function getCurrentUserName(t: TFunction) {
   } catch {
     return fallback;
   }
-}
-
-async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T> {
-  const token = getToken();
-
-  const res = await fetch(`${API_BASE}${url}`, {
-    ...options,
-    credentials: "include",
-    headers: {
-      "Content-Type": "application/json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers || {}),
-    },
-  });
-
-  const data = await res.json().catch(() => null);
-
-  if (!res.ok) {
-    throw new Error(data?.message || data?.error || "Request failed");
-  }
-
-  return data as T;
 }
 
 function cleanText(value?: unknown) {
@@ -697,8 +668,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       setLoading(true);
       setError("");
 
-      const data = await apiRequest<{ success: boolean; leads: Lead[] }>(
-        "/api/crm/leads/my"
+      const { data } = await API.get<{ success: boolean; leads: Lead[] }>(
+        "/crm/leads/my",
+        {
+          params: businessId ? { businessId } : undefined,
+        }
       );
 
       const nextLeads = Array.isArray(data.leads) ? data.leads : [];
@@ -745,8 +719,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
 
     try {
-      const data = await apiRequest<{ success: boolean; leads: Lead[] }>(
-        "/api/crm/leads/my"
+      const { data } = await API.get<{ success: boolean; leads: Lead[] }>(
+        "/crm/leads/my",
+        {
+          params: businessId ? { businessId } : undefined,
+        }
       );
 
       const nextLeads = Array.isArray(data.leads) ? data.leads : [];
@@ -794,6 +771,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       window.removeEventListener("bizuply:open-lead", handleOpenLead);
     };
   }, [leads]);
+
+  useEffect(() => {
+    if (businessId && isAdminUser()) {
+      setAdminActiveBusinessId(businessId);
+    }
+  }, [businessId]);
 
   useEffect(() => {
     fetchLeads();
@@ -862,14 +845,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     );
 
     try {
-      const saved = await apiRequest<{
+      const { data: saved } = await API.patch<{
         success: boolean;
         lead?: Lead;
         activity?: LeadActivity;
-      }>(`/api/crm/leads/${leadId}/status`, {
-        method: "PATCH",
-        body: JSON.stringify({ status }),
-      });
+      }>(`/crm/leads/${leadId}/status`, { status });
 
       if (saved.lead) {
         setLeads((current) =>
@@ -929,18 +909,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }));
 
     try {
-      const saved = await apiRequest<{
+      const { data: saved } = await API.post<{
         success: boolean;
         activity?: LeadActivity;
         lead?: Lead;
-      }>(`/api/crm/leads/${leadId}/activities`, {
-        method: "POST",
-        body: JSON.stringify({
-          type: tempActivity.type,
-          text: tempActivity.text,
-          taskDueAt:
-            tempActivity.type === "task" ? tempActivity.taskDueAt : null,
-        }),
+      }>(`/crm/leads/${leadId}/activities`, {
+        type: tempActivity.type,
+        text: tempActivity.text,
+        taskDueAt:
+          tempActivity.type === "task" ? tempActivity.taskDueAt : null,
       });
 
       if (saved.lead) {
@@ -1024,13 +1001,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     });
 
     try {
-      const saved = await apiRequest<{ success: boolean; lead?: Lead }>(
-        `/api/crm/leads/${leadId}/activities/${activityId}/done`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({ done: nextDone }),
-        }
-      );
+      const { data: saved } = await API.patch<{
+        success: boolean;
+        lead?: Lead;
+      }>(`/crm/leads/${leadId}/activities/${activityId}/done`, {
+        done: nextDone,
+      });
 
       if (saved.lead) {
         setLeads((current) =>
@@ -1050,7 +1026,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir={dir}>
-      <MetaLeadAdsIntegration />
+      <MetaLeadAdsIntegration businessId={businessId} />
 
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
         <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
