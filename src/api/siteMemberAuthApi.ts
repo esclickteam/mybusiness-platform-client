@@ -36,6 +36,9 @@ export type SiteAuthSettings = {
   showLoginButton: boolean;
   useLoginModal: boolean;
   buttonMode: "floating" | "inline" | "both";
+  buttonDisplay: "button" | "icon" | "text";
+  buttonTransparent: boolean;
+  buttonTextColor: string;
   showMemberName: boolean;
   triggerPosition: { x: number; y: number };
   memberAreaPath: string;

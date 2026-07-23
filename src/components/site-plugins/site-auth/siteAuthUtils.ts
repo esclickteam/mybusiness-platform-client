@@ -27,8 +27,11 @@ export function mergeSiteAuthSettings(
     registerSubtitle: String(stored.registerSubtitle ?? base.registerSubtitle),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
-    useLoginModal: stored.useLoginModal !== false,
+    useLoginModal: Boolean(stored.useLoginModal ?? base.useLoginModal),
     buttonMode: normalizeButtonMode(stored.buttonMode ?? base.buttonMode),
+    buttonDisplay: normalizeButtonDisplay(stored.buttonDisplay ?? base.buttonDisplay),
+    buttonTransparent: stored.buttonTransparent !== false,
+    buttonTextColor: String(stored.buttonTextColor ?? base.buttonTextColor),
     showMemberName: stored.showMemberName !== false,
     memberAreaPath: String(stored.memberAreaPath || base.memberAreaPath),
     defaultAddAsCrmClient: Boolean(
@@ -68,8 +71,11 @@ function readPartialSettings(
     registerSubtitle: String(fallback?.registerSubtitle || ""),
     forgotPasswordEnabled: fallback?.forgotPasswordEnabled !== false,
     showLoginButton: fallback?.showLoginButton !== false,
-    useLoginModal: fallback?.useLoginModal !== false,
+    useLoginModal: Boolean(fallback?.useLoginModal),
     buttonMode: normalizeButtonMode(fallback?.buttonMode),
+    buttonDisplay: normalizeButtonDisplay(fallback?.buttonDisplay),
+    buttonTransparent: fallback?.buttonTransparent !== false,
+    buttonTextColor: String(fallback?.buttonTextColor || ""),
     showMemberName: fallback?.showMemberName !== false,
     memberAreaPath: String(fallback?.memberAreaPath || "/member"),
     defaultAddAsCrmClient: Boolean(fallback?.defaultAddAsCrmClient),
@@ -90,13 +96,21 @@ function readPartialSettings(
 }
 
 function normalizeButtonMode(value: unknown): SiteAuthWidgetSettings["buttonMode"] {
-  const mode = String(value || "both");
+  const mode = String(value || "inline");
   if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "both";
+  return "inline";
+}
+
+function normalizeButtonDisplay(
+  value: unknown
+): SiteAuthWidgetSettings["buttonDisplay"] {
+  const display = String(value || "icon");
+  if (display === "button" || display === "icon" || display === "text") return display;
+  return "icon";
 }
 
 export function buildSiteAuthWidgetMarker(label = "כפתור התחברות") {
-  return `<div data-bizuply-plugin="site-auth" data-bizuply-widget="site-auth" data-site-auth-mount="true" style="display:inline-flex;min-height:44px;direction:rtl;box-sizing:border-box"><div style="display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:999px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-family:system-ui,sans-serif;font-size:13px;font-weight:800;box-shadow:0 8px 24px rgba(99,102,241,.35)">${label}</div></div>`;
+  return `<div data-bizuply-plugin="site-auth" data-bizuply-widget="site-auth" data-site-auth-mount="true" style="display:inline-flex;width:fit-content;height:fit-content;direction:rtl;box-sizing:border-box"><span style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;color:#6366f1;font-family:system-ui,sans-serif;font-size:11px;font-weight:700">${label}</span></div>`;
 }
 
 export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {

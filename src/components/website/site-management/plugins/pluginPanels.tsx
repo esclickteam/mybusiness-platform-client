@@ -236,19 +236,42 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
           onChange={(v) => updateField("showLoginButton", v)}
         />
         <Toggle
-          label="טופס התחברות במודאל (מומלץ)"
-          checked={bool(settings.useLoginModal, true)}
+          label="טופס התחברות במודאל (לא מומלץ — ברירת מחדל: דף ייעודי)"
+          checked={bool(settings.useLoginModal)}
           onChange={(v) => updateField("useLoginModal", v)}
         />
+        <Field label="סוג כפתור באתר">
+          <select
+            className={inputBase}
+            value={str(settings.buttonDisplay, "icon")}
+            onChange={(e) => updateField("buttonDisplay", e.target.value)}
+          >
+            <option value="icon">אייקון בלבד</option>
+            <option value="button">כפתור עם טקסט</option>
+            <option value="text">טקסט בלבד</option>
+          </select>
+        </Field>
+        <Toggle
+          label="כפתור שקוף (ללא רקע)"
+          checked={bool(settings.buttonTransparent, true)}
+          onChange={(v) => updateField("buttonTransparent", v)}
+        />
+        <Field label="צבע כפתור / אייקון (ריק = צבע מותג)">
+          <TextInput
+            value={str(settings.buttonTextColor)}
+            onChange={(v) => updateField("buttonTextColor", v)}
+            placeholder="#6366F1"
+          />
+        </Field>
         <Field label="מיקום הכפתור">
           <select
             className={inputBase}
-            value={str(settings.buttonMode, "both")}
+            value={str(settings.buttonMode, "inline")}
             onChange={(e) => updateField("buttonMode", e.target.value)}
           >
+            <option value="inline">בתוך העמוד (גרירה בעורך)</option>
+            <option value="floating">כפתור צף</option>
             <option value="both">צף + בתוך העמוד</option>
-            <option value="floating">כפתור צף בלבד</option>
-            <option value="inline">בתוך העמוד בלבד</option>
           </select>
         </Field>
         <Toggle

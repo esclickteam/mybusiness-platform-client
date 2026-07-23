@@ -2936,8 +2936,12 @@ function applyInsertedSpecialContent(
     if (html) {
       const isHydratedPluginWidget =
         node.getAttribute("data-bizuply-countdown-mounted") === "true" ||
+        node.getAttribute("data-bizuply-site-auth-mounted") === "true" ||
         Boolean(
           node.querySelector('[data-bizuply-countdown-mounted="true"]'),
+        ) ||
+        Boolean(
+          node.querySelector('[data-bizuply-site-auth-mounted="true"]'),
         );
 
       if (!isHydratedPluginWidget) {
@@ -3246,9 +3250,20 @@ function createInsertedElementNode(
   }
 
   if (type === "embed" || type === "html") {
-    node.style.width = "480px";
-    node.style.minHeight = "220px";
-    node.style.overflow = "auto";
+    const html = String(item?.html || "");
+    const isSiteAuthWidget =
+      item?.pluginWidget && html.includes('data-bizuply-widget="site-auth"');
+
+    if (isSiteAuthWidget) {
+      node.style.width = "48px";
+      node.style.height = "48px";
+      node.style.minHeight = "0";
+      node.style.overflow = "visible";
+    } else {
+      node.style.width = "480px";
+      node.style.minHeight = "220px";
+      node.style.overflow = "auto";
+    }
   }
 
   return node;

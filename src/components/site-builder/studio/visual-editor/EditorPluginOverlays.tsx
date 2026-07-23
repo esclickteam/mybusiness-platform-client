@@ -90,6 +90,20 @@ export default function EditorPluginOverlays({
     [siteId, wheelSettings]
   );
 
+  const handleAuthPositionChange = useCallback(
+    async (pos: { x: number; y: number }) => {
+      if (!siteId || !authSettings) return;
+      const next = { ...authSettings, triggerPosition: pos };
+      setAuthSettings(next);
+      try {
+        await saveSitePluginSettings(siteId, "site-auth", next);
+      } catch {
+        // local preview still updates
+      }
+    },
+    [siteId, authSettings]
+  );
+
   const handleDeactivate = useCallback(async () => {
     if (!siteId) return;
     try {
@@ -130,6 +144,7 @@ export default function EditorPluginOverlays({
             settings={authSettings}
             variant="floating"
             mode="editor"
+            onPositionChange={handleAuthPositionChange}
           />
         </SiteMemberAuthProvider>
       ) : null}

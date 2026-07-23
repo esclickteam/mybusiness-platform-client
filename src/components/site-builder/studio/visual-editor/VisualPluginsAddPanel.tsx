@@ -185,8 +185,11 @@ export default function VisualPluginsAddPanel({
     } else if (typeof editor?.insertHtmlWidget === "function") {
       await editor.insertHtmlWidget(html, {
         label: plugin.name,
-        width: plugin.key === "countdown" ? 520 : undefined,
-        height: plugin.key === "countdown" ? 180 : undefined,
+        width:
+          plugin.key === "countdown" ? 520 : plugin.key === "site-auth" ? 48 : undefined,
+        height:
+          plugin.key === "countdown" ? 180 : plugin.key === "site-auth" ? 48 : undefined,
+        fitContent: plugin.key === "site-auth",
       });
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);

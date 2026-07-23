@@ -18,7 +18,7 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     pluginKey: "site-auth",
     kind: "widget",
     label: "כפתור התחברות",
-    description: "כפתור + טופס התחברות — הופך אוטומטית להתנתקות",
+    description: "אייקון או כפתור — גרירה בעורך, לחיצה מובילה לדף התחברות",
   },
   "benefits-wheel": {
     pluginKey: "benefits-wheel",
