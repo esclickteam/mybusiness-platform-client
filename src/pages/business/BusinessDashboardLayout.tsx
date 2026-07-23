@@ -208,6 +208,12 @@ export default function BusinessDashboardLayout() {
     }
   }, [isAdmin, businessId]);
 
+  // Re-bind Web Push to the active business when permission is already granted.
+  useEffect(() => {
+    if (!businessId) return;
+    void ensurePushSubscription();
+  }, [businessId]);
+
   /* ============================
      Persist current dashboard route (survives refresh)
   ============================ */
