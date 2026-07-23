@@ -19,6 +19,7 @@ import {
   COUNTDOWN_LAYOUT_MODES,
   COUNTDOWN_SIZE_PRESETS,
   COUNTDOWN_STYLE_PRESETS,
+  COUNTDOWN_UNIT_FORMATS,
   PRESET_DEFAULT_COLORS,
   type CountdownEffectMode,
   type CountdownEffectWhen,
@@ -27,6 +28,7 @@ import {
   type CountdownSettings,
   type CountdownSizePreset,
   type CountdownStylePreset,
+  type CountdownUnitFormat,
 } from "../../../site-plugins/countdown/countdownUtils";
 
 function SectionCard({
@@ -107,6 +109,8 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
 
   const selectedPreset = (settings.stylePreset as CountdownStylePreset) || "cards";
   const isCards = selectedPreset === "cards";
+  const unitFormat = (settings.unitFormat as CountdownUnitFormat) || "standard";
+  const isStandardFormat = unitFormat === "standard";
 
   function applyPreset(preset: CountdownStylePreset) {
     updateField("stylePreset", preset);
@@ -229,26 +233,79 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
           checked={bool(settings.unitOrderReversed, true)}
           onChange={(v) => updateField("unitOrderReversed", v)}
         />
-        <Toggle
-          label="הצג חודשים כימים (30 יום = חודש)"
-          checked={bool(settings.monthsAsDays, false)}
-          onChange={(v) => updateField("monthsAsDays", v)}
-        />
+
+        <div>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">אופן הצגת זמן</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {COUNTDOWN_UNIT_FORMATS.map((format) => (
+              <button
+                key={format.value}
+                type="button"
+                onClick={() => updateField("unitFormat", format.value as CountdownUnitFormat)}
+                className={`rounded-xl border p-3 text-right transition ${
+                  unitFormat === format.value
+                    ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-200"
+                    : "border-slate-200 bg-white hover:border-indigo-200"
+                }`}
+              >
+                <p className="text-xs font-black text-slate-800">{format.label}</p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">{format.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {isStandardFormat ? (
+          <>
+            <Toggle
+              label="המר חודשים לימים (30 יום = חודש)"
+              checked={bool(settings.monthsAsDays, false)}
+              onChange={(v) => updateField("monthsAsDays", v)}
+            />
+            <Toggle
+              label="המר שבועות לימים (7 יום = שבוע)"
+              checked={bool(settings.weeksAsDays, false)}
+              onChange={(v) => updateField("weeksAsDays", v)}
+            />
+          </>
+        ) : null}
+
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-          <Toggle
-            label="חודשים"
-            checked={bool(settings.showMonths, true)}
-            onChange={(v) => updateField("showMonths", v)}
-          />
-          <Toggle label="שבועות" checked={bool(settings.showWeeks, true)} onChange={(v) => updateField("showWeeks", v)} />
-          <Toggle label="ימים" checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
+          {isStandardFormat ? (
+            <Toggle
+              label="חודשים"
+              checked={bool(settings.showMonths, true)}
+              onChange={(v) => updateField("showMonths", v)}
+            />
+          ) : null}
+          {unitFormat !== "daysOnly" ? (
+            <Toggle label="שבועות" checked={bool(settings.showWeeks, true)} onChange={(v) => updateField("showWeeks", v)} />
+          ) : null}
+          {unitFormat !== "weeksOnly" ? (
+            <Toggle label="ימים" checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
+          ) : null}
           <Toggle label="שעות" checked={bool(settings.showHours, true)} onChange={(v) => updateField("showHours", v)} />
           <Toggle label="דקות" checked={bool(settings.showMinutes, true)} onChange={(v) => updateField("showMinutes", v)} />
           <Toggle label="שניות" checked={bool(settings.showSeconds, true)} onChange={(v) => updateField("showSeconds", v)} />
         </div>
-        {settings.monthsAsDays ? (
+
+        {isStandardFormat && (settings.monthsAsDays || settings.weeksAsDays) ? (
           <p className="text-[11px] leading-relaxed text-slate-500">
-            חודשים מחושבים כ-30 יום ומוצגים בשדה הימים. אפשר להשאיר גם שבועות לפירוט נוסף.
+            {settings.monthsAsDays && settings.weeksAsDays
+              ? "כל הזמן מוצג כימים בלבד (חודשים ושבועות מומרים)."
+              : settings.monthsAsDays
+                ? "חודשים מומרים לימים. אפשר להשאיר שבועות לפירוט או להמיר גם אותם."
+                : "שבועות מומרים לימים. חודשים נשארים כרטיס נפרד."}
+          </p>
+        ) : null}
+        {unitFormat === "daysOnly" ? (
+          <p className="text-[11px] leading-relaxed text-slate-500">
+            כל הזמן הנותר מוצג כסה״כ ימים, ואחריו שעות/דקות/שניות.
+          </p>
+        ) : null}
+        {unitFormat === "weeksOnly" ? (
+          <p className="text-[11px] leading-relaxed text-slate-500">
+            הזמן מוצג כסה״כ שבועות. אפשר להוסיף גם ימים לשארית בתוך השבוע הנוכחי.
           </p>
         ) : null}
       </SectionCard>

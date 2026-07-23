@@ -30,7 +30,7 @@ function UnitBlock({
   preset: string;
   sizeClasses: ReturnType<typeof resolveSizeClasses>;
 }) {
-  const value = padUnit(unit.value, unit.key);
+  const value = padUnit(unit.value, unit.key, settings);
   const font = resolveFontFamily(settings.fontPreset);
   const shadow = settings.shadowEnabled
     ? `0 12px 32px ${settings.shadowColor || "rgba(15,23,42,0.12)"}`
