@@ -9,7 +9,6 @@ import {
   FileText,
   Plug,
   RefreshCw,
-  ShieldCheck,
   Unplug,
   Webhook,
 } from "lucide-react";
@@ -69,6 +68,8 @@ type MetaLeadAdsIntegrationProps = {
   businessId?: string;
 };
 
+type WizardStep = 1 | 2 | 3;
+
 const T = "crm.leads.metaIntegration";
 
 export default function MetaLeadAdsIntegration({
@@ -82,6 +83,7 @@ export default function MetaLeadAdsIntegration({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [forceSetup, setForceSetup] = useState(false);
 
   const [connectedPage, setConnectedPage] = useState<ConnectedPage | null>(null);
   const [pages, setPages] = useState<MetaPage[]>([]);
@@ -91,8 +93,16 @@ export default function MetaLeadAdsIntegration({
   const [selectedPageId, setSelectedPageId] = useState("");
 
   const isConnected = Boolean(connectedPage?.pageId);
+  const hasAccount = pages.length > 0 || isConnected;
+  const hasForm = Boolean(selectedForm?.formId);
   const tenantParams = businessId ? { businessId } : undefined;
   const emDash = t(`${T}.emDash`);
+
+  const wizardStep: WizardStep = !hasAccount
+    ? 1
+    : !isConnected || !hasForm || forceSetup
+      ? 2
+      : 3;
 
   const formatDate = (value?: string) => {
     if (!value) return emDash;
@@ -112,11 +122,6 @@ export default function MetaLeadAdsIntegration({
 
   const leadDisplayName = (lead: RecentLead) =>
     lead.name || lead.fullName || t(`${T}.unnamedLead`);
-
-  const selectedPage = useMemo(
-    () => pages.find((page) => page.id === selectedPageId),
-    [pages, selectedPageId]
-  );
 
   const activeForm = useMemo(
     () =>
@@ -153,6 +158,9 @@ export default function MetaLeadAdsIntegration({
 
       if (nextConnectedPage?.pageId) {
         setSelectedPageId(nextConnectedPage.pageId);
+        if (data.selectedForm?.formId) {
+          setForceSetup(false);
+        }
       } else {
         setSelectedPageId("");
       }
@@ -218,6 +226,7 @@ export default function MetaLeadAdsIntegration({
       setForms(data.forms || []);
       setSelectedForm(data.selectedForm || null);
       setSuccess(t(`${T}.successPageConnected`));
+      setForceSetup(true);
 
       await loadStatus();
     } catch (err) {
@@ -238,11 +247,11 @@ export default function MetaLeadAdsIntegration({
       await API.post("/meta-leads/disconnect", {}, { params: tenantParams });
 
       setConnectedPage(null);
-      setPages([]);
       setForms([]);
       setSelectedForm(null);
       setRecentLeads([]);
       setSelectedPageId("");
+      setForceSetup(true);
       setSuccess(t(`${T}.successDisconnected`));
 
       await loadStatus();
@@ -302,6 +311,7 @@ export default function MetaLeadAdsIntegration({
       );
 
       setSelectedForm(data.selectedForm);
+      setForceSetup(false);
       setSuccess(
         t(`${T}.successFormSelected`, {
           name: data.selectedForm.formName || form.name,
@@ -337,7 +347,6 @@ export default function MetaLeadAdsIntegration({
       const { data } = await API.post<{
         success: boolean;
         imported?: number;
-        fetched?: number;
         message?: string;
         recentLeads?: RecentLead[];
       }>(
@@ -367,527 +376,430 @@ export default function MetaLeadAdsIntegration({
     }
   };
 
+  const stepItems = [
+    { id: 1 as const, label: t(`${T}.wizard.step1Label`) },
+    { id: 2 as const, label: t(`${T}.wizard.step2Label`) },
+    { id: 3 as const, label: t(`${T}.wizard.step3Label`) },
+  ];
+
   return (
     <div
       dir={dir}
       className="min-h-[calc(100vh-72px)] bg-slate-50 p-4 text-slate-900 sm:p-6 lg:p-8"
     >
-      <div className="mx-auto max-w-7xl space-y-6">
+      <div className="mx-auto max-w-4xl space-y-6">
         <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-blue-50 p-6 sm:p-8">
-            <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-              <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black tracking-[0.08em] text-sky-700 ring-1 ring-sky-100">
-                  <Facebook className="h-4 w-4" />
-                  {t(`${T}.badge`)}
-                </div>
-
-                <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
-                  {t(`${T}.title`)}
-                </h1>
-
-                <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
-                  {t(`${T}.subtitle`)}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={loadStatus}
-                disabled={loading || busy}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-              >
-                {loading ? (
-                  <BizuplyLoader size="xs" compact />
-                ) : (
-                  <RefreshCw className="h-5 w-5" />
-                )}
-                {t(`${T}.refresh`)}
-              </button>
-            </div>
-          </div>
-
-          <div className="grid gap-4 p-4 sm:p-6 lg:grid-cols-4">
-            <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-xs font-black tracking-wide text-slate-400">
-                {t(`${T}.status`)}
-              </p>
-
-              <p className="mt-2 text-xl font-black text-slate-900">
-                {isConnected ? t(`${T}.connected`) : t(`${T}.notConnected`)}
-              </p>
+          <div className="border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-blue-50 p-6 sm:p-8">
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+              <Facebook className="h-4 w-4" />
+              {t(`${T}.badge`)}
             </div>
 
-            <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-              <p className="text-xs font-black tracking-wide text-sky-600">
-                {t(`${T}.selectedPage`)}
-              </p>
+            <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
+              {t(`${T}.title`)}
+            </h1>
 
-              <p className="mt-2 truncate text-xl font-black text-sky-900">
-                {connectedPage?.pageName || selectedPage?.name || emDash}
-              </p>
-            </div>
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
+              {t(`${T}.subtitle`)}
+            </p>
 
-            <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-              <p className="text-xs font-black tracking-wide text-emerald-600">
-                {t(`${T}.leadForms`)}
-              </p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-3">
+              {stepItems.map((item) => {
+                const active = wizardStep === item.id;
+                const done = wizardStep > item.id;
 
-              <p className="mt-2 text-xl font-black text-emerald-900">
-                {forms.length}
-              </p>
-            </div>
-
-            <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-              <p className="text-xs font-black tracking-wide text-violet-600">
-                {t(`${T}.activeForm`)}
-              </p>
-
-              <p className="mt-2 truncate text-xl font-black text-violet-900">
-                {selectedForm?.formName ||
-                  activeForm?.name ||
-                  t(`${T}.notSelected`)}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {error && (
-          <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
-            <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
-            <p>{error}</p>
-          </div>
-        )}
-
-        {success && (
-          <div className="flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
-            <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
-            <p>{success}</p>
-          </div>
-        )}
-
-        <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  {t(`${T}.connectionSetup`)}
-                </h2>
-
-                <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                  {t(`${T}.connectionSetupDesc`)}
-                </p>
-              </div>
-
-              <ShieldCheck className="h-7 w-7 text-sky-600" />
-            </div>
-
-            <div className="space-y-4">
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-black text-slate-900">
-                      {t(`${T}.step1Title`)}
-                    </p>
-
-                    <p className="mt-1 text-xs font-bold text-slate-500">
-                      {t(`${T}.step1Desc`)}
-                    </p>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={connectFacebook}
-                    disabled={busy}
-                    className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:opacity-60"
-                  >
-                    {busy ? (
-                      <BizuplyLoader size="xs" compact />
-                    ) : (
-                      <Plug className="h-4 w-4" />
-                    )}
-                    {t(`${T}.connectFacebook`)}
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-slate-200 bg-white p-4">
-                <p className="text-sm font-black text-slate-900">
-                  {t(`${T}.step2Title`)}
-                </p>
-
-                <p className="mt-1 text-xs font-bold text-slate-500">
-                  {t(`${T}.step2Desc`)}
-                </p>
-
-                <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
-                  <select
-                    value={selectedPageId}
-                    onChange={(event) => setSelectedPageId(event.target.value)}
-                    className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
-                  >
-                    <option value="">{t(`${T}.selectPage`)}</option>
-
-                    {pages.map((page) => (
-                      <option key={page.id} value={page.id}>
-                        {page.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  <button
-                    type="button"
-                    onClick={connectPage}
-                    disabled={busy || !selectedPageId}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
-                  >
-                    <Webhook className="h-4 w-4" />
-                    {t(`${T}.connectPage`)}
-                  </button>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-black text-slate-900">
-                      {t(`${T}.step3Title`)}
-                    </p>
-
-                    <p className="mt-1 text-xs font-bold text-slate-500">
-                      {t(`${T}.step3Desc`)}
-                    </p>
-                  </div>
-
-                  <span
+                return (
+                  <div
+                    key={item.id}
                     className={[
-                      "rounded-full px-3 py-1.5 text-xs font-black",
-                      connectedPage?.webhookSubscribed
-                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-100"
-                        : "bg-slate-100 text-slate-500",
+                      "rounded-2xl border px-4 py-3",
+                      active
+                        ? "border-sky-200 bg-sky-50"
+                        : done
+                          ? "border-emerald-100 bg-emerald-50"
+                          : "border-slate-200 bg-white",
                     ].join(" ")}
                   >
-                    {connectedPage?.webhookSubscribed
-                      ? t(`${T}.listening`)
-                      : t(`${T}.notSubscribed`)}
-                  </span>
-                </div>
-              </div>
-
-              <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="min-w-0">
-                    <p className="text-sm font-black text-slate-900">
-                      {t(`${T}.step4Title`)}
-                    </p>
-
-                    <p className="mt-1 text-xs font-bold text-slate-500">
-                      {t(`${T}.step4Desc`)}
+                    <p
+                      className={[
+                        "text-xs font-black",
+                        active
+                          ? "text-sky-700"
+                          : done
+                            ? "text-emerald-700"
+                            : "text-slate-400",
+                      ].join(" ")}
+                    >
+                      {done ? "✓ " : `${item.id}. `}
+                      {item.label}
                     </p>
                   </div>
-
-                  <span
-                    className={[
-                      "max-w-[240px] truncate rounded-full px-3 py-1.5 text-xs font-black",
-                      selectedForm?.formId
-                        ? "bg-white text-violet-700 ring-1 ring-violet-100"
-                        : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
-                    ].join(" ")}
-                    title={selectedForm?.formName || t(`${T}.noFormSelected`)}
-                  >
-                    {selectedForm?.formName || t(`${T}.noFormSelected`)}
-                  </span>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  {t(`${T}.connectedPage`)}
-                </h2>
-
-                <p className="mt-2 text-sm font-semibold text-slate-500">
-                  {t(`${T}.connectedPageDesc`)}
-                </p>
-              </div>
-
-              {isConnected && (
-                <button
-                  type="button"
-                  onClick={disconnect}
-                  disabled={busy}
-                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
-                >
-                  <Unplug className="h-4 w-4" />
-                  {t(`${T}.disconnect`)}
-                </button>
-              )}
-            </div>
-
-            {isConnected ? (
-              <div className="space-y-3">
-                <div className="rounded-3xl border border-sky-100 bg-sky-50 p-4">
-                  <p className="text-xs font-black tracking-wide text-sky-600">
-                    {t(`${T}.page`)}
-                  </p>
-
-                  <p className="mt-1 text-lg font-black text-sky-950">
-                    {connectedPage?.pageName}
-                  </p>
-
-                  <p className="mt-1 text-xs font-bold text-sky-700">
-                    {t(`${T}.pageId`, { id: connectedPage?.pageId })}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-4">
-                  <p className="text-xs font-black tracking-wide text-emerald-600">
-                    {t(`${T}.connection`)}
-                  </p>
-
-                  <p className="mt-1 text-sm font-black text-emerald-900">
-                    {t(`${T}.pageConnectedSuccess`)}
-                  </p>
-
-                  <p className="mt-1 text-xs font-bold text-emerald-700">
-                    {t(`${T}.connectedAt`, {
-                      date: formatDate(connectedPage?.connectedAt),
-                    })}
-                  </p>
-                </div>
-
-                <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
-                  <p className="text-xs font-black tracking-wide text-violet-600">
-                    {t(`${T}.activeLeadForm`)}
-                  </p>
-
-                  <p className="mt-1 text-sm font-black text-slate-800">
-                    {selectedForm?.formName || t(`${T}.noFormSelectedYet`)}
-                  </p>
-
-                  <p className="mt-1 text-xs font-bold text-violet-700">
-                    {selectedForm?.formId
-                      ? t(`${T}.formIdLabel`, { id: selectedForm.formId })
-                      : t(`${T}.chooseFormBelow`)}
-                  </p>
-                </div>
+          <div className="p-5 sm:p-6">
+            {loading ? (
+              <div className="flex min-h-[220px] items-center justify-center">
+                <BizuplyLoader size="sm" compact />
               </div>
             ) : (
-              <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-                <Plug className="mx-auto h-10 w-10 text-slate-300" />
+              <>
+                {error && (
+                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700">
+                    <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                    <p>{error}</p>
+                  </div>
+                )}
 
-                <p className="mt-4 text-lg font-black text-slate-700">
-                  {t(`${T}.noPageYet`)}
-                </p>
+                {success && (
+                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
+                    <p>{success}</p>
+                  </div>
+                )}
 
-                <p className="mt-2 text-sm font-semibold text-slate-500">
-                  {t(`${T}.noPageYetDesc`)}
-                </p>
-              </div>
-            )}
-          </div>
-        </section>
+                {wizardStep === 1 && (
+                  <div className="rounded-[1.75rem] border border-slate-200 bg-slate-50 p-6 sm:p-8">
+                    <h2 className="text-2xl font-black text-slate-800">
+                      {t(`${T}.wizard.step1Title`)}
+                    </h2>
+                    <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
+                      {t(`${T}.wizard.step1Desc`)}
+                    </p>
 
-        <section className="grid gap-6 lg:grid-cols-2">
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  {t(`${T}.leadFormsTitle`)}
-                </h2>
+                    <button
+                      type="button"
+                      onClick={connectFacebook}
+                      disabled={busy}
+                      className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-200 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-6 text-sm font-black text-slate-900 transition hover:from-sky-200/80 disabled:opacity-60"
+                    >
+                      {busy ? (
+                        <BizuplyLoader size="xs" compact />
+                      ) : (
+                        <Plug className="h-4 w-4" />
+                      )}
+                      {t(`${T}.wizard.step1Cta`)}
+                    </button>
 
-                <p className="mt-2 text-sm font-semibold text-slate-500">
-                  {t(`${T}.leadFormsDesc`)}
-                </p>
-              </div>
+                    <p className="mt-3 text-xs font-bold text-slate-400">
+                      {t(`${T}.wizard.step1Hint`)}
+                    </p>
+                  </div>
+                )}
 
-              <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={refreshForms}
-                  disabled={busy || !isConnected}
-                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-                >
-                  <RefreshCw className="h-4 w-4" />
-                  {t(`${T}.refreshForms`)}
-                </button>
+                {wizardStep === 2 && (
+                  <div className="space-y-5">
+                    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 sm:p-6">
+                      <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h2 className="text-2xl font-black text-slate-800">
+                            {t(`${T}.wizard.step2Title`)}
+                          </h2>
+                          <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
+                            {t(`${T}.wizard.step2Desc`)}
+                          </p>
+                        </div>
 
-                <button
-                  type="button"
-                  onClick={syncLeadsFromMeta}
-                  disabled={
-                    busy ||
-                    !isConnected ||
-                    !(selectedForm?.formId || activeForm?.id)
-                  }
-                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 text-xs font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
-                >
-                  <Webhook className="h-4 w-4" />
-                  {t(`${T}.syncLeads`)}
-                </button>
-              </div>
-            </div>
-
-            <div className="mb-4 rounded-3xl border border-violet-100 bg-violet-50 p-4">
-              <div className="flex items-start gap-3">
-                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-violet-700" />
-                <div className="min-w-0">
-                  <p className="text-sm font-black text-slate-800">
-                    {selectedForm?.formName
-                      ? t(`${T}.activeFormName`, { name: selectedForm.formName })
-                      : t(`${T}.noActiveForm`)}
-                  </p>
-                  <p className="mt-1 text-xs font-bold leading-5 text-violet-700">
-                    {selectedForm?.formId
-                      ? t(`${T}.onlyFormId`, { id: selectedForm.formId })
-                      : forms.length === 1
-                        ? t(`${T}.oneFormHint`)
-                        : t(`${T}.selectOneFormHint`)}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              {forms.length > 0 ? (
-                forms.map((form) => (
-                  <div
-                    key={form.id}
-                    className={[
-                      "flex flex-col gap-4 rounded-3xl border p-4 transition sm:flex-row sm:items-center sm:justify-between",
-                      selectedForm?.formId === form.id
-                        ? "border-violet-200 bg-violet-50 shadow-[0_12px_35px_rgba(124,58,237,0.08)]"
-                        : "border-slate-200 bg-slate-50",
-                    ].join(" ")}
-                  >
-                    <div className="flex min-w-0 items-start gap-3">
-                      <div
-                        className={[
-                          "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
-                          selectedForm?.formId === form.id
-                            ? "border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
-                            : "bg-white text-sky-600 ring-1 ring-slate-200",
-                        ].join(" ")}
-                      >
-                        {selectedForm?.formId === form.id ? (
-                          <CheckCircle2 className="h-5 w-5" />
-                        ) : (
-                          <FileText className="h-5 w-5" />
-                        )}
+                        <button
+                          type="button"
+                          onClick={connectFacebook}
+                          disabled={busy}
+                          className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          {t(`${T}.wizard.reconnectAccount`)}
+                        </button>
                       </div>
 
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-900">
-                          {form.name}
-                        </p>
+                      <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        {t(`${T}.wizard.accountConnected`)}
+                      </div>
 
+                      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4">
+                        <p className="text-sm font-black text-slate-900">
+                          {t(`${T}.wizard.step2PageTitle`)}
+                        </p>
                         <p className="mt-1 text-xs font-bold text-slate-500">
-                          {t(`${T}.formId`, { id: form.id })}
+                          {t(`${T}.step2Desc`)}
                         </p>
 
-                        {selectedForm?.formId === form.id && (
-                          <p className="mt-2 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-                            {t(`${T}.selectedActiveForm`)}
+                        <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                          <select
+                            value={selectedPageId}
+                            onChange={(event) =>
+                              setSelectedPageId(event.target.value)
+                            }
+                            className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                          >
+                            <option value="">{t(`${T}.selectPage`)}</option>
+                            {pages.map((page) => (
+                              <option key={page.id} value={page.id}>
+                                {page.name}
+                              </option>
+                            ))}
+                          </select>
+
+                          <button
+                            type="button"
+                            onClick={connectPage}
+                            disabled={busy || !selectedPageId}
+                            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-slate-800 transition disabled:opacity-60"
+                          >
+                            <Webhook className="h-4 w-4" />
+                            {t(`${T}.connectPage`)}
+                          </button>
+                        </div>
+
+                        {isConnected && (
+                          <p className="mt-3 text-xs font-bold text-emerald-700">
+                            {t(`${T}.pageConnectedSuccess`)} ·{" "}
+                            {connectedPage?.pageName}
                           </p>
                         )}
                       </div>
                     </div>
 
-                    <button
-                      type="button"
-                      onClick={() => selectForm(form)}
-                      disabled={
-                        busy || !isConnected || selectedForm?.formId === form.id
-                      }
-                      className={[
-                        "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-70",
-                        selectedForm?.formId === form.id
-                          ? "bg-violet-100 text-violet-700 ring-1 ring-violet-200"
-                          : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50",
-                      ].join(" ")}
-                    >
-                      {busy ? (
-                        <BizuplyLoader size="xs" compact />
-                      ) : selectedForm?.formId === form.id ? (
-                        <CheckCircle2 className="h-4 w-4" />
-                      ) : (
-                        <FileText className="h-4 w-4" />
-                      )}
-                      {selectedForm?.formId === form.id
-                        ? t(`${T}.selectedForm`)
-                        : t(`${T}.selectForm`)}
-                    </button>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-                  <p className="text-sm font-bold text-slate-500">
-                    {t(`${T}.noFormsYet`)}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+                    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 sm:p-6">
+                      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <h3 className="text-xl font-black text-slate-800">
+                            {t(`${T}.wizard.step2FormTitle`)}
+                          </h3>
+                          <p className="mt-1 text-sm font-semibold text-slate-500">
+                            {isConnected
+                              ? t(`${T}.leadFormsDesc`)
+                              : t(`${T}.wizard.step2FormLocked`)}
+                          </p>
+                        </div>
 
-          <div className="rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-6">
-            <div className="mb-5 flex items-center justify-between gap-4">
-              <div>
-                <h2 className="text-2xl font-black text-slate-800">
-                  {t(`${T}.recentLeads`)}
-                </h2>
-
-                <p className="mt-2 text-sm font-semibold text-slate-500">
-                  {t(`${T}.recentLeadsDesc`)}
-                </p>
-              </div>
-
-              <ExternalLink className="h-5 w-5 text-slate-300" />
-            </div>
-
-            <div className="space-y-3">
-              {recentLeads.length > 0 ? (
-                recentLeads.map((lead, index) => (
-                  <div
-                    key={lead._id || lead.externalLeadId || index}
-                    className="rounded-3xl border border-slate-200 bg-slate-50 p-4"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-black text-slate-900">
-                          {leadDisplayName(lead)}
-                        </p>
-
-                        <p className="mt-1 text-xs font-bold text-slate-500">
-                          {lead.phone || t(`${T}.noPhone`)}{" "}
-                          {lead.email ? `• ${lead.email}` : ""}
-                        </p>
+                        <button
+                          type="button"
+                          onClick={refreshForms}
+                          disabled={busy || !isConnected}
+                          className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-slate-100 disabled:opacity-60"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          {t(`${T}.refreshForms`)}
+                        </button>
                       </div>
 
-                      <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                        {t(`${T}.metaLeadAds`)}
-                      </span>
+                      {!isConnected ? (
+                        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-bold text-slate-500">
+                          {t(`${T}.wizard.step2FormLocked`)}
+                        </div>
+                      ) : forms.length > 0 ? (
+                        <div className="space-y-3">
+                          {forms.map((form) => {
+                            const isActive = selectedForm?.formId === form.id;
+
+                            return (
+                              <div
+                                key={form.id}
+                                className={[
+                                  "flex flex-col gap-4 rounded-3xl border p-4 transition sm:flex-row sm:items-center sm:justify-between",
+                                  isActive
+                                    ? "border-violet-200 bg-violet-50"
+                                    : "border-slate-200 bg-slate-50",
+                                ].join(" ")}
+                              >
+                                <div className="flex min-w-0 items-start gap-3">
+                                  <div
+                                    className={[
+                                      "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
+                                      isActive
+                                        ? "bg-white text-violet-700 ring-1 ring-violet-100"
+                                        : "bg-white text-sky-600 ring-1 ring-slate-200",
+                                    ].join(" ")}
+                                  >
+                                    {isActive ? (
+                                      <CheckCircle2 className="h-5 w-5" />
+                                    ) : (
+                                      <FileText className="h-5 w-5" />
+                                    )}
+                                  </div>
+
+                                  <div className="min-w-0">
+                                    <p className="truncate text-sm font-black text-slate-900">
+                                      {form.name}
+                                    </p>
+                                    <p className="mt-1 text-xs font-bold text-slate-500">
+                                      {t(`${T}.formId`, { id: form.id })}
+                                    </p>
+                                  </div>
+                                </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => selectForm(form)}
+                                  disabled={busy || isActive}
+                                  className={[
+                                    "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition disabled:opacity-70",
+                                    isActive
+                                      ? "bg-violet-100 text-violet-700 ring-1 ring-violet-200"
+                                      : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800",
+                                  ].join(" ")}
+                                >
+                                  {busy ? (
+                                    <BizuplyLoader size="xs" compact />
+                                  ) : isActive ? (
+                                    <CheckCircle2 className="h-4 w-4" />
+                                  ) : (
+                                    <FileText className="h-4 w-4" />
+                                  )}
+                                  {isActive
+                                    ? t(`${T}.selectedForm`)
+                                    : t(`${T}.selectForm`)}
+                                </button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-bold text-slate-500">
+                          {t(`${T}.noFormsYet`)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {wizardStep === 3 && (
+                  <div className="space-y-5">
+                    <div className="rounded-[1.75rem] border border-emerald-100 bg-emerald-50/70 p-5 sm:p-6">
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <h2 className="text-2xl font-black text-slate-800">
+                            {t(`${T}.wizard.readyTitle`)}
+                          </h2>
+                          <p className="mt-2 text-sm font-semibold text-slate-600">
+                            {t(`${T}.wizard.readyDesc`)}
+                          </p>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setForceSetup(true)}
+                            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                          >
+                            {t(`${T}.wizard.changeSetup`)}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={disconnect}
+                            disabled={busy}
+                            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
+                          >
+                            <Unplug className="h-4 w-4" />
+                            {t(`${T}.disconnect`)}
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                        <div className="rounded-2xl border border-white bg-white p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            {t(`${T}.status`)}
+                          </p>
+                          <p className="mt-1 text-lg font-black text-emerald-700">
+                            {t(`${T}.connected`)}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-white bg-white p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            {t(`${T}.selectedPage`)}
+                          </p>
+                          <p className="mt-1 truncate text-lg font-black text-slate-800">
+                            {connectedPage?.pageName || emDash}
+                          </p>
+                        </div>
+                        <div className="rounded-2xl border border-white bg-white p-4">
+                          <p className="text-xs font-black text-slate-400">
+                            {t(`${T}.activeForm`)}
+                          </p>
+                          <p className="mt-1 truncate text-lg font-black text-slate-800">
+                            {selectedForm?.formName || emDash}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="mt-4 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          onClick={syncLeadsFromMeta}
+                          disabled={busy}
+                          className="inline-flex h-11 items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 text-xs font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
+                        >
+                          <Webhook className="h-4 w-4" />
+                          {t(`${T}.syncLeads`)}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={loadStatus}
+                          disabled={busy}
+                          className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                        >
+                          <RefreshCw className="h-4 w-4" />
+                          {t(`${T}.refresh`)}
+                        </button>
+                      </div>
                     </div>
 
-                    <p className="mt-3 text-xs font-bold text-slate-400">
-                      {t(`${T}.received`, {
-                        date: formatDate(lead.createdAt),
-                      })}
-                    </p>
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
-                  <Webhook className="mx-auto h-10 w-10 text-slate-300" />
+                    <div className="rounded-[1.75rem] border border-slate-200 bg-white p-5 sm:p-6">
+                      <div className="mb-4 flex items-center justify-between gap-3">
+                        <div>
+                          <h3 className="text-xl font-black text-slate-800">
+                            {t(`${T}.recentLeads`)}
+                          </h3>
+                          <p className="mt-1 text-sm font-semibold text-slate-500">
+                            {t(`${T}.recentLeadsDesc`)}
+                          </p>
+                        </div>
+                        <ExternalLink className="h-5 w-5 text-slate-300" />
+                      </div>
 
-                  <p className="mt-4 text-sm font-bold text-slate-500">
-                    {t(`${T}.noLeadsYet`)}
-                  </p>
-                </div>
-              )}
-            </div>
+                      <div className="space-y-3">
+                        {recentLeads.length > 0 ? (
+                          recentLeads.map((lead, index) => (
+                            <div
+                              key={lead._id || lead.externalLeadId || index}
+                              className="rounded-3xl border border-slate-200 bg-slate-50 p-4"
+                            >
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-black text-slate-900">
+                                    {leadDisplayName(lead)}
+                                  </p>
+                                  <p className="mt-1 text-xs font-bold text-slate-500">
+                                    {lead.phone || t(`${T}.noPhone`)}
+                                    {lead.email ? ` · ${lead.email}` : ""}
+                                  </p>
+                                </div>
+                                <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                                  {t(`${T}.metaLeadAds`)}
+                                </span>
+                              </div>
+                              <p className="mt-3 text-xs font-bold text-slate-400">
+                                {t(`${T}.received`, {
+                                  date: formatDate(lead.createdAt),
+                                })}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center text-sm font-bold text-slate-500">
+                            {t(`${T}.noLeadsYet`)}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </section>
       </div>
