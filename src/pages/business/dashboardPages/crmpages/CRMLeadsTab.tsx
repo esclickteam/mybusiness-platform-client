@@ -1947,15 +1947,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] flex items-end justify-center bg-slate-900/40 p-0 backdrop-blur-sm sm:items-center sm:p-3"
+          className="fixed inset-0 z-[90] flex items-start justify-center overflow-y-auto bg-slate-900/40 p-2 pt-3 backdrop-blur-sm sm:p-4 sm:pt-5"
           dir={dir}
         >
           <div
-            className="absolute inset-0"
+            className="fixed inset-0"
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="relative flex h-[100dvh] w-full max-w-[1180px] flex-col overflow-hidden rounded-t-2xl border border-slate-200 bg-[#F4F5F8] shadow-[0_24px_80px_rgba(15,23,42,0.22)] sm:h-auto sm:max-h-[92vh] sm:rounded-2xl">
+          <section className="relative flex max-h-[min(90vh,860px)] w-full max-w-[1180px] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-[#F4F5F8] shadow-[0_24px_80px_rgba(15,23,42,0.22)]">
             <div className="flex min-h-0 flex-1 flex-col">
               <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2.5 sm:px-4 sm:py-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
