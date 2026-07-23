@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   Bell,
@@ -665,9 +665,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchLeads = async () => {
+  const fetchLeads = async (options: { silent?: boolean } = {}) => {
     try {
-      setLoading(true);
+      if (!options.silent) {
+        setLoading(true);
+      }
       setError("");
 
       const { data } = await API.get<{ success: boolean; leads: Lead[] }>(
@@ -689,8 +691,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         err instanceof Error ? err.message : t("crm.leads.errors.loadFailed")
       );
     } finally {
-      setLoading(false);
+      if (!options.silent) {
+        setLoading(false);
+      }
     }
+  };
+
+  const fetchLeadsSilentRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
+
+  const scheduleSilentLeadsRefresh = () => {
+    if (fetchLeadsSilentRef.current) {
+      window.clearTimeout(fetchLeadsSilentRef.current);
+    }
+    fetchLeadsSilentRef.current = window.setTimeout(() => {
+      void fetchLeads({ silent: true });
+    }, 400);
   };
 
   const scrollToActivity = (activityId?: string) => {
@@ -786,7 +803,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   useEffect(() => {
     const handleLeadsSynced = () => {
-      fetchLeads();
+      scheduleSilentLeadsRefresh();
     };
 
     window.addEventListener("bizuply:leads-synced", handleLeadsSynced);
@@ -794,6 +811,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     return () => {
       window.removeEventListener("bizuply:leads-synced", handleLeadsSynced);
       window.removeEventListener("bizuply:leads-updated", handleLeadsSynced);
+      if (fetchLeadsSilentRef.current) {
+        window.clearTimeout(fetchLeadsSilentRef.current);
+      }
     };
   }, [businessId]);
 
@@ -801,7 +821,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     if (!businessId || !socket) return;
 
     const refreshFromSocket = () => {
-      fetchLeads();
+      scheduleSilentLeadsRefresh();
     };
 
     const handleNewNotification = (data: {

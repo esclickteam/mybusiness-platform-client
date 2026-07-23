@@ -279,19 +279,23 @@ export default function FacebookStyleNotifications() {
       unified.type === "new_lead" ||
       Boolean(unified.leadId)
     ) {
+      // Refresh CRM list once; do not re-request push from here.
       window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
 
-      if (shouldToast) {
-        void showLocalNotification({
-          title: unified.title || "ליד חדש",
-          body: unified.text || unified.message || "נכנס ליד חדש למערכת",
-          url:
-            unified.targetUrl ||
-            (businessId
-              ? `/business/${businessId}/dashboard/crm/leads`
-              : "/"),
-          tag: `bizuply-lead-${unified.leadId || unified.id}`,
-        });
+      if (shouldToast && unified.leadId && businessId) {
+        const alertedKey = `bizuply_alerted_lead_ids_${businessId}`;
+        const alertedIds = getStoredArray(alertedKey);
+        if (!alertedIds.includes(unified.leadId)) {
+          setStoredArray(alertedKey, [...alertedIds, unified.leadId]);
+          void showLocalNotification({
+            title: unified.title || "ליד חדש",
+            body: unified.text || unified.message || "נכנס ליד חדש למערכת",
+            url:
+              unified.targetUrl ||
+              `/business/${businessId}/dashboard/crm/leads`,
+            tag: `bizuply-lead-${unified.leadId || unified.id}`,
+          });
+        }
       }
     }
   }
@@ -341,12 +345,11 @@ export default function FacebookStyleNotifications() {
     socket.on("connect", joinRoom);
     socket.on("newNotification", handleNewNotification);
     socket.on("crmLeadCreated", () => {
+      // List refresh only — avoid re-fetching notifications in a socket loop.
       window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
-      fetchAllNotifications();
     });
     socket.on("crm-lead-created", () => {
       window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
-      fetchAllNotifications();
     });
 
     return () => {
@@ -929,16 +932,28 @@ export default function FacebookStyleNotifications() {
       }
 
       const seenIds = getStoredArray(seenLeadsKey);
+      const alertedKey = businessId
+        ? `bizuply_alerted_lead_ids_${businessId}`
+        : "bizuply_alerted_lead_ids";
+      const alertedIds = getStoredArray(alertedKey);
 
       const newLeads = leads.filter(
         (lead) => lead?._id && !seenIds.includes(lead._id)
       );
 
-      if (newLeads.length > 0) {
-        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      // Alert each lead only once — never re-trigger push/refresh loops.
+      const leadsToAlert = newLeads.filter(
+        (lead) => lead?._id && !alertedIds.includes(lead._id)
+      );
 
-        // Device alert + ask server to push from the lead document itself.
-        for (const lead of newLeads) {
+      if (leadsToAlert.length > 0) {
+        const nextAlerted = [
+          ...alertedIds,
+          ...leadsToAlert.map((lead) => lead._id).filter(Boolean),
+        ];
+        setStoredArray(alertedKey, nextAlerted);
+
+        for (const lead of leadsToAlert) {
           const name = getLeadName(lead);
           void showLocalNotification({
             title: t("notifications.newLeadTitle", { name }),
@@ -949,9 +964,11 @@ export default function FacebookStyleNotifications() {
             tag: `bizuply-lead-${lead._id}`,
           });
 
-          void API.post("/push/notify-lead", { leadId: lead._id }).catch(
-            () => undefined
-          );
+          // pushOnly: do not re-emit sockets (that caused endless CRM refresh).
+          void API.post("/push/notify-lead", {
+            leadId: lead._id,
+            pushOnly: true,
+          }).catch(() => undefined);
         }
       }
 
