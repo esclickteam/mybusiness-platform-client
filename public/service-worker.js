@@ -40,7 +40,7 @@ self.addEventListener("push", (event) => {
     dir: "rtl",
     lang: "he",
     tag: data.tag || "bizuply-notification",
-    renotify: true,
+    renotify: data.renotify === true,
     requireInteraction: false,
     vibrate: data.vibrate || [200, 100, 200],
     silent: false,

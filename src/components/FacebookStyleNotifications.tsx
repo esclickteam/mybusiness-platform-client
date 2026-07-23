@@ -29,7 +29,6 @@ import {
   X,
 } from "lucide-react";
 import { NotificationSettingsPanel } from "./NotificationSettings";
-import { showLocalNotification } from "../utils/push";
 
 type NotificationTab = "all" | "unread";
 
@@ -279,7 +278,7 @@ export default function FacebookStyleNotifications() {
       unified.type === "new_lead" ||
       Boolean(unified.leadId)
     ) {
-      // Refresh CRM list once; do not re-request push from here.
+      // Refresh CRM list once. Phone alert comes only from Web Push (server).
       window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
 
       if (shouldToast && unified.leadId && businessId) {
@@ -287,14 +286,6 @@ export default function FacebookStyleNotifications() {
         const alertedIds = getStoredArray(alertedKey);
         if (!alertedIds.includes(unified.leadId)) {
           setStoredArray(alertedKey, [...alertedIds, unified.leadId]);
-          void showLocalNotification({
-            title: unified.title || "ליד חדש",
-            body: unified.text || unified.message || "נכנס ליד חדש למערכת",
-            url:
-              unified.targetUrl ||
-              `/business/${businessId}/dashboard/crm/leads`,
-            tag: `bizuply-lead-${unified.leadId || unified.id}`,
-          });
         }
       }
     }
@@ -957,17 +948,7 @@ export default function FacebookStyleNotifications() {
         window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
 
         for (const lead of leadsToAlert) {
-          const name = getLeadName(lead);
-          void showLocalNotification({
-            title: t("notifications.newLeadTitle", { name }),
-            body: t("notifications.newLeadText"),
-            url: businessId
-              ? `/business/${businessId}/dashboard/crm/leads`
-              : "/",
-            tag: `bizuply-lead-${lead._id}`,
-          });
-
-          // pushOnly: do not re-emit sockets (that caused endless CRM refresh).
+          // Phone alert is server Web Push only — avoid a second local banner.
           void API.post("/push/notify-lead", {
             leadId: lead._id,
             pushOnly: true,
