@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { CircleDot, Plus, Trash2 } from "lucide-react";
 
-import { getSitePlugins, updateSitePlugins } from "../../../api/sitePluginsApi";
+import { getSitePlugins, updateSitePlugins } from "../../../../api/sitePluginsApi";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
   Field,
