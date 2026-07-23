@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
@@ -6,7 +7,6 @@ import {
   ExternalLink,
   Facebook,
   FileText,
-  Loader2,
   Plug,
   RefreshCw,
   ShieldCheck,
@@ -18,6 +18,8 @@ import {
   isAdminUser,
   setAdminActiveBusinessId,
 } from "../../../../utils/adminTenant";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type ConnectedPage = {
   pageId: string;
@@ -67,29 +69,15 @@ type MetaLeadAdsIntegrationProps = {
   businessId?: string;
 };
 
-function formatDate(value?: string) {
-  if (!value) return "—";
-
-  try {
-    return new Intl.DateTimeFormat("en-US", {
-      month: "short",
-      day: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    }).format(new Date(value));
-  } catch {
-    return "—";
-  }
-}
-
-function leadName(lead: RecentLead) {
-  return lead.name || lead.fullName || "Test Lead";
-}
+const T = "crm.leads.metaIntegration";
 
 export default function MetaLeadAdsIntegration({
   businessId,
 }: MetaLeadAdsIntegrationProps) {
+  const { t, i18n } = useTranslation();
+  const dir = useLocaleDir();
+  const locale = getIntlLocale(i18n.language);
+
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -104,6 +92,26 @@ export default function MetaLeadAdsIntegration({
 
   const isConnected = Boolean(connectedPage?.pageId);
   const tenantParams = businessId ? { businessId } : undefined;
+  const emDash = t(`${T}.emDash`);
+
+  const formatDate = (value?: string) => {
+    if (!value) return emDash;
+
+    try {
+      return new Intl.DateTimeFormat(locale, {
+        month: "short",
+        day: "2-digit",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }).format(new Date(value));
+    } catch {
+      return emDash;
+    }
+  };
+
+  const leadDisplayName = (lead: RecentLead) =>
+    lead.name || lead.fullName || t(`${T}.unnamedLead`);
 
   const selectedPage = useMemo(
     () => pages.find((page) => page.id === selectedPageId),
@@ -150,7 +158,7 @@ export default function MetaLeadAdsIntegration({
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Failed to load Meta status"
+        err instanceof Error ? err.message : t(`${T}.errors.loadStatus`)
       );
     } finally {
       setLoading(false);
@@ -178,7 +186,7 @@ export default function MetaLeadAdsIntegration({
       window.location.href = data.url;
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Could not start Facebook Login"
+        err instanceof Error ? err.message : t(`${T}.errors.startLogin`)
       );
       setBusy(false);
     }
@@ -186,7 +194,7 @@ export default function MetaLeadAdsIntegration({
 
   const connectPage = async () => {
     if (!selectedPageId) {
-      setError("Please select a Facebook Page first.");
+      setError(t(`${T}.errors.selectPageFirst`));
       return;
     }
 
@@ -209,16 +217,12 @@ export default function MetaLeadAdsIntegration({
       setConnectedPage(data.connectedPage);
       setForms(data.forms || []);
       setSelectedForm(data.selectedForm || null);
-      setSuccess(
-        "Facebook Page connected. Bizuply is now listening for Meta Lead Ads leads."
-      );
+      setSuccess(t(`${T}.successPageConnected`));
 
       await loadStatus();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Could not connect the selected Page"
+        err instanceof Error ? err.message : t(`${T}.errors.connectPage`)
       );
     } finally {
       setBusy(false);
@@ -239,14 +243,12 @@ export default function MetaLeadAdsIntegration({
       setSelectedForm(null);
       setRecentLeads([]);
       setSelectedPageId("");
-      setSuccess("Meta Lead Ads integration disconnected.");
+      setSuccess(t(`${T}.successDisconnected`));
 
       await loadStatus();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Could not disconnect Meta integration"
+        err instanceof Error ? err.message : t(`${T}.errors.disconnect`)
       );
     } finally {
       setBusy(false);
@@ -272,7 +274,7 @@ export default function MetaLeadAdsIntegration({
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Could not refresh lead forms"
+        err instanceof Error ? err.message : t(`${T}.errors.refreshForms`)
       );
     } finally {
       setBusy(false);
@@ -281,7 +283,7 @@ export default function MetaLeadAdsIntegration({
 
   const selectForm = async (form: MetaLeadForm) => {
     if (!isConnected) {
-      setError("Please connect a Facebook Page before selecting a form.");
+      setError(t(`${T}.errors.connectBeforeForm`));
       return;
     }
 
@@ -301,13 +303,15 @@ export default function MetaLeadAdsIntegration({
 
       setSelectedForm(data.selectedForm);
       setSuccess(
-        `Active form selected: ${data.selectedForm.formName || form.name}. Only leads from this form will be added to the CRM.`
+        t(`${T}.successFormSelected`, {
+          name: data.selectedForm.formName || form.name,
+        })
       );
 
       await loadStatus();
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Could not select this lead form"
+        err instanceof Error ? err.message : t(`${T}.errors.selectForm`)
       );
     } finally {
       setBusy(false);
@@ -316,12 +320,12 @@ export default function MetaLeadAdsIntegration({
 
   const syncLeadsFromMeta = async () => {
     if (!isConnected) {
-      setError("Please connect a Facebook Page before syncing leads.");
+      setError(t(`${T}.errors.connectBeforeSync`));
       return;
     }
 
     if (!selectedForm?.formId && !activeForm?.id) {
-      setError("Please select an active lead form before syncing.");
+      setError(t(`${T}.errors.selectFormBeforeSync`));
       return;
     }
 
@@ -350,15 +354,13 @@ export default function MetaLeadAdsIntegration({
 
       setSuccess(
         data.message ||
-          `Synced ${data.imported || 0} lead(s) from Meta into the CRM.`
+          t(`${T}.successSynced`, { count: data.imported || 0 })
       );
 
       window.dispatchEvent(new CustomEvent("bizuply:leads-synced"));
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Could not sync leads from Meta. Check Lead Access Manager."
+        err instanceof Error ? err.message : t(`${T}.errors.syncFailed`)
       );
     } finally {
       setBusy(false);
@@ -367,27 +369,25 @@ export default function MetaLeadAdsIntegration({
 
   return (
     <div
-      dir="ltr"
-      className="min-h-[calc(100vh-72px)] bg-slate-50 p-4 text-left text-slate-900 sm:p-6 lg:p-8"
+      dir={dir}
+      className="min-h-[calc(100vh-72px)] bg-slate-50 p-4 text-slate-900 sm:p-6 lg:p-8"
     >
       <div className="mx-auto max-w-7xl space-y-6">
         <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="relative border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-blue-50 p-6 sm:p-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black tracking-[0.08em] text-sky-700 ring-1 ring-sky-100">
                   <Facebook className="h-4 w-4" />
-                  Meta Lead Ads Integration
+                  {t(`${T}.badge`)}
                 </div>
 
                 <h1 className="text-3xl font-black tracking-tight text-slate-800 sm:text-5xl">
-                  Connect Facebook Leads to Bizuply
+                  {t(`${T}.title`)}
                 </h1>
 
                 <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
-                  Businesses connect their own Facebook Page, allow Bizuply to
-                  subscribe to leadgen webhooks, and receive Meta Lead Ads
-                  directly inside their CRM dashboard.
+                  {t(`${T}.subtitle`)}
                 </p>
               </div>
 
@@ -402,35 +402,35 @@ export default function MetaLeadAdsIntegration({
                 ) : (
                   <RefreshCw className="h-5 w-5" />
                 )}
-                Refresh
+                {t(`${T}.refresh`)}
               </button>
             </div>
           </div>
 
           <div className="grid gap-4 p-4 sm:p-6 lg:grid-cols-4">
             <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-              <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                Status
+              <p className="text-xs font-black tracking-wide text-slate-400">
+                {t(`${T}.status`)}
               </p>
 
               <p className="mt-2 text-xl font-black text-slate-900">
-                {isConnected ? "Connected" : "Not connected"}
+                {isConnected ? t(`${T}.connected`) : t(`${T}.notConnected`)}
               </p>
             </div>
 
             <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-              <p className="text-xs font-black uppercase tracking-wide text-sky-600">
-                Selected Page
+              <p className="text-xs font-black tracking-wide text-sky-600">
+                {t(`${T}.selectedPage`)}
               </p>
 
               <p className="mt-2 truncate text-xl font-black text-sky-900">
-                {connectedPage?.pageName || selectedPage?.name || "—"}
+                {connectedPage?.pageName || selectedPage?.name || emDash}
               </p>
             </div>
 
             <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
-              <p className="text-xs font-black uppercase tracking-wide text-emerald-600">
-                Lead Forms
+              <p className="text-xs font-black tracking-wide text-emerald-600">
+                {t(`${T}.leadForms`)}
               </p>
 
               <p className="mt-2 text-xl font-black text-emerald-900">
@@ -439,12 +439,14 @@ export default function MetaLeadAdsIntegration({
             </div>
 
             <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-              <p className="text-xs font-black uppercase tracking-wide text-violet-600">
-                Active Form
+              <p className="text-xs font-black tracking-wide text-violet-600">
+                {t(`${T}.activeForm`)}
               </p>
 
               <p className="mt-2 truncate text-xl font-black text-violet-900">
-                {selectedForm?.formName || activeForm?.name || "Not selected"}
+                {selectedForm?.formName ||
+                  activeForm?.name ||
+                  t(`${T}.notSelected`)}
               </p>
             </div>
           </div>
@@ -469,13 +471,11 @@ export default function MetaLeadAdsIntegration({
             <div className="mb-5 flex items-start justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-800">
-                  Connection setup
+                  {t(`${T}.connectionSetup`)}
                 </h2>
 
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
-                  This is the exact end-to-end user experience shown to Meta
-                  reviewers: connect Facebook, select a managed Page, subscribe
-                  to leadgen webhooks, then display forms and leads.
+                  {t(`${T}.connectionSetupDesc`)}
                 </p>
               </div>
 
@@ -487,13 +487,11 @@ export default function MetaLeadAdsIntegration({
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-black text-slate-900">
-                      1. Connect Facebook
+                      {t(`${T}.step1Title`)}
                     </p>
 
                     <p className="mt-1 text-xs font-bold text-slate-500">
-                      Uses public_profile, pages_show_list,
-                      pages_read_engagement, pages_manage_ads and
-                      leads_retrieval during Facebook Login.
+                      {t(`${T}.step1Desc`)}
                     </p>
                   </div>
 
@@ -508,19 +506,18 @@ export default function MetaLeadAdsIntegration({
                     ) : (
                       <Plug className="h-4 w-4" />
                     )}
-                    Connect Facebook
+                    {t(`${T}.connectFacebook`)}
                   </button>
                 </div>
               </div>
 
               <div className="rounded-3xl border border-slate-200 bg-white p-4">
                 <p className="text-sm font-black text-slate-900">
-                  2. Select a Facebook Page
+                  {t(`${T}.step2Title`)}
                 </p>
 
                 <p className="mt-1 text-xs font-bold text-slate-500">
-                  The business user can only choose Pages returned by Meta for
-                  their own account.
+                  {t(`${T}.step2Desc`)}
                 </p>
 
                 <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
@@ -529,7 +526,7 @@ export default function MetaLeadAdsIntegration({
                     onChange={(event) => setSelectedPageId(event.target.value)}
                     className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                   >
-                    <option value="">Select Page</option>
+                    <option value="">{t(`${T}.selectPage`)}</option>
 
                     {pages.map((page) => (
                       <option key={page.id} value={page.id}>
@@ -542,10 +539,10 @@ export default function MetaLeadAdsIntegration({
                     type="button"
                     onClick={connectPage}
                     disabled={busy || !selectedPageId}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-slate-800 transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:opacity-60"
                   >
                     <Webhook className="h-4 w-4" />
-                    Connect Page
+                    {t(`${T}.connectPage`)}
                   </button>
                 </div>
               </div>
@@ -554,12 +551,11 @@ export default function MetaLeadAdsIntegration({
                 <div className="flex items-center justify-between gap-4">
                   <div>
                     <p className="text-sm font-black text-slate-900">
-                      3. Webhook subscription
+                      {t(`${T}.step3Title`)}
                     </p>
 
                     <p className="mt-1 text-xs font-bold text-slate-500">
-                      Bizuply subscribes the selected Page to the leadgen
-                      webhook using pages_manage_metadata.
+                      {t(`${T}.step3Desc`)}
                     </p>
                   </div>
 
@@ -572,8 +568,8 @@ export default function MetaLeadAdsIntegration({
                     ].join(" ")}
                   >
                     {connectedPage?.webhookSubscribed
-                      ? "Listening for new leads"
-                      : "Not subscribed"}
+                      ? t(`${T}.listening`)
+                      : t(`${T}.notSubscribed`)}
                   </span>
                 </div>
               </div>
@@ -582,12 +578,11 @@ export default function MetaLeadAdsIntegration({
                 <div className="flex items-center justify-between gap-4">
                   <div className="min-w-0">
                     <p className="text-sm font-black text-slate-900">
-                      4. Active lead form
+                      {t(`${T}.step4Title`)}
                     </p>
 
                     <p className="mt-1 text-xs font-bold text-slate-500">
-                      Select one Lead Ads form. Bizuply will add CRM leads only
-                      from the selected form ID.
+                      {t(`${T}.step4Desc`)}
                     </p>
                   </div>
 
@@ -598,9 +593,9 @@ export default function MetaLeadAdsIntegration({
                         ? "bg-white text-violet-700 ring-1 ring-violet-100"
                         : "bg-white/70 text-slate-500 ring-1 ring-slate-200",
                     ].join(" ")}
-                    title={selectedForm?.formName || "No form selected"}
+                    title={selectedForm?.formName || t(`${T}.noFormSelected`)}
                   >
-                    {selectedForm?.formName || "No form selected"}
+                    {selectedForm?.formName || t(`${T}.noFormSelected`)}
                   </span>
                 </div>
               </div>
@@ -611,11 +606,11 @@ export default function MetaLeadAdsIntegration({
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-800">
-                  Connected Page
+                  {t(`${T}.connectedPage`)}
                 </h2>
 
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  The data belongs only to the connected business account.
+                  {t(`${T}.connectedPageDesc`)}
                 </p>
               </div>
 
@@ -627,7 +622,7 @@ export default function MetaLeadAdsIntegration({
                   className="inline-flex h-10 items-center gap-2 rounded-2xl border border-rose-100 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
                 >
                   <Unplug className="h-4 w-4" />
-                  Disconnect
+                  {t(`${T}.disconnect`)}
                 </button>
               )}
             </div>
@@ -635,8 +630,8 @@ export default function MetaLeadAdsIntegration({
             {isConnected ? (
               <div className="space-y-3">
                 <div className="rounded-3xl border border-sky-100 bg-sky-50 p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-sky-600">
-                    Page
+                  <p className="text-xs font-black tracking-wide text-sky-600">
+                    {t(`${T}.page`)}
                   </p>
 
                   <p className="mt-1 text-lg font-black text-sky-950">
@@ -644,37 +639,39 @@ export default function MetaLeadAdsIntegration({
                   </p>
 
                   <p className="mt-1 text-xs font-bold text-sky-700">
-                    Page ID: {connectedPage?.pageId}
+                    {t(`${T}.pageId`, { id: connectedPage?.pageId })}
                   </p>
                 </div>
 
                 <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-emerald-600">
-                    Connection
+                  <p className="text-xs font-black tracking-wide text-emerald-600">
+                    {t(`${T}.connection`)}
                   </p>
 
                   <p className="mt-1 text-sm font-black text-emerald-900">
-                    Page connected successfully
+                    {t(`${T}.pageConnectedSuccess`)}
                   </p>
 
                   <p className="mt-1 text-xs font-bold text-emerald-700">
-                    Connected at: {formatDate(connectedPage?.connectedAt)}
+                    {t(`${T}.connectedAt`, {
+                      date: formatDate(connectedPage?.connectedAt),
+                    })}
                   </p>
                 </div>
 
                 <div className="rounded-3xl border border-violet-100 bg-violet-50 p-4">
-                  <p className="text-xs font-black uppercase tracking-wide text-violet-600">
-                    Active Lead Form
+                  <p className="text-xs font-black tracking-wide text-violet-600">
+                    {t(`${T}.activeLeadForm`)}
                   </p>
 
                   <p className="mt-1 text-sm font-black text-slate-800">
-                    {selectedForm?.formName || "No form selected yet"}
+                    {selectedForm?.formName || t(`${T}.noFormSelectedYet`)}
                   </p>
 
                   <p className="mt-1 text-xs font-bold text-violet-700">
                     {selectedForm?.formId
-                      ? `Form ID: ${selectedForm.formId}`
-                      : "Choose one form below to start accepting CRM leads."}
+                      ? t(`${T}.formIdLabel`, { id: selectedForm.formId })
+                      : t(`${T}.chooseFormBelow`)}
                   </p>
                 </div>
               </div>
@@ -683,11 +680,11 @@ export default function MetaLeadAdsIntegration({
                 <Plug className="mx-auto h-10 w-10 text-slate-300" />
 
                 <p className="mt-4 text-lg font-black text-slate-700">
-                  No Facebook Page connected yet
+                  {t(`${T}.noPageYet`)}
                 </p>
 
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  Connect Facebook and select a managed Page to continue.
+                  {t(`${T}.noPageYetDesc`)}
                 </p>
               </div>
             )}
@@ -699,12 +696,11 @@ export default function MetaLeadAdsIntegration({
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-800">
-                  Lead Forms
+                  {t(`${T}.leadFormsTitle`)}
                 </h2>
 
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  Choose one active Lead Ads form. Only leads from the selected
-                  form will be added to the CRM.
+                  {t(`${T}.leadFormsDesc`)}
                 </p>
               </div>
 
@@ -716,19 +712,21 @@ export default function MetaLeadAdsIntegration({
                   className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
                 >
                   <RefreshCw className="h-4 w-4" />
-                  Refresh forms
+                  {t(`${T}.refreshForms`)}
                 </button>
 
                 <button
                   type="button"
                   onClick={syncLeadsFromMeta}
                   disabled={
-                    busy || !isConnected || !(selectedForm?.formId || activeForm?.id)
+                    busy ||
+                    !isConnected ||
+                    !(selectedForm?.formId || activeForm?.id)
                   }
                   className="inline-flex h-10 items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 text-xs font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
                 >
                   <Webhook className="h-4 w-4" />
-                  Sync leads to CRM
+                  {t(`${T}.syncLeads`)}
                 </button>
               </div>
             </div>
@@ -739,15 +737,15 @@ export default function MetaLeadAdsIntegration({
                 <div className="min-w-0">
                   <p className="text-sm font-black text-slate-800">
                     {selectedForm?.formName
-                      ? `Active form: ${selectedForm.formName}`
-                      : "No active form selected"}
+                      ? t(`${T}.activeFormName`, { name: selectedForm.formName })
+                      : t(`${T}.noActiveForm`)}
                   </p>
                   <p className="mt-1 text-xs font-bold leading-5 text-violet-700">
                     {selectedForm?.formId
-                      ? `Only new leads from Form ID ${selectedForm.formId} will be saved in Bizuply.`
+                      ? t(`${T}.onlyFormId`, { id: selectedForm.formId })
                       : forms.length === 1
-                        ? "One form is available. Select it to make the behavior explicit for this business."
-                        : "Select one form so Bizuply ignores leads from other forms on the same Page."}
+                        ? t(`${T}.oneFormHint`)
+                        : t(`${T}.selectOneFormHint`)}
                   </p>
                 </div>
               </div>
@@ -770,7 +768,7 @@ export default function MetaLeadAdsIntegration({
                         className={[
                           "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl",
                           selectedForm?.formId === form.id
-                            ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
+                            ? "border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
                             : "bg-white text-sky-600 ring-1 ring-slate-200",
                         ].join(" ")}
                       >
@@ -787,12 +785,12 @@ export default function MetaLeadAdsIntegration({
                         </p>
 
                         <p className="mt-1 text-xs font-bold text-slate-500">
-                          Form ID: {form.id}
+                          {t(`${T}.formId`, { id: form.id })}
                         </p>
 
                         {selectedForm?.formId === form.id && (
                           <p className="mt-2 inline-flex rounded-full bg-white px-3 py-1 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-                            Selected active form
+                            {t(`${T}.selectedActiveForm`)}
                           </p>
                         )}
                       </div>
@@ -801,7 +799,9 @@ export default function MetaLeadAdsIntegration({
                     <button
                       type="button"
                       onClick={() => selectForm(form)}
-                      disabled={busy || !isConnected || selectedForm?.formId === form.id}
+                      disabled={
+                        busy || !isConnected || selectedForm?.formId === form.id
+                      }
                       className={[
                         "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-2xl px-4 text-xs font-black transition disabled:cursor-not-allowed disabled:opacity-70",
                         selectedForm?.formId === form.id
@@ -817,15 +817,15 @@ export default function MetaLeadAdsIntegration({
                         <FileText className="h-4 w-4" />
                       )}
                       {selectedForm?.formId === form.id
-                        ? "Selected form"
-                        : "Select form"}
+                        ? t(`${T}.selectedForm`)
+                        : t(`${T}.selectForm`)}
                     </button>
                   </div>
                 ))
               ) : (
                 <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
                   <p className="text-sm font-bold text-slate-500">
-                    No lead forms found yet.
+                    {t(`${T}.noFormsYet`)}
                   </p>
                 </div>
               )}
@@ -836,11 +836,11 @@ export default function MetaLeadAdsIntegration({
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <h2 className="text-2xl font-black text-slate-800">
-                  Recent Leads
+                  {t(`${T}.recentLeads`)}
                 </h2>
 
                 <p className="mt-2 text-sm font-semibold text-slate-500">
-                  Leads received from Meta Lead Ads webhooks.
+                  {t(`${T}.recentLeadsDesc`)}
                 </p>
               </div>
 
@@ -857,22 +857,24 @@ export default function MetaLeadAdsIntegration({
                     <div className="flex items-start justify-between gap-4">
                       <div className="min-w-0">
                         <p className="truncate text-sm font-black text-slate-900">
-                          {leadName(lead)}
+                          {leadDisplayName(lead)}
                         </p>
 
                         <p className="mt-1 text-xs font-bold text-slate-500">
-                          {lead.phone || "No phone"}{" "}
+                          {lead.phone || t(`${T}.noPhone`)}{" "}
                           {lead.email ? `• ${lead.email}` : ""}
                         </p>
                       </div>
 
                       <span className="rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
-                        Meta Lead Ads
+                        {t(`${T}.metaLeadAds`)}
                       </span>
                     </div>
 
                     <p className="mt-3 text-xs font-bold text-slate-400">
-                      Received: {formatDate(lead.createdAt)}
+                      {t(`${T}.received`, {
+                        date: formatDate(lead.createdAt),
+                      })}
                     </p>
                   </div>
                 ))
@@ -881,8 +883,7 @@ export default function MetaLeadAdsIntegration({
                   <Webhook className="mx-auto h-10 w-10 text-slate-300" />
 
                   <p className="mt-4 text-sm font-bold text-slate-500">
-                    No leads yet. New Meta Lead Ads leads will appear here
-                    automatically.
+                    {t(`${T}.noLeadsYet`)}
                   </p>
                 </div>
               )}
