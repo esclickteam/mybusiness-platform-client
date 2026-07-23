@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
+  ArrowRight,
   CheckCircle2,
   ExternalLink,
   Facebook,
@@ -66,6 +67,7 @@ type RecentLead = {
 
 type MetaLeadAdsIntegrationProps = {
   businessId?: string;
+  onBack?: () => void;
 };
 
 type WizardStep = 1 | 2 | 3;
@@ -74,6 +76,7 @@ const T = "crm.leads.metaIntegration";
 
 export default function MetaLeadAdsIntegration({
   businessId,
+  onBack,
 }: MetaLeadAdsIntegrationProps) {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
@@ -390,6 +393,17 @@ export default function MetaLeadAdsIntegration({
       <div className="mx-auto max-w-4xl space-y-6">
         <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
           <div className="border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-blue-50 p-6 sm:p-8">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="mb-4 inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+              >
+                <ArrowRight className="h-4 w-4" />
+                {t(`${T}.wizard.backToLeads`)}
+              </button>
+            )}
+
             <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-black text-sky-700 ring-1 ring-sky-100">
               <Facebook className="h-4 w-4" />
               {t(`${T}.badge`)}

@@ -1247,6 +1247,8 @@
       "title": "Lead Management",
       "subtitle": "Professional lead table, full client profile, notes and tasks as part of the timeline, including on-site reminders by due time.",
       "refreshLeads": "Refresh Leads",
+      "connectMeta": "Connect to Meta",
+      "metaConnected": "Meta connection",
       "stats": {
         "total": "Total",
         "new": "New",
@@ -1310,7 +1312,8 @@
           "reconnectAccount": "Reconnect account",
           "readyTitle": "Connection ready",
           "readyDesc": "The Page and form are connected. New leads will enter the CRM automatically.",
-          "changeSetup": "Change setup"
+          "changeSetup": "Change setup",
+          "backToLeads": "Back to lead management"
         },
         "connectionSetup": "Connection setup",
         "connectionSetupDesc": "This is the exact end-to-end user experience shown to Meta reviewers: connect Facebook, select a managed Page, subscribe to leadgen webhooks, then display forms and leads.",

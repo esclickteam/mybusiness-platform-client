@@ -8,6 +8,7 @@ import {
   Clock3,
   Copy,
   ExternalLink,
+  Facebook,
   FileText,
   Filter,
   Globe2,
@@ -24,6 +25,7 @@ import {
   X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
@@ -644,6 +646,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const locale = i18n.language || "en";
   const emDash = t("crm.common.emDash");
   const { socket } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const showMetaSetup = searchParams.get("metaSetup") === "1";
+  const deepLinkLeadId = searchParams.get("leadId") || "";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -664,6 +670,19 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [savingActivity, setSavingActivity] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const openMetaSetup = () => {
+    const next = new URLSearchParams(searchParams);
+    next.set("metaSetup", "1");
+    next.delete("leadId");
+    setSearchParams(next, { replace: false });
+  };
+
+  const closeMetaSetup = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("metaSetup");
+    setSearchParams(next, { replace: false });
+  };
 
   const fetchLeads = async (options: { silent?: boolean } = {}) => {
     try {
@@ -790,6 +809,21 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       window.removeEventListener("bizuply:open-lead", handleOpenLead);
     };
   }, [leads]);
+
+  useEffect(() => {
+    if (!deepLinkLeadId || showMetaSetup) return;
+
+    void (async () => {
+      await openLeadFromNotification({ leadId: deepLinkLeadId });
+
+      // Keep the lead open, but strip the query so refresh doesn't loop the drawer.
+      const next = new URLSearchParams(searchParams);
+      if (next.has("leadId")) {
+        next.delete("leadId");
+        setSearchParams(next, { replace: true });
+      }
+    })();
+  }, [deepLinkLeadId, showMetaSetup, leads.length]);
 
   useEffect(() => {
     if (businessId && isAdminUser()) {
@@ -1103,8 +1137,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
   return (
     <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir={dir}>
-      <MetaLeadAdsIntegration businessId={businessId} />
-
+      {showMetaSetup ? (
+        <MetaLeadAdsIntegration
+          businessId={businessId}
+          onBack={closeMetaSetup}
+        />
+      ) : (
+        <>
       <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
         <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
           <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
@@ -1126,19 +1165,30 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={fetchLeads}
-              disabled={loading}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {loading ? (
-                <BizuplyLoader size="xs" compact />
-              ) : (
-                <RefreshCw className="h-5 w-5" />
-              )}
-              {t("crm.leads.refreshLeads")}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={openMetaSetup}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-white px-5 text-sm font-black text-sky-800 shadow-sm transition hover:bg-sky-50"
+              >
+                <Facebook className="h-5 w-5" />
+                {t("crm.leads.connectMeta")}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fetchLeads()}
+                disabled={loading}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {loading ? (
+                  <BizuplyLoader size="xs" compact />
+                ) : (
+                  <RefreshCw className="h-5 w-5" />
+                )}
+                {t("crm.leads.refreshLeads")}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -2023,6 +2073,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             </div>
           </section>
         </div>
+      )}
+        </>
       )}
     </div>
   );

@@ -29,6 +29,10 @@ self.addEventListener("push", (event) => {
   }
 
   const title = data.title || "BizUply";
+  const targetUrl =
+    (data.data && data.data.url) || data.url || "/";
+  const leadId =
+    (data.data && data.data.leadId) || data.leadId || null;
   const options = {
     body: data.body || "יש לך התראה חדשה",
     icon: absoluteAsset(
@@ -45,7 +49,8 @@ self.addEventListener("push", (event) => {
     vibrate: data.vibrate || [200, 100, 200],
     silent: false,
     data: {
-      url: (data.data && data.data.url) || data.url || "/",
+      url: targetUrl,
+      leadId,
     },
   };
 
@@ -77,8 +82,15 @@ self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
   const rawUrl = (event.notification.data && event.notification.data.url) || "/";
-  const absoluteUrl = new URL(rawUrl, self.location.origin).href;
-  const pathUrl = `${new URL(absoluteUrl).pathname}${new URL(absoluteUrl).search}${new URL(absoluteUrl).hash}`;
+  const leadId =
+    (event.notification.data && event.notification.data.leadId) || null;
+  let absoluteUrl = new URL(rawUrl, self.location.origin);
+
+  if (leadId && !absoluteUrl.searchParams.get("leadId")) {
+    absoluteUrl.searchParams.set("leadId", String(leadId));
+  }
+
+  const pathUrl = `${absoluteUrl.pathname}${absoluteUrl.search}${absoluteUrl.hash}`;
 
   event.waitUntil(
     self.clients
@@ -100,7 +112,7 @@ self.addEventListener("notificationclick", (event) => {
         }
 
         if (self.clients.openWindow) {
-          return self.clients.openWindow(absoluteUrl);
+          return self.clients.openWindow(absoluteUrl.href);
         }
 
         return undefined;

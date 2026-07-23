@@ -772,7 +772,9 @@ export default function FacebookStyleNotifications() {
       })
     );
 
-    navigate(getDashboardCrmPath());
+    navigate(
+      `${getDashboardCrmPath()}?leadId=${encodeURIComponent(payload.leadId)}`
+    );
   }
 
   function sanitizeUnifiedNotification(
@@ -944,16 +946,9 @@ export default function FacebookStyleNotifications() {
         ];
         setStoredArray(alertedKey, nextAlerted);
 
-        // Refresh CRM list once (heal + silent fetch). Do not re-open a socket loop.
+        // Refresh CRM list only. Phone push is sent by the server on insert —
+        // never re-request it from polling (that caused a second alert ~1 min later).
         window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
-
-        for (const lead of leadsToAlert) {
-          // Phone alert is server Web Push only — avoid a second local banner.
-          void API.post("/push/notify-lead", {
-            leadId: lead._id,
-            pushOnly: true,
-          }).catch(() => undefined);
-        }
       }
 
       return newLeads.map((lead) => ({
