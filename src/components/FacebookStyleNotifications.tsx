@@ -221,6 +221,34 @@ export default function FacebookStyleNotifications() {
     return () => window.clearInterval(interval);
   }, [businessId, i18n.language]);
 
+  // Bulk Meta sync should import quietly — mark synced leads as already seen
+  // so polling does not create a toast/alert for every imported lead.
+  useEffect(() => {
+    if (!businessId) return;
+
+    const markSyncedLeadsSeen = async () => {
+      try {
+        const res = await API.get("/crm/leads/my", {
+          params: { businessId },
+        });
+        if (!res.data?.success) return;
+
+        const leads = Array.isArray(res.data.leads) ? res.data.leads : [];
+        const leadIds = leads.map((lead: { _id?: string }) => lead._id).filter(Boolean);
+
+        setStoredArray(seenLeadsKey, leadIds);
+        setStoredArray(`bizuply_alerted_lead_ids_${businessId}`, leadIds);
+      } catch {
+        // ignore — list refresh still works via leads-synced handlers
+      }
+    };
+
+    window.addEventListener("bizuply:leads-synced", markSyncedLeadsSeen);
+    return () => {
+      window.removeEventListener("bizuply:leads-synced", markSyncedLeadsSeen);
+    };
+  }, [businessId, seenLeadsKey]);
+
   /* ============================
      Real-time notifications (Facebook style)
      ============================ */
