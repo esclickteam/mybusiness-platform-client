@@ -5,6 +5,7 @@ import {
   getSitePlugins,
   type SitePluginDefinition,
 } from "../../../../api/sitePluginsApi";
+import { saveSitePluginSettings, getSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getPluginAccent, getPluginIcon } from "../../../../data/sitePluginNav";
 import {
   buildPluginWidgetMarker,
@@ -20,6 +21,7 @@ type VisualPluginsAddPanelProps = {
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   onAddHtml?: (html: string) => string | void | Promise<string | void>;
   onAdded?: (title: string) => void;
+  onOverlayInstalled?: () => void;
 };
 
 export default function VisualPluginsAddPanel({
@@ -28,6 +30,7 @@ export default function VisualPluginsAddPanel({
   onAddLibraryPage,
   onAddHtml,
   onAdded,
+  onOverlayInstalled,
 }: VisualPluginsAddPanelProps) {
   const [loading, setLoading] = useState(Boolean(siteId));
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
@@ -67,8 +70,25 @@ export default function VisualPluginsAddPanel({
       });
   }, [catalog, enabledPlugins, query]);
 
-  function insertPlugin(plugin: SitePluginDefinition) {
+  async function insertPlugin(plugin: SitePluginDefinition) {
     const action = getPluginEditorAction(plugin.key);
+
+    if (action.kind === "overlay" && siteId) {
+      try {
+        const current = await getSitePluginSettings(siteId, plugin.key);
+        await saveSitePluginSettings(siteId, plugin.key, {
+          ...current,
+          isActive: true,
+          showTrigger: true,
+          triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
+        });
+        onOverlayInstalled?.();
+        onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
+      } catch {
+        onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
+      }
+      return;
+    }
 
     if (action.kind === "page" && action.pageTemplateId) {
       const page = getPageTemplateById(action.pageTemplateId);
@@ -188,7 +208,9 @@ export default function VisualPluginsAddPanel({
                     ? "הוספת עמוד"
                     : action.kind === "section"
                       ? "הוספת סקשן"
-                      : "הוספת רכיב"}
+                      : action.kind === "overlay"
+                        ? "הפעלת תוסף צף"
+                        : "הוספת רכיב"}
                 </span>
               </button>
             );

@@ -1,0 +1,109 @@
+export type BenefitsWheelSegment = {
+  label: string;
+  color?: string;
+};
+
+export type BenefitsWheelSettings = {
+  isActive?: boolean;
+  title?: string;
+  subtitle?: string;
+  spinsPerUser?: number;
+  segmentCount?: number;
+  segments?: BenefitsWheelSegment[];
+  autoOpenOnFirstVisit?: boolean;
+  showTrigger?: boolean;
+  triggerPosition?: { x: number; y: number };
+};
+
+export const WHEEL_COLORS = [
+  "#7C3AED",
+  "#0284C7",
+  "#059669",
+  "#F59E0B",
+  "#EC4899",
+  "#EF4444",
+  "#8B5CF6",
+  "#14B8A6",
+  "#F97316",
+  "#6366F1",
+  "#CA8A04",
+  "#0891B2",
+];
+
+export function normalizeSegments(
+  segments: BenefitsWheelSegment[] | undefined,
+  count: number
+): BenefitsWheelSegment[] {
+  const n = Math.min(12, Math.max(3, count || 6));
+  const base = Array.isArray(segments) ? segments : [];
+  return Array.from({ length: n }, (_, i) => ({
+    label: String(base[i]?.label || `הטבה ${i + 1}`).trim() || `הטבה ${i + 1}`,
+    color: base[i]?.color || WHEEL_COLORS[i % WHEEL_COLORS.length],
+  }));
+}
+
+export function visitorStorageKey(siteId: string, suffix: string) {
+  return `bizuply:benefits-wheel:${siteId}:${suffix}`;
+}
+
+export function readVisitorSpinCount(siteId: string) {
+  try {
+    return Number(localStorage.getItem(visitorStorageKey(siteId, "spins")) || 0);
+  } catch {
+    return 0;
+  }
+}
+
+export function readVisitorSavedPrize(siteId: string) {
+  try {
+    const raw = localStorage.getItem(visitorStorageKey(siteId, "prize"));
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function writeVisitorSpin(siteId: string, prize: { label: string; index: number }) {
+  try {
+    const count = readVisitorSpinCount(siteId) + 1;
+    localStorage.setItem(visitorStorageKey(siteId, "spins"), String(count));
+    localStorage.setItem(
+      visitorStorageKey(siteId, "prize"),
+      JSON.stringify({ ...prize, savedAt: new Date().toISOString() })
+    );
+    localStorage.setItem(visitorStorageKey(siteId, "seen"), "1");
+  } catch {
+    // ignore
+  }
+}
+
+export function sessionAutoShownKey(siteId: string) {
+  return `bizuply:benefits-wheel:${siteId}:session-auto`;
+}
+
+export function wasAutoShownThisSession(siteId: string) {
+  try {
+    return sessionStorage.getItem(sessionAutoShownKey(siteId)) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function markAutoShownThisSession(siteId: string) {
+  try {
+    sessionStorage.setItem(sessionAutoShownKey(siteId), "1");
+  } catch {
+    // ignore
+  }
+}
+
+/** Rotation (deg) so pointer lands on segment index (pointer at top). */
+export function rotationForSegmentIndex(index: number, segmentCount: number, extraSpins = 5) {
+  const slice = 360 / segmentCount;
+  const segmentCenter = index * slice + slice / 2;
+  return extraSpins * 360 + (360 - segmentCenter);
+}
+
+export function pickWinningIndex(segmentCount: number) {
+  return Math.floor(Math.random() * segmentCount);
+}

@@ -19,6 +19,7 @@ import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
+import EditorPluginOverlays from "./EditorPluginOverlays";
 import VisualSitePagesPanel, {
   type VisualSitePageItem,
 } from "./VisualSitePagesPanel";
@@ -131,6 +132,7 @@ export default function VisualEditorShell({
   const [preferredAddTab, setPreferredAddTab] = useState<
     "sections" | "pages" | "plugins"
   >("sections");
+  const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
 
   const templateName =
     editor.templateName ||
@@ -569,7 +571,12 @@ export default function VisualEditorShell({
             onAddLibraryPage={onAddLibraryPage}
             preferredAddTab={preferredAddTab}
             siteId={siteId}
+            onOverlayInstalled={() => setOverlayRefreshKey((k) => k + 1)}
           />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <EditorPluginOverlays siteId={siteId} refreshKey={overlayRefreshKey} />
         ) : null}
 
         {!isPreviewMode ? (

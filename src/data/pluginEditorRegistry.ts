@@ -3,7 +3,7 @@
  */
 export type PluginEditorAction = {
   pluginKey: string;
-  kind: "section" | "page" | "widget";
+  kind: "section" | "page" | "widget" | "overlay";
   sectionId?: string;
   pageTemplateId?: string;
   label: string;
@@ -11,6 +11,12 @@ export type PluginEditorAction = {
 };
 
 export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
+  "benefits-wheel": {
+    pluginKey: "benefits-wheel",
+    kind: "overlay",
+    label: "גלגל הטבות צף",
+    description: "מודאל + כפתור צף — לא סקשן בעמוד",
+  },
   store: {
     pluginKey: "store",
     kind: "page",
