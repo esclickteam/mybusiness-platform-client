@@ -29,6 +29,10 @@ export type SiteAuthSettings = {
   loginPageTitle: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
+  useLoginModal: boolean;
+  buttonMode: "floating" | "inline" | "both";
+  showMemberName: boolean;
+  triggerPosition: { x: number; y: number };
   memberAreaPath: string;
 };
 
@@ -185,8 +189,21 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     loginPageTitle: String(stored?.loginPageTitle || "התחברות"),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
+    useLoginModal: stored?.useLoginModal !== false,
+    buttonMode: normalizeButtonMode(stored?.buttonMode),
+    showMemberName: stored?.showMemberName !== false,
+    triggerPosition: {
+      x: Number(stored?.triggerPosition?.x ?? 92),
+      y: Number(stored?.triggerPosition?.y ?? 6),
+    },
     memberAreaPath: String(stored?.memberAreaPath || "/member"),
   };
+}
+
+function normalizeButtonMode(value: unknown): SiteAuthSettings["buttonMode"] {
+  const mode = String(value || "both");
+  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
+  return "both";
 }
 
 export function siteHasAuthPlugin(site: Record<string, unknown> | null | undefined) {

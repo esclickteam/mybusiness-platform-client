@@ -233,6 +233,27 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
           checked={bool(settings.showLoginButton, true)}
           onChange={(v) => updateField("showLoginButton", v)}
         />
+        <Toggle
+          label="טופס התחברות במודאל (מומלץ)"
+          checked={bool(settings.useLoginModal, true)}
+          onChange={(v) => updateField("useLoginModal", v)}
+        />
+        <Field label="מיקום הכפתור">
+          <select
+            className={inputBase}
+            value={str(settings.buttonMode, "both")}
+            onChange={(e) => updateField("buttonMode", e.target.value)}
+          >
+            <option value="both">צף + בתוך העמוד</option>
+            <option value="floating">כפתור צף בלבד</option>
+            <option value="inline">בתוך העמוד בלבד</option>
+          </select>
+        </Field>
+        <Toggle
+          label="הצג שם משתמש על הכפתור"
+          checked={bool(settings.showMemberName, true)}
+          onChange={(v) => updateField("showMemberName", v)}
+        />
         <Field label="כותרת דף התחברות">
           <TextInput
             value={str(settings.loginPageTitle, "התחברות")}

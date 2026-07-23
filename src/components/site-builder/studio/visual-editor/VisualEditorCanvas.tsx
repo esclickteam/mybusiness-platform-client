@@ -20,6 +20,8 @@ import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets } from "../../../site-plugins/countdown/mountCountdownWidgets";
+import { mountSiteAuthWidgets } from "../../../site-plugins/site-auth/mountSiteAuthWidgets";
+import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -1163,25 +1165,38 @@ export default function VisualEditorCanvas({
     (async () => {
       try {
         const plugins = await getSitePlugins(siteId);
-        if (cancelled || !plugins.enabledPlugins.includes("countdown")) return;
-
-        const stored = await getSitePluginSettings(siteId, "countdown");
         if (cancelled) return;
 
-        mountCountdownWidgets(root, mergeCountdownSettings(stored), {
-          preview: true,
-          editorMode: true,
-          onFloatingPositionChange: async (pos) => {
-            try {
-              await saveSitePluginSettings(siteId, "countdown", {
-                ...stored,
-                floatingPosition: pos,
-              });
-            } catch {
-              // local drag preview still works
-            }
-          },
-        });
+        if (plugins.enabledPlugins.includes("countdown")) {
+          const stored = await getSitePluginSettings(siteId, "countdown");
+          if (cancelled) return;
+
+          mountCountdownWidgets(root, mergeCountdownSettings(stored), {
+            preview: true,
+            editorMode: true,
+            onFloatingPositionChange: async (pos) => {
+              try {
+                await saveSitePluginSettings(siteId, "countdown", {
+                  ...stored,
+                  floatingPosition: pos,
+                });
+              } catch {
+                // local drag preview still works
+              }
+            },
+          });
+        }
+
+        if (plugins.enabledPlugins.includes("site-auth")) {
+          const authStored = await getSitePluginSettings(siteId, "site-auth");
+          if (cancelled) return;
+
+          mountSiteAuthWidgets(root, mergeSiteAuthSettings(authStored), {
+            site: { slug: "", pluginSettings: { "site-auth": authStored } },
+            slug: "",
+            editorMode: true,
+          });
+        }
       } catch {
         // editor preview still works with placeholder markup
       }

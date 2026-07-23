@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
+import SiteAuthLoginForm from "../../site-plugins/site-auth/SiteAuthLoginForm";
 import {
   readSiteAuthSettings,
   siteMemberForgotPassword,
@@ -88,16 +89,9 @@ function AuthButton({
 
 export function PublicSiteLoginPage({ site }: { site: Record<string, any> }) {
   const settings = useMemo(() => readSiteAuthSettings(site), [site]);
-  const { login, register, isAuthenticated } = useSiteMemberAuth();
+  const { isAuthenticated } = useSiteMemberAuth();
   const navigate = useNavigate();
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [loginValue, setLoginValue] = useState("");
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const brandColor = String(site?.brand?.primaryColor || "#6366F1");
 
   React.useEffect(() => {
     if (isAuthenticated) {
@@ -105,122 +99,13 @@ export function PublicSiteLoginPage({ site }: { site: Record<string, any> }) {
     }
   }, [isAuthenticated, navigate, settings.memberAreaPath]);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      if (mode === "login") {
-        await login(loginValue, password);
-      } else {
-        await register({
-          email: email || undefined,
-          username: username || undefined,
-          password,
-          displayName: displayName || undefined,
-        });
-      }
-      navigate(settings.memberAreaPath || "/", { replace: true });
-    } catch (err: any) {
-      setError(err?.message || "שגיאה");
-    } finally {
-      setLoading(false);
-    }
-  }
-
   return (
     <PublicSiteAuthShell site={site} title={settings.loginPageTitle}>
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        {mode === "login" ? (
-          <AuthField label="אימייל או שם משתמש">
-            <input
-              className={inputClass}
-              value={loginValue}
-              onChange={(e) => setLoginValue(e.target.value)}
-              autoComplete="username"
-              required
-            />
-          </AuthField>
-        ) : (
-          <>
-            <AuthField label="אימייל">
-              <input
-                className={inputClass}
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                autoComplete="email"
-              />
-            </AuthField>
-            <AuthField label="שם משתמש">
-              <input
-                className={inputClass}
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                autoComplete="username"
-              />
-            </AuthField>
-            <AuthField label="שם תצוגה">
-              <input
-                className={inputClass}
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-              />
-            </AuthField>
-          </>
-        )}
-
-        <AuthField label="סיסמה">
-          <input
-            className={inputClass}
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete={
-              mode === "login" ? "current-password" : "new-password"
-            }
-            minLength={6}
-            required
-          />
-        </AuthField>
-
-        {error ? (
-          <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600">
-            {error}
-          </p>
-        ) : null}
-
-        <AuthButton disabled={loading}>
-          {loading
-            ? "מעבד..."
-            : mode === "login"
-              ? settings.loginButtonLabel
-              : "הרשמה"}
-        </AuthButton>
-
-        {mode === "login" && settings.forgotPasswordEnabled ? (
-          <Link
-            to="/forgot-password"
-            className="block text-center text-sm font-bold text-violet-600"
-          >
-            שכחתי סיסמה
-          </Link>
-        ) : null}
-
-        {settings.allowSelfRegister ? (
-          <button
-            type="button"
-            className="w-full text-sm font-bold text-slate-500"
-            onClick={() => {
-              setMode(mode === "login" ? "register" : "login");
-              setError("");
-            }}
-          >
-            {mode === "login" ? "אין לך חשבון? הרשמה" : "יש לך חשבון? התחברות"}
-          </button>
-        ) : null}
-      </form>
+      <SiteAuthLoginForm
+        settings={settings}
+        brandColor={brandColor}
+        onSuccess={() => navigate(settings.memberAreaPath || "/", { replace: true })}
+      />
     </PublicSiteAuthShell>
   );
 }
