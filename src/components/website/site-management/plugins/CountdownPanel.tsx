@@ -196,7 +196,7 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-dashed border-violet-200 bg-slate-50 p-4">
+        <div className="overflow-visible rounded-2xl border border-dashed border-violet-200 bg-slate-50 p-4">
           <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-wide text-violet-500">
             תצוגה מקדימה
           </p>

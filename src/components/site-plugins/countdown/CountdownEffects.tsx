@@ -7,24 +7,25 @@ type CountdownEffectsProps = {
   when: CountdownEffectWhen;
   active: boolean;
   expired: boolean;
+  preview?: boolean;
   accentColor?: string;
 };
 
 function SparkleLayer({ accent }: { accent: string }) {
   const dots = useMemo(
     () =>
-      Array.from({ length: 14 }, (_, i) => ({
+      Array.from({ length: 18 }, (_, i) => ({
         id: i,
-        left: `${8 + ((i * 17) % 84)}%`,
-        top: `${10 + ((i * 23) % 72)}%`,
+        left: `${6 + ((i * 19) % 88)}%`,
+        top: `${8 + ((i * 27) % 78)}%`,
         delay: `${(i % 7) * 0.35}s`,
-        size: 4 + (i % 3) * 2,
+        size: 6 + (i % 4) * 2,
       })),
     []
   );
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+    <div className="countdown-fx-layer" aria-hidden>
       {dots.map((dot) => (
         <span
           key={dot.id}
@@ -43,31 +44,65 @@ function SparkleLayer({ accent }: { accent: string }) {
   );
 }
 
-function BurstLayer({ accent, kind }: { accent: string; kind: "fireworks" | "confetti" }) {
+function ConfettiRain({ accent, burstKey }: { accent: string; burstKey: number }) {
   const pieces = useMemo(
     () =>
-      Array.from({ length: kind === "confetti" ? 36 : 24 }, (_, i) => ({
-        id: i,
-        left: `${50 + Math.sin(i) * 38}%`,
+      Array.from({ length: 42 }, (_, i) => ({
+        id: `${burstKey}-${i}`,
+        left: `${(i * 13) % 100}%`,
         color: i % 3 === 0 ? accent : i % 3 === 1 ? "#fbbf24" : "#ec4899",
-        rotate: `${(i * 29) % 360}deg`,
-        delay: `${(i % 8) * 0.04}s`,
+        delay: `${(i % 10) * 0.12}s`,
+        duration: `${1.4 + (i % 5) * 0.2}s`,
+        rotate: (i * 37) % 360,
       })),
-    [accent, kind]
+    [accent, burstKey]
   );
 
   return (
-    <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+    <div className="countdown-fx-layer" aria-hidden>
       {pieces.map((piece) => (
         <span
           key={piece.id}
-          className={kind === "confetti" ? "countdown-confetti" : "countdown-firework"}
+          className="countdown-confetti absolute"
           style={{
             left: piece.left,
-            top: "42%",
+            top: "-12%",
             background: piece.color,
             animationDelay: piece.delay,
-            transform: `rotate(${piece.rotate})`,
+            animationDuration: piece.duration,
+            ["--countdown-rotate" as string]: `${piece.rotate}deg`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function FireworksBurst({ accent, burstKey }: { accent: string; burstKey: number }) {
+  const pieces = useMemo(
+    () =>
+      Array.from({ length: 28 }, (_, i) => ({
+        id: `${burstKey}-${i}`,
+        left: `${48 + Math.sin(i * 0.9) * 34}%`,
+        color: i % 2 === 0 ? accent : "#fbbf24",
+        delay: `${(i % 6) * 0.05}s`,
+        angle: (i * 360) / 28,
+      })),
+    [accent, burstKey]
+  );
+
+  return (
+    <div className="countdown-fx-layer" aria-hidden>
+      {pieces.map((piece) => (
+        <span
+          key={piece.id}
+          className="countdown-firework absolute"
+          style={{
+            left: piece.left,
+            top: "46%",
+            background: piece.color,
+            animationDelay: piece.delay,
+            ["--countdown-angle" as string]: `${piece.angle}deg`,
           }}
         />
       ))}
@@ -80,84 +115,92 @@ export default function CountdownEffects({
   when,
   active,
   expired,
+  preview = false,
   accentColor = "#7C3AED",
 }: CountdownEffectsProps) {
-  const [showBurst, setShowBurst] = useState(false);
+  const [burstKey, setBurstKey] = useState(0);
+
+  const wantsDuring = when === "during" || when === "both";
+  const wantsExpire = when === "onExpire" || when === "both";
+
+  const showDuring = (preview || (active && !expired)) && wantsDuring;
+  const showExpire = (preview && wantsExpire) || (expired && wantsExpire);
+
+  const shouldRender =
+    mode !== "none" &&
+    (preview ? wantsDuring || wantsExpire : showDuring || showExpire);
 
   useEffect(() => {
-    if (!expired) {
-      setShowBurst(false);
-      return;
+    if (!shouldRender) return undefined;
+
+    const interval = window.setInterval(() => {
+      setBurstKey((key) => key + 1);
+    }, mode === "fireworks" ? 2200 : 2800);
+
+    return () => window.clearInterval(interval);
+  }, [mode, shouldRender]);
+
+  useEffect(() => {
+    if (expired && wantsExpire) {
+      setBurstKey((key) => key + 1);
     }
-    if (when === "during") return;
-    setShowBurst(true);
-  }, [expired, when]);
+  }, [expired, wantsExpire]);
 
-  const showDuring =
-    active &&
-    !expired &&
-    (when === "during" || when === "both") &&
-    (mode === "sparkle" || mode === "glow");
+  if (!shouldRender) return null;
 
-  const showExpireBurst =
-    expired &&
-    (when === "onExpire" || when === "both") &&
-    (mode === "fireworks" || mode === "confetti") &&
-    showBurst;
+  if (mode === "sparkle") return <SparkleLayer accent={accentColor} />;
+  if (mode === "glow") {
+    return (
+      <div
+        className="countdown-glow countdown-fx-layer rounded-2xl"
+        style={{ boxShadow: `0 0 48px ${accentColor}88, inset 0 0 24px ${accentColor}33` }}
+        aria-hidden
+      />
+    );
+  }
+  if (mode === "confetti") return <ConfettiRain accent={accentColor} burstKey={burstKey} />;
+  if (mode === "fireworks") return <FireworksBurst accent={accentColor} burstKey={burstKey} />;
 
-  if (mode === "none") return null;
-
-  return (
-    <>
-      {showDuring && mode === "sparkle" ? <SparkleLayer accent={accentColor} /> : null}
-      {showDuring && mode === "glow" ? (
-        <div
-          className="countdown-glow pointer-events-none absolute inset-0 rounded-2xl"
-          style={{ boxShadow: `0 0 40px ${accentColor}55` }}
-          aria-hidden
-        />
-      ) : null}
-      {showExpireBurst && mode === "fireworks" ? (
-        <BurstLayer accent={accentColor} kind="fireworks" />
-      ) : null}
-      {showExpireBurst && mode === "confetti" ? (
-        <BurstLayer accent={accentColor} kind="confetti" />
-      ) : null}
-    </>
-  );
+  return null;
 }
 
 export const COUNTDOWN_EFFECT_STYLES = `
+  .countdown-fx-layer {
+    pointer-events: none;
+    position: absolute;
+    inset: -20px;
+    overflow: visible;
+    z-index: 5;
+  }
   @keyframes countdown-sparkle-pulse {
-    0%, 100% { opacity: 0.15; transform: scale(0.8); }
-    50% { opacity: 0.95; transform: scale(1.2); }
+    0%, 100% { opacity: 0.2; transform: scale(0.75); }
+    50% { opacity: 1; transform: scale(1.25); }
   }
   @keyframes countdown-firework-burst {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-120px) scale(0.2); }
+    0% { opacity: 1; transform: translate(-50%, -50%) rotate(var(--countdown-angle, 0deg)) translateY(0) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) rotate(var(--countdown-angle, 0deg)) translateY(-110px) scale(0.15); }
   }
   @keyframes countdown-confetti-fall {
-    0% { opacity: 1; transform: translateY(0) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(180px) rotate(540deg); }
+    0% { opacity: 0; transform: translateY(-10px) rotate(var(--countdown-rotate, 0deg)); }
+    12% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(220px) rotate(calc(var(--countdown-rotate, 0deg) + 540deg)); }
   }
   @keyframes countdown-glow-pulse {
-    0%, 100% { opacity: 0.35; }
-    50% { opacity: 0.85; }
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
   }
   .countdown-sparkle { animation: countdown-sparkle-pulse 2.2s ease-in-out infinite; }
   .countdown-firework {
-    position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
     border-radius: 999px;
-    animation: countdown-firework-burst 1.4s ease-out forwards;
+    animation: countdown-firework-burst 1.5s ease-out infinite;
   }
   .countdown-confetti {
-    position: absolute;
-    width: 7px;
-    height: 12px;
+    width: 9px;
+    height: 14px;
     border-radius: 2px;
-    animation: countdown-confetti-fall 1.8s ease-in forwards;
+    animation: countdown-confetti-fall 2.2s linear infinite;
   }
   .countdown-glow { animation: countdown-glow-pulse 1.6s ease-in-out infinite; }
 `;

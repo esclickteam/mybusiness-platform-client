@@ -131,7 +131,7 @@ function CountdownBody({
 
   return (
     <div
-      className={`relative rounded-2xl px-4 py-6 sm:px-6 sm:py-8 ${
+      className={`relative overflow-visible rounded-2xl px-4 py-6 sm:px-6 sm:py-8 ${
         preset === "cards" ? "bg-transparent" : ""
       } ${isNeon ? "ring-1 ring-cyan-500/20" : ""}`}
       style={{ background: preset === "cards" ? "transparent" : bg }}
@@ -140,7 +140,8 @@ function CountdownBody({
         mode={effectMode}
         when={effectWhen}
         active={!expired || preview}
-        expired={expired && !preview}
+        expired={expired}
+        preview={preview}
         accentColor={settings.accentColor}
       />
 
