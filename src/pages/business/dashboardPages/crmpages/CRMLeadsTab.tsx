@@ -32,6 +32,10 @@ import { useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
+import GoogleAdsLeadIntegration from "./GoogleAdsLeadIntegration";
+import AdNetworkPickerModal, {
+  type AdNetworkId,
+} from "./AdNetworkPickerModal";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import API from "@api";
@@ -145,6 +149,15 @@ type Lead = {
     pageName?: string;
     createdTime?: string;
   };
+
+  google?: {
+    leadId?: string;
+    formId?: string;
+    formName?: string;
+    campaignId?: string;
+    createdTime?: string;
+    isTest?: boolean;
+  };
 };
 
 type CRMLeadsTabProps = {
@@ -227,9 +240,10 @@ function parseLeadTime(raw?: string) {
 }
 
 function getLeadCreatedTime(lead: Lead) {
-  // Prefer Meta lead time so date groups match the real lead day,
+  // Prefer provider lead time so date groups match the real lead day,
   // then CRM createdAt, then Mongo ObjectId creation time.
   return (
+    parseLeadTime(lead.google?.createdTime) ||
     parseLeadTime(lead.facebook?.createdTime) ||
     parseLeadTime(lead.createdAt) ||
     getObjectIdTime(lead) ||
@@ -439,25 +453,32 @@ function normalizePhoneForWhatsApp(phone?: string) {
   return cleaned;
 }
 
+function isGoogleLead(lead: Lead) {
+  const source = String(lead.source || lead.provider || "").toLowerCase();
+  return (
+    source.includes("google") ||
+    Boolean(lead.google?.leadId) ||
+    Boolean(lead.google?.formId)
+  );
+}
+
 function isMetaLead(lead: Lead) {
+  if (isGoogleLead(lead)) return false;
+
   const source = String(lead.source || lead.provider || "").toLowerCase();
 
   return (
     source.includes("meta") ||
     source.includes("facebook") ||
     source.includes("leadgen") ||
-    source.includes("lead_ads") ||
-    source.includes("webhook") ||
     Boolean(lead.facebook?.leadId) ||
     Boolean(lead.facebook?.formId) ||
-    Boolean(lead.facebook?.pageId) ||
-    Boolean(lead.externalLeadId) ||
-    Boolean(lead.externalPageId) ||
-    Boolean(lead.externalFormId)
+    Boolean(lead.facebook?.pageId)
   );
 }
 
 function getLeadSourceLabel(lead: Lead, t: TFunction) {
+  if (isGoogleLead(lead)) return t("crm.leads.sources.googleAds");
   if (isMetaLead(lead)) return t("crm.leads.sources.metaLeadAds");
 
   return lead.source || lead.provider || t("crm.leads.sources.manual");
@@ -465,10 +486,16 @@ function getLeadSourceLabel(lead: Lead, t: TFunction) {
 
 function getLeadFormName(lead: Lead, t: TFunction) {
   return (
+    lead.google?.formName ||
     lead.facebook?.formName ||
     lead.externalFormId ||
+    lead.google?.formId ||
     lead.facebook?.formId ||
-    (isMetaLead(lead) ? t("crm.leads.sources.metaForm") : lead.source) ||
+    (isGoogleLead(lead)
+      ? t("crm.leads.sources.googleForm")
+      : isMetaLead(lead)
+        ? t("crm.leads.sources.metaForm")
+        : lead.source) ||
     t("crm.leads.sources.manualLead")
   );
 }
@@ -725,11 +752,15 @@ function LeadStatusBadge({ status }: { status: LeadStatus }) {
 function SourceBadge({ lead }: { lead: Lead }) {
   const { t } = useTranslation();
   const sourceLabel = getLeadSourceLabel(lead, t);
+  const google = isGoogleLead(lead);
+  const meta = isMetaLead(lead);
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
       <span className="inline-flex max-w-full items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-black text-slate-800 shadow-sm">
-        {isMetaLead(lead) ? (
+        {google ? (
+          <Globe2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+        ) : meta ? (
           <Webhook className="h-3.5 w-3.5 shrink-0 text-sky-700" />
         ) : (
           <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-500" />
@@ -757,15 +788,19 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     searchParams.get("metaSetup") === "1" ||
     searchParams.get("meta_connected") === "1" ||
     Boolean(searchParams.get("meta_error"));
+  const showGoogleSetup = searchParams.get("googleSetup") === "1";
   const deepLinkLeadId = searchParams.get("leadId") || "";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [highlightedActivityId, setHighlightedActivityId] = useState("");
+  const [showAdNetworkPicker, setShowAdNetworkPicker] = useState(false);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
-  const [sourceFilter, setSourceFilter] = useState<"all" | "meta" | "other">("all");
+  const [sourceFilter, setSourceFilter] = useState<
+    "all" | "meta" | "google" | "other"
+  >("all");
   const [viewMode, setViewMode] = useState<"list" | "board">("list");
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -798,6 +833,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const openMetaSetup = () => {
     const next = new URLSearchParams(searchParams);
     next.set("metaSetup", "1");
+    next.delete("googleSetup");
+    next.delete("leadId");
+    setSearchParams(next, { replace: false });
+  };
+
+  const openGoogleSetup = () => {
+    const next = new URLSearchParams(searchParams);
+    next.set("googleSetup", "1");
+    next.delete("metaSetup");
     next.delete("leadId");
     setSearchParams(next, { replace: false });
   };
@@ -806,6 +850,18 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     const next = new URLSearchParams(searchParams);
     next.delete("metaSetup");
     setSearchParams(next, { replace: false });
+  };
+
+  const closeGoogleSetup = () => {
+    const next = new URLSearchParams(searchParams);
+    next.delete("googleSetup");
+    setSearchParams(next, { replace: false });
+  };
+
+  const handleAdNetworkSelect = (network: AdNetworkId) => {
+    setShowAdNetworkPicker(false);
+    if (network === "meta") openMetaSetup();
+    if (network === "google") openGoogleSetup();
   };
 
   const fetchLeads = async (options: { silent?: boolean } = {}) => {
@@ -933,7 +989,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   }, [leads]);
 
   useEffect(() => {
-    if (!deepLinkLeadId || showMetaSetup) return;
+    if (!deepLinkLeadId || showMetaSetup || showGoogleSetup) return;
 
     void (async () => {
       await openLeadFromNotification({ leadId: deepLinkLeadId });
@@ -945,7 +1001,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         setSearchParams(next, { replace: true });
       }
     })();
-  }, [deepLinkLeadId, showMetaSetup, leads.length]);
+  }, [deepLinkLeadId, showMetaSetup, showGoogleSetup, leads.length]);
 
   useEffect(() => {
     if (businessId && isAdminUser()) {
@@ -1026,10 +1082,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           statusFilter === "all" || (lead.status || "new") === statusFilter;
 
         const meta = isMetaLead(lead);
+        const google = isGoogleLead(lead);
         const matchesSource =
           sourceFilter === "all" ||
           (sourceFilter === "meta" && meta) ||
-          (sourceFilter === "other" && !meta);
+          (sourceFilter === "google" && google) ||
+          (sourceFilter === "other" && !meta && !google);
 
         return matchesSearch && matchesStatus && matchesSource;
       })
@@ -1329,6 +1387,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           businessId={businessId}
           onBack={closeMetaSetup}
         />
+      ) : showGoogleSetup ? (
+        <GoogleAdsLeadIntegration
+          businessId={businessId}
+          onBack={closeGoogleSetup}
+        />
       ) : (
                 <div className="flex h-[calc(100vh-7.5rem)] min-h-[720px] flex-col gap-4">
           <div className="shrink-0 space-y-4">
@@ -1476,13 +1539,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     value={sourceFilter}
                     onChange={(event) =>
                       setSourceFilter(
-                        event.target.value as "all" | "meta" | "other"
+                        event.target.value as "all" | "meta" | "google" | "other"
                       )
                     }
                     className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 outline-none"
                   >
                     <option value="all">{t("crm.leads.filters.allSources")}</option>
                     <option value="meta">{t("crm.leads.filters.metaOnly")}</option>
+                    <option value="google">{t("crm.leads.filters.googleOnly")}</option>
                     <option value="other">{t("crm.leads.filters.otherSources")}</option>
                   </select>
 
@@ -1505,11 +1569,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                   <button
                     type="button"
-                    onClick={openMetaSetup}
+                    onClick={() => setShowAdNetworkPicker(true)}
                     className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
                   >
                     <Facebook className="h-3.5 w-3.5 text-[#6D28D9]" />
-                    {t("crm.leads.connectMeta")}
+                    {t("crm.leads.connectAdNetwork")}
                   </button>
 
                   <button
@@ -1819,6 +1883,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           </section>
         </div>
       )}
+
+      <AdNetworkPickerModal
+        open={showAdNetworkPicker}
+        onClose={() => setShowAdNetworkPicker(false)}
+        onSelect={handleAdNetworkSelect}
+      />
 
       {selectedLead && (
         <div

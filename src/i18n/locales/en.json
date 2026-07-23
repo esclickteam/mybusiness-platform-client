@@ -870,6 +870,7 @@
       "copy": "Copy",
       "refresh": "Refresh",
       "close": "Close",
+      "back": "Back",
       "open": "Open",
       "filter": "Filter",
       "all": "All",
@@ -1248,6 +1249,7 @@
       "subtitle": "Professional lead table, full client profile, notes and tasks as part of the timeline, including on-site reminders by due time.",
       "refreshLeads": "Refresh Leads",
       "connectMeta": "Connect to Meta",
+      "connectAdNetwork": "Connect ad network",
       "metaConnected": "Meta connection",
       "newLead": "New Lead",
       "importLeads": "Import Leads",
@@ -1261,6 +1263,7 @@
         "status": "Status",
         "allSources": "All sources",
         "metaOnly": "Meta",
+        "googleOnly": "Google Ads",
         "otherSources": "Other"
       },
       "stats": {
@@ -1297,9 +1300,48 @@
       },
       "sources": {
         "metaLeadAds": "Meta Lead Ads",
+        "googleAds": "Google Ads leads",
         "manual": "Manual",
         "metaForm": "Meta Lead Ads form",
+        "googleForm": "Google Ads lead form",
         "manualLead": "Manual lead"
+      },
+      "adNetworks": {
+        "title": "Choose an ad network",
+        "meta": "Meta",
+        "google": "Google Ads",
+        "linkedin": "LinkedIn",
+        "tiktok": "TikTok",
+        "comingSoon": "Coming soon"
+      },
+      "googleIntegration": {
+        "badge": "Google Ads Lead Forms",
+        "title": "Connect Google Ads leads",
+        "subtitle": "Enable the connection, copy the webhook URL and key into your Google Ads lead form, and receive leads directly in the CRM.",
+        "enableHint": "Click to enable the connection. You will get a URL and key to paste into Google Ads.",
+        "enable": "Enable Google Ads connection",
+        "webhookUrl": "Webhook URL",
+        "googleKey": "Google Key",
+        "copy": "Copy",
+        "copied": "Copied",
+        "rotateKey": "Rotate key",
+        "disconnect": "Disconnect",
+        "lastWebhook": "Last webhook: {{date}}",
+        "steps": {
+          "openAds": "Open the business Google Ads account.",
+          "openForm": "Open the campaign lead form.",
+          "pasteWebhook": "Paste the BizUply webhook URL.",
+          "pasteKey": "Paste the Google Key.",
+          "sendTest": "Send a test lead from Google and confirm it appears in the CRM."
+        },
+        "successEnabled": "Google Ads connection enabled. Copy the details into your Google form.",
+        "successRotated": "Key rotated. Update it in the Google Ads form too.",
+        "successDisconnected": "Google Ads connection disconnected.",
+        "errors": {
+          "loadStatus": "Failed to load Google Ads connection",
+          "actionFailed": "Action failed",
+          "copyFailed": "Copy failed"
+        }
       },
       "metaIntegration": {
         "badge": "Meta Lead Ads Integration",
