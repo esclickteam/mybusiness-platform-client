@@ -14,12 +14,14 @@ import {
   Star,
   Users,
   CircleDot,
+  LogIn,
 } from "lucide-react";
 
 import type { SitePanelSection } from "../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
+import SiteMembersPanel from "./SiteMembersPanel";
 import {
   bool,
   Field,
@@ -202,6 +204,99 @@ export const SiteClubPanel = makePanel(
     </>
   )
 );
+
+function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
+  const { settings, loading, saving, message, save, updateField } =
+    useSitePluginSettings(props.siteId, "site-auth");
+  const Icon = LogIn;
+
+  return (
+    <div className="space-y-6">
+      <SitePluginPanelFrame
+        {...props}
+        icon={Icon}
+        accent="#6366F1"
+        title="התחברות ואזור אישי"
+        description="מערכת התחברות נפרדת ללקוחות האתר — לא קשורה ל-BizUply."
+        loading={loading}
+        saving={saving}
+        message={message}
+        onSave={() => save()}
+      >
+        <Toggle
+          label="תוסף פעיל באתר"
+          checked={bool(settings.isActive, true)}
+          onChange={(v) => updateField("isActive", v)}
+        />
+        <Toggle
+          label="הצג כפתור התחברות באתר"
+          checked={bool(settings.showLoginButton, true)}
+          onChange={(v) => updateField("showLoginButton", v)}
+        />
+        <Toggle
+          label="טופס התחברות במודאל (מומלץ)"
+          checked={bool(settings.useLoginModal, true)}
+          onChange={(v) => updateField("useLoginModal", v)}
+        />
+        <Field label="מיקום הכפתור">
+          <select
+            className={inputBase}
+            value={str(settings.buttonMode, "both")}
+            onChange={(e) => updateField("buttonMode", e.target.value)}
+          >
+            <option value="both">צף + בתוך העמוד</option>
+            <option value="floating">כפתור צף בלבד</option>
+            <option value="inline">בתוך העמוד בלבד</option>
+          </select>
+        </Field>
+        <Toggle
+          label="הצג שם משתמש על הכפתור"
+          checked={bool(settings.showMemberName, true)}
+          onChange={(v) => updateField("showMemberName", v)}
+        />
+        <Field label="כותרת דף התחברות">
+          <TextInput
+            value={str(settings.loginPageTitle, "התחברות")}
+            onChange={(v) => updateField("loginPageTitle", v)}
+          />
+        </Field>
+        <Field label="טקסט כפתור התחברות">
+          <TextInput
+            value={str(settings.loginButtonLabel, "התחברות")}
+            onChange={(v) => updateField("loginButtonLabel", v)}
+          />
+        </Field>
+        <Field label="טקסט כפתור התנתקות">
+          <TextInput
+            value={str(settings.logoutButtonLabel, "התנתקות")}
+            onChange={(v) => updateField("logoutButtonLabel", v)}
+          />
+        </Field>
+        <Field label="נתיב אזור אישי (לאחר התחברות)">
+          <TextInput
+            value={str(settings.memberAreaPath, "/member")}
+            onChange={(v) => updateField("memberAreaPath", v)}
+            placeholder="/member"
+          />
+        </Field>
+        <Toggle
+          label="אפשר הרשמה עצמית"
+          checked={bool(settings.allowSelfRegister)}
+          onChange={(v) => updateField("allowSelfRegister", v)}
+        />
+        <Toggle
+          label="אפשר שכחתי סיסמה"
+          checked={bool(settings.forgotPasswordEnabled, true)}
+          onChange={(v) => updateField("forgotPasswordEnabled", v)}
+        />
+      </SitePluginPanelFrame>
+
+      <SiteMembersPanel {...props} />
+    </div>
+  );
+}
+
+export const SiteSiteAuthPanel = SiteSiteAuthSettingsPanel;
 
 export const SiteHeatmapPanel = makePanel(
   "heatmap",
@@ -514,6 +609,7 @@ export const PLUGIN_PANEL_MAP: Partial<
   leads: SiteLeadsPanel,
   reviews: SiteReviewsPanel,
   club: SiteClubPanel,
+  "site-auth": SiteSiteAuthPanel,
   heatmap: SiteHeatmapPanel,
   "form-abandonment": SiteFormAbandonmentPanel,
   "journey-recording": SiteJourneyRecordingPanel,

@@ -20,6 +20,8 @@ import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
+import { mountSiteAuthWidgets } from "../../../site-plugins/site-auth/mountSiteAuthWidgets";
+import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -1215,23 +1217,33 @@ export default function VisualEditorCanvas({
 
         if (!hasWidget && !pluginEnabled) {
           countdownEditorMountRef.current.enabled = false;
-          return;
+        } else {
+          const stored = pluginEnabled
+            ? await getSitePluginSettings(siteId, "countdown")
+            : null;
+          if (cancelled) return;
+
+          countdownEditorMountRef.current = {
+            enabled: hasWidget || pluginEnabled,
+            settings: mergeCountdownSettings(stored),
+            stored: (stored && typeof stored === "object" ? stored : {}) as Record<
+              string,
+              unknown
+            >,
+          };
+          mountEditorCountdownPreview(root);
         }
 
-        const stored = pluginEnabled
-          ? await getSitePluginSettings(siteId, "countdown")
-          : null;
-        if (cancelled) return;
+        if (plugins.enabledPlugins.includes("site-auth")) {
+          const authStored = await getSitePluginSettings(siteId, "site-auth");
+          if (cancelled) return;
 
-        countdownEditorMountRef.current = {
-          enabled: hasWidget || pluginEnabled,
-          settings: mergeCountdownSettings(stored),
-          stored: (stored && typeof stored === "object" ? stored : {}) as Record<
-            string,
-            unknown
-          >,
-        };
-        mountEditorCountdownPreview(root);
+          mountSiteAuthWidgets(root, mergeSiteAuthSettings(authStored), {
+            site: { slug: "", pluginSettings: { "site-auth": authStored } },
+            slug: "",
+            editorMode: true,
+          });
+        }
       } catch {
         if (!cancelled && pageHasCountdownWidget(root)) {
           countdownEditorMountRef.current = {

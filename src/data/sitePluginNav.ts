@@ -19,6 +19,7 @@ import {
   Star,
   Timer,
   Users,
+  LogIn,
 } from "lucide-react";
 
 export type SitePanelSection =
@@ -31,6 +32,7 @@ export type SitePanelSection =
   | "leads"
   | "reviews"
   | "club"
+  | "site-auth"
   | "heatmap"
   | "form-abandonment"
   | "journey-recording"
@@ -80,6 +82,7 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   leads: "leads",
   reviews: "reviews",
   club: "club",
+  "site-auth": "site-auth",
   heatmap: "heatmap",
   "form-abandonment": "form-abandonment",
   "journey-recording": "journey-recording",
@@ -101,6 +104,7 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   leads: "#6366F1",
   reviews: "#F59E0B",
   club: "#8B5CF6",
+  "site-auth": "#6366F1",
   heatmap: "#EF4444",
   "form-abandonment": "#F97316",
   "journey-recording": "#EC4899",
@@ -160,6 +164,11 @@ export const SECTION_META: Record<
     label: "מועדון לקוחות",
     description: "אזור לקוחות והטבות",
     pluginKey: "club",
+  },
+  "site-auth": {
+    label: "התחברות ואזור אישי",
+    description: "משתמשים, סיסמאות והתחברות ללקוחות האתר",
+    pluginKey: "site-auth",
   },
   heatmap: {
     label: "מפת חום",
@@ -239,6 +248,8 @@ export function getPluginIcon(key: string) {
       return Star;
     case "club":
       return Users;
+    case "site-auth":
+      return LogIn;
     case "heatmap":
       return Flame;
     case "form-abandonment":

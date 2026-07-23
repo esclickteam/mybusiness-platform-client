@@ -11,6 +11,12 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import BusinessChatPage from "./components/BusinessChatPage";
 import PublicVisualSiteRenderer from "./components/site-builder/public/PublicVisualSiteRenderer";
+import { resolvePublicSiteAuthPage } from "./components/site-builder/public/PublicSiteAuthPages";
+import { SiteMemberAuthProvider } from "./context/SiteMemberAuthContext";
+import {
+  readSiteAuthSettings,
+  siteHasAuthPlugin,
+} from "./api/siteMemberAuthApi";
 
 import { useAuth } from "./context/AuthContext";
 import { useOnceLogger } from "./utils/useOnceLogger";
@@ -544,16 +550,37 @@ function PublicMiniSitePage() {
   }
 
   return (
-    <PublicVisualSiteRenderer
-      site={site}
-      pathname={
-        typeof window !== "undefined"
-          ? window.location.pathname
-          : location.pathname
-      }
-    />
+    <PublicMiniSiteContent site={site} location={location} />
   );
 
+}
+
+function PublicMiniSiteContent({ site, location }) {
+  const pathname =
+    typeof window !== "undefined"
+      ? window.location.pathname
+      : location.pathname;
+
+  const slug = String(site?.slug || getMiniSiteSlugFromHost() || "");
+  const authEnabled = siteHasAuthPlugin(site);
+  const settings = readSiteAuthSettings(site);
+  const authPage = authEnabled
+    ? resolvePublicSiteAuthPage(pathname, site, settings)
+    : null;
+
+  const page = authPage || (
+    <PublicVisualSiteRenderer site={site} pathname={pathname} />
+  );
+
+  if (!authEnabled) {
+    return page;
+  }
+
+  return (
+    <SiteMemberAuthProvider slug={slug}>
+      {page}
+    </SiteMemberAuthProvider>
+  );
 }
 
 function ScrollToTop() {
