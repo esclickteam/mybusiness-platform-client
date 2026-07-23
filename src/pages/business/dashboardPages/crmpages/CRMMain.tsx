@@ -222,7 +222,6 @@ export default function CRMMain() {
                 </div>
               </div>
             </div>
-          </div>
 
           <nav className="border-t border-slate-100/80 bg-white/90 px-4 py-4 sm:px-6 lg:px-8">
             <div className="flex gap-3 overflow-x-auto pb-1">
