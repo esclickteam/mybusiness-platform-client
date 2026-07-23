@@ -17,7 +17,7 @@ import {
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { resolveFormContext } from "./utils/visualForms";
-import { getSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
+import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets } from "../../../site-plugins/countdown/mountCountdownWidgets";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
@@ -1170,6 +1170,17 @@ export default function VisualEditorCanvas({
 
         mountCountdownWidgets(root, mergeCountdownSettings(stored), {
           preview: true,
+          editorMode: true,
+          onFloatingPositionChange: async (pos) => {
+            try {
+              await saveSitePluginSettings(siteId, "countdown", {
+                ...stored,
+                floatingPosition: pos,
+              });
+            } catch {
+              // local drag preview still works
+            }
+          },
         });
       } catch {
         // editor preview still works with placeholder markup

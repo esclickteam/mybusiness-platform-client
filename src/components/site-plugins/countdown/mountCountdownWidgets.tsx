@@ -15,10 +15,16 @@ export function pageHasCountdownWidget(root: ParentNode | null | undefined) {
   return Boolean(root.querySelector('[data-bizuply-widget="countdown"]'));
 }
 
+type MountOptions = {
+  preview?: boolean;
+  editorMode?: boolean;
+  onFloatingPositionChange?: (pos: { x: number; y: number }) => void;
+};
+
 export function mountCountdownWidgets(
   root: ParentNode | null | undefined,
   settings: CountdownSettings | unknown,
-  options?: { preview?: boolean }
+  options?: MountOptions
 ) {
   if (!root) return;
 
@@ -28,6 +34,16 @@ export function mountCountdownWidgets(
   const nodes = root.querySelectorAll('[data-bizuply-widget="countdown"]');
   nodes.forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
+
+    if (normalized.layoutMode === "floating") {
+      node.style.minHeight = "0";
+      node.style.height = "0";
+      node.style.overflow = "visible";
+    } else {
+      node.style.minHeight = "";
+      node.style.height = "";
+      node.style.overflow = "";
+    }
 
     let reactRoot = roots.get(node);
     if (!reactRoot) {
@@ -40,6 +56,8 @@ export function mountCountdownWidgets(
       React.createElement(CountdownWidget, {
         settings: normalized,
         preview: options?.preview,
+        editorMode: options?.editorMode,
+        onFloatingPositionChange: options?.onFloatingPositionChange,
       })
     );
   });

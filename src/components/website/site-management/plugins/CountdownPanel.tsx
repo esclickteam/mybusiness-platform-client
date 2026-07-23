@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { LayoutTemplate, Palette, Timer } from "lucide-react";
+import { LayoutTemplate, Palette, Sparkles, Timer } from "lucide-react";
 
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
@@ -13,11 +13,19 @@ import {
 } from "./SitePluginPanelFrame";
 import CountdownWidget from "../../../site-plugins/countdown/CountdownWidget";
 import {
+  COUNTDOWN_EFFECT_MODES,
+  COUNTDOWN_EFFECT_WHEN,
   COUNTDOWN_FONT_PRESETS,
+  COUNTDOWN_LAYOUT_MODES,
+  COUNTDOWN_SIZE_PRESETS,
   COUNTDOWN_STYLE_PRESETS,
   PRESET_DEFAULT_COLORS,
+  type CountdownEffectMode,
+  type CountdownEffectWhen,
   type CountdownFontPreset,
+  type CountdownLayoutMode,
   type CountdownSettings,
+  type CountdownSizePreset,
   type CountdownStylePreset,
 } from "../../../site-plugins/countdown/countdownUtils";
 
@@ -98,11 +106,13 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
   }, [settings]);
 
   const selectedPreset = (settings.stylePreset as CountdownStylePreset) || "cards";
+  const isCards = selectedPreset === "cards";
 
   function applyPreset(preset: CountdownStylePreset) {
     updateField("stylePreset", preset);
     const colors = PRESET_DEFAULT_COLORS[preset];
     updateField("backgroundColor", colors.backgroundColor);
+    updateField("cardBackgroundColor", colors.cardBackgroundColor);
     updateField("numberColor", colors.numberColor);
     updateField("labelColor", colors.labelColor);
     updateField("accentColor", colors.accentColor);
@@ -126,7 +136,7 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
         onChange={(v) => updateField("isActive", v)}
       />
 
-      <SectionCard icon={LayoutTemplate} title="סגנון תצוגה" accent="#A855F7">
+      <SectionCard icon={LayoutTemplate} title="סגנון וגודל" accent="#A855F7">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {COUNTDOWN_STYLE_PRESETS.map((preset) => (
             <button
@@ -143,6 +153,47 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
               <p className="mt-1 text-[10px] leading-4 text-slate-500">{preset.description}</p>
             </button>
           ))}
+        </div>
+
+        <div>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">תצוגה בעמוד</p>
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+            {COUNTDOWN_LAYOUT_MODES.map((mode) => (
+              <button
+                key={mode.value}
+                type="button"
+                onClick={() => updateField("layoutMode", mode.value as CountdownLayoutMode)}
+                className={`rounded-xl border p-3 text-right transition ${
+                  (settings.layoutMode || "section") === mode.value
+                    ? "border-violet-400 bg-violet-50 ring-2 ring-violet-200"
+                    : "border-slate-200 bg-white hover:border-violet-200"
+                }`}
+              >
+                <p className="text-xs font-black text-slate-800">{mode.label}</p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">{mode.description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">גודל</p>
+          <div className="grid grid-cols-3 gap-2">
+            {COUNTDOWN_SIZE_PRESETS.map((size) => (
+              <button
+                key={size.value}
+                type="button"
+                onClick={() => updateField("sizePreset", size.value as CountdownSizePreset)}
+                className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                  (settings.sizePreset || "md") === size.value
+                    ? "border-violet-400 bg-violet-50 text-violet-700"
+                    : "border-slate-200 bg-white text-slate-600"
+                }`}
+              >
+                {size.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         <div className="overflow-hidden rounded-2xl border border-dashed border-violet-200 bg-slate-50 p-4">
@@ -173,12 +224,61 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
             onChange={(v) => updateField("expiredMessage", v)}
           />
         </Field>
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <Toggle
+          label="סדר יחידות הפוך (שניות ← חודשים)"
+          checked={bool(settings.unitOrderReversed, true)}
+          onChange={(v) => updateField("unitOrderReversed", v)}
+        />
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+          <Toggle label="חודשים" checked={bool(settings.showMonths, true)} onChange={(v) => updateField("showMonths", v)} />
           <Toggle label="ימים" checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
           <Toggle label="שעות" checked={bool(settings.showHours, true)} onChange={(v) => updateField("showHours", v)} />
           <Toggle label="דקות" checked={bool(settings.showMinutes, true)} onChange={(v) => updateField("showMinutes", v)} />
           <Toggle label="שניות" checked={bool(settings.showSeconds, true)} onChange={(v) => updateField("showSeconds", v)} />
         </div>
+      </SectionCard>
+
+      <SectionCard icon={Sparkles} title="אפקטים" accent="#F59E0B">
+        <div>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">סוג אפקט</p>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
+            {COUNTDOWN_EFFECT_MODES.map((effect) => (
+              <button
+                key={effect.value}
+                type="button"
+                onClick={() => updateField("effectMode", effect.value as CountdownEffectMode)}
+                className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                  (settings.effectMode || "none") === effect.value
+                    ? "border-amber-400 bg-amber-50 text-amber-700"
+                    : "border-slate-200 bg-white text-slate-600"
+                }`}
+              >
+                {effect.label}
+              </button>
+            ))}
+          </div>
+        </div>
+        {(settings.effectMode || "none") !== "none" ? (
+          <div>
+            <p className="mb-2 text-[11px] font-bold text-slate-500">מתי להציג</p>
+            <div className="grid grid-cols-3 gap-2">
+              {COUNTDOWN_EFFECT_WHEN.map((when) => (
+                <button
+                  key={when.value}
+                  type="button"
+                  onClick={() => updateField("effectWhen", when.value as CountdownEffectWhen)}
+                  className={`rounded-xl border px-3 py-2 text-xs font-bold transition ${
+                    (settings.effectWhen || "onExpire") === when.value
+                      ? "border-amber-400 bg-amber-50 text-amber-700"
+                      : "border-slate-200 bg-white text-slate-600"
+                  }`}
+                >
+                  {when.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        ) : null}
       </SectionCard>
 
       <SectionCard icon={Palette} title="צבעים, פונט וצל" accent="#EC4899">
@@ -209,6 +309,13 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
             value={str(settings.backgroundColor, PRESET_DEFAULT_COLORS[selectedPreset].backgroundColor || "transparent")}
             onChange={(v) => updateField("backgroundColor", v)}
           />
+          {isCards ? (
+            <ColorField
+              label="צבע כרטיסיות"
+              value={str(settings.cardBackgroundColor, PRESET_DEFAULT_COLORS.cards.cardBackgroundColor || "#ffffff")}
+              onChange={(v) => updateField("cardBackgroundColor", v)}
+            />
+          ) : null}
           <ColorField
             label="צבע מספרים"
             value={str(settings.numberColor, PRESET_DEFAULT_COLORS[selectedPreset].numberColor || "#1e293b")}
@@ -242,7 +349,7 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
 
       <p className="text-xs leading-relaxed text-slate-500">
         בעורך: <strong className="text-slate-700">הוספה → תוספים → ספירה לאחור</strong>.
-        התוסף יופיע ברשימה עד שתוסיפו אותו לעמוד. אחרי ההוספה — הטיימר יוצג חי לפי ההגדרות כאן.
+        בחרו <strong className="text-slate-700">בלוק מלא</strong> לסקשן, או <strong className="text-slate-700">צף ונגרר</strong> לווידג'ט קטן — גררו אותו בעורך למיקום הרצוי.
       </p>
     </SitePluginPanelFrame>
   );
