@@ -1249,14 +1249,27 @@
       "refreshLeads": "רענון לידים",
       "connectMeta": "חיבור ל-Meta",
       "metaConnected": "חיבור Meta",
+      "newLead": "ליד חדש",
+      "importLeads": "ייבוא לידים",
+      "listView": "תצוגת רשימה",
+      "boardView": "תצוגת לוח",
+      "boardSoon": "תצוגת לוח תהיה זמינה בקרוב",
+      "newLeadSoon": "הוספת ליד ידני תהיה זמינה בקרוב",
+      "filters": {
+        "source": "מקור",
+        "status": "סטטוס",
+        "allSources": "כל המקורות",
+        "metaOnly": "Meta",
+        "otherSources": "אחר"
+      },
       "stats": {
-        "total": "סה״כ",
-        "new": "חדש",
-        "contacted": "נוצר קשר",
-        "converted": "הומר",
+        "total": "סה״כ לידים",
+        "new": "לידים חדשים",
+        "contacted": "בטיפול",
+        "converted": "הומרו",
         "openTasks": "משימות פתוחות"
       },
-      "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל, מקור או פרטי ליד...",
+      "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל או מקור...",
       "emptyTitle": "אין לידים להצגה",
       "emptyDescription": "כשליד חדש יגיע, הוא יופיע כאן עם כל שדות הטופס.",
       "table": {
@@ -1267,8 +1280,10 @@
         "status": "סטטוס",
         "nextTask": "משימה הבאה",
         "createdDate": "תאריך יצירה",
+        "agent": "סוכן",
         "actions": "פעולות"
       },
+      "unassignedAgent": "לא משויך",
       "noContactDetails": "אין פרטי קשר",
       "noAdditionalData": "אין נתונים נוספים",
       "noNextTask": "אין משימה",

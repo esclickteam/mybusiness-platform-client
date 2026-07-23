@@ -1249,14 +1249,27 @@
       "refreshLeads": "Refresh Leads",
       "connectMeta": "Connect to Meta",
       "metaConnected": "Meta connection",
+      "newLead": "New Lead",
+      "importLeads": "Import Leads",
+      "listView": "List View",
+      "boardView": "Board View",
+      "boardSoon": "Board view coming soon",
+      "newLeadSoon": "Manual lead creation coming soon",
+      "filters": {
+        "source": "Source",
+        "status": "Status",
+        "allSources": "All sources",
+        "metaOnly": "Meta",
+        "otherSources": "Other"
+      },
       "stats": {
-        "total": "Total",
-        "new": "New",
-        "contacted": "Contacted",
+        "total": "Total Leads",
+        "new": "New Leads",
+        "contacted": "In Treatment",
         "converted": "Converted",
         "openTasks": "Open Tasks"
       },
-      "searchPlaceholder": "Search by name, phone, email, source, or lead details...",
+      "searchPlaceholder": "Search by name, phone, email or source...",
       "emptyTitle": "No leads to display",
       "emptyDescription": "When a new lead comes in, it will appear here with all form fields.",
       "table": {
@@ -1267,8 +1280,10 @@
         "status": "Status",
         "nextTask": "Next Task",
         "createdDate": "Created Date",
+        "agent": "Agent",
         "actions": "Actions"
       },
+      "unassignedAgent": "Unassigned",
       "noContactDetails": "No contact details",
       "noAdditionalData": "No additional data",
       "noNextTask": "No task",
