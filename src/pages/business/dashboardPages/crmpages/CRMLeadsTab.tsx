@@ -1801,7 +1801,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   style={{ direction: "ltr" }}
                 >
                   <div dir={dir}>
-                  <div className="sticky top-0 z-10 grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] gap-2 border-b border-slate-200 bg-[#F8FAFC] px-3 py-2 text-[10px] font-black uppercase tracking-wide text-slate-400 xl:hidden">
+                  <div className="sticky top-0 z-10 grid grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] gap-2 border-b border-slate-200 bg-[#F8FAFC] px-3 py-2 text-center text-[10px] font-black uppercase tracking-wide text-slate-400 xl:hidden">
                     <div>{t("crm.common.phone")}</div>
                     <div>{t("crm.common.name")}</div>
                     <div>{t("crm.leads.table.createdDate")}</div>
@@ -1840,7 +1840,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           </div>
                         </div>
 
-                        <div className="px-3 py-1.5 text-[10px] font-black text-slate-500 xl:hidden">
+                        <div className="px-3 py-1.5 text-center text-[10px] font-black text-slate-500 xl:hidden">
                           {group.label}
                         </div>
 
@@ -2002,15 +2002,15 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                   ].join(" ")}
                                 >
                                   <p
-                                    className="truncate text-[11px] font-bold text-slate-700"
+                                    className="truncate text-center text-[11px] font-bold text-slate-700"
                                     dir="ltr"
                                   >
                                     {lead.phone || emDash}
                                   </p>
-                                  <p className="truncate text-[11px] font-black text-slate-900">
+                                  <p className="truncate text-center text-[11px] font-black text-slate-900">
                                     {leadName}
                                   </p>
-                                  <p className="truncate text-[10px] font-bold text-slate-500">
+                                  <p className="truncate text-center text-[10px] font-bold text-slate-500">
                                     {formatDate(leadCreatedAt, locale, emDash)}
                                   </p>
                                 </article>
@@ -2173,61 +2173,57 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </header>
 
               {!isDesktopLeads && leadDrawerView === "form" ? (
-                <>
-                  <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-3">
-                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-                        <h3 className="text-base font-black text-slate-800">
-                          {t("crm.leads.drawer.allFormData")}
-                        </h3>
-                        <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
-                          {t("crm.leads.drawer.fieldsCount", {
-                            count: selectedDetails.length,
-                          })}
-                        </span>
+                <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-3">
+                  <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                      <h3 className="text-base font-black text-slate-800">
+                        {t("crm.leads.drawer.allFormData")}
+                      </h3>
+                      <span className="rounded-full bg-sky-50 px-2.5 py-0.5 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
+                        {t("crm.leads.drawer.fieldsCount", {
+                          count: selectedDetails.length,
+                        })}
+                      </span>
+                    </div>
+
+                    {selectedDetails.length > 0 ? (
+                      <div className="grid gap-2">
+                        {selectedDetails.map((detail, index) => (
+                          <DetailRow
+                            key={`${selectedLead._id}-mobile-form-${detail.label}-${index}`}
+                            label={detail.label}
+                            value={detail.value}
+                          />
+                        ))}
                       </div>
-
-                      {selectedDetails.length > 0 ? (
-                        <div className="grid gap-2">
-                          {selectedDetails.map((detail, index) => (
-                            <DetailRow
-                              key={`${selectedLead._id}-mobile-form-${detail.label}-${index}`}
-                              label={detail.label}
-                              value={detail.value}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
-                          <p className="text-sm font-bold text-slate-400">
-                            {t("crm.leads.drawer.noFormData")}
-                          </p>
-                        </div>
-                      )}
-                    </section>
-
-                    {selectedLead.message && (
-                      <section className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                        <h3 className="mb-2 text-sm font-black text-slate-800">
-                          {t("crm.leads.drawer.formNote")}
-                        </h3>
-                        <p className="rounded-xl bg-slate-50 p-3 text-sm font-bold leading-6 text-slate-600">
-                          {selectedLead.message}
+                    ) : (
+                      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center">
+                        <p className="text-sm font-bold text-slate-400">
+                          {t("crm.leads.drawer.noFormData")}
                         </p>
-                      </section>
+                      </div>
                     )}
-                  </div>
+                  </section>
 
-                  <div className="shrink-0 border-t border-slate-200 bg-white p-3">
-                    <button
-                      type="button"
-                      onClick={() => setLeadDrawerView("full")}
-                      className="inline-flex h-11 w-full items-center justify-center rounded-xl bg-[#6D28D9] text-sm font-black text-white transition hover:bg-[#5B21B6]"
-                    >
-                      {t("crm.leads.manageLead")}
-                    </button>
-                  </div>
-                </>
+                  {selectedLead.message && (
+                    <section className="mt-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <h3 className="mb-2 text-sm font-black text-slate-800">
+                        {t("crm.leads.drawer.formNote")}
+                      </h3>
+                      <p className="rounded-xl bg-slate-50 p-3 text-sm font-bold leading-6 text-slate-600">
+                        {selectedLead.message}
+                      </p>
+                    </section>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => setLeadDrawerView("full")}
+                    className="mt-3 inline-flex h-11 w-full items-center justify-center rounded-xl bg-[#6D28D9] text-sm font-black text-white transition hover:bg-[#5B21B6]"
+                  >
+                    {t("crm.leads.manageLead")}
+                  </button>
+                </div>
               ) : (
               <div
                 className={[
