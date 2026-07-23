@@ -11,34 +11,26 @@ type AdNetworkPickerModalProps = {
   onSelect: (network: AdNetworkId) => void;
 };
 
-function MetaLogo() {
+function NetworkLogo({
+  src,
+  alt,
+  wide = false,
+}: {
+  src: string;
+  alt: string;
+  wide?: boolean;
+}) {
   return (
-    <svg viewBox="0 0 48 32" className="h-11 w-16" aria-hidden>
-      <path
-        fill="#0081FB"
-        d="M24.1 4.2c-4.2 0-7 2.3-8.3 6.7 1.7-2.2 3.6-3 5.8-2.5 1.2.3 2.1 1.1 3.1 2.1 1.6 1.6 3.5 3.5 7.4 3.5 4.2 0 7-2.3 8.3-6.7-1.7 2.2-3.6 3-5.8 2.5-1.2-.3-2.1-1.1-3.1-2.1-1.6-1.6-3.5-3.5-7.4-3.5zm-8.3 9c-4.2 0-7 2.3-8.3 6.7 1.7-2.2 3.6-3 5.8-2.5 1.2.3 2.1 1.1 3.1 2.1 1.6 1.6 3.5 3.5 7.4 3.5 4.2 0 7-2.3 8.3-6.7-1.7 2.2-3.6 3-5.8 2.5-1.2-.3-2.1-1.1-3.1-2.1-1.6-1.6-3.5-3.5-7.4-3.5z"
-      />
-    </svg>
-  );
-}
-
-/** Official-style Google Ads "A" mark (not the Google G). */
-function GoogleAdsLogo() {
-  return (
-    <svg viewBox="0 0 48 48" className="h-12 w-12" aria-hidden>
-      {/* Yellow right bar of the A */}
-      <path
-        fill="#FBBC04"
-        d="M33.6 6.5c1.5-2.7 5.2-3.7 7.9-2.1 2.5 1.4 3.4 4.7 2 7.2L28.2 40.8c-.9 1.7-2.7 2.7-4.6 2.7h-.4L33.6 6.5z"
-      />
-      {/* Blue left bar of the A */}
-      <path
-        fill="#4285F4"
-        d="M20.2 6.5C18.7 3.8 15 2.8 12.3 4.4 9.8 5.8 8.9 9.1 10.3 11.6l15.3 29.2c.9 1.7 2.7 2.7 4.6 2.7h.5L20.2 6.5z"
-      />
-      {/* Green circle */}
-      <circle cx="12.8" cy="35.2" r="7.6" fill="#34A853" />
-    </svg>
+    <img
+      src={src}
+      alt={alt}
+      className={
+        wide
+          ? "h-11 w-16 object-contain"
+          : "h-12 w-12 object-contain"
+      }
+      draggable={false}
+    />
   );
 }
 
@@ -86,13 +78,13 @@ const NETWORKS: Array<{
     id: "meta",
     labelKey: "meta",
     available: true,
-    logo: <MetaLogo />,
+    logo: <NetworkLogo src="/meta.svg" alt="Meta" wide />,
   },
   {
     id: "google",
     labelKey: "google",
     available: true,
-    logo: <GoogleAdsLogo />,
+    logo: <NetworkLogo src="/google-ads.svg" alt="Google Ads" />,
   },
   {
     id: "linkedin",
