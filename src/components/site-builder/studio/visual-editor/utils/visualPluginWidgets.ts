@@ -42,6 +42,38 @@ export function resolvePluginWidgetSelectionTarget(
   return null;
 }
 
+export function fitPluginWidgetShellToContent(node: HTMLElement) {
+  const shell = getPluginWidgetShell(node);
+  if (!shell) return;
+
+  const trigger = shell.querySelector<HTMLElement>('[data-bizuply-site-auth-button="true"]');
+  if (!trigger) return;
+
+  const rect = trigger.getBoundingClientRect();
+  const padding = 6;
+  const width = Math.max(32, Math.ceil(rect.width) + padding);
+  const height = Math.max(32, Math.ceil(rect.height) + padding);
+
+  shell.style.width = `${width}px`;
+  shell.style.height = `${height}px`;
+  shell.style.minWidth = `${width}px`;
+  shell.style.minHeight = `${height}px`;
+  shell.style.maxWidth = `${width}px`;
+  shell.style.maxHeight = `${height}px`;
+  shell.style.overflow = "visible";
+  shell.style.boxSizing = "border-box";
+
+  const mount = shell.querySelector<HTMLElement>('[data-bizuply-widget="site-auth"]');
+  if (mount) {
+    mount.style.width = "100%";
+    mount.style.height = "100%";
+    mount.style.minHeight = "0";
+    mount.style.display = "inline-flex";
+    mount.style.alignItems = "center";
+    mount.style.justifyContent = "center";
+  }
+}
+
 export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
   if (!root) return;
 

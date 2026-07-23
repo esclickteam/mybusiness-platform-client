@@ -3264,7 +3264,10 @@ export function useVisualEditorState({
   );
 
   const insertHtmlWidget = useCallback(
-    async (html: string, options?: { label?: string; width?: number; height?: number }) => {
+    async (
+      html: string,
+      options?: { label?: string; width?: number; height?: number; fitContent?: boolean }
+    ) => {
       const root = canvasRef.current;
       if (!root) return "";
 
@@ -3285,8 +3288,13 @@ export function useVisualEditorState({
       const id = createVisualCustomId("custom-html");
       const now = new Date().toISOString();
       const label = String(options?.label || "תוסף").trim() || "תוסף";
-      const width = Math.max(160, Number(options?.width) || 520);
-      const height = Math.max(80, Number(options?.height) || 180);
+      const fitContent = options?.fitContent === true;
+      const width = fitContent
+        ? Math.max(32, Number(options?.width) || 48)
+        : Math.max(160, Number(options?.width) || 520);
+      const height = fitContent
+        ? Math.max(32, Number(options?.height) || 48)
+        : Math.max(80, Number(options?.height) || 180);
       const x = 72;
       const y = 96;
 
@@ -3314,8 +3322,8 @@ export function useVisualEditorState({
           translateY: y,
           width: `${width}px`,
           height: `${height}px`,
-          minWidth: "160px",
-          minHeight: "80px",
+          minWidth: fitContent ? "32px" : "160px",
+          minHeight: fitContent ? "32px" : "80px",
           zIndex: 9000,
         });
 
@@ -3324,7 +3332,7 @@ export function useVisualEditorState({
           width: `${width}px`,
           height: `${height}px`,
           overflow: "visible",
-          borderRadius: "16px",
+          borderRadius: fitContent ? "0px" : "16px",
           boxSizing: "border-box",
         } as StylePatch);
 

@@ -16,9 +16,9 @@ export type PluginEditorAction = {
 export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   "site-auth": {
     pluginKey: "site-auth",
-    kind: "widget",
+    kind: "overlay",
     label: "כפתור התחברות",
-    description: "כפתור + טופס התחברות — הופך אוטומטית להתנתקות",
+    description: "כפתור צף — גרירה כמו גלגל המזל, לחיצה לדף התחברות",
   },
   "benefits-wheel": {
     pluginKey: "benefits-wheel",

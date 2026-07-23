@@ -15,6 +15,8 @@ export type SiteMemberProfile = {
   email: string;
   username: string;
   displayName: string;
+  phone?: string;
+  crmClientId?: string | null;
   status: "active" | "pending" | "blocked";
   lastLoginAt?: string | null;
   createdAt?: string;
@@ -27,13 +29,30 @@ export type SiteAuthSettings = {
   logoutButtonLabel: string;
   allowSelfRegister: boolean;
   loginPageTitle: string;
+  loginSubtitle: string;
+  registerTitle: string;
+  registerSubtitle: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
+  showTrigger?: boolean;
   useLoginModal: boolean;
   buttonMode: "floating" | "inline" | "both";
+  buttonDisplay: "button" | "icon" | "text";
+  buttonTransparent: boolean;
+  buttonTextColor: string;
   showMemberName: boolean;
   triggerPosition: { x: number; y: number };
   memberAreaPath: string;
+  defaultAddAsCrmClient: boolean;
+  autoAddRegisterAsCrmClient: boolean;
+  registerCollectPhone: boolean;
+  formBackgroundColor: string;
+  formTextColor: string;
+  formLabelColor: string;
+  formAccentColor: string;
+  formButtonTextColor: string;
+  formBorderColor: string;
+  formBorderRadius: number;
 };
 
 function tokenStorageKey(slug: string) {
@@ -116,6 +135,7 @@ export async function siteMemberRegister(
     username?: string;
     password: string;
     displayName?: string;
+    phone?: string;
   }
 ) {
   const data = await siteAuthRequest<{
@@ -181,29 +201,52 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     | Record<string, unknown>
     | undefined;
 
+  const triggerRaw = stored?.triggerPosition as { x?: number; y?: number } | undefined;
+  let triggerY = Number(triggerRaw?.y ?? 82);
+  if (triggerY < 24) triggerY = 82;
+
   return {
     isActive: stored?.isActive !== false,
     loginButtonLabel: String(stored?.loginButtonLabel || "התחברות"),
     logoutButtonLabel: String(stored?.logoutButtonLabel || "התנתקות"),
     allowSelfRegister: Boolean(stored?.allowSelfRegister),
     loginPageTitle: String(stored?.loginPageTitle || "התחברות"),
+    loginSubtitle: String(stored?.loginSubtitle || ""),
+    registerTitle: String(stored?.registerTitle || "הרשמה"),
+    registerSubtitle: String(stored?.registerSubtitle || ""),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
-    useLoginModal: stored?.useLoginModal !== false,
+    showTrigger: stored?.showTrigger !== false,
+    useLoginModal: Boolean(stored?.useLoginModal),
     buttonMode: normalizeButtonMode(stored?.buttonMode),
+    buttonDisplay: ["button", "icon", "text"].includes(String(stored?.buttonDisplay))
+      ? (stored?.buttonDisplay as SiteAuthSettings["buttonDisplay"])
+      : "icon",
+    buttonTransparent: stored?.buttonTransparent !== false,
+    buttonTextColor: String(stored?.buttonTextColor || ""),
     showMemberName: stored?.showMemberName !== false,
     triggerPosition: {
-      x: Number(stored?.triggerPosition?.x ?? 92),
-      y: Number(stored?.triggerPosition?.y ?? 6),
+      x: Number(triggerRaw?.x ?? 88),
+      y: triggerY,
     },
     memberAreaPath: String(stored?.memberAreaPath || "/member"),
+    defaultAddAsCrmClient: Boolean(stored?.defaultAddAsCrmClient),
+    autoAddRegisterAsCrmClient: Boolean(stored?.autoAddRegisterAsCrmClient),
+    registerCollectPhone: Boolean(stored?.registerCollectPhone),
+    formBackgroundColor: String(stored?.formBackgroundColor || "#ffffff"),
+    formTextColor: String(stored?.formTextColor || "#1e293b"),
+    formLabelColor: String(stored?.formLabelColor || "#334155"),
+    formAccentColor: String(stored?.formAccentColor || ""),
+    formButtonTextColor: String(stored?.formButtonTextColor || "#ffffff"),
+    formBorderColor: String(stored?.formBorderColor || "#e2e8f0"),
+    formBorderRadius: Number(stored?.formBorderRadius ?? 16),
   };
 }
 
 function normalizeButtonMode(value: unknown): SiteAuthSettings["buttonMode"] {
-  const mode = String(value || "both");
-  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "both";
+  const mode = String(value || "floating");
+  if (mode === "inline" || mode === "both") return "floating";
+  return "floating";
 }
 
 export function siteHasAuthPlugin(site: Record<string, unknown> | null | undefined) {

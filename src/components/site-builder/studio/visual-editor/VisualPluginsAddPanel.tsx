@@ -114,15 +114,29 @@ export default function VisualPluginsAddPanel({
     if (!siteId) return;
     try {
       const current = await getSitePluginSettings(siteId, plugin.key);
+      const defaultPosition = { x: 88, y: 82 };
+
       await saveSitePluginSettings(siteId, plugin.key, {
         ...current,
         isActive: true,
         showTrigger: true,
-        triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
+        ...(plugin.key === "site-auth"
+          ? {
+              showLoginButton: true,
+              buttonMode: "floating",
+              buttonDisplay: current?.buttonDisplay || "icon",
+              buttonTransparent: current?.buttonTransparent !== false,
+            }
+          : {}),
+        triggerPosition: current?.triggerPosition || defaultPosition,
       });
       setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
       onOverlayInstalled?.();
-      onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
+      onAdded?.(
+        plugin.key === "site-auth"
+          ? `«${plugin.name}» הופעל — גררו את האייקון הצף למיקום הרצוי (כמו גלגל המזל)`
+          : `«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`
+      );
     } catch {
       onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
     }
@@ -185,8 +199,11 @@ export default function VisualPluginsAddPanel({
     } else if (typeof editor?.insertHtmlWidget === "function") {
       await editor.insertHtmlWidget(html, {
         label: plugin.name,
-        width: plugin.key === "countdown" ? 520 : undefined,
-        height: plugin.key === "countdown" ? 180 : undefined,
+        width:
+          plugin.key === "countdown" ? 520 : plugin.key === "site-auth" ? 48 : undefined,
+        height:
+          plugin.key === "countdown" ? 180 : plugin.key === "site-auth" ? 48 : undefined,
+        fitContent: plugin.key === "site-auth",
       });
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);

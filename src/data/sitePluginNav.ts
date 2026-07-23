@@ -33,6 +33,7 @@ export type SitePanelSection =
   | "reviews"
   | "club"
   | "site-auth"
+  | "site-members"
   | "heatmap"
   | "form-abandonment"
   | "journey-recording"
@@ -83,6 +84,7 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   reviews: "reviews",
   club: "club",
   "site-auth": "site-auth",
+  "site-members": "site-members",
   heatmap: "heatmap",
   "form-abandonment": "form-abandonment",
   "journey-recording": "journey-recording",
@@ -105,6 +107,7 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   reviews: "#F59E0B",
   club: "#8B5CF6",
   "site-auth": "#6366F1",
+  "site-members": "#4F46E5",
   heatmap: "#EF4444",
   "form-abandonment": "#F97316",
   "journey-recording": "#EC4899",
@@ -166,8 +169,13 @@ export const SECTION_META: Record<
     pluginKey: "club",
   },
   "site-auth": {
-    label: "התחברות ואזור אישי",
-    description: "משתמשים, סיסמאות והתחברות ללקוחות האתר",
+    label: "התחברות ועיצוב",
+    description: "כפתור, טופס והגדרות התחברות ללקוחות האתר",
+    pluginKey: "site-auth",
+  },
+  "site-members": {
+    label: "משתמשי האתר",
+    description: "ניהול משתמשים, סיסמאות וקישור ל-CRM",
     pluginKey: "site-auth",
   },
   heatmap: {
@@ -250,6 +258,8 @@ export function getPluginIcon(key: string) {
       return Users;
     case "site-auth":
       return LogIn;
+    case "site-members":
+      return Users;
     case "heatmap":
       return Flame;
     case "form-abandonment":
