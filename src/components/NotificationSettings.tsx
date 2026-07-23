@@ -267,6 +267,8 @@ export function NotificationSettingsPanel({
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
       } else if (result.reason === "unsupported") {
         setSupported(false);
+      } else if (result.reason === "ios-install") {
+        setShowGuide(true);
       }
     } finally {
       setBusy(false);
@@ -285,10 +287,18 @@ export function NotificationSettingsPanel({
     setTestMessage("");
 
     try {
-      await ensurePushSubscription();
+      const ensure = await ensurePushSubscription();
+      if (!ensure.ok && ensure.reason === "ios-install") {
+        setShowGuide(true);
+        setTestMessage(
+          "באייפון צריך לפתוח מתוך האפליקציה המותקנת במסך הבית"
+        );
+        return;
+      }
+
       const res = await API.post("/push/test");
       setServerReady(Boolean(res.data?.ok || res.data?.sent > 0));
-      setDeviceCount(Number(res.data?.devices || deviceCount));
+      setDeviceCount(Number(res.data?.deviceCount || res.data?.sent || deviceCount));
       setTestMessage(res.data?.message || "נשלחה התראת בדיקה");
     } catch (err) {
       setTestMessage(
@@ -369,6 +379,13 @@ export function NotificationSettingsPanel({
           {supported && permission === "denied" && (
             <div className="mb-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
               התראות חסומות. לחצ/י 🔒 ליד כתובת האתר → התראות → אפשר/י.
+            </div>
+          )}
+
+          {supported && iosNeedsInstall && (
+            <div className="mb-2 rounded-2xl border border-orange-200 bg-orange-50 p-3 text-xs font-bold text-orange-800">
+              באייפון חייבים להתקין את BizUply למסך הבית (Safari → שיתוף → הוסף
+              למסך הבית) ואז לפתוח מהאייקון — אחרת Push לטלפון לא יעבוד.
             </div>
           )}
 

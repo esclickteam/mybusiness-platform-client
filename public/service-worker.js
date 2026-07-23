@@ -1,13 +1,22 @@
 /* eslint-disable no-restricted-globals */
 
 // Activate updated service workers immediately.
-self.addEventListener("install", () => {
+self.addEventListener("install", (event) => {
   self.skipWaiting();
+  event.waitUntil(Promise.resolve());
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(self.clients.claim());
 });
+
+function absoluteAsset(path) {
+  try {
+    return new URL(path, self.location.origin).href;
+  } catch {
+    return path;
+  }
+}
 
 // Push event sent from the server (Web Push / VAPID)
 self.addEventListener("push", (event) => {
@@ -22,14 +31,17 @@ self.addEventListener("push", (event) => {
   const title = data.title || "BizUply";
   const options = {
     body: data.body || "יש לך התראה חדשה",
-    icon: data.icon || "/android-chrome-192x192.png",
-    badge: data.badge || "/favicon-32x32.png",
+    icon: absoluteAsset(
+      (data.icon && String(data.icon)) || "/android-chrome-192x192.png"
+    ),
+    badge: absoluteAsset(
+      (data.badge && String(data.badge)) || "/favicon-v2.png"
+    ),
     dir: "rtl",
     lang: "he",
-    tag: data.tag || undefined,
-    renotify: Boolean(data.tag),
-    // Haptic feedback on phones (Android). The device plays its default
-    // notification sound automatically.
+    tag: data.tag || "bizuply-notification",
+    renotify: true,
+    requireInteraction: false,
     vibrate: data.vibrate || [200, 100, 200],
     silent: false,
     data: {
@@ -37,7 +49,27 @@ self.addEventListener("push", (event) => {
     },
   };
 
-  event.waitUntil(self.registration.showNotification(title, options));
+  event.waitUntil(
+    self.registration.showNotification(title, options).catch((err) => {
+      console.error("[sw] showNotification failed", err);
+    })
+  );
+});
+
+// Browser rotated/expired the push subscription — ask open clients to re-bind.
+self.addEventListener("pushsubscriptionchange", (event) => {
+  event.waitUntil(
+    (async () => {
+      const clientsList = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+
+      for (const client of clientsList) {
+        client.postMessage({ type: "PUSH_SUBSCRIPTION_CHANGED" });
+      }
+    })()
+  );
 });
 
 // Click on a notification → focus an open tab or open a new one at the target

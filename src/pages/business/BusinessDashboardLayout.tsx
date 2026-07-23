@@ -23,7 +23,7 @@ import {
   clearAdminActiveBusinessId,
   setAdminActiveBusinessId,
 } from "../../utils/adminTenant";
-import { ensurePushSubscription } from "../../utils/push";
+import { ensurePushSubscription, listenForPushSubscriptionChange } from "../../utils/push";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -213,6 +213,8 @@ export default function BusinessDashboardLayout() {
     if (!businessId) return;
     void ensurePushSubscription();
   }, [businessId]);
+
+  useEffect(() => listenForPushSubscriptionChange(), []);
 
   /* ============================
      Persist current dashboard route (survives refresh)
