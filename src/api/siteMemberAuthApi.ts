@@ -15,6 +15,8 @@ export type SiteMemberProfile = {
   email: string;
   username: string;
   displayName: string;
+  phone?: string;
+  crmClientId?: string | null;
   status: "active" | "pending" | "blocked";
   lastLoginAt?: string | null;
   createdAt?: string;
@@ -27,6 +29,9 @@ export type SiteAuthSettings = {
   logoutButtonLabel: string;
   allowSelfRegister: boolean;
   loginPageTitle: string;
+  loginSubtitle: string;
+  registerTitle: string;
+  registerSubtitle: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
   useLoginModal: boolean;
@@ -34,6 +39,16 @@ export type SiteAuthSettings = {
   showMemberName: boolean;
   triggerPosition: { x: number; y: number };
   memberAreaPath: string;
+  defaultAddAsCrmClient: boolean;
+  autoAddRegisterAsCrmClient: boolean;
+  registerCollectPhone: boolean;
+  formBackgroundColor: string;
+  formTextColor: string;
+  formLabelColor: string;
+  formAccentColor: string;
+  formButtonTextColor: string;
+  formBorderColor: string;
+  formBorderRadius: number;
 };
 
 function tokenStorageKey(slug: string) {
@@ -116,6 +131,7 @@ export async function siteMemberRegister(
     username?: string;
     password: string;
     displayName?: string;
+    phone?: string;
   }
 ) {
   const data = await siteAuthRequest<{
@@ -187,16 +203,29 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     logoutButtonLabel: String(stored?.logoutButtonLabel || "התנתקות"),
     allowSelfRegister: Boolean(stored?.allowSelfRegister),
     loginPageTitle: String(stored?.loginPageTitle || "התחברות"),
+    loginSubtitle: String(stored?.loginSubtitle || ""),
+    registerTitle: String(stored?.registerTitle || "הרשמה"),
+    registerSubtitle: String(stored?.registerSubtitle || ""),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
     useLoginModal: stored?.useLoginModal !== false,
     buttonMode: normalizeButtonMode(stored?.buttonMode),
     showMemberName: stored?.showMemberName !== false,
     triggerPosition: {
-      x: Number(stored?.triggerPosition?.x ?? 92),
-      y: Number(stored?.triggerPosition?.y ?? 6),
+      x: Number((stored?.triggerPosition as { x?: number })?.x ?? 92),
+      y: Number((stored?.triggerPosition as { y?: number })?.y ?? 6),
     },
     memberAreaPath: String(stored?.memberAreaPath || "/member"),
+    defaultAddAsCrmClient: Boolean(stored?.defaultAddAsCrmClient),
+    autoAddRegisterAsCrmClient: Boolean(stored?.autoAddRegisterAsCrmClient),
+    registerCollectPhone: Boolean(stored?.registerCollectPhone),
+    formBackgroundColor: String(stored?.formBackgroundColor || "#ffffff"),
+    formTextColor: String(stored?.formTextColor || "#1e293b"),
+    formLabelColor: String(stored?.formLabelColor || "#334155"),
+    formAccentColor: String(stored?.formAccentColor || ""),
+    formButtonTextColor: String(stored?.formButtonTextColor || "#ffffff"),
+    formBorderColor: String(stored?.formBorderColor || "#e2e8f0"),
+    formBorderRadius: Number(stored?.formBorderRadius ?? 16),
   };
 }
 

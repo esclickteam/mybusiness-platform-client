@@ -9,30 +9,82 @@ export function mergeSiteAuthSettings(
   fallback?: Partial<SiteAuthWidgetSettings>
 ): SiteAuthWidgetSettings {
   const stored = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const base = (fallback && typeof fallback === "object" ? fallback : {}) as Record<
-    string,
-    unknown
-  >;
+  const base = readPartialSettings(fallback);
 
-  const triggerRaw = (stored.triggerPosition || base.triggerPosition) as
+  const triggerRaw = (stored.triggerPosition || fallback?.triggerPosition) as
     | { x?: number; y?: number }
     | undefined;
 
   return {
+    ...base,
     isActive: stored.isActive !== false && base.isActive !== false,
-    loginButtonLabel: String(stored.loginButtonLabel || base.loginButtonLabel || "התחברות"),
-    logoutButtonLabel: String(stored.logoutButtonLabel || base.logoutButtonLabel || "התנתקות"),
+    loginButtonLabel: String(stored.loginButtonLabel || base.loginButtonLabel),
+    logoutButtonLabel: String(stored.logoutButtonLabel || base.logoutButtonLabel),
     allowSelfRegister: Boolean(stored.allowSelfRegister ?? base.allowSelfRegister),
-    loginPageTitle: String(stored.loginPageTitle || base.loginPageTitle || "התחברות"),
+    loginPageTitle: String(stored.loginPageTitle || base.loginPageTitle),
+    loginSubtitle: String(stored.loginSubtitle ?? base.loginSubtitle),
+    registerTitle: String(stored.registerTitle || base.registerTitle),
+    registerSubtitle: String(stored.registerSubtitle ?? base.registerSubtitle),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
     useLoginModal: stored.useLoginModal !== false,
-    buttonMode: normalizeButtonMode(stored.buttonMode || base.buttonMode),
+    buttonMode: normalizeButtonMode(stored.buttonMode ?? base.buttonMode),
     showMemberName: stored.showMemberName !== false,
-    memberAreaPath: String(stored.memberAreaPath || base.memberAreaPath || "/member"),
+    memberAreaPath: String(stored.memberAreaPath || base.memberAreaPath),
+    defaultAddAsCrmClient: Boolean(
+      stored.defaultAddAsCrmClient ?? base.defaultAddAsCrmClient
+    ),
+    autoAddRegisterAsCrmClient: Boolean(
+      stored.autoAddRegisterAsCrmClient ?? base.autoAddRegisterAsCrmClient
+    ),
+    registerCollectPhone: Boolean(
+      stored.registerCollectPhone ?? base.registerCollectPhone
+    ),
+    formBackgroundColor: String(stored.formBackgroundColor || base.formBackgroundColor),
+    formTextColor: String(stored.formTextColor || base.formTextColor),
+    formLabelColor: String(stored.formLabelColor || base.formLabelColor),
+    formAccentColor: String(stored.formAccentColor ?? base.formAccentColor),
+    formButtonTextColor: String(stored.formButtonTextColor || base.formButtonTextColor),
+    formBorderColor: String(stored.formBorderColor || base.formBorderColor),
+    formBorderRadius: Number(stored.formBorderRadius ?? base.formBorderRadius),
     triggerPosition: {
-      x: Number(triggerRaw?.x ?? 92),
-      y: Number(triggerRaw?.y ?? 6),
+      x: Number(triggerRaw?.x ?? base.triggerPosition.x),
+      y: Number(triggerRaw?.y ?? base.triggerPosition.y),
+    },
+  };
+}
+
+function readPartialSettings(
+  fallback?: Partial<SiteAuthWidgetSettings>
+): SiteAuthWidgetSettings {
+  return {
+    isActive: fallback?.isActive !== false,
+    loginButtonLabel: String(fallback?.loginButtonLabel || "התחברות"),
+    logoutButtonLabel: String(fallback?.logoutButtonLabel || "התנתקות"),
+    allowSelfRegister: Boolean(fallback?.allowSelfRegister),
+    loginPageTitle: String(fallback?.loginPageTitle || "התחברות"),
+    loginSubtitle: String(fallback?.loginSubtitle || ""),
+    registerTitle: String(fallback?.registerTitle || "הרשמה"),
+    registerSubtitle: String(fallback?.registerSubtitle || ""),
+    forgotPasswordEnabled: fallback?.forgotPasswordEnabled !== false,
+    showLoginButton: fallback?.showLoginButton !== false,
+    useLoginModal: fallback?.useLoginModal !== false,
+    buttonMode: normalizeButtonMode(fallback?.buttonMode),
+    showMemberName: fallback?.showMemberName !== false,
+    memberAreaPath: String(fallback?.memberAreaPath || "/member"),
+    defaultAddAsCrmClient: Boolean(fallback?.defaultAddAsCrmClient),
+    autoAddRegisterAsCrmClient: Boolean(fallback?.autoAddRegisterAsCrmClient),
+    registerCollectPhone: Boolean(fallback?.registerCollectPhone),
+    formBackgroundColor: String(fallback?.formBackgroundColor || "#ffffff"),
+    formTextColor: String(fallback?.formTextColor || "#1e293b"),
+    formLabelColor: String(fallback?.formLabelColor || "#334155"),
+    formAccentColor: String(fallback?.formAccentColor || ""),
+    formButtonTextColor: String(fallback?.formButtonTextColor || "#ffffff"),
+    formBorderColor: String(fallback?.formBorderColor || "#e2e8f0"),
+    formBorderRadius: Number(fallback?.formBorderRadius ?? 16),
+    triggerPosition: {
+      x: Number(fallback?.triggerPosition?.x ?? 92),
+      y: Number(fallback?.triggerPosition?.y ?? 6),
     },
   };
 }
@@ -60,4 +112,10 @@ export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
 export function shouldMountInlineAuthButton(settings: SiteAuthWidgetSettings) {
   if (!settings.isActive) return false;
   return settings.buttonMode === "inline" || settings.buttonMode === "both";
+}
+
+export function shouldCollectRegisterPhone(settings: SiteAuthWidgetSettings) {
+  return (
+    settings.registerCollectPhone || settings.autoAddRegisterAsCrmClient
+  );
 }

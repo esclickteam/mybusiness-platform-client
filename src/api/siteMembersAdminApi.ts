@@ -17,7 +17,9 @@ export async function createSiteMember(
     username?: string;
     password: string;
     displayName?: string;
+    phone?: string;
     status?: SiteMemberProfile["status"];
+    addAsCrmClient?: boolean;
   }
 ) {
   const { data } = await API.post(`/site-builder/sites/${siteId}/site-members`, payload);

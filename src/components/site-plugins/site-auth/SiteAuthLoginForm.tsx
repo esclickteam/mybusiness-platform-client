@@ -2,10 +2,15 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import type { SiteAuthWidgetSettings } from "./siteAuthUtils";
+import { shouldCollectRegisterPhone } from "./siteAuthUtils";
+import {
+  buildSiteAuthButtonStyle,
+  buildSiteAuthInputStyle,
+  buildSiteAuthLabelStyle,
+  buildSiteAuthLinkStyle,
+  resolveSiteAuthAccentColor,
+} from "./siteAuthFormStyles";
 import { useSiteMemberAuth } from "../../../context/SiteMemberAuthContext";
-
-const inputClass =
-  "w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-800 outline-none transition focus:border-violet-400 focus:ring-2 focus:ring-violet-100";
 
 type SiteAuthLoginFormProps = {
   settings: SiteAuthWidgetSettings;
@@ -28,9 +33,16 @@ export default function SiteAuthLoginForm({
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const labelStyle = buildSiteAuthLabelStyle(settings);
+  const inputStyle = buildSiteAuthInputStyle(settings);
+  const buttonStyle = buildSiteAuthButtonStyle(settings, brandColor);
+  const linkStyle = buildSiteAuthLinkStyle(settings, brandColor);
+  const showPhone = mode === "register" && shouldCollectRegisterPhone(settings);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -46,6 +58,7 @@ export default function SiteAuthLoginForm({
           username: username || undefined,
           password,
           displayName: displayName || undefined,
+          phone: phone || undefined,
         });
       }
       onSuccess?.();
@@ -56,13 +69,22 @@ export default function SiteAuthLoginForm({
     }
   }
 
+  const inputClass =
+    "w-full border px-4 py-3 text-sm font-medium outline-none transition focus:ring-2";
+
   return (
     <form className={compact ? "space-y-3" : "space-y-4"} onSubmit={handleSubmit}>
       {mode === "login" ? (
         <label className="block space-y-2">
-          <span className="text-sm font-bold text-slate-700">אימייל או שם משתמש</span>
+          <span className="text-sm font-bold" style={labelStyle}>
+            אימייל או שם משתמש
+          </span>
           <input
             className={inputClass}
+            style={{
+              ...inputStyle,
+              boxShadow: `0 0 0 2px ${resolveSiteAuthAccentColor(settings, brandColor)}22`,
+            }}
             value={loginValue}
             onChange={(e) => setLoginValue(e.target.value)}
             autoComplete="username"
@@ -72,9 +94,12 @@ export default function SiteAuthLoginForm({
       ) : (
         <>
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-slate-700">אימייל</span>
+            <span className="text-sm font-bold" style={labelStyle}>
+              אימייל
+            </span>
             <input
               className={inputClass}
+              style={inputStyle}
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -82,29 +107,53 @@ export default function SiteAuthLoginForm({
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-slate-700">שם משתמש</span>
+            <span className="text-sm font-bold" style={labelStyle}>
+              שם משתמש
+            </span>
             <input
               className={inputClass}
+              style={inputStyle}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               autoComplete="username"
             />
           </label>
           <label className="block space-y-2">
-            <span className="text-sm font-bold text-slate-700">שם תצוגה</span>
+            <span className="text-sm font-bold" style={labelStyle}>
+              שם תצוגה
+            </span>
             <input
               className={inputClass}
+              style={inputStyle}
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
           </label>
+          {showPhone ? (
+            <label className="block space-y-2">
+              <span className="text-sm font-bold" style={labelStyle}>
+                טלפון{settings.autoAddRegisterAsCrmClient ? " *" : ""}
+              </span>
+              <input
+                className={inputClass}
+                style={inputStyle}
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                autoComplete="tel"
+                required={settings.autoAddRegisterAsCrmClient}
+              />
+            </label>
+          ) : null}
         </>
       )}
 
       <label className="block space-y-2">
-        <span className="text-sm font-bold text-slate-700">סיסמה</span>
+        <span className="text-sm font-bold" style={labelStyle}>
+          סיסמה
+        </span>
         <input
           className={inputClass}
+          style={inputStyle}
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -123,21 +172,22 @@ export default function SiteAuthLoginForm({
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-2xl px-4 py-3 text-sm font-black text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
-        style={{ backgroundColor: brandColor }}
+        className="w-full px-4 py-3 text-sm font-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+        style={buttonStyle}
       >
         {loading
           ? "מעבד..."
           : mode === "login"
             ? settings.loginButtonLabel
-            : "הרשמה"}
+            : settings.registerTitle || "הרשמה"}
       </button>
 
       {mode === "login" && settings.forgotPasswordEnabled ? (
         onForgotPassword ? (
           <button
             type="button"
-            className="block w-full text-center text-sm font-bold text-violet-600"
+            className="block w-full text-center text-sm font-bold"
+            style={linkStyle}
             onClick={onForgotPassword}
           >
             שכחתי סיסמה
@@ -145,7 +195,8 @@ export default function SiteAuthLoginForm({
         ) : (
           <Link
             to="/forgot-password"
-            className="block text-center text-sm font-bold text-violet-600"
+            className="block text-center text-sm font-bold"
+            style={linkStyle}
           >
             שכחתי סיסמה
           </Link>
@@ -155,7 +206,8 @@ export default function SiteAuthLoginForm({
       {settings.allowSelfRegister ? (
         <button
           type="button"
-          className="w-full text-sm font-bold text-slate-500"
+          className="w-full text-sm font-bold"
+          style={{ color: settings.formTextColor || "#64748b" }}
           onClick={() => {
             setMode(mode === "login" ? "register" : "login");
             setError("");
