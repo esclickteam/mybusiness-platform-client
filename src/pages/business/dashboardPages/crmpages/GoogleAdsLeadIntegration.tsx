@@ -5,6 +5,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Copy,
+  FlaskConical,
   KeyRound,
   Link2,
   RefreshCw,
@@ -20,6 +21,21 @@ type GoogleConnection = {
   googleKey: string;
   lastWebhookAt?: string | null;
   lastLeadId?: string;
+};
+
+type GoogleRecentLead = {
+  _id: string;
+  name?: string;
+  fullName?: string;
+  phone?: string;
+  email?: string;
+  status?: string;
+  createdAt?: string;
+  google?: {
+    formName?: string;
+    isTest?: boolean;
+    campaignId?: string;
+  };
 };
 
 type GoogleAdsLeadIntegrationProps = {
@@ -40,11 +56,14 @@ export default function GoogleAdsLeadIntegration({
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [copied, setCopied] = useState<"url" | "key" | "">("");
+  const [showCredentials, setShowCredentials] = useState(false);
   const [connection, setConnection] = useState<GoogleConnection>({
     enabled: false,
     webhookUrl: "",
     googleKey: "",
   });
+  const [recentLeads, setRecentLeads] = useState<GoogleRecentLead[]>([]);
+  const [googleLeadCount, setGoogleLeadCount] = useState(0);
 
   const tenantParams = businessId ? { businessId } : undefined;
 
@@ -55,7 +74,10 @@ export default function GoogleAdsLeadIntegration({
       const { data } = await API.get<{
         success: boolean;
         connection: GoogleConnection;
+        recentLeads?: GoogleRecentLead[];
+        googleLeadCount?: number;
       }>("/google-ads-leads/status", { params: tenantParams });
+
       setConnection(
         data.connection || {
           enabled: false,
@@ -63,6 +85,8 @@ export default function GoogleAdsLeadIntegration({
           googleKey: "",
         }
       );
+      setRecentLeads(Array.isArray(data.recentLeads) ? data.recentLeads : []);
+      setGoogleLeadCount(Number(data.googleLeadCount || 0));
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t(`${T}.errors.loadStatus`)
@@ -78,7 +102,11 @@ export default function GoogleAdsLeadIntegration({
   }, [businessId]);
 
   const runAction = async (
-    path: "/google-ads-leads/enable" | "/google-ads-leads/rotate-key" | "/google-ads-leads/disconnect",
+    path:
+      | "/google-ads-leads/enable"
+      | "/google-ads-leads/rotate-key"
+      | "/google-ads-leads/disconnect"
+      | "/google-ads-leads/send-test",
     successKey: string
   ) => {
     try {
@@ -87,16 +115,24 @@ export default function GoogleAdsLeadIntegration({
       setSuccess("");
       const { data } = await API.post<{
         success: boolean;
-        connection: GoogleConnection;
+        connection?: GoogleConnection;
+        lead?: GoogleRecentLead;
       }>(path, {}, { params: tenantParams });
-      setConnection(
-        data.connection || {
-          enabled: false,
-          webhookUrl: "",
-          googleKey: "",
-        }
-      );
+
+      if (data.connection) {
+        setConnection(data.connection);
+      }
+
+      if (path === "/google-ads-leads/enable") {
+        setShowCredentials(true);
+      }
+
+      if (path === "/google-ads-leads/disconnect") {
+        setShowCredentials(false);
+      }
+
       setSuccess(t(successKey));
+      await loadStatus();
     } catch (err) {
       setError(err instanceof Error ? err.message : t(`${T}.errors.actionFailed`));
     } finally {
@@ -114,8 +150,10 @@ export default function GoogleAdsLeadIntegration({
     }
   };
 
+  const isReady = Boolean(connection.enabled);
+
   return (
-    <div className="mx-auto w-full max-w-3xl" dir={dir}>
+    <div className="mx-auto w-full max-w-4xl" dir={dir}>
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="flex items-center justify-between gap-3 bg-[#0F766E] px-5 py-4 text-white">
           <div>
@@ -159,7 +197,7 @@ export default function GoogleAdsLeadIntegration({
             <div className="flex justify-center py-10">
               <BizuplyLoader size="sm" />
             </div>
-          ) : !connection.enabled ? (
+          ) : !isReady ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-6 text-center">
               <p className="text-sm font-semibold text-slate-600">
                 {t(`${T}.enableHint`)}
@@ -167,7 +205,9 @@ export default function GoogleAdsLeadIntegration({
               <button
                 type="button"
                 disabled={busy}
-                onClick={() => void runAction("/google-ads-leads/enable", `${T}.successEnabled`)}
+                onClick={() =>
+                  void runAction("/google-ads-leads/enable", `${T}.successEnabled`)
+                }
                 className="mt-4 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#0F766E] px-5 text-sm font-black text-white transition hover:bg-[#0D9488] disabled:opacity-60"
               >
                 {busy ? <BizuplyLoader size="xs" compact /> : <Link2 className="h-4 w-4" />}
@@ -176,63 +216,151 @@ export default function GoogleAdsLeadIntegration({
             </div>
           ) : (
             <>
-              <ol className="space-y-3 rounded-2xl border border-slate-200 bg-[#F8FAFC] p-4 text-sm font-semibold text-slate-700">
-                <li>1. {t(`${T}.steps.openAds`)}</li>
-                <li>2. {t(`${T}.steps.openForm`)}</li>
-                <li>3. {t(`${T}.steps.pasteWebhook`)}</li>
-                <li>4. {t(`${T}.steps.pasteKey`)}</li>
-                <li>5. {t(`${T}.steps.sendTest`)}</li>
-              </ol>
-
-              <div className="space-y-3">
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-slate-500">
-                    <Link2 className="h-3.5 w-3.5" />
-                    {t(`${T}.webhookUrl`)}
+              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 p-5">
+                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  <div>
+                    <div className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      {t(`${T}.readyBadge`)}
+                    </div>
+                    <h3 className="mt-3 text-2xl font-black text-slate-900">
+                      {t(`${T}.readyTitle`)}
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-sm font-semibold text-slate-600">
+                      {t(`${T}.readyDesc`)}
+                    </p>
                   </div>
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <code
-                      className="min-w-0 flex-1 break-all rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700"
-                      dir="ltr"
-                    >
-                      {connection.webhookUrl}
-                    </code>
+                  <div className="flex flex-wrap gap-2">
+                    {onBack && (
+                      <button
+                        type="button"
+                        onClick={onBack}
+                        className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#0F766E] px-4 text-xs font-black text-white"
+                      >
+                        {t(`${T}.backToCrm`)}
+                      </button>
+                    )}
                     <button
                       type="button"
-                      onClick={() => void copyValue(connection.webhookUrl, "url")}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
+                      onClick={() => setShowCredentials((value) => !value)}
+                      className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700"
                     >
-                      <Copy className="h-3.5 w-3.5" />
-                      {copied === "url" ? t(`${T}.copied`) : t(`${T}.copy`)}
+                      {showCredentials
+                        ? t(`${T}.hideCredentials`)
+                        : t(`${T}.showCredentials`)}
                     </button>
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200 p-4">
-                  <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-slate-500">
-                    <KeyRound className="h-3.5 w-3.5" />
-                    {t(`${T}.googleKey`)}
+                <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                  <div className="rounded-2xl border border-emerald-100 bg-white p-4">
+                    <p className="text-xs font-bold text-slate-500">{t(`${T}.status`)}</p>
+                    <p className="mt-1 text-lg font-black text-emerald-700">
+                      {t(`${T}.connected`)}
+                    </p>
                   </div>
-                  <div className="flex flex-col gap-2 sm:flex-row">
-                    <code
-                      className="min-w-0 flex-1 break-all rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700"
-                      dir="ltr"
-                    >
-                      {connection.googleKey}
-                    </code>
-                    <button
-                      type="button"
-                      onClick={() => void copyValue(connection.googleKey, "key")}
-                      className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
-                    >
-                      <Copy className="h-3.5 w-3.5" />
-                      {copied === "key" ? t(`${T}.copied`) : t(`${T}.copy`)}
-                    </button>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-bold text-slate-500">
+                      {t(`${T}.leadsInCrm`)}
+                    </p>
+                    <p className="mt-1 text-lg font-black text-slate-900">
+                      {googleLeadCount}
+                    </p>
+                  </div>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <p className="text-xs font-bold text-slate-500">
+                      {t(`${T}.lastWebhookLabel`)}
+                    </p>
+                    <p className="mt-1 text-sm font-black text-slate-900">
+                      {connection.lastWebhookAt
+                        ? new Date(connection.lastWebhookAt).toLocaleString()
+                        : t(`${T}.waitingFirstLead`)}
+                    </p>
                   </div>
                 </div>
               </div>
 
+              {(showCredentials || googleLeadCount === 0) && (
+                <>
+                  <ol className="space-y-3 rounded-2xl border border-slate-200 bg-[#F8FAFC] p-4 text-sm font-semibold text-slate-700">
+                    <li>1. {t(`${T}.steps.openAds`)}</li>
+                    <li>2. {t(`${T}.steps.openForm`)}</li>
+                    <li>3. {t(`${T}.steps.pasteWebhook`)}</li>
+                    <li>4. {t(`${T}.steps.pasteKey`)}</li>
+                    <li>5. {t(`${T}.steps.sendTest`)}</li>
+                  </ol>
+
+                  <div className="space-y-3">
+                    <div className="rounded-2xl border border-slate-200 p-4">
+                      <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-slate-500">
+                        <Link2 className="h-3.5 w-3.5" />
+                        {t(`${T}.webhookUrl`)}
+                      </div>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <code
+                          className="min-w-0 flex-1 break-all rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700"
+                          dir="ltr"
+                        >
+                          {connection.webhookUrl}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => void copyValue(connection.webhookUrl, "url")}
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                          {copied === "url" ? t(`${T}.copied`) : t(`${T}.copy`)}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200 p-4">
+                      <div className="mb-2 flex items-center gap-2 text-xs font-black uppercase tracking-[0.08em] text-slate-500">
+                        <KeyRound className="h-3.5 w-3.5" />
+                        {t(`${T}.googleKey`)}
+                      </div>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <code
+                          className="min-w-0 flex-1 break-all rounded-xl bg-slate-50 px-3 py-2 text-xs font-bold text-slate-700"
+                          dir="ltr"
+                        >
+                          {connection.googleKey}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => void copyValue(connection.googleKey, "key")}
+                          className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
+                        >
+                          <Copy className="h-3.5 w-3.5" />
+                          {copied === "key" ? t(`${T}.copied`) : t(`${T}.copy`)}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() =>
+                    void runAction("/google-ads-leads/send-test", `${T}.successTestLead`)
+                  }
+                  className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#0F766E] px-3 text-xs font-black text-white disabled:opacity-60"
+                >
+                  <FlaskConical className="h-3.5 w-3.5" />
+                  {t(`${T}.sendTestLead`)}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void loadStatus()}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 disabled:opacity-60"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  {t(`${T}.refresh`)}
+                </button>
                 <button
                   type="button"
                   disabled={busy}
@@ -248,7 +376,10 @@ export default function GoogleAdsLeadIntegration({
                   type="button"
                   disabled={busy}
                   onClick={() =>
-                    void runAction("/google-ads-leads/disconnect", `${T}.successDisconnected`)
+                    void runAction(
+                      "/google-ads-leads/disconnect",
+                      `${T}.successDisconnected`
+                    )
                   }
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-3 text-xs font-black text-rose-700 disabled:opacity-60"
                 >
@@ -257,13 +388,52 @@ export default function GoogleAdsLeadIntegration({
                 </button>
               </div>
 
-              {connection.lastWebhookAt && (
-                <p className="text-xs font-semibold text-slate-500">
-                  {t(`${T}.lastWebhook`, {
-                    date: new Date(connection.lastWebhookAt).toLocaleString(),
-                  })}
-                </p>
-              )}
+              <section className="rounded-2xl border border-slate-200 p-4">
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-black text-slate-800">
+                    {t(`${T}.recentTitle`)}
+                  </h3>
+                  <span className="text-xs font-bold text-slate-500">
+                    {t(`${T}.recentHint`)}
+                  </span>
+                </div>
+
+                {recentLeads.length === 0 ? (
+                  <p className="rounded-xl bg-slate-50 px-3 py-4 text-sm font-semibold text-slate-500">
+                    {t(`${T}.noLeadsYet`)}
+                  </p>
+                ) : (
+                  <div className="divide-y divide-slate-100">
+                    {recentLeads.map((lead) => (
+                      <div
+                        key={lead._id}
+                        className="flex flex-wrap items-center justify-between gap-2 py-3"
+                      >
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-black text-slate-800">
+                            {lead.fullName || lead.name || t(`${T}.unnamedLead`)}
+                          </p>
+                          <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
+                            {[lead.phone, lead.email, lead.google?.formName]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {lead.google?.isTest && (
+                            <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-700 ring-1 ring-amber-100">
+                              {t(`${T}.testBadge`)}
+                            </span>
+                          )}
+                          <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-600">
+                            {lead.status || "new"}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </section>
             </>
           )}
         </div>

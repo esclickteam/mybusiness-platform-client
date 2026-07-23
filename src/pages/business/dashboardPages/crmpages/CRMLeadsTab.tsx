@@ -155,6 +155,8 @@ type Lead = {
     formId?: string;
     formName?: string;
     campaignId?: string;
+    adgroupId?: string;
+    gclId?: string;
     createdTime?: string;
     isTest?: boolean;
   };
@@ -648,6 +650,11 @@ function getLeadSearchText(lead: Lead, t: TFunction) {
     lead.facebook?.leadId,
     lead.facebook?.formId,
     lead.facebook?.pageId,
+    lead.google?.leadId,
+    lead.google?.formId,
+    lead.google?.formName,
+    lead.google?.campaignId,
+    lead.google?.gclId,
     detailsText,
   ]
     .filter(Boolean)
@@ -795,6 +802,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [highlightedActivityId, setHighlightedActivityId] = useState("");
   const [showAdNetworkPicker, setShowAdNetworkPicker] = useState(false);
+  const [metaConnected, setMetaConnected] = useState(false);
+  const [googleConnected, setGoogleConnected] = useState(false);
 
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
@@ -863,6 +872,42 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     if (network === "meta") openMetaSetup();
     if (network === "google") openGoogleSetup();
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadConnectionBadges = async () => {
+      try {
+        const tenantParams = businessId ? { businessId } : undefined;
+        const [metaRes, googleRes] = await Promise.all([
+          API.get<{ success?: boolean; connectedPage?: { pageId?: string } | null }>(
+            "/meta-leads/status",
+            { params: tenantParams }
+          ).catch(() => null),
+          API.get<{
+            success?: boolean;
+            connection?: { enabled?: boolean };
+          }>("/google-ads-leads/status", { params: tenantParams }).catch(
+            () => null
+          ),
+        ]);
+
+        if (cancelled) return;
+        setMetaConnected(Boolean(metaRes?.data?.connectedPage?.pageId));
+        setGoogleConnected(Boolean(googleRes?.data?.connection?.enabled));
+      } catch {
+        if (!cancelled) {
+          setMetaConnected(false);
+          setGoogleConnected(false);
+        }
+      }
+    };
+
+    void loadConnectionBadges();
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, showMetaSetup, showGoogleSetup]);
 
   const fetchLeads = async (options: { silent?: boolean } = {}) => {
     try {
@@ -1576,6 +1621,21 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     {t("crm.leads.connectAdNetwork")}
                   </button>
 
+                  {(metaConnected || googleConnected) && (
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {metaConnected && (
+                        <span className="inline-flex items-center rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-black text-sky-700 ring-1 ring-sky-100">
+                          Meta
+                        </span>
+                      )}
+                      {googleConnected && (
+                        <span className="inline-flex items-center rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-700 ring-1 ring-emerald-100">
+                          Google
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <button
                     type="button"
                     onClick={() => fetchLeads()}
@@ -1765,7 +1825,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 <SourceBadge lead={lead} />
 
                                 <div>
-                                  <LeadStatusBadge status={status} />
+                                  <div className="flex flex-wrap items-center gap-1.5">
+                                    <LeadStatusBadge status={status} />
+                                    {isGoogleLead(lead) && lead.google?.isTest && (
+                                      <span className="inline-flex items-center rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-700 ring-1 ring-amber-100">
+                                        {t("crm.leads.googleIntegration.testBadge")}
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
 
                                 <div className="min-w-0">
@@ -1931,8 +1998,24 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <span>{selectedLead.phone || t("crm.common.noPhone")}</span>
                       <span>•</span>
                       <span>{getLeadSourceLabel(selectedLead, t)}</span>
+                      {isGoogleLead(selectedLead) && selectedLead.google?.isTest && (
+                        <>
+                          <span>•</span>
+                          <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-700 ring-1 ring-amber-100">
+                            {t("crm.leads.googleIntegration.testBadge")}
+                          </span>
+                        </>
+                      )}
                       <span>•</span>
-                      <span>{formatDate(selectedLead.createdAt, locale, emDash)}</span>
+                      <span>
+                        {formatDate(
+                          selectedLead.google?.createdTime ||
+                            selectedLead.facebook?.createdTime ||
+                            selectedLead.createdAt,
+                          locale,
+                          emDash
+                        )}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -2435,6 +2518,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           label={t("crm.leads.drawer.leadId")}
                           value={
                             selectedLead.externalLeadId ||
+                            selectedLead.google?.leadId ||
                             selectedLead.facebook?.leadId
                           }
                           copyable
@@ -2443,18 +2527,34 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           label={t("crm.leads.drawer.formId")}
                           value={
                             selectedLead.externalFormId ||
+                            selectedLead.google?.formId ||
                             selectedLead.facebook?.formId
                           }
                           copyable
                         />
-                        <DetailRow
-                          label={t("crm.leads.drawer.pageId")}
-                          value={
-                            selectedLead.externalPageId ||
-                            selectedLead.facebook?.pageId
-                          }
-                          copyable
-                        />
+                        {isGoogleLead(selectedLead) ? (
+                          <>
+                            <DetailRow
+                              label={t("crm.leads.drawer.campaignId")}
+                              value={selectedLead.google?.campaignId}
+                              copyable
+                            />
+                            <DetailRow
+                              label={t("crm.leads.drawer.gclid")}
+                              value={selectedLead.google?.gclId}
+                              copyable
+                            />
+                          </>
+                        ) : (
+                          <DetailRow
+                            label={t("crm.leads.drawer.pageId")}
+                            value={
+                              selectedLead.externalPageId ||
+                              selectedLead.facebook?.pageId
+                            }
+                            copyable
+                          />
+                        )}
                       </div>
                     </section>
 
