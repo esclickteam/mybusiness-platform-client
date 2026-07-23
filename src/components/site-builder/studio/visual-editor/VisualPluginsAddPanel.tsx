@@ -186,7 +186,7 @@ export default function VisualPluginsAddPanel({
       await editor.insertHtmlWidget(html, {
         label: plugin.name,
         width: plugin.key === "countdown" ? 520 : undefined,
-        height: plugin.key === "countdown" ? 148 : undefined,
+        height: plugin.key === "countdown" ? 180 : undefined,
       });
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);

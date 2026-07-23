@@ -3285,8 +3285,8 @@ export function useVisualEditorState({
       const id = createVisualCustomId("custom-html");
       const now = new Date().toISOString();
       const label = String(options?.label || "תוסף").trim() || "תוסף";
-      const width = Math.max(240, Number(options?.width) || 520);
-      const height = Math.max(120, Number(options?.height) || 148);
+      const width = Math.max(160, Number(options?.width) || 520);
+      const height = Math.max(80, Number(options?.height) || 180);
       const x = 72;
       const y = 96;
 
@@ -3314,16 +3314,16 @@ export function useVisualEditorState({
           translateY: y,
           width: `${width}px`,
           height: `${height}px`,
-          minWidth: "240px",
-          minHeight: "120px",
-          zIndex: 24,
+          minWidth: "160px",
+          minHeight: "80px",
+          zIndex: 860,
         });
 
         next = writeVisualStyleItem(next, id, {
           display: "block",
           width: `${width}px`,
           height: `${height}px`,
-          overflow: "hidden",
+          overflow: "visible",
           borderRadius: "16px",
           boxSizing: "border-box",
         } as StylePatch);
