@@ -5,7 +5,6 @@ import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
-  ExternalLink,
   Facebook,
   FileText,
   Plug,
@@ -19,7 +18,6 @@ import {
   setAdminActiveBusinessId,
 } from "../../../../utils/adminTenant";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
-import { getIntlLocale } from "../../../../i18n/localeUtils";
 
 type ConnectedPage = {
   pageId: string;
@@ -48,23 +46,6 @@ type SelectedForm = {
   selectedAt?: string;
 };
 
-type RecentLead = {
-  _id?: string;
-  name?: string;
-  fullName?: string;
-  phone?: string;
-  email?: string;
-  source?: string;
-  provider?: string;
-  createdAt?: string;
-  externalLeadId?: string;
-  facebook?: {
-    pageName?: string;
-    formName?: string;
-    leadId?: string;
-  };
-};
-
 type MetaLeadAdsIntegrationProps = {
   businessId?: string;
   onBack?: () => void;
@@ -78,9 +59,8 @@ export default function MetaLeadAdsIntegration({
   businessId,
   onBack,
 }: MetaLeadAdsIntegrationProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const dir = useLocaleDir();
-  const locale = getIntlLocale(i18n.language);
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -92,7 +72,6 @@ export default function MetaLeadAdsIntegration({
   const [pages, setPages] = useState<MetaPage[]>([]);
   const [forms, setForms] = useState<MetaLeadForm[]>([]);
   const [selectedForm, setSelectedForm] = useState<SelectedForm | null>(null);
-  const [recentLeads, setRecentLeads] = useState<RecentLead[]>([]);
   const [selectedPageId, setSelectedPageId] = useState("");
 
   const isConnected = Boolean(connectedPage?.pageId);
@@ -106,25 +85,6 @@ export default function MetaLeadAdsIntegration({
     : !isConnected || !hasForm || forceSetup
       ? 2
       : 3;
-
-  const formatDate = (value?: string) => {
-    if (!value) return emDash;
-
-    try {
-      return new Intl.DateTimeFormat(locale, {
-        month: "short",
-        day: "2-digit",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-      }).format(new Date(value));
-    } catch {
-      return emDash;
-    }
-  };
-
-  const leadDisplayName = (lead: RecentLead) =>
-    lead.name || lead.fullName || t(`${T}.unnamedLead`);
 
   const activeForm = useMemo(
     () =>
@@ -146,7 +106,6 @@ export default function MetaLeadAdsIntegration({
         pages?: MetaPage[];
         forms?: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
-        recentLeads?: RecentLead[];
       }>("/meta-leads/status", {
         params: tenantParams,
       });
@@ -157,7 +116,6 @@ export default function MetaLeadAdsIntegration({
       setPages(data.pages || []);
       setForms(nextConnectedPage?.pageId ? data.forms || [] : []);
       setSelectedForm(nextConnectedPage?.pageId ? data.selectedForm || null : null);
-      setRecentLeads(data.recentLeads || []);
 
       if (nextConnectedPage?.pageId) {
         setSelectedPageId(nextConnectedPage.pageId);
@@ -252,7 +210,6 @@ export default function MetaLeadAdsIntegration({
       setConnectedPage(null);
       setForms([]);
       setSelectedForm(null);
-      setRecentLeads([]);
       setSelectedPageId("");
       setForceSetup(true);
       setSuccess(t(`${T}.successDisconnected`));
@@ -351,7 +308,6 @@ export default function MetaLeadAdsIntegration({
         success: boolean;
         imported?: number;
         message?: string;
-        recentLeads?: RecentLead[];
       }>(
         "/meta-leads/sync-leads",
         {
@@ -359,10 +315,6 @@ export default function MetaLeadAdsIntegration({
         },
         { params: tenantParams }
       );
-
-      if (Array.isArray(data.recentLeads)) {
-        setRecentLeads(data.recentLeads);
-      }
 
       setSuccess(
         data.message ||
@@ -386,103 +338,86 @@ export default function MetaLeadAdsIntegration({
   ];
 
   return (
-    <div
-      dir={dir}
-      className="min-h-[calc(100vh-72px)] bg-[linear-gradient(165deg,#dbe7f3_0%,#e8eef5_35%,#d5dee8_100%)] p-3 text-slate-900 sm:p-4"
-    >
-      <div className="mx-auto max-w-4xl space-y-5">
-        <section className="overflow-hidden rounded-[1.75rem] border border-slate-300/90 bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
-          <div className="relative overflow-hidden border-b border-slate-800 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a6e_55%,#0369a1_100%)] p-6 text-white sm:p-8">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.28),transparent_42%),radial-gradient(circle_at_85%_10%,rgba(14,165,233,0.22),transparent_38%)]" />
-            <div
-              className="pointer-events-none absolute inset-0 opacity-[0.12]"
-              style={{
-                backgroundImage:
-                  "linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)",
-                backgroundSize: "28px 28px",
-              }}
-            />
+    <div dir={dir} className="w-full min-w-0 bg-[#F4F5F8] p-1 text-slate-900 sm:p-2">
+      <div className="mx-auto flex max-w-4xl flex-col gap-4">
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
+          <div className="border-b border-slate-100 bg-white p-5 sm:p-6">
+            {onBack && (
+              <button
+                type="button"
+                onClick={onBack}
+                className="mb-4 inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white"
+              >
+                <ArrowRight className="h-4 w-4" />
+                {t(`${T}.wizard.backToLeads`)}
+              </button>
+            )}
 
-            <div className="relative">
-              {onBack && (
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="mb-4 inline-flex h-10 items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 text-xs font-black text-white transition hover:bg-white/20"
-                >
-                  <ArrowRight className="h-4 w-4" />
-                  {t(`${T}.wizard.backToLeads`)}
-                </button>
-              )}
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-violet-100 px-3 py-1.5 text-xs font-black text-violet-700">
+              <Facebook className="h-4 w-4" />
+              {t(`${T}.badge`)}
+            </div>
 
-              <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-sky-300/40 bg-sky-500/20 px-3 py-1.5 text-xs font-black text-sky-100">
-                <Facebook className="h-4 w-4" />
-                {t(`${T}.badge`)}
-              </div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+              {t(`${T}.title`)}
+            </h1>
 
-              <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-                {t(`${T}.title`)}
-              </h1>
+            <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
+              {t(`${T}.subtitle`)}
+            </p>
 
-              <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-sky-100/90">
-                {t(`${T}.subtitle`)}
-              </p>
+            <div className="mt-5 grid gap-2 sm:grid-cols-3">
+              {stepItems.map((item) => {
+                const active = wizardStep === item.id;
+                const done = wizardStep > item.id;
 
-              <div className="mt-6 grid gap-3 sm:grid-cols-3">
-                {stepItems.map((item) => {
-                  const active = wizardStep === item.id;
-                  const done = wizardStep > item.id;
-
-                  return (
-                    <div
-                      key={item.id}
-                      className={[
-                        "rounded-xl border px-4 py-3",
-                        active
-                          ? "border-sky-300 bg-sky-400 text-slate-950"
-                          : done
-                            ? "border-emerald-300/50 bg-emerald-500/25 text-emerald-50"
-                            : "border-white/20 bg-white/10 text-sky-100/80",
-                      ].join(" ")}
-                    >
-                      <p className="text-xs font-black">
-                        {done ? "✓ " : `${item.id}. `}
-                        {item.label}
-                      </p>
-                    </div>
-                  );
-                })}
-              </div>
+                return (
+                  <div
+                    key={item.id}
+                    className={[
+                      "rounded-xl border px-4 py-3 text-xs font-black",
+                      active
+                        ? "border-violet-200 bg-violet-600 text-white"
+                        : done
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-slate-200 bg-slate-50 text-slate-400",
+                    ].join(" ")}
+                  >
+                    {done ? "✓ " : `${item.id}. `}
+                    {item.label}
+                  </div>
+                );
+              })}
             </div>
           </div>
 
-          <div className="bg-slate-100/70 p-4 sm:p-6">
+          <div className="bg-[#F4F5F8] p-4 sm:p-5">
             {loading ? (
-              <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-slate-300 bg-white">
+              <div className="flex min-h-[220px] items-center justify-center rounded-2xl border border-slate-200 bg-white">
                 <BizuplyLoader size="sm" compact />
               </div>
             ) : (
               <>
                 {error && (
-                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-rose-300 bg-rose-100 p-4 text-sm font-bold text-rose-800">
+                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm font-bold text-rose-700">
                     <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
                     <p>{error}</p>
                   </div>
                 )}
 
                 {success && (
-                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-emerald-300 bg-emerald-100 p-4 text-sm font-bold text-emerald-900">
+                  <div className="mb-4 flex items-start gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm font-bold text-emerald-700">
                     <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0" />
                     <p>{success}</p>
                   </div>
                 )}
 
                 {wizardStep === 1 && (
-                  <div className="rounded-2xl border border-slate-300 bg-white p-6 shadow-sm sm:p-8">
+                  <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-8">
                     <h2 className="text-2xl font-black text-slate-900">
                       {t(`${T}.wizard.step1Title`)}
                     </h2>
-                    <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-600">
+                    <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
                       {t(`${T}.wizard.step1Desc`)}
                     </p>
 
@@ -490,7 +425,7 @@ export default function MetaLeadAdsIntegration({
                       type="button"
                       onClick={connectFacebook}
                       disabled={busy}
-                      className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-sky-600 px-6 text-sm font-black text-white transition hover:bg-sky-500 disabled:opacity-60"
+                      className="mt-6 inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
                     >
                       {busy ? (
                         <BizuplyLoader size="xs" compact />
@@ -500,7 +435,7 @@ export default function MetaLeadAdsIntegration({
                       {t(`${T}.wizard.step1Cta`)}
                     </button>
 
-                    <p className="mt-3 text-xs font-bold text-slate-500">
+                    <p className="mt-3 text-xs font-bold text-slate-400">
                       {t(`${T}.wizard.step1Hint`)}
                     </p>
                   </div>
@@ -508,13 +443,13 @@ export default function MetaLeadAdsIntegration({
 
                 {wizardStep === 2 && (
                   <div className="space-y-4">
-                    <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-6">
                       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                         <div>
                           <h2 className="text-2xl font-black text-slate-900">
                             {t(`${T}.wizard.step2Title`)}
                           </h2>
-                          <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-600">
+                          <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
                             {t(`${T}.wizard.step2Desc`)}
                           </p>
                         </div>
@@ -523,23 +458,23 @@ export default function MetaLeadAdsIntegration({
                           type="button"
                           onClick={connectFacebook}
                           disabled={busy}
-                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 text-xs font-black text-slate-800 transition hover:bg-slate-100 disabled:opacity-60"
+                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white disabled:opacity-60"
                         >
                           <RefreshCw className="h-4 w-4" />
                           {t(`${T}.wizard.reconnectAccount`)}
                         </button>
                       </div>
 
-                      <div className="mb-4 inline-flex items-center gap-2 rounded-md border border-emerald-300 bg-emerald-100 px-3 py-1.5 text-xs font-black text-emerald-900">
+                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         {t(`${T}.wizard.accountConnected`)}
                       </div>
 
-                      <div className="rounded-2xl border border-slate-300 bg-slate-50 p-4">
+                      <div className="rounded-2xl border border-slate-200 bg-[#F4F5F8] p-4">
                         <p className="text-sm font-black text-slate-900">
                           {t(`${T}.wizard.step2PageTitle`)}
                         </p>
-                        <p className="mt-1 text-xs font-bold text-slate-600">
+                        <p className="mt-1 text-xs font-bold text-slate-500">
                           {t(`${T}.step2Desc`)}
                         </p>
 
@@ -549,7 +484,7 @@ export default function MetaLeadAdsIntegration({
                             onChange={(event) =>
                               setSelectedPageId(event.target.value)
                             }
-                            className="h-12 rounded-xl border border-slate-300 bg-white px-4 text-sm font-bold text-slate-800 outline-none focus:border-sky-500 focus:ring-4 focus:ring-sky-200"
+                            className="h-12 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-700 outline-none focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
                           >
                             <option value="">{t(`${T}.selectPage`)}</option>
                             {pages.map((page) => (
@@ -563,7 +498,7 @@ export default function MetaLeadAdsIntegration({
                             type="button"
                             onClick={connectPage}
                             disabled={busy || !selectedPageId}
-                            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
+                            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
                           >
                             <Webhook className="h-4 w-4" />
                             {t(`${T}.connectPage`)}
@@ -571,7 +506,7 @@ export default function MetaLeadAdsIntegration({
                         </div>
 
                         {isConnected && (
-                          <p className="mt-3 text-xs font-bold text-emerald-800">
+                          <p className="mt-3 text-xs font-bold text-emerald-700">
                             {t(`${T}.pageConnectedSuccess`)} ·{" "}
                             {connectedPage?.pageName}
                           </p>
@@ -579,13 +514,13 @@ export default function MetaLeadAdsIntegration({
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm sm:p-6">
+                    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-6">
                       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
                         <div>
                           <h3 className="text-xl font-black text-slate-900">
                             {t(`${T}.wizard.step2FormTitle`)}
                           </h3>
-                          <p className="mt-1 text-sm font-semibold text-slate-600">
+                          <p className="mt-1 text-sm font-semibold text-slate-500">
                             {isConnected
                               ? t(`${T}.leadFormsDesc`)
                               : t(`${T}.wizard.step2FormLocked`)}
@@ -596,7 +531,7 @@ export default function MetaLeadAdsIntegration({
                           type="button"
                           onClick={refreshForms}
                           disabled={busy || !isConnected}
-                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-slate-50 px-4 text-xs font-black text-slate-800 transition hover:bg-slate-100 disabled:opacity-60"
+                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white disabled:opacity-60"
                         >
                           <RefreshCw className="h-4 w-4" />
                           {t(`${T}.refreshForms`)}
@@ -604,7 +539,7 @@ export default function MetaLeadAdsIntegration({
                       </div>
 
                       {!isConnected ? (
-                        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm font-bold text-slate-600">
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-[#F4F5F8] p-8 text-center text-sm font-bold text-slate-500">
                           {t(`${T}.wizard.step2FormLocked`)}
                         </div>
                       ) : forms.length > 0 ? (
@@ -618,17 +553,17 @@ export default function MetaLeadAdsIntegration({
                                 className={[
                                   "flex flex-col gap-4 rounded-2xl border p-4 transition sm:flex-row sm:items-center sm:justify-between",
                                   isActive
-                                    ? "border-sky-400 bg-sky-50"
-                                    : "border-slate-300 bg-slate-50",
+                                    ? "border-violet-200 bg-violet-50"
+                                    : "border-slate-200 bg-[#F4F5F8]",
                                 ].join(" ")}
                               >
                                 <div className="flex min-w-0 items-start gap-3">
                                   <div
                                     className={[
-                                      "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
+                                      "mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-black",
                                       isActive
-                                        ? "bg-sky-600 text-white"
-                                        : "bg-slate-900 text-sky-300",
+                                        ? "bg-violet-600 text-white"
+                                        : "bg-violet-100 text-violet-700",
                                     ].join(" ")}
                                   >
                                     {isActive ? (
@@ -642,7 +577,7 @@ export default function MetaLeadAdsIntegration({
                                     <p className="truncate text-sm font-black text-slate-900">
                                       {form.name}
                                     </p>
-                                    <p className="mt-1 text-xs font-bold text-slate-500">
+                                    <p className="mt-1 text-xs font-bold text-slate-400">
                                       {t(`${T}.formId`, { id: form.id })}
                                     </p>
                                   </div>
@@ -653,10 +588,10 @@ export default function MetaLeadAdsIntegration({
                                   onClick={() => selectForm(form)}
                                   disabled={busy || isActive}
                                   className={[
-                                    "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-xl px-4 text-xs font-black transition disabled:opacity-70",
+                                    "inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-full px-4 text-xs font-black transition disabled:opacity-70",
                                     isActive
-                                      ? "border border-sky-300 bg-sky-100 text-sky-900"
-                                      : "bg-slate-900 text-white hover:bg-slate-800",
+                                      ? "border border-violet-200 bg-white text-violet-700"
+                                      : "bg-violet-600 text-white hover:bg-violet-500",
                                   ].join(" ")}
                                 >
                                   {busy ? (
@@ -675,7 +610,7 @@ export default function MetaLeadAdsIntegration({
                           })}
                         </div>
                       ) : (
-                        <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm font-bold text-slate-600">
+                        <div className="rounded-2xl border border-dashed border-slate-200 bg-[#F4F5F8] p-8 text-center text-sm font-bold text-slate-500">
                           {t(`${T}.noFormsYet`)}
                         </div>
                       )}
@@ -684,134 +619,97 @@ export default function MetaLeadAdsIntegration({
                 )}
 
                 {wizardStep === 3 && (
-                  <div className="space-y-4">
-                    <div className="rounded-2xl border border-emerald-400 bg-[linear-gradient(160deg,#ecfdf5_0%,#d1fae5_100%)] p-5 shadow-sm sm:p-6">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div>
-                          <h2 className="text-2xl font-black text-slate-900">
-                            {t(`${T}.wizard.readyTitle`)}
-                          </h2>
-                          <p className="mt-2 text-sm font-semibold text-slate-700">
-                            {t(`${T}.wizard.readyDesc`)}
-                          </p>
+                  <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-6">
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {t(`${T}.connected`)}
                         </div>
-
-                        <div className="flex flex-wrap gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setForceSetup(true)}
-                            className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-black text-slate-800 transition hover:bg-slate-50"
-                          >
-                            {t(`${T}.wizard.changeSetup`)}
-                          </button>
-                          <button
-                            type="button"
-                            onClick={disconnect}
-                            disabled={busy}
-                            className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-300 bg-rose-100 px-4 text-xs font-black text-rose-800 transition hover:bg-rose-200 disabled:opacity-60"
-                          >
-                            <Unplug className="h-4 w-4" />
-                            {t(`${T}.disconnect`)}
-                          </button>
-                        </div>
+                        <h2 className="text-2xl font-black text-slate-900">
+                          {t(`${T}.wizard.readyTitle`)}
+                        </h2>
+                        <p className="mt-2 text-sm font-semibold text-slate-500">
+                          {t(`${T}.wizard.readyDesc`)}
+                        </p>
                       </div>
 
-                      <div className="mt-5 grid gap-3 sm:grid-cols-3">
-                        <div className="rounded-xl border border-emerald-300 bg-white p-4 shadow-sm">
-                          <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-                            {t(`${T}.status`)}
-                          </p>
-                          <p className="mt-1 text-lg font-black text-emerald-700">
-                            {t(`${T}.connected`)}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
-                          <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-                            {t(`${T}.selectedPage`)}
-                          </p>
-                          <p className="mt-1 truncate text-lg font-black text-slate-900">
-                            {connectedPage?.pageName || emDash}
-                          </p>
-                        </div>
-                        <div className="rounded-xl border border-slate-300 bg-white p-4 shadow-sm">
-                          <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-                            {t(`${T}.activeForm`)}
-                          </p>
-                          <p className="mt-1 truncate text-lg font-black text-slate-900">
-                            {selectedForm?.formName || emDash}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex flex-wrap gap-2">
+                      <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
-                          onClick={syncLeadsFromMeta}
-                          disabled={busy}
-                          className="inline-flex h-11 items-center gap-2 rounded-xl bg-sky-600 px-4 text-xs font-black text-white transition hover:bg-sky-500 disabled:opacity-60"
+                          onClick={() => setForceSetup(true)}
+                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white"
                         >
-                          <Webhook className="h-4 w-4" />
-                          {t(`${T}.syncLeads`)}
+                          {t(`${T}.wizard.changeSetup`)}
                         </button>
                         <button
                           type="button"
-                          onClick={loadStatus}
+                          onClick={disconnect}
                           disabled={busy}
-                          className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 text-xs font-black text-slate-800 transition hover:bg-slate-50 disabled:opacity-60"
+                          className="inline-flex h-10 items-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-black text-rose-700 transition hover:bg-rose-100 disabled:opacity-60"
                         >
-                          <RefreshCw className="h-4 w-4" />
-                          {t(`${T}.refresh`)}
+                          <Unplug className="h-4 w-4" />
+                          {t(`${T}.disconnect`)}
                         </button>
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm sm:p-6">
-                      <div className="mb-4 flex items-center justify-between gap-3">
-                        <div>
-                          <h3 className="text-xl font-black text-slate-900">
-                            {t(`${T}.recentLeads`)}
-                          </h3>
-                          <p className="mt-1 text-sm font-semibold text-slate-600">
-                            {t(`${T}.recentLeadsDesc`)}
-                          </p>
-                        </div>
-                        <ExternalLink className="h-5 w-5 text-slate-400" />
+                    <div className="mt-5 grid gap-3 sm:grid-cols-3">
+                      <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-4">
+                        <p className="text-xs font-bold text-slate-500">
+                          {t(`${T}.status`)}
+                        </p>
+                        <p className="mt-1 text-lg font-black text-emerald-700">
+                          {t(`${T}.connected`)}
+                        </p>
                       </div>
+                      <div className="rounded-2xl border border-slate-200 bg-[#F4F5F8] p-4">
+                        <p className="text-xs font-bold text-slate-500">
+                          {t(`${T}.selectedPage`)}
+                        </p>
+                        <p className="mt-1 truncate text-lg font-black text-slate-900">
+                          {connectedPage?.pageName || emDash}
+                        </p>
+                      </div>
+                      <div className="rounded-2xl border border-slate-200 bg-[#F4F5F8] p-4">
+                        <p className="text-xs font-bold text-slate-500">
+                          {t(`${T}.activeForm`)}
+                        </p>
+                        <p className="mt-1 truncate text-lg font-black text-slate-900">
+                          {selectedForm?.formName || emDash}
+                        </p>
+                      </div>
+                    </div>
 
-                      <div className="space-y-3">
-                        {recentLeads.length > 0 ? (
-                          recentLeads.map((lead, index) => (
-                            <div
-                              key={lead._id || lead.externalLeadId || index}
-                              className="rounded-2xl border border-slate-300 bg-slate-50 p-4"
-                            >
-                              <div className="flex items-start justify-between gap-4">
-                                <div className="min-w-0">
-                                  <p className="truncate text-sm font-black text-slate-900">
-                                    {leadDisplayName(lead)}
-                                  </p>
-                                  <p className="mt-1 text-xs font-bold text-slate-600">
-                                    {lead.phone || t(`${T}.noPhone`)}
-                                    {lead.email ? ` · ${lead.email}` : ""}
-                                  </p>
-                                </div>
-                                <span className="rounded-md border border-sky-300 bg-sky-100 px-3 py-1 text-xs font-black text-sky-900">
-                                  {t(`${T}.metaLeadAds`)}
-                                </span>
-                              </div>
-                              <p className="mt-3 text-xs font-bold text-slate-500">
-                                {t(`${T}.received`, {
-                                  date: formatDate(lead.createdAt),
-                                })}
-                              </p>
-                            </div>
-                          ))
-                        ) : (
-                          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center text-sm font-bold text-slate-600">
-                            {t(`${T}.noLeadsYet`)}
-                          </div>
-                        )}
-                      </div>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button
+                        type="button"
+                        onClick={syncLeadsFromMeta}
+                        disabled={busy}
+                        className="inline-flex h-11 items-center gap-2 rounded-xl bg-violet-600 px-4 text-xs font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
+                      >
+                        <Webhook className="h-4 w-4" />
+                        {t(`${T}.syncLeads`)}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={loadStatus}
+                        disabled={busy}
+                        className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                      >
+                        <RefreshCw className="h-4 w-4" />
+                        {t(`${T}.refresh`)}
+                      </button>
+                      {onBack && (
+                        <button
+                          type="button"
+                          onClick={onBack}
+                          className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                        >
+                          <ArrowRight className="h-4 w-4" />
+                          {t(`${T}.wizard.backToLeads`)}
+                        </button>
+                      )}
                     </div>
                   </div>
                 )}
