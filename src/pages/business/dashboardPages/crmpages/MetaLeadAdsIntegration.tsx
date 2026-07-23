@@ -314,6 +314,57 @@ export default function MetaLeadAdsIntegration({
     }
   };
 
+  const syncLeadsFromMeta = async () => {
+    if (!isConnected) {
+      setError("Please connect a Facebook Page before syncing leads.");
+      return;
+    }
+
+    if (!selectedForm?.formId && !activeForm?.id) {
+      setError("Please select an active lead form before syncing.");
+      return;
+    }
+
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+
+      const { data } = await API.post<{
+        success: boolean;
+        imported?: number;
+        fetched?: number;
+        message?: string;
+        recentLeads?: RecentLead[];
+      }>(
+        "/meta-leads/sync-leads",
+        {
+          formId: selectedForm?.formId || activeForm?.id,
+        },
+        { params: tenantParams }
+      );
+
+      if (Array.isArray(data.recentLeads)) {
+        setRecentLeads(data.recentLeads);
+      }
+
+      setSuccess(
+        data.message ||
+          `Synced ${data.imported || 0} lead(s) from Meta into the CRM.`
+      );
+
+      window.dispatchEvent(new CustomEvent("bizuply:leads-synced"));
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Could not sync leads from Meta. Check Lead Access Manager."
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <div
       dir="ltr"
@@ -657,15 +708,29 @@ export default function MetaLeadAdsIntegration({
                 </p>
               </div>
 
-              <button
-                type="button"
-                onClick={refreshForms}
-                disabled={busy || !isConnected}
-                className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
-              >
-                <RefreshCw className="h-4 w-4" />
-                Refresh forms
-              </button>
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={refreshForms}
+                  disabled={busy || !isConnected}
+                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+                >
+                  <RefreshCw className="h-4 w-4" />
+                  Refresh forms
+                </button>
+
+                <button
+                  type="button"
+                  onClick={syncLeadsFromMeta}
+                  disabled={
+                    busy || !isConnected || !(selectedForm?.formId || activeForm?.id)
+                  }
+                  className="inline-flex h-10 items-center gap-2 rounded-2xl border border-sky-200 bg-sky-50 px-4 text-xs font-black text-sky-800 transition hover:bg-sky-100 disabled:opacity-60"
+                >
+                  <Webhook className="h-4 w-4" />
+                  Sync leads to CRM
+                </button>
+              </div>
             </div>
 
             <div className="mb-4 rounded-3xl border border-violet-100 bg-violet-50 p-4">

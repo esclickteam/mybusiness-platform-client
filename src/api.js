@@ -4,7 +4,7 @@ import {
   registerAuthHeaderSetter,
   refreshAccessTokenOnce,
 } from "./utils/tokenRefresh";
-import { getAdminActiveBusinessId } from "./utils/adminTenant";
+import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd
@@ -91,10 +91,12 @@ API.interceptors.request.use(
       delete config.headers["Authorization"];
     }
 
-    // Admin cross-tenant: scope /business/my and CRM to the target business
-    const adminBusinessId = getAdminActiveBusinessId();
-    if (adminBusinessId) {
-      config.headers["X-Business-Id"] = adminBusinessId;
+    // Scope tenant by active business route. Backend applies this for admins
+    // (and ignores it for users who don't own the business).
+    const tenantBusinessId =
+      getAdminActiveBusinessId() || getBusinessIdFromPath() || null;
+    if (tenantBusinessId) {
+      config.headers["X-Business-Id"] = tenantBusinessId;
     } else {
       delete config.headers["X-Business-Id"];
     }

@@ -782,6 +782,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     fetchLeads();
   }, [businessId]);
 
+  useEffect(() => {
+    const handleLeadsSynced = () => {
+      fetchLeads();
+    };
+
+    window.addEventListener("bizuply:leads-synced", handleLeadsSynced);
+    return () => {
+      window.removeEventListener("bizuply:leads-synced", handleLeadsSynced);
+    };
+  }, [businessId]);
+
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase();
 
