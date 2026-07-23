@@ -34,6 +34,7 @@ import {
   isAdminUser,
   setAdminActiveBusinessId,
 } from "../../../../utils/adminTenant";
+import { useAuth } from "../../../../context/AuthContext";
 
 type LeadStatus =
   | "new"
@@ -642,6 +643,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const dir = useLocaleDir();
   const locale = i18n.language || "en";
   const emDash = t("crm.common.emDash");
+  const { socket } = useAuth();
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
@@ -788,10 +790,54 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     };
 
     window.addEventListener("bizuply:leads-synced", handleLeadsSynced);
+    window.addEventListener("bizuply:leads-updated", handleLeadsSynced);
     return () => {
       window.removeEventListener("bizuply:leads-synced", handleLeadsSynced);
+      window.removeEventListener("bizuply:leads-updated", handleLeadsSynced);
     };
   }, [businessId]);
+
+  useEffect(() => {
+    if (!businessId || !socket) return;
+
+    const refreshFromSocket = () => {
+      fetchLeads();
+    };
+
+    const handleNewNotification = (data: {
+      kind?: string;
+      type?: string;
+      leadId?: string;
+    }) => {
+      if (
+        data?.kind === "new_lead" ||
+        data?.type === "new_lead" ||
+        Boolean(data?.leadId)
+      ) {
+        refreshFromSocket();
+      }
+    };
+
+    const joinRoom = () => {
+      socket.emit("joinBusinessRoom", businessId);
+    };
+
+    if (socket.connected) {
+      joinRoom();
+    }
+
+    socket.on("connect", joinRoom);
+    socket.on("crmLeadCreated", refreshFromSocket);
+    socket.on("crm-lead-created", refreshFromSocket);
+    socket.on("newNotification", handleNewNotification);
+
+    return () => {
+      socket.off("connect", joinRoom);
+      socket.off("crmLeadCreated", refreshFromSocket);
+      socket.off("crm-lead-created", refreshFromSocket);
+      socket.off("newNotification", handleNewNotification);
+    };
+  }, [businessId, socket]);
 
   const filteredLeads = useMemo(() => {
     const q = search.trim().toLowerCase();

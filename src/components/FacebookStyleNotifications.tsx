@@ -272,6 +272,14 @@ export default function FacebookStyleNotifications() {
     if (shouldToast) {
       showToast(unified);
     }
+
+    if (
+      unified.kind === "new_lead" ||
+      unified.type === "new_lead" ||
+      Boolean(unified.leadId)
+    ) {
+      window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+    }
   }
 
   /* Channel 1: Redis-relayed events forwarded by src/socket.js */
@@ -318,10 +326,20 @@ export default function FacebookStyleNotifications() {
 
     socket.on("connect", joinRoom);
     socket.on("newNotification", handleNewNotification);
+    socket.on("crmLeadCreated", () => {
+      window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      fetchAllNotifications();
+    });
+    socket.on("crm-lead-created", () => {
+      window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      fetchAllNotifications();
+    });
 
     return () => {
       socket.off("connect", joinRoom);
       socket.off("newNotification", handleNewNotification);
+      socket.off("crmLeadCreated");
+      socket.off("crm-lead-created");
     };
   }, [businessId, socket]);
 
@@ -901,6 +919,10 @@ export default function FacebookStyleNotifications() {
       const newLeads = leads.filter(
         (lead) => lead?._id && !seenIds.includes(lead._id)
       );
+
+      if (newLeads.length > 0) {
+        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      }
 
       return newLeads.map((lead) => ({
         id: `lead-${lead._id}`,
