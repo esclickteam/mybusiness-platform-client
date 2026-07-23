@@ -14,6 +14,11 @@ export function mergePluginSettings(stored: unknown): BenefitsWheelSettings {
     autoOpenOnFirstVisit: true,
     showTrigger: true,
     triggerPosition: { x: 88, y: 82 },
+    triggerLabel: "גלגל הטבות",
+    triggerColor: "#7C3AED",
+    triggerColorEnd: "#a855f7",
+    triggerTextColor: "#ffffff",
+    triggerShape: "pill",
     segments: normalizeSegments(
       [
         { label: "10% הנחה", couponCode: "SALE10" },

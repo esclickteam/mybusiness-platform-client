@@ -9,6 +9,7 @@ import {
   pickWinningIndex,
   readVisitorSavedPrize,
   readVisitorSpinCount,
+  resolveTriggerPresentation,
   rotationDeltaForSegment,
   wasAutoShownThisSession,
   writeVisitorSpin,
@@ -116,6 +117,7 @@ export default function BenefitsWheelWidget({
 
   const canSpin = spinsUsed < spinsAllowed;
   const hasMoreSpins = canSpin && spinsAllowed > 1;
+  const trigger = useMemo(() => resolveTriggerPresentation(settings), [settings]);
 
   const handleSpin = useCallback(async () => {
     if (spinning || !canSpin) return;
@@ -223,21 +225,23 @@ export default function BenefitsWheelWidget({
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
-          className={`fixed z-[99990] flex items-center gap-2 rounded-full shadow-[0_8px_32px_rgba(124,58,237,0.45)] transition hover:scale-105 ${
+          className={`fixed z-[99990] flex items-center justify-center gap-2 shadow-[0_8px_32px_rgba(124,58,237,0.35)] transition hover:scale-105 ${trigger.shapeClass} ${
             isEditor ? "cursor-grab ring-2 ring-violet-400 ring-offset-2" : "cursor-pointer"
           }`}
           style={{
             right: `${dragPos.x}%`,
             bottom: `${100 - dragPos.y}%`,
             transform: "translate(50%, 50%)",
-            background: "linear-gradient(135deg, #7C3AED, #a855f7)",
-            color: "#fff",
-            padding: isEditor ? "10px 14px" : "14px 18px",
+            background: trigger.background,
+            color: trigger.textColor,
+            padding: isEditor && trigger.showLabel ? "10px 14px" : undefined,
           }}
-          aria-label={settings.title || "גלגל הטבות"}
+          aria-label={trigger.label}
         >
           {isEditor ? <GripVertical size={16} className="opacity-80" /> : <Gift size={20} />}
-          <span className="text-sm font-bold">{settings.title || "גלגל הטבות"}</span>
+          {trigger.showLabel ? (
+            <span className="text-sm font-bold">{trigger.label}</span>
+          ) : null}
         </button>
       ) : null}
 
@@ -250,10 +254,10 @@ export default function BenefitsWheelWidget({
         >
           <div
             dir="rtl"
-            className="relative w-full max-w-md overflow-hidden rounded-2xl border border-violet-100 bg-white shadow-[0_24px_80px_rgba(99,102,241,0.25)]"
+            className="relative w-full max-w-md rounded-2xl border border-violet-100 bg-white shadow-[0_24px_80px_rgba(99,102,241,0.25)]"
             onMouseDown={(e) => e.stopPropagation()}
           >
-            <div className="h-1.5 bg-gradient-to-l from-violet-500 via-fuchsia-500 to-pink-500" />
+            <div className="h-1.5 rounded-t-2xl bg-gradient-to-l from-violet-500 via-fuchsia-500 to-pink-500" />
 
             <button
               type="button"
@@ -275,12 +279,12 @@ export default function BenefitsWheelWidget({
                 <p className="mt-1 text-sm text-slate-500">סובבו וגלו מה זכיתם!</p>
               )}
 
-              <div className="mx-auto my-4 flex h-[284px] items-end justify-center">
+              <div className="mx-auto my-4 flex h-[300px] items-center justify-center overflow-visible">
                 <BenefitsWheelSpinWheel
                   segments={segments}
                   rotation={rotation}
                   spinning={spinning}
-                  size={260}
+                  size={240}
                 />
               </div>
 

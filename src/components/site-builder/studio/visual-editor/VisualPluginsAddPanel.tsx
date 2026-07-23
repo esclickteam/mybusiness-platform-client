@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Download, Puzzle, Search } from "lucide-react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Download, Puzzle, Search, Trash2 } from "lucide-react";
 
 import {
   getSitePlugins,
@@ -35,7 +35,31 @@ export default function VisualPluginsAddPanel({
   const [loading, setLoading] = useState(Boolean(siteId));
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
+  const [overlayActive, setOverlayActive] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
+
+  const loadOverlayStates = useCallback(
+    async (plugins: SitePluginDefinition[], enabled: string[]) => {
+      if (!siteId) return;
+      const enabledSet = new Set(enabled);
+      const overlays = plugins.filter(
+        (p) => enabledSet.has(p.key) && getPluginEditorAction(p.key).kind === "overlay"
+      );
+      const next: Record<string, boolean> = {};
+      await Promise.all(
+        overlays.map(async (plugin) => {
+          try {
+            const settings = await getSitePluginSettings(siteId, plugin.key);
+            next[plugin.key] = settings?.isActive !== false;
+          } catch {
+            next[plugin.key] = false;
+          }
+        })
+      );
+      setOverlayActive(next);
+    },
+    [siteId]
+  );
 
   useEffect(() => {
     if (!siteId) {
@@ -45,16 +69,18 @@ export default function VisualPluginsAddPanel({
 
     setLoading(true);
     getSitePlugins(siteId)
-      .then((data) => {
+      .then(async (data) => {
         setCatalog(data.catalog);
         setEnabledPlugins(data.enabledPlugins);
+        await loadOverlayStates(data.catalog, data.enabledPlugins);
       })
       .catch(() => {
         setCatalog([]);
         setEnabledPlugins([]);
+        setOverlayActive({});
       })
       .finally(() => setLoading(false));
-  }, [siteId]);
+  }, [siteId, loadOverlayStates]);
 
   const installed = useMemo(() => {
     const set = new Set(enabledPlugins);
@@ -70,23 +96,46 @@ export default function VisualPluginsAddPanel({
       });
   }, [catalog, enabledPlugins, query]);
 
+  async function activateOverlay(plugin: SitePluginDefinition) {
+    if (!siteId) return;
+    try {
+      const current = await getSitePluginSettings(siteId, plugin.key);
+      await saveSitePluginSettings(siteId, plugin.key, {
+        ...current,
+        isActive: true,
+        showTrigger: true,
+        triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
+      });
+      setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
+      onOverlayInstalled?.();
+      onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
+    } catch {
+      onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
+    }
+  }
+
+  async function removeOverlay(plugin: SitePluginDefinition) {
+    if (!siteId) return;
+    try {
+      const current = await getSitePluginSettings(siteId, plugin.key);
+      await saveSitePluginSettings(siteId, plugin.key, {
+        ...current,
+        isActive: false,
+        showTrigger: false,
+      });
+      setOverlayActive((prev) => ({ ...prev, [plugin.key]: false }));
+      onOverlayInstalled?.();
+      onAdded?.(`«${plugin.name}» הוסר מהעמוד`);
+    } catch {
+      onAdded?.(`שגיאה בהסרת ${plugin.name}`);
+    }
+  }
+
   async function insertPlugin(plugin: SitePluginDefinition) {
     const action = getPluginEditorAction(plugin.key);
 
     if (action.kind === "overlay" && siteId) {
-      try {
-        const current = await getSitePluginSettings(siteId, plugin.key);
-        await saveSitePluginSettings(siteId, plugin.key, {
-          ...current,
-          isActive: true,
-          showTrigger: true,
-          triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
-        });
-        onOverlayInstalled?.();
-        onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
-      } catch {
-        onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
-      }
+      await activateOverlay(plugin);
       return;
     }
 
@@ -178,12 +227,12 @@ export default function VisualPluginsAddPanel({
             const Icon = getPluginIcon(plugin.key);
             const accent = getPluginAccent(plugin.key, plugin.accent);
             const action = getPluginEditorAction(plugin.key);
+            const isOverlay = action.kind === "overlay";
+            const isOverlayActive = isOverlay && overlayActive[plugin.key];
 
             return (
-              <button
+              <div
                 key={plugin.key}
-                type="button"
-                onClick={() => insertPlugin(plugin)}
                 className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-right transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg"
               >
                 <div className="flex items-start gap-3">
@@ -194,14 +243,13 @@ export default function VisualPluginsAddPanel({
                     <Icon size={20} />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h4 className="text-sm font-black text-slate-800">
-                      {plugin.name}
-                    </h4>
+                    <h4 className="text-sm font-black text-slate-800">{plugin.name}</h4>
                     <p className="mt-1 line-clamp-2 text-[11px] font-bold leading-5 text-slate-400">
                       {plugin.description}
                     </p>
                   </div>
                 </div>
+
                 <span className="mt-3 inline-flex items-center gap-1 self-start rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
                   <Download className="h-3 w-3" />
                   {action.kind === "page"
@@ -209,10 +257,42 @@ export default function VisualPluginsAddPanel({
                     : action.kind === "section"
                       ? "הוספת סקשן"
                       : action.kind === "overlay"
-                        ? "הפעלת תוסף צף"
+                        ? isOverlayActive
+                          ? "פעיל בעמוד"
+                          : "הפעלת תוסף צף"
                         : "הוספת רכיב"}
                 </span>
-              </button>
+
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {isOverlay && isOverlayActive ? (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => removeOverlay(plugin)}
+                        className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black text-rose-600 transition hover:bg-rose-100"
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        הסרה
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => activateOverlay(plugin)}
+                        className="inline-flex flex-1 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[11px] font-black text-violet-700 transition hover:bg-violet-100"
+                      >
+                        הפעלה מחדש
+                      </button>
+                    </>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => insertPlugin(plugin)}
+                      className="inline-flex w-full items-center justify-center rounded-xl bg-violet-600 px-3 py-2 text-[11px] font-black text-white transition hover:bg-violet-700"
+                    >
+                      {isOverlay ? "הוספה לעמוד" : "הוספה"}
+                    </button>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>

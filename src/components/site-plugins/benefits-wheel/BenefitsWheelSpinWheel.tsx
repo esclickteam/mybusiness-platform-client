@@ -33,17 +33,19 @@ function describeArc(
 export default function BenefitsWheelSpinWheel({
   segments,
   rotation,
-  size = 260,
+  size = 240,
   spinning = false,
 }: BenefitsWheelSpinWheelProps) {
   const hubGradientId = useId().replace(/:/g, "");
-  const cx = size / 2;
-  const cy = size / 2;
-  const r = size / 2 - 8;
+  const pad = 16;
+  const pointerHeight = 22;
+  const viewSize = size + pad * 2;
+  const cx = viewSize / 2;
+  const cy = viewSize / 2;
+  const r = size / 2 - 10;
   const n = segments.length;
   const slice = 360 / n;
-  const pointerHeight = 24;
-  const containerHeight = size + pointerHeight;
+  const boxHeight = viewSize + pointerHeight;
 
   const slices = useMemo(() => {
     return segments.map((seg, i) => {
@@ -63,33 +65,33 @@ export default function BenefitsWheelSpinWheel({
   return (
     <div
       className="relative mx-auto shrink-0 select-none"
-      style={{ width: size, height: containerHeight }}
+      style={{ width: viewSize, height: boxHeight }}
     >
       <div
-        className="pointer-events-none absolute left-1/2 top-0 z-20 -translate-x-1/2"
+        className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2"
         style={{
+          top: 0,
           width: 0,
           height: 0,
-          borderLeft: "12px solid transparent",
-          borderRight: "12px solid transparent",
+          borderLeft: "11px solid transparent",
+          borderRight: "11px solid transparent",
           borderTop: `${pointerHeight}px solid #1e293b`,
-          filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
         }}
       />
 
       <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="absolute left-0 drop-shadow-xl"
+        width={viewSize}
+        height={viewSize}
+        viewBox={`0 0 ${viewSize} ${viewSize}`}
+        className="absolute left-0 overflow-visible"
         style={{ top: pointerHeight }}
+        overflow="visible"
       >
-        <circle cx={cx} cy={cy} r={r + 6} fill="#fff" stroke="#e2e8f0" strokeWidth={4} />
+        <circle cx={cx} cy={cy} r={r + 6} fill="#fff" stroke="#e2e8f0" strokeWidth={3} />
         <g
           style={{
             transform: `rotate(${rotation}deg)`,
             transformOrigin: `${cx}px ${cy}px`,
-            transformBox: "view-box",
             transition: spinning
               ? "transform 4.2s cubic-bezier(0.15, 0.85, 0.2, 1)"
               : "none",
@@ -112,7 +114,7 @@ export default function BenefitsWheelSpinWheel({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${sliceItem.mid}, ${sliceItem.labelPos.x}, ${sliceItem.labelPos.y})`}
-                style={{ pointerEvents: "none", textShadow: "0 1px 2px rgba(0,0,0,0.35)" }}
+                style={{ pointerEvents: "none" }}
               >
                 {sliceItem.label.length > 14
                   ? `${sliceItem.label.slice(0, 12)}…`
@@ -121,8 +123,8 @@ export default function BenefitsWheelSpinWheel({
             </g>
           ))}
         </g>
-        <circle cx={cx} cy={cy} r={28} fill="#fff" stroke="#cbd5e1" strokeWidth={3} />
-        <circle cx={cx} cy={cy} r={18} fill={`url(#${hubGradientId})`} />
+        <circle cx={cx} cy={cy} r={26} fill="#fff" stroke="#cbd5e1" strokeWidth={2} />
+        <circle cx={cx} cy={cy} r={16} fill={`url(#${hubGradientId})`} />
         <defs>
           <radialGradient id={hubGradientId}>
             <stop offset="0%" stopColor="#a78bfa" />

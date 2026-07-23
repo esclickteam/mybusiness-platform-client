@@ -125,6 +125,7 @@ type VisualAddLayersPanelProps = {
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   preferredAddTab?: AddPanelTab;
   siteId?: string;
+  onOverlayInstalled?: () => void;
 };
 
 type LayerItem = {
@@ -414,6 +415,7 @@ export default function VisualAddLayersPanel({
   onAddLibraryPage,
   preferredAddTab = "sections",
   siteId,
+  onOverlayInstalled,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
@@ -1135,6 +1137,7 @@ export default function VisualAddLayersPanel({
                 onAddLibraryPage={onAddLibraryPage}
                 onAddHtml={onAddHtml}
                 onAdded={(title) => setLastAddedTitle(title)}
+                onOverlayInstalled={onOverlayInstalled}
               />
             ) : addTab === "pages" ? (
               <div className="flex min-h-0 flex-1 flex-col">

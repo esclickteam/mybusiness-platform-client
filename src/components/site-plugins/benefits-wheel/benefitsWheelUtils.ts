@@ -4,6 +4,8 @@ export type BenefitsWheelSegment = {
   couponCode?: string;
 };
 
+export type BenefitsWheelTriggerShape = "pill" | "rounded" | "circle";
+
 export type BenefitsWheelSettings = {
   isActive?: boolean;
   title?: string;
@@ -14,6 +16,11 @@ export type BenefitsWheelSettings = {
   autoOpenOnFirstVisit?: boolean;
   showTrigger?: boolean;
   triggerPosition?: { x: number; y: number };
+  triggerLabel?: string;
+  triggerColor?: string;
+  triggerColorEnd?: string;
+  triggerTextColor?: string;
+  triggerShape?: BenefitsWheelTriggerShape;
 };
 
 export const WHEEL_COLORS = [
@@ -137,4 +144,30 @@ export function rotationForSegmentIndex(index: number, segmentCount: number, ext
   const slice = 360 / segmentCount;
   const segmentCenter = index * slice + slice / 2;
   return extraSpins * 360 + (360 - segmentCenter);
+}
+
+export function resolveTriggerPresentation(settings: BenefitsWheelSettings) {
+  const shape = settings.triggerShape || "pill";
+  const label =
+    String(settings.triggerLabel || settings.title || "גלגל הטבות").trim() ||
+    "גלגל הטבות";
+  const colorStart = settings.triggerColor || "#7C3AED";
+  const colorEnd = settings.triggerColorEnd || settings.triggerColor || "#a855f7";
+  const textColor = settings.triggerTextColor || "#ffffff";
+
+  const shapeClass =
+    shape === "circle"
+      ? "rounded-full p-3.5"
+      : shape === "rounded"
+        ? "rounded-xl px-4 py-3"
+        : "rounded-full px-4 py-3";
+
+  return {
+    label,
+    textColor,
+    shape,
+    shapeClass,
+    background: `linear-gradient(135deg, ${colorStart}, ${colorEnd})`,
+    showLabel: shape !== "circle",
+  };
 }
