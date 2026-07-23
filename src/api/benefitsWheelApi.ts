@@ -2,7 +2,12 @@ import API from "../api";
 
 export async function saveBenefitsWheelSpin(
   slug: string,
-  payload: { prizeLabel: string; segmentIndex: number; visitorId?: string }
+  payload: {
+    prizeLabel: string;
+    segmentIndex: number;
+    couponCode?: string;
+    visitorId?: string;
+  }
 ) {
   const visitorId =
     payload.visitorId ||
@@ -20,6 +25,7 @@ export async function saveBenefitsWheelSpin(
     {
       prizeLabel: payload.prizeLabel,
       segmentIndex: payload.segmentIndex,
+      couponCode: payload.couponCode || "",
       visitorId,
     }
   );

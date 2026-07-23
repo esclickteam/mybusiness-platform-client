@@ -35,8 +35,8 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
     updateField("segments", normalizeSegments(segments, n));
   }
 
-  function updateSegment(index: number, label: string) {
-    const next = segments.map((s, i) => (i === index ? { ...s, label } : s));
+  function updateSegment(index: number, patch: Partial<BenefitsWheelSegment>) {
+    const next = segments.map((s, i) => (i === index ? { ...s, ...patch } : s));
     updateField("segments", next);
   }
 
@@ -134,28 +134,41 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
 
         <div className="space-y-2">
           {segments.map((seg, index) => (
-            <div key={index} className="flex items-center gap-2">
-              <span
-                className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white"
-                style={{ background: seg.color || WHEEL_COLORS[index % WHEEL_COLORS.length] }}
-              >
-                {index + 1}
-              </span>
-              <input
-                value={seg.label}
-                onChange={(e) => updateSegment(index, e.target.value)}
-                placeholder={`הטבה ${index + 1}`}
-                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
-              />
-              <button
-                type="button"
-                onClick={() => removeSegment(index)}
-                disabled={segmentCount <= 3}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-rose-100 text-rose-500 disabled:opacity-30"
-                aria-label="הסרה"
-              >
-                <Trash2 size={14} />
-              </button>
+            <div key={index} className="rounded-lg border border-slate-100 bg-white p-2">
+              <div className="flex items-center gap-2">
+                <span
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-[11px] font-black text-white"
+                  style={{ background: seg.color || WHEEL_COLORS[index % WHEEL_COLORS.length] }}
+                >
+                  {index + 1}
+                </span>
+                <input
+                  value={seg.label}
+                  onChange={(e) => updateSegment(index, { label: e.target.value })}
+                  placeholder={`הטבה ${index + 1}`}
+                  className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeSegment(index)}
+                  disabled={segmentCount <= 3}
+                  className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-rose-100 text-rose-500 disabled:opacity-30"
+                  aria-label="הסרה"
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+              <div className="mt-2 pr-10">
+                <label className="mb-1 block text-[11px] font-semibold text-slate-500">
+                  קוד הטבה
+                </label>
+                <input
+                  value={seg.couponCode || ""}
+                  onChange={(e) => updateSegment(index, { couponCode: e.target.value })}
+                  placeholder="לדוגמה: SALE10"
+                  className="w-full rounded-lg border border-slate-200 px-3 py-2 font-mono text-sm tracking-wide"
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -175,11 +188,18 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
           <p className="mb-2 text-sm font-bold text-slate-800">הטבות שנשמרו ({settings.wonSpins.length})</p>
           <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-slate-600">
-            {(settings.wonSpins as Array<{ prizeLabel?: string; createdAt?: string }>)
+            {(settings.wonSpins as Array<{ prizeLabel?: string; couponCode?: string; createdAt?: string }>)
               .slice(0, 20)
               .map((row, i) => (
                 <li key={i} className="flex justify-between gap-2 border-b border-slate-100 py-1">
-                  <span className="font-semibold">{row.prizeLabel || "—"}</span>
+                  <span className="font-semibold">
+                    {row.prizeLabel || "—"}
+                    {row.couponCode ? (
+                      <span className="mr-2 font-mono text-[10px] text-violet-600">
+                        ({row.couponCode})
+                      </span>
+                    ) : null}
+                  </span>
                   <span className="text-slate-400">
                     {row.createdAt ? new Date(row.createdAt).toLocaleDateString("he-IL") : ""}
                   </span>

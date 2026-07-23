@@ -16,12 +16,12 @@ export function mergePluginSettings(stored: unknown): BenefitsWheelSettings {
     triggerPosition: { x: 88, y: 82 },
     segments: normalizeSegments(
       [
-        { label: "10% הנחה" },
-        { label: "משלוח חינם" },
-        { label: "מתנה" },
-        { label: "20% הנחה" },
-        { label: "שדרוג חינם" },
-        { label: "נסו שוב" },
+        { label: "10% הנחה", couponCode: "SALE10" },
+        { label: "משלוח חינם", couponCode: "FREESHIP" },
+        { label: "מתנה", couponCode: "GIFT2024" },
+        { label: "20% הנחה", couponCode: "SALE20" },
+        { label: "שדרוג חינם", couponCode: "UPGRADE" },
+        { label: "נסו שוב", couponCode: "" },
       ],
       6
     ),

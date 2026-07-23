@@ -41,6 +41,9 @@ export default function BenefitsWheelSpinWheel({
   const r = size / 2 - 8;
   const n = segments.length;
   const slice = 360 / n;
+  const spinPadding = Math.ceil((size * (Math.SQRT2 - 1)) / 2);
+  const pointerHeight = 28;
+  const boxSize = size + spinPadding * 2;
 
   const slices = useMemo(() => {
     return segments.map((seg, i) => {
@@ -58,31 +61,40 @@ export default function BenefitsWheelSpinWheel({
   }, [segments, cx, cy, r, slice, n]);
 
   return (
-    <div className="relative mx-auto" style={{ width: size, height: size }}>
+    <div
+      className="relative mx-auto overflow-visible"
+      style={{ width: boxSize, height: boxSize + pointerHeight / 2, paddingTop: pointerHeight }}
+    >
       <div
-        className="absolute left-1/2 top-0 z-20 -translate-x-1/2 -translate-y-1"
+        className="absolute left-1/2 z-20 -translate-x-1/2"
         style={{
+          top: 0,
           width: 0,
           height: 0,
           borderLeft: "14px solid transparent",
           borderRight: "14px solid transparent",
-          borderTop: "28px solid #1e293b",
+          borderTop: `${pointerHeight}px solid #1e293b`,
           filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))",
         }}
       />
 
-      <svg
-        width={size}
-        height={size}
-        viewBox={`0 0 ${size} ${size}`}
-        className="drop-shadow-xl"
-        style={{
-          transform: `rotate(${rotation}deg)`,
-          transition: spinning
-            ? "transform 4.2s cubic-bezier(0.15, 0.85, 0.2, 1)"
-            : "none",
-        }}
+      <div
+        className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 overflow-visible"
+        style={{ width: size, height: size, marginTop: pointerHeight / 4 }}
       >
+        <svg
+          width={size}
+          height={size}
+          viewBox={`0 0 ${size} ${size}`}
+          className="block drop-shadow-xl"
+          style={{
+            transform: `rotate(${rotation}deg)`,
+            transformOrigin: "center center",
+            transition: spinning
+              ? "transform 4.2s cubic-bezier(0.15, 0.85, 0.2, 1)"
+              : "none",
+          }}
+        >
         <circle cx={cx} cy={cy} r={r + 6} fill="#fff" stroke="#e2e8f0" strokeWidth={4} />
         <g>
           {slices.map((sliceItem, i) => (
@@ -114,7 +126,8 @@ export default function BenefitsWheelSpinWheel({
             <stop offset="100%" stopColor="#7c3aed" />
           </radialGradient>
         </defs>
-      </svg>
+        </svg>
+      </div>
     </div>
   );
 }

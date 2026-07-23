@@ -1,6 +1,7 @@
 export type BenefitsWheelSegment = {
   label: string;
   color?: string;
+  couponCode?: string;
 };
 
 export type BenefitsWheelSettings = {
@@ -39,6 +40,7 @@ export function normalizeSegments(
   return Array.from({ length: n }, (_, i) => ({
     label: String(base[i]?.label || `הטבה ${i + 1}`).trim() || `הטבה ${i + 1}`,
     color: base[i]?.color || WHEEL_COLORS[i % WHEEL_COLORS.length],
+    couponCode: String(base[i]?.couponCode || "").trim(),
   }));
 }
 
@@ -63,7 +65,10 @@ export function readVisitorSavedPrize(siteId: string) {
   }
 }
 
-export function writeVisitorSpin(siteId: string, prize: { label: string; index: number }) {
+export function writeVisitorSpin(
+  siteId: string,
+  prize: { label: string; index: number; couponCode?: string }
+) {
   try {
     const count = readVisitorSpinCount(siteId) + 1;
     localStorage.setItem(visitorStorageKey(siteId, "spins"), String(count));
