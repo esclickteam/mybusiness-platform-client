@@ -291,7 +291,7 @@ export default function GoogleAdsLeadIntegration({
   };
 
   return (
-    <div className="mx-auto w-full max-w-4xl" dir={dir}>
+    <div className="mx-auto w-full min-w-0 max-w-4xl overflow-x-hidden px-2 sm:px-0" dir={dir}>
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="flex items-center justify-between gap-3 bg-[#0F766E] px-5 py-4 text-white">
           <div>

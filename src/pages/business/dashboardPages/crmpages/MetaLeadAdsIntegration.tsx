@@ -310,10 +310,10 @@ export default function MetaLeadAdsIntegration({
   ];
 
   return (
-    <div dir={dir} className="w-full min-w-0 bg-[#F4F5F8] p-1 text-slate-900 sm:p-2">
-      <div className="mx-auto flex max-w-4xl flex-col gap-4">
+    <div dir={dir} className="w-full min-w-0 overflow-x-hidden bg-[#F4F5F8] p-2 text-slate-900 sm:p-3">
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 sm:gap-4">
         <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-          <div className="border-b border-slate-100 bg-white p-5 sm:p-6">
+          <div className="border-b border-slate-100 bg-white p-4 sm:p-6">
             {onBack && (
               <button
                 type="button"
@@ -330,7 +330,7 @@ export default function MetaLeadAdsIntegration({
               {t(`${T}.badge`)}
             </div>
 
-            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
+            <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-4xl">
               {t(`${T}.title`)}
             </h1>
 
@@ -386,7 +386,7 @@ export default function MetaLeadAdsIntegration({
 
                 {wizardStep === 1 && (
                   <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-8">
-                    <h2 className="text-2xl font-black text-slate-900">
+                    <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
                       {t(`${T}.wizard.step1Title`)}
                     </h2>
                     <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
@@ -418,7 +418,7 @@ export default function MetaLeadAdsIntegration({
                     <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-6">
                       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
                         <div>
-                          <h2 className="text-2xl font-black text-slate-900">
+                          <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
                             {t(`${T}.wizard.step2Title`)}
                           </h2>
                           <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
@@ -450,7 +450,7 @@ export default function MetaLeadAdsIntegration({
                           {t(`${T}.step2Desc`)}
                         </p>
 
-                        <div className="mt-4 grid gap-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+                        <div className="mt-4 grid gap-3">
                           <select
                             value={selectedPageId}
                             onChange={(event) =>
@@ -470,7 +470,7 @@ export default function MetaLeadAdsIntegration({
                             type="button"
                             onClick={connectPage}
                             disabled={busy || !selectedPageId}
-                            className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
+                            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60 sm:w-auto"
                           >
                             <Webhook className="h-4 w-4" />
                             {t(`${T}.connectPage`)}
