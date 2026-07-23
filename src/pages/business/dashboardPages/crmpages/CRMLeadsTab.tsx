@@ -159,19 +159,19 @@ function getStatusLabel(status: LeadStatus, t: TFunction) {
 }
 
 const statusBadgeClasses: Record<LeadStatus, string> = {
-  new: "border-sky-200 bg-sky-50 text-sky-700",
-  contacted: "border-violet-200 bg-violet-50 text-violet-700",
-  interested: "border-amber-200 bg-blue-50 text-blue-700",
-  converted: "border-sky-200 bg-sky-50 text-sky-700",
-  lost: "border-rose-200 bg-rose-50 text-rose-700",
+  new: "border-sky-400 bg-sky-600 text-white",
+  contacted: "border-slate-500 bg-slate-800 text-white",
+  interested: "border-amber-400 bg-amber-500 text-slate-950",
+  converted: "border-cyan-500 bg-cyan-700 text-white",
+  lost: "border-rose-400 bg-rose-600 text-white",
 };
 
 const statusDotClasses: Record<LeadStatus, string> = {
-  new: "bg-sky-500",
-  contacted: "bg-violet-500",
-  interested: "bg-blue-500",
-  converted: "bg-sky-500",
-  lost: "bg-rose-500",
+  new: "bg-sky-200",
+  contacted: "bg-slate-300",
+  interested: "bg-amber-100",
+  converted: "bg-cyan-200",
+  lost: "bg-rose-200",
 };
 
 function getCurrentUserName(t: TFunction) {
@@ -607,7 +607,7 @@ function LeadStatusBadge({ status }: { status: LeadStatus }) {
   return (
     <span
       className={[
-        "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black",
+        "inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-black",
         statusBadgeClasses[status],
       ].join(" ")}
     >
@@ -623,7 +623,7 @@ function SourceBadge({ lead }: { lead: Lead }) {
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
-      <span className="inline-flex max-w-full items-center gap-2 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-600">
+      <span className="inline-flex max-w-full items-center gap-2 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-black text-slate-800 shadow-sm">
         {isMetaLead(lead) ? (
           <Webhook className="h-3.5 w-3.5 shrink-0 text-sky-700" />
         ) : (
@@ -633,7 +633,7 @@ function SourceBadge({ lead }: { lead: Lead }) {
         <span className="truncate">{sourceLabel}</span>
       </span>
 
-      <span className="max-w-full truncate text-xs font-bold text-slate-400">
+      <span className="max-w-full truncate text-xs font-bold text-slate-500">
         {getLeadFormName(lead, t)}
       </span>
     </div>
@@ -1136,7 +1136,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   };
 
   return (
-    <div className="w-full min-w-0 space-y-6 bg-slate-50/60" dir={dir}>
+    <div
+      className="w-full min-w-0 space-y-6 bg-[linear-gradient(165deg,#dbe7f3_0%,#e8eef5_35%,#d5dee8_100%)] p-3 sm:p-4"
+      dir={dir}
+    >
       {showMetaSetup ? (
         <MetaLeadAdsIntegration
           businessId={businessId}
@@ -1144,23 +1147,30 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         />
       ) : (
         <>
-      <section className="overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_24px_80px_rgba(20,184,166,0.10)]">
-        <div className="relative overflow-hidden border-b border-sky-100 bg-gradient-to-r from-sky-50 via-white to-sky-50 p-6 text-slate-800 sm:p-7">
-          <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-sky-200/40 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-28 right-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
+      <section className="overflow-hidden rounded-[1.75rem] border border-slate-300/90 bg-white shadow-[0_28px_70px_rgba(15,23,42,0.14)]">
+        <div className="relative overflow-hidden border-b border-slate-800 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a6e_55%,#0369a1_100%)] p-6 text-white sm:p-7">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.28),transparent_42%),radial-gradient(circle_at_85%_10%,rgba(14,165,233,0.22),transparent_38%)]" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.12]"
+            style={{
+              backgroundImage:
+                "linear-gradient(rgba(255,255,255,0.35) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.35) 1px, transparent 1px)",
+              backgroundSize: "28px 28px",
+            }}
+          />
 
           <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-sky-700 ring-1 ring-sky-100 shadow-sm">
+              <div className="mb-3 inline-flex items-center gap-2 rounded-md border border-sky-300/40 bg-sky-500/20 px-3 py-1.5 text-xs font-black uppercase tracking-[0.16em] text-sky-100">
                 <Sparkles className="h-4 w-4" />
                 {t("crm.leads.badge")}
               </div>
 
-              <h1 className="text-3xl font-black tracking-tight sm:text-5xl">
+              <h1 className="text-3xl font-black tracking-tight text-white sm:text-5xl">
                 {t("crm.leads.title")}
               </h1>
 
-              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-slate-500 sm:text-base">
+              <p className="mt-3 max-w-3xl text-sm font-semibold leading-7 text-sky-100/90 sm:text-base">
                 {t("crm.leads.subtitle")}
               </p>
             </div>
@@ -1169,7 +1179,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <button
                 type="button"
                 onClick={openMetaSetup}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-white px-5 text-sm font-black text-sky-800 shadow-sm transition hover:bg-sky-50"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-white/25 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/20"
               >
                 <Facebook className="h-5 w-5" />
                 {t("crm.leads.connectMeta")}
@@ -1179,7 +1189,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 type="button"
                 onClick={() => fetchLeads()}
                 disabled={loading}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-lg shadow-sky-600/20 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-sky-400 px-5 text-sm font-black text-slate-950 transition hover:bg-sky-300 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? (
                   <BizuplyLoader size="xs" compact />
@@ -1192,38 +1202,38 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           </div>
         </div>
 
-        <div className="grid gap-4 bg-white p-4 sm:p-6 md:grid-cols-2 xl:grid-cols-5">
-          <div className="rounded-3xl border border-slate-200 bg-slate-50 p-5">
-            <p className="text-xs font-black text-slate-400">{t("crm.leads.stats.total")}</p>
-            <p className="mt-2 text-3xl font-black text-slate-800">
+        <div className="grid gap-3 bg-slate-100/80 p-4 sm:p-5 md:grid-cols-2 xl:grid-cols-5">
+          <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-slate-500">{t("crm.leads.stats.total")}</p>
+            <p className="mt-2 text-3xl font-black text-slate-900">
               {stats.total}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">{t("crm.leads.stats.new")}</p>
-            <p className="mt-2 text-3xl font-black text-sky-800">
+          <div className="rounded-2xl border border-sky-300 bg-sky-600 p-5 text-white shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-sky-100">{t("crm.leads.stats.new")}</p>
+            <p className="mt-2 text-3xl font-black">
               {stats.new}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-violet-100 bg-violet-50 p-5">
-            <p className="text-xs font-black text-violet-600">{t("crm.leads.stats.contacted")}</p>
-            <p className="mt-2 text-3xl font-black text-violet-800">
+          <div className="rounded-2xl border border-slate-300 bg-slate-800 p-5 text-white shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-slate-300">{t("crm.leads.stats.contacted")}</p>
+            <p className="mt-2 text-3xl font-black">
               {stats.contacted}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-sky-100 bg-sky-50 p-5">
-            <p className="text-xs font-black text-sky-600">{t("crm.leads.stats.converted")}</p>
-            <p className="mt-2 text-3xl font-black text-sky-800">
+          <div className="rounded-2xl border border-cyan-300 bg-cyan-700 p-5 text-white shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-cyan-100">{t("crm.leads.stats.converted")}</p>
+            <p className="mt-2 text-3xl font-black">
               {stats.converted}
             </p>
           </div>
 
-          <div className="rounded-3xl border border-blue-100 bg-blue-50 p-5">
-            <p className="text-xs font-black text-blue-600">{t("crm.leads.stats.openTasks")}</p>
-            <p className="mt-2 text-3xl font-black text-blue-800">
+          <div className="rounded-2xl border border-slate-300 bg-white p-5 shadow-sm">
+            <p className="text-xs font-black uppercase tracking-wide text-slate-500">{t("crm.leads.stats.openTasks")}</p>
+            <p className="mt-2 text-3xl font-black text-slate-900">
               {leads.reduce(
                 (sum, lead) =>
                   sum +
@@ -1239,27 +1249,27 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       </section>
 
       {error && (
-        <div className="flex items-start gap-3 rounded-2xl border border-rose-100 bg-rose-50 p-4 text-sm font-bold text-rose-700 shadow-sm">
+        <div className="flex items-start gap-3 rounded-2xl border border-rose-300 bg-rose-100 p-4 text-sm font-bold text-rose-800 shadow-sm">
           <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" />
           <p>{error}</p>
         </div>
       )}
 
-      <section className="w-full min-w-0 overflow-hidden rounded-[2rem] border border-slate-200 bg-white shadow-[0_18px_55px_rgba(20,184,166,0.08)]">
-        <div className="border-b border-slate-100 bg-white p-4 sm:p-5">
+      <section className="w-full min-w-0 overflow-hidden rounded-[1.75rem] border border-slate-300/90 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.12)]">
+        <div className="border-b border-slate-200 bg-slate-50 p-4 sm:p-5">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
-            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 transition focus-within:border-sky-300 focus-within:bg-white focus-within:ring-4 focus-within:ring-sky-100">
-              <Search className="h-5 w-5 shrink-0 text-slate-400" />
+            <div className="flex min-w-0 flex-1 items-center gap-3 rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-sm transition focus-within:border-sky-500 focus-within:ring-4 focus-within:ring-sky-200">
+              <Search className="h-5 w-5 shrink-0 text-slate-500" />
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder={t("crm.leads.searchPlaceholder")}
-                className="w-full bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-400"
+                className="w-full bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
               />
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
+              <div className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-600 shadow-sm">
                 <Filter className="h-4 w-4" />
                 {t("crm.common.filter")}
               </div>
@@ -1271,10 +1281,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     type="button"
                     onClick={() => setStatusFilter(status)}
                     className={[
-                      "rounded-2xl px-4 py-2 text-xs font-black transition",
+                      "rounded-xl px-4 py-2 text-xs font-black transition",
                       statusFilter === status
-                        ? "bg-sky-600 text-white shadow-[0_12px_30px_rgba(14,165,233,0.14)]"
-                        : "bg-slate-50 text-slate-500 hover:bg-sky-50 hover:text-sky-800",
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : "border border-slate-300 bg-white text-slate-600 hover:border-sky-400 hover:text-sky-800",
                     ].join(" ")}
                   >
                     {status === "all" ? t("crm.common.all") : getStatusLabel(status, t)}
@@ -1286,31 +1296,31 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         </div>
 
         {loading ? (
-          <div className="space-y-3 p-4 sm:p-5">
+          <div className="space-y-3 bg-slate-100/50 p-4 sm:p-5">
             {Array.from({ length: 7 }).map((_, index) => (
               <div
                 key={index}
-                className="h-16 animate-pulse rounded-2xl bg-slate-50"
+                className="h-16 animate-pulse rounded-xl bg-slate-200"
               />
             ))}
           </div>
         ) : filteredLeads.length === 0 ? (
-          <div className="flex min-h-[420px] flex-col items-center justify-center p-8 text-center">
-            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-3xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
+          <div className="flex min-h-[420px] flex-col items-center justify-center bg-slate-50 p-8 text-center">
+            <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-slate-900 text-sky-300 shadow-lg">
               <Webhook className="h-9 w-9" />
             </div>
 
-            <h3 className="text-2xl font-black text-slate-800">
+            <h3 className="text-2xl font-black text-slate-900">
               {t("crm.leads.emptyTitle")}
             </h3>
 
-            <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-500">
+            <p className="mt-3 max-w-xl text-sm font-semibold leading-7 text-slate-600">
               {t("crm.leads.emptyDescription")}
             </p>
           </div>
         ) : (
           <div className="w-full">
-            <div className="hidden border-b border-slate-200 bg-slate-50 px-4 py-4 text-xs font-black uppercase tracking-[0.08em] text-slate-400 xl:grid xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:gap-4">
+            <div className="hidden border-b border-slate-300 bg-slate-200/80 px-4 py-4 text-xs font-black uppercase tracking-[0.08em] text-slate-600 xl:grid xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:gap-4">
               <div>{t("crm.leads.table.lead")}</div>
               <div>{t("crm.leads.table.contactDetails")}</div>
               <div>{t("crm.leads.table.source")}</div>
@@ -1320,7 +1330,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               <div>{t("crm.leads.table.actions")}</div>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-200 bg-white">
               {filteredLeads.map((lead) => {
                 const status = lead.status || "new";
                 const leadName = getLeadName(lead, t);
@@ -1333,13 +1343,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     key={lead._id}
                     onClick={() => setSelectedLead(lead)}
                     className={[
-                      "cursor-pointer px-4 py-4 transition hover:bg-sky-50/40",
-                      selectedLead?._id === lead._id ? "bg-sky-50/70" : "",
+                      "cursor-pointer px-4 py-4 transition hover:bg-sky-50",
+                      selectedLead?._id === lead._id ? "bg-sky-100" : "",
                       "grid gap-4 xl:grid-cols-[1.25fr_1.05fr_0.75fr_1.45fr_0.7fr_0.8fr_1fr] xl:items-center",
                     ].join(" ")}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white text-sm font-black text-black shadow-sm">
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-sm font-black text-sky-300 shadow-sm">
                         {getInitials(leadName)}
                       </div>
 
@@ -1393,7 +1403,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           {mainDetails.map((detail, index) => (
                             <span
                               key={`${lead._id}-main-${detail.label}-${index}`}
-                              className="max-w-full rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-600 ring-1 ring-slate-100 xl:max-w-[180px]"
+                              className="max-w-full rounded-md border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-black text-slate-700 xl:max-w-[180px]"
                               title={`${detail.label}: ${detail.value}`}
                             >
                               <span className="line-clamp-2 break-words">
@@ -1403,7 +1413,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           ))}
 
                           {details.length > 3 && (
-                            <span className="rounded-full bg-sky-50 px-3 py-1.5 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+                            <span className="rounded-md border border-sky-300 bg-sky-100 px-3 py-1.5 text-xs font-black text-sky-800">
                               +{details.length - 3}
                             </span>
                           )}
@@ -1435,7 +1445,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           href={`https://wa.me/${whatsAppPhone}`}
                           target="_blank"
                           rel="noreferrer"
-                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 hover:text-sky-800"
                           title={t("crm.common.whatsapp")}
                         >
                           <MessageCircle className="h-4 w-4" />
@@ -1445,7 +1455,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       {lead.phone && (
                         <a
                           href={`tel:${lead.phone}`}
-                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                          className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-300 bg-white text-slate-700 transition hover:border-sky-400 hover:bg-sky-50 hover:text-sky-800"
                           title={t("crm.common.call")}
                         >
                           <Phone className="h-4 w-4" />
@@ -1455,7 +1465,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       <button
                         type="button"
                         onClick={() => setSelectedLead(lead)}
-                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-xs font-black text-black transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
+                        className="inline-flex h-10 shrink-0 items-center gap-2 rounded-xl bg-slate-900 px-4 text-xs font-black text-white transition hover:bg-slate-800"
                       >
                         {t("crm.common.open")}
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -1471,7 +1481,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className="fixed inset-0 z-[90] bg-sky-600/45 backdrop-blur-sm"
+          className="fixed inset-0 z-[90] bg-slate-950/55 backdrop-blur-sm"
           dir={dir}
         >
           <div
@@ -1479,29 +1489,29 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             onClick={() => setSelectedLead(null)}
           />
 
-          <section className="absolute inset-4 overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 shadow-[0_30px_120px_rgba(14,165,233,0.18)]">
+          <section className="absolute inset-4 overflow-hidden rounded-[1.75rem] border border-slate-300 bg-slate-100 shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
             <div className="flex h-full flex-col">
-              <header className="flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-5 py-4">
+              <header className="flex shrink-0 items-center justify-between border-b border-slate-300 bg-[linear-gradient(135deg,#0f172a_0%,#0c4a6e_100%)] px-5 py-4 text-white">
                 <div className="flex min-w-0 items-center gap-3">
                   <button
                     type="button"
                     onClick={() => setSelectedLead(null)}
-                    className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50 hover:text-slate-800"
+                    className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/10 text-white transition hover:bg-white/20"
                     title={t("crm.common.close")}
                   >
                     <X className="h-5 w-5" />
                   </button>
 
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white text-lg font-black text-black shadow-sm">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-sky-400 text-lg font-black text-slate-950 shadow-sm">
                     {getInitials(getLeadName(selectedLead, t))}
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-2xl font-black text-slate-800">
+                    <h2 className="truncate text-2xl font-black text-white">
                       {getLeadName(selectedLead, t)}
                     </h2>
 
-                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
+                    <div className="mt-1 flex flex-wrap items-center gap-2 text-xs font-bold text-sky-100/90">
                       <span>{selectedLead.phone || t("crm.common.noPhone")}</span>
                       <span>•</span>
                       <span>{getLeadSourceLabel(selectedLead, t)}</span>
