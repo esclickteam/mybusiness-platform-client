@@ -146,7 +146,10 @@ class NotificationPanelErrorBoundary extends React.Component<
       return (
         <div
           dir={dir}
-          className="fixed right-4 top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-start shadow-xl sm:right-6"
+          className={[
+            "fixed top-20 z-[9999] w-[320px] max-w-[calc(100vw-24px)] rounded-2xl border border-rose-100 bg-white p-4 text-start shadow-xl",
+            dir === "rtl" ? "left-4 sm:left-6" : "right-4 sm:right-6",
+          ].join(" ")}
         >
           <p className="text-sm font-black text-slate-900">
             {i18n.t("notifications.errorTitle")}
@@ -172,6 +175,11 @@ class NotificationPanelErrorBoundary extends React.Component<
 export default function FacebookStyleNotifications() {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
+  const isRtl = dir === "rtl";
+  const sideDockClass = isRtl
+    ? "left-4 sm:left-6"
+    : "right-4 sm:right-6";
+  const toastEnterX = isRtl ? -90 : 90;
   const dateLocale = getIntlLocale(i18n.language);
   const { user, socket } = useAuth();
   const navigate = useNavigate();
@@ -1237,7 +1245,12 @@ export default function FacebookStyleNotifications() {
       </button>
 
       {toasts.length > 0 && (
-        <div className="fixed right-4 top-20 z-[10000] flex w-[360px] max-w-[calc(100vw-24px)] flex-col gap-3 sm:right-6">
+        <div
+          className={[
+            "fixed top-20 z-[10000] flex w-[360px] max-w-[calc(100vw-24px)] flex-col gap-3",
+            sideDockClass,
+          ].join(" ")}
+        >
           <AnimatePresence initial={false}>
             {toasts.map((toast) => {
               const isClickable =
@@ -1252,9 +1265,9 @@ export default function FacebookStyleNotifications() {
                   key={toast.id}
                   dir={dir}
                   layout
-                  initial={{ opacity: 0, x: 90, scale: 0.92 }}
+                  initial={{ opacity: 0, x: toastEnterX, scale: 0.92 }}
                   animate={{ opacity: 1, x: 0, scale: 1 }}
-                  exit={{ opacity: 0, x: 90, scale: 0.92 }}
+                  exit={{ opacity: 0, x: toastEnterX, scale: 0.92 }}
                   transition={{ type: "spring", stiffness: 380, damping: 30 }}
                   onClick={() => {
                     if (isClickable) {
@@ -1330,13 +1343,13 @@ export default function FacebookStyleNotifications() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.98 }}
               transition={{ duration: 0.16 }}
-              className="
-                fixed right-4 top-20 z-[9999]
-                flex max-h-[min(680px,calc(100dvh-5.5rem))] w-[440px] max-w-[calc(100vw-24px)]
-                flex-col overflow-hidden rounded-[1.7rem] border border-slate-200
-                bg-white shadow-[0_26px_90px_rgba(15,23,42,0.14)]
-                sm:right-6
-              "
+              className={[
+                "fixed top-20 z-[9999]",
+                "flex max-h-[min(680px,calc(100dvh-5.5rem))] w-[440px] max-w-[calc(100vw-24px)]",
+                "flex-col overflow-hidden rounded-[1.7rem] border border-slate-200",
+                "bg-white shadow-[0_26px_90px_rgba(15,23,42,0.14)]",
+                sideDockClass,
+              ].join(" ")}
             >
               {panelView === "settings" ? (
                 <NotificationSettingsPanel
