@@ -170,6 +170,24 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
         במיקום הנוכחי — גררו אותו למקום הרצוי. הגלגל עצמו נפתח במודאל, לא בתוך
         סקשן.
       </p>
+
+      {Array.isArray(settings.wonSpins) && settings.wonSpins.length > 0 ? (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+          <p className="mb-2 text-sm font-bold text-slate-800">הטבות שנשמרו ({settings.wonSpins.length})</p>
+          <ul className="max-h-40 space-y-1 overflow-y-auto text-xs text-slate-600">
+            {(settings.wonSpins as Array<{ prizeLabel?: string; createdAt?: string }>)
+              .slice(0, 20)
+              .map((row, i) => (
+                <li key={i} className="flex justify-between gap-2 border-b border-slate-100 py-1">
+                  <span className="font-semibold">{row.prizeLabel || "—"}</span>
+                  <span className="text-slate-400">
+                    {row.createdAt ? new Date(row.createdAt).toLocaleDateString("he-IL") : ""}
+                  </span>
+                </li>
+              ))}
+          </ul>
+        </div>
+      ) : null}
     </SitePluginPanelFrame>
   );
 }
