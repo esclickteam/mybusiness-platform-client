@@ -1863,10 +1863,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 <article
                                   onClick={() => openLeadDrawer(lead)}
                                   className={[
-                                    "hidden cursor-pointer px-4 py-3.5 transition hover:bg-violet-50/40 xl:grid xl:grid-cols-[1.35fr_1.15fr_0.9fr_0.8fr_1.15fr_0.85fr_0.95fr] xl:items-center xl:gap-3",
+                                    "hidden cursor-pointer px-4 py-3.5 transition xl:grid xl:grid-cols-[1.35fr_1.15fr_0.9fr_0.8fr_1.15fr_0.85fr_0.95fr] xl:items-center xl:gap-3",
                                     selectedLead?._id === lead._id
-                                      ? "bg-violet-50/70"
-                                      : "bg-white",
+                                      ? "bg-violet-100 ring-1 ring-inset ring-violet-200 hover:bg-violet-100"
+                                      : "bg-white hover:bg-violet-50/40",
                                   ].join(" ")}
                                 >
                                   <div className="flex min-w-0 items-center gap-3">
@@ -1995,10 +1995,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                 <article
                                   onClick={() => openLeadDrawer(lead, "form")}
                                   className={[
-                                    "grid cursor-pointer grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] items-center gap-2 px-3 py-2.5 transition hover:bg-violet-50/40 xl:hidden",
+                                    "grid cursor-pointer grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] items-center gap-2 px-3 py-2.5 transition xl:hidden",
                                     selectedLead?._id === lead._id
-                                      ? "bg-violet-50/70"
-                                      : "bg-white",
+                                      ? "bg-violet-100 ring-1 ring-inset ring-violet-200 hover:bg-violet-100"
+                                      : "bg-white hover:bg-violet-50/40",
                                   ].join(" ")}
                                 >
                                   <p
