@@ -223,6 +223,47 @@ export async function unsubscribeFromPush(): Promise<void> {
   }
 }
 
+/** Show a device notification from the open page (fallback when push fails). */
+export async function showLocalNotification(options: {
+  title: string;
+  body: string;
+  url?: string;
+  tag?: string;
+}): Promise<boolean> {
+  if (!isPushSupported()) return false;
+  if (Notification.permission !== "granted") return false;
+
+  try {
+    const reg =
+      (await navigator.serviceWorker.getRegistration(SW_URL)) ||
+      (await navigator.serviceWorker.getRegistration()) ||
+      (await registerServiceWorker());
+
+    const payload = {
+      body: options.body,
+      icon: "/android-chrome-192x192.png",
+      badge: "/favicon-v2.png",
+      tag: options.tag || `bizuply-local-${Date.now()}`,
+      renotify: true,
+      vibrate: [200, 100, 200],
+      data: { url: options.url || "/" },
+    };
+
+    if (reg?.showNotification) {
+      await reg.showNotification(options.title, payload);
+      return true;
+    }
+
+    // Fallback without SW (desktop browsers).
+    // eslint-disable-next-line no-new
+    new Notification(options.title, payload);
+    return true;
+  } catch (err) {
+    console.error("showLocalNotification failed:", err);
+    return false;
+  }
+}
+
 /** Listen for SW asking the page to re-bind push after endpoint rotation. */
 export function listenForPushSubscriptionChange(): () => void {
   if (!("serviceWorker" in navigator)) return () => undefined;

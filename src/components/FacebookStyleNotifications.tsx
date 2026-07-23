@@ -29,6 +29,7 @@ import {
   X,
 } from "lucide-react";
 import { NotificationSettingsPanel } from "./NotificationSettings";
+import { showLocalNotification } from "../utils/push";
 
 type NotificationTab = "all" | "unread";
 
@@ -279,6 +280,19 @@ export default function FacebookStyleNotifications() {
       Boolean(unified.leadId)
     ) {
       window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+
+      if (shouldToast) {
+        void showLocalNotification({
+          title: unified.title || "ליד חדש",
+          body: unified.text || unified.message || "נכנס ליד חדש למערכת",
+          url:
+            unified.targetUrl ||
+            (businessId
+              ? `/business/${businessId}/dashboard/crm/leads`
+              : "/"),
+          tag: `bizuply-lead-${unified.leadId || unified.id}`,
+        });
+      }
     }
   }
 
