@@ -48,7 +48,7 @@ export default function SiteAuthLoginWidget({
     auth?.member?.email ||
     "";
 
-  const position = settings.triggerPosition || { x: 92, y: 8 };
+  const position = settings.triggerPosition || { x: 88, y: 82 };
   const [dragPos, setDragPos] = useState(position);
   const dragPosRef = useRef(dragPos);
 

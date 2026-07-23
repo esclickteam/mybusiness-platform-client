@@ -201,6 +201,10 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     | Record<string, unknown>
     | undefined;
 
+  const triggerRaw = stored?.triggerPosition as { x?: number; y?: number } | undefined;
+  let triggerY = Number(triggerRaw?.y ?? 82);
+  if (triggerY < 24) triggerY = 82;
+
   return {
     isActive: stored?.isActive !== false,
     loginButtonLabel: String(stored?.loginButtonLabel || "התחברות"),
@@ -212,12 +216,18 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     registerSubtitle: String(stored?.registerSubtitle || ""),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
-    useLoginModal: stored?.useLoginModal !== false,
+    showTrigger: stored?.showTrigger !== false,
+    useLoginModal: Boolean(stored?.useLoginModal),
     buttonMode: normalizeButtonMode(stored?.buttonMode),
+    buttonDisplay: ["button", "icon", "text"].includes(String(stored?.buttonDisplay))
+      ? (stored?.buttonDisplay as SiteAuthSettings["buttonDisplay"])
+      : "icon",
+    buttonTransparent: stored?.buttonTransparent !== false,
+    buttonTextColor: String(stored?.buttonTextColor || ""),
     showMemberName: stored?.showMemberName !== false,
     triggerPosition: {
-      x: Number((stored?.triggerPosition as { x?: number })?.x ?? 92),
-      y: Number((stored?.triggerPosition as { y?: number })?.y ?? 6),
+      x: Number(triggerRaw?.x ?? 88),
+      y: triggerY,
     },
     memberAreaPath: String(stored?.memberAreaPath || "/member"),
     defaultAddAsCrmClient: Boolean(stored?.defaultAddAsCrmClient),
@@ -234,9 +244,9 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
 }
 
 function normalizeButtonMode(value: unknown): SiteAuthSettings["buttonMode"] {
-  const mode = String(value || "both");
-  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "both";
+  const mode = String(value || "floating");
+  if (mode === "inline" || mode === "both") return "floating";
+  return "floating";
 }
 
 export function siteHasAuthPlugin(site: Record<string, unknown> | null | undefined) {

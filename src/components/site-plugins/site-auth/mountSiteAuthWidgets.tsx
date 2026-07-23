@@ -1,17 +1,7 @@
 import { createRoot, type Root } from "react-dom/client";
-import React from "react";
 
-import SiteAuthLoginWidget from "./SiteAuthLoginWidget";
 import {
-  mergeSiteAuthSettings,
-  shouldMountInlineAuthButton,
-  type SiteAuthWidgetSettings,
-} from "./siteAuthUtils";
-import { SiteMemberAuthProvider } from "../../../context/SiteMemberAuthContext";
-import {
-  ensurePluginWidgetsLayering,
-  fitPluginWidgetShellToContent,
-  sanitizePluginWidgetEditorNodes,
+  getPluginWidgetShell,
 } from "../../site-builder/studio/visual-editor/utils/visualPluginWidgets";
 
 const roots = new WeakMap<Element, Root>();
@@ -22,90 +12,66 @@ type MountSiteAuthOptions = {
   editorMode?: boolean;
 };
 
-export function mountSiteAuthWidgets(
-  root: ParentNode | null | undefined,
-  settings: SiteAuthWidgetSettings | unknown,
-  options: MountSiteAuthOptions = {}
-) {
+/**
+ * Site-auth is overlay-only (like benefits wheel). Legacy HTML widgets inserted
+ * into the page are hidden so they don't show as blue boxes in the header.
+ */
+export function hideLegacySiteAuthInlineWidgets(root: ParentNode | null | undefined) {
   if (!root) return;
 
-  const normalized = mergeSiteAuthSettings(settings);
-  if (!shouldMountInlineAuthButton(normalized)) return;
-
-  const site = options.site || {};
-  const slug = String(options.slug || site?.slug || "");
-
-  const nodes = root.querySelectorAll('[data-bizuply-widget="site-auth"]');
-  nodes.forEach((node) => {
+  root.querySelectorAll('[data-bizuply-widget="site-auth"]').forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
 
-    node.style.display = "inline-flex";
-    node.style.alignItems = "center";
-    node.style.justifyContent = "center";
-    node.style.width = "fit-content";
-    node.style.height = "fit-content";
-    node.style.minHeight = "0";
-    node.style.overflow = "visible";
-
-    let reactRoot = roots.get(node);
-    const needsFreshRoot =
-      !reactRoot ||
-      !node.isConnected ||
-      node.getAttribute("data-bizuply-site-auth-mounted") !== "true";
-
-    if (needsFreshRoot) {
-      if (reactRoot) {
-        try {
-          reactRoot.unmount();
-        } catch {
-          // stale root after DOM reset
-        }
-        roots.delete(node);
+    const reactRoot = roots.get(node);
+    if (reactRoot) {
+      try {
+        reactRoot.unmount();
+      } catch {
+        // stale root
       }
-
-      node.innerHTML = "";
-      reactRoot = createRoot(node);
-      roots.set(node, reactRoot);
+      roots.delete(node);
     }
 
-    const widget = (
-      <SiteMemberAuthProvider slug={slug}>
-        <SiteAuthLoginWidget
-          site={site}
-          settings={normalized}
-          variant="inline"
-          mode={options.editorMode ? "editor" : "live"}
-        />
-      </SiteMemberAuthProvider>
-    );
+    node.innerHTML = "";
+    node.style.display = "none";
+    node.style.visibility = "hidden";
+    node.style.width = "0";
+    node.style.height = "0";
+    node.style.minHeight = "0";
+    node.style.overflow = "hidden";
+    node.style.pointerEvents = "none";
+    node.style.border = "none";
+    node.style.background = "transparent";
+    node.setAttribute("data-bizuply-site-auth-legacy-hidden", "true");
+    node.removeAttribute("data-bizuply-site-auth-mounted");
 
-    reactRoot.render(widget);
-    node.setAttribute("data-bizuply-site-auth-mounted", "true");
-    node.setAttribute("data-bizuply-plugin-runtime", "true");
-
-    window.requestAnimationFrame(() => {
-      fitPluginWidgetShellToContent(node);
-    });
+    const shell = getPluginWidgetShell(node);
+    if (shell) {
+      shell.style.display = "none";
+      shell.style.visibility = "hidden";
+      shell.style.width = "0";
+      shell.style.height = "0";
+      shell.style.minWidth = "0";
+      shell.style.minHeight = "0";
+      shell.style.overflow = "hidden";
+      shell.style.pointerEvents = "none";
+      shell.style.border = "none";
+      shell.style.background = "transparent";
+      shell.style.boxShadow = "none";
+    }
   });
+}
 
-  if (root instanceof HTMLElement) {
-    sanitizePluginWidgetEditorNodes(root);
-    ensurePluginWidgetsLayering(root);
-  }
+export function mountSiteAuthWidgets(
+  root: ParentNode | null | undefined,
+  _settings?: unknown,
+  _options: MountSiteAuthOptions = {}
+) {
+  hideLegacySiteAuthInlineWidgets(root);
 }
 
 export function unmountSiteAuthWidgets(root: ParentNode | null | undefined) {
-  if (!root) return;
-  root.querySelectorAll('[data-bizuply-widget="site-auth"]').forEach((node) => {
-    const reactRoot = roots.get(node);
-    if (reactRoot) {
-      reactRoot.unmount();
-      roots.delete(node);
-    }
-    if (node instanceof HTMLElement) {
-      node.removeAttribute("data-bizuply-site-auth-mounted");
-    }
-  });
+  hideLegacySiteAuthInlineWidgets(root);
 }
 
 export { buildSiteAuthWidgetMarker, pageHasSiteAuthWidget } from "./siteAuthUtils";

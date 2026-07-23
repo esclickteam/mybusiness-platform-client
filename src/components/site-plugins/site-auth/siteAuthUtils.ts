@@ -51,10 +51,7 @@ export function mergeSiteAuthSettings(
     formButtonTextColor: String(stored.formButtonTextColor || base.formButtonTextColor),
     formBorderColor: String(stored.formBorderColor || base.formBorderColor),
     formBorderRadius: Number(stored.formBorderRadius ?? base.formBorderRadius),
-    triggerPosition: {
-      x: Number(triggerRaw?.x ?? base.triggerPosition.x),
-      y: Number(triggerRaw?.y ?? base.triggerPosition.y),
-    },
+    triggerPosition: normalizeTriggerPosition(triggerRaw, base.triggerPosition),
   };
 }
 
@@ -90,17 +87,29 @@ function readPartialSettings(
     formButtonTextColor: String(fallback?.formButtonTextColor || "#ffffff"),
     formBorderColor: String(fallback?.formBorderColor || "#e2e8f0"),
     formBorderRadius: Number(fallback?.formBorderRadius ?? 16),
-    triggerPosition: {
-      x: Number(fallback?.triggerPosition?.x ?? 92),
-      y: Number(fallback?.triggerPosition?.y ?? 6),
-    },
+    triggerPosition: { x: 88, y: 82 },
   };
 }
 
 function normalizeButtonMode(value: unknown): SiteAuthWidgetSettings["buttonMode"] {
   const mode = String(value || "floating");
-  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
+  if (mode === "inline" || mode === "both") return "floating";
+  if (mode === "floating") return "floating";
   return "floating";
+}
+
+function normalizeTriggerPosition(
+  raw: { x?: number; y?: number } | undefined,
+  fallback: { x: number; y: number }
+) {
+  const x = Number(raw?.x ?? fallback.x);
+  let y = Number(raw?.y ?? fallback.y);
+  // Legacy top-of-page positions looked like a broken header bar — move to wheel zone.
+  if (y < 24) y = 82;
+  return {
+    x: Math.min(96, Math.max(4, x)),
+    y: Math.min(96, Math.max(4, y)),
+  };
 }
 
 function normalizeButtonDisplay(
@@ -123,12 +132,11 @@ export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {
 export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
   if (!settings.isActive || settings.showLoginButton === false) return false;
   if (settings.showTrigger === false) return false;
-  return settings.buttonMode === "floating" || settings.buttonMode === "both";
+  return true;
 }
 
-export function shouldMountInlineAuthButton(settings: SiteAuthWidgetSettings) {
-  if (!settings.isActive) return false;
-  return settings.buttonMode === "inline" || settings.buttonMode === "both";
+export function shouldMountInlineAuthButton(_settings: SiteAuthWidgetSettings) {
+  return false;
 }
 
 export function shouldCollectRegisterPhone(settings: SiteAuthWidgetSettings) {
