@@ -1251,6 +1251,7 @@
       "metaConnected": "Meta connection",
       "newLead": "New Lead",
       "importLeads": "Import Leads",
+      "pageNumber": "Page {{page}}",
       "listView": "List View",
       "boardView": "Board View",
       "boardSoon": "Board view coming soon",

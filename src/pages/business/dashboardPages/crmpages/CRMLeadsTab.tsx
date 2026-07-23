@@ -6,7 +6,6 @@ import {
   CheckCircle2,
   ChevronDown,
   Clock3,
-  CloudUpload,
   Copy,
   ExternalLink,
   Facebook,
@@ -18,7 +17,6 @@ import {
   Mail,
   MessageCircle,
   Phone,
-  Plus,
   RefreshCw,
   Search,
   Send,
@@ -212,27 +210,42 @@ function formatDaySeparatorLabel(value?: string, locale = "he-IL", fallback = "�
   }
 }
 
-function getLeadCreatedTime(lead: Lead) {
-  const candidates = [lead.createdAt, lead.facebook?.createdTime];
+const LEADS_PER_PAGE = 50;
 
-  for (const raw of candidates) {
-    if (!raw) continue;
-    const time = new Date(raw).getTime();
-    if (Number.isFinite(time) && time > 0) return time;
-  }
-
-  // Mongo ObjectId embeds creation time — reliable newest-first tiebreaker.
+function getObjectIdTime(lead: Lead) {
   const id = String(lead._id || "");
   if (/^[a-f\d]{24}$/i.test(id)) {
     return parseInt(id.slice(0, 8), 16) * 1000;
   }
-
   return 0;
+}
+
+function parseLeadTime(raw?: string) {
+  if (!raw) return 0;
+  const time = new Date(raw).getTime();
+  return Number.isFinite(time) && time > 0 ? time : 0;
+}
+
+function getLeadCreatedTime(lead: Lead) {
+  // Prefer Meta lead time so date groups match the real lead day,
+  // then CRM createdAt, then Mongo ObjectId creation time.
+  return (
+    parseLeadTime(lead.facebook?.createdTime) ||
+    parseLeadTime(lead.createdAt) ||
+    getObjectIdTime(lead) ||
+    0
+  );
 }
 
 function compareLeadsNewestFirst(a: Lead, b: Lead) {
   const timeDiff = getLeadCreatedTime(b) - getLeadCreatedTime(a);
   if (timeDiff !== 0) return timeDiff;
+
+  // Same calendar/source time: prefer the lead that entered CRM later.
+  const createdDiff =
+    parseLeadTime(b.createdAt) - parseLeadTime(a.createdAt);
+  if (createdDiff !== 0) return createdDiff;
+
   return String(b._id || "").localeCompare(String(a._id || ""));
 }
 
@@ -244,6 +257,12 @@ function getLeadDateKey(lead: Lead) {
   const m = String(date.getMonth() + 1).padStart(2, "0");
   const d = String(date.getDate()).padStart(2, "0");
   return `${y}-${m}-${d}`;
+}
+
+function formatDateKeyLabel(key: string, locale = "he-IL", fallback = "—") {
+  if (key === "unknown") return fallback;
+  // Noon avoids timezone shifting the calendar day.
+  return formatDaySeparatorLabel(`${key}T12:00:00`, locale, fallback);
 }
 
 function getNextOpenTask(lead: Lead) {
@@ -748,6 +767,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
   const [sourceFilter, setSourceFilter] = useState<"all" | "meta" | "other">("all");
   const [viewMode, setViewMode] = useState<"list" | "board">("list");
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [localActivitiesByLead, setLocalActivitiesByLead] = useState<
     Record<string, LeadActivity[]>
@@ -761,6 +781,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [savingActivity, setSavingActivity] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const leadsScrollRef = useRef<HTMLDivElement | null>(null);
 
   // After Meta OAuth callback, keep the wizard open on step 2 (page/form).
   useEffect(() => {
@@ -1015,10 +1036,32 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       .sort(compareLeadsNewestFirst);
   }, [leads, search, statusFilter, sourceFilter, t]);
 
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredLeads.length / LEADS_PER_PAGE)
+  );
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, statusFilter, sourceFilter]);
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
+  const paginatedLeads = useMemo(() => {
+    const start = (currentPage - 1) * LEADS_PER_PAGE;
+    return filteredLeads.slice(start, start + LEADS_PER_PAGE);
+  }, [filteredLeads, currentPage]);
+
   const leadDateGroups = useMemo(() => {
     const groups: Array<{ key: string; label: string; leads: Lead[] }> = [];
 
-    for (const lead of filteredLeads) {
+    // Build groups in already-sorted newest-first order so each distinct
+    // calendar day gets its own gray separator row.
+    for (const lead of paginatedLeads) {
       const key = getLeadDateKey(lead);
       const last = groups[groups.length - 1];
 
@@ -1029,30 +1072,16 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       groups.push({
         key,
-        label:
-          key === "unknown"
-            ? emDash
-            : formatDaySeparatorLabel(
-                lead.createdAt || lead.facebook?.createdTime,
-                locale,
-                emDash
-              ),
+        label: formatDateKeyLabel(key, locale, emDash),
         leads: [lead],
       });
     }
 
-    // Newest day first; keep unknown dates at the bottom.
-    return groups
-      .map((group) => ({
-        ...group,
-        leads: [...group.leads].sort(compareLeadsNewestFirst),
-      }))
-      .sort((a, b) => {
-        if (a.key === "unknown") return 1;
-        if (b.key === "unknown") return -1;
-        return b.key.localeCompare(a.key);
-      });
-  }, [filteredLeads, locale, emDash]);
+    return groups.map((group) => ({
+      ...group,
+      leads: [...group.leads].sort(compareLeadsNewestFirst),
+    }));
+  }, [paginatedLeads, locale, emDash]);
 
   const stats = useMemo(() => {
     const openTasks = leads.reduce(
@@ -1314,22 +1343,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
 
               <div className="flex flex-wrap items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setError(t("crm.leads.newLeadSoon"))}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white shadow-[0_10px_24px_rgba(109,40,217,0.28)] transition hover:bg-[#5B21B6]"
-                >
-                  <Plus className="h-4 w-4" />
-                  {t("crm.leads.newLead")}
-                </button>
-                <button
-                  type="button"
-                  onClick={openMetaSetup}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-                >
-                  <CloudUpload className="h-4 w-4 text-[#6D28D9]" />
-                  {t("crm.leads.importLeads")}
-                </button>
                 <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
                   <button
                     type="button"
@@ -1578,12 +1591,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 </div>
 
                 <div
-                  className="min-h-0 flex-1 overflow-y-auto"
-                  style={{ direction: "ltr" }}
                   ref={(node) => {
+                    leadsScrollRef.current = node;
                     // RTL overflow containers often start scrolled to the bottom.
                     if (node) node.scrollTop = 0;
                   }}
+                  data-leads-scroll
+                  className="min-h-0 flex-1 overflow-y-auto"
+                  style={{ direction: "ltr" }}
                 >
                   <div dir={dir}>
                   {loading ? (
@@ -1595,7 +1610,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         />
                       ))}
                     </div>
-                  ) : filteredLeads.length === 0 ? (
+                  ) : paginatedLeads.length === 0 ? (
                     <div className="flex min-h-full flex-col items-center justify-center p-10 text-center">
                       <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-[#6D28D9]">
                         <Webhook className="h-7 w-7" />
@@ -1608,8 +1623,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                       </p>
                     </div>
                   ) : (
-                    leadDateGroups.map((group) => (
-                      <div key={group.key}>
+                    leadDateGroups.map((group, groupIndex) => (
+                      <div key={`${group.key}-${groupIndex}`}>
                         <div className="sticky top-0 z-10 border-y border-slate-200/80 bg-[#EEF0F5] px-4 py-2">
                           <div className="flex items-center gap-2 text-xs font-black text-slate-600">
                             <CalendarDays className="h-3.5 w-3.5 text-[#6D28D9]" />
@@ -1764,6 +1779,41 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   )}
                   </div>
                 </div>
+
+                {filteredLeads.length > 0 && (
+                  <div
+                    className="flex shrink-0 items-center justify-start gap-1 border-t border-slate-100 bg-white px-4 py-3"
+                    dir="ltr"
+                  >
+                    {Array.from({ length: totalPages }, (_, index) => {
+                      const page = index + 1;
+                      const active = page === currentPage;
+
+                      return (
+                        <button
+                          key={page}
+                          type="button"
+                          onClick={() => {
+                            setCurrentPage(page);
+                            if (leadsScrollRef.current) {
+                              leadsScrollRef.current.scrollTop = 0;
+                            }
+                          }}
+                          className={[
+                            "inline-flex h-9 min-w-9 items-center justify-center rounded-lg px-3 text-xs font-black transition",
+                            active
+                              ? "bg-[#6D28D9] text-white"
+                              : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+                          ].join(" ")}
+                          aria-label={t("crm.leads.pageNumber", { page })}
+                          aria-current={active ? "page" : undefined}
+                        >
+                          {page}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
               </>
             )}
           </section>

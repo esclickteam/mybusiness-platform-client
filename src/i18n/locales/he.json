@@ -1251,6 +1251,7 @@
       "metaConnected": "חיבור Meta",
       "newLead": "ליד חדש",
       "importLeads": "ייבוא לידים",
+      "pageNumber": "עמוד {{page}}",
       "listView": "תצוגת רשימה",
       "boardView": "תצוגת לוח",
       "boardSoon": "תצוגת לוח תהיה זמינה בקרוב",
