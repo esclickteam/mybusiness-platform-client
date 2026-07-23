@@ -9,7 +9,7 @@ import {
   pickWinningIndex,
   readVisitorSavedPrize,
   readVisitorSpinCount,
-  rotationForSegmentIndex,
+  rotationDeltaForSegment,
   wasAutoShownThisSession,
   writeVisitorSpin,
 } from "./benefitsWheelUtils";
@@ -43,6 +43,8 @@ export default function BenefitsWheelWidget({
   const [rotation, setRotation] = useState(0);
   const [spinning, setSpinning] = useState(false);
   const [wonPrize, setWonPrize] = useState<{ label: string; index: number } | null>(null);
+  const [lastWinIndex, setLastWinIndex] = useState<number | null>(null);
+  const rotationRef = useRef(0);
   const [dragPos, setDragPos] = useState(position);
   const dragRef = useRef<{ startX: number; startY: number; origX: number; origY: number } | null>(
     null
@@ -55,14 +57,20 @@ export default function BenefitsWheelWidget({
   useEffect(() => {
     if (isEditor || !settings.isActive) return;
 
-    const saved = readVisitorSavedPrize(siteId);
-    if (saved?.label) setWonPrize({ label: saved.label, index: saved.index ?? 0 });
-
     const spinsUsed = readVisitorSpinCount(siteId);
-    const canSpin = spinsUsed < spinsAllowed;
+    const canSpinNow = spinsUsed < spinsAllowed;
 
-    if (settings.autoOpenOnFirstVisit !== false && !wasAutoShownThisSession(siteId) && canSpin) {
+    if (!canSpinNow) {
+      const saved = readVisitorSavedPrize(siteId);
+      if (saved?.label) {
+        setWonPrize({ label: saved.label, index: saved.index ?? 0 });
+        setLastWinIndex(typeof saved.index === "number" ? saved.index : null);
+      }
+    }
+
+    if (settings.autoOpenOnFirstVisit !== false && !wasAutoShownThisSession(siteId) && canSpinNow) {
       const t = window.setTimeout(() => {
+        setWonPrize(null);
         setOpen(true);
         markAutoShownThisSession(siteId);
       }, 800);
@@ -76,19 +84,25 @@ export default function BenefitsWheelWidget({
   const handleSpin = useCallback(async () => {
     if (spinning || !canSpin) return;
 
-    const winIndex = pickWinningIndex(segments.length);
-    const targetRotation = rotationForSegmentIndex(winIndex, segments.length, 5 + Math.floor(Math.random() * 3));
+    const winIndex = pickWinningIndex(segments.length, lastWinIndex);
+    const extraSpins = 5 + Math.floor(Math.random() * 4);
+    const delta = rotationDeltaForSegment(
+      rotationRef.current,
+      winIndex,
+      segments.length,
+      extraSpins
+    );
     const prize = { label: segments[winIndex]?.label || "הטבה", index: winIndex };
 
     setSpinning(true);
-    setRotation((prev) => {
-      const base = prev % 360;
-      return prev - base + targetRotation;
-    });
+    setWonPrize(null);
+    rotationRef.current += delta;
+    setRotation(rotationRef.current);
 
     window.setTimeout(async () => {
       setSpinning(false);
       setWonPrize(prize);
+      setLastWinIndex(winIndex);
 
       if (!isEditor) {
         writeVisitorSpin(siteId, prize);
@@ -104,7 +118,16 @@ export default function BenefitsWheelWidget({
         }
       }
     }, 4300);
-  }, [canSpin, isEditor, segments, siteId, slug, spinning]);
+  }, [canSpin, isEditor, lastWinIndex, segments, siteId, slug, spinning]);
+
+  function openModal() {
+    if (canSpin) setWonPrize(null);
+    setOpen(true);
+  }
+
+  function closeModal() {
+    setOpen(false);
+  }
 
   function onPointerDown(e: React.PointerEvent) {
     if (!isEditor) return;
@@ -147,7 +170,7 @@ export default function BenefitsWheelWidget({
       {showTrigger ? (
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={openModal}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
@@ -173,7 +196,7 @@ export default function BenefitsWheelWidget({
         <div
           className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[2px]"
           onMouseDown={(e) => {
-            if (e.target === e.currentTarget && !isEditor) setOpen(false);
+            if (e.target === e.currentTarget && !spinning) closeModal();
           }}
         >
           <div
@@ -183,16 +206,15 @@ export default function BenefitsWheelWidget({
           >
             <div className="h-1.5 bg-gradient-to-l from-violet-500 via-fuchsia-500 to-pink-500" />
 
-            {!isEditor ? (
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="absolute left-3 top-3 grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-500 hover:bg-slate-50"
-                aria-label="סגירה"
-              >
-                <X size={16} />
-              </button>
-            ) : null}
+            <button
+              type="button"
+              onClick={closeModal}
+              disabled={spinning}
+              className="absolute right-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
+              aria-label="סגירה"
+            >
+              <X size={18} strokeWidth={2.5} />
+            </button>
 
             <div className="px-6 pb-6 pt-5 text-center">
               <h3 className="text-xl font-black text-slate-900">
@@ -221,6 +243,16 @@ export default function BenefitsWheelWidget({
                 </div>
               ) : null}
 
+              {wonPrize && !spinning && canSpin ? (
+                <button
+                  type="button"
+                  onClick={() => setWonPrize(null)}
+                  className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
+                >
+                  סובבו שוב!
+                </button>
+              ) : null}
+
               {canSpin && !wonPrize ? (
                 <button
                   type="button"
@@ -235,7 +267,7 @@ export default function BenefitsWheelWidget({
               ) : wonPrize ? (
                 <button
                   type="button"
-                  onClick={() => !isEditor && setOpen(false)}
+                  onClick={closeModal}
                   className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
                 >
                   סגירה

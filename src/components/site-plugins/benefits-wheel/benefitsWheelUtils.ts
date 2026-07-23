@@ -97,13 +97,39 @@ export function markAutoShownThisSession(siteId: string) {
   }
 }
 
-/** Rotation (deg) so pointer lands on segment index (pointer at top). */
+/** Delta rotation (deg) from prev so pointer lands on segment index (pointer at top). */
+export function rotationDeltaForSegment(
+  prevRotation: number,
+  index: number,
+  segmentCount: number,
+  extraSpins = 5
+) {
+  const slice = 360 / segmentCount;
+  const mid = index * slice + slice / 2;
+  const targetMod = (360 - mid + 360) % 360;
+  const currentMod = ((prevRotation % 360) + 360) % 360;
+  let align = (targetMod - currentMod + 360) % 360;
+  if (align === 0) align = 360;
+  return extraSpins * 360 + align;
+}
+
+export function pickWinningIndex(segmentCount: number, excludeIndex?: number | null) {
+  if (segmentCount <= 1) return 0;
+  if (excludeIndex == null || excludeIndex < 0 || excludeIndex >= segmentCount) {
+    return Math.floor(Math.random() * segmentCount);
+  }
+  let idx = Math.floor(Math.random() * segmentCount);
+  let guard = 0;
+  while (idx === excludeIndex && guard < 12) {
+    idx = Math.floor(Math.random() * segmentCount);
+    guard += 1;
+  }
+  return idx;
+}
+
+/** @deprecated use rotationDeltaForSegment */
 export function rotationForSegmentIndex(index: number, segmentCount: number, extraSpins = 5) {
   const slice = 360 / segmentCount;
   const segmentCenter = index * slice + slice / 2;
   return extraSpins * 360 + (360 - segmentCenter);
-}
-
-export function pickWinningIndex(segmentCount: number) {
-  return Math.floor(Math.random() * segmentCount);
 }
