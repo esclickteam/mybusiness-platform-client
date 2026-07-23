@@ -1250,6 +1250,7 @@
       "refreshLeads": "Refresh Leads",
       "connectMeta": "Connect to Meta",
       "connectAdNetwork": "Connect ad network",
+      "manageLead": "Manage lead",
       "metaConnected": "Meta connection",
       "newLead": "New Lead",
       "importLeads": "Import Leads",
@@ -1499,6 +1500,7 @@
       },
       "drawer": {
         "leadDetails": "Lead Details",
+        "backToForm": "Back to form",
         "updateStatus": "Update Status",
         "dataSummary": "Data Summary",
         "clientStage": "Client Stage",

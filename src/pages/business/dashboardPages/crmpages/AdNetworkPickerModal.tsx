@@ -76,16 +76,19 @@ export default function AdNetworkPickerModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 z-[95] flex items-center justify-center bg-slate-900/45 p-4" dir={dir}>
+    <div
+      className="fixed inset-0 z-[95] flex items-end justify-center bg-slate-900/45 p-0 sm:items-center sm:p-4"
+      dir={dir}
+    >
       <button
         type="button"
         className="absolute inset-0 cursor-default"
         aria-label={t("crm.common.close")}
         onClick={onClose}
       />
-      <div className="relative w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)]">
-        <div className="flex items-center justify-between bg-[#0F766E] px-5 py-4 text-white">
-          <h2 className="text-lg font-black">{t("crm.leads.adNetworks.title")}</h2>
+      <div className="relative flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:max-h-none sm:rounded-2xl">
+        <div className="flex shrink-0 items-center justify-between bg-[#0F766E] px-4 py-3 text-white sm:px-5 sm:py-4">
+          <h2 className="text-base font-black sm:text-lg">{t("crm.leads.adNetworks.title")}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -95,7 +98,7 @@ export default function AdNetworkPickerModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 p-5">
+        <div className="grid flex-1 grid-cols-2 gap-3 overflow-y-auto p-4 sm:gap-4 sm:p-5">
           {NETWORKS.map((network) => (
             <button
               key={network.id}
@@ -105,14 +108,14 @@ export default function AdNetworkPickerModal({
                 onSelect(network.id);
               }}
               className={[
-                "relative flex aspect-square flex-col items-center justify-center gap-3 rounded-2xl border bg-[#F3F4F6] transition",
+                "relative flex min-h-[120px] flex-col items-center justify-center gap-2 rounded-2xl border bg-[#F3F4F6] p-3 transition sm:min-h-[140px] sm:gap-3",
                 network.available
                   ? "border-slate-200 hover:border-sky-300 hover:bg-white"
                   : "cursor-not-allowed border-slate-100 opacity-55",
               ].join(" ")}
             >
               {network.logo}
-              <span className="text-sm font-black text-slate-600">
+              <span className="text-xs font-black text-slate-600 sm:text-sm">
                 {t(`crm.leads.adNetworks.${network.labelKey}`)}
               </span>
               {!network.available && (

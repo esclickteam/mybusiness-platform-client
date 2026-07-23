@@ -1273,6 +1273,7 @@
         "converted": "הומרו",
         "openTasks": "משימות פתוחות"
       },
+      "manageLead": "ניהול ליד",
       "searchPlaceholder": "חיפוש לפי שם, טלפון, אימייל או מקור...",
       "emptyTitle": "אין לידים להצגה",
       "emptyDescription": "כשליד חדש יגיע, הוא יופיע כאן עם כל שדות הטופס.",
@@ -1499,6 +1500,7 @@
       },
       "drawer": {
         "leadDetails": "פרטי ליד",
+        "backToForm": "חזרה לטופס",
         "updateStatus": "עדכון סטטוס",
         "dataSummary": "סיכום נתונים",
         "clientStage": "שלב לקוח",
