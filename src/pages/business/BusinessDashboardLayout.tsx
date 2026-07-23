@@ -23,6 +23,7 @@ import {
   clearAdminActiveBusinessId,
   setAdminActiveBusinessId,
 } from "../../utils/adminTenant";
+import { ensurePushSubscription } from "../../utils/push";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";

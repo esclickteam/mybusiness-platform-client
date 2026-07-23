@@ -116,6 +116,7 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
       });
     }
 
+    // Always re-bind the browser subscription to the current business tenant.
     await API.post("/push/subscribe", {
       subscription: subscription.toJSON(),
     });
@@ -125,6 +126,19 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
     console.error("subscribeToPush failed:", err);
     return { ok: false, reason: "error" };
   }
+}
+
+/**
+ * If the user already granted notification permission, make sure the device
+ * subscription is registered for the current business (no permission prompt).
+ */
+export async function ensurePushSubscription(): Promise<SubscribeResult> {
+  if (!isPushSupported()) return { ok: false, reason: "unsupported" };
+  if (Notification.permission !== "granted") {
+    return { ok: false, reason: Notification.permission as "denied" | "default" };
+  }
+
+  return subscribeToPush();
 }
 
 export async function unsubscribeFromPush(): Promise<void> {

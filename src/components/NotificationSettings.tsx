@@ -349,7 +349,7 @@ export function NotificationSettingsPanel({
                   התראות Push במכשיר
                 </p>
                 <p className="text-[11px] font-semibold text-slate-500">
-                  {pushOn ? "מופעל" : "כבוי — הפעל/י לקבלת התראות"}
+                  {pushOn ? "מופעל" : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
                 </p>
               </div>
             </div>
