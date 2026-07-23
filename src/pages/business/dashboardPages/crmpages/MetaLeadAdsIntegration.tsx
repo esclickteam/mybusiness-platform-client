@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AlertCircle,
@@ -61,6 +62,7 @@ export default function MetaLeadAdsIntegration({
 }: MetaLeadAdsIntegrationProps) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -86,15 +88,6 @@ export default function MetaLeadAdsIntegration({
       ? 2
       : 3;
 
-  const activeForm = useMemo(
-    () =>
-      selectedForm?.formId
-        ? forms.find((form) => String(form.id) === String(selectedForm.formId)) ||
-          null
-        : null,
-    [forms, selectedForm]
-  );
-
   const loadStatus = async () => {
     try {
       setLoading(true);
@@ -119,9 +112,6 @@ export default function MetaLeadAdsIntegration({
 
       if (nextConnectedPage?.pageId) {
         setSelectedPageId(nextConnectedPage.pageId);
-        if (data.selectedForm?.formId) {
-          setForceSetup(false);
-        }
       } else {
         setSelectedPageId("");
       }
@@ -140,6 +130,31 @@ export default function MetaLeadAdsIntegration({
     }
     loadStatus();
   }, [businessId]);
+
+  // Return from Facebook OAuth → stay in wizard on page/form step.
+  useEffect(() => {
+    const metaConnected = searchParams.get("meta_connected") === "1";
+    const metaError = searchParams.get("meta_error");
+
+    if (!metaConnected && !metaError) return;
+
+    if (metaConnected) {
+      setForceSetup(true);
+      setSuccess(t(`${T}.wizard.accountConnected`));
+      void loadStatus();
+    }
+
+    if (metaError) {
+      setError(metaError);
+      setForceSetup(true);
+    }
+
+    const next = new URLSearchParams(searchParams);
+    next.set("metaSetup", "1");
+    next.delete("meta_connected");
+    next.delete("meta_error");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams, t]);
 
   const connectFacebook = async () => {
     try {
@@ -282,49 +297,6 @@ export default function MetaLeadAdsIntegration({
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t(`${T}.errors.selectForm`)
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const syncLeadsFromMeta = async () => {
-    if (!isConnected) {
-      setError(t(`${T}.errors.connectBeforeSync`));
-      return;
-    }
-
-    if (!selectedForm?.formId && !activeForm?.id) {
-      setError(t(`${T}.errors.selectFormBeforeSync`));
-      return;
-    }
-
-    try {
-      setBusy(true);
-      setError("");
-      setSuccess("");
-
-      const { data } = await API.post<{
-        success: boolean;
-        imported?: number;
-        message?: string;
-      }>(
-        "/meta-leads/sync-leads",
-        {
-          formId: selectedForm?.formId || activeForm?.id,
-        },
-        { params: tenantParams }
-      );
-
-      setSuccess(
-        data.message ||
-          t(`${T}.successSynced`, { count: data.imported || 0 })
-      );
-
-      window.dispatchEvent(new CustomEvent("bizuply:leads-synced"));
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : t(`${T}.errors.syncFailed`)
       );
     } finally {
       setBusy(false);
@@ -682,15 +654,6 @@ export default function MetaLeadAdsIntegration({
                     </div>
 
                     <div className="mt-4 flex flex-wrap gap-2">
-                      <button
-                        type="button"
-                        onClick={syncLeadsFromMeta}
-                        disabled={busy}
-                        className="inline-flex h-11 items-center gap-2 rounded-xl bg-violet-600 px-4 text-xs font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
-                      >
-                        <Webhook className="h-4 w-4" />
-                        {t(`${T}.syncLeads`)}
-                      </button>
                       <button
                         type="button"
                         onClick={loadStatus}

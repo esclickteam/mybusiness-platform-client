@@ -712,7 +712,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const { socket } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const showMetaSetup = searchParams.get("metaSetup") === "1";
+  const showMetaSetup =
+    searchParams.get("metaSetup") === "1" ||
+    searchParams.get("meta_connected") === "1" ||
+    Boolean(searchParams.get("meta_error"));
   const deepLinkLeadId = searchParams.get("leadId") || "";
 
   const [leads, setLeads] = useState<Lead[]>([]);
@@ -734,6 +737,18 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [savingActivity, setSavingActivity] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // After Meta OAuth callback, keep the wizard open on step 2 (page/form).
+  useEffect(() => {
+    const metaConnected = searchParams.get("meta_connected") === "1";
+    const metaError = searchParams.get("meta_error");
+    if (!metaConnected && !metaError) return;
+    if (searchParams.get("metaSetup") === "1") return;
+
+    const next = new URLSearchParams(searchParams);
+    next.set("metaSetup", "1");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
 
   const openMetaSetup = () => {
     const next = new URLSearchParams(searchParams);
