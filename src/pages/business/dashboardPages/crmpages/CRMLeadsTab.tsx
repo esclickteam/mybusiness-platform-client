@@ -795,7 +795,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     searchParams.get("metaSetup") === "1" ||
     searchParams.get("meta_connected") === "1" ||
     Boolean(searchParams.get("meta_error"));
-  const showGoogleSetup = searchParams.get("googleSetup") === "1";
+  const showGoogleSetup =
+    searchParams.get("googleSetup") === "1" ||
+    searchParams.get("google_connected") === "1" ||
+    Boolean(searchParams.get("google_error"));
   const deepLinkLeadId = searchParams.get("leadId") || "";
 
   const [leads, setLeads] = useState<Lead[]>([]);
