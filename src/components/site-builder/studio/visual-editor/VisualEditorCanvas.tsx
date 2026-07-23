@@ -19,7 +19,7 @@ import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
-import { mountCountdownWidgets } from "../../../site-plugins/countdown/mountCountdownWidgets";
+import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -698,6 +698,49 @@ export default function VisualEditorCanvas({
   const [templateEpoch, setTemplateEpoch] = useState(0);
   const [sectionOrderEpoch, setSectionOrderEpoch] = useState(0);
   const [domPatchEpoch, setDomPatchEpoch] = useState(0);
+  const countdownEditorMountRef = useRef<{
+    enabled: boolean;
+    settings: ReturnType<typeof mergeCountdownSettings>;
+    stored: Record<string, unknown>;
+  }>({
+    enabled: false,
+    settings: mergeCountdownSettings(null),
+    stored: {},
+  });
+
+  const mountEditorCountdownPreview = useCallback(
+    (root: HTMLElement | null) => {
+      if (!root) return;
+
+      if (!countdownEditorMountRef.current.enabled) {
+        if (!pageHasCountdownWidget(root)) return;
+        countdownEditorMountRef.current = {
+          enabled: true,
+          settings: mergeCountdownSettings(null),
+          stored: {},
+        };
+      }
+
+      const { settings, stored } = countdownEditorMountRef.current;
+
+      mountCountdownWidgets(root, settings, {
+        preview: true,
+        editorMode: true,
+        onFloatingPositionChange: async (pos) => {
+          if (!siteId) return;
+          try {
+            await saveSitePluginSettings(siteId, "countdown", {
+              ...stored,
+              floatingPosition: pos,
+            });
+          } catch {
+            // local drag preview still works
+          }
+        },
+      });
+    },
+    [siteId],
+  );
 
   const [inlineEditingElementId, setInlineEditingElementId] = useState("");
   const [selectionBox, setSelectionBox] = useState<SelectionBox | null>(null);
@@ -1144,6 +1187,7 @@ export default function VisualEditorCanvas({
     applyAllVisualDataToDom(root, syncedData);
     syncEditorMediaPreviewsInDom(root);
     disableNativeMediaDrag(root);
+    mountEditorCountdownPreview(root);
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     domPatchEpoch,
@@ -1151,6 +1195,7 @@ export default function VisualEditorCanvas({
     editorAny.sitePages,
     editorAny.isInlineEditing,
     inlineEditingElementId,
+    mountEditorCountdownPreview,
     refreshSelectionBox,
   ]);
 
@@ -1163,27 +1208,39 @@ export default function VisualEditorCanvas({
     (async () => {
       try {
         const plugins = await getSitePlugins(siteId);
-        if (cancelled || !plugins.enabledPlugins.includes("countdown")) return;
-
-        const stored = await getSitePluginSettings(siteId, "countdown");
         if (cancelled) return;
 
-        mountCountdownWidgets(root, mergeCountdownSettings(stored), {
-          preview: true,
-          editorMode: true,
-          onFloatingPositionChange: async (pos) => {
-            try {
-              await saveSitePluginSettings(siteId, "countdown", {
-                ...stored,
-                floatingPosition: pos,
-              });
-            } catch {
-              // local drag preview still works
-            }
-          },
-        });
+        const hasWidget = pageHasCountdownWidget(root);
+        const pluginEnabled = plugins.enabledPlugins.includes("countdown");
+
+        if (!hasWidget && !pluginEnabled) {
+          countdownEditorMountRef.current.enabled = false;
+          return;
+        }
+
+        const stored = pluginEnabled
+          ? await getSitePluginSettings(siteId, "countdown")
+          : null;
+        if (cancelled) return;
+
+        countdownEditorMountRef.current = {
+          enabled: hasWidget || pluginEnabled,
+          settings: mergeCountdownSettings(stored),
+          stored: (stored && typeof stored === "object" ? stored : {}) as Record<
+            string,
+            unknown
+          >,
+        };
+        mountEditorCountdownPreview(root);
       } catch {
-        // editor preview still works with placeholder markup
+        if (!cancelled && pageHasCountdownWidget(root)) {
+          countdownEditorMountRef.current = {
+            enabled: true,
+            settings: mergeCountdownSettings(null),
+            stored: {},
+          };
+          mountEditorCountdownPreview(root);
+        }
       }
     })();
 
@@ -1198,6 +1255,7 @@ export default function VisualEditorCanvas({
     editorAny.activePageId,
     editorAny.activePageID,
     editorAny.data,
+    mountEditorCountdownPreview,
   ]);
 
   useEffect(() => {
@@ -1217,6 +1275,7 @@ export default function VisualEditorCanvas({
       applyAllVisualDataToDom(root, syncedData);
       syncEditorMediaPreviewsInDom(root);
       disableNativeMediaDrag(root);
+      mountEditorCountdownPreview(root);
     }
 
     markSelectedVisualElementInDom(
@@ -1234,6 +1293,7 @@ export default function VisualEditorCanvas({
     editorAny.sitePages,
     editorAny.isInlineEditing,
     inlineEditingElementId,
+    mountEditorCountdownPreview,
     refreshSelectionBox,
   ]);
 

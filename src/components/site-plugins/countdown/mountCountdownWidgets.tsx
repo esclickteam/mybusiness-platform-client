@@ -47,7 +47,21 @@ export function mountCountdownWidgets(
     }
 
     let reactRoot = roots.get(node);
-    if (!reactRoot) {
+    const needsFreshRoot =
+      !reactRoot ||
+      !node.isConnected ||
+      node.getAttribute("data-bizuply-countdown-mounted") !== "true";
+
+    if (needsFreshRoot) {
+      if (reactRoot) {
+        try {
+          reactRoot.unmount();
+        } catch {
+          // stale root after DOM reset
+        }
+        roots.delete(node);
+      }
+
       node.innerHTML = "";
       reactRoot = createRoot(node);
       roots.set(node, reactRoot);
@@ -61,6 +75,7 @@ export function mountCountdownWidgets(
         onFloatingPositionChange: options?.onFloatingPositionChange,
       })
     );
+    node.setAttribute("data-bizuply-countdown-mounted", "true");
   });
 }
 

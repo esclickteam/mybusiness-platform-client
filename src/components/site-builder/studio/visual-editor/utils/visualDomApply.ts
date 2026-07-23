@@ -2921,7 +2921,15 @@ function applyInsertedSpecialContent(
 
     const html = String(item.html || "").trim();
     if (html) {
-      node.innerHTML = html;
+      const isHydratedPluginWidget =
+        node.getAttribute("data-bizuply-countdown-mounted") === "true" ||
+        Boolean(
+          node.querySelector('[data-bizuply-countdown-mounted="true"]'),
+        );
+
+      if (!isHydratedPluginWidget) {
+        node.innerHTML = html;
+      }
     }
     return true;
   }
@@ -3339,6 +3347,28 @@ export function renderVisualInsertedElementsToDom(
   });
 }
 
+function applyVisualInsertedElementsContentToDom(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return;
+
+  const elements = readVisualInsertedElements(data || {});
+  const content = readVisualContent(data || {});
+
+  Object.values(elements).forEach((item) => {
+    if (!item?.id) return;
+
+    const node = findDirectVisualNode(root, item.id);
+    if (!(node instanceof HTMLElement) || isEditorOnlyNode(node)) return;
+
+    applyInsertedSpecialContent(node, {
+      ...(content[item.id] || {}),
+      ...item,
+    });
+  });
+}
+
 export function applyAllVisualDataToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
@@ -3348,6 +3378,7 @@ export function applyAllVisualDataToDom(
   registerAllVisualElements(root);
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
+  applyVisualInsertedElementsContentToDom(root, data);
   applyVisualLibraryPageMode(root, data);
   applyVisualSectionOrderToDom(
     root,
