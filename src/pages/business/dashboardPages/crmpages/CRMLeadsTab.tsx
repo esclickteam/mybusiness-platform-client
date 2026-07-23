@@ -1,8 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
+  Bell,
   CalendarDays,
   CheckCircle2,
+  ChevronDown,
   Clock3,
   CloudUpload,
   Copy,
@@ -799,9 +801,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     }
   };
 
-  const fetchLeadsSilentRef = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
+  const fetchLeadsSilentRef = useRef<number | null>(null);
 
   const scheduleSilentLeadsRefresh = () => {
     if (fetchLeadsSilentRef.current) {
@@ -1781,7 +1781,9 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
                   <button
                     type="button"
-                    onClick={fetchLeads}
+                    onClick={() => {
+                      void fetchLeads();
+                    }}
                     className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                   >
                     <RefreshCw className="h-4 w-4" />
