@@ -201,8 +201,7 @@ export default function CRMMain() {
           <div className="relative px-5 py-5 sm:px-7 lg:px-8">
             <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-sky-300 via-violet-300 to-emerald-300" />
 
-            <div className="flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-              <div className="flex min-w-0 items-center gap-4">
+            <div className="flex min-w-0 items-center gap-4">
                 <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-3xl bg-gradient-to-br from-sky-100 via-white to-violet-100 text-sky-700 shadow-[0_16px_38px_rgba(14,165,233,0.16)] ring-1 ring-white">
                   <KanbanSquare className="h-6 w-6" />
                   <span className="absolute -right-1 -top-1 flex h-4 w-4 rounded-full bg-emerald-400 ring-4 ring-white" />
@@ -219,44 +218,6 @@ export default function CRMMain() {
 
                   <p className="mt-1 text-sm font-semibold text-slate-500">
                     {t("crm.shell.subtitle")}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-3">
-                <div className="rounded-2xl border border-sky-100 bg-sky-50/80 px-4 py-3 shadow-sm">
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-sky-600">
-                    {t("crm.shell.activeArea")}
-                  </p>
-
-                  <div className="mt-1 flex items-center gap-2">
-                    <ActiveIcon className="h-4 w-4 text-sky-700" />
-                    <p className="text-sm font-black text-slate-900">
-                      {t(activeTabData.labelKey)}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-emerald-100 bg-emerald-50/70 px-4 py-3 shadow-sm">
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-emerald-600">
-                    {t("crm.shell.status")}
-                  </p>
-
-                  <div className="mt-1 flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                    <p className="text-sm font-black text-slate-900">
-                      {t("crm.shell.crmActive")}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-3 shadow-sm">
-                  <p className="text-[11px] font-black uppercase tracking-[0.16em] text-violet-600">
-                    {t("crm.shell.workspace")}
-                  </p>
-
-                  <p className="mt-1 text-sm font-black text-slate-900">
-                    {t("crm.shell.professionalCrm")}
                   </p>
                 </div>
               </div>

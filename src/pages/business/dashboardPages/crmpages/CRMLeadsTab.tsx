@@ -2174,6 +2174,32 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
               {!isDesktopLeads && leadDrawerView === "form" ? (
                 <div className="min-h-0 flex-1 overflow-y-auto bg-slate-50 p-3">
+                  {(selectedWhatsAppPhone || selectedLead.phone) && (
+                    <div className="mb-3 flex gap-2">
+                      {selectedWhatsAppPhone && (
+                        <a
+                          href={`https://wa.me/${selectedWhatsAppPhone}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex h-12 flex-1 flex-col items-center justify-center rounded-xl bg-sky-50 text-[11px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                        >
+                          <MessageCircle className="mb-1 h-4 w-4" />
+                          {t("crm.common.whatsapp")}
+                        </a>
+                      )}
+
+                      {selectedLead.phone && (
+                        <a
+                          href={`tel:${selectedLead.phone}`}
+                          className="flex h-12 flex-1 flex-col items-center justify-center rounded-xl bg-sky-50 text-[11px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
+                        >
+                          <Phone className="mb-1 h-4 w-4" />
+                          {t("crm.common.call")}
+                        </a>
+                      )}
+                    </div>
+                  )}
+
                   <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                     <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                       <h3 className="text-base font-black text-slate-800">
