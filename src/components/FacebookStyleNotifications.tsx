@@ -1006,9 +1006,14 @@ export default function FacebookStyleNotifications() {
       const map = new Map<string, UnifiedNotification>();
 
       [...newLeads, ...dueTasks, ...regular].forEach((item) => {
-        if (!map.has(item.id)) {
-          map.set(item.id, item);
-        }
+        // One Meta/CRM lead = one notification row.
+        const key =
+          (item.kind === "new_lead" || item.type === "new_lead") && item.leadId
+            ? `lead-${item.leadId}`
+            : item.id;
+
+        if (!key || map.has(key)) return;
+        map.set(key, { ...item, id: key });
       });
 
       const merged = Array.from(map.values())
