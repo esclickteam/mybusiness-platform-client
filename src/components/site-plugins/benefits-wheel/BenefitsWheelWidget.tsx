@@ -22,6 +22,7 @@ type BenefitsWheelWidgetProps = {
   settings: BenefitsWheelSettings;
   mode?: "live" | "editor";
   onPositionChange?: (pos: { x: number; y: number }) => void;
+  onDeactivate?: () => void;
 };
 
 type WonPrize = {
@@ -36,6 +37,7 @@ export default function BenefitsWheelWidget({
   settings,
   mode = "live",
   onPositionChange,
+  onDeactivate,
 }: BenefitsWheelWidgetProps) {
   const segmentCount = Math.min(12, Math.max(3, Number(settings.segmentCount) || 6));
   const segments = useMemo(
@@ -247,101 +249,117 @@ export default function BenefitsWheelWidget({
 
       {open ? (
         <div
-          className="fixed inset-0 z-[99999] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[99999] overflow-y-auto bg-slate-900/50 p-4 backdrop-blur-[2px]"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget && !spinning) closeModal();
           }}
         >
-          <div
-            dir="rtl"
-            className="relative w-full max-w-md rounded-2xl border border-violet-100 bg-white shadow-[0_24px_80px_rgba(99,102,241,0.25)]"
-            onMouseDown={(e) => e.stopPropagation()}
-          >
-            <div className="h-1.5 rounded-t-2xl bg-gradient-to-l from-violet-500 via-fuchsia-500 to-pink-500" />
-
-            <button
-              type="button"
-              onClick={closeModal}
-              disabled={spinning}
-              className="absolute right-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
-              aria-label="סגירה"
+          <div className="flex min-h-full items-center justify-center py-4">
+            <div
+              dir="rtl"
+              className="relative w-full max-w-sm rounded-2xl border border-violet-100 bg-white shadow-[0_24px_80px_rgba(99,102,241,0.25)]"
+              onMouseDown={(e) => e.stopPropagation()}
             >
-              <X size={18} strokeWidth={2.5} />
-            </button>
+              <div className="h-1.5 rounded-t-2xl bg-gradient-to-l from-violet-500 via-fuchsia-500 to-pink-500" />
 
-            <div className="px-6 pb-6 pt-5 text-center">
-              <h3 className="text-xl font-black text-slate-900">
-                {settings.title || "גלגל ההטבות"}
-              </h3>
-              {settings.subtitle ? (
-                <p className="mt-1 text-sm text-slate-500">{settings.subtitle}</p>
-              ) : (
-                <p className="mt-1 text-sm text-slate-500">סובבו וגלו מה זכיתם!</p>
-              )}
+              <button
+                type="button"
+                onClick={closeModal}
+                disabled={spinning}
+                className="absolute right-3 top-3 z-30 grid h-9 w-9 place-items-center rounded-full border border-slate-200/80 bg-white text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600 disabled:opacity-40"
+                aria-label="סגירה"
+              >
+                <X size={18} strokeWidth={2.5} />
+              </button>
 
-              <div className="mx-auto my-4 flex h-[300px] items-center justify-center overflow-visible">
-                <BenefitsWheelSpinWheel
-                  segments={segments}
-                  rotation={rotation}
-                  spinning={spinning}
-                  size={240}
-                />
-              </div>
+              <div className="grid grid-rows-[auto_278px_190px] px-6 pb-5 pt-5 text-center">
+                <div>
+                  <h3 className="text-xl font-black text-slate-900">
+                    {settings.title || "גלגל ההטבות"}
+                  </h3>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {settings.subtitle || "סובבו וגלו מה זכיתם!"}
+                  </p>
+                </div>
 
-              <div className="min-h-[148px]">
-                {wonPrize && !spinning ? (
-                  <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
-                    <p className="text-xs font-semibold text-emerald-700">🎉 מזל טוב!</p>
-                    <p className="mt-1 text-lg font-black text-emerald-900">{wonPrize.label}</p>
-                    {wonPrize.couponCode ? (
-                      <p className="mt-3 text-sm text-emerald-800">
-                        <span className="font-bold">קוד הטבה: </span>
-                        <span className="font-mono text-base font-black tracking-wider text-emerald-900">
-                          {wonPrize.couponCode}
-                        </span>
+                <div className="flex items-center justify-center">
+                  <BenefitsWheelSpinWheel
+                    segments={segments}
+                    rotation={rotation}
+                    spinning={spinning}
+                    size={240}
+                  />
+                </div>
+
+                <div className="flex flex-col justify-center">
+                  {wonPrize && !spinning ? (
+                    <div className="mb-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3">
+                      <p className="text-xs font-semibold text-emerald-700">🎉 מזל טוב!</p>
+                      <p className="mt-1 text-lg font-black text-emerald-900">{wonPrize.label}</p>
+                      {wonPrize.couponCode ? (
+                        <p className="mt-2 text-sm text-emerald-800">
+                          <span className="font-bold">קוד הטבה: </span>
+                          <span className="font-mono text-base font-black tracking-wider text-emerald-900">
+                            {wonPrize.couponCode}
+                          </span>
+                        </p>
+                      ) : null}
+                      <p className="mt-2 text-[11px] text-emerald-600">ההטבה נשמרה עבורך</p>
+                    </div>
+                  ) : (
+                    <div className="mb-3 h-[108px]" aria-hidden />
+                  )}
+
+                  {wonPrize && !spinning && hasMoreSpins ? (
+                    <button
+                      type="button"
+                      onClick={() => setWonPrize(null)}
+                      className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
+                    >
+                      סובבו שוב!
+                    </button>
+                  ) : canSpin && !wonPrize ? (
+                    <button
+                      type="button"
+                      disabled={spinning}
+                      onClick={handleSpin}
+                      className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg disabled:opacity-60"
+                    >
+                      {spinning ? "מסתובב..." : "סובבו את הגלגל!"}
+                    </button>
+                  ) : !canSpin && !wonPrize ? (
+                    <p className="text-sm font-semibold text-slate-500">כבר השתמשתם בסיבובים שלכם</p>
+                  ) : wonPrize ? (
+                    <button
+                      type="button"
+                      onClick={closeModal}
+                      className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
+                    >
+                      סגירה
+                    </button>
+                  ) : null}
+
+                  {isEditor ? (
+                    <div className="mt-3 space-y-2">
+                      <p className="text-[11px] text-violet-600">
+                        מצב עורך — גררו את הכפתור הצף למיקום הרצוי
                       </p>
-                    ) : null}
-                    <p className="mt-2 text-[11px] text-emerald-600">ההטבה נשמרה עבורך</p>
-                  </div>
-                ) : null}
-
-                {wonPrize && !spinning && hasMoreSpins ? (
-                  <button
-                    type="button"
-                    onClick={() => setWonPrize(null)}
-                    className="mb-2 inline-flex h-11 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg"
-                  >
-                    סובבו שוב!
-                  </button>
-                ) : null}
-
-                {canSpin && !wonPrize ? (
-                  <button
-                    type="button"
-                    disabled={spinning}
-                    onClick={handleSpin}
-                    className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-gradient-to-l from-violet-600 to-fuchsia-500 text-sm font-bold text-white shadow-lg disabled:opacity-60"
-                  >
-                    {spinning ? "מסתובב..." : "סובבו את הגלגל!"}
-                  </button>
-                ) : !canSpin && !wonPrize ? (
-                  <p className="text-sm font-semibold text-slate-500">כבר השתמשתם בסיבובים שלכם</p>
-                ) : wonPrize ? (
-                  <button
-                    type="button"
-                    onClick={closeModal}
-                    className="inline-flex h-11 w-full items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-sm font-bold text-violet-700"
-                  >
-                    סגירה
-                  </button>
-                ) : null}
+                      {onDeactivate ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            closeModal();
+                            onDeactivate();
+                          }}
+                          className="text-[11px] font-bold text-rose-600 underline-offset-2 hover:underline"
+                        >
+                          הסרת התוסף מהעמוד
+                        </button>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
               </div>
-
-              {isEditor ? (
-                <p className="mt-2 text-[11px] text-violet-600">
-                  מצב עורך — גררו את הכפתור הצף למיקום הרצוי
-                </p>
-              ) : null}
             </div>
           </div>
         </div>

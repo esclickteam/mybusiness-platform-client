@@ -64,7 +64,18 @@ export default function EditorPluginOverlays({
     [siteId, wheelSettings]
   );
 
-  if (!siteId || !wheelEnabled || !wheelSettings) return null;
+  const handleDeactivate = useCallback(async () => {
+    if (!siteId || !wheelSettings) return;
+    const next = { ...wheelSettings, isActive: false, showTrigger: false };
+    setWheelSettings(next);
+    try {
+      await saveSitePluginSettings(siteId, "benefits-wheel", next);
+    } catch {
+      // ignore
+    }
+  }, [siteId, wheelSettings]);
+
+  if (!siteId || !wheelEnabled || !wheelSettings || wheelSettings.isActive === false) return null;
 
   return (
     <BenefitsWheelWidget
@@ -72,6 +83,7 @@ export default function EditorPluginOverlays({
       settings={wheelSettings}
       mode="editor"
       onPositionChange={handlePositionChange}
+      onDeactivate={handleDeactivate}
     />
   );
 }

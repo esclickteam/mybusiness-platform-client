@@ -36,16 +36,17 @@ export default function BenefitsWheelSpinWheel({
   size = 240,
   spinning = false,
 }: BenefitsWheelSpinWheelProps) {
+  const clipId = useId().replace(/:/g, "");
   const hubGradientId = useId().replace(/:/g, "");
-  const pad = 16;
-  const pointerHeight = 22;
-  const viewSize = size + pad * 2;
-  const cx = viewSize / 2;
-  const cy = viewSize / 2;
-  const r = size / 2 - 10;
+  const pointerHeight = 18;
+  const pad = 10;
+  const svgW = size + pad * 2;
+  const svgH = size + pad * 2 + pointerHeight;
+  const cx = svgW / 2;
+  const cy = pad + pointerHeight + size / 2;
+  const r = size / 2 - 8;
   const n = segments.length;
   const slice = 360 / n;
-  const boxHeight = viewSize + pointerHeight;
 
   const slices = useMemo(() => {
     return segments.map((seg, i) => {
@@ -63,35 +64,36 @@ export default function BenefitsWheelSpinWheel({
   }, [segments, cx, cy, r, slice, n]);
 
   return (
-    <div
-      className="relative mx-auto shrink-0 select-none"
-      style={{ width: viewSize, height: boxHeight }}
+    <svg
+      width={svgW}
+      height={svgH}
+      viewBox={`0 0 ${svgW} ${svgH}`}
+      className="mx-auto block shrink-0 select-none"
+      aria-hidden
     >
-      <div
-        className="pointer-events-none absolute left-1/2 z-20 -translate-x-1/2"
-        style={{
-          top: 0,
-          width: 0,
-          height: 0,
-          borderLeft: "11px solid transparent",
-          borderRight: "11px solid transparent",
-          borderTop: `${pointerHeight}px solid #1e293b`,
-        }}
+      <polygon
+        points={`${cx - 9},${pad} ${cx + 9},${pad} ${cx},${pad + pointerHeight}`}
+        fill="#1e293b"
       />
 
-      <svg
-        width={viewSize}
-        height={viewSize}
-        viewBox={`0 0 ${viewSize} ${viewSize}`}
-        className="absolute left-0 overflow-visible"
-        style={{ top: pointerHeight }}
-        overflow="visible"
-      >
-        <circle cx={cx} cy={cy} r={r + 6} fill="#fff" stroke="#e2e8f0" strokeWidth={3} />
+      <circle cx={cx} cy={cy} r={r + 5} fill="#fff" stroke="#e2e8f0" strokeWidth={2} />
+
+      <defs>
+        <clipPath id={clipId}>
+          <circle cx={cx} cy={cy} r={r} />
+        </clipPath>
+        <radialGradient id={hubGradientId}>
+          <stop offset="0%" stopColor="#a78bfa" />
+          <stop offset="100%" stopColor="#7c3aed" />
+        </radialGradient>
+      </defs>
+
+      <g clipPath={`url(#${clipId})`}>
         <g
           style={{
             transform: `rotate(${rotation}deg)`,
             transformOrigin: `${cx}px ${cy}px`,
+            transformBox: "view-box",
             transition: spinning
               ? "transform 4.2s cubic-bezier(0.15, 0.85, 0.2, 1)"
               : "none",
@@ -114,7 +116,6 @@ export default function BenefitsWheelSpinWheel({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 transform={`rotate(${sliceItem.mid}, ${sliceItem.labelPos.x}, ${sliceItem.labelPos.y})`}
-                style={{ pointerEvents: "none" }}
               >
                 {sliceItem.label.length > 14
                   ? `${sliceItem.label.slice(0, 12)}…`
@@ -123,15 +124,10 @@ export default function BenefitsWheelSpinWheel({
             </g>
           ))}
         </g>
-        <circle cx={cx} cy={cy} r={26} fill="#fff" stroke="#cbd5e1" strokeWidth={2} />
-        <circle cx={cx} cy={cy} r={16} fill={`url(#${hubGradientId})`} />
-        <defs>
-          <radialGradient id={hubGradientId}>
-            <stop offset="0%" stopColor="#a78bfa" />
-            <stop offset="100%" stopColor="#7c3aed" />
-          </radialGradient>
-        </defs>
-      </svg>
-    </div>
+      </g>
+
+      <circle cx={cx} cy={cy} r={24} fill="#fff" stroke="#cbd5e1" strokeWidth={2} />
+      <circle cx={cx} cy={cy} r={15} fill={`url(#${hubGradientId})`} />
+    </svg>
   );
 }
