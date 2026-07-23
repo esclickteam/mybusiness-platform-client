@@ -6,6 +6,16 @@ export type BenefitsWheelSegment = {
 
 export type BenefitsWheelTriggerShape = "pill" | "rounded" | "circle";
 
+export type BenefitsWheelTriggerIcon =
+  | "ferris-wheel"
+  | "gift"
+  | "sparkles"
+  | "tag"
+  | "percent"
+  | "star"
+  | "trophy"
+  | "none";
+
 export type BenefitsWheelSettings = {
   isActive?: boolean;
   title?: string;
@@ -17,6 +27,8 @@ export type BenefitsWheelSettings = {
   showTrigger?: boolean;
   triggerPosition?: { x: number; y: number };
   triggerLabel?: string;
+  triggerIcon?: BenefitsWheelTriggerIcon;
+  triggerShowIcon?: boolean;
   triggerColor?: string;
   triggerColorEnd?: string;
   triggerTextColor?: string;
@@ -154,20 +166,25 @@ export function resolveTriggerPresentation(settings: BenefitsWheelSettings) {
   const colorStart = settings.triggerColor || "#7C3AED";
   const colorEnd = settings.triggerColorEnd || settings.triggerColor || "#a855f7";
   const textColor = settings.triggerTextColor || "#ffffff";
+  const icon = settings.triggerIcon || "ferris-wheel";
+  const showIconSetting = settings.triggerShowIcon !== false;
+  const isCircle = shape === "circle";
 
   const shapeClass =
     shape === "circle"
       ? "rounded-full p-3.5"
       : shape === "rounded"
         ? "rounded-xl px-4 py-3"
-        : "rounded-full px-4 py-3";
+        : "rounded-full px-4 py-3.5";
 
   return {
     label,
     textColor,
     shape,
+    icon,
     shapeClass,
     background: `linear-gradient(135deg, ${colorStart}, ${colorEnd})`,
-    showLabel: shape !== "circle",
+    showLabel: !isCircle,
+    showIcon: showIconSetting && icon !== "none",
   };
 }

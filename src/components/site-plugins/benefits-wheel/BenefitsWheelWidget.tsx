@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Gift, GripVertical, X } from "lucide-react";
+import { GripVertical, X } from "lucide-react";
 
 import BenefitsWheelSpinWheel from "./BenefitsWheelSpinWheel";
 import {
@@ -15,6 +15,7 @@ import {
   writeVisitorSpin,
 } from "./benefitsWheelUtils";
 import { saveBenefitsWheelSpin } from "../../../api/benefitsWheelApi";
+import { BenefitsWheelTriggerIcon } from "./benefitsWheelTriggerIcons";
 
 type BenefitsWheelWidgetProps = {
   siteId: string;
@@ -240,7 +241,11 @@ export default function BenefitsWheelWidget({
           }}
           aria-label={trigger.label}
         >
-          {isEditor ? <GripVertical size={16} className="opacity-80" /> : <Gift size={20} />}
+          {isEditor ? (
+            <GripVertical size={16} className="opacity-80" />
+          ) : trigger.showIcon ? (
+            <BenefitsWheelTriggerIcon icon={trigger.icon} size={20} />
+          ) : null}
           {trigger.showLabel ? (
             <span className="text-sm font-bold">{trigger.label}</span>
           ) : null}

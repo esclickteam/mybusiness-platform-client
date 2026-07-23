@@ -15,6 +15,8 @@ export function mergePluginSettings(stored: unknown): BenefitsWheelSettings {
     showTrigger: true,
     triggerPosition: { x: 88, y: 82 },
     triggerLabel: "גלגל הטבות",
+    triggerIcon: "ferris-wheel",
+    triggerShowIcon: true,
     triggerColor: "#7C3AED",
     triggerColorEnd: "#a855f7",
     triggerTextColor: "#ffffff",
