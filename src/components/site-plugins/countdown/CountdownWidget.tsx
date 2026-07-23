@@ -286,9 +286,10 @@ export default function CountdownWidget({
   if (isFloating) {
     return (
       <div
-        className="bizuply-countdown-widget pointer-events-none"
-        data-bizuply-countdown="true"
-        data-countdown-layout="floating"
+      className="bizuply-countdown-widget pointer-events-none"
+      data-bizuply-countdown="true"
+      data-bizuply-plugin-runtime="true"
+      data-countdown-layout="floating"
         style={{ fontFamily: font, minHeight: 0 }}
       >
         {sharedStyles}
@@ -327,6 +328,7 @@ export default function CountdownWidget({
       dir="rtl"
       className="bizuply-countdown-widget flex h-full w-full min-h-0 items-center justify-center overflow-visible"
       data-bizuply-countdown="true"
+      data-bizuply-plugin-runtime="true"
       data-countdown-layout={layoutMode}
       style={{ fontFamily: font, pointerEvents: editorMode ? "none" : "auto" }}
     >

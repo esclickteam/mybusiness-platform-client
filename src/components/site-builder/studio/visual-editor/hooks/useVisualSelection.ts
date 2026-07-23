@@ -21,6 +21,12 @@ import {
   getNodeMediaSrc,
   getVisualMediaTypeFromNode,
 } from "../utils/visualMediaUtils";
+import {
+  isInsidePluginWidgetContent,
+  isPluginWidgetShell,
+  resolvePluginWidgetSelectionTarget,
+  shouldSkipPluginWidgetRegistration,
+} from "../utils/visualPluginWidgets";
 
 export type VisualSelectedElementWithLink = VisualSelectedElement & {
   text?: string;
@@ -214,6 +220,7 @@ const EDITOR_ONLY_SELECTOR = [
   ".visual-floating-toolbar",
   ".visual-context-menu",
   ".visual-inspector-panel",
+  "[data-bizuply-plugin-runtime='true']",
 ].join(",");
 
 function isHTMLElement(value: unknown): value is HTMLElement {
@@ -629,6 +636,11 @@ function normalizeCandidateNode(
     }
   }
 
+  const pluginTarget = resolvePluginWidgetSelectionTarget(resolvedNode, canvas);
+  if (pluginTarget) {
+    return pluginTarget;
+  }
+
   return resolvedNode;
 }
 
@@ -638,6 +650,7 @@ function scoreCandidate(
   canvas: HTMLElement,
 ) {
   if (isEditorOnlyNode(node)) return -100000;
+  if (isInsidePluginWidgetContent(node)) return -100000;
 
   const type = getVisualTypeFromNode(node);
   const tagName = String(node.tagName || "").toLowerCase();
@@ -673,6 +686,7 @@ function scoreCandidate(
 
   if (node.hasAttribute("data-visual-edit-id")) score += 120;
   if (node.hasAttribute("data-visual-editable")) score += 80;
+  if (isPluginWidgetShell(node)) score += 8000;
 
   const childEditableCount = node.querySelectorAll(
     "[data-visual-edit-id], h1, h2, h3, h4, h5, h6, p, span, img, video, button, a",
@@ -942,7 +956,10 @@ export function registerAllVisualElements(
 
   const nodes = Array.from(
     canvas.querySelectorAll<HTMLElement>(AUTO_VISUAL_SELECTOR),
-  ).filter((node) => !isEditorOnlyNode(node));
+  ).filter(
+    (node) =>
+      !isEditorOnlyNode(node) && !shouldSkipPluginWidgetRegistration(node),
+  );
 
   nodes.forEach((node) => {
     ensureNodeHasVisualId(node, canvas);

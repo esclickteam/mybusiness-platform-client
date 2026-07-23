@@ -3,6 +3,10 @@ import React from "react";
 
 import CountdownWidget from "./CountdownWidget";
 import { normalizeCountdownSettings, type CountdownSettings } from "./countdownUtils";
+import {
+  ensurePluginWidgetsLayering,
+  sanitizePluginWidgetEditorNodes,
+} from "../../site-builder/studio/visual-editor/utils/visualPluginWidgets";
 
 const roots = new WeakMap<Element, Root>();
 
@@ -76,7 +80,13 @@ export function mountCountdownWidgets(
       })
     );
     node.setAttribute("data-bizuply-countdown-mounted", "true");
+    node.setAttribute("data-bizuply-plugin-runtime", "true");
   });
+
+  if (root instanceof HTMLElement) {
+    sanitizePluginWidgetEditorNodes(root);
+    ensurePluginWidgetsLayering(root);
+  }
 }
 
 export function unmountCountdownWidgets(root: ParentNode | null | undefined) {

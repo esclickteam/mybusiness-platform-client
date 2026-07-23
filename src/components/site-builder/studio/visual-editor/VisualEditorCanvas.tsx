@@ -2133,6 +2133,18 @@ export default function VisualEditorCanvas({
             touch-action: none;
           }
 
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-widget="true"] {
+            overflow: visible !important;
+            cursor: grab !important;
+            touch-action: none;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-runtime="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-widget="true"] [data-bizuply-plugin-runtime="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-widget="true"] [data-bizuply-widget] {
+            pointer-events: none !important;
+          }
+
           /*
             Form controls stay non-interactive in edit mode so the field slot /
             wrapper receives selection + drag (same pattern as Ido FormFieldSlot).
