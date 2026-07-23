@@ -16,7 +16,9 @@ export type CountdownSettings = {
   endDate?: string;
   timezone?: string;
   showMonths?: boolean;
+  showWeeks?: boolean;
   showDays?: boolean;
+  monthsAsDays?: boolean;
   showHours?: boolean;
   showMinutes?: boolean;
   showSeconds?: boolean;
@@ -39,7 +41,7 @@ export type CountdownSettings = {
 };
 
 export type CountdownUnit = {
-  key: "months" | "days" | "hours" | "minutes" | "seconds";
+  key: "months" | "weeks" | "days" | "hours" | "minutes" | "seconds";
   label: string;
   value: number;
 };
@@ -141,6 +143,7 @@ export const PRESET_DEFAULT_COLORS: Record<
 const MS_DAY = 86400000;
 const MS_HOUR = 3600000;
 const MS_MINUTE = 60000;
+const MS_WEEK = MS_DAY * 7;
 const MS_MONTH = MS_DAY * 30;
 
 export function resolveFontFamily(preset?: CountdownFontPreset) {
@@ -189,7 +192,9 @@ export function normalizeCountdownSettings(raw: unknown): CountdownSettings {
     endDate: "",
     timezone: "Asia/Jerusalem",
     showMonths: true,
+    showWeeks: true,
     showDays: true,
+    monthsAsDays: false,
     showHours: true,
     showMinutes: true,
     showSeconds: true,
@@ -229,14 +234,24 @@ export function parseEndDate(endDate?: string) {
 
 export function buildCountdownUnits(settings: CountdownSettings, parts: {
   months: number;
+  weeks: number;
   days: number;
   hours: number;
   minutes: number;
   seconds: number;
 }): CountdownUnit[] {
   const units: CountdownUnit[] = [];
-  if (settings.showMonths !== false) units.push({ key: "months", label: "חודשים", value: parts.months });
-  if (settings.showDays !== false) units.push({ key: "days", label: "ימים", value: parts.days });
+  const showMonths = settings.showMonths !== false && settings.monthsAsDays !== true;
+
+  if (showMonths) units.push({ key: "months", label: "חודשים", value: parts.months });
+  if (settings.showWeeks !== false) units.push({ key: "weeks", label: "שבועות", value: parts.weeks });
+  if (settings.showDays !== false) {
+    units.push({
+      key: "days",
+      label: settings.monthsAsDays ? "ימים (כולל חודשים)" : "ימים",
+      value: parts.days,
+    });
+  }
   if (settings.showHours !== false) units.push({ key: "hours", label: "שעות", value: parts.hours });
   if (settings.showMinutes !== false) units.push({ key: "minutes", label: "דקות", value: parts.minutes });
   if (settings.showSeconds !== false) units.push({ key: "seconds", label: "שניות", value: parts.seconds });
@@ -246,6 +261,44 @@ export function buildCountdownUnits(settings: CountdownSettings, parts: {
   }
 
   return units;
+}
+
+export function splitCountdownParts(diffMs: number, settings: CountdownSettings) {
+  let diff = Math.max(0, diffMs);
+  let months = 0;
+  let weeks = 0;
+  let days = 0;
+
+  if (settings.monthsAsDays) {
+    let totalDays = Math.floor(diff / MS_DAY);
+    diff -= totalDays * MS_DAY;
+
+    if (settings.showWeeks !== false) {
+      weeks = Math.floor(totalDays / 7);
+      days = totalDays % 7;
+    } else {
+      days = totalDays;
+    }
+  } else {
+    if (settings.showMonths !== false) {
+      months = Math.floor(diff / MS_MONTH);
+      diff -= months * MS_MONTH;
+    }
+    if (settings.showWeeks !== false) {
+      weeks = Math.floor(diff / MS_WEEK);
+      diff -= weeks * MS_WEEK;
+    }
+    days = Math.floor(diff / MS_DAY);
+    diff -= days * MS_DAY;
+  }
+
+  const hours = Math.floor(diff / MS_HOUR);
+  diff -= hours * MS_HOUR;
+  const minutes = Math.floor(diff / MS_MINUTE);
+  diff -= minutes * MS_MINUTE;
+  const seconds = Math.floor(diff / 1000);
+
+  return { months, weeks, days, hours, minutes, seconds };
 }
 
 export function computeCountdownUnits(
@@ -258,18 +311,10 @@ export function computeCountdownUnits(
   }
 
   let diff = Math.max(0, endMs - now);
-  const months = Math.floor(diff / MS_MONTH);
-  diff -= months * MS_MONTH;
-  const days = Math.floor(diff / MS_DAY);
-  diff -= days * MS_DAY;
-  const hours = Math.floor(diff / MS_HOUR);
-  diff -= hours * MS_HOUR;
-  const minutes = Math.floor(diff / MS_MINUTE);
-  diff -= minutes * MS_MINUTE;
-  const seconds = Math.floor(diff / 1000);
+  const parts = splitCountdownParts(diff, settings);
 
   return {
-    units: buildCountdownUnits(settings, { months, days, hours, minutes, seconds }),
+    units: buildCountdownUnits(settings, parts),
     expired: false,
   };
 }
@@ -281,8 +326,9 @@ export function padUnit(value: number, key: CountdownUnit["key"]) {
 
 export function previewCountdownUnits(settings: CountdownSettings): CountdownUnit[] {
   return buildCountdownUnits(settings, {
-    months: 1,
-    days: 12,
+    months: settings.monthsAsDays ? 0 : 1,
+    weeks: 2,
+    days: settings.monthsAsDays ? 42 : 5,
     hours: 8,
     minutes: 45,
     seconds: 22,

@@ -229,13 +229,28 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
           checked={bool(settings.unitOrderReversed, true)}
           onChange={(v) => updateField("unitOrderReversed", v)}
         />
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-          <Toggle label="חודשים" checked={bool(settings.showMonths, true)} onChange={(v) => updateField("showMonths", v)} />
+        <Toggle
+          label="הצג חודשים כימים (30 יום = חודש)"
+          checked={bool(settings.monthsAsDays, false)}
+          onChange={(v) => updateField("monthsAsDays", v)}
+        />
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+          <Toggle
+            label="חודשים"
+            checked={bool(settings.showMonths, true)}
+            onChange={(v) => updateField("showMonths", v)}
+          />
+          <Toggle label="שבועות" checked={bool(settings.showWeeks, true)} onChange={(v) => updateField("showWeeks", v)} />
           <Toggle label="ימים" checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
           <Toggle label="שעות" checked={bool(settings.showHours, true)} onChange={(v) => updateField("showHours", v)} />
           <Toggle label="דקות" checked={bool(settings.showMinutes, true)} onChange={(v) => updateField("showMinutes", v)} />
           <Toggle label="שניות" checked={bool(settings.showSeconds, true)} onChange={(v) => updateField("showSeconds", v)} />
         </div>
+        {settings.monthsAsDays ? (
+          <p className="text-[11px] leading-relaxed text-slate-500">
+            חודשים מחושבים כ-30 יום ומוצגים בשדה הימים. אפשר להשאיר גם שבועות לפירוט נוסף.
+          </p>
+        ) : null}
       </SectionCard>
 
       <SectionCard icon={Sparkles} title="אפקטים" accent="#F59E0B">
