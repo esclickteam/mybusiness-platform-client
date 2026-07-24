@@ -6,6 +6,7 @@ import React, {
   useCallback,
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
+import API from "../api";
 
 const NotificationsContext = createContext();
 
@@ -93,11 +94,8 @@ export function NotificationsProvider({ children }) {
   /* === FETCH FROM SERVER === */
   const fetchNotifications = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      if (!res.ok) throw new Error();
-      const data = await res.json();
+      const res = await API.get("/business/my/notifications");
+      const data = res.data;
 
       if (data.ok && data.notifications) {
         const filtered = data.notifications.filter(
@@ -179,10 +177,7 @@ export function NotificationsProvider({ children }) {
   const markAsRead = useCallback(
     async (id) => {
       try {
-        await fetch(`/api/business/my/notifications/${id}/read`, {
-          method: "PUT",
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
+        await API.put(`/business/my/notifications/${id}/read`);
         dispatch({
           type: "UPDATE_UNREAD_COUNT",
           payload: Math.max(state.unreadCount - 1, 0),
@@ -197,11 +192,8 @@ export function NotificationsProvider({ children }) {
   /* === CLEAR READ === */
   const clearRead = useCallback(async () => {
     try {
-      const res = await fetch("/api/business/my/notifications/clearRead", {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await res.json();
+      const res = await API.delete("/business/my/notifications/clearRead");
+      const data = res.data;
       if (data.ok) dispatch({ type: "CLEAR_ALL" });
     } catch (err) {
       console.error("clearRead failed:", err);

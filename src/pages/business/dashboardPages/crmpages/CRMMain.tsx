@@ -12,7 +12,10 @@ import {
   UsersRound,
   Wrench,
 } from "lucide-react";
+import API from "../../../../api";
+import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import { workHoursQueryKey } from "../../../../hooks/useBusinessWorkHours";
 
 type CrmTab = {
   path: string;
@@ -75,60 +78,14 @@ const crmTabs: CrmTab[] = [
   },
 ];
 
-async function fetchAppointments() {
-  const res = await fetch("/api/appointments/all-with-services", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to load appointments");
-  }
-
-  return res.json();
-}
-
-async function fetchClients() {
-  const res = await fetch("/api/crm-clients", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to load clients");
-  }
-
-  return res.json();
-}
-
-async function fetchServices() {
-  const res = await fetch("/api/business/my/services", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to load services");
-  }
-
-  return res.json();
-}
-
-async function fetchWorkHours() {
-  const res = await fetch("/api/appointments/get-work-hours", {
-    credentials: "include",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to load work hours");
-  }
-
-  return res.json();
-}
-
 export default function CRMMain() {
   const { t } = useTranslation();
   const dir = useLocaleDir();
   const queryClient = useQueryClient();
   const location = useLocation();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const businessId = user?.businessId || null;
 
   const currentTab = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -162,26 +119,39 @@ export default function CRMMain() {
   }, [currentTab, isKnownTab, location.pathname, navigate]);
 
   useEffect(() => {
+    if (!businessId) return;
+
     queryClient.prefetchQuery({
-      queryKey: ["appointments"],
-      queryFn: fetchAppointments,
+      queryKey: ["businessAppointments", businessId],
+      queryFn: async () =>
+        (
+          await API.get("/appointments/all-with-services", {
+            params: { businessId },
+          })
+        ).data,
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["clients"],
-      queryFn: fetchClients,
+      queryKey: ["crmClients", businessId],
+      queryFn: async () =>
+        (await API.get(`/crm-clients/${businessId}`)).data,
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["services"],
-      queryFn: fetchServices,
+      queryKey: ["businessServices", businessId],
+      queryFn: async () => (await API.get("/business/my/services")).data,
     });
 
     queryClient.prefetchQuery({
-      queryKey: ["work-hours"],
-      queryFn: fetchWorkHours,
+      queryKey: workHoursQueryKey(businessId),
+      queryFn: async () =>
+        (
+          await API.get("/appointments/get-work-hours", {
+            params: { businessId },
+          })
+        ).data,
     });
-  }, [queryClient]);
+  }, [queryClient, businessId]);
 
   const ActiveIcon = activeTabData.icon;
 

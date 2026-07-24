@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
+import API from "../../../api";
 
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
@@ -65,10 +66,7 @@ const BizUplyAdvisor: React.FC = () => {
   const userId = user?._id || user?.id || null;
 
   useEffect(() => {
-    const token =
-      typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
-    if (!businessId || !token) {
+    if (!businessId) {
       setBusinessDetails(null);
       setAppointments([]);
       setSelectedAppointmentId(null);
@@ -79,17 +77,8 @@ const BizUplyAdvisor: React.FC = () => {
 
     const loadBusinessData = async () => {
       try {
-        const res = await fetch(`/api/business/${businessId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!res.ok) {
-          throw new Error("שגיאה בטעינת פרטי העסק");
-        }
-
-        const data = (await res.json()) as BusinessApiResponse;
+        const res = await API.get(`/business/${businessId}`);
+        const data = res.data as BusinessApiResponse;
 
         if (!isMounted) return;
 
@@ -105,17 +94,10 @@ const BizUplyAdvisor: React.FC = () => {
 
     const loadAppointments = async () => {
       try {
-        const res = await fetch(`/api/appointments?businessId=${businessId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        const res = await API.get("/appointments/all-with-services", {
+          params: { businessId },
         });
-
-        if (!res.ok) {
-          throw new Error("שגיאה בטעינת התורים");
-        }
-
-        const data = (await res.json()) as AppointmentsApiResponse;
+        const data = res.data as AppointmentsApiResponse;
         const list = getAppointmentsList(data);
 
         if (!isMounted) return;

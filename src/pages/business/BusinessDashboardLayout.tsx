@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { io } from "socket.io-client";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
@@ -64,6 +63,12 @@ type AuthContextValue = {
   loading: boolean;
   logout?: () => Promise<void> | void;
   isImpersonating?: boolean;
+  socket?: {
+    connected: boolean;
+    emit: (event: string, ...args: unknown[]) => void;
+    on: (event: string, handler: (...args: unknown[]) => void) => void;
+    off: (event: string, handler?: (...args: unknown[]) => void) => void;
+  } | null;
   loginWithToken?: (
     userFromServer: unknown,
     accessToken: string,
@@ -78,13 +83,6 @@ type UnreadCountResponse = {
 type UnreadCountUpdatePayload = {
   count?: number;
 };
-
-/* ============================
-   Socket
-============================ */
-
-const SOCKET_URL = "https://api.bizuply.com";
-const socket = io(SOCKET_URL, { autoConnect: false });
 
 const SIDEBAR_WIDTH_EXPANDED = 260;
 const SIDEBAR_WIDTH_COLLAPSED = 72;
@@ -172,7 +170,7 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
 }
 
 export default function BusinessDashboardLayout() {
-  const { user, loading, logout, isImpersonating, loginWithToken } =
+  const { user, loading, logout, isImpersonating, loginWithToken, socket } =
     useAuth() as AuthContextValue;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
@@ -291,7 +289,7 @@ export default function BusinessDashboardLayout() {
   ============================ */
 
   useEffect(() => {
-    if (!businessId) return;
+    if (!businessId || !socket) return;
 
     API.get<UnreadCountResponse>("/chat/unread-count")
       .then((res) => {
@@ -300,10 +298,6 @@ export default function BusinessDashboardLayout() {
       .catch(() => {
         setMessagesCount(0);
       });
-
-    if (!socket.connected) {
-      socket.connect();
-    }
 
     socket.emit("joinRoom", `business-${businessId}`);
     socket.emit("joinBusinessRoom", businessId);
@@ -318,7 +312,7 @@ export default function BusinessDashboardLayout() {
       socket.off("unreadCountUpdate", handleUnreadCountUpdate);
       socket.emit("leaveRoom", `business-${businessId}`);
     };
-  }, [businessId]);
+  }, [businessId, socket]);
 
   /* ============================
      Resize Handler
@@ -446,8 +440,7 @@ export default function BusinessDashboardLayout() {
       }
 
       clearAdminActiveBusinessId();
-      socket.disconnect();
-      // logout() clears auth and navigates to /login; next login → main dashboard
+      // logout() clears auth socket and navigates to /login
       await logout?.();
     } catch {
       navigate("/login", { replace: true });
