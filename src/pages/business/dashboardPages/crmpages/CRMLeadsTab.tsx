@@ -875,10 +875,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       try {
         const tenantParams = businessId ? { businessId } : undefined;
         const [metaRes, googleRes] = await Promise.all([
-          API.get<{ success?: boolean; connectedPage?: { pageId?: string } | null }>(
-            "/meta-leads/status",
-            { params: tenantParams }
-          ).catch(() => null),
+          API.get<{
+            success?: boolean;
+            connectedPage?: { pageId?: string } | null;
+            purgedHistorical?: number;
+          }>("/meta-leads/status", { params: tenantParams }).catch(() => null),
           API.get<{
             success?: boolean;
             connection?: { enabled?: boolean };
@@ -890,6 +891,11 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         if (cancelled) return;
         setMetaConnected(Boolean(metaRes?.data?.connectedPage?.pageId));
         setGoogleConnected(Boolean(googleRes?.data?.connection?.enabled));
+
+        // Server may remove historical Meta form leads that arrived before connect.
+        if ((metaRes?.data?.purgedHistorical || 0) > 0) {
+          window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+        }
       } catch {
         if (!cancelled) {
           setMetaConnected(false);

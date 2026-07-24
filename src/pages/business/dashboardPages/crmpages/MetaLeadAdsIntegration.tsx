@@ -99,6 +99,7 @@ export default function MetaLeadAdsIntegration({
         pages?: MetaPage[];
         forms?: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
+        purgedHistorical?: number;
       }>("/meta-leads/status", {
         params: tenantParams,
       });
@@ -114,6 +115,10 @@ export default function MetaLeadAdsIntegration({
         setSelectedPageId(nextConnectedPage.pageId);
       } else {
         setSelectedPageId("");
+      }
+
+      if ((data.purgedHistorical || 0) > 0) {
+        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
       }
     } catch (err) {
       setError(
