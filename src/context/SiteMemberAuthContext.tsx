@@ -93,6 +93,7 @@ export function SiteMemberAuthProvider({
       username?: string;
       password: string;
       displayName?: string;
+      phone?: string;
     }) => {
       const data = await siteMemberRegister(slug, payload);
       setMember(data.member);

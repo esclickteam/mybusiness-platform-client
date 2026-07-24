@@ -7,6 +7,7 @@ import {
   mergeSiteAuthSettings,
   type SiteAuthWidgetSettings,
 } from "./siteAuthUtils";
+import { buildSiteAuthFormShellStyle } from "./siteAuthFormStyles";
 import { useOptionalSiteMemberAuth } from "../../../context/SiteMemberAuthContext";
 
 type SiteAuthLoginWidgetProps = {
@@ -105,7 +106,8 @@ export default function SiteAuthLoginWidget({
         onClick={() => setModalOpen(false)}
       >
         <div
-          className="relative w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 shadow-2xl"
+          className="relative w-full max-w-md border p-6 shadow-2xl"
+          style={buildSiteAuthFormShellStyle(settings, brandColor)}
           onClick={(event) => event.stopPropagation()}
         >
           <button
@@ -117,12 +119,21 @@ export default function SiteAuthLoginWidget({
             <X size={18} />
           </button>
 
-          <h2 className="mb-1 text-xl font-black text-slate-800">
+          <h2 className="mb-1 text-xl font-black" style={{ color: settings.formTextColor }}>
             {settings.loginPageTitle}
           </h2>
-          <p className="mb-5 text-sm font-medium text-slate-500">
-            התחברות לאתר {String(site?.name || "")}
-          </p>
+          {settings.loginSubtitle ? (
+            <p
+              className="mb-5 text-sm font-medium opacity-80"
+              style={{ color: settings.formTextColor }}
+            >
+              {settings.loginSubtitle}
+            </p>
+          ) : (
+            <p className="mb-5 text-sm font-medium opacity-80" style={{ color: settings.formTextColor }}>
+              התחברות לאתר {String(site?.name || "")}
+            </p>
+          )}
 
           <SiteAuthLoginForm
             settings={settings}
