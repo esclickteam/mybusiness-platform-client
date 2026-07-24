@@ -96,10 +96,11 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
     socketInstance.on("tokenExpired", refreshAndReconnect);
     socketInstance.on("connect_error", (err) => {
-      if (err?.message === "jwt expired") {
+      const msg = String(err?.message || "");
+      if (msg.includes("jwt expired") || msg.includes("TokenExpired")) {
         refreshAndReconnect();
       } else {
-        console.warn("[Socket] connect_error:", err.message);
+        console.warn("[Socket] connect_error:", msg);
       }
     });
 
