@@ -1053,10 +1053,29 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     if (businessId && isAdminUser()) {
       setAdminActiveBusinessId(businessId);
     }
-  }, [businessId]);
 
-  useEffect(() => {
-    fetchLeads();
+    let cancelled = false;
+
+    const loadLeadsWithMetaPurge = async () => {
+      try {
+        const tenantParams = businessId ? { businessId } : undefined;
+        await API.get("/meta-leads/status", { params: tenantParams }).catch(
+          () => null
+        );
+      } catch {
+        // status purge is best-effort; leads fetch still runs below
+      }
+
+      if (!cancelled) {
+        await fetchLeads();
+      }
+    };
+
+    void loadLeadsWithMetaPurge();
+
+    return () => {
+      cancelled = true;
+    };
   }, [businessId]);
 
   useEffect(() => {
