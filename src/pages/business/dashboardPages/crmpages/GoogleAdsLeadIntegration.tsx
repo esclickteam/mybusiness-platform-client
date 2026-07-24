@@ -5,7 +5,6 @@ import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
-  RefreshCw,
   Unplug,
 } from "lucide-react";
 import API from "@api";
@@ -229,29 +228,6 @@ export default function GoogleAdsLeadIntegration({
       setError(
         err instanceof Error ? err.message : t(`${T}.errors.connectForm`)
       );
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const syncLeads = async () => {
-    try {
-      setBusy(true);
-      setError("");
-      const { data } = await API.post<{
-        success: boolean;
-        created?: number;
-        synced?: number;
-      }>("/google-ads-leads/sync-leads", {}, { params: tenantParams });
-      setSuccess(
-        t(`${T}.successSynced`, {
-          created: data.created || 0,
-          synced: data.synced || 0,
-        })
-      );
-      await loadStatus();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t(`${T}.errors.syncFailed`));
     } finally {
       setBusy(false);
     }
@@ -528,15 +504,6 @@ export default function GoogleAdsLeadIntegration({
                     {t(`${T}.backToCrm`)}
                   </button>
                 )}
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => void syncLeads()}
-                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
-                >
-                  <RefreshCw className="h-3.5 w-3.5" />
-                  {t(`${T}.syncLeads`)}
-                </button>
                 <button
                   type="button"
                   disabled={busy}
