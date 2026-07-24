@@ -1458,7 +1458,7 @@
         "emDash": "—",
         "successPageConnected": "עמוד הפייסבוק חובר. Bizuply מאזינה עכשיו ללידים ממודעות Meta.",
         "successDisconnected": "אינטגרציית מודעות הלידים של Meta נותקה.",
-        "successFormSelected": "הטופס הפעיל נבחר: {{name}}. רק לידים חדשים מהטופס הזה מכאן והלאה יתווספו ל-CRM — בלי ייבוא היסטוריה.",
+        "successFormSelected": "הטופס הפעיל נבחר: {{name}}. לידים ישנים מהטופס נוקו מה-CRM. מעכשיו ייכנסו רק לידים חדשים שלא קיימים כבר במערכת.",
         "successSynced": "סונכרנו {{count}} לידים מ-Meta לתוך ה-CRM.",
         "errors": {
           "loadStatus": "טעינת סטטוס Meta נכשלה",

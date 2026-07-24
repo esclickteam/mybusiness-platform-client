@@ -1458,7 +1458,7 @@
         "emDash": "—",
         "successPageConnected": "Facebook Page connected. Bizuply is now listening for Meta Lead Ads leads.",
         "successDisconnected": "Meta Lead Ads integration disconnected.",
-        "successFormSelected": "Active form selected: {{name}}. Only new leads from this form from now on will be added to the CRM — history is not imported.",
+        "successFormSelected": "Active form selected: {{name}}. Old form leads were cleared from the CRM. From now on only new leads that are not already in the system will be added.",
         "successSynced": "Synced {{count}} lead(s) from Meta into the CRM.",
         "errors": {
           "loadStatus": "Failed to load Meta status",
