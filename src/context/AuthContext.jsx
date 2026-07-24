@@ -5,6 +5,7 @@ import createSocket from "../socket";
 import {
   getValidAccessToken,
   refreshAccessTokenOnce,
+  isAccessTokenExpired,
 } from "../utils/tokenRefresh";
 import {
   clearLastDashboardRoute,
@@ -491,17 +492,21 @@ export function AuthProvider({ children }) {
 
       let activeToken = token;
 
-      // No access token in storage — try restoring from httpOnly refresh cookie
-      if (!activeToken && !localStorage.getItem("impersonatedBy")) {
-        try {
-          activeToken = await refreshAccessTokenOnce();
-          if (activeToken && !cancelled) {
-            setToken(activeToken);
-            // Continue init with the restored token (do not return early —
-            // otherwise initialized/refreshUser can be skipped until a hard refresh)
+      // Restore or refresh access token before loading the dashboard
+      if (!localStorage.getItem("impersonatedBy")) {
+        const shouldRefresh =
+          !activeToken ||
+          isAccessTokenExpired(activeToken, { skewMs: 30_000 });
+
+        if (shouldRefresh) {
+          try {
+            activeToken = await refreshAccessTokenOnce();
+            if (activeToken && !cancelled) {
+              setToken(activeToken);
+            }
+          } catch {
+            // No valid refresh cookie — fall through to logged-out state
           }
-        } catch {
-          // No valid refresh cookie — user is logged out
         }
       }
 

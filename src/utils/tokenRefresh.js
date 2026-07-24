@@ -59,6 +59,20 @@ export async function refreshAccessTokenOnce() {
         applyAccessToken(accessToken);
         return accessToken;
       })
+      .catch((err) => {
+        const status = err.response?.status;
+        const code = err.response?.data?.code;
+        const message = err.response?.data?.message;
+
+        if (
+          status === 401 &&
+          (code === "NO_REFRESH_TOKEN" || message === "No refresh token")
+        ) {
+          throw new Error("NO_REFRESH_TOKEN");
+        }
+
+        throw err;
+      })
       .finally(() => {
         ongoingRefresh = null;
       });
@@ -85,6 +99,10 @@ export async function getValidAccessToken(options = {}) {
   } catch (err) {
     // Impersonation cannot refresh — keep the current access token
     if (localStorage.getItem("impersonatedBy")) {
+      return token || null;
+    }
+
+    if (err.message === "NO_REFRESH_TOKEN") {
       return token || null;
     }
 

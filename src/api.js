@@ -126,8 +126,13 @@ API.interceptors.response.use(
     }
 
     // Handle unauthorized — refresh cookie then retry (including /auth/me)
+    const authErrorCode = response.data?.code;
+    const shouldTryRefresh =
+      response.status === 401 ||
+      (response.status === 403 && authErrorCode === "TOKEN_EXPIRED");
+
     if (
-      (response.status === 401 || response.status === 403) &&
+      shouldTryRefresh &&
       config &&
       !isRefreshEndpoint(config.url) &&
       !isLoginOrRegisterEndpoint(config.url) &&
@@ -159,7 +164,10 @@ API.interceptors.response.use(
         throw new Error("No new token");
       } catch (err) {
         onRefreshed(null);
-        console.error("Error refreshing token:", err);
+
+        if (err.message !== "NO_REFRESH_TOKEN") {
+          console.error("Error refreshing token:", err);
+        }
 
         localStorage.removeItem("token");
         delete API.defaults.headers.common["Authorization"];
