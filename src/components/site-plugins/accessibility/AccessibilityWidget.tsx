@@ -2,14 +2,17 @@ import React, { useEffect, useId, useMemo, useRef, useState } from "react";
 import {
   Accessibility,
   ALargeSmall,
+  AlignRight,
   Contrast,
   Droplets,
+  ImageOff,
+  Info,
   Link2,
   MousePointer2,
   PauseCircle,
   RefreshCw,
-  Type,
   UnfoldHorizontal,
+  UnfoldVertical,
   X,
 } from "lucide-react";
 
@@ -18,6 +21,9 @@ import {
   applyAccessibilityToDocument,
   clearVisitorAccessibilityState,
   createEmptyVisitorState,
+  cycleLevel,
+  getFeatureLabel,
+  isFeatureActive,
   isFeatureEnabled,
   mergeAccessibilitySettings,
   readVisitorAccessibilityState,
@@ -26,6 +32,9 @@ import {
   type AccessibilityFeatureKey,
   type AccessibilitySettings,
   type AccessibilityVisitorState,
+  type ContrastLevel,
+  type IntensityLevel,
+  type SaturationLevel,
 } from "./accessibilityUtils";
 import "./AccessibilityWidget.css";
 
@@ -39,15 +48,35 @@ const FEATURE_ICONS: Record<
   AccessibilityFeatureKey,
   React.ComponentType<{ size?: number; strokeWidth?: number }>
 > = {
-  largeText: ALargeSmall,
-  highContrast: Contrast,
-  grayscale: Droplets,
   highlightLinks: Link2,
-  stopAnimations: PauseCircle,
-  readableFont: Type,
+  contrast: Contrast,
   textSpacing: UnfoldHorizontal,
+  largeText: ALargeSmall,
+  hideImages: ImageOff,
+  stopAnimations: PauseCircle,
   largeCursor: MousePointer2,
+  dyslexia: ALargeSmall,
+  lineHeight: UnfoldVertical,
+  descriptions: Info,
+  saturation: Droplets,
+  textAlign: AlignRight,
 };
+
+function DyslexiaIcon({ size = 28 }: { size?: number; strokeWidth?: number }) {
+  return (
+    <span
+      aria-hidden="true"
+      style={{
+        fontSize: Math.round(size * 0.78),
+        fontWeight: 800,
+        letterSpacing: "-0.04em",
+        lineHeight: 1,
+      }}
+    >
+      Df
+    </span>
+  );
+}
 
 export default function AccessibilityWidget({
   siteKey = "site",
@@ -111,21 +140,52 @@ export default function AccessibilityWidget({
   if (settings.isActive === false) return null;
 
   const accent = settings.accentColor || "#7C3AED";
-  const positionClass =
-    settings.widgetPosition === "bottom-right"
-      ? "bizuply-a11y-trigger--right"
-      : "bizuply-a11y-trigger--left";
+  // Trigger defaults to left; panel always docks left.
+  const triggerSide =
+    settings.widgetPosition === "bottom-right" ? "right" : "left";
 
   const visibleFeatures = ACCESSIBILITY_FEATURES.filter((feature) =>
     isFeatureEnabled(settings, feature.key)
   );
 
-  function toggleFeature(key: AccessibilityFeatureKey) {
+  function activateFeature(key: AccessibilityFeatureKey) {
     if (isEditor) return;
     setState((prev) => {
-      const next = { ...prev, [key]: !prev[key] };
-      if (key === "largeText" && next.largeText && next.fontScale < 115) {
-        next.fontScale = 120;
+      const next: AccessibilityVisitorState = { ...prev };
+
+      if (key === "contrast") {
+        next.contrast = cycleLevel(prev.contrast) as ContrastLevel;
+        return next;
+      }
+      if (key === "saturation") {
+        next.saturation = cycleLevel(prev.saturation) as SaturationLevel;
+        return next;
+      }
+      if (key === "textSpacing") {
+        next.textSpacing = cycleLevel(prev.textSpacing) as IntensityLevel;
+        return next;
+      }
+      if (key === "lineHeight") {
+        next.lineHeight = cycleLevel(prev.lineHeight) as IntensityLevel;
+        return next;
+      }
+      if (key === "largeText") {
+        next.largeText = !prev.largeText;
+        if (next.largeText && next.fontScale < 115) next.fontScale = 120;
+        if (!next.largeText) next.fontScale = settings.defaultFontScale || 100;
+        return next;
+      }
+
+      if (
+        key === "highlightLinks" ||
+        key === "hideImages" ||
+        key === "stopAnimations" ||
+        key === "largeCursor" ||
+        key === "dyslexia" ||
+        key === "descriptions" ||
+        key === "textAlign"
+      ) {
+        next[key] = !prev[key];
       }
       return next;
     });
@@ -157,7 +217,7 @@ export default function AccessibilityWidget({
     >
       <button
         type="button"
-        className={`bizuply-a11y-trigger ${positionClass}`}
+        className={`bizuply-a11y-trigger bizuply-a11y-trigger--${triggerSide}`}
         aria-label="פתח תפריט נגישות"
         aria-haspopup="dialog"
         aria-expanded={open}
@@ -184,14 +244,6 @@ export default function AccessibilityWidget({
           >
             <header className="bizuply-a11y-header">
               <div className="bizuply-a11y-header-row">
-                <div>
-                  <h2 id={titleId} className="bizuply-a11y-title">
-                    תפריט נגישות (Ctrl+U)
-                  </h2>
-                  <p className="bizuply-a11y-subtitle">
-                    התאמות נגישות מובנות של BizUply
-                  </p>
-                </div>
                 <button
                   type="button"
                   className="bizuply-a11y-close"
@@ -200,6 +252,14 @@ export default function AccessibilityWidget({
                 >
                   <X size={18} aria-hidden="true" />
                 </button>
+                <div className="bizuply-a11y-header-text">
+                  <h2 id={titleId} className="bizuply-a11y-title">
+                    תפריט נגישות (Ctrl+U)
+                  </h2>
+                  <p className="bizuply-a11y-subtitle">
+                    התאמות נגישות מובנות של BizUply
+                  </p>
+                </div>
               </div>
               <div className="bizuply-a11y-brand-chip">
                 <span aria-hidden="true">◆</span>
@@ -210,8 +270,23 @@ export default function AccessibilityWidget({
             <div className="bizuply-a11y-body">
               <div className="bizuply-a11y-grid" role="group" aria-label="אפשרויות נגישות">
                 {visibleFeatures.map((feature) => {
-                  const Icon = FEATURE_ICONS[feature.key];
-                  const active = Boolean(state[feature.key]);
+                  const Icon =
+                    feature.key === "dyslexia"
+                      ? DyslexiaIcon
+                      : FEATURE_ICONS[feature.key];
+                  const active = isFeatureActive(state, feature.key);
+                  const label = getFeatureLabel(feature.key, state, feature.label);
+                  const level =
+                    feature.key === "contrast"
+                      ? state.contrast
+                      : feature.key === "saturation"
+                        ? state.saturation
+                        : feature.key === "textSpacing"
+                          ? state.textSpacing
+                          : feature.key === "lineHeight"
+                            ? state.lineHeight
+                            : 0;
+
                   return (
                     <button
                       key={feature.key}
@@ -219,12 +294,19 @@ export default function AccessibilityWidget({
                       className={`bizuply-a11y-tile${active ? " is-active" : ""}`}
                       aria-pressed={active}
                       title={feature.description}
-                      onClick={() => toggleFeature(feature.key)}
+                      onClick={() => activateFeature(feature.key)}
                     >
                       <span className="bizuply-a11y-tile-icon" aria-hidden="true">
                         <Icon size={28} strokeWidth={2} />
                       </span>
-                      <span className="bizuply-a11y-tile-label">{feature.label}</span>
+                      <span className="bizuply-a11y-tile-label">{label}</span>
+                      {active && level > 0 ? (
+                        <span
+                          className="bizuply-a11y-level"
+                          style={{ width: `${(level / 3) * 100}%` }}
+                          aria-hidden="true"
+                        />
+                      ) : null}
                     </button>
                   );
                 })}

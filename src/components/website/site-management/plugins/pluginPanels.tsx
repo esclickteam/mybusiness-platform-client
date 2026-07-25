@@ -387,7 +387,10 @@ export const SiteAccessibilityPanel = makePanel(
           התוסף של BizUply — שליטה מלאה בקוד, ללא מגבלת אתרים וללא הטמעת ספק חיצוני.
           קיצור מקלדת לגולשים: Ctrl+U.
         </p>
-        <Field label="מיקום הווידג'ט">
+        <p className="text-xs text-slate-500">
+          התפריט נפתח תמיד בצד שמאל. מיקום הכפתור הצף בלבד ניתן לשינוי.
+        </p>
+        <Field label="מיקום כפתור הצף">
           <select
             value={str(settings.widgetPosition, "bottom-left")}
             onChange={(e) => updateField("widgetPosition", e.target.value)}
@@ -404,34 +407,14 @@ export const SiteAccessibilityPanel = makePanel(
           />
         </Field>
         <Toggle
-          label="הגדלת טקסט"
-          checked={bool(features.largeText, true)}
-          onChange={(v) => setFeature("largeText", v)}
-        />
-        <Toggle
-          label="ניגודיות גבוהה"
-          checked={bool(features.highContrast, true)}
-          onChange={(v) => setFeature("highContrast", v)}
-        />
-        <Toggle
-          label="גווני אפור"
-          checked={bool(features.grayscale, true)}
-          onChange={(v) => setFeature("grayscale", v)}
-        />
-        <Toggle
           label="הדגשת קישורים"
           checked={bool(features.highlightLinks, true)}
           onChange={(v) => setFeature("highlightLinks", v)}
         />
         <Toggle
-          label="עצירת אנימציות"
-          checked={bool(features.stopAnimations, true)}
-          onChange={(v) => setFeature("stopAnimations", v)}
-        />
-        <Toggle
-          label="פונט קריא"
-          checked={bool(features.readableFont, true)}
-          onChange={(v) => setFeature("readableFont", v)}
+          label="ניגודיות (מחזור מצבים)"
+          checked={bool(features.contrast, true)}
+          onChange={(v) => setFeature("contrast", v)}
         />
         <Toggle
           label="ריווח טקסט"
@@ -439,9 +422,49 @@ export const SiteAccessibilityPanel = makePanel(
           onChange={(v) => setFeature("textSpacing", v)}
         />
         <Toggle
+          label="טקסט גדול"
+          checked={bool(features.largeText, true)}
+          onChange={(v) => setFeature("largeText", v)}
+        />
+        <Toggle
+          label="הסתרת תמונות"
+          checked={bool(features.hideImages, true)}
+          onChange={(v) => setFeature("hideImages", v)}
+        />
+        <Toggle
+          label="ביטול הנפשות"
+          checked={bool(features.stopAnimations, true)}
+          onChange={(v) => setFeature("stopAnimations", v)}
+        />
+        <Toggle
           label="סמן מוגדל"
           checked={bool(features.largeCursor, true)}
           onChange={(v) => setFeature("largeCursor", v)}
+        />
+        <Toggle
+          label="תמיכה בדיסלקציה"
+          checked={bool(features.dyslexia, true)}
+          onChange={(v) => setFeature("dyslexia", v)}
+        />
+        <Toggle
+          label="גובה שורה"
+          checked={bool(features.lineHeight, true)}
+          onChange={(v) => setFeature("lineHeight", v)}
+        />
+        <Toggle
+          label="תאורים"
+          checked={bool(features.descriptions, true)}
+          onChange={(v) => setFeature("descriptions", v)}
+        />
+        <Toggle
+          label="רוויה / גווני אפור"
+          checked={bool(features.saturation, true)}
+          onChange={(v) => setFeature("saturation", v)}
+        />
+        <Toggle
+          label="יישור טקסט"
+          checked={bool(features.textAlign, true)}
+          onChange={(v) => setFeature("textAlign", v)}
         />
       </>
     );
