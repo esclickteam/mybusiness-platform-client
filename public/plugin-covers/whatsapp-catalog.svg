@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <linearGradient id="bg-whatsapp-catalog" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgb(156,229,183)"/>
+      <stop offset="45%" stop-color="rgb(206,242,220)"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg-whatsapp-catalog)"/>
+  <circle cx="520" cy="80" r="90" fill="#22C55E" opacity="0.08"/>
+  <circle cx="100" cy="320" r="70" fill="#22C55E" opacity="0.06"/>
+  
+    <g filter="url(#shadow)">
+      <rect x="220" y="80" width="120" height="220" rx="16" fill="#1e293b"/>
+      <rect x="226" y="86" width="108" height="208" rx="12" fill="#fff"/>
+      <rect x="260" y="92" width="40" height="6" rx="3" fill="#e2e8f0"/>
+      
+    
+      <rect x="232" y="105" width="92" height="40" rx="6" fill="rgb(222,246,231)"/>
+      <circle cx="250" cy="125" r="12" fill="#22C55E" opacity="0.3"/>
+    
+      <rect x="232" y="155" width="92" height="40" rx="6" fill="rgb(222,246,231)"/>
+      <circle cx="250" cy="175" r="12" fill="#22C55E" opacity="0.3"/>
+    
+      <rect x="232" y="205" width="92" height="40" rx="6" fill="rgb(222,246,231)"/>
+      <circle cx="250" cy="225" r="12" fill="#22C55E" opacity="0.3"/>
+    
+  
+    </g>
+</svg>

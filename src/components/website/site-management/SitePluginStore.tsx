@@ -12,6 +12,7 @@ import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 import SitePluginHelpModal from "./SitePluginHelpModal";
+import PluginCoverImage from "./PluginCoverImage";
 import {
   CATEGORY_GROUPS,
   CATEGORY_LABELS,
@@ -62,31 +63,32 @@ function PluginStoreCard({
       role="button"
       tabIndex={0}
     >
-      <div
-        className="relative flex aspect-[16/10] items-center justify-center"
-        style={{
-          background: `linear-gradient(145deg, ${accent}18 0%, ${accent}08 50%, #f8fafc 100%)`,
-        }}
-      >
-        <div
-          className="grid h-20 w-20 place-items-center rounded-2xl text-white shadow-[0_8px_24px_rgba(15,23,42,0.12)] transition group-hover:scale-105"
-          style={{ background: `linear-gradient(135deg, ${accent}, ${accent}cc)` }}
-        >
-          <Icon size={36} strokeWidth={1.75} />
+      <div className="relative">
+        <PluginCoverImage
+          pluginKey={plugin.key}
+          pluginName={plugin.name}
+          accent={accent}
+          Icon={Icon}
+          className="aspect-[16/10] w-full"
+          variant="card"
+        />
+
+        <div className="pointer-events-none absolute inset-x-0 top-0 flex items-start justify-between p-3">
+          {wasDetected && !isEnabled ? (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 shadow-sm">
+              <Sparkles size={11} />
+              חדש
+            </span>
+          ) : (
+            <span />
+          )}
+
+          {isEnabled ? (
+            <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+              מותקן
+            </span>
+          ) : null}
         </div>
-
-        {wasDetected && !isEnabled ? (
-          <span className="absolute left-3 top-3 inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800">
-            <Sparkles size={11} />
-            חדש
-          </span>
-        ) : null}
-
-        {isEnabled ? (
-          <span className="absolute right-3 top-3 rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white">
-            מותקן
-          </span>
-        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-4 pt-3">
