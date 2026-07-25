@@ -109,6 +109,21 @@ import { brandforgeTemplate } from "./brandforge/meta";
 import { mediavaultTemplate } from "./mediavault/meta";
 import { summitopsTemplate } from "./summitops/meta";
 import { eventideTemplate } from "./eventide/meta";
+import { pitchoraTemplate } from "./pitchora/meta";
+import { socialuxTemplate } from "./socialux/meta";
+import { influencixTemplate } from "./influencix/meta";
+import { seoraTemplate } from "./seora/meta";
+import { contentraTemplate } from "./contentra/meta";
+import { productixTemplate } from "./productix/meta";
+import { launchoraTemplate } from "./launchora/meta";
+import { partnerlyTemplate } from "./partnerly/meta";
+import { insightixTemplate } from "./insightix/meta";
+import { uxforgeTemplate } from "./uxforge/meta";
+import { reelhausTemplate } from "./reelhaus/meta";
+import { podcastixTemplate } from "./podcastix/meta";
+import { crisisdeskTemplate } from "./crisisdesk/meta";
+import { lobbyhausTemplate } from "./lobbyhaus/meta";
+import { franchoraTemplate } from "./franchora/meta";
 import { lumenwareTemplate } from "./lumenware/meta";
 import { greenbiteTemplate } from "./greenbite/meta";
 import { sportifyaTemplate } from "./sportifya/meta";
@@ -295,6 +310,21 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   mediavaultTemplate,
   summitopsTemplate,
   eventideTemplate,
+  pitchoraTemplate,
+  socialuxTemplate,
+  influencixTemplate,
+  seoraTemplate,
+  contentraTemplate,
+  productixTemplate,
+  launchoraTemplate,
+  partnerlyTemplate,
+  insightixTemplate,
+  uxforgeTemplate,
+  reelhausTemplate,
+  podcastixTemplate,
+  crisisdeskTemplate,
+  lobbyhausTemplate,
+  franchoraTemplate,
   lumenwareTemplate,
   greenbiteTemplate,
   sportifyaTemplate,
