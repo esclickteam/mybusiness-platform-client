@@ -2,8 +2,6 @@ export const archoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
 [data-template-id="archora"], [data-template-id="archora-preview"] {
   /* wow-rtl-align */
-  text-align: right;
-
   --p: #D4FF00;
   --bg: #111111;
   --surface: #1A1A1A;
