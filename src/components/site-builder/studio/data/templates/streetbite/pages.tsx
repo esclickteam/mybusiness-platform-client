@@ -71,12 +71,12 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
 }
 
 
-function NightCardStack({ data }: { data: Record<string, any> }) {
+function StreetCardStack({ data }: { data: Record<string, any> }) {
   const cards = [1, 2, 3].map((i) => [v(data, `item${i}Title`), v(data, `item${i}Meta`), v(data, `item${i}Text`), v(data, `item${i}Image`)]);
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
       <div className="mx-auto max-w-lg">
-        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">ערימת לילה</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">{v(data, "featuredTitle")}</h2></Reveal>
         <div className="relative mt-10 space-y-4">
           {cards.map(([title, meta, text, img], i) => (
             <Reveal key={title} delayMs={i * 100} variant="up">
@@ -96,17 +96,155 @@ function NightCardStack({ data }: { data: Record<string, any> }) {
   );
 }
 
-function BouncePins({ data }: { data: Record<string, any> }) {
-  const pins = [["דיזנגוף", "עכשיו"], ["נמל ת״א", "21:00"], ["רוטשילד", "מחר"]];
+function StreetProcessSteps({ data }: { data: Record<string, any> }) {
+  const steps = [[v(data, "process1Title"), v(data, "process1Text")], [v(data, "process2Title"), v(data, "process2Text")], [v(data, "process3Title"), v(data, "process3Text")]];
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto max-w-7xl">
+        <Reveal><h2 className="tpl-display text-center text-3xl font-bold md:text-4xl">{v(data, "processTitle")}</h2></Reveal>
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
+          {steps.map(([t, x], i) => (
+            <Reveal key={t} delayMs={i * 90} variant="up">
+              <div className="border-t-2 pt-4" style={{ borderColor: "#39d353" }}>
+                <div className="text-xs font-bold tracking-[0.2em]" style={{ color: "#39d353" }}>0{i + 1}</div>
+                <h3 className="tpl-display mt-2 text-xl font-bold">{t}</h3>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#8b949e" }}>{x}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetHomeGallery({ data }: { data: Record<string, any> }) {
+  const imgs = [v(data, "galleryImage1"), v(data, "galleryImage2"), v(data, "galleryImage3"), v(data, "galleryImage4")];
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-7xl">
+        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <div className="mt-10 flex flex-wrap justify-center gap-4">
+          {imgs.map((src, i) => (
+            <Reveal key={i} delayMs={i * 70} variant="scale">
+              <img src={src} alt="" className="h-40 w-32 object-cover shadow-md" style={{ transform: `rotate(${(i - 1.5) * 3}deg)` }} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetHomeReviews({ data }: { data: Record<string, any> }) {
+  const revs = [1, 2, 3].map((i) => [v(data, `review${i}Text`), v(data, `review${i}Name`), v(data, `review${i}Role`)]);
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto max-w-7xl">
+        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {revs.map(([text, name, role], i) => (
+            <Reveal key={name} delayMs={i * 80} variant="up">
+              <blockquote className="border p-5" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+                <p className="text-sm leading-7" style={{ color: "#8b949e" }}>״{text}״</p>
+                <footer className="mt-4 text-sm font-bold">{name} <span className="font-normal" style={{ color: "#8b949e" }}>· {role}</span></footer>
+              </blockquote>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetHomeStats({ data }: { data: Record<string, any> }) {
+  const stats = [[v(data, "stat1"), v(data, "stat1Label")], [v(data, "stat2"), v(data, "stat2Label")], [v(data, "stat3"), v(data, "stat3Label")]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
-      <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8">
-        {pins.map(([place, when], i) => (
-          <Reveal key={place} delayMs={i * 80} variant="up">
-            <div className="text-center">
-              <div className="tpl-pin mx-auto h-4 w-4 rounded-full" style={{ background: "#39d353", animationDelay: `${i * 0.2}s` }} />
-              <p className="mt-2 text-sm font-black">{place}</p>
-              <p className="text-xs" style={{ color: "#8b949e" }}>{when}</p>
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
+        <div className="grid grid-cols-3 gap-4 text-center">
+          {stats.map(([n, l], i) => (
+            <Reveal key={l} delayMs={i * 70} variant="scale">
+              <div className=" border px-4 py-3" style={{ borderColor: "#39d353", animationDelay: `${i * 0.3}s` }}>
+                <div className="tpl-display text-3xl font-bold" style={{ color: "#39d353" }}>{n}</div>
+                <p className="mt-1 text-xs" style={{ color: "#8b949e" }}>{l}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+        <p className="text-sm" style={{ color: "#8b949e" }}>{v(data, "hours")}</p>
+      </div>
+    </section>
+  );
+}
+
+function StreetHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <Reveal>
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 border p-8 md:flex-row md:items-center" style={{ borderColor: "#39d353", background: "#161b22" }}>
+          <div>
+            <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
+            <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#8b949e" }}>{v(data, "ctaBandText")}</p>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button type="button" onClick={() => goTo("contact")} className="px-6 py-3 text-sm font-bold" style={{ background: "#39d353", color: "#39d353Text" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={() => goTo("about")} className="border px-6 py-3 text-sm font-semibold" style={{ borderColor: "rgba(230,237,243,0.12)" }}>{v(data, "navAbout")}</button>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+
+function StreetSpecialtyBanner({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="relative overflow-hidden border-b px-5 py-20 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <img src={v(data, "item4Image")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #0d1117, transparent)" }} />
+      <div className="relative z-10 mx-auto max-w-7xl">
+        <p className="text-xs font-semibold tracking-[0.28em]" style={{ color: "#39d353" }}>{v(data, "brandName")}</p>
+        <h1 className="tpl-display mt-4 text-5xl font-bold md:text-7xl">{v(data, "page1Title")}</h1>
+        <p className="mt-4 max-w-xl text-lg" style={{ color: "#8b949e" }}>{v(data, "page1Subtitle")}</p>
+      </div>
+    </section>
+  );
+}
+
+function StreetFullMenuBoard({ data }: { data: Record<string, any> }) {
+  const items = [1, 2, 3, 4, 5, 6].map((i) => [v(data, `item${i}Title`), v(data, `item${i}Meta`), v(data, `item${i}Text`), v(data, `item${i}Image`)]);
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-4xl space-y-6">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "menuListTitle")}</h2></Reveal>
+        {items.map(([title, meta, text, img], i) => (
+          <Reveal key={title} delayMs={i * 60} variant="right">
+            <article className="grid gap-4 border-b pb-6 md:grid-cols-[100px_1fr_auto]" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+              <img src={img} alt="" className="aspect-square w-full object-cover" />
+              <div>
+                <h3 className="tpl-display text-2xl font-bold">{title}</h3>
+                <p className="mt-1 text-sm leading-7" style={{ color: "#8b949e" }}>{text}</p>
+              </div>
+              <p className="text-sm font-bold" style={{ color: "#39d353" }}>{meta}</p>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StreetCategoryGrid({ data }: { data: Record<string, any> }) {
+  const cats = [[v(data, "cat1Title"), v(data, "cat1Text")], [v(data, "cat2Title"), v(data, "cat2Text")], [v(data, "cat3Title"), v(data, "cat3Text")], [v(data, "cat4Title"), v(data, "cat4Text")]];
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
+        {cats.map(([t, x], i) => (
+          <Reveal key={t} delayMs={i * 70} variant="up">
+            <div className="border p-5" style={{ borderColor: "rgba(230,237,243,0.12)", background: i % 2 ? "#161b22" : "#0d1117" }}>
+              <h3 className="tpl-display text-xl font-bold" style={{ color: "#39d353" }}>{t}</h3>
+              <p className="mt-2 text-sm" style={{ color: "#8b949e" }}>{x}</p>
             </div>
           </Reveal>
         ))}
@@ -115,37 +253,251 @@ function BouncePins({ data }: { data: Record<string, any> }) {
   );
 }
 
-function AboutBlock({ data }: { data: Record<string, any> }) {
+function StreetPairingNotes({ data }: { data: Record<string, any> }) {
+  const pairs = [[v(data, "pair1Title"), v(data, "pair1Text")], [v(data, "pair2Title"), v(data, "pair2Text")], [v(data, "pair3Title"), v(data, "pair3Text")]];
   return (
-    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
-      <div className="mx-auto grid max-w-4xl gap-0 border-4 md:grid-cols-2" style={{ borderColor: "#e6edf3" }}>
-        <div className="border-b-4 p-6 md:border-b-0 md:border-l-4" style={{ borderColor: "#e6edf3", background: "#161b22" }}>
-          <p className="text-xs font-black uppercase" style={{ color: "#39d353" }}>Comic · 01</p>
-          <h2 className="tpl-display mt-3 text-3xl font-black">{v(data, "aboutTitle")}</h2>
-          <p className="mt-4 text-sm leading-7" style={{ color: "#8b949e" }}>{v(data, "aboutText")}</p>
-        </div>
-        <div className="relative min-h-[240px]">
-          <img src={v(data, "aboutImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-          <span className="absolute bottom-3 left-3 border-2 px-2 py-1 text-xs font-black" style={{ background: "#39d353", color: "#0d1117", borderColor: "#e6edf3" }}>POW!</span>
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-7xl">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "pairingTitle")}</h2></Reveal>
+        <div className="mt-8 grid gap-6 md:grid-cols-3">
+          {pairs.map(([t, x], i) => (
+            <Reveal key={t} delayMs={i * 80} variant="up">
+              <div className="border-r pr-4" style={{ borderColor: "#39d353" }}>
+                <h3 className="font-bold">{t}</h3>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#8b949e" }}>{x}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>
   );
 }
 
-function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
+function StreetChefPicks({ data }: { data: Record<string, any> }) {
   return (
-    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+        <div>
+          <p className="text-xs tracking-[0.24em]" style={{ color: "#39d353" }}>{v(data, "chefPickEyebrow")}</p>
+          <h2 className="tpl-display mt-3 text-3xl font-bold">{v(data, "chefPickTitle")}</h2>
+          <p className="mt-4 text-lg leading-8" style={{ color: "#8b949e" }}>{v(data, "chefPickText")}</p>
+        </div>
+        <img src={v(data, "item5Image")} alt="" className="aspect-[4/3] w-full object-cover" />
+      </div>
+    </section>
+  );
+}
+
+
+function StreetStoryBanner({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="relative min-h-[42vh] overflow-hidden">
+      <img src={v(data, "item6Image")} alt="" className="absolute inset-0 h-full w-full object-cover" />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,.55), #0d1117)" }} />
+      <div className="relative z-10 mx-auto flex min-h-[42vh] max-w-7xl items-end px-5 pb-12 lg:px-8">
+        <div>
+          <p className="text-xs tracking-[0.28em]" style={{ color: "#39d353" }}>{v(data, "brandName")}</p>
+          <h1 className="tpl-display mt-3 text-5xl font-bold md:text-6xl">{v(data, "page2Title")}</h1>
+          <p className="mt-3 max-w-xl text-lg" style={{ color: "#8b949e" }}>{v(data, "page2Subtitle")}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetTechniqueLadder({ data }: { data: Record<string, any> }) {
+  const steps = [[v(data, "tech1Title"), v(data, "tech1Text")], [v(data, "tech2Title"), v(data, "tech2Text")], [v(data, "tech3Title"), v(data, "tech3Text")], [v(data, "tech4Title"), v(data, "tech4Text")]];
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-3xl space-y-8">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "techTitle")}</h2></Reveal>
+        {steps.map(([t, x], i) => (
+          <Reveal key={t} delayMs={i * 80} variant="right">
+            <div className="flex gap-4">
+              <div className="grid h-10 w-10 shrink-0 place-items-center text-sm font-bold" style={{ background: "#39d353", color: "#39d353Text" }}>{i + 1}</div>
+              <div>
+                <h3 className="text-xl font-bold">{t}</h3>
+                <p className="mt-1 text-sm leading-7" style={{ color: "#8b949e" }}>{x}</p>
+              </div>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function StreetMaterialCards({ data }: { data: Record<string, any> }) {
+  const woods = [[v(data, "mat1Title"), v(data, "mat1Text")], [v(data, "mat2Title"), v(data, "mat2Text")], [v(data, "mat3Title"), v(data, "mat3Text")]];
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto max-w-7xl">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "matTitle")}</h2></Reveal>
+        <div className="mt-8 grid gap-4 md:grid-cols-3">
+          {woods.map(([t, x], i) => (
+            <Reveal key={t} delayMs={i * 70} variant="up">
+              <div className="border p-6 text-center" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+                <h3 className="tpl-display text-2xl font-bold" style={{ color: "#39d353" }}>{t}</h3>
+                <p className="mt-3 text-sm" style={{ color: "#8b949e" }}>{x}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetEventsBand({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2 lg:items-center">
+        <img src={v(data, "galleryImage3")} alt="" className="aspect-[16/10] w-full object-cover" />
+        <div>
+          <h2 className="tpl-display text-3xl font-bold">{v(data, "eventsTitle")}</h2>
+          <p className="mt-4 text-lg leading-8" style={{ color: "#8b949e" }}>{v(data, "eventsText")}</p>
+          <p className="mt-4 text-sm font-semibold" style={{ color: "#39d353" }}>{v(data, "eventsMeta")}</p>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+
+function StreetAboutBanner({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-b px-5 py-20 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-7xl">
+        <p className="text-xs tracking-[0.28em]" style={{ color: "#39d353" }}>{v(data, "aboutEyebrow")}</p>
+        <h1 className="tpl-display mt-4 max-w-3xl text-5xl font-bold md:text-6xl">{v(data, "aboutPageTitle")}</h1>
+        <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#8b949e" }}>{v(data, "aboutPageLead")}</p>
+      </div>
+    </section>
+  );
+}
+
+function StreetAboutTimeline({ data }: { data: Record<string, any> }) {
+  const pts = [[v(data, "timeline1Year"), v(data, "timeline1Text")], [v(data, "timeline2Year"), v(data, "timeline2Text")], [v(data, "timeline3Year"), v(data, "timeline3Text")]];
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto max-w-3xl">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "timelineTitle")}</h2></Reveal>
+        <div className="relative mt-10">
+          <div className="absolute right-2 top-0 bottom-0 w-px" style={{ background: "rgba(230,237,243,0.12)" }} />
+          {pts.map(([y, t], i) => (
+            <Reveal key={y} delayMs={i * 90} variant="right">
+              <div className="relative pb-10 pr-10">
+                <div className="absolute right-0.5 top-1 h-3 w-3 rounded-full" style={{ background: "#39d353" }} />
+                <p className="text-xs font-bold" style={{ color: "#39d353" }}>{y}</p>
+                <p className="mt-2 text-sm leading-7" style={{ color: "#8b949e" }}>{t}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetChefPortrait({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-t px-5 py-20 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto flex max-w-xl flex-col items-center text-center">
+        <div className="h-72 w-56 overflow-hidden border" style={{ borderColor: "#39d353" }}><img src={v(data, "chefImage")} alt="" className="tpl-ken h-full w-full object-cover" /></div>
+        <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#39d353" }}>{v(data, "chefLabel")}</p>
+        <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+        <p className="mt-5 text-lg leading-8" style={{ color: "#8b949e" }}>{v(data, "chefBio")}</p>
+        <blockquote className="mt-6 text-xl font-semibold">״{v(data, "chefQuote")}״</blockquote>
+      </div>
+    </section>
+  );
+}
+
+function StreetValuesRow({ data }: { data: Record<string, any> }) {
+  const vals = [[v(data, "value1Title"), v(data, "value1Text")], [v(data, "value2Title"), v(data, "value2Text")], [v(data, "value3Title"), v(data, "value3Text")]];
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
+        {vals.map(([t, x], i) => (
+          <Reveal key={t} delayMs={i * 80} variant="up">
+            <div>
+              <h3 className="tpl-display text-2xl font-bold" style={{ color: "#39d353" }}>{t}</h3>
+              <p className="mt-3 text-sm leading-7" style={{ color: "#8b949e" }}>{x}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+function StreetContactBanner({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-b px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto max-w-7xl">
+        <p className="text-xs tracking-[0.28em]" style={{ color: "#39d353" }}>{v(data, "contactEyebrow")}</p>
+        <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{v(data, "contactPageTitle")}</h1>
+        <p className="mt-4 max-w-xl text-lg" style={{ color: "#8b949e" }}>{v(data, "contactPageText")}</p>
+      </div>
+    </section>
+  );
+}
+
+function StreetReserveForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
       <div className="mx-auto max-w-md">
-        <div className="rounded-2xl border p-4" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#0d1117" }}>
-          <p className="mb-4 text-center text-xs font-bold" style={{ color: "#8b949e" }}>SMS · Streetbite</p>
-          <div className="mb-3 mr-8 rounded-2xl rounded-tr-sm px-4 py-2 text-sm" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "contactTitle")}</div>
-          <div className="mb-4 ml-8 rounded-2xl rounded-tl-sm border px-4 py-2 text-sm" style={{ borderColor: "rgba(230,237,243,0.12)" }}>{v(data, "contactText")}</div>
-          <form className="grid gap-2" onSubmit={(e) => e.preventDefault()}>
-            <input className="w-full rounded-full border bg-transparent px-4 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="הקלידו הודעה..." />
-            <button type="button" onClick={onCta} className="rounded-full px-4 py-3 text-sm font-black" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "cta")}</button>
+        <div className="border p-6" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#0d1117" }}>
+          <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
+          <p className="mt-2 text-sm" style={{ color: "#8b949e" }}>{v(data, "contactText")}</p>
+          <form className="mt-6 grid gap-3" onSubmit={(e) => e.preventDefault()}>
+            <input className="w-full border bg-transparent px-3 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="שם" />
+            <input className="w-full border bg-transparent px-3 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="טלפון" />
+            <input className="w-full border bg-transparent px-3 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="תאריך / הערה" />
+            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#39d353", color: "#39d353Text" }}>{v(data, "cta")}</button>
           </form>
         </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetHoursMap({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
+        <div className="border p-6" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+          <h3 className="tpl-display text-2xl font-bold">{v(data, "hoursTitle")}</h3>
+          <p className="mt-4 text-sm leading-7" style={{ color: "#8b949e" }}>{v(data, "hours")}</p>
+          <p className="mt-4 text-sm">{v(data, "address")}</p>
+        </div>
+        <div className="relative min-h-[220px] overflow-hidden border" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+          <img src={v(data, "galleryImage1")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="border px-4 py-2 text-xs font-bold tracking-wider" style={{ borderColor: "#39d353", background: "#0d1117", color: "#39d353" }}>{v(data, "mapLabel")}</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function StreetFaqBlock({ data }: { data: Record<string, any> }) {
+  const faqs = [[v(data, "faq1Q"), v(data, "faq1A")], [v(data, "faq2Q"), v(data, "faq2A")], [v(data, "faq3Q"), v(data, "faq3A")]];
+  return (
+    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
+      <div className="mx-auto max-w-3xl space-y-4">
+        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "faqTitle")}</h2></Reveal>
+        {faqs.map(([q, a], i) => (
+          <Reveal key={q} delayMs={i * 70} variant="up">
+            <details className="border p-4" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
+              <summary className="cursor-pointer font-bold">{q}</summary>
+              <p className="mt-3 text-sm leading-7" style={{ color: "#8b949e" }}>{a}</p>
+            </details>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
@@ -166,26 +518,61 @@ function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id:
   return (
     <>
       <Hero data={data} goTo={goTo} onCta={onCta} />
-      <NightCardStack data={data} />
-      <BouncePins data={data} />
-      <AboutBlock data={data} />
-      <ContactBlock data={data} onCta={onCta} />
+      <StreetCardStack data={data} />
+      <StreetProcessSteps data={data} />
+      <StreetHomeGallery data={data} />
+      <StreetHomeReviews data={data} />
+      <StreetHomeStats data={data} />
+      <StreetHomeCtaTeaser data={data} goTo={goTo} />
       <Footer data={data} />
     </>
   );
 }
 
-function InnerPage({ data, title, children, onCta }: { data: Record<string, any>; title: string; children: React.ReactNode; onCta: () => void }) {
+function TrucksPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
   return (
     <>
-      <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#39d353" }}>{v(data, "brandName")}</p>
-          <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{title}</h1>
-        </div>
-      </section>
-      {children}
-      <ContactBlock data={data} onCta={onCta} />
+      <StreetSpecialtyBanner data={data} />
+      <StreetFullMenuBoard data={data} />
+      <StreetChefPicks data={data} />
+      <StreetCategoryGrid data={data} />
+      <StreetPairingNotes data={data} />
+      <Footer data={data} />
+    </>
+  );
+}
+
+function SpotsPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+  return (
+    <>
+      <StreetStoryBanner data={data} />
+      <StreetEventsBand data={data} />
+      <StreetTechniqueLadder data={data} />
+      <StreetMaterialCards data={data} />
+      <Footer data={data} />
+    </>
+  );
+}
+
+function AboutPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+  return (
+    <>
+      <StreetAboutBanner data={data} />
+      <StreetAboutTimeline data={data} />
+      <StreetChefPortrait data={data} />
+      <StreetValuesRow data={data} />
+      <Footer data={data} />
+    </>
+  );
+}
+
+function ContactPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+  return (
+    <>
+      <StreetContactBanner data={data} />
+      <StreetReserveForm data={data} onCta={onCta} />
+      <StreetHoursMap data={data} />
+      <StreetFaqBlock data={data} />
       <Footer data={data} />
     </>
   );
@@ -202,18 +589,11 @@ export default function StreetbitePages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    trucks: <TrucksPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    spots: <SpotsPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    about: <AboutPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
-  for (const pg of streetbitePages) {
-    if (pg.id === "home") continue;
-    pageContent[pg.id] = (
-      <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
-        {pg.id.includes("contact") ? null : (<>
-        <NightCardStack data={merged} />
-        <BouncePins data={merged} />
-        </>)}
-      </InnerPage>
-    );
-  }
   return (
     <div dir="rtl" data-template-id={mode === "preview" ? "streetbite-preview" : "streetbite"} className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#0d1117", color: "#e6edf3" }}>
