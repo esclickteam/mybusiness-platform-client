@@ -657,6 +657,56 @@ import { streetbiteEditorCss } from "./streetbite/editorCss";
 import { streetbiteSchema } from "./streetbite/schema";
 import { streetbiteDefaultData } from "./streetbite/defaultData";
 
+import VelvetinePages, { velvetinePages } from "./velvetine/pages";
+import { velvetineEditorCss } from "./velvetine/editorCss";
+import { velvetineSchema } from "./velvetine/schema";
+import { velvetineDefaultData } from "./velvetine/defaultData";
+
+import NailoraPages, { nailoraPages } from "./nailora/pages";
+import { nailoraEditorCss } from "./nailora/editorCss";
+import { nailoraSchema } from "./nailora/schema";
+import { nailoraDefaultData } from "./nailora/defaultData";
+
+import BlushlabPages, { blushlabPages } from "./blushlab/pages";
+import { blushlabEditorCss } from "./blushlab/editorCss";
+import { blushlabSchema } from "./blushlab/schema";
+import { blushlabDefaultData } from "./blushlab/defaultData";
+
+import SilkbarPages, { silkbarPages } from "./silkbar/pages";
+import { silkbarEditorCss } from "./silkbar/editorCss";
+import { silkbarSchema } from "./silkbar/schema";
+import { silkbarDefaultData } from "./silkbar/defaultData";
+
+import LashoraPages, { lashoraPages } from "./lashora/pages";
+import { lashoraEditorCss } from "./lashora/editorCss";
+import { lashoraSchema } from "./lashora/schema";
+import { lashoraDefaultData } from "./lashora/defaultData";
+
+import DermaraPages, { dermaraPages } from "./dermara/pages";
+import { dermaraEditorCss } from "./dermara/editorCss";
+import { dermaraSchema } from "./dermara/schema";
+import { dermaraDefaultData } from "./dermara/defaultData";
+
+import WaxellePages, { waxellePages } from "./waxelle/pages";
+import { waxelleEditorCss } from "./waxelle/editorCss";
+import { waxelleSchema } from "./waxelle/schema";
+import { waxelleDefaultData } from "./waxelle/defaultData";
+
+import GlowhausPages, { glowhausPages } from "./glowhaus/pages";
+import { glowhausEditorCss } from "./glowhaus/editorCss";
+import { glowhausSchema } from "./glowhaus/schema";
+import { glowhausDefaultData } from "./glowhaus/defaultData";
+
+import PetaluxePages, { petaluxePages } from "./petaluxe/pages";
+import { petaluxeEditorCss } from "./petaluxe/editorCss";
+import { petaluxeSchema } from "./petaluxe/schema";
+import { petaluxeDefaultData } from "./petaluxe/defaultData";
+
+import FormellaPages, { formellaPages } from "./formella/pages";
+import { formellaEditorCss } from "./formella/editorCss";
+import { formellaSchema } from "./formella/schema";
+import { formellaDefaultData } from "./formella/defaultData";
+
 import BrandforgePages, { brandforgePages } from "./brandforge/pages";
 import { brandforgeEditorCss } from "./brandforge/editorCss";
 import { brandforgeSchema } from "./brandforge/schema";
@@ -2260,6 +2310,116 @@ export const studioTemplateRendererRegistry: Record<
     schema: streetbiteSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: streetbiteDefaultData as unknown as Record<string, any>,
     editorCss: streetbiteEditorCss,
+  }),
+
+  velvetine: createRenderer({
+    key: "velvetine",
+    name: "Velvetine",
+    Component: VelvetinePages,
+    pages: velvetinePages,
+    editorMode: "visual-react",
+    schema: velvetineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: velvetineDefaultData as unknown as Record<string, any>,
+    editorCss: velvetineEditorCss,
+  }),
+
+  nailora: createRenderer({
+    key: "nailora",
+    name: "Nailora",
+    Component: NailoraPages,
+    pages: nailoraPages,
+    editorMode: "visual-react",
+    schema: nailoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nailoraDefaultData as unknown as Record<string, any>,
+    editorCss: nailoraEditorCss,
+  }),
+
+  blushlab: createRenderer({
+    key: "blushlab",
+    name: "Blushlab",
+    Component: BlushlabPages,
+    pages: blushlabPages,
+    editorMode: "visual-react",
+    schema: blushlabSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: blushlabDefaultData as unknown as Record<string, any>,
+    editorCss: blushlabEditorCss,
+  }),
+
+  silkbar: createRenderer({
+    key: "silkbar",
+    name: "Silkbar",
+    Component: SilkbarPages,
+    pages: silkbarPages,
+    editorMode: "visual-react",
+    schema: silkbarSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: silkbarDefaultData as unknown as Record<string, any>,
+    editorCss: silkbarEditorCss,
+  }),
+
+  lashora: createRenderer({
+    key: "lashora",
+    name: "Lashora",
+    Component: LashoraPages,
+    pages: lashoraPages,
+    editorMode: "visual-react",
+    schema: lashoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lashoraDefaultData as unknown as Record<string, any>,
+    editorCss: lashoraEditorCss,
+  }),
+
+  dermara: createRenderer({
+    key: "dermara",
+    name: "Dermara",
+    Component: DermaraPages,
+    pages: dermaraPages,
+    editorMode: "visual-react",
+    schema: dermaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dermaraDefaultData as unknown as Record<string, any>,
+    editorCss: dermaraEditorCss,
+  }),
+
+  waxelle: createRenderer({
+    key: "waxelle",
+    name: "Waxelle",
+    Component: WaxellePages,
+    pages: waxellePages,
+    editorMode: "visual-react",
+    schema: waxelleSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: waxelleDefaultData as unknown as Record<string, any>,
+    editorCss: waxelleEditorCss,
+  }),
+
+  glowhaus: createRenderer({
+    key: "glowhaus",
+    name: "Glowhaus",
+    Component: GlowhausPages,
+    pages: glowhausPages,
+    editorMode: "visual-react",
+    schema: glowhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: glowhausDefaultData as unknown as Record<string, any>,
+    editorCss: glowhausEditorCss,
+  }),
+
+  petaluxe: createRenderer({
+    key: "petaluxe",
+    name: "Petaluxe",
+    Component: PetaluxePages,
+    pages: petaluxePages,
+    editorMode: "visual-react",
+    schema: petaluxeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: petaluxeDefaultData as unknown as Record<string, any>,
+    editorCss: petaluxeEditorCss,
+  }),
+
+  formella: createRenderer({
+    key: "formella",
+    name: "Formella",
+    Component: FormellaPages,
+    pages: formellaPages,
+    editorMode: "visual-react",
+    schema: formellaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: formellaDefaultData as unknown as Record<string, any>,
+    editorCss: formellaEditorCss,
   }),
 };
 
