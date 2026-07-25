@@ -196,8 +196,8 @@ export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
 
 const STORAGE_PREFIX = "bizuply-a11y:v2:";
 const HTML_ATTR = "data-bizuply-a11y";
-const STYLE_ID = "bizuply-accessibility-runtime-css-v2";
-const DESC_STYLE_ID = "bizuply-accessibility-desc-css-v2";
+const STYLE_ID = "bizuply-accessibility-runtime-css-v3";
+const DESC_STYLE_ID = "bizuply-accessibility-desc-css-v3";
 
 function asLevel(value: unknown, max = 3): number {
   const n = Number(value);
@@ -316,6 +316,13 @@ export function clearVisitorAccessibilityState(siteKey: string) {
 
 function ensureRuntimeStyles() {
   if (typeof document === "undefined") return;
+
+  // Drop older runtime sheets that applied filter on <html> (broke the menu).
+  [
+    "bizuply-accessibility-runtime-css",
+    "bizuply-accessibility-runtime-css-v2",
+  ].forEach((id) => document.getElementById(id)?.remove());
+
   if (document.getElementById(STYLE_ID)) return;
 
   const style = document.createElement("style");
@@ -328,53 +335,53 @@ html[${HTML_ATTR}~="large-text"] body {
   font-size: inherit !important;
 }
 
-/* Contrast level 1: +contrast */
-html[${HTML_ATTR}~="contrast-1"] {
+/*
+  IMPORTANT: never put filter/transform on <html>.
+  That breaks position:fixed for the accessibility menu (panel jumps and closes).
+  Filters apply to <body> only; the widget is portaled outside <body>.
+*/
+html[${HTML_ATTR}~="contrast-1"] body {
   filter: contrast(1.4) !important;
 }
 
-/* Contrast level 2: dark contrast (like UserWay) */
-html[${HTML_ATTR}~="contrast-2"] {
+html[${HTML_ATTR}~="contrast-2"] body {
   background: #000 !important;
   filter: invert(0.92) hue-rotate(180deg) !important;
 }
-html[${HTML_ATTR}~="contrast-2"] img,
-html[${HTML_ATTR}~="contrast-2"] video,
-html[${HTML_ATTR}~="contrast-2"] picture,
-html[${HTML_ATTR}~="contrast-2"] [data-bizuply-accessibility-widget] {
+html[${HTML_ATTR}~="contrast-2"] body img,
+html[${HTML_ATTR}~="contrast-2"] body video,
+html[${HTML_ATTR}~="contrast-2"] body picture {
   filter: invert(0.92) hue-rotate(180deg) !important;
 }
 
-/* Contrast level 3: full invert colors */
-html[${HTML_ATTR}~="contrast-3"] {
+html[${HTML_ATTR}~="contrast-3"] body {
   filter: invert(1) hue-rotate(180deg) !important;
 }
-html[${HTML_ATTR}~="contrast-3"] img,
-html[${HTML_ATTR}~="contrast-3"] video,
-html[${HTML_ATTR}~="contrast-3"] picture,
-html[${HTML_ATTR}~="contrast-3"] [data-bizuply-accessibility-widget] {
+html[${HTML_ATTR}~="contrast-3"] body img,
+html[${HTML_ATTR}~="contrast-3"] body video,
+html[${HTML_ATTR}~="contrast-3"] body picture {
   filter: invert(1) hue-rotate(180deg) !important;
 }
 
-html[${HTML_ATTR}~="sat-1"] {
+html[${HTML_ATTR}~="sat-1"] body {
   filter: saturate(1.7) !important;
 }
-html[${HTML_ATTR}~="sat-2"] {
+html[${HTML_ATTR}~="sat-2"] body {
   filter: saturate(0.35) !important;
 }
-html[${HTML_ATTR}~="sat-3"] {
+html[${HTML_ATTR}~="sat-3"] body {
   filter: grayscale(1) !important;
 }
 
-html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-1"] { filter: contrast(1.4) saturate(1.7) !important; }
-html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-2"] { filter: contrast(1.4) saturate(0.35) !important; }
-html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-3"] { filter: contrast(1.4) grayscale(1) !important; }
-html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-1"] { filter: invert(0.92) hue-rotate(180deg) saturate(1.7) !important; }
-html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-2"] { filter: invert(0.92) hue-rotate(180deg) saturate(0.35) !important; }
-html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-3"] { filter: invert(0.92) hue-rotate(180deg) grayscale(1) !important; }
-html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-1"] { filter: invert(1) hue-rotate(180deg) saturate(1.7) !important; }
-html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-2"] { filter: invert(1) hue-rotate(180deg) saturate(0.35) !important; }
-html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-3"] { filter: invert(1) hue-rotate(180deg) grayscale(1) !important; }
+html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-1"] body { filter: contrast(1.4) saturate(1.7) !important; }
+html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-2"] body { filter: contrast(1.4) saturate(0.35) !important; }
+html[${HTML_ATTR}~="contrast-1"][${HTML_ATTR}~="sat-3"] body { filter: contrast(1.4) grayscale(1) !important; }
+html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-1"] body { filter: invert(0.92) hue-rotate(180deg) saturate(1.7) !important; }
+html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-2"] body { filter: invert(0.92) hue-rotate(180deg) saturate(0.35) !important; }
+html[${HTML_ATTR}~="contrast-2"][${HTML_ATTR}~="sat-3"] body { filter: invert(0.92) hue-rotate(180deg) grayscale(1) !important; }
+html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-1"] body { filter: invert(1) hue-rotate(180deg) saturate(1.7) !important; }
+html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-2"] body { filter: invert(1) hue-rotate(180deg) saturate(0.35) !important; }
+html[${HTML_ATTR}~="contrast-3"][${HTML_ATTR}~="sat-3"] body { filter: invert(1) hue-rotate(180deg) grayscale(1) !important; }
 
 html[${HTML_ATTR}~="highlight-links"] a:not([data-bizuply-accessibility-widget] a) {
   outline: 3px solid #2563eb !important;

@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Accessibility,
   ALargeSmall,
@@ -208,7 +209,7 @@ export default function AccessibilityWidget({
     resetAccessibilityOnDocument();
   }
 
-  return (
+  const ui = (
     <div
       className="bizuply-a11y-root"
       style={{ ["--biz-a11y-primary" as string]: accent }}
@@ -231,6 +232,11 @@ export default function AccessibilityWidget({
         <div
           className="bizuply-a11y-overlay"
           role="presentation"
+          onMouseDown={(e) => {
+            // Prevent backdrop close when interacting with contrast filters
+            // that temporarily reshuffle hit-testing.
+            e.stopPropagation();
+          }}
           onClick={(e) => {
             if (e.target === e.currentTarget) setOpen(false);
           }}
@@ -294,7 +300,12 @@ export default function AccessibilityWidget({
                       className={`bizuply-a11y-tile${active ? " is-active" : ""}`}
                       aria-pressed={active}
                       title={feature.description}
-                      onClick={() => activateFeature(feature.key)}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        activateFeature(feature.key);
+                      }}
                     >
                       <span className="bizuply-a11y-tile-icon" aria-hidden="true">
                         <Icon size={28} strokeWidth={2} />
@@ -349,4 +360,9 @@ export default function AccessibilityWidget({
       ) : null}
     </div>
   );
+
+  // Portal outside <body> so body filters (contrast/saturation) cannot break
+  // position:fixed and make the menu jump/close on the 2nd contrast click.
+  if (typeof document === "undefined") return ui;
+  return createPortal(ui, document.documentElement);
 }
