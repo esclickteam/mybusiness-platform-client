@@ -85,4 +85,23 @@ export const homecraftEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="homecraft"] .store-product-card,
+[data-template-id="homecraft-preview"] .store-product-card {
+  animation: homecraft-page-turn 8s ease-in-out infinite;
+  transform-origin: 100% 50%;
+}
+[data-template-id="homecraft"] .store-product-card:nth-child(3n),
+[data-template-id="homecraft-preview"] .store-product-card:nth-child(3n) {
+  animation-delay: 1.2s;
+}
+@keyframes homecraft-page-turn {
+  0%, 100% { transform: perspective(1200px) rotateY(0deg); }
+  50% { transform: perspective(1200px) rotateY(-2.5deg) translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="homecraft"] .store-product-card,
+  [data-template-id="homecraft-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

@@ -85,4 +85,22 @@ export const jewelisEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="jewelis"] .store-product-card,
+[data-template-id="jewelis-preview"] .store-product-card {
+  animation: jewelis-gallery-glint 8.5s ease-in-out infinite;
+}
+[data-template-id="jewelis"] .store-product-card:nth-child(2n),
+[data-template-id="jewelis-preview"] .store-product-card:nth-child(2n) {
+  animation-delay: 1.1s;
+}
+@keyframes jewelis-gallery-glint {
+  0%, 100% { border-color: var(--line); filter: brightness(1); }
+  50% { border-color: rgba(231,200,115,0.55); filter: brightness(1.08); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="jewelis"] .store-product-card,
+  [data-template-id="jewelis-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

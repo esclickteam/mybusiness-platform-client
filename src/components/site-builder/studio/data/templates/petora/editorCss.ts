@@ -85,4 +85,39 @@ export const petoraEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="petora"] .store-diagonal-band,
+[data-template-id="petora-preview"] .store-diagonal-band {
+  transform: skewY(-2deg);
+}
+[data-template-id="petora"] .store-diagonal-band > *,
+[data-template-id="petora-preview"] .store-diagonal-band > * {
+  transform: skewY(2deg);
+}
+[data-template-id="petora"] .store-paw-pattern,
+[data-template-id="petora-preview"] .store-paw-pattern {
+  background-image: radial-gradient(circle at 20px 20px, var(--p) 0 6px, transparent 7px), radial-gradient(circle at 44px 34px, var(--accent) 0 5px, transparent 6px);
+  background-size: 96px 96px;
+  animation: petora-paw-parade 16s linear infinite;
+}
+[data-template-id="petora"] .store-wiggle,
+[data-template-id="petora-preview"] .store-wiggle {
+  animation: petora-tail-wag 4.5s ease-in-out infinite;
+}
+@keyframes petora-paw-parade {
+  from { background-position: 0 0; }
+  to { background-position: 96px 96px; }
+}
+@keyframes petora-tail-wag {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-1.2deg); }
+  75% { transform: rotate(1.2deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="petora"] .store-paw-pattern,
+  [data-template-id="petora"] .store-wiggle,
+  [data-template-id="petora-preview"] .store-paw-pattern,
+  [data-template-id="petora-preview"] .store-wiggle {
+    animation: none !important;
+  }
+}
 `;
