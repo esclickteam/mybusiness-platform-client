@@ -1086,10 +1086,12 @@ export default function App() {
 
       {!user && !isEarlyAccessLanding && <PreLoginBot />}
 
+      {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
         !isBusinessChatRoute &&
         !location.pathname.startsWith("/admin") &&
-        !location.pathname.startsWith("/embed/") && (
+        !location.pathname.startsWith("/embed/") &&
+        !isMiniSiteHost && (
           <SupportChatWidget />
         )}
     </NotificationsProvider>
