@@ -4,6 +4,7 @@ import { craftoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { craftoraEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import SafeImg from "../shared/SafeImg";
 
 export const craftoraPages = [
   {
@@ -110,9 +111,9 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
   return (
     <section data-template-section-type="hero" className="relative min-h-[100svh] overflow-hidden bg-[var(--bg)]">
       <div className="absolute inset-0 grid grid-cols-3 gap-2 p-2 opacity-80">
-        <img src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover" />
-        <img src={getValue(data,"sectionImage")} alt="" className="t-ken h-full w-full object-cover" style={{animationDelay:"2s"}} />
-        <img src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover grayscale" style={{animationDelay:"4s"}} />
+        <SafeImg src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover" />
+        <SafeImg src={getValue(data,"sectionImage")} alt="" className="t-ken h-full w-full object-cover" style={{animationDelay:"2s"}} />
+        <SafeImg src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover grayscale" style={{animationDelay:"4s"}} />
       </div>
       <div className="absolute inset-0 bg-[var(--bg)]/55" />
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-5xl flex-col items-start justify-end px-5 pb-20 lg:px-8">
@@ -137,7 +138,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
               <h3 className="t-display text-3xl text-[var(--dark)]">{title}</h3>
               <p className="mt-3 text-[var(--muted)]">{text}</p>
             </div>
-            <div className="h-48 overflow-hidden bg-[var(--surface)]"><img src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" /></div>
+            <div className="h-48 overflow-hidden bg-[var(--surface)]"><SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" /></div>
           </Reveal>
         ))}
       </div>
@@ -171,7 +172,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
       <div className="relative mx-auto mt-16 h-[420px] max-w-4xl">
         {[["נועה",0],["איתי",1],["מיכל",2]].map(([n,i]) => (
           <Reveal key={n} delayMs={i*120} className="t-hover absolute w-48 overflow-hidden border-4 border-white shadow-lg" style={{top: i*40+"px", right: i*120+"px", zIndex: 3-i}}>
-            <img src={getValue(data,"sectionImage")} alt="" className="h-56 w-full object-cover" />
+            <SafeImg src={getValue(data,"sectionImage")} alt="" className="h-56 w-full object-cover" />
             <p className="bg-white p-3 font-bold text-[var(--dark)]">{n}</p>
           </Reveal>
         ))}
@@ -272,7 +273,7 @@ function galleryItems(data: Record<string, any>) {
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
   return (
     <section data-template-section-type="pageHero" className="relative overflow-hidden px-5 py-28 lg:px-8 bg-[var(--bg)] text-[var(--dark)]">
-      <img src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover rotate-1" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover rotate-1" />
       <div className="absolute inset-0 bg-[var(--dark)]/70" />
       <Reveal className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--a)]">{getValue(data,"heroEyebrow")}</p>
@@ -289,7 +290,7 @@ function About({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="about" className="px-5 py-24 lg:px-8 bg-[var(--bg)] text-[var(--dark)]">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <Reveal className="relative min-h-[360px] overflow-hidden border border-[var(--p)]/25 bg-white shadow-[8px_8px_0_rgba(0,0,0,.08)]">
-          <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover rotate-1" />
+          <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover rotate-1" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
           <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold bg-[var(--p)] text-white">אטלייה</span>
         </Reveal>
@@ -353,7 +354,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-6 md:grid-cols-4">
         {galleryItems(data).map((image, i) => (
           <Reveal key={image} delayMs={i * 80} className="t-hover relative min-h-[260px] overflow-hidden border border-[var(--p)]/25 bg-white shadow-[8px_8px_0_rgba(0,0,0,.08)]">
-            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 rotate-1" />
+            <SafeImg src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 rotate-1" />
             <span className="absolute bottom-4 right-4 px-3 py-1 text-xs font-bold bg-[var(--p)] text-white">0{i + 1}</span>
           </Reveal>
         ))}

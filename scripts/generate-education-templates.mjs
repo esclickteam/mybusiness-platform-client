@@ -94,7 +94,7 @@ const TEMPLATES = [
     fonts: { display: "Sora:wght@600;700;800", body: "Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700", displayCss: '"Sora"', bodyCss: '"Nunito Sans"' },
     palette: { primary: "#0284C7", secondary: "#F0F9FF", accent: "#38BDF8", background: "#F0F9FF", surface: "#FFFFFF", text: "#0C4A6E", muted: "#64748B", dark: "#082F49" },
     heroImage: "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&w=2200&q=90",
-    img2: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1400&q=85",
+    img2: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1400&q=85",
     style: "skyBlue",
     copy: {
       heroTitle: "Polyglota\nשפה חדשה. עולם חדש.",
@@ -166,7 +166,7 @@ const TEMPLATES = [
     fonts: { display: "Outfit:wght@500;600;700;800", body: "Space+Grotesk:wght@400;500;600;700", displayCss: '"Outfit"', bodyCss: '"Space Grotesk"' },
     palette: { primary: "#C2410C", secondary: "#1C1917", accent: "#EA580C", background: "#1C1917", surface: "#292524", text: "#FAFAF9", muted: "#A8A29E", dark: "#0C0A09" },
     heroImage: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=2200&q=90",
-    img2: "https://images.unsplash.com/photo-1514320291840-75f0a71093f5?auto=format&fit=crop&w=1400&q=85",
+    img2: "https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1400&q=85",
     style: "copperCharcoal",
     copy: {
       heroTitle: "Noteline\nהמוזיקה שלכם, בנפח מלא.",
@@ -345,7 +345,7 @@ const TEMPLATES = [
     description: "מאסטרקלאס יוקרתי: הירו מותג־דומיננטי, כיתות מודגשות ומאסטרים באור זרקור.",
     fonts: { display: "Cinzel:wght@500;600;700", body: "Montserrat:wght@400;500;600;700", displayCss: '"Cinzel"', bodyCss: '"Montserrat"' },
     palette: { primary: "#D4AF37", secondary: "#0A0A0A", accent: "#F5E6C8", background: "#0A0A0A", surface: "#171717", text: "#FAF7F0", muted: "#A3A3A3", dark: "#000000" },
-    heroImage: "https://images.unsplash.com/photo-1475724017902-4c2f6e8545e2?auto=format&fit=crop&w=2200&q=90",
+    heroImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=2200&q=90",
     img2: "https://images.unsplash.com/photo-1505373877841-8d25f7d46678?auto=format&fit=crop&w=1400&q=85",
     style: "champagneNoir",
     copy: {

@@ -4,6 +4,7 @@ import { notelineDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { notelineEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import SafeImg from "../shared/SafeImg";
 
 export const notelinePages = [
   {
@@ -109,7 +110,7 @@ function Header({ data, currentPage, goTo, openModal }: { data: Record<string, a
 function Hero({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
   return (
     <section data-template-section-type="hero" className="relative min-h-[100svh] overflow-hidden">
-      <img src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)] via-[var(--dark)]/60 to-transparent" />
       <svg className="absolute bottom-0 left-0 right-0 h-32 w-full text-[var(--bg)]" viewBox="0 0 1440 120" preserveAspectRatio="none"><path fill="currentColor" d="M0,64 C240,120 480,0 720,40 C960,80 1200,100 1440,40 L1440,120 L0,120 Z" className="t-wave" /></svg>
       <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-center px-5 lg:px-8">
@@ -169,7 +170,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-12 grid max-w-6xl gap-0 md:grid-cols-3">
         {[["דני","גיטרה"],["יעל","שירה"],["עומר","הפקה"]].map(([n,r],i) => (
           <Reveal key={n} delayMs={i*90} className="t-hover relative min-h-[280px] overflow-hidden">
-            <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-700 hover:scale-110" />
+            <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60 transition duration-700 hover:scale-110" />
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black p-6">
               <p className="t-display text-2xl">{n}</p>
               <p className="text-sm text-[var(--a)]">{r}</p>
@@ -281,7 +282,7 @@ function galleryItems(data: Record<string, any>) {
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
   return (
     <section data-template-section-type="pageHero" className="relative overflow-hidden px-5 py-28 lg:px-8 bg-[var(--bg)] text-white">
-      <img src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover saturate-75" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover saturate-75" />
       <div className="absolute inset-0 bg-[var(--dark)]/70" />
       <Reveal className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--a)]">{getValue(data,"heroEyebrow")}</p>
@@ -298,7 +299,7 @@ function About({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="about" className="px-5 py-24 lg:px-8 bg-[var(--bg)] text-white">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <Reveal className="relative min-h-[360px] overflow-hidden border border-[var(--a)]/30 bg-[linear-gradient(180deg,rgba(255,255,255,.04)_0_2px,transparent_2px_36px)]">
-          <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover saturate-75" />
+          <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover saturate-75" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
           <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold bg-[var(--a)] text-white">מוזיקלי</span>
         </Reveal>
@@ -362,7 +363,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-0 md:grid-cols-4">
         {galleryItems(data).map((image, i) => (
           <Reveal key={image} delayMs={i * 80} className="t-hover relative min-h-[260px] overflow-hidden border border-[var(--a)]/30 bg-[linear-gradient(180deg,rgba(255,255,255,.04)_0_2px,transparent_2px_36px)]">
-            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 saturate-75" />
+            <SafeImg src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 saturate-75" />
             <span className="absolute bottom-4 right-4 px-3 py-1 text-xs font-bold bg-[var(--a)] text-white">0{i + 1}</span>
           </Reveal>
         ))}

@@ -586,7 +586,7 @@ const layoutStyles = {
 const galleryImages = [
   "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=85",
   "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=85",
-  "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=85",
+  "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=85",
   "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=85",
 ];
 
@@ -745,7 +745,7 @@ function sectionSuite(c) {
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
   return (
     <section data-template-section-type="pageHero" className="relative overflow-hidden px-5 py-28 lg:px-8 ${s.section}">
-      <img src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover ${s.img}" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover ${s.img}" />
       <div className="absolute inset-0 bg-[var(--dark)]/70" />
       <Reveal className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--a)]">{getValue(data,"heroEyebrow")}</p>
@@ -762,7 +762,7 @@ function About({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="about" className="px-5 py-24 lg:px-8 ${s.section}">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <Reveal className="relative min-h-[360px] overflow-hidden ${s.panel}">
-          <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover ${s.img}" />
+          <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover ${s.img}" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
           <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold ${s.pill}">${c.tone}</span>
         </Reveal>
@@ -826,7 +826,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="${galleryClass}">
         {galleryItems(data).map((image, i) => (
           <Reveal key={image} delayMs={i * 80} className="t-hover relative min-h-[260px] overflow-hidden ${s.panel}">
-            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 ${s.img}" />
+            <SafeImg src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 ${s.img}" />
             <span className="absolute bottom-4 right-4 px-3 py-1 text-xs font-bold ${s.pill}">0{i + 1}</span>
           </Reveal>
         ))}

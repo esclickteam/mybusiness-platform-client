@@ -86,7 +86,7 @@ export const craftoraDefaultData = {
   galleryTitle: "רגעים מתוך הלמידה",
   galleryOneImage: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=85",
   galleryTwoImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=85",
-  galleryThreeImage: "https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&w=1200&q=85",
+  galleryThreeImage: "https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=1200&q=85",
   outcomesEyebrow: "תוצאות",
   outcomesTitle: "מה נשאר אחרי הסדנה",
