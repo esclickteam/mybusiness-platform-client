@@ -1792,6 +1792,11 @@
       "dashboardStuck": "מה לעשות אם הדשבורד לא מתעדכן?"
     },
     "talkToHuman": "פנו לנציג אנושי עכשיו",
+    "supportHistoryTitle": "היסטוריית שיחות",
+    "supportBackAria": "חזרה",
+    "supportHistoryAria": "היסטוריה",
+    "supportEmptyHistory": "אין שיחות קודמות",
+    "supportOpenHistory": "צפייה בהיסטוריה",
     "humanTitle": "שירות לקוחות",
     "humanFormHint": "השאירו פרטים ונתחבר לנציג בזמן אמת",
     "humanName": "שם מלא",

@@ -1792,6 +1792,11 @@
       "dashboardStuck": "What if the dashboard isn't updating?"
     },
     "talkToHuman": "Talk to a human agent now",
+    "supportHistoryTitle": "Chat history",
+    "supportBackAria": "Back",
+    "supportHistoryAria": "History",
+    "supportEmptyHistory": "No previous chats",
+    "supportOpenHistory": "View history",
     "humanTitle": "Customer Support",
     "humanFormHint": "Leave your details and we'll connect you live",
     "humanName": "Full name",

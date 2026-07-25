@@ -159,15 +159,17 @@ export default function ChatBot({
   const lastNotifiedIdRef = useRef(null);
   const typingTimerRef = useRef(null);
 
-  const historyTitle = t("chatbot.historyTitle", {
+  const historyTitle = t("chatbot.supportHistoryTitle", {
     defaultValue: "היסטוריית שיחות",
   });
-  const backAria = t("chatbot.backAria", { defaultValue: "חזרה" });
-  const historyAria = t("chatbot.historyAria", { defaultValue: "היסטוריה" });
-  const emptyHistory = t("chatbot.emptyHistory", {
+  const backAria = t("chatbot.supportBackAria", { defaultValue: "חזרה" });
+  const historyAria = t("chatbot.supportHistoryAria", {
+    defaultValue: "היסטוריה",
+  });
+  const emptyHistory = t("chatbot.supportEmptyHistory", {
     defaultValue: "אין שיחות קודמות",
   });
-  const openHistoryLabel = t("chatbot.openHistory", {
+  const openHistoryLabel = t("chatbot.supportOpenHistory", {
     defaultValue: "צפייה בהיסטוריה",
   });
 
