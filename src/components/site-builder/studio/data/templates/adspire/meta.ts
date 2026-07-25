@@ -9,14 +9,14 @@ import { adspireSchema } from "./schema";
 import { adspireDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#7C3AED",
-  secondary: "#050208",
-  accent: "#A78BFA",
-  background: "#0B0614",
-  surface: "#160B24",
-  text: "#F5F3FF",
-  muted: "#C4B5FD",
-  dark: "#050208",
+  primary: "#A855F7",
+  secondary: "#05010A",
+  accent: "#E879F9",
+  background: "#09020F",
+  surface: "#160824",
+  text: "#FAF5FF",
+  muted: "#D8B4FE",
+  dark: "#05010A",
 };
 
 export const adspireSeed = {
@@ -24,7 +24,7 @@ export const adspireSeed = {
   key: "adspire",
   name: "Adspire",
   title: "Adspire",
-  description: "אתר מלא לסוכנות פרסום: 8 עמודים כולל אודות, שירותים, פרויקטים, צוות, תובנות, תהליך וצור קשר.",
+  description: "אתר מלא לסוכנות פרסום: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   niche: "advertising-agency",
@@ -59,7 +59,7 @@ export const adspireTemplate = {
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   badge: "חדש",
-  description: "אתר מלא לסוכנות פרסום עם 8 עמודים, ניווט פנימי ותוכן מוכן לעריכה.",
+  description: "אתר מלא לסוכנות פרסום עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.",
   thumbnail: React.createElement(AdspireThumbnail),
   preview: React.createElement(AdspirePreview),
   component: AdspirePages,

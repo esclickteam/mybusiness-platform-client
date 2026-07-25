@@ -9,14 +9,14 @@ import { closoraSchema } from "./schema";
 import { closoraDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#C2410C",
-  secondary: "#1C1917",
-  accent: "#F97316",
-  background: "#FFF7ED",
-  surface: "#FFFFFF",
-  text: "#431407",
-  muted: "#9A3412",
-  dark: "#1C1917",
+  primary: "#EA580C",
+  secondary: "#0C0A09",
+  accent: "#FB923C",
+  background: "#1C1917",
+  surface: "#292524",
+  text: "#FFF7ED",
+  muted: "#FDBA74",
+  dark: "#0C0A09",
 };
 
 export const closoraSeed = {
@@ -24,7 +24,7 @@ export const closoraSeed = {
   key: "closora",
   name: "Closora",
   title: "Closora",
-  description: "אתר מלא לסוכנות מכירות: 8 עמודים כולל אודות, שירותים, פרויקטים, צוות, תובנות, תהליך וצור קשר.",
+  description: "אתר מלא לסוכנות מכירות: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   niche: "sales-agency",
@@ -59,7 +59,7 @@ export const closoraTemplate = {
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   badge: "חדש",
-  description: "אתר מלא לסוכנות מכירות עם 8 עמודים, ניווט פנימי ותוכן מוכן לעריכה.",
+  description: "אתר מלא לסוכנות מכירות עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.",
   thumbnail: React.createElement(ClosoraThumbnail),
   preview: React.createElement(ClosoraPreview),
   component: ClosoraPages,

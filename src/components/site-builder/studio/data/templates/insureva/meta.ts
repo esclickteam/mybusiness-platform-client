@@ -10,13 +10,13 @@ import { insurevaDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
   primary: "#1D4ED8",
-  secondary: "#020617",
-  accent: "#3B82F6",
+  secondary: "#0B1B3A",
+  accent: "#60A5FA",
   background: "#F8FAFC",
   surface: "#FFFFFF",
   text: "#0F172A",
   muted: "#64748B",
-  dark: "#020617",
+  dark: "#0B1B3A",
 };
 
 export const insurevaSeed = {
@@ -24,7 +24,7 @@ export const insurevaSeed = {
   key: "insureva",
   name: "Insureva",
   title: "Insureva",
-  description: "אתר מלא לסוכנות ביטוח: 8 עמודים כולל אודות, שירותים, פרויקטים, צוות, תובנות, תהליך וצור קשר.",
+  description: "אתר מלא לסוכנות ביטוח: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   niche: "insurance-agency",
@@ -59,7 +59,7 @@ export const insurevaTemplate = {
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   badge: "חדש",
-  description: "אתר מלא לסוכנות ביטוח עם 8 עמודים, ניווט פנימי ותוכן מוכן לעריכה.",
+  description: "אתר מלא לסוכנות ביטוח עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.",
   thumbnail: React.createElement(InsurevaThumbnail),
   preview: React.createElement(InsurevaPreview),
   component: InsurevaPages,
