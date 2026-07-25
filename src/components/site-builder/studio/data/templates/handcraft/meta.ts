@@ -14,14 +14,14 @@ import { handcraftSchema } from "./schema";
 import { handcraftDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#F97316",
-  secondary: "#1C1917",
-  accent: "#FB923C",
-  background: "#FAFAF9",
+  primary: "#C56A3A",
+  secondary: "#2B2F33",
+  accent: "#D4895A",
+  background: "#F4F2EE",
   surface: "#FFFFFF",
-  text: "#1C1917",
-  muted: "#78716C",
-  dark: "#0C0A09",
+  text: "#1C1E20",
+  muted: "#6B6F74",
+  dark: "#16181A",
 };
 
 const blocks = [
@@ -42,7 +42,7 @@ export const handcraftSeed = {
   key: "handcraft",
   name: "Handcraft",
   title: "Handcraft",
-  description: "דף נחיתה לשירותי בית: הירו עם טלפון בולט, שירותים, לפני/אחרי, מחירון, אזורי שירות, ביקורות וקריאה דחופה — כתום-א industrial.",
+  description: "דף נחיתה עברי לשירותי בית: אינסטלציה, חשמל ושיפוצים בעיצוב תעשייתי חד עם צילום מלא, גריד טיפוגרפי, מחירון, אזורי שירות וקריאה דחופה.",
   category: "landing",
   categoryLabel: "דפי נחיתה",
   niche: "homeservices",
@@ -72,7 +72,7 @@ export const handcraftTemplate = {
   category: "landing",
   categoryLabel: "דפי נחיתה",
   badge: "חדש",
-  description: "דף נחיתה לשירותי בית: הירו עם טלפון בולט, שירותים, לפני/אחרי, מחירון, אזורי שירות, ביקורות וקריאה דחופה — כתום-א industrial.",
+  description: "דף נחיתה עברי לשירותי בית: אינסטלציה, חשמל ושיפוצים בעיצוב תעשייתי חד עם צילום מלא, גריד טיפוגרפי, מחירון, אזורי שירות וקריאה דחופה.",
   thumbnail: React.createElement(HandcraftThumbnail),
   preview: React.createElement(HandcraftPreview),
   component: HandcraftPages,
