@@ -75,6 +75,7 @@ export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
             src={embedSrc}
             title={site.name || "תצוגה מקדימה של האתר"}
             activateOn="immediate"
+            enableHoverPan
           />
         </div>
       ) : null}
