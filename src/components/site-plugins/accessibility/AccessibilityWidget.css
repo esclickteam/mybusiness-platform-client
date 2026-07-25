@@ -6,18 +6,8 @@
   --biz-a11y-border: #e2e8f0;
   --biz-a11y-soft: #f5f3ff;
   font-family: "Heebo", "Assistant", "Segoe UI", Arial, sans-serif;
-  /* Portaled under <html>; must not affect document flow */
-  position: fixed;
-  inset: 0;
-  width: 0;
-  height: 0;
-  overflow: visible;
-  pointer-events: none;
-  z-index: 2147483000;
-}
-
-.bizuply-a11y-root > * {
-  pointer-events: auto;
+  /* No box — children stay viewport-fixed even when portaled under <html> */
+  display: contents;
 }
 
 .bizuply-a11y-trigger {
