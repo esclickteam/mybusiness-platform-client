@@ -53,7 +53,6 @@ async function supportFetch(path, { method = "GET", body, token } = {}) {
   const visitorId = getSupportVisitorId();
   const headers = {
     "Content-Type": "application/json",
-    // Keep both casings for proxies that normalize oddly.
     "X-Support-Visitor-Id": visitorId,
   };
 
@@ -135,6 +134,14 @@ export async function fetchSupportMessages(conversationId, guestToken) {
   });
 }
 
+export async function fetchSupportHistory(guestToken) {
+  const visitorId = getSupportVisitorId();
+  const q = encodeURIComponent(visitorId);
+  return supportFetch(`/support-chat/history?visitorId=${q}`, {
+    token: guestToken,
+  });
+}
+
 export async function sendSupportMessageRest(conversationId, text, guestToken) {
   return supportFetch(`/support-chat/${conversationId}/messages`, {
     method: "POST",
@@ -166,6 +173,8 @@ export function getSupportGuestSocket(guestToken) {
     transports: ["websocket", "polling"],
     withCredentials: true,
     reconnection: true,
+    reconnectionAttempts: Infinity,
+    reconnectionDelay: 800,
     autoConnect: true,
     auth: {
       token: guestToken,
@@ -176,11 +185,62 @@ export function getSupportGuestSocket(guestToken) {
   return guestSocket;
 }
 
+export function joinSupportConversation(guestToken, conversationId) {
+  const socket = getSupportGuestSocket(guestToken);
+  if (!socket || !conversationId) return null;
+
+  const doJoin = () => {
+    socket.emit("support:join", conversationId, (ack) => {
+      if (ack && ack.ok === false) {
+        console.warn("[support] join failed:", ack.error);
+      }
+    });
+  };
+
+  if (socket.connected) doJoin();
+  else socket.once("connect", doJoin);
+
+  return socket;
+}
+
 export function disconnectSupportGuestSocket() {
   if (guestSocket) {
     guestSocket.removeAllListeners();
     guestSocket.disconnect();
     guestSocket = null;
     guestSocketToken = null;
+  }
+}
+
+export function showBrowserNotify(title, body, { tag, onClick } = {}) {
+  try {
+    if (typeof Notification === "undefined") return;
+    if (Notification.permission !== "granted") return;
+
+    const n = new Notification(title, {
+      body,
+      tag: tag || "bizuply-support",
+      renotify: true,
+    });
+    if (typeof onClick === "function") {
+      n.onclick = () => {
+        window.focus();
+        onClick();
+        n.close();
+      };
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+export async function ensureNotifyPermission() {
+  try {
+    if (typeof Notification === "undefined") return "unsupported";
+    if (Notification.permission === "granted") return "granted";
+    if (Notification.permission === "denied") return "denied";
+    return await Notification.requestPermission();
+  } catch {
+    return "denied";
   }
 }
