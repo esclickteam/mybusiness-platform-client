@@ -14,27 +14,27 @@ import { savorySchema } from "./schema";
 import { savoryDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#C45C26",
-  secondary: "#2D1810",
-  accent: "#E8A849",
-  background: "#FAF6F0",
-  surface: "#FFF9F2",
-  text: "#2D1810",
-  muted: "#8B7355",
-  dark: "#1A0F0A",
+  primary: "#E8A317",
+  secondary: "#12100E",
+  accent: "#F0C75E",
+  background: "#12100E",
+  surface: "#1C1916",
+  text: "#F5F0E8",
+  muted: "#A39E94",
+  dark: "#0A0908",
 };
 
 const blocks = [
-  { type: "header", variant: "warm-rustic-header", title: "header" },
-  { type: "hero", variant: "warm-rustic-hero", title: "hero" },
-  { type: "menu", variant: "warm-rustic-menu", title: "menu" },
-  { type: "chef", variant: "warm-rustic-chef", title: "chef" },
-  { type: "gallery", variant: "warm-rustic-gallery", title: "gallery" },
-  { type: "reviews", variant: "warm-rustic-reviews", title: "reviews" },
-  { type: "events", variant: "warm-rustic-events", title: "events" },
-  { type: "hours", variant: "warm-rustic-hours", title: "hours" },
-  { type: "reservation", variant: "warm-rustic-reservation", title: "reservation" },
-  { type: "footer", variant: "warm-rustic-footer", title: "footer" },
+  { type: "header", variant: "dark-saffron-header", title: "header" },
+  { type: "hero", variant: "dark-saffron-hero", title: "hero" },
+  { type: "menu", variant: "dark-saffron-menu", title: "menu" },
+  { type: "chef", variant: "dark-saffron-chef", title: "chef" },
+  { type: "gallery", variant: "dark-saffron-gallery", title: "gallery" },
+  { type: "reviews", variant: "dark-saffron-reviews", title: "reviews" },
+  { type: "events", variant: "dark-saffron-events", title: "events" },
+  { type: "hours", variant: "dark-saffron-hours", title: "hours" },
+  { type: "reservation", variant: "dark-saffron-reservation", title: "reservation" },
+  { type: "footer", variant: "dark-saffron-footer-cta", title: "footer" },
 ];
 
 export const savorySeed = {
@@ -42,7 +42,7 @@ export const savorySeed = {
   key: "savory",
   name: "Savory",
   title: "Savory",
-  description: "דף נחיתה למסעדת שף: הירו עם טופס הזמנה, תפריט, סיפור השף, גaleria, ביקורות ואירועים — עיצוב חם טרקוטה.",
+  description: "דף נחיתה למסעדת שף יוקרתית: הירו צילומי, תפריט טיפוגרפי, סיפור השף, גלריה, ביקורות, אירועים והזמנות — עיצוב שחור-ענבר.",
   category: "landing",
   categoryLabel: "דפי נחיתה",
   niche: "restaurant",
@@ -72,7 +72,7 @@ export const savoryTemplate = {
   category: "landing",
   categoryLabel: "דפי נחיתה",
   badge: "Premium",
-  description: "דף נחיתה למסעדת שף: הירו עם טופס הזמנה, תפריט, סיפור השף, גaleria, ביקורות ואירועים — עיצוב חם טרקוטה.",
+  description: "דף נחיתה למסעדת שף יוקרתית: הירו צילומי, תפריט טיפוגרפי, סיפור השף, גלריה, ביקורות, אירועים והזמנות — עיצוב שחור-ענבר.",
   thumbnail: React.createElement(SavoryThumbnail),
   preview: React.createElement(SavoryPreview),
   component: SavoryPages,
