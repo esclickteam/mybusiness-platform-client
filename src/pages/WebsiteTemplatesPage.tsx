@@ -27,6 +27,9 @@ import {
 
 import DomainSearch from "../components/website/DomainSearch";
 import { createMySite } from "../api/mySitesApi";
+import TemplateCardPreview, {
+  canRenderTemplatePreview,
+} from "../components/website/TemplateCardPreview";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -1084,10 +1087,21 @@ export default function WebsiteTemplatesPage() {
                                 className="block w-full cursor-pointer text-start"
                                 aria-label={t("websiteTemplates.previewAria", { name: template.name })}
                               >
-                                <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
-                                  {template.image ||
-                                  template.thumbnailUrl ||
-                                  template.previewImageUrl ? (
+                                <div className="aspect-[3/4] overflow-hidden bg-[#f3f4f6] sm:aspect-[4/5]">
+                                  {canRenderTemplatePreview(template.key) ? (
+                                    <TemplateCardPreview
+                                      templateKey={template.key}
+                                      title={template.name}
+                                      coverImage={
+                                        template.image ||
+                                        template.thumbnailUrl ||
+                                        template.previewImageUrl
+                                      }
+                                      eager={index < 6}
+                                    />
+                                  ) : template.image ||
+                                    template.thumbnailUrl ||
+                                    template.previewImageUrl ? (
                                     <img
                                       src={
                                         template.image ||
@@ -1097,8 +1111,7 @@ export default function WebsiteTemplatesPage() {
                                       alt={template.name}
                                       loading={index < 8 ? "eager" : "lazy"}
                                       decoding="async"
-                                      fetchPriority={index < 4 ? "high" : "auto"}
-                                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                                      className="h-full w-full object-cover object-top transition duration-[3.5s] ease-out group-hover:object-bottom"
                                     />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
@@ -1114,16 +1127,16 @@ export default function WebsiteTemplatesPage() {
                                 </div>
                               )}
 
-                              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition group-hover:bg-black/35 group-hover:opacity-100">
-                                <div className="pointer-events-auto flex flex-col gap-3 sm:flex-row">
+                              <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-center bg-gradient-to-t from-black/55 via-black/15 to-transparent px-3 pb-3 pt-16 opacity-0 transition duration-300 group-hover:opacity-100">
+                                <div className="pointer-events-auto flex w-full flex-col gap-2 sm:flex-row">
                                   <button
                                     type="button"
                                     onClick={() =>
                                       handlePreviewTemplate(template.key)
                                     }
                                     className="
-                                      inline-flex h-11 items-center justify-center gap-2
-                                      rounded-lg bg-white px-5 text-sm font-black
+                                      inline-flex h-10 flex-1 items-center justify-center gap-2
+                                      rounded-lg bg-white px-4 text-xs font-black
                                       text-[#111827] shadow-lg transition
                                       hover:-translate-y-0.5 hover:bg-[#f8fafc]
                                       active:scale-[0.98]
@@ -1139,8 +1152,8 @@ export default function WebsiteTemplatesPage() {
                                       handleEditTemplate(template.key)
                                     }
                                     className="
-                                      inline-flex h-11 items-center justify-center gap-2
-                                      rounded-lg bg-[#111827] px-5 text-sm font-black
+                                      inline-flex h-10 flex-1 items-center justify-center gap-2
+                                      rounded-lg bg-[#111827] px-4 text-xs font-black
                                       text-white shadow-lg transition hover:-translate-y-0.5
                                       hover:bg-black active:scale-[0.98]
                                     "
