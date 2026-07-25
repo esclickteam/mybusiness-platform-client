@@ -658,7 +658,7 @@ def footer_jsx(t):
     </footer>''',
         "smokePlume": f'''
     <footer className="border-t px-5 py-8 lg:px-8" style={{{{ borderColor: "{p['line']}" }}}}>
-      <div className="mx-auto h-px max-w-7xl" style={{{{ background: f"linear-gradient(90deg, transparent, {p['primary']}, transparent)" }}}} />
+      <div className="mx-auto h-px max-w-7xl" style={{{{ background: "linear-gradient(90deg, transparent, {p['primary']}, transparent)" }}}} />
       <div className="mx-auto mt-6 flex max-w-7xl justify-between text-sm" style={{{{ color: "{p['muted']}" }}}}>
         <span className="tpl-display text-lg font-bold" style={{{{ color: "{p['text']}" }}}}>{{v(data, "brandName")}}</span>
         <span>{{v(data, "email")}} · {{v(data, "phone")}}</span>

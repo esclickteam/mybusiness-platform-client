@@ -187,7 +187,7 @@ function SmokeHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#a89078" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#ea580c", color: "#ea580cText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#ea580c", color: "#120c08" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -445,7 +445,7 @@ function SmokeReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(243,232,216,0.12)", color: "#f3e8d8" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(243,232,216,0.12)", color: "#f3e8d8" }} placeholder="תאריך" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(243,232,216,0.12)", color: "#f3e8d8" }} placeholder="מספר סועדים" />
-          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#ea580c", color: "#ea580cText" }}>{v(data, "cta")}</button>
+          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#ea580c", color: "#120c08" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

@@ -3,8 +3,9 @@ from __future__ import annotations
 
 def paint(s: str, p: dict) -> str:
     out = s
-    for k, val in p.items():
-        out = out.replace("@" + k, str(val))
+    # Longer keys first so @primaryText is not mangled by @primary.
+    for k in sorted(p.keys(), key=len, reverse=True):
+        out = out.replace("@" + k, str(p[k]))
     return out
 
 LAYOUT_SECTIONS = {

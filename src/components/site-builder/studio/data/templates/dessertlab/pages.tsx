@@ -176,7 +176,7 @@ function SugarHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#b89bb8" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e879f9", color: "#e879f9Text" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e879f9", color: "#1a1220" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -426,7 +426,7 @@ function SugarReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e879f9" }} onSubmit={(e) => e.preventDefault()}>
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="שם + טלפון" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="תאריך ושעה" />
-            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#e879f9", color: "#e879f9Text" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#e879f9", color: "#1a1220" }}>{v(data, "cta")}</button>
           </form>
         </div>
       </div>

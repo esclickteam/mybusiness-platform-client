@@ -184,7 +184,7 @@ function MeltHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (i
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#9a6b7c" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e85a8c", color: "#e85a8cText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e85a8c", color: "#ffffff" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -434,7 +434,7 @@ function MeltReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
           <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e85a8c" }} onSubmit={(e) => e.preventDefault()}>
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="שם + טלפון" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="תאריך ושעה" />
-            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#e85a8c", color: "#e85a8cText" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#e85a8c", color: "#ffffff" }}>{v(data, "cta")}</button>
           </form>
         </div>
       </div>

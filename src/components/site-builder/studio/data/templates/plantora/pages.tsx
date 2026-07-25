@@ -183,7 +183,7 @@ function RootHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (i
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#5c7a5c" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#65a30d", color: "#65a30dText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#65a30d", color: "#f4f7f0" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -433,7 +433,7 @@ function RootReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
           <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} onSubmit={(e) => e.preventDefault()}>
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="שם + טלפון" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="תאריך ושעה" />
-            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#65a30d", color: "#65a30dText" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#65a30d", color: "#f4f7f0" }}>{v(data, "cta")}</button>
           </form>
         </div>
       </div>
