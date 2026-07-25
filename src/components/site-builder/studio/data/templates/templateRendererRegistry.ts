@@ -478,6 +478,36 @@ import { axispointEditorCss } from "./axispoint/editorCss";
 import { axispointSchema } from "./axispoint/schema";
 import { axispointDefaultData } from "./axispoint/defaultData";
 
+import GrowthlyPages, { growthlyPages } from "./growthly/pages";
+import { growthlyEditorCss } from "./growthly/editorCss";
+import { growthlySchema } from "./growthly/schema";
+import { growthlyDefaultData } from "./growthly/defaultData";
+
+import InsurevaPages, { insurevaPages } from "./insureva/pages";
+import { insurevaEditorCss } from "./insureva/editorCss";
+import { insurevaSchema } from "./insureva/schema";
+import { insurevaDefaultData } from "./insureva/defaultData";
+
+import ClosoraPages, { closoraPages } from "./closora/pages";
+import { closoraEditorCss } from "./closora/editorCss";
+import { closoraSchema } from "./closora/schema";
+import { closoraDefaultData } from "./closora/defaultData";
+
+import AdspirePages, { adspirePages } from "./adspire/pages";
+import { adspireEditorCss } from "./adspire/editorCss";
+import { adspireSchema } from "./adspire/schema";
+import { adspireDefaultData } from "./adspire/defaultData";
+
+import TalentixPages, { talentixPages } from "./talentix/pages";
+import { talentixEditorCss } from "./talentix/editorCss";
+import { talentixSchema } from "./talentix/schema";
+import { talentixDefaultData } from "./talentix/defaultData";
+
+import NarrativaPages, { narrativaPages } from "./narrativa/pages";
+import { narrativaEditorCss } from "./narrativa/editorCss";
+import { narrativaSchema } from "./narrativa/schema";
+import { narrativaDefaultData } from "./narrativa/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -1631,6 +1661,67 @@ export const studioTemplateRendererRegistry: Record<
     schema: axispointSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: axispointDefaultData as unknown as Record<string, any>,
     editorCss: axispointEditorCss,
+  }),
+
+  growthly: createRenderer({
+    key: "growthly",
+    name: "Growthly",
+    Component: GrowthlyPages,
+    pages: growthlyPages,
+    editorMode: "visual-react",
+    schema: growthlySchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: growthlyDefaultData as unknown as Record<string, any>,
+    editorCss: growthlyEditorCss,
+  }),
+  insureva: createRenderer({
+    key: "insureva",
+    name: "Insureva",
+    Component: InsurevaPages,
+    pages: insurevaPages,
+    editorMode: "visual-react",
+    schema: insurevaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: insurevaDefaultData as unknown as Record<string, any>,
+    editorCss: insurevaEditorCss,
+  }),
+  closora: createRenderer({
+    key: "closora",
+    name: "Closora",
+    Component: ClosoraPages,
+    pages: closoraPages,
+    editorMode: "visual-react",
+    schema: closoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: closoraDefaultData as unknown as Record<string, any>,
+    editorCss: closoraEditorCss,
+  }),
+  adspire: createRenderer({
+    key: "adspire",
+    name: "Adspire",
+    Component: AdspirePages,
+    pages: adspirePages,
+    editorMode: "visual-react",
+    schema: adspireSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: adspireDefaultData as unknown as Record<string, any>,
+    editorCss: adspireEditorCss,
+  }),
+  talentix: createRenderer({
+    key: "talentix",
+    name: "Talentix",
+    Component: TalentixPages,
+    pages: talentixPages,
+    editorMode: "visual-react",
+    schema: talentixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: talentixDefaultData as unknown as Record<string, any>,
+    editorCss: talentixEditorCss,
+  }),
+  narrativa: createRenderer({
+    key: "narrativa",
+    name: "Narrativa",
+    Component: NarrativaPages,
+    pages: narrativaPages,
+    editorMode: "visual-react",
+    schema: narrativaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: narrativaDefaultData as unknown as Record<string, any>,
+    editorCss: narrativaEditorCss,
   }),
 };
 
