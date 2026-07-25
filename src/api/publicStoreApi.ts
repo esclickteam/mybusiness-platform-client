@@ -52,7 +52,17 @@ export async function createPublicStoreOrder(
     customerName: string;
     customerPhone?: string;
     customerEmail?: string;
-    items: Array<{ productId: string; quantity: number }>;
+    items: Array<{
+      productId?: string;
+      quantity: number;
+      name?: string;
+      title?: string;
+      price?: number;
+      image?: string;
+      variantLabel?: string;
+      sku?: string;
+      ref?: string;
+    }>;
     shippingAddress?: string;
     notes?: string;
     paymentProvider?: string;

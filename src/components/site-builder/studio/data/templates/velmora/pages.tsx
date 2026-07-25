@@ -369,6 +369,32 @@ function findScrollableParent(node: HTMLElement | null): HTMLElement | null {
   return null;
 }
 
+function openVelmoraStripeCheckout(cartItems: VelmoraCartItem[]) {
+  if (typeof window === "undefined") return;
+
+  window.dispatchEvent(
+    new CustomEvent("bizuply:open-checkout", {
+      detail: {
+        items: cartItems.map((item) => ({
+          productId: item.productId,
+          cartId: item.cartId,
+          name: item.title,
+          title: item.title,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image,
+          ref: item.ref,
+          sku: item.ref,
+          variantLabel: [item.size, item.color].filter(Boolean).join(" / "),
+          size: item.size,
+          color: item.color,
+          custom: true,
+        })),
+      },
+    }),
+  );
+}
+
 function VelmoraCartPage({
   cartItems,
   onPageChange,
@@ -543,6 +569,7 @@ function VelmoraCartPage({
 
               <button
                 type="button"
+                onClick={() => openVelmoraStripeCheckout(cartItems)}
                 className="mt-8 h-12 w-full rounded-[4px] bg-[#292318] text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black active:scale-95"
               >
                 מעבר לתשלום
@@ -1104,6 +1131,7 @@ export default function VelmoraPages({
     <div
       dir="rtl"
       data-template-id="velmora"
+      data-bizuply-template-cart="true"
       data-visual-editor={isVisualEditor ? "true" : "false"}
       className="velmora-template-root min-h-screen bg-[#f6f2ea] text-[#27231f]"
     >

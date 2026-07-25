@@ -23,6 +23,9 @@ type CartItem = {
   price: number;
   quantity: number;
   image?: string;
+  variantLabel?: string;
+  sku?: string;
+  custom?: boolean;
 };
 
 type PublicStoreCheckoutProps = {
@@ -58,6 +61,37 @@ function saveCart(businessId: string, items: CartItem[]) {
   localStorage.setItem(CART_KEY(businessId), JSON.stringify(items));
 }
 
+function normalizeIncomingCartItems(rawItems: unknown): CartItem[] {
+  if (!Array.isArray(rawItems)) return [];
+
+  return rawItems
+    .map((raw, index) => {
+      const item = raw && typeof raw === "object" ? (raw as Record<string, any>) : {};
+      const name = String(item.name || item.title || "").trim();
+      const price = Number(item.price);
+      const quantity = Math.max(1, Number(item.quantity) || 1);
+      const productId = String(
+        item.productId || item.cartId || item.ref || `custom-${index}`
+      ).trim();
+
+      if (!name || !Number.isFinite(price) || price < 0 || !productId) {
+        return null;
+      }
+
+      return {
+        productId,
+        name,
+        price,
+        quantity,
+        image: String(item.image || ""),
+        variantLabel: String(item.variantLabel || item.size || item.color || ""),
+        sku: String(item.sku || item.ref || ""),
+        custom: Boolean(item.custom) || !/^[a-f\d]{24}$/i.test(productId),
+      } as CartItem;
+    })
+    .filter(Boolean) as CartItem[];
+}
+
 export default function PublicStoreCheckout({
   businessId,
   enabled = true,
@@ -72,6 +106,7 @@ export default function PublicStoreCheckout({
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [hasTemplateCartUi, setHasTemplateCartUi] = useState(false);
   const [message, setMessage] = useState<{
     type: "success" | "error" | "info";
     text: string;
@@ -118,6 +153,7 @@ export default function PublicStoreCheckout({
             price: Number(product.price) || 0,
             quantity,
             image: product.image || product.images?.[0] || "",
+            custom: false,
           },
         ];
       });
@@ -131,6 +167,24 @@ export default function PublicStoreCheckout({
     if (!businessId || !enabled) return;
     setCart(loadCart(businessId));
   }, [businessId, enabled]);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+
+    const detectTemplateCart = () => {
+      setHasTemplateCartUi(
+        Boolean(
+          document.querySelector(
+            '[data-template-id="velmora"], [data-bizuply-template-cart="true"]'
+          )
+        )
+      );
+    };
+
+    detectTemplateCart();
+    const timer = window.setTimeout(detectTemplateCart, 400);
+    return () => window.clearTimeout(timer);
+  }, [businessId, open]);
 
   useEffect(() => {
     if (!businessId || !enabled) return;
@@ -166,6 +220,42 @@ export default function PublicStoreCheckout({
   }, [businessId, enabled]);
 
   useEffect(() => {
+    if (!businessId || !enabled) return;
+
+    function onOpenCheckout(event: Event) {
+      const detail = (event as CustomEvent).detail || {};
+      const incoming = normalizeIncomingCartItems(detail.items);
+      if (incoming.length) {
+        syncCart(incoming);
+      } else if (Array.isArray(detail.items) && detail.items.length === 0) {
+        syncCart([]);
+      }
+
+      if (!stripeReady) {
+        setMessage({
+          type: "error",
+          text: "Stripe עדיין לא מחובר. חברו Stripe בלשונית תשלומים בניהול האתר.",
+        });
+      } else {
+        setMessage(null);
+      }
+      setOpen(true);
+    }
+
+    window.addEventListener(
+      "bizuply:open-checkout",
+      onOpenCheckout as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "bizuply:open-checkout",
+        onOpenCheckout as EventListener
+      );
+    };
+  }, [businessId, enabled, stripeReady, syncCart]);
+
+  useEffect(() => {
     if (!businessId || !enabled || !stripeReady) return;
 
     function onClick(event: MouseEvent) {
@@ -197,8 +287,26 @@ export default function PublicStoreCheckout({
       const detail = (event as CustomEvent).detail || {};
       const productId = String(detail.productId || "");
       const product = products.find((item) => item._id === productId);
-      if (!product) return;
-      addProduct(product, Number(detail.quantity) || 1);
+      if (product) {
+        addProduct(product, Number(detail.quantity) || 1);
+        return;
+      }
+
+      const incoming = normalizeIncomingCartItems([detail]);
+      if (!incoming.length) return;
+      syncCart((prev) => {
+        const next = [...prev];
+        for (const item of incoming) {
+          const existing = next.find((row) => row.productId === item.productId);
+          if (existing) {
+            existing.quantity += item.quantity;
+          } else {
+            next.push(item);
+          }
+        }
+        return next;
+      });
+      setOpen(true);
     }
 
     document.addEventListener("click", onClick, true);
@@ -211,7 +319,7 @@ export default function PublicStoreCheckout({
         onCustomAdd as EventListener
       );
     };
-  }, [addProduct, businessId, enabled, products, stripeReady]);
+  }, [addProduct, businessId, enabled, products, stripeReady, syncCart]);
 
   useEffect(() => {
     if (!businessId || !enabled) return;
@@ -305,8 +413,13 @@ export default function PublicStoreCheckout({
         customerEmail: customerEmail.trim(),
         customerPhone: customerPhone.trim(),
         items: cart.map((item) => ({
-          productId: item.productId,
+          productId: item.custom ? undefined : item.productId,
+          name: item.name,
+          price: item.price,
           quantity: item.quantity,
+          image: item.image,
+          variantLabel: item.variantLabel,
+          sku: item.sku,
         })),
         paymentProvider: "stripe",
         startCheckout: false,
@@ -341,25 +454,26 @@ export default function PublicStoreCheckout({
   }
 
   if (!enabled || !businessId || loading) return null;
-  if (!stripeReady && !products.length) return null;
-  if (!stripeReady) return null;
+  if (!stripeReady && !open) return null;
 
   return (
     <div dir="rtl" className="bizuply-public-store-checkout">
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="fixed bottom-5 left-5 z-[70] inline-flex h-14 items-center gap-2 rounded-full bg-slate-900 px-5 text-sm font-bold text-white shadow-xl hover:bg-slate-800"
-        aria-label="פתח סל קניות"
-      >
-        <ShoppingBag size={18} />
-        סל
-        {cartCount > 0 ? (
-          <span className="grid h-6 min-w-6 place-items-center rounded-full bg-emerald-400 px-1.5 text-xs font-black text-slate-900">
-            {cartCount}
-          </span>
-        ) : null}
-      </button>
+      {stripeReady && !hasTemplateCartUi ? (
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="fixed bottom-5 left-5 z-[70] inline-flex h-14 items-center gap-2 rounded-full bg-slate-900 px-5 text-sm font-bold text-white shadow-xl hover:bg-slate-800"
+          aria-label="פתח סל קניות"
+        >
+          <ShoppingBag size={18} />
+          סל
+          {cartCount > 0 ? (
+            <span className="grid h-6 min-w-6 place-items-center rounded-full bg-emerald-400 px-1.5 text-xs font-black text-slate-900">
+              {cartCount}
+            </span>
+          ) : null}
+        </button>
+      ) : null}
 
       {open ? (
         <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-900/40 p-3 sm:items-center">
@@ -431,11 +545,7 @@ export default function PublicStoreCheckout({
                     ))}
                   </div>
                 </div>
-              ) : (
-                <p className="text-sm text-slate-500">
-                  אין מוצרים פעילים בחנות. הוסיפו מוצרים במנהל החנות.
-                </p>
-              )}
+              ) : null}
 
               <div>
                 <h3 className="mb-2 text-sm font-bold text-slate-800">הסל שלי</h3>
@@ -501,7 +611,9 @@ export default function PublicStoreCheckout({
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500">הסל ריק</p>
+                  <p className="text-sm text-slate-500">
+                    הסל ריק. הוסיפו מוצרים מהחנות ולחצו שוב על מעבר לתשלום.
+                  </p>
                 )}
               </div>
 
