@@ -92,6 +92,33 @@ const contactIconMap: Record<SpalcioContactItem["type"], React.ElementType> = {
   hours: Clock3,
 };
 
+function mediaProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-field": id,
+    "data-image-field": id,
+    "data-visual-image-field": id,
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  } as Record<string, string>;
+}
+
+function sectionProps(id: string, label: string, kind?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "section",
+    "data-visual-type": "section",
+    "data-visual-editable": "true",
+    "data-visual-edit-label": label,
+    "data-template-section-id": id,
+    "data-section-kind": kind || id,
+    "data-section-title": label,
+  } as Record<string, string>;
+}
+
 function normalizeSlug(value: string | null | undefined) {
   const clean = String(value || "").trim();
 
@@ -353,6 +380,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
   return (
     <section
       id="hero"
+      {...sectionProps("hero", "אזור פתיחה")}
       data-section-id="hero"
       data-section-title="אזור פתיחה"
       className="relative overflow-hidden bg-[#f6f3ee]"
@@ -437,6 +465,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
             <img
               src={spalcioData.hero.image}
               alt={spalcioData.hero.imageAlt}
+              {...mediaProps("hero.image", spalcioData.hero.imageAlt)}
               className="spalcio-hero-image h-[520px] w-full rounded-[2rem] object-cover"
             />
 
@@ -465,6 +494,7 @@ function Services() {
   return (
     <section
       id="services"
+      {...sectionProps("services", "שירותים")}
       data-section-id="services"
       data-section-title="שירותים"
       className="bg-white px-6 py-24"
@@ -534,6 +564,7 @@ function Projects() {
   return (
     <section
       id="projects"
+      {...sectionProps("projects", "פרויקטים")}
       data-section-id="projects"
       data-section-title="פרויקטים"
       className="bg-[#f6f3ee] px-6 py-24"
@@ -555,7 +586,7 @@ function Projects() {
         </div>
 
         <div className="grid gap-7 lg:grid-cols-3">
-          {spalcioData.projects.items.map((project) => (
+          {spalcioData.projects.items.map((project, index) => (
             <article
               key={project.title}
               className="spalcio-card overflow-hidden rounded-[2rem] bg-white shadow-sm"
@@ -563,6 +594,7 @@ function Projects() {
               <img
                 src={project.image}
                 alt={project.title}
+                {...mediaProps(`projects.${index}.image`, project.title)}
                 className="spalcio-project-image h-72 w-full object-cover"
               />
 
@@ -593,6 +625,7 @@ function About() {
   return (
     <section
       id="about"
+      {...sectionProps("about", "אודות")}
       data-section-id="about"
       data-section-title="אודות"
       className="bg-white px-6 py-24"
@@ -602,6 +635,7 @@ function About() {
           <img
             src={spalcioData.about.image}
             alt={spalcioData.about.imageAlt}
+            {...mediaProps("about.image", spalcioData.about.imageAlt)}
             className="spalcio-about-image h-[520px] w-full object-cover"
           />
         </div>
@@ -651,6 +685,7 @@ function Process() {
   return (
     <section
       id="process"
+      {...sectionProps("process", "תהליך עבודה")}
       data-section-id="process"
       data-section-title="תהליך עבודה"
       className="relative overflow-hidden bg-[#f6f3ee] px-6 py-24 text-slate-950"
@@ -727,6 +762,7 @@ function Testimonials() {
   return (
     <section
       id="testimonials"
+      {...sectionProps("testimonials", "המלצות")}
       data-section-id="testimonials"
       data-section-title="המלצות"
       className="bg-white px-6 py-24"
@@ -758,6 +794,7 @@ function Contact() {
   return (
     <section
       id="contact"
+      {...sectionProps("contact", "יצירת קשר")}
       data-section-id="contact"
       data-section-title="יצירת קשר"
       className="bg-[#f6f3ee] px-6 py-24"

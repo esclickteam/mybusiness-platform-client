@@ -38,6 +38,33 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function mediaProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-field": id,
+    "data-image-field": id,
+    "data-visual-image-field": id,
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  } as Record<string, string>;
+}
+
+function sectionProps(id: string, label: string, kind?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "section",
+    "data-visual-type": "section",
+    "data-visual-editable": "true",
+    "data-visual-edit-label": label,
+    "data-template-section-id": id,
+    "data-section-kind": kind || id,
+    "data-section-title": label,
+  } as Record<string, string>;
+}
+
 function getPageTitle(data: Record<string, any>, type: string) {
   if (type === "about") return getValue(data, "navAbout");
   if (type === "services") return getValue(data, "navServices");
@@ -327,7 +354,10 @@ function Hero({
   ];
 
   return (
-    <section className="relative isolate overflow-hidden px-5 pb-24 pt-14 lg:px-8 lg:pb-36 lg:pt-20">
+    <section
+      {...sectionProps("hero", "Hero")}
+      className="relative isolate overflow-hidden px-5 pb-24 pt-14 lg:px-8 lg:pb-36 lg:pt-20"
+    >
       <div className="absolute left-[5%] top-20 -z-10 h-72 w-72 rounded-full bg-[#b8cfae]/40 blur-3xl" />
       <div className="absolute right-[8%] top-[42%] -z-10 h-80 w-80 rounded-full bg-[#d7bf97]/35 blur-3xl" />
       <div className="absolute left-1/2 top-24 -z-10 h-64 w-64 rounded-full bg-white/70 blur-3xl" />
@@ -400,6 +430,7 @@ function Hero({
             <img
               src={getValue(data, "heroImage")}
               alt=""
+              {...mediaProps("hero.image", getValue(data, "heroTitle"))}
               className="h-[600px] w-full rounded-[40px] object-cover transition duration-700 group-hover:scale-105"
             />
             <div className="pointer-events-none absolute inset-3 rounded-[40px] bg-gradient-to-t from-[#17251e]/42 via-transparent to-transparent" />
@@ -409,6 +440,7 @@ function Hero({
             <img
               src={getValue(data, "aboutImage")}
               alt=""
+              {...mediaProps("hero.aboutImage", getValue(data, "aboutTitle"))}
               className="h-[250px] w-full rounded-[28px] object-cover transition duration-700 group-hover:scale-105"
             />
           </div>
@@ -462,7 +494,10 @@ function ExperienceStrip({
   ];
 
   return (
-    <section className="px-5 pb-10 lg:px-8">
+    <section
+      {...sectionProps("experience", "Experience")}
+      className="px-5 pb-10 lg:px-8"
+    >
       <div className="mx-auto max-w-7xl rounded-[42px] border border-[#244236]/10 bg-[#244236] p-4 text-[#fbf6ec] shadow-2xl shadow-[#244236]/18">
         <div className="grid gap-4 lg:grid-cols-[1fr_1fr_1fr_auto]">
           {items.map(([num, title, text]) => (
@@ -503,7 +538,10 @@ function AboutSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("about", "About")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto grid max-w-7xl items-center gap-14 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="relative">
           <div className="absolute -right-6 -top-6 h-full w-full rounded-[46px] border border-[#244236]/10" />
@@ -512,6 +550,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
             <img
               src={getValue(data, "aboutImage")}
               alt=""
+              {...mediaProps("about.image", getValue(data, "aboutTitle"))}
               className="h-[560px] w-full rounded-[38px] object-cover transition duration-700 group-hover:scale-105"
             />
             <div className="pointer-events-none absolute inset-3 rounded-[38px] bg-gradient-to-t from-[#244236]/25 via-transparent to-transparent" />
@@ -601,7 +640,10 @@ function ServicesSection({
   ];
 
   return (
-    <section className="relative overflow-hidden px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("services", "Services")}
+      className="relative overflow-hidden px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="absolute left-[7%] top-20 h-56 w-56 rounded-full bg-[#b8cfae]/25 blur-3xl" />
       <div className="absolute bottom-10 right-[10%] h-64 w-64 rounded-full bg-[#d7bf97]/20 blur-3xl" />
 
@@ -724,7 +766,10 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("process", "Process")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.82fr_1.18fr]">
         <div className="h-fit lg:sticky lg:top-28">
           <SectionTitle
@@ -801,7 +846,10 @@ function PricingSection({
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("pricing", "Pricing")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           center
@@ -902,7 +950,10 @@ function GallerySection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("gallery", "Gallery")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           center
@@ -912,7 +963,7 @@ function GallerySection({ data }: { data: Record<string, any> }) {
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-4 lg:grid-rows-[280px_280px_300px]">
-          {items.map((item) => (
+          {items.map((item, index) => (
             <div
               key={item.src}
               className={cx(
@@ -924,6 +975,7 @@ function GallerySection({ data }: { data: Record<string, any> }) {
                 <img
                   src={item.src}
                   alt=""
+                  {...mediaProps(`gallery.${index}.image`, item.title)}
                   className={cx(
                     "w-full rounded-[30px] object-cover transition duration-700 group-hover:scale-105",
                     item.h,
@@ -953,7 +1005,10 @@ function BlogSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("blog", "Blog")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           center
@@ -1019,7 +1074,10 @@ function FaqSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("faq", "FAQ")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <SectionTitle
           eyebrow={getValue(data, "faqEyebrow")}
@@ -1085,7 +1143,10 @@ function ContactSection({
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("contact", "Contact")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto grid max-w-7xl overflow-hidden rounded-[50px] border border-[#244236]/10 bg-[#244236] text-[#fbf6ec] shadow-2xl shadow-[#244236]/20 lg:grid-cols-[0.92fr_1.08fr]">
         <div className="relative p-8 lg:p-12">
           <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
@@ -1282,7 +1343,10 @@ function SimplePage({
 
   return (
     <>
-      <section className="relative isolate overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+      <section
+        {...sectionProps(`${type}.pageHero`, `${getPageTitle(data, type)} hero`, "pageHero")}
+        className="relative isolate overflow-hidden px-5 py-20 lg:px-8 lg:py-28"
+      >
         <div className="absolute left-[10%] top-10 -z-10 h-56 w-56 rounded-full bg-[#b8cfae]/35 blur-3xl" />
         <div className="absolute right-[12%] bottom-10 -z-10 h-56 w-56 rounded-full bg-[#d7bf97]/35 blur-3xl" />
 

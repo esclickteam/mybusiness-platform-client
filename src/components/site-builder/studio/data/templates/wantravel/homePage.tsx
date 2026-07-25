@@ -17,6 +17,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
           <SafeImage
             src={data.hero.image}
             alt={data.hero.title}
+            editId="hero.image"
             className="wan-hero-bg-image"
           />
           <div className="wan-hero-overlay" />
@@ -66,6 +67,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
               <SafeImage
                 src={data.hero.floatingImage}
                 alt="חופשת בוטיק"
+                editId="hero.floatingImage"
                 className="wan-showcase-image"
               />
               <div className="wan-showcase-label">
@@ -154,7 +156,11 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
                 }
                 delay={index * 110}
               >
-                <SafeImage src={item.image} alt={item.title} />
+                <SafeImage
+                  src={item.image}
+                  alt={item.title}
+                  editId={`destinations.${index}.image`}
+                />
                 <div className="wan-destination-gradient" />
                 <div className="wan-destination-top">
                   <span>{item.tag}</span>
@@ -205,6 +211,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
               <SafeImage
                 src="https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?auto=format&fit=crop&w=900&q=90"
                 alt="נוף הררי"
+                editId="editorial.image.1"
               />
             </Reveal>
 
@@ -215,6 +222,7 @@ export default function WantravelHomePage({ data }: { data: WantravelSeed }) {
               <SafeImage
                 src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=90"
                 alt="חופשה טרופית"
+                editId="editorial.image.2"
               />
             </Reveal>
           </div>

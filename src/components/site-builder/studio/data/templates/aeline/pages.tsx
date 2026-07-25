@@ -60,6 +60,20 @@ const navItems: Array<{ id: AelinePageId; label: string }> = [
   { id: "pricing", label: "חבילות" },
 ];
 
+function mediaProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-field": id,
+    "data-image-field": id,
+    "data-visual-image-field": id,
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  } as Record<string, string>;
+}
+
 const services = [
   {
     number: "01",
@@ -434,6 +448,7 @@ function HeroCardRail() {
                     data-gjs-type="image"
                     src={aelineImages.meeting}
                     alt="עסקאות פעילות"
+                    {...mediaProps("hero.carousel.image", "עסקאות פעילות")}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
 
@@ -1070,6 +1085,7 @@ function BlogSection({
                 data-gjs-type="image"
                 src={[aelineImages.abstract, aelineImages.dashboard, aelineImages.meeting][index]}
                 alt={post.title}
+                {...mediaProps(`blog.posts.${index}.image`, post.title)}
                 className="h-64 w-full object-cover transition duration-500 group-hover:scale-105"
               />
 

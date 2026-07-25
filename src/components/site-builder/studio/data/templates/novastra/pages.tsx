@@ -197,6 +197,33 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function mediaProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-field": id,
+    "data-image-field": id,
+    "data-visual-image-field": id,
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  } as Record<string, string>;
+}
+
+function sectionProps(id: string, label: string, kind?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "section",
+    "data-visual-type": "section",
+    "data-visual-editable": "true",
+    "data-visual-edit-label": label,
+    "data-template-section-id": id,
+    "data-section-kind": kind || id,
+    "data-section-title": label,
+  } as Record<string, string>;
+}
+
 function getProductKey(product: NovastraProduct) {
   return `${product.title}-${product.category || ""}-${product.price || ""}`;
 }
@@ -373,6 +400,7 @@ function Header({
                   <img
                     src={data.megaImage}
                     alt=""
+                    {...mediaProps("mega.image", data.megaTitle)}
                     className="h-full min-h-[210px] w-full object-cover transition duration-700 group-hover/card:scale-105"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -505,7 +533,10 @@ function Hero({
   onNavigate: (pageId: string) => void;
 }) {
   return (
-    <section className="relative isolate overflow-hidden bg-zinc-950 text-white">
+    <section
+      {...sectionProps("hero", "Hero")}
+      className="relative isolate overflow-hidden bg-zinc-950 text-white"
+    >
       <div className="absolute left-1/2 top-0 -z-10 h-[560px] w-[560px] -translate-x-1/2 rounded-full bg-white/10 blur-3xl" />
       <div className="absolute bottom-12 right-10 -z-10 hidden h-[300px] w-[300px] rounded-full bg-[#fbf7ef]/10 blur-3xl lg:block" />
 
@@ -551,6 +582,7 @@ function Hero({
             <img
               src={data.heroImages[0]?.src}
               alt={data.heroImages[0]?.alt || ""}
+              {...mediaProps("heroImages.0", data.heroImages[0]?.alt)}
               className="novastra-hero-image h-full w-full object-cover transition duration-700"
               style={{ animationDelay: "0.05s" }}
             />
@@ -560,6 +592,7 @@ function Hero({
             <img
               src={data.heroImages[1]?.src}
               alt={data.heroImages[1]?.alt || ""}
+              {...mediaProps("heroImages.1", data.heroImages[1]?.alt)}
               className="novastra-hero-image h-full w-full object-cover transition duration-700"
               style={{ animationDelay: "0.25s" }}
             />
@@ -569,6 +602,7 @@ function Hero({
             <img
               src={data.heroImages[2]?.src}
               alt={data.heroImages[2]?.alt || ""}
+              {...mediaProps("heroImages.2", data.heroImages[2]?.alt)}
               className="novastra-hero-image h-full w-full object-cover transition duration-700"
               style={{ animationDelay: "0.45s" }}
             />
@@ -578,6 +612,7 @@ function Hero({
             <img
               src={data.heroImages[3]?.src}
               alt={data.heroImages[3]?.alt || ""}
+              {...mediaProps("heroImages.3", data.heroImages[3]?.alt)}
               className="novastra-hero-image h-full w-full object-cover transition duration-700"
               style={{ animationDelay: "0.65s" }}
             />
@@ -594,7 +629,10 @@ function Hero({
 
 function CategoryCards({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("categories", "Categories")}
+      className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -623,6 +661,7 @@ function CategoryCards({ data }: { data: NovastraData }) {
               <img
                 src={category.src}
                 alt={category.alt || category.title || ""}
+                {...mediaProps(`categories.${index}.image`, category.title)}
                 className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -647,7 +686,10 @@ function CategoryCards({ data }: { data: NovastraData }) {
 
 function PromoGrid({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("promoCards", "Promo cards")}
+      className="bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] gap-4 md:grid-cols-4">
         {data.promoCards.map((card, index) => (
           <div
@@ -657,6 +699,7 @@ function PromoGrid({ data }: { data: NovastraData }) {
             <img
               src={card.src}
               alt={card.alt || card.title || ""}
+              {...mediaProps(`promoCards.${index}.image`, card.title)}
               className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -686,7 +729,10 @@ function ProductGrid({
   const products = compact ? data.products.slice(0, 4) : data.products;
 
   return (
-    <section className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("products", "Products")}
+      className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -717,6 +763,7 @@ function ProductGrid({
                   <img
                     src={getProductImage(product)}
                     alt={product.title}
+                    {...mediaProps(`products.${index}.image`, product.title)}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                   />
                   <span className="absolute left-4 top-4 rounded-full bg-white px-3 py-1 text-[11px] font-black uppercase tracking-[0.16em] text-zinc-950 shadow-sm">
@@ -793,7 +840,10 @@ function ProductPage({
     .slice(0, 4);
 
   return (
-    <section className="bg-[#fbf7ef] px-4 py-10 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("productDetail", "Product detail")}
+      className="bg-[#fbf7ef] px-4 py-10 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-[1480px]">
         <button
           type="button"
@@ -810,6 +860,7 @@ function ProductPage({
               <img
                 src={getProductImage(product)}
                 alt={product.title}
+                {...mediaProps("product.image", product.title)}
                 className="h-full w-full object-cover"
               />
 
@@ -924,7 +975,7 @@ function ProductPage({
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {relatedProducts.map((item) => (
+            {relatedProducts.map((item, index) => (
               <article
                 key={getProductKey(item)}
                 className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-white p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10"
@@ -938,6 +989,7 @@ function ProductPage({
                     <img
                       src={getProductImage(item)}
                       alt={item.title}
+                      {...mediaProps(`product.related.${index}.image`, item.title)}
                       className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                     />
                     {item.badge ? (
@@ -989,7 +1041,10 @@ function CartPage({
   const total = subtotal + shipping;
 
   return (
-    <section className="min-h-[70vh] bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("cart", "Cart")}
+      className="min-h-[70vh] bg-[#fbf7ef] px-4 py-12 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -1027,7 +1082,7 @@ function CartPage({
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
             <div className="space-y-4">
-              {cartItems.map((item) => (
+              {cartItems.map((item, index) => (
                 <div
                   key={getProductKey(item.product)}
                   className="grid gap-4 rounded-[2rem] border border-zinc-200 bg-white p-4 shadow-sm sm:grid-cols-[130px_1fr_auto]"
@@ -1036,6 +1091,7 @@ function CartPage({
                     <img
                       src={getProductImage(item.product)}
                       alt={item.product.title}
+                      {...mediaProps(`cart.items.${index}.image`, item.product.title)}
                       className="h-full w-full object-cover"
                     />
                   </div>
@@ -1139,12 +1195,16 @@ function CartPage({
 
 function Community({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#fbf7ef] px-4 py-14 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("community", "Community")}
+      className="bg-[#fbf7ef] px-4 py-14 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] items-center gap-6 overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-5 text-zinc-950 shadow-xl shadow-zinc-950/5 lg:grid-cols-[0.95fr_1.05fr]">
         <div className="relative min-h-[410px] overflow-hidden rounded-[2rem]">
           <img
             src={data.communityImage}
             alt=""
+            {...mediaProps("community.image")}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
@@ -1155,6 +1215,7 @@ function Community({ data }: { data: NovastraData }) {
                   key={`${avatar}-${index}`}
                   src={avatar}
                   alt=""
+                  {...mediaProps(`community.avatars.${index}.image`)}
                   className="h-12 w-12 rounded-full border-2 border-white object-cover"
                 />
               ))}
@@ -1213,12 +1274,16 @@ function FeaturedPiece({
   };
 
   return (
-    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("featured", "Featured")}
+      className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[1.08fr_0.92fr]">
         <div className="relative min-h-[610px] overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white shadow-xl shadow-zinc-950/5">
           <img
             src={data.featuredImage}
             alt=""
+            {...mediaProps("featured.image", data.featuredTitle)}
             className="absolute inset-0 h-full w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
@@ -1254,6 +1319,7 @@ function FeaturedPiece({
               <img
                 src={data.featuredProductImage}
                 alt=""
+                {...mediaProps("featuredProduct.image", data.featuredProductName)}
                 className="aspect-[1.18] w-full rounded-[1.5rem] object-cover"
               />
             </button>
@@ -1288,7 +1354,10 @@ function Benefits({ data }: { data: NovastraData }) {
   const icons = [Truck, ShieldCheck, RefreshCw, Gift];
 
   return (
-    <section className="bg-white px-4 py-8 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("benefits", "Benefits")}
+      className="bg-white px-4 py-8 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] gap-3 md:grid-cols-4">
         {data.benefits.map((benefit, index) => {
           const Icon = icons[index] || Sparkles;
@@ -1317,7 +1386,10 @@ function Benefits({ data }: { data: NovastraData }) {
 
 function Reviews({ data }: { data: NovastraData }) {
   return (
-    <section className="overflow-hidden bg-[#fbf7ef] py-16 text-zinc-950">
+    <section
+      {...sectionProps("reviews", "Reviews")}
+      className="overflow-hidden bg-[#fbf7ef] py-16 text-zinc-950"
+    >
       <div className="mx-auto max-w-[1480px] px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
           {data.reviewsEyebrow}
@@ -1348,6 +1420,7 @@ function Reviews({ data }: { data: NovastraData }) {
                 <img
                   src={review.avatar}
                   alt=""
+                  {...mediaProps(`reviews.${index}.avatar`, review.name)}
                   className="h-12 w-12 rounded-full object-cover"
                 />
               ) : null}
@@ -1370,7 +1443,10 @@ function Reviews({ data }: { data: NovastraData }) {
 
 function Journal({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("journal", "Journal")}
+      className="bg-white px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
@@ -1396,6 +1472,7 @@ function Journal({ data }: { data: NovastraData }) {
                 <img
                   src={article.image}
                   alt=""
+                  {...mediaProps(`articles.${index}.image`, article.title)}
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                 />
               </div>
@@ -1427,7 +1504,10 @@ function FaqNewsletter({
   onNavigate: (pageId: string) => void;
 }) {
   return (
-    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("faqNewsletter", "FAQ and newsletter")}
+      className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] gap-5 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 sm:p-8">
           <SectionEyebrow>{data.faqEyebrow}</SectionEyebrow>
@@ -1492,6 +1572,7 @@ function FaqNewsletter({
           <img
             src={data.newsletterImage}
             alt=""
+            {...mediaProps("newsletter.image", data.newsletterTitle)}
             className="absolute inset-0 h-full w-full object-cover"
           />
         </div>
@@ -1649,7 +1730,10 @@ function CollectionPage({
 }) {
   return (
     <>
-      <section className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8">
+      <section
+        {...sectionProps("collectionHero", "Collection hero")}
+        className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto max-w-[1480px]">
           <SectionEyebrow>{data.collectionPageEyebrow}</SectionEyebrow>
           <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
@@ -1675,7 +1759,10 @@ function CollectionPage({
 function JournalPage({ data }: { data: NovastraData }) {
   return (
     <>
-      <section className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8">
+      <section
+        {...sectionProps("journalHero", "Journal hero")}
+        className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8"
+      >
         <div className="mx-auto max-w-[1480px]">
           <SectionEyebrow>{data.journalEyebrow}</SectionEyebrow>
           <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
@@ -1692,7 +1779,10 @@ function JournalPage({ data }: { data: NovastraData }) {
 
 function ContactPage({ data }: { data: NovastraData }) {
   return (
-    <section className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8">
+    <section
+      {...sectionProps("contact", "Contact")}
+      className="bg-[#fbf7ef] px-4 py-16 text-zinc-950 sm:px-6 lg:px-8"
+    >
       <div className="mx-auto grid max-w-[1480px] gap-6 lg:grid-cols-[0.85fr_1.15fr]">
         <div className="rounded-[2.5rem] bg-zinc-950 p-8 text-white">
           <SectionEyebrow dark>{data.contactEyebrow}</SectionEyebrow>

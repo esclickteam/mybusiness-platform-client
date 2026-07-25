@@ -26,6 +26,7 @@ export default function WantravelReviewsPage({
             <SafeImage
               src="https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?auto=format&fit=crop&w=1100&q=90"
               alt="לקוחות ממליצים"
+              editId="reviewsPage.hero.image"
             />
           </Reveal>
         </div>

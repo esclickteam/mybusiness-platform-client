@@ -162,6 +162,33 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function mediaProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-field": id,
+    "data-image-field": id,
+    "data-visual-image-field": id,
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  } as Record<string, string>;
+}
+
+function sectionProps(id: string, label: string, kind?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "section",
+    "data-visual-type": "section",
+    "data-visual-editable": "true",
+    "data-visual-edit-label": label,
+    "data-template-section-id": id,
+    "data-section-kind": kind || id,
+    "data-section-title": label,
+  } as Record<string, string>;
+}
+
 function normalizeJustoraNavKey(value: unknown) {
   return String(value || "")
     .trim()
@@ -736,7 +763,10 @@ function Hero({
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[#2b1b1d]">
+    <section
+      {...sectionProps("hero", "Hero")}
+      className="relative overflow-hidden bg-[#2b1b1d]"
+    >
       <div className="absolute inset-x-0 bottom-0 h-40 bg-[#efe2d2]" />
       <div className="absolute left-[8%] top-[18%] h-72 w-72 rounded-full bg-[#b45c3a]/18 blur-3xl" />
       <div className="absolute right-[18%] top-[12%] h-80 w-80 rounded-full bg-[#8b744f]/18 blur-3xl" />
@@ -787,6 +817,7 @@ function Hero({
             <img
               src={getHeroImage(data)}
               alt=""
+              {...mediaProps("hero.image", getValue(data, "brandName"))}
               className="h-[650px] w-full object-cover object-top lg:h-[720px]"
             />
           </div>
@@ -963,7 +994,10 @@ function PracticeAreasSection({
   }
 
   return (
-    <section className="bg-[#e9ddcc] px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("practice", "Practice areas")}
+      className="bg-[#e9ddcc] px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-14 grid gap-8 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
           <div className="text-right">
@@ -1030,12 +1064,16 @@ function BookNowSection({
   openConsultation: () => void;
 }) {
   return (
-    <section className="px-5 py-8 lg:px-8 lg:py-16">
+    <section
+      {...sectionProps("bookNow", "Book now")}
+      className="px-5 py-8 lg:px-8 lg:py-16"
+    >
       <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[46px] bg-[#2b1b1d] !text-white shadow-2xl shadow-[#2b1b1d]/25 lg:grid-cols-[0.9fr_1.1fr]">
         <div className="relative min-h-[430px] overflow-hidden">
           <img
             src="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1300&q=85"
             alt=""
+            {...mediaProps("bookNow.image", "קביעת פגישה")}
             className="h-full min-h-[430px] w-full object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-l from-[#2b1b1d]/82 via-[#2b1b1d]/25 to-transparent" />
@@ -1087,7 +1125,10 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("lawyers", "Lawyers")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px]">
         <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
           <div>
@@ -1126,6 +1167,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
                   <img
                     src={image}
                     alt=""
+                    {...mediaProps(`lawyers.${index}.image`, String(name || ""))}
                     className={cx(
                       "w-full rounded-[28px] object-cover transition duration-700 group-hover:scale-105",
                       index === 0 ? "h-[430px]" : "h-[330px]",
@@ -1158,7 +1200,10 @@ function CasesSection({
   const cases = getCaseItems(data);
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("cases", "Cases")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
@@ -1245,7 +1290,10 @@ function CaseDetailPage({
 }) {
   return (
     <>
-      <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+      <section
+        {...sectionProps("caseDetail", "Case detail")}
+        className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28"
+      >
         <div className="mx-auto max-w-[1380px]">
           <button
             type="button"
@@ -1344,7 +1392,10 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("testimonials", "Testimonials")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto grid max-w-[1380px] gap-12 lg:grid-cols-[0.86fr_1.14fr]">
         <div className="h-fit lg:sticky lg:top-28">
           <SectionTitle
@@ -1392,7 +1443,10 @@ function FreeReviewSection({
   openConsultation: () => void;
 }) {
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("freeReview", "Free review")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px] overflow-hidden rounded-[48px] bg-[#2b1b1d] p-7 !text-white shadow-2xl shadow-[#2b1b1d]/25 lg:p-12">
         <div className="grid items-center gap-10 lg:grid-cols-[1fr_0.9fr]">
           <div>
@@ -1449,7 +1503,10 @@ function BlogSection({
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("blog", "Blog")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px]">
         <div className="mb-12 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
           <SectionTitle
@@ -1531,7 +1588,10 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-24 lg:px-8 lg:py-32">
+    <section
+      {...sectionProps("socialFeed", "Social feed")}
+      className="px-5 py-24 lg:px-8 lg:py-32"
+    >
       <div className="mx-auto max-w-[1380px]">
         <SectionTitle
           center
@@ -1553,6 +1613,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
               <img
                 src={image}
                 alt=""
+                {...mediaProps(`socialFeed.${index}.image`)}
                 className={cx(
                   "w-full rounded-[24px] object-cover transition duration-700 group-hover:scale-105",
                   index === 0 || index === 3 ? "h-[420px]" : "h-[200px]",
@@ -1576,7 +1637,10 @@ function FaqSection({ data }: { data: Record<string, any> }) {
   ];
 
   return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
+    <section
+      {...sectionProps("faq", "FAQ")}
+      className="px-5 py-20 lg:px-8 lg:py-28"
+    >
       <div className="mx-auto grid max-w-[1380px] gap-10 lg:grid-cols-[0.9fr_1.1fr]">
         <SectionTitle
           eyebrow="שאלות נפוצות"
@@ -1641,7 +1705,10 @@ function ContactSection({
   ];
 
   return (
-    <section className="px-5 py-20 lg:px-8 lg:py-28">
+    <section
+      {...sectionProps("contact", "Contact")}
+      className="px-5 py-20 lg:px-8 lg:py-28"
+    >
       <div className="mx-auto grid max-w-[1380px] overflow-hidden rounded-[48px] border border-[#2b1b1d]/10 bg-[#2b1b1d] !text-white shadow-2xl shadow-[#2b1b1d]/20 lg:grid-cols-[0.88fr_1.12fr]">
         <div className="relative p-8 lg:p-12">
           <div className="absolute left-8 top-8 h-32 w-32 rounded-full bg-[#b45c3a]/20 blur-2xl" />
@@ -1885,7 +1952,10 @@ function SimplePage({
 
   return (
     <>
-      <section className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28">
+      <section
+        {...sectionProps(`${type}.pageHero`, `${getPageTitle(data, type)} hero`, "pageHero")}
+        className="relative overflow-hidden px-5 py-20 lg:px-8 lg:py-28"
+      >
         <div className="absolute left-[10%] top-10 h-56 w-56 rounded-full bg-[#b45c3a]/20 blur-3xl" />
         <div className="absolute right-[12%] bottom-10 h-56 w-56 rounded-full bg-[#2b1b1d]/10 blur-3xl" />
 

@@ -26,6 +26,7 @@ export default function WantravelPackagesPage({
             <SafeImage
               src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1100&q=90"
               alt="חבילות נסיעה"
+              editId="packagesPage.hero.image"
             />
           </Reveal>
         </div>

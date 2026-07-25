@@ -173,13 +173,20 @@ function footerHtml() {
 `;
 }
 
+function visualImageAttrs(id: string, label?: string) {
+  const cleanId = String(id || "").trim();
+  const cleanLabel = String(label || "").replace(/"/g, "&quot;");
+
+  return `data-visual-edit-id="${cleanId}" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="${cleanId}" data-image-field="${cleanId}" data-visual-image-field="${cleanId}"${cleanLabel ? ` data-visual-edit-label="${cleanLabel}"` : ""}`;
+}
+
 function servicesCardsHtml() {
   return lunelleServices
     .map(
-      (service) => `
+      (service, index) => `
 <article data-section-kind="service-card" data-section-title="${service.title}" class="lunelle-card lunelle-shine overflow-hidden rounded-[34px] border border-[#2a171c]/10 bg-white shadow-[0_22px_70px_rgba(42,23,28,.08)]">
   <div class="overflow-hidden bg-[#f1d7dc]">
-    <img data-gjs-type="image" src="${service.image}" alt="${service.title}" class="lunelle-image-hover h-[300px] w-full object-cover" />
+    <img data-gjs-type="image" ${visualImageAttrs(`services.${index}.image`, service.title)} src="${service.image}" alt="${service.title}" class="lunelle-image-hover h-[300px] w-full object-cover" />
   </div>
   <div class="p-7">
     <div class="flex items-start justify-between gap-4">
@@ -201,7 +208,7 @@ function galleryHtml() {
 <div data-section-kind="gallery-image" data-section-title="Gallery ${index + 1}" class="lunelle-card lunelle-shine overflow-hidden rounded-[34px] bg-[#f0d8dc] ${
         index % 3 === 0 ? "md:row-span-2" : ""
       }">
-  <img data-gjs-type="image" src="${image}" alt="Lunelle gallery ${
+  <img data-gjs-type="image" ${visualImageAttrs(`gallery.${index}.image`, `Gallery ${index + 1}`)} src="${image}" alt="Lunelle gallery ${
         index + 1
       }" class="lunelle-image-hover h-full min-h-[260px] w-full object-cover" />
 </div>`,
@@ -306,11 +313,11 @@ export function createLunelleHomeHtml() {
           </div>
 
           <div class="lunelle-card lunelle-shine overflow-hidden rounded-[46px] border-[10px] border-white bg-[#f1d7dc] shadow-[0_35px_100px_rgba(42,23,28,.18)]">
-            <img data-gjs-type="image" src="${lunelleImages.hero}" alt="Lunelle Studio manicure" class="lunelle-image-hover h-[650px] w-full object-cover" />
+            <img data-gjs-type="image" ${visualImageAttrs("hero.image", "Lunelle Studio manicure")} src="${lunelleImages.hero}" alt="Lunelle Studio manicure" class="lunelle-image-hover h-[650px] w-full object-cover" />
           </div>
 
           <div class="absolute -bottom-10 right-16 hidden w-[210px] overflow-hidden rounded-[34px] border-[8px] border-white bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.18)] lg:block">
-            <img data-gjs-type="image" src="${lunelleImages.nailArt}" alt="Nail art detail" class="lunelle-image-hover h-[220px] w-full object-cover" />
+            <img data-gjs-type="image" ${visualImageAttrs("hero.detail.image", "Nail art detail")} src="${lunelleImages.nailArt}" alt="Nail art detail" class="lunelle-image-hover h-[220px] w-full object-cover" />
           </div>
         </div>
       </div>
@@ -394,10 +401,10 @@ ${marqueeHtml()}
 
     <div class="grid grid-cols-2 gap-5">
       <div class="lunelle-card overflow-hidden rounded-[38px] bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.12)]">
-        <img data-gjs-type="image" src="${lunelleImages.studio}" alt="Nail studio" class="lunelle-image-hover h-[520px] w-full object-cover" />
+        <img data-gjs-type="image" ${visualImageAttrs("about.images.0", "Nail studio")} src="${lunelleImages.studio}" alt="Nail studio" class="lunelle-image-hover h-[520px] w-full object-cover" />
       </div>
       <div class="lunelle-card mt-14 overflow-hidden rounded-[38px] bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.12)]">
-        <img data-gjs-type="image" src="${lunelleImages.tools}" alt="Nail tools" class="lunelle-image-hover h-[520px] w-full object-cover" />
+        <img data-gjs-type="image" ${visualImageAttrs("about.images.1", "Nail tools")} src="${lunelleImages.tools}" alt="Nail tools" class="lunelle-image-hover h-[520px] w-full object-cover" />
       </div>
     </div>
   </div>
@@ -558,7 +565,7 @@ ${marqueeHtml()}
       </div>
     </form>
 
-    <img data-gjs-type="image" src="${lunelleImages.studio}" alt="Lunelle studio" class="lunelle-image-hover h-full min-h-[620px] rounded-[40px] object-cover shadow-[0_25px_80px_rgba(42,23,28,.12)]" />
+    <img data-gjs-type="image" ${visualImageAttrs("contact.image", "Lunelle studio")} src="${lunelleImages.studio}" alt="Lunelle studio" class="lunelle-image-hover h-full min-h-[620px] rounded-[40px] object-cover shadow-[0_25px_80px_rgba(42,23,28,.12)]" />
   </div>
 </section>
 `);
