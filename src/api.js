@@ -48,16 +48,6 @@ const isLoginOrRegisterEndpoint = (url = "") => {
   ].some((endpoint) => String(url).endsWith(endpoint));
 };
 
-const PUBLIC_PATHS = new Set([
-  "/",
-  "/login",
-  "/register",
-  "/pricing",
-  "/features",
-  "/about",
-  "/contact",
-]);
-
 // Variables for tracking token refresh and registering callbacks
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -69,16 +59,6 @@ function onRefreshed(token) {
 
 function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
-}
-
-function redirectToLoginIfNeeded() {
-  const pathname = window.location.pathname;
-  const isAlreadyOnLogin = pathname === "/login";
-  const isPublicPage = PUBLIC_PATHS.has(pathname);
-
-  if (!isAlreadyOnLogin && !isPublicPage) {
-    window.location.replace("/login");
-  }
 }
 
 // Request interceptor
@@ -166,13 +146,10 @@ API.interceptors.response.use(
         onRefreshed(null);
 
         if (err.message !== "NO_REFRESH_TOKEN") {
-          console.error("Error refreshing token:", err);
+          console.warn("Error refreshing token:", err?.message || err);
         }
 
-        localStorage.removeItem("token");
-        delete API.defaults.headers.common["Authorization"];
-        redirectToLoginIfNeeded();
-
+        // Do not clear session or redirect — only explicit logout disconnects
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

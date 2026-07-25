@@ -102,15 +102,18 @@ export async function getValidAccessToken(options = {}) {
       return token || null;
     }
 
-    if (err.message === "NO_REFRESH_TOKEN") {
-      return token || null;
-    }
+    // Keep the session alive — only explicit logout clears tokens
+    console.warn("Failed to refresh access token:", err?.message || err);
+    return token || null;
+  }
+}
 
-    console.error("Failed to refresh access token:", err);
-    localStorage.removeItem("token");
-    if (typeof authHeaderSetter === "function") {
-      authHeaderSetter(null);
-    }
-    return null;
+/**
+ * Clear access token from storage. Call only from explicit logout.
+ */
+export function clearAccessToken() {
+  localStorage.removeItem("token");
+  if (typeof authHeaderSetter === "function") {
+    authHeaderSetter(null);
   }
 }
