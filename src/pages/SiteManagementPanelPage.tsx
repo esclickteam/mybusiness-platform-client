@@ -29,9 +29,7 @@ import {
   getPluginIcon,
   getSectionIcon,
   getSectionMetaForPlugin,
-  PLUGIN_SECTION_MAP,
   resolvePluginSection,
-  SECTION_META,
   type SitePanelSection,
 } from "../data/sitePluginNav";
 
@@ -252,7 +250,7 @@ export default function SiteManagementPanelPage() {
           <nav className="flex min-w-max gap-0.5 border-t border-violet-50 pt-0.5">
             {navSections.map((section) => {
               const Icon = getSectionIcon(section);
-              const meta = SECTION_META[section];
+              const meta = getSectionMetaForPlugin(section, catalog);
               const active = activeSection === section;
 
               return (
