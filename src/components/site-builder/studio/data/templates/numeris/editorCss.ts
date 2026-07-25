@@ -1,11 +1,11 @@
 export const numerisEditorCss = `
-@import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Figtree:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
 
 [data-template-id="numeris"],
 [data-template-id="numeris-preview"] {
   --p: #0F6E56;
   --s: #F3F6F4;
-  --a: #1D9B75;
+  --a: #158765;
   --bg: #F3F6F4;
   --surface: #FFFFFF;
   --text: #143028;
@@ -14,6 +14,12 @@ export const numerisEditorCss = `
   font-family: "Figtree", sans-serif;
   color: var(--text);
   background: var(--bg);
+  scroll-behavior: smooth;
+}
+
+[data-template-id="numeris"] *,
+[data-template-id="numeris-preview"] * {
+  border-radius: 0 !important;
 }
 
 [data-template-id="numeris"] .t-display,
@@ -21,41 +27,52 @@ export const numerisEditorCss = `
   font-family: "Literata", serif;
 }
 
-@keyframes t-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes t-scale {
-  from { transform: scale(1.08); }
-  to { transform: scale(1); }
-}
-@keyframes t-line {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+@keyframes nu-ledger-shift {
+  from { background-position: 0 0, 0 0; }
+  to { background-position: 40px 40px, 160px 0; }
 }
 
-[data-template-id="numeris"] .t-anim,
-[data-template-id="numeris-preview"] .t-anim {
-  animation: t-up 0.85s cubic-bezier(0.22,1,0.36,1) both;
+@keyframes nu-tile-glow {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.16), 0 18px 42px rgba(15,110,86,.12); }
+  50% { box-shadow: inset 0 0 0 1px rgba(255,255,255,.3), 0 28px 60px rgba(15,110,86,.22); }
 }
-[data-template-id="numeris"] .t-d1,
-[data-template-id="numeris-preview"] .t-d1 { animation-delay: .12s; }
-[data-template-id="numeris"] .t-d2,
-[data-template-id="numeris-preview"] .t-d2 { animation-delay: .24s; }
-[data-template-id="numeris"] .t-ken,
-[data-template-id="numeris-preview"] .t-ken { animation: t-scale 14s ease-out both; }
-[data-template-id="numeris"] .t-line,
-[data-template-id="numeris-preview"] .t-line {
-  transform-origin: right center;
-  animation: t-line .9s .35s cubic-bezier(0.22,1,0.36,1) both;
+
+@keyframes nu-rule-scan {
+  from { transform: translateX(0); }
+  to { transform: translateX(-24px); }
 }
-[data-template-id="numeris"] .t-card,
-[data-template-id="numeris-preview"] .t-card {
-  border-radius: 0;
-  transition: transform .45s ease, border-color .3s ease, background .3s ease;
+
+[data-template-id="numeris"] .nu-ledger-bg,
+[data-template-id="numeris-preview"] .nu-ledger-bg {
+  background-image:
+    linear-gradient(rgba(15,110,86,.095) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15,110,86,.095) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.35), rgba(255,255,255,0));
+  background-size: 40px 40px, 40px 40px, 180px 100%;
+  animation: nu-ledger-shift 18s linear infinite;
 }
-[data-template-id="numeris"] .t-card:hover,
-[data-template-id="numeris-preview"] .t-card:hover {
-  transform: translateY(-4px);
+
+[data-template-id="numeris"] .nu-stat-tile,
+[data-template-id="numeris-preview"] .nu-stat-tile {
+  animation: nu-tile-glow 3.8s ease-in-out infinite;
+}
+
+[data-template-id="numeris"] .nu-stat-tile:nth-child(2n),
+[data-template-id="numeris-preview"] .nu-stat-tile:nth-child(2n) {
+  animation-delay: .5s;
+}
+
+[data-template-id="numeris"] table,
+[data-template-id="numeris-preview"] table {
+  border-collapse: collapse;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="numeris"] .nu-ledger-bg,
+  [data-template-id="numeris-preview"] .nu-ledger-bg,
+  [data-template-id="numeris"] .nu-stat-tile,
+  [data-template-id="numeris-preview"] .nu-stat-tile {
+    animation: none;
+  }
 }
 `;

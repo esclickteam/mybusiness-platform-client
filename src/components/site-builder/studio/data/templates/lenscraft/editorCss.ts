@@ -1,5 +1,5 @@
 export const lenscraftEditorCss = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter+Tight:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 [data-template-id="lenscraft"],
 [data-template-id="lenscraft-preview"] {
@@ -11,51 +11,104 @@ export const lenscraftEditorCss = `
   --text: #FAFAFA;
   --muted: #A1A1AA;
   --dark: #09090B;
-  font-family: "Inter Tight", sans-serif;
+  font-family: "Space Grotesk", sans-serif;
   color: var(--text);
   background: var(--bg);
+  scroll-behavior: smooth;
 }
 
-[data-template-id="lenscraft"] .t-display,
-[data-template-id="lenscraft-preview"] .t-display {
-  font-family: "Space Grotesk", serif;
+[data-template-id="lenscraft"] *,
+[data-template-id="lenscraft-preview"] * {
+  border-radius: 0 !important;
 }
 
-@keyframes t-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes t-scale {
-  from { transform: scale(1.08); }
-  to { transform: scale(1); }
-}
-@keyframes t-line {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+@keyframes lc-hero-drift {
+  0% { transform: scale(1.08) translateX(0); }
+  100% { transform: scale(1.16) translateX(-2.5%); }
 }
 
-[data-template-id="lenscraft"] .t-anim,
-[data-template-id="lenscraft-preview"] .t-anim {
-  animation: t-up 0.85s cubic-bezier(0.22,1,0.36,1) both;
+@keyframes lc-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
 }
-[data-template-id="lenscraft"] .t-d1,
-[data-template-id="lenscraft-preview"] .t-d1 { animation-delay: .12s; }
-[data-template-id="lenscraft"] .t-d2,
-[data-template-id="lenscraft-preview"] .t-d2 { animation-delay: .24s; }
-[data-template-id="lenscraft"] .t-ken,
-[data-template-id="lenscraft-preview"] .t-ken { animation: t-scale 14s ease-out both; }
-[data-template-id="lenscraft"] .t-line,
-[data-template-id="lenscraft-preview"] .t-line {
-  transform-origin: right center;
-  animation: t-line .9s .35s cubic-bezier(0.22,1,0.36,1) both;
+
+@keyframes lc-flicker {
+  0%, 100% { opacity: .16; transform: translateY(0); }
+  50% { opacity: .32; transform: translateY(-8px); }
 }
-[data-template-id="lenscraft"] .t-card,
-[data-template-id="lenscraft-preview"] .t-card {
-  border-radius: 0;
-  transition: transform .45s ease, border-color .3s ease, background .3s ease;
+
+[data-template-id="lenscraft"] .lc-hero-image,
+[data-template-id="lenscraft-preview"] .lc-hero-image {
+  animation: lc-hero-drift 18s ease-in-out infinite alternate;
 }
-[data-template-id="lenscraft"] .t-card:hover,
-[data-template-id="lenscraft-preview"] .t-card:hover {
-  transform: translateY(-4px);
+
+[data-template-id="lenscraft"] .lc-filmstrip,
+[data-template-id="lenscraft-preview"] .lc-filmstrip {
+  scrollbar-width: thin;
+  scrollbar-color: var(--p) #09090B;
+  background-image:
+    linear-gradient(90deg, rgba(225,29,72,.16) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.06) 1px, transparent 1px);
+  background-size: 80px 100%, 12px 100%;
+}
+
+[data-template-id="lenscraft"] .lc-filmstrip::before,
+[data-template-id="lenscraft-preview"] .lc-filmstrip::before,
+[data-template-id="lenscraft"] .lc-filmstrip::after,
+[data-template-id="lenscraft-preview"] .lc-filmstrip::after {
+  content: "";
+  flex: 0 0 1px;
+}
+
+[data-template-id="lenscraft"] .lc-package-strip,
+[data-template-id="lenscraft-preview"] .lc-package-strip {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-template-id="lenscraft"] .lc-package-strip::before,
+[data-template-id="lenscraft-preview"] .lc-package-strip::before,
+[data-template-id="lenscraft"] .lc-package-strip::after,
+[data-template-id="lenscraft-preview"] .lc-package-strip::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  width: 12px;
+  background-image: radial-gradient(circle, var(--p) 2px, transparent 2.5px);
+  background-size: 12px 20px;
+  animation: lc-flicker 2.8s ease-in-out infinite;
+}
+
+[data-template-id="lenscraft"] .lc-package-strip::before,
+[data-template-id="lenscraft-preview"] .lc-package-strip::before {
+  right: 0;
+}
+
+[data-template-id="lenscraft"] .lc-package-strip::after,
+[data-template-id="lenscraft-preview"] .lc-package-strip::after {
+  left: 0;
+}
+
+[data-template-id="lenscraft"] .lc-marquee,
+[data-template-id="lenscraft-preview"] .lc-marquee {
+  animation: lc-marquee 24s linear infinite;
+}
+
+[data-template-id="lenscraft"] .lc-marquee:hover,
+[data-template-id="lenscraft-preview"] .lc-marquee:hover {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="lenscraft"] .lc-hero-image,
+  [data-template-id="lenscraft-preview"] .lc-hero-image,
+  [data-template-id="lenscraft"] .lc-marquee,
+  [data-template-id="lenscraft-preview"] .lc-marquee,
+  [data-template-id="lenscraft"] .lc-package-strip::before,
+  [data-template-id="lenscraft-preview"] .lc-package-strip::before,
+  [data-template-id="lenscraft"] .lc-package-strip::after,
+  [data-template-id="lenscraft-preview"] .lc-package-strip::after {
+    animation: none;
+  }
 }
 `;
