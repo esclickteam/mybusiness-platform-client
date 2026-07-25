@@ -36,15 +36,17 @@ function pump() {
       return;
     }
 
-    const batch = queue.splice(0, BATCH_SIZE);
-    for (const key of batch) {
-      if (activated.has(key)) continue;
-      if (activated.size >= MAX_ACTIVE) {
-        queue.unshift(key, ...batch.slice(batch.indexOf(key) + 1));
-        break;
-      }
+    let activatedThisTick = 0;
+    while (
+      queue.length &&
+      activated.size < MAX_ACTIVE &&
+      activatedThisTick < BATCH_SIZE
+    ) {
+      const key = queue.shift();
+      if (!key || activated.has(key)) continue;
       activated.add(key);
       notify(key, true);
+      activatedThisTick += 1;
     }
 
     if (queue.length) {
