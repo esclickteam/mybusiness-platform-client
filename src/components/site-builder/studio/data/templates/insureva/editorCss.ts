@@ -19,11 +19,6 @@ export const insurevaEditorCss = `
 [data-template-id="insureva-preview"] .ag-display {
   font-family: "IBM Plex Sans Hebrew", "Heebo", sans-serif;
 }
-[data-template-id="insureva"] .ag-marquee,
-[data-template-id="insureva-preview"] .ag-marquee {
-  animation: insurevaMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="insureva"] .ag-float,
 [data-template-id="insureva-preview"] .ag-float {
   animation: insurevaFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const insurevaEditorCss = `
 [data-template-id="insureva-preview"] .ag-ken {
   animation: insurevaKen 18s ease-in-out infinite alternate;
 }
-@keyframes insurevaMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes insurevaFloat {
@@ -63,9 +56,7 @@ export const insurevaEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="insureva"] .ag-marquee,
-  [data-template-id="insureva-preview"] .ag-marquee,
-  [data-template-id="insureva"] .ag-float,
+    [data-template-id="insureva"] .ag-float,
   [data-template-id="insureva-preview"] .ag-float,
   [data-template-id="insureva"] .ag-ken,
   [data-template-id="insureva-preview"] .ag-ken,

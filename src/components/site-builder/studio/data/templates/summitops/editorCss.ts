@@ -19,11 +19,6 @@ export const summitopsEditorCss = `
 [data-template-id="summitops-preview"] .ag-display {
   font-family: "Manrope", "Heebo", sans-serif;
 }
-[data-template-id="summitops"] .ag-marquee,
-[data-template-id="summitops-preview"] .ag-marquee {
-  animation: summitopsMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="summitops"] .ag-float,
 [data-template-id="summitops-preview"] .ag-float {
   animation: summitopsFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const summitopsEditorCss = `
 [data-template-id="summitops-preview"] .ag-ken {
   animation: summitopsKen 18s ease-in-out infinite alternate;
 }
-@keyframes summitopsMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes summitopsFloat {
@@ -63,9 +56,7 @@ export const summitopsEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="summitops"] .ag-marquee,
-  [data-template-id="summitops-preview"] .ag-marquee,
-  [data-template-id="summitops"] .ag-float,
+    [data-template-id="summitops"] .ag-float,
   [data-template-id="summitops-preview"] .ag-float,
   [data-template-id="summitops"] .ag-ken,
   [data-template-id="summitops-preview"] .ag-ken,

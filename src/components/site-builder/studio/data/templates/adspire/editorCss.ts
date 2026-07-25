@@ -19,11 +19,6 @@ export const adspireEditorCss = `
 [data-template-id="adspire-preview"] .ag-display {
   font-family: "Space Grotesk", "Heebo", sans-serif;
 }
-[data-template-id="adspire"] .ag-marquee,
-[data-template-id="adspire-preview"] .ag-marquee {
-  animation: adspireMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="adspire"] .ag-float,
 [data-template-id="adspire-preview"] .ag-float {
   animation: adspireFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const adspireEditorCss = `
 [data-template-id="adspire-preview"] .ag-ken {
   animation: adspireKen 18s ease-in-out infinite alternate;
 }
-@keyframes adspireMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes adspireFloat {
@@ -63,9 +56,7 @@ export const adspireEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="adspire"] .ag-marquee,
-  [data-template-id="adspire-preview"] .ag-marquee,
-  [data-template-id="adspire"] .ag-float,
+    [data-template-id="adspire"] .ag-float,
   [data-template-id="adspire-preview"] .ag-float,
   [data-template-id="adspire"] .ag-ken,
   [data-template-id="adspire-preview"] .ag-ken,

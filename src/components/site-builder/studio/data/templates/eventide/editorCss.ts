@@ -19,11 +19,6 @@ export const eventideEditorCss = `
 [data-template-id="eventide-preview"] .ag-display {
   font-family: "Space Grotesk", "Heebo", sans-serif;
 }
-[data-template-id="eventide"] .ag-marquee,
-[data-template-id="eventide-preview"] .ag-marquee {
-  animation: eventideMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="eventide"] .ag-float,
 [data-template-id="eventide-preview"] .ag-float {
   animation: eventideFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const eventideEditorCss = `
 [data-template-id="eventide-preview"] .ag-ken {
   animation: eventideKen 18s ease-in-out infinite alternate;
 }
-@keyframes eventideMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes eventideFloat {
@@ -63,9 +56,7 @@ export const eventideEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="eventide"] .ag-marquee,
-  [data-template-id="eventide-preview"] .ag-marquee,
-  [data-template-id="eventide"] .ag-float,
+    [data-template-id="eventide"] .ag-float,
   [data-template-id="eventide-preview"] .ag-float,
   [data-template-id="eventide"] .ag-ken,
   [data-template-id="eventide-preview"] .ag-ken,

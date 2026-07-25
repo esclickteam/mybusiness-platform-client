@@ -19,11 +19,6 @@ export const mediavaultEditorCss = `
 [data-template-id="mediavault-preview"] .ag-display {
   font-family: "IBM Plex Sans Hebrew", "Heebo", sans-serif;
 }
-[data-template-id="mediavault"] .ag-marquee,
-[data-template-id="mediavault-preview"] .ag-marquee {
-  animation: mediavaultMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="mediavault"] .ag-float,
 [data-template-id="mediavault-preview"] .ag-float {
   animation: mediavaultFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const mediavaultEditorCss = `
 [data-template-id="mediavault-preview"] .ag-ken {
   animation: mediavaultKen 18s ease-in-out infinite alternate;
 }
-@keyframes mediavaultMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes mediavaultFloat {
@@ -63,9 +56,7 @@ export const mediavaultEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="mediavault"] .ag-marquee,
-  [data-template-id="mediavault-preview"] .ag-marquee,
-  [data-template-id="mediavault"] .ag-float,
+    [data-template-id="mediavault"] .ag-float,
   [data-template-id="mediavault-preview"] .ag-float,
   [data-template-id="mediavault"] .ag-ken,
   [data-template-id="mediavault-preview"] .ag-ken,

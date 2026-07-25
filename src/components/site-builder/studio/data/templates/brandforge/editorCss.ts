@@ -19,11 +19,6 @@ export const brandforgeEditorCss = `
 [data-template-id="brandforge-preview"] .ag-display {
   font-family: "Syne", "Heebo", sans-serif;
 }
-[data-template-id="brandforge"] .ag-marquee,
-[data-template-id="brandforge-preview"] .ag-marquee {
-  animation: brandforgeMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="brandforge"] .ag-float,
 [data-template-id="brandforge-preview"] .ag-float {
   animation: brandforgeFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const brandforgeEditorCss = `
 [data-template-id="brandforge-preview"] .ag-ken {
   animation: brandforgeKen 18s ease-in-out infinite alternate;
 }
-@keyframes brandforgeMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes brandforgeFloat {
@@ -63,9 +56,7 @@ export const brandforgeEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="brandforge"] .ag-marquee,
-  [data-template-id="brandforge-preview"] .ag-marquee,
-  [data-template-id="brandforge"] .ag-float,
+    [data-template-id="brandforge"] .ag-float,
   [data-template-id="brandforge-preview"] .ag-float,
   [data-template-id="brandforge"] .ag-ken,
   [data-template-id="brandforge-preview"] .ag-ken,
