@@ -1,3 +1,8 @@
+import {
+  readVisualInsertedElements,
+  removeVisualInsertedElement,
+} from "../../site-builder/studio/visual-editor/utils/visualData";
+
 import type { SiteAuthSettings } from "../../api/siteMemberAuthApi";
 
 export type SiteAuthWidgetSettings = SiteAuthSettings & {
@@ -139,8 +144,30 @@ export function shouldMountInlineAuthButton(_settings: SiteAuthWidgetSettings) {
   return false;
 }
 
-export function shouldCollectRegisterPhone(settings: SiteAuthWidgetSettings) {
-  return (
-    settings.registerCollectPhone || settings.autoAddRegisterAsCrmClient
-  );
+export function shouldCollectRegisterPhone(_settings: SiteAuthWidgetSettings) {
+  return true;
+}
+
+export function stripLegacySiteAuthWidgetsFromVisualData(data: Record<string, any>) {
+  const elements = readVisualInsertedElements(data || {});
+  let next = data || {};
+  let changed = false;
+
+  Object.values(elements).forEach((item) => {
+    const id = String(item?.id || "");
+    const html = String(item?.html || "");
+    const label = String(item?.label || "");
+    const isLegacySiteAuth =
+      html.includes('data-bizuply-widget="site-auth"') ||
+      html.includes('data-bizuply-plugin="site-auth"') ||
+      label.includes("התחברות ואזור אישי") ||
+      label.includes("כפתור התחברות");
+
+    if (id && isLegacySiteAuth) {
+      next = removeVisualInsertedElement(next, id);
+      changed = true;
+    }
+  });
+
+  return { data: next, changed };
 }

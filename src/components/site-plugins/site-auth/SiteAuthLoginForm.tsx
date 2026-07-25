@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
 import type { SiteAuthWidgetSettings } from "./siteAuthUtils";
-import { shouldCollectRegisterPhone } from "./siteAuthUtils";
 import {
   buildSiteAuthButtonStyle,
   buildSiteAuthInputStyle,
@@ -18,6 +17,7 @@ type SiteAuthLoginFormProps = {
   compact?: boolean;
   onSuccess?: () => void;
   onForgotPassword?: () => void;
+  initialMode?: "login" | "register";
 };
 
 export default function SiteAuthLoginForm({
@@ -26,12 +26,11 @@ export default function SiteAuthLoginForm({
   compact = false,
   onSuccess,
   onForgotPassword,
+  initialMode = "login",
 }: SiteAuthLoginFormProps) {
   const { login, register } = useSiteMemberAuth();
-  const [mode, setMode] = useState<"login" | "register">("login");
-  const [loginValue, setLoginValue] = useState("");
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
   const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -42,7 +41,7 @@ export default function SiteAuthLoginForm({
   const inputStyle = buildSiteAuthInputStyle(settings);
   const buttonStyle = buildSiteAuthButtonStyle(settings, brandColor);
   const linkStyle = buildSiteAuthLinkStyle(settings, brandColor);
-  const showPhone = mode === "register" && shouldCollectRegisterPhone(settings);
+  const accent = resolveSiteAuthAccentColor(settings, brandColor);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -51,14 +50,13 @@ export default function SiteAuthLoginForm({
 
     try {
       if (mode === "login") {
-        await login(loginValue, password);
+        await login(email.trim(), password);
       } else {
         await register({
-          email: email || undefined,
-          username: username || undefined,
+          email: email.trim(),
           password,
-          displayName: displayName || undefined,
-          phone: phone || undefined,
+          displayName: displayName.trim(),
+          phone: phone.trim(),
         });
       }
       onSuccess?.();
@@ -77,22 +75,50 @@ export default function SiteAuthLoginForm({
       {mode === "login" ? (
         <label className="block space-y-2">
           <span className="text-sm font-bold" style={labelStyle}>
-            אימייל או שם משתמש
+            אימייל
           </span>
           <input
             className={inputClass}
             style={{
               ...inputStyle,
-              boxShadow: `0 0 0 2px ${resolveSiteAuthAccentColor(settings, brandColor)}22`,
+              boxShadow: `0 0 0 2px ${accent}22`,
             }}
-            value={loginValue}
-            onChange={(e) => setLoginValue(e.target.value)}
-            autoComplete="username"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
             required
           />
         </label>
       ) : (
         <>
+          <label className="block space-y-2">
+            <span className="text-sm font-bold" style={labelStyle}>
+              שם מלא
+            </span>
+            <input
+              className={inputClass}
+              style={inputStyle}
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              autoComplete="name"
+              required
+            />
+          </label>
+          <label className="block space-y-2">
+            <span className="text-sm font-bold" style={labelStyle}>
+              טלפון
+            </span>
+            <input
+              className={inputClass}
+              style={inputStyle}
+              type="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              autoComplete="tel"
+              required
+            />
+          </label>
           <label className="block space-y-2">
             <span className="text-sm font-bold" style={labelStyle}>
               אימייל
@@ -104,46 +130,9 @@ export default function SiteAuthLoginForm({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               autoComplete="email"
+              required
             />
           </label>
-          <label className="block space-y-2">
-            <span className="text-sm font-bold" style={labelStyle}>
-              שם משתמש
-            </span>
-            <input
-              className={inputClass}
-              style={inputStyle}
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              autoComplete="username"
-            />
-          </label>
-          <label className="block space-y-2">
-            <span className="text-sm font-bold" style={labelStyle}>
-              שם תצוגה
-            </span>
-            <input
-              className={inputClass}
-              style={inputStyle}
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-            />
-          </label>
-          {showPhone ? (
-            <label className="block space-y-2">
-              <span className="text-sm font-bold" style={labelStyle}>
-                טלפון{settings.autoAddRegisterAsCrmClient ? " *" : ""}
-              </span>
-              <input
-                className={inputClass}
-                style={inputStyle}
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                autoComplete="tel"
-                required={settings.autoAddRegisterAsCrmClient}
-              />
-            </label>
-          ) : null}
         </>
       )}
 
@@ -207,7 +196,7 @@ export default function SiteAuthLoginForm({
         <button
           type="button"
           className="w-full text-sm font-bold"
-          style={{ color: settings.formTextColor || "#64748b" }}
+          style={{ color: accent }}
           onClick={() => {
             setMode(mode === "login" ? "register" : "login");
             setError("");
