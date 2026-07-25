@@ -1,5 +1,5 @@
 export const formaraEditorCss = `
-@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 [data-template-id="formara"],
 [data-template-id="formara-preview"] {
@@ -9,53 +9,76 @@ export const formaraEditorCss = `
   --bg: #1E1C1A;
   --surface: #2A2623;
   --text: #F3EEE7;
-  --muted: #A39A90;
+  --muted: #B6AAA0;
   --dark: #12100E;
   font-family: "Manrope", sans-serif;
   color: var(--text);
   background: var(--bg);
 }
 
+[data-template-id="formara"] *,
+[data-template-id="formara-preview"] * {
+  border-radius: 0 !important;
+}
+
 [data-template-id="formara"] .t-display,
 [data-template-id="formara-preview"] .t-display {
   font-family: "Instrument Serif", serif;
+  font-weight: 400;
+  letter-spacing: -0.035em;
 }
 
-@keyframes t-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes t-scale {
-  from { transform: scale(1.08); }
+@keyframes formara-hero-zoom {
+  from { transform: scale(1.1); }
   to { transform: scale(1); }
 }
-@keyframes t-line {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+
+@keyframes formara-bar-rise {
+  from { opacity: 0; transform: translateY(36px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-[data-template-id="formara"] .t-anim,
-[data-template-id="formara-preview"] .t-anim {
-  animation: t-up 0.85s cubic-bezier(0.22,1,0.36,1) both;
+@keyframes formara-copy-in {
+  from { opacity: 0; transform: translateX(28px); }
+  to { opacity: 1; transform: translateX(0); }
 }
-[data-template-id="formara"] .t-d1,
-[data-template-id="formara-preview"] .t-d1 { animation-delay: .12s; }
-[data-template-id="formara"] .t-d2,
-[data-template-id="formara-preview"] .t-d2 { animation-delay: .24s; }
-[data-template-id="formara"] .t-ken,
-[data-template-id="formara-preview"] .t-ken { animation: t-scale 14s ease-out both; }
-[data-template-id="formara"] .t-line,
-[data-template-id="formara-preview"] .t-line {
-  transform-origin: right center;
-  animation: t-line .9s .35s cubic-bezier(0.22,1,0.36,1) both;
+
+@keyframes formara-clay-pulse {
+  0%, 100% { box-shadow: inset 0 0 0 1px rgba(139, 94, 60, 0.24); }
+  50% { box-shadow: inset 0 0 0 1px rgba(139, 94, 60, 0.58); }
 }
-[data-template-id="formara"] .t-card,
-[data-template-id="formara-preview"] .t-card {
-  border-radius: 0;
-  transition: transform .45s ease, border-color .3s ease, background .3s ease;
+
+[data-template-id="formara"] .t-hero-zoom,
+[data-template-id="formara-preview"] .t-hero-zoom {
+  animation: formara-hero-zoom 18s ease-out both;
 }
-[data-template-id="formara"] .t-card:hover,
-[data-template-id="formara-preview"] .t-card:hover {
-  transform: translateY(-4px);
+
+[data-template-id="formara"] .t-hero-bar,
+[data-template-id="formara-preview"] .t-hero-bar {
+  animation: formara-bar-rise .9s .1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+[data-template-id="formara"] .t-hero-copy,
+[data-template-id="formara-preview"] .t-hero-copy {
+  animation: formara-copy-in .9s .28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+[data-template-id="formara"] .t-material-card,
+[data-template-id="formara-preview"] .t-material-card {
+  transition: transform .45s ease, border-color .35s ease, background .35s ease;
+}
+
+[data-template-id="formara"] .t-material-card:hover,
+[data-template-id="formara-preview"] .t-material-card:hover {
+  border-color: rgba(139, 94, 60, .72);
+  transform: translateY(-6px);
+  animation: formara-clay-pulse 1.8s ease-in-out infinite;
+}
+
+[data-template-id="formara"] input,
+[data-template-id="formara"] textarea,
+[data-template-id="formara-preview"] input,
+[data-template-id="formara-preview"] textarea {
+  font-family: "Manrope", sans-serif;
 }
 `;
