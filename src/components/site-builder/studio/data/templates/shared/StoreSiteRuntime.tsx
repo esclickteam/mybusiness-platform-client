@@ -537,7 +537,7 @@ export default function StoreSiteRuntime({
         className={cx("store-card group relative w-full overflow-hidden border border-[var(--line)] text-right", className)}
       >
         <StoreImage
-          src={cat.image || fallbackCategoryImages[index % fallbackCategoryImages.length] || g("heroImage")}
+          src={cat.image || fallbackCategoryImages[index % fallbackCategoryImages.length] || g("heroImage") || SAFE_IMAGE_FALLBACK}
           alt={cat.name}
           fallbackLabel={cat.name}
           className={cx("h-full w-full object-cover transition duration-700 group-hover:scale-110", imageClassName)}

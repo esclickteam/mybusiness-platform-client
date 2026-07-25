@@ -4,6 +4,7 @@ import { kidwiseDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { kidwiseEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import SafeImg from "../shared/SafeImg";
 
 export const kidwisePages = [
   {
@@ -109,7 +110,7 @@ function Header({ data, currentPage, goTo, openModal }: { data: Record<string, a
 function Hero({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
   return (
     <section data-template-section-type="hero" className="relative min-h-[100svh] overflow-hidden">
-      <img src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-l from-[var(--bg)] via-[var(--bg)]/88 to-[var(--bg)]/35" />
       <div className="t-float absolute -left-10 top-24 h-40 w-40 rounded-full bg-[var(--a)]/45" />
       <div className="t-float absolute right-10 top-40 h-24 w-24 rounded-full bg-[var(--p)]/35" style={{animationDelay:"1s"}} />
@@ -170,7 +171,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
         {["תמר","יואב","שירה"].map((n,i) => (
           <Reveal key={n} delayMs={i*100} className="t-hover text-center">
             <div className="t-float mx-auto h-32 w-32 overflow-hidden rounded-full border-4 border-[var(--a)]" style={{animationDelay:i*0.4+"s"}}>
-              <img src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" />
+              <SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" />
             </div>
             <p className="mt-3 font-bold text-[var(--dark)]">{n}</p>
             <p className="text-sm text-[var(--p)]">מורה חברותי/ת</p>
@@ -279,7 +280,7 @@ function galleryItems(data: Record<string, any>) {
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
   return (
     <section data-template-section-type="pageHero" className="relative overflow-hidden px-5 py-28 lg:px-8 bg-[var(--bg)] text-[var(--dark)]">
-      <img src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover rounded-[2rem]" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover rounded-[2rem]" />
       <div className="absolute inset-0 bg-[var(--dark)]/70" />
       <Reveal className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--a)]">{getValue(data,"heroEyebrow")}</p>
@@ -296,7 +297,7 @@ function About({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="about" className="px-5 py-24 lg:px-8 bg-[var(--bg)] text-[var(--dark)]">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <Reveal className="relative min-h-[360px] overflow-hidden rounded-[2.5rem] bg-white shadow-sm">
-          <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover rounded-[2rem]" />
+          <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover rounded-[2rem]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
           <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">ילדים</span>
         </Reveal>
@@ -360,7 +361,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-12 grid max-w-5xl grid-cols-2 gap-5 md:grid-cols-4">
         {galleryItems(data).map((image, i) => (
           <Reveal key={image} delayMs={i * 80} className="t-hover relative min-h-[260px] overflow-hidden rounded-[2.5rem] bg-white shadow-sm">
-            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 rounded-[2rem]" />
+            <SafeImg src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 rounded-[2rem]" />
             <span className="absolute bottom-4 right-4 px-3 py-1 text-xs font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">0{i + 1}</span>
           </Reveal>
         ))}

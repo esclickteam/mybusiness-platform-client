@@ -4,6 +4,7 @@ import { codehausDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { codehausEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import SafeImg from "../shared/SafeImg";
 
 export const codehausPages = [
   {
@@ -109,7 +110,7 @@ function Header({ data, currentPage, goTo, openModal }: { data: Record<string, a
 function Hero({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
   return (
     <section data-template-section-type="hero" className="relative min-h-[100svh] bg-black px-5 pt-24 lg:px-8">
-      <div className="absolute inset-0 opacity-30"><img src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover grayscale" /></div>
+      <div className="absolute inset-0 opacity-30"><SafeImg src={getValue(data,"heroImage")} alt="" className="t-ken h-full w-full object-cover grayscale" /></div>
       <div className="relative z-10 mx-auto max-w-4xl border border-[var(--p)]/40 bg-black/85 p-6 font-mono md:p-10">
         <div className="mb-4 flex gap-2"><span className="h-3 w-3 rounded-full bg-red-500" /><span className="h-3 w-3 rounded-full bg-yellow-500" /><span className="h-3 w-3 rounded-full bg-[var(--p)]" /></div>
         <Reveal>
@@ -168,7 +169,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-10 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[["@noa","mentor"],["@itai","fullstack"],["@michal","data"],["@gal","devops"]].map(([h,r],i) => (
           <Reveal key={h} delayMs={i*70} className="t-hover border border-[var(--p)]/25 p-4">
-            <div className="mb-3 h-16 w-16 overflow-hidden bg-[var(--surface)]"><img src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" /></div>
+            <div className="mb-3 h-16 w-16 overflow-hidden bg-[var(--surface)]"><SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" /></div>
             <p className="text-[var(--p)]">{h}</p>
             <p className="text-xs text-[var(--muted)]">{r}</p>
           </Reveal>
@@ -274,7 +275,7 @@ function galleryItems(data: Record<string, any>) {
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
   return (
     <section data-template-section-type="pageHero" className="relative overflow-hidden px-5 py-28 lg:px-8 bg-black font-mono text-white">
-      <img src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
+      <SafeImg src={getValue(data,"heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
       <div className="absolute inset-0 bg-[var(--dark)]/70" />
       <Reveal className="relative z-10 mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.35em] text-[var(--a)]">{getValue(data,"heroEyebrow")}</p>
@@ -291,7 +292,7 @@ function About({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="about" className="px-5 py-24 lg:px-8 bg-black font-mono text-white">
       <div className="mx-auto grid max-w-6xl gap-8 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <Reveal className="relative min-h-[360px] overflow-hidden border border-[var(--p)]/35 bg-[var(--surface)]">
-          <img src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
+          <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover grayscale" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
           <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold border border-[var(--p)] text-[var(--p)]">קוד</span>
         </Reveal>
@@ -355,7 +356,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-10 grid max-w-5xl gap-3 md:grid-cols-4">
         {galleryItems(data).map((image, i) => (
           <Reveal key={image} delayMs={i * 80} className="t-hover relative min-h-[260px] overflow-hidden border border-[var(--p)]/35 bg-[var(--surface)]">
-            <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 grayscale" />
+            <SafeImg src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-110 grayscale" />
             <span className="absolute bottom-4 right-4 px-3 py-1 text-xs font-bold border border-[var(--p)] text-[var(--p)]">0{i + 1}</span>
           </Reveal>
         ))}
