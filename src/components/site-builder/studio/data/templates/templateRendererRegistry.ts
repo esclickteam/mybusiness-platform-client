@@ -102,6 +102,81 @@ import FluxoraPages, { fluxoraPages } from "./fluxora/pages";
 import { fluxoraEditorCss } from "./fluxora/editorCss";
 import { fluxoraSchema } from "./fluxora/schema";
 import { fluxoraDefaultData } from "./fluxora/defaultData";
+
+import VerdantPages, { verdantPages } from "./verdant/pages";
+import { verdantEditorCss } from "./verdant/editorCss";
+import { verdantSchema } from "./verdant/schema";
+import { verdantDefaultData } from "./verdant/defaultData";
+
+import SavoryPages, { savoryPages } from "./savory/pages";
+import { savoryEditorCss } from "./savory/editorCss";
+import { savorySchema } from "./savory/schema";
+import { savoryDefaultData } from "./savory/defaultData";
+
+import LuminellePages, { luminellePages } from "./luminelle/pages";
+import { luminelleEditorCss } from "./luminelle/editorCss";
+import { luminelleSchema } from "./luminelle/schema";
+import { luminelleDefaultData } from "./luminelle/defaultData";
+
+import VitalcarePages, { vitalcarePages } from "./vitalcare/pages";
+import { vitalcareEditorCss } from "./vitalcare/editorCss";
+import { vitalcareSchema } from "./vitalcare/schema";
+import { vitalcareDefaultData } from "./vitalcare/defaultData";
+
+import HandcraftPages, { handcraftPages } from "./handcraft/pages";
+import { handcraftEditorCss } from "./handcraft/editorCss";
+import { handcraftSchema } from "./handcraft/schema";
+import { handcraftDefaultData } from "./handcraft/defaultData";
+
+import AdvisoraPages, { advisoraPages } from "./advisora/pages";
+import { advisoraEditorCss } from "./advisora/editorCss";
+import { advisoraSchema } from "./advisora/schema";
+import { advisoraDefaultData } from "./advisora/defaultData";
+
+import MarkoraPages, { markoraPages } from "./markora/pages";
+import { markoraEditorCss } from "./markora/editorCss";
+import { markoraSchema } from "./markora/schema";
+import { markoraDefaultData } from "./markora/defaultData";
+
+import GlinticaPages, { glinticaPages } from "./glintica/pages";
+import { glinticaEditorCss } from "./glintica/editorCss";
+import { glinticaSchema } from "./glintica/schema";
+import { glinticaDefaultData } from "./glintica/defaultData";
+
+import BladehausPages, { bladehausPages } from "./bladehaus/pages";
+import { bladehausEditorCss } from "./bladehaus/editorCss";
+import { bladehausSchema } from "./bladehaus/schema";
+import { bladehausDefaultData } from "./bladehaus/defaultData";
+
+import LexhavenPages, { lexhavenPages } from "./lexhaven/pages";
+import { lexhavenEditorCss } from "./lexhaven/editorCss";
+import { lexhavenSchema } from "./lexhaven/schema";
+import { lexhavenDefaultData } from "./lexhaven/defaultData";
+
+import PulsefitPages, { pulsefitPages } from "./pulsefit/pages";
+import { pulsefitEditorCss } from "./pulsefit/editorCss";
+import { pulsefitSchema } from "./pulsefit/schema";
+import { pulsefitDefaultData } from "./pulsefit/defaultData";
+
+import LenscraftPages, { lenscraftPages } from "./lenscraft/pages";
+import { lenscraftEditorCss } from "./lenscraft/editorCss";
+import { lenscraftSchema } from "./lenscraft/schema";
+import { lenscraftDefaultData } from "./lenscraft/defaultData";
+
+import NumerisPages, { numerisPages } from "./numeris/pages";
+import { numerisEditorCss } from "./numeris/editorCss";
+import { numerisSchema } from "./numeris/schema";
+import { numerisDefaultData } from "./numeris/defaultData";
+
+import FormaraPages, { formaraPages } from "./formara/pages";
+import { formaraEditorCss } from "./formara/editorCss";
+import { formaraSchema } from "./formara/schema";
+import { formaraDefaultData } from "./formara/defaultData";
+
+import VowlinePages, { vowlinePages } from "./vowline/pages";
+import { vowlineEditorCss } from "./vowline/editorCss";
+import { vowlineSchema } from "./vowline/schema";
+import { vowlineDefaultData } from "./vowline/defaultData";
 import LoteraPages, { loteraPages } from "./lotera/pages";
 import { loteraEditorCss } from "./lotera/editorCss";
 import { loteraSchema } from "./lotera/schema";
@@ -695,6 +770,157 @@ export const studioTemplateRendererRegistry: Record<
     schema: fluxoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: fluxoraDefaultData as unknown as Record<string, any>,
     editorCss: fluxoraEditorCss,
+  }),
+
+  verdant: createRenderer({
+    key: "verdant",
+    name: "Verdant",
+    Component: VerdantPages,
+    pages: verdantPages,
+    editorMode: "visual-react",
+    schema: verdantSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: verdantDefaultData as unknown as Record<string, any>,
+    editorCss: verdantEditorCss,
+  }),
+  savory: createRenderer({
+    key: "savory",
+    name: "Savory",
+    Component: SavoryPages,
+    pages: savoryPages,
+    editorMode: "visual-react",
+    schema: savorySchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: savoryDefaultData as unknown as Record<string, any>,
+    editorCss: savoryEditorCss,
+  }),
+  luminelle: createRenderer({
+    key: "luminelle",
+    name: "Luminelle",
+    Component: LuminellePages,
+    pages: luminellePages,
+    editorMode: "visual-react",
+    schema: luminelleSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: luminelleDefaultData as unknown as Record<string, any>,
+    editorCss: luminelleEditorCss,
+  }),
+  vitalcare: createRenderer({
+    key: "vitalcare",
+    name: "Vitalcare",
+    Component: VitalcarePages,
+    pages: vitalcarePages,
+    editorMode: "visual-react",
+    schema: vitalcareSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vitalcareDefaultData as unknown as Record<string, any>,
+    editorCss: vitalcareEditorCss,
+  }),
+  handcraft: createRenderer({
+    key: "handcraft",
+    name: "Handcraft",
+    Component: HandcraftPages,
+    pages: handcraftPages,
+    editorMode: "visual-react",
+    schema: handcraftSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: handcraftDefaultData as unknown as Record<string, any>,
+    editorCss: handcraftEditorCss,
+  }),
+  advisora: createRenderer({
+    key: "advisora",
+    name: "Advisora",
+    Component: AdvisoraPages,
+    pages: advisoraPages,
+    editorMode: "visual-react",
+    schema: advisoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: advisoraDefaultData as unknown as Record<string, any>,
+    editorCss: advisoraEditorCss,
+  }),
+  markora: createRenderer({
+    key: "markora",
+    name: "Markora",
+    Component: MarkoraPages,
+    pages: markoraPages,
+    editorMode: "visual-react",
+    schema: markoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: markoraDefaultData as unknown as Record<string, any>,
+    editorCss: markoraEditorCss,
+  }),
+  glintica: createRenderer({
+    key: "glintica",
+    name: "Glintica",
+    Component: GlinticaPages,
+    pages: glinticaPages,
+    editorMode: "visual-react",
+    schema: glinticaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: glinticaDefaultData as unknown as Record<string, any>,
+    editorCss: glinticaEditorCss,
+  }),
+  bladehaus: createRenderer({
+    key: "bladehaus",
+    name: "Bladehaus",
+    Component: BladehausPages,
+    pages: bladehausPages,
+    editorMode: "visual-react",
+    schema: bladehausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: bladehausDefaultData as unknown as Record<string, any>,
+    editorCss: bladehausEditorCss,
+  }),
+  lexhaven: createRenderer({
+    key: "lexhaven",
+    name: "Lexhaven",
+    Component: LexhavenPages,
+    pages: lexhavenPages,
+    editorMode: "visual-react",
+    schema: lexhavenSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lexhavenDefaultData as unknown as Record<string, any>,
+    editorCss: lexhavenEditorCss,
+  }),
+  pulsefit: createRenderer({
+    key: "pulsefit",
+    name: "Pulsefit",
+    Component: PulsefitPages,
+    pages: pulsefitPages,
+    editorMode: "visual-react",
+    schema: pulsefitSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pulsefitDefaultData as unknown as Record<string, any>,
+    editorCss: pulsefitEditorCss,
+  }),
+  lenscraft: createRenderer({
+    key: "lenscraft",
+    name: "Lenscraft",
+    Component: LenscraftPages,
+    pages: lenscraftPages,
+    editorMode: "visual-react",
+    schema: lenscraftSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lenscraftDefaultData as unknown as Record<string, any>,
+    editorCss: lenscraftEditorCss,
+  }),
+  numeris: createRenderer({
+    key: "numeris",
+    name: "Numeris",
+    Component: NumerisPages,
+    pages: numerisPages,
+    editorMode: "visual-react",
+    schema: numerisSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: numerisDefaultData as unknown as Record<string, any>,
+    editorCss: numerisEditorCss,
+  }),
+  formara: createRenderer({
+    key: "formara",
+    name: "Formara",
+    Component: FormaraPages,
+    pages: formaraPages,
+    editorMode: "visual-react",
+    schema: formaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: formaraDefaultData as unknown as Record<string, any>,
+    editorCss: formaraEditorCss,
+  }),
+  vowline: createRenderer({
+    key: "vowline",
+    name: "Vowline",
+    Component: VowlinePages,
+    pages: vowlinePages,
+    editorMode: "visual-react",
+    schema: vowlineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vowlineDefaultData as unknown as Record<string, any>,
+    editorCss: vowlineEditorCss,
   }),
   lotera: createRenderer({
     key: "lotera",
