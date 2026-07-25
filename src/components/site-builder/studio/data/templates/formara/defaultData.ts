@@ -33,7 +33,7 @@ export const formaraDefaultData = {
   projectOneImage: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1400&q=88",
   projectTwoTitle: "לופט עבודה ביפו",
   projectTwoText: "חלל עבודה חם עם קירות טיח מינרלי, ספריית פלדה ועמדות עבודה שמסתתרות בתוך הריהוט.",
-  projectTwoImage: "https://images.unsplash.com/photo-1600607687644-c7171b42498b?auto=format&fit=crop&w=1400&q=88",
+  projectTwoImage: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=88",
   projectThreeTitle: "סוויטת אירוח במדבר",
   projectThreeText: "מעטפת כהה, טקסטיל טבעי ותאורה נמוכה שיוצרים חוויה אינטימית ורגועה.",
   projectThreeImage: "https://images.unsplash.com/photo-1600566752355-35792bedcfea?auto=format&fit=crop&w=1400&q=88",

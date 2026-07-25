@@ -122,18 +122,27 @@ export default function TemplateCardPreview({
             [data-template-card-live="${key}"] .tpl-marquee-track,
             [data-template-card-live="${key}"] .tpl-float,
             [data-template-card-live="${key}"] .tpl-pulse-line,
-            [data-template-card-live="${key}"] .tpl-sweep::after {
+            [data-template-card-live="${key}"] .tpl-sweep::after,
+            [data-template-card-live="${key}"] [class*="-ken"],
+            [data-template-card-live="${key}"] [class*="kenburns"],
+            [data-template-card-live="${key}"] [class*="hero-image"],
+            [data-template-card-live="${key}"] [class*="marquee"],
+            [data-template-card-live="${key}"] [class*="Marquee"] {
               animation-delay: 0s !important;
               animation-duration: revert-layer !important;
               animation-iteration-count: infinite !important;
               animation-fill-mode: both !important;
               transform: none;
             }
-            [data-template-card-live="${key}"] .tpl-ken {
+            [data-template-card-live="${key}"] .tpl-ken,
+            [data-template-card-live="${key}"] [class*="-ken"],
+            [data-template-card-live="${key}"] [class*="kenburns"],
+            [data-template-card-live="${key}"] [class*="hero-image"] {
               animation-direction: alternate !important;
               transform: unset !important;
             }
-            [data-template-card-live="${key}"] .tpl-marquee-track {
+            [data-template-card-live="${key}"] .tpl-marquee-track,
+            [data-template-card-live="${key}"] [class*="marquee"] {
               animation-timing-function: linear !important;
               transform: unset !important;
             }

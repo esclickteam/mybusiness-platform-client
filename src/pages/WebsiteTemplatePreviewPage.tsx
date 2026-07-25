@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, LayoutTemplate, Wand2 } from "lucide-react";
 
 import { getStudioTemplateById } from "../components/site-builder/studio/data/templates";
+import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
 export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
@@ -19,17 +20,23 @@ export default function WebsiteTemplatePreviewPage() {
     ? getStudioTemplateById(cleanTemplateId)
     : undefined;
 
+  const renderer = useMemo(
+    () => (cleanTemplateId ? getStudioTemplateRenderer(cleanTemplateId) : null),
+    [cleanTemplateId],
+  );
+
   function handleBackToTemplates() {
     navigate(`${basePath}/dashboard/website/templates`);
   }
 
   function handleUseTemplate() {
-    if (!template?.id) return;
+    if (!template?.id && !renderer?.key) return;
 
-    localStorage.setItem("bizuply-selected-template-id", template.id);
-    localStorage.setItem("bizuply-selected-template-key", template.id);
+    const id = String(template?.id || renderer?.key || "").trim();
+    localStorage.setItem("bizuply-selected-template-id", id);
+    localStorage.setItem("bizuply-selected-template-key", id);
 
-    navigate(`${basePath}/dashboard/website?template=${template.id}`);
+    navigate(`${basePath}/dashboard/website?template=${id}`);
   }
 
   function PreviewActions() {
@@ -38,7 +45,7 @@ export default function WebsiteTemplatePreviewPage() {
         <button
           type="button"
           onClick={handleBackToTemplates}
-          className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 text-sm font-black text-black shadow-2xl backdrop-blur-xl transition hover:bg-black"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-full border border-white/20 bg-black/55 px-4 text-sm font-black text-white shadow-2xl backdrop-blur-xl transition hover:bg-black"
         >
           <ArrowLeft className="h-4 w-4" />
           חזרה
@@ -56,7 +63,7 @@ export default function WebsiteTemplatePreviewPage() {
     );
   }
 
-  if (!template) {
+  if (!template && !renderer?.Component) {
     return (
       <main className="fixed inset-0 z-[9999] overflow-y-auto bg-white px-6 py-10 text-[#111827]">
         <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center">
@@ -81,6 +88,57 @@ export default function WebsiteTemplatePreviewPage() {
               חזרה לתבניות
             </button>
           </div>
+        </div>
+      </main>
+    );
+  }
+
+  // Prefer live renderer (same path as gallery cards / embed) so every site
+  // preview looks and behaves like a real homepage.
+  if (renderer?.Component) {
+    const Component = renderer.Component as React.ComponentType<
+      Record<string, unknown>
+    >;
+    const data = (renderer.defaultData || {}) as Record<string, unknown>;
+    const homePage = renderer.pages?.[0];
+    const pageId = homePage?.id || "home";
+    const pageSlug = homePage?.slug || "/";
+    const key = String(renderer.key || cleanTemplateId).toLowerCase();
+    const background =
+      (data as any)?.backgroundColor ||
+      (template as any)?.seed?.palette?.background ||
+      "#0b1020";
+
+    return (
+      <main
+        className="fixed inset-0 z-[9999] overflow-x-hidden overflow-y-auto"
+        style={{ background }}
+      >
+        <PreviewActions />
+        {renderer.editorCss ? (
+          <style
+            dangerouslySetInnerHTML={{ __html: String(renderer.editorCss) }}
+          />
+        ) : null}
+        <div
+          className="min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible"
+          data-template-id={key}
+          dir="rtl"
+        >
+          <Component
+            initialPage={pageId}
+            initialPageId={pageId}
+            activePageId={pageId}
+            currentPageId={pageId}
+            pageId={pageId}
+            initialSlug={pageSlug}
+            activePageSlug={pageSlug}
+            currentPageSlug={pageSlug}
+            pageSlug={pageSlug}
+            mode="preview"
+            data={data}
+            templateData={data}
+          />
         </div>
       </main>
     );
@@ -139,7 +197,7 @@ export default function WebsiteTemplatePreviewPage() {
               </p>
 
               <h1 className="truncate text-xl font-black tracking-[-0.03em] text-[#111827]">
-                {template.name}
+                {template?.name || cleanTemplateId}
               </h1>
             </div>
           </div>
@@ -168,27 +226,8 @@ export default function WebsiteTemplatePreviewPage() {
               </h2>
 
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
-                התבנית קיימת, אבל אין לה קומפוננטת Preview מחוברת. צריך להוסיף
-                preview.tsx ולחבר אותו ב־meta.ts.
+                התבנית קיימת, אבל אין לה קומפוננטת Preview מחוברת.
               </p>
-
-              <div className="mt-7 flex justify-center gap-3">
-                <button
-                  type="button"
-                  onClick={handleBackToTemplates}
-                  className="rounded-xl border border-[#d1d5db] bg-white px-5 py-3 text-sm font-bold text-[#111827] transition hover:bg-[#f9fafb]"
-                >
-                  חזרה
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleUseTemplate}
-                  className="rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black transition hover:bg-black"
-                >
-                  שימוש בתבנית
-                </button>
-              </div>
             </div>
           </div>
         </div>
