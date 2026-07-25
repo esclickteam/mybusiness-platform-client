@@ -1,9 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CheckCircle2,
   Globe2,
-  Loader2,
   LockKeyhole,
   Search,
   ShieldCheck,
@@ -15,12 +14,16 @@ import {
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
   checkDomainAvailability,
+  checkoutDomainRegistration,
   createDomainContact,
+  quoteDomainRegistration,
   registerDomain,
   type DomainAvailabilityResult,
   type DomainContactPayload,
   type DomainContactResult,
+  type DomainQuoteResult,
   type DomainRegisterResult,
+  type DomainYears,
 } from "../../services/domainService";
 
 type ContactFormState = Omit<
@@ -49,6 +52,16 @@ const INITIAL_CONTACT: ContactFormState = {
   phone: "",
 };
 
+const DOMAIN_YEAR_OPTIONS: DomainYears[] = [1, 2, 3, 5, 10];
+
+function formatIls(amount: number) {
+  return new Intl.NumberFormat("he-IL", {
+    style: "currency",
+    currency: "ILS",
+    maximumFractionDigits: 0,
+  }).format(amount || 0);
+}
+
 export default function DomainSearch() {
   const [domain, setDomain] = useState("");
   const [result, setResult] =
@@ -63,7 +76,10 @@ export default function DomainSearch() {
   const [contactError, setContactError] = useState("");
   const [contactResult, setContactResult] =
     useState<DomainContactResult | null>(null);
-  const [isRegisteringDomain, setIsRegisteringDomain] = useState(false);
+  const [selectedYears, setSelectedYears] = useState<DomainYears>(3);
+  const [quote, setQuote] = useState<DomainQuoteResult | null>(null);
+  const [isQuoting, setIsQuoting] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [registerResult, setRegisterResult] =
     useState<DomainRegisterResult | null>(null);
@@ -80,6 +96,91 @@ export default function DomainSearch() {
     );
   }, [contact]);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const domainPaid = params.get("domain_paid");
+    const registrationId = params.get("registrationId") || "";
+
+    if (domainPaid !== "1" || !registrationId) return;
+
+    let cancelled = false;
+
+    async function completeAfterPayment() {
+      setShowContactForm(true);
+      setRegisterError("");
+      setIsCheckingOut(true);
+
+      try {
+        const response = await registerDomain({ registrationId });
+        if (cancelled) return;
+        setRegisterResult(response);
+        setContactResult((current) =>
+          current
+            ? { ...current, registrationId, status: response.status }
+            : {
+                success: true,
+                registrationId,
+                domain: response.domain,
+                status: response.status,
+              },
+        );
+      } catch (requestError) {
+        if (cancelled) return;
+        setRegisterError(
+          requestError instanceof Error
+            ? requestError.message
+            : "אישור התשלום התקבל, אך השלמת הרישום נכשלה. נסו שוב.",
+        );
+      } finally {
+        if (!cancelled) setIsCheckingOut(false);
+        const url = new URL(window.location.href);
+        url.searchParams.delete("domain_paid");
+        url.searchParams.delete("registrationId");
+        window.history.replaceState({}, "", url.toString());
+      }
+    }
+
+    void completeAfterPayment();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  useEffect(() => {
+    const registrationId = contactResult?.registrationId;
+    if (!registrationId || registerResult?.success) return;
+
+    let cancelled = false;
+
+    async function loadQuote() {
+      setIsQuoting(true);
+      setRegisterError("");
+      try {
+        const nextQuote = await quoteDomainRegistration({
+          registrationId,
+          years: selectedYears,
+        });
+        if (!cancelled) setQuote(nextQuote);
+      } catch (requestError) {
+        if (!cancelled) {
+          setQuote(null);
+          setRegisterError(
+            requestError instanceof Error
+              ? requestError.message
+              : "טעינת מחיר הדומיין נכשלה",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsQuoting(false);
+      }
+    }
+
+    void loadQuote();
+    return () => {
+      cancelled = true;
+    };
+  }, [contactResult?.registrationId, selectedYears, registerResult?.success]);
+
   async function handleCheck() {
     if (isChecking || !domain.trim()) return;
 
@@ -89,6 +190,7 @@ export default function DomainSearch() {
     setContactResult(null);
     setRegisterResult(null);
     setRegisterError("");
+    setQuote(null);
     setIsChecking(true);
 
     try {
@@ -159,6 +261,8 @@ export default function DomainSearch() {
       });
 
       setContactResult(response);
+      setSelectedYears(3);
+      setQuote(null);
     } catch (requestError) {
       setContactError(
         requestError instanceof Error
@@ -170,41 +274,41 @@ export default function DomainSearch() {
     }
   }
 
-  async function handleRegisterDomain() {
-    if (
-      !contactResult?.registrationId ||
-      isRegisteringDomain
-    ) {
-      return;
-    }
+  async function handlePayAndRegister() {
+    if (!contactResult?.registrationId || isCheckingOut) return;
 
     setRegisterError("");
-    setRegisterResult(null);
-    setIsRegisteringDomain(true);
+    setIsCheckingOut(true);
 
     try {
-      const response = await registerDomain({
+      const checkout = await checkoutDomainRegistration({
         registrationId: contactResult.registrationId,
-        period: 12,
+        years: selectedYears,
       });
 
-      setRegisterResult(response);
-      setContactResult((current) =>
-        current
-          ? {
-              ...current,
-              status: response.status || "registered",
-            }
-          : current,
-      );
+      if (checkout.alreadyRegistered) {
+        setRegisterResult({
+          success: true,
+          alreadyRegistered: true,
+          domain: checkout.domain,
+          registrationId: checkout.registrationId,
+          status: checkout.status || "registered",
+        });
+        return;
+      }
+
+      if (!checkout.paymentUrl) {
+        throw new Error("לא התקבל קישור לתשלום");
+      }
+
+      window.location.href = checkout.paymentUrl;
     } catch (requestError) {
       setRegisterError(
         requestError instanceof Error
           ? requestError.message
-          : "רישום הדומיין נכשל",
+          : "מעבר לתשלום נכשל",
       );
-    } finally {
-      setIsRegisteringDomain(false);
+      setIsCheckingOut(false);
     }
   }
 
@@ -561,28 +665,80 @@ export default function DomainSearch() {
 
                     {contactResult.registrationId &&
                     !registerResult?.success ? (
-                      <div className="mt-4">
-                        <button
-                          type="button"
-                          onClick={() => void handleRegisterDomain()}
-                          disabled={isRegisteringDomain}
-                          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-black text-white shadow-lg shadow-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-                        >
-                          {isRegisteringDomain ? (
-                            <>
-                              <BizuplyLoader size="sm" compact />
-                              רושם דומיין...
-                            </>
-                          ) : (
-                            <>
-                              <Globe2 className="h-5 w-5" />
-                              רשום דומיין לשנה (חיוב מיתרה)
-                            </>
-                          )}
-                        </button>
-                        <p className="mt-2 text-xs font-semibold text-emerald-700">
-                          הרישום יורד מיתרת Realtime Register של העסק.
-                        </p>
+                      <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                        <div className="rounded-2xl border border-emerald-200 bg-white p-4">
+                          <h5 className="text-sm font-black text-slate-800">
+                            בחירת תקופת רישום
+                          </h5>
+                          <div className="mt-3 grid gap-2">
+                            {DOMAIN_YEAR_OPTIONS.map((years) => {
+                              const active = selectedYears === years;
+                              return (
+                                <button
+                                  key={years}
+                                  type="button"
+                                  onClick={() => setSelectedYears(years)}
+                                  className={[
+                                    "flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition",
+                                    active
+                                      ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                                      : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300",
+                                  ].join(" ")}
+                                >
+                                  <span>
+                                    {years === 1 ? "שנה אחת" : `${years} שנים`}
+                                  </span>
+                                  {active ? (
+                                    <span className="text-xs font-black text-emerald-700">
+                                      נבחר
+                                    </span>
+                                  ) : null}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                          <h5 className="text-sm font-black text-slate-800">
+                            סיכום
+                          </h5>
+                          <p className="mt-3 text-sm font-semibold text-slate-600">
+                            {selectedYears === 1
+                              ? "שנה אחת"
+                              : `${selectedYears} שנים`}
+                          </p>
+                          <p className="mt-4 text-2xl font-black text-slate-900">
+                            {isQuoting
+                              ? "מחשב מחיר..."
+                              : quote
+                                ? formatIls(quote.price)
+                                : "—"}
+                          </p>
+                          <p className="mt-1 text-xs font-semibold text-slate-500">
+                            תשלום מאובטח · חידוש שנתי לפי תנאי הרישום
+                          </p>
+                          <button
+                            type="button"
+                            onClick={() => void handlePayAndRegister()}
+                            disabled={
+                              isCheckingOut || isQuoting || !quote?.price
+                            }
+                            className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                          >
+                            {isCheckingOut ? (
+                              <>
+                                <BizuplyLoader size="sm" compact />
+                                מעביר לתשלום...
+                              </>
+                            ) : (
+                              <>
+                                <ShieldCheck className="h-5 w-5" />
+                                המשך לתשלום מאובטח
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                     ) : null}
                   </div>
