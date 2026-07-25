@@ -54,7 +54,7 @@ export const codehausDefaultData = {
   phone: "03-700-4400",
   email: "root@codehaus.co.il",
   address: "תל אביב · לימוד מרחוק",
-  ctaTitle: "git commit -m "career upgrade"",
+  ctaTitle: 'git commit -m "career upgrade"',
   ctaText: "הצעד הבא בלמידה מתחיל בשיחה קצרה — בלי התחייבות.",
   ctaButton: "הגשת מועמדות",
 };
