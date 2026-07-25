@@ -19,11 +19,6 @@ export const closoraEditorCss = `
 [data-template-id="closora-preview"] .ag-display {
   font-family: "Oswald", "Heebo", sans-serif;
 }
-[data-template-id="closora"] .ag-marquee,
-[data-template-id="closora-preview"] .ag-marquee {
-  animation: closoraMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="closora"] .ag-float,
 [data-template-id="closora-preview"] .ag-float {
   animation: closoraFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const closoraEditorCss = `
 [data-template-id="closora-preview"] .ag-ken {
   animation: closoraKen 18s ease-in-out infinite alternate;
 }
-@keyframes closoraMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes closoraFloat {
@@ -63,9 +56,7 @@ export const closoraEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="closora"] .ag-marquee,
-  [data-template-id="closora-preview"] .ag-marquee,
-  [data-template-id="closora"] .ag-float,
+    [data-template-id="closora"] .ag-float,
   [data-template-id="closora-preview"] .ag-float,
   [data-template-id="closora"] .ag-ken,
   [data-template-id="closora-preview"] .ag-ken,

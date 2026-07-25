@@ -19,11 +19,6 @@ export const narrativaEditorCss = `
 [data-template-id="narrativa-preview"] .ag-display {
   font-family: "Playfair Display", "Heebo", sans-serif;
 }
-[data-template-id="narrativa"] .ag-marquee,
-[data-template-id="narrativa-preview"] .ag-marquee {
-  animation: narrativaMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="narrativa"] .ag-float,
 [data-template-id="narrativa-preview"] .ag-float {
   animation: narrativaFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const narrativaEditorCss = `
 [data-template-id="narrativa-preview"] .ag-ken {
   animation: narrativaKen 18s ease-in-out infinite alternate;
 }
-@keyframes narrativaMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes narrativaFloat {
@@ -63,9 +56,7 @@ export const narrativaEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="narrativa"] .ag-marquee,
-  [data-template-id="narrativa-preview"] .ag-marquee,
-  [data-template-id="narrativa"] .ag-float,
+    [data-template-id="narrativa"] .ag-float,
   [data-template-id="narrativa-preview"] .ag-float,
   [data-template-id="narrativa"] .ag-ken,
   [data-template-id="narrativa-preview"] .ag-ken,

@@ -19,11 +19,6 @@ export const growthlyEditorCss = `
 [data-template-id="growthly-preview"] .ag-display {
   font-family: "Manrope", "Heebo", sans-serif;
 }
-[data-template-id="growthly"] .ag-marquee,
-[data-template-id="growthly-preview"] .ag-marquee {
-  animation: growthlyMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="growthly"] .ag-float,
 [data-template-id="growthly-preview"] .ag-float {
   animation: growthlyFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const growthlyEditorCss = `
 [data-template-id="growthly-preview"] .ag-ken {
   animation: growthlyKen 18s ease-in-out infinite alternate;
 }
-@keyframes growthlyMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes growthlyFloat {
@@ -63,9 +56,7 @@ export const growthlyEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="growthly"] .ag-marquee,
-  [data-template-id="growthly-preview"] .ag-marquee,
-  [data-template-id="growthly"] .ag-float,
+    [data-template-id="growthly"] .ag-float,
   [data-template-id="growthly-preview"] .ag-float,
   [data-template-id="growthly"] .ag-ken,
   [data-template-id="growthly-preview"] .ag-ken,

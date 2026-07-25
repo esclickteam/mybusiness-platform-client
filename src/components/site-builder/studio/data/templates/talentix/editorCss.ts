@@ -19,11 +19,6 @@ export const talentixEditorCss = `
 [data-template-id="talentix-preview"] .ag-display {
   font-family: "Sora", "Heebo", sans-serif;
 }
-[data-template-id="talentix"] .ag-marquee,
-[data-template-id="talentix-preview"] .ag-marquee {
-  animation: talentixMarquee 28s linear infinite;
-  width: max-content;
-}
 [data-template-id="talentix"] .ag-float,
 [data-template-id="talentix-preview"] .ag-float {
   animation: talentixFloat 7s ease-in-out infinite;
@@ -46,8 +41,6 @@ export const talentixEditorCss = `
 [data-template-id="talentix-preview"] .ag-ken {
   animation: talentixKen 18s ease-in-out infinite alternate;
 }
-@keyframes talentixMarquee {
-  from { transform: translateX(0); }
   to { transform: translateX(50%); }
 }
 @keyframes talentixFloat {
@@ -63,9 +56,7 @@ export const talentixEditorCss = `
   to { transform: scale(1.08); }
 }
 @media (prefers-reduced-motion: reduce) {
-  [data-template-id="talentix"] .ag-marquee,
-  [data-template-id="talentix-preview"] .ag-marquee,
-  [data-template-id="talentix"] .ag-float,
+    [data-template-id="talentix"] .ag-float,
   [data-template-id="talentix-preview"] .ag-float,
   [data-template-id="talentix"] .ag-ken,
   [data-template-id="talentix-preview"] .ag-ken,
