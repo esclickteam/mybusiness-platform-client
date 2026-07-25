@@ -1,0 +1,107 @@
+export const archoraEditorCss = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap');
+[data-template-id="archora"], [data-template-id="archora-preview"] {
+  --p: #D4FF00;
+  --bg: #111111;
+  --surface: #1A1A1A;
+  --text: #F5F5F0;
+  --muted: #9A9A92;
+  --dark: #0A0A0A;
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  scroll-behavior: smooth;
+}
+[data-template-id="archora"] *, [data-template-id="archora-preview"] * {
+  border-radius: 0 !important;
+}
+[data-template-id="archora"] .ar-display, [data-template-id="archora-preview"] .ar-display {
+  font-family: "Syne", "Space Grotesk", sans-serif;
+}
+[data-template-id="archora"] .ar-hero-image, [data-template-id="archora-preview"] .ar-hero-image {
+  animation: archoraKenBurns 22s ease-in-out infinite alternate;
+  transform-origin: center;
+}
+[data-template-id="archora"] .ar-slash, [data-template-id="archora-preview"] .ar-slash {
+  animation: archoraSlash 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+[data-template-id="archora"] .ar-marquee-track, [data-template-id="archora-preview"] .ar-marquee-track {
+  animation: archoraMarquee 24s linear infinite;
+  will-change: transform;
+}
+[data-template-id="archora"] .ar-marquee-track:hover, [data-template-id="archora-preview"] .ar-marquee-track:hover {
+  animation-play-state: paused;
+}
+[data-template-id="archora"] .ar-project-img, [data-template-id="archora-preview"] .ar-project-img {
+  transition: transform 900ms cubic-bezier(0.22, 1, 0.36, 1), filter 900ms ease;
+}
+[data-template-id="archora"] .ar-project-card:hover .ar-project-img,
+[data-template-id="archora-preview"] .ar-project-card:hover .ar-project-img {
+  transform: scale(1.12);
+  filter: saturate(1.15) contrast(1.08);
+}
+[data-template-id="archora"] .ar-horizontal-scroll, [data-template-id="archora-preview"] .ar-horizontal-scroll {
+  scrollbar-width: none;
+}
+[data-template-id="archora"] .ar-horizontal-scroll::-webkit-scrollbar,
+[data-template-id="archora-preview"] .ar-horizontal-scroll::-webkit-scrollbar {
+  display: none;
+}
+[data-template-id="archora"] .ar-service-panel, [data-template-id="archora-preview"] .ar-service-panel {
+  background:
+    linear-gradient(135deg, rgba(212, 255, 0, 0.12), transparent 34%),
+    linear-gradient(180deg, #1A1A1A 0%, #0A0A0A 100%);
+  transition: transform 500ms cubic-bezier(0.22, 1, 0.36, 1), border-color 500ms ease;
+}
+[data-template-id="archora"] .ar-service-panel:hover,
+[data-template-id="archora-preview"] .ar-service-panel:hover {
+  transform: translateY(-10px);
+  border-color: var(--p);
+}
+[data-template-id="archora"] .ar-grid-noise, [data-template-id="archora-preview"] .ar-grid-noise {
+  background-image:
+    linear-gradient(rgba(212,255,0,0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,255,0,0.08) 1px, transparent 1px);
+  background-size: 72px 72px;
+}
+[data-template-id="archora"] .ar-lime-band, [data-template-id="archora-preview"] .ar-lime-band {
+  animation: archoraBandPulse 5s ease-in-out infinite;
+}
+[data-template-id="archora"] .ar-timeline-line, [data-template-id="archora-preview"] .ar-timeline-line {
+  background: linear-gradient(180deg, transparent, var(--p), transparent);
+}
+[data-template-id="archora"] .ar-node, [data-template-id="archora-preview"] .ar-node {
+  box-shadow: 0 0 0 0 rgba(212, 255, 0, 0.5);
+  animation: archoraNodePulse 2.8s ease-in-out infinite;
+}
+[data-template-id="archora"] .ar-field, [data-template-id="archora-preview"] .ar-field {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(245, 245, 240, 0.18);
+  color: var(--text);
+}
+[data-template-id="archora"] .ar-field::placeholder,
+[data-template-id="archora-preview"] .ar-field::placeholder {
+  color: rgba(245, 245, 240, 0.45);
+}
+
+@keyframes archoraKenBurns {
+  0% { transform: scale(1) translate3d(0, 0, 0); }
+  100% { transform: scale(1.14) translate3d(-2.5%, 2%, 0); }
+}
+@keyframes archoraSlash {
+  0% { transform: scaleY(0) rotate(12deg); opacity: 0; }
+  100% { transform: scaleY(1) rotate(12deg); opacity: 1; }
+}
+@keyframes archoraMarquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+@keyframes archoraBandPulse {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.08); }
+}
+@keyframes archoraNodePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(212, 255, 0, 0.48); }
+  50% { box-shadow: 0 0 0 16px rgba(212, 255, 0, 0); }
+}
+`;

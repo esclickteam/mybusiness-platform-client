@@ -39,6 +39,16 @@ import { lenscraftTemplate } from "./lenscraft/meta";
 import { numerisTemplate } from "./numeris/meta";
 import { formaraTemplate } from "./formara/meta";
 import { vowlineTemplate } from "./vowline/meta";
+import { archoraTemplate } from "./archora/meta";
+import { dentelleTemplate } from "./dentelle/meta";
+import { aurayogaTemplate } from "./aurayoga/meta";
+import { soundlineTemplate } from "./soundline/meta";
+import { pawhausTemplate } from "./pawhaus/meta";
+import { atelierxTemplate } from "./atelierx/meta";
+import { brewlineTemplate } from "./brewline/meta";
+import { autovoltTemplate } from "./autovolt/meta";
+import { neuralisTemplate } from "./neuralis/meta";
+import { floriqueTemplate } from "./florique/meta";
 import { loteraTemplate } from "./lotera/meta";
 import { keyoraTemplate } from "./keyora/meta";
 import { estateoTemplate } from "./estateo/meta";
@@ -129,6 +139,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   numerisTemplate,
   formaraTemplate,
   vowlineTemplate,
+  archoraTemplate,
+  dentelleTemplate,
+  aurayogaTemplate,
+  soundlineTemplate,
+  pawhausTemplate,
+  atelierxTemplate,
+  brewlineTemplate,
+  autovoltTemplate,
+  neuralisTemplate,
+  floriqueTemplate,
   loteraTemplate,
   keyoraTemplate,
   estateoTemplate,

@@ -177,6 +177,56 @@ import VowlinePages, { vowlinePages } from "./vowline/pages";
 import { vowlineEditorCss } from "./vowline/editorCss";
 import { vowlineSchema } from "./vowline/schema";
 import { vowlineDefaultData } from "./vowline/defaultData";
+import ArchoraPages, { archoraPages } from "./archora/pages";
+import { archoraEditorCss } from "./archora/editorCss";
+import { archoraSchema } from "./archora/schema";
+import { archoraDefaultData } from "./archora/defaultData";
+
+import DentellePages, { dentellePages } from "./dentelle/pages";
+import { dentelleEditorCss } from "./dentelle/editorCss";
+import { dentelleSchema } from "./dentelle/schema";
+import { dentelleDefaultData } from "./dentelle/defaultData";
+
+import AurayogaPages, { aurayogaPages } from "./aurayoga/pages";
+import { aurayogaEditorCss } from "./aurayoga/editorCss";
+import { aurayogaSchema } from "./aurayoga/schema";
+import { aurayogaDefaultData } from "./aurayoga/defaultData";
+
+import SoundlinePages, { soundlinePages } from "./soundline/pages";
+import { soundlineEditorCss } from "./soundline/editorCss";
+import { soundlineSchema } from "./soundline/schema";
+import { soundlineDefaultData } from "./soundline/defaultData";
+
+import PawhausPages, { pawhausPages } from "./pawhaus/pages";
+import { pawhausEditorCss } from "./pawhaus/editorCss";
+import { pawhausSchema } from "./pawhaus/schema";
+import { pawhausDefaultData } from "./pawhaus/defaultData";
+
+import AtelierxPages, { atelierxPages } from "./atelierx/pages";
+import { atelierxEditorCss } from "./atelierx/editorCss";
+import { atelierxSchema } from "./atelierx/schema";
+import { atelierxDefaultData } from "./atelierx/defaultData";
+
+import BrewlinePages, { brewlinePages } from "./brewline/pages";
+import { brewlineEditorCss } from "./brewline/editorCss";
+import { brewlineSchema } from "./brewline/schema";
+import { brewlineDefaultData } from "./brewline/defaultData";
+
+import AutovoltPages, { autovoltPages } from "./autovolt/pages";
+import { autovoltEditorCss } from "./autovolt/editorCss";
+import { autovoltSchema } from "./autovolt/schema";
+import { autovoltDefaultData } from "./autovolt/defaultData";
+
+import NeuralisPages, { neuralisPages } from "./neuralis/pages";
+import { neuralisEditorCss } from "./neuralis/editorCss";
+import { neuralisSchema } from "./neuralis/schema";
+import { neuralisDefaultData } from "./neuralis/defaultData";
+
+import FloriquePages, { floriquePages } from "./florique/pages";
+import { floriqueEditorCss } from "./florique/editorCss";
+import { floriqueSchema } from "./florique/schema";
+import { floriqueDefaultData } from "./florique/defaultData";
+
 import LoteraPages, { loteraPages } from "./lotera/pages";
 import { loteraEditorCss } from "./lotera/editorCss";
 import { loteraSchema } from "./lotera/schema";
@@ -922,6 +972,116 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: vowlineDefaultData as unknown as Record<string, any>,
     editorCss: vowlineEditorCss,
   }),
+  archora: createRenderer({
+    key: "archora",
+    name: "Archora",
+    Component: ArchoraPages,
+    pages: archoraPages,
+    editorMode: "visual-react",
+    schema: archoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: archoraDefaultData as unknown as Record<string, any>,
+    editorCss: archoraEditorCss,
+  }),
+
+  dentelle: createRenderer({
+    key: "dentelle",
+    name: "Dentelle",
+    Component: DentellePages,
+    pages: dentellePages,
+    editorMode: "visual-react",
+    schema: dentelleSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dentelleDefaultData as unknown as Record<string, any>,
+    editorCss: dentelleEditorCss,
+  }),
+
+  aurayoga: createRenderer({
+    key: "aurayoga",
+    name: "Aurayoga",
+    Component: AurayogaPages,
+    pages: aurayogaPages,
+    editorMode: "visual-react",
+    schema: aurayogaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: aurayogaDefaultData as unknown as Record<string, any>,
+    editorCss: aurayogaEditorCss,
+  }),
+
+  soundline: createRenderer({
+    key: "soundline",
+    name: "Soundline",
+    Component: SoundlinePages,
+    pages: soundlinePages,
+    editorMode: "visual-react",
+    schema: soundlineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: soundlineDefaultData as unknown as Record<string, any>,
+    editorCss: soundlineEditorCss,
+  }),
+
+  pawhaus: createRenderer({
+    key: "pawhaus",
+    name: "Pawhaus",
+    Component: PawhausPages,
+    pages: pawhausPages,
+    editorMode: "visual-react",
+    schema: pawhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pawhausDefaultData as unknown as Record<string, any>,
+    editorCss: pawhausEditorCss,
+  }),
+
+  atelierx: createRenderer({
+    key: "atelierx",
+    name: "Atelier X",
+    Component: AtelierxPages,
+    pages: atelierxPages,
+    editorMode: "visual-react",
+    schema: atelierxSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: atelierxDefaultData as unknown as Record<string, any>,
+    editorCss: atelierxEditorCss,
+  }),
+
+  brewline: createRenderer({
+    key: "brewline",
+    name: "Brewline",
+    Component: BrewlinePages,
+    pages: brewlinePages,
+    editorMode: "visual-react",
+    schema: brewlineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: brewlineDefaultData as unknown as Record<string, any>,
+    editorCss: brewlineEditorCss,
+  }),
+
+  autovolt: createRenderer({
+    key: "autovolt",
+    name: "Autovolt",
+    Component: AutovoltPages,
+    pages: autovoltPages,
+    editorMode: "visual-react",
+    schema: autovoltSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: autovoltDefaultData as unknown as Record<string, any>,
+    editorCss: autovoltEditorCss,
+  }),
+
+  neuralis: createRenderer({
+    key: "neuralis",
+    name: "Neuralis",
+    Component: NeuralisPages,
+    pages: neuralisPages,
+    editorMode: "visual-react",
+    schema: neuralisSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: neuralisDefaultData as unknown as Record<string, any>,
+    editorCss: neuralisEditorCss,
+  }),
+
+  florique: createRenderer({
+    key: "florique",
+    name: "Florique",
+    Component: FloriquePages,
+    pages: floriquePages,
+    editorMode: "visual-react",
+    schema: floriqueSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: floriqueDefaultData as unknown as Record<string, any>,
+    editorCss: floriqueEditorCss,
+  }),
+
   lotera: createRenderer({
     key: "lotera",
     name: "Lotera",
