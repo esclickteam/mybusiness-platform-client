@@ -293,13 +293,18 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
         {...props}
         icon={Icon}
         accent="#6366F1"
-        title="התחברות ואזור אישי"
-        description="כפתור צף + דפי התחברות/הרשמה ללקוחות האתר."
+        title="התחברות לקוחות האתר"
+        description="מערכת נפרדת לגמרי מ-BizUply — ללקוחות שגולשים באתר שלך בלבד."
         loading={loading}
         saving={saving}
         message={message}
         onSave={() => save()}
       >
+        <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold leading-relaxed text-amber-900">
+          זו לא ההתחברות של BizUply. כאן מגדירים כניסה ללקוחות שמבקרים באתר המפורסם
+          שלך — משתמשים, סיסמאות וטокנים נפרדים לחלוטין מהחשבון שלך בפלטפורמה.
+        </div>
+
         <Toggle
           label="תוסף פעיל באתר"
           checked={bool(settings.isActive, true)}

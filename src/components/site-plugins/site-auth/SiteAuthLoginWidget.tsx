@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { GripVertical, UserRound } from "lucide-react";
 
 import {
@@ -8,6 +7,7 @@ import {
 } from "./siteAuthUtils";
 import { resolveSiteAuthAccentColor } from "./siteAuthFormStyles";
 import { SiteAuthTriggerIcon } from "./siteAuthTriggerIcons";
+import { openSiteMemberLogin } from "./siteAuthNavigation";
 import { useOptionalSiteMemberAuth } from "../../../context/SiteMemberAuthContext";
 
 function resolveButtonDimensions(size: SiteAuthWidgetSettings["buttonSize"], display: string) {
@@ -38,7 +38,6 @@ export default function SiteAuthLoginWidget({
   onPositionChange,
 }: SiteAuthLoginWidgetProps) {
   const auth = useOptionalSiteMemberAuth();
-  const navigate = useNavigate();
   const dragRef = useRef<{
     startX: number;
     startY: number;
@@ -79,7 +78,7 @@ export default function SiteAuthLoginWidget({
       auth?.logout();
       return;
     }
-    navigate("/login");
+    openSiteMemberLogin(site);
   }
 
   function onPointerDown(e: React.PointerEvent) {

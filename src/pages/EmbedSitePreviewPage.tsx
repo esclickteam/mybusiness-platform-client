@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVisualSiteRenderer";
 import { getMySite } from "../api/mySitesApi";
+import PublicSiteWithAuth from "../components/site-builder/public/PublicSiteWithAuth";
 
 /**
  * Standalone, isolated render of a single site using the exact same renderer as
@@ -14,6 +14,7 @@ export default function EmbedSitePreviewPage() {
   const { siteId = "" } = useParams<{ siteId: string }>();
   const [site, setSite] = useState<Record<string, any> | null>(null);
   const [failed, setFailed] = useState(false);
+  const [pathname, setPathname] = useState("/");
 
   useEffect(() => {
     if (!siteId) return;
@@ -21,6 +22,7 @@ export default function EmbedSitePreviewPage() {
     let active = true;
     setSite(null);
     setFailed(false);
+    setPathname("/");
 
     getMySite(siteId)
       .then((result) => {
@@ -37,13 +39,22 @@ export default function EmbedSitePreviewPage() {
     };
   }, [siteId]);
 
+  useEffect(() => {
+    const onPopState = () => {
+      setPathname(window.location.pathname || "/");
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   if (failed || !site) {
     return <div style={{ minHeight: "100vh", background: "#fff" }} />;
   }
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#fff" }}>
-      <PublicVisualSiteRenderer site={site} pathname="/" disableAnalytics />
+      <PublicSiteWithAuth site={site} pathname={pathname} disableAnalytics />
     </div>
   );
 }
