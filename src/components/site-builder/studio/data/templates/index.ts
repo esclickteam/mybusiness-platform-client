@@ -99,6 +99,12 @@ import { primeviewTemplate } from "./primeview/meta";
 import { nestiqTemplate } from "./nestiq/meta";
 import { signetTemplate } from "./signet/meta";
 import { axispointTemplate } from "./axispoint/meta";
+import { growthlyTemplate } from "./growthly/meta";
+import { insurevaTemplate } from "./insureva/meta";
+import { closoraTemplate } from "./closora/meta";
+import { adspireTemplate } from "./adspire/meta";
+import { talentixTemplate } from "./talentix/meta";
+import { narrativaTemplate } from "./narrativa/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -199,6 +205,12 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   nestiqTemplate,
   signetTemplate,
   axispointTemplate,
+  growthlyTemplate,
+  insurevaTemplate,
+  closoraTemplate,
+  adspireTemplate,
+  talentixTemplate,
+  narrativaTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
