@@ -85,4 +85,24 @@ export const sportifyaEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="sportifya"] .store-athletic-panel,
+[data-template-id="sportifya-preview"] .store-athletic-panel {
+  animation: sportifya-stack-hit 4.8s cubic-bezier(0.22,1,0.36,1) infinite;
+  transform-origin: 100% 50%;
+}
+[data-template-id="sportifya"] .store-athletic-panel:nth-child(2),
+[data-template-id="sportifya-preview"] .store-athletic-panel:nth-child(2) {
+  animation-delay: 0.35s;
+}
+@keyframes sportifya-stack-hit {
+  0%, 100% { transform: translateX(0) skewY(-1deg); }
+  45% { transform: translateX(-10px) skewY(-1deg); }
+  55% { transform: translateX(4px) skewY(-1deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="sportifya"] .store-athletic-panel,
+  [data-template-id="sportifya-preview"] .store-athletic-panel {
+    animation: none !important;
+  }
+}
 `;

@@ -41,8 +41,6 @@ export const mediavaultEditorCss = `
 [data-template-id="mediavault-preview"] .ag-ken {
   animation: mediavaultKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes mediavaultFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }

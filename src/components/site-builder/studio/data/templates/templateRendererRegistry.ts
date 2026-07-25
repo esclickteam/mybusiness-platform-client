@@ -607,6 +607,55 @@ import { masterlyEditorCss } from "./masterly/editorCss";
 import { masterlySchema } from "./masterly/schema";
 import { masterlyDefaultData } from "./masterly/defaultData";
 
+import EmberplatePages, { emberplatePages } from "./emberplate/pages";
+import { emberplateEditorCss } from "./emberplate/editorCss";
+import { emberplateSchema } from "./emberplate/schema";
+import { emberplateDefaultData } from "./emberplate/defaultData";
+
+import NoodlixPages, { noodlixPages } from "./noodlix/pages";
+import { noodlixEditorCss } from "./noodlix/editorCss";
+import { noodlixSchema } from "./noodlix/schema";
+import { noodlixDefaultData } from "./noodlix/defaultData";
+
+import CrustoraPages, { crustoraPages } from "./crustora/pages";
+import { crustoraEditorCss } from "./crustora/editorCss";
+import { crustoraSchema } from "./crustora/schema";
+import { crustoraDefaultData } from "./crustora/defaultData";
+
+import MezzalinePages, { mezzalinePages } from "./mezzaline/pages";
+import { mezzalineEditorCss } from "./mezzaline/editorCss";
+import { mezzalineSchema } from "./mezzaline/schema";
+import { mezzalineDefaultData } from "./mezzaline/defaultData";
+
+import SushisenPages, { sushisenPages } from "./sushisen/pages";
+import { sushisenEditorCss } from "./sushisen/editorCss";
+import { sushisenSchema } from "./sushisen/schema";
+import { sushisenDefaultData } from "./sushisen/defaultData";
+
+import BrunchhausPages, { brunchhausPages } from "./brunchhaus/pages";
+import { brunchhausEditorCss } from "./brunchhaus/editorCss";
+import { brunchhausSchema } from "./brunchhaus/schema";
+import { brunchhausDefaultData } from "./brunchhaus/defaultData";
+
+import TapasoraPages, { tapasoraPages } from "./tapasora/pages";
+import { tapasoraEditorCss } from "./tapasora/editorCss";
+import { tapasoraSchema } from "./tapasora/schema";
+import { tapasoraDefaultData } from "./tapasora/defaultData";
+
+import SpiceforgePages, { spiceforgePages } from "./spiceforge/pages";
+import { spiceforgeEditorCss } from "./spiceforge/editorCss";
+import { spiceforgeSchema } from "./spiceforge/schema";
+import { spiceforgeDefaultData } from "./spiceforge/defaultData";
+
+import VineriaPages, { vineriaPages } from "./vineria/pages";
+import { vineriaEditorCss } from "./vineria/editorCss";
+import { vineriaSchema } from "./vineria/schema";
+import { vineriaDefaultData } from "./vineria/defaultData";
+
+import StreetbitePages, { streetbitePages } from "./streetbite/pages";
+import { streetbiteEditorCss } from "./streetbite/editorCss";
+import { streetbiteSchema } from "./streetbite/schema";
+import { streetbiteDefaultData } from "./streetbite/defaultData";
 
 import BrandforgePages, { brandforgePages } from "./brandforge/pages";
 import { brandforgeEditorCss } from "./brandforge/editorCss";
@@ -2101,6 +2150,116 @@ export const studioTemplateRendererRegistry: Record<
     schema: masterlySchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: masterlyDefaultData as unknown as Record<string, any>,
     editorCss: masterlyEditorCss,
+  }),
+
+  emberplate: createRenderer({
+    key: "emberplate",
+    name: "Emberplate",
+    Component: EmberplatePages,
+    pages: emberplatePages,
+    editorMode: "visual-react",
+    schema: emberplateSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: emberplateDefaultData as unknown as Record<string, any>,
+    editorCss: emberplateEditorCss,
+  }),
+
+  noodlix: createRenderer({
+    key: "noodlix",
+    name: "Noodlix",
+    Component: NoodlixPages,
+    pages: noodlixPages,
+    editorMode: "visual-react",
+    schema: noodlixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: noodlixDefaultData as unknown as Record<string, any>,
+    editorCss: noodlixEditorCss,
+  }),
+
+  crustora: createRenderer({
+    key: "crustora",
+    name: "Crustora",
+    Component: CrustoraPages,
+    pages: crustoraPages,
+    editorMode: "visual-react",
+    schema: crustoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: crustoraDefaultData as unknown as Record<string, any>,
+    editorCss: crustoraEditorCss,
+  }),
+
+  mezzaline: createRenderer({
+    key: "mezzaline",
+    name: "Mezzaline",
+    Component: MezzalinePages,
+    pages: mezzalinePages,
+    editorMode: "visual-react",
+    schema: mezzalineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: mezzalineDefaultData as unknown as Record<string, any>,
+    editorCss: mezzalineEditorCss,
+  }),
+
+  sushisen: createRenderer({
+    key: "sushisen",
+    name: "Sushisen",
+    Component: SushisenPages,
+    pages: sushisenPages,
+    editorMode: "visual-react",
+    schema: sushisenSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: sushisenDefaultData as unknown as Record<string, any>,
+    editorCss: sushisenEditorCss,
+  }),
+
+  brunchhaus: createRenderer({
+    key: "brunchhaus",
+    name: "Brunchhaus",
+    Component: BrunchhausPages,
+    pages: brunchhausPages,
+    editorMode: "visual-react",
+    schema: brunchhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: brunchhausDefaultData as unknown as Record<string, any>,
+    editorCss: brunchhausEditorCss,
+  }),
+
+  tapasora: createRenderer({
+    key: "tapasora",
+    name: "Tapasora",
+    Component: TapasoraPages,
+    pages: tapasoraPages,
+    editorMode: "visual-react",
+    schema: tapasoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: tapasoraDefaultData as unknown as Record<string, any>,
+    editorCss: tapasoraEditorCss,
+  }),
+
+  spiceforge: createRenderer({
+    key: "spiceforge",
+    name: "Spiceforge",
+    Component: SpiceforgePages,
+    pages: spiceforgePages,
+    editorMode: "visual-react",
+    schema: spiceforgeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: spiceforgeDefaultData as unknown as Record<string, any>,
+    editorCss: spiceforgeEditorCss,
+  }),
+
+  vineria: createRenderer({
+    key: "vineria",
+    name: "Vineria",
+    Component: VineriaPages,
+    pages: vineriaPages,
+    editorMode: "visual-react",
+    schema: vineriaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vineriaDefaultData as unknown as Record<string, any>,
+    editorCss: vineriaEditorCss,
+  }),
+
+  streetbite: createRenderer({
+    key: "streetbite",
+    name: "Streetbite",
+    Component: StreetbitePages,
+    pages: streetbitePages,
+    editorMode: "visual-react",
+    schema: streetbiteSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: streetbiteDefaultData as unknown as Record<string, any>,
+    editorCss: streetbiteEditorCss,
   }),
 };
 

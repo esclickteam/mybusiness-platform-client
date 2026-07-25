@@ -85,4 +85,30 @@ export const toolhausEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="toolhaus"] .store-blueprint-grid,
+[data-template-id="toolhaus-preview"] .store-blueprint-grid {
+  background-image: linear-gradient(rgba(250,204,21,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(250,204,21,0.14) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: toolhaus-blueprint-pan 18s linear infinite;
+}
+[data-template-id="toolhaus"] .store-product-card,
+[data-template-id="toolhaus-preview"] .store-product-card {
+  animation: toolhaus-bench-clank 5.2s steps(2, end) infinite;
+}
+@keyframes toolhaus-blueprint-pan {
+  from { background-position: 0 0; }
+  to { background-position: 96px 48px; }
+}
+@keyframes toolhaus-bench-clank {
+  0%, 100% { transform: translate(0,0); }
+  50% { transform: translate(-2px,-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="toolhaus"] .store-blueprint-grid,
+  [data-template-id="toolhaus"] .store-product-card,
+  [data-template-id="toolhaus-preview"] .store-blueprint-grid,
+  [data-template-id="toolhaus-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

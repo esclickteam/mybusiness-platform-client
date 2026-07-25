@@ -85,4 +85,23 @@ export const booknookEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="booknook"] .store-product-card,
+[data-template-id="booknook-preview"] .store-product-card {
+  animation: booknook-page-breathe 7.2s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+[data-template-id="booknook"] .store-product-card:nth-child(even),
+[data-template-id="booknook-preview"] .store-product-card:nth-child(even) {
+  animation-delay: 0.7s;
+}
+@keyframes booknook-page-breathe {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-7px) rotate(0.8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="booknook"] .store-product-card,
+  [data-template-id="booknook-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

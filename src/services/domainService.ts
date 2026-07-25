@@ -300,7 +300,7 @@ export async function checkDomainAvailability(
   return data;
 }
 
-export async function createOteDomainContact(
+export async function createDomainContact(
   payload: DomainContactPayload,
 ): Promise<DomainContactResult> {
   const cleanDomain =
@@ -421,6 +421,9 @@ export async function createOteDomainContact(
 
   return data;
 }
+
+/** @deprecated Use createDomainContact — kept for older imports. */
+export const createOteDomainContact = createDomainContact;
 
 export async function getDomainRegistrations(): Promise<
   DomainRegistrationsResult

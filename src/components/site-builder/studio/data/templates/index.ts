@@ -129,6 +129,16 @@ import { craftoraTemplate } from "./craftora/meta";
 import { skillforgeTemplate } from "./skillforge/meta";
 import { campuslyTemplate } from "./campusly/meta";
 import { masterlyTemplate } from "./masterly/meta";
+import { emberplateTemplate } from "./emberplate/meta";
+import { noodlixTemplate } from "./noodlix/meta";
+import { crustoraTemplate } from "./crustora/meta";
+import { mezzalineTemplate } from "./mezzaline/meta";
+import { sushisenTemplate } from "./sushisen/meta";
+import { brunchhausTemplate } from "./brunchhaus/meta";
+import { tapasoraTemplate } from "./tapasora/meta";
+import { spiceforgeTemplate } from "./spiceforge/meta";
+import { vineriaTemplate } from "./vineria/meta";
+import { streetbiteTemplate } from "./streetbite/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -259,6 +269,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   skillforgeTemplate,
   campuslyTemplate,
   masterlyTemplate,
+  emberplateTemplate,
+  noodlixTemplate,
+  crustoraTemplate,
+  mezzalineTemplate,
+  sushisenTemplate,
+  brunchhausTemplate,
+  tapasoraTemplate,
+  spiceforgeTemplate,
+  vineriaTemplate,
+  streetbiteTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

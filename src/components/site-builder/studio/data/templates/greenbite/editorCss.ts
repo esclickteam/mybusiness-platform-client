@@ -85,4 +85,23 @@ export const greenbiteEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="greenbite"] .store-product-card,
+[data-template-id="greenbite-preview"] .store-product-card {
+  animation: greenbite-crate-breathe 6.8s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+[data-template-id="greenbite"] .store-product-card:nth-child(even),
+[data-template-id="greenbite-preview"] .store-product-card:nth-child(even) {
+  animation-delay: 0.9s;
+}
+@keyframes greenbite-crate-breathe {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-5px) rotate(-0.6deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="greenbite"] .store-product-card,
+  [data-template-id="greenbite-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

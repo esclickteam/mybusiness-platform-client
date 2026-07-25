@@ -85,15 +85,36 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
 }
 
 function About({ data }: { data: Record<string, any> }) {
+  const aboutText = String(getValue(data, "aboutText"));
+  const firstLetter = aboutText.slice(0, 1);
+  const restText = aboutText.slice(1);
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-        <Reveal variant="scale"><img src={getValue(data, "aboutImage")} alt="" className={`aspect-[4/3] w-full object-cover border border-black/10`} /></Reveal>
-        <Reveal variant="right" className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "aboutEyebrow")}</p>
-          <h2 className="ag-display mt-4 text-3xl font-extrabold leading-tight md:text-5xl">{getValue(data, "aboutTitle")}</h2>
-          <p className="mt-6 text-base leading-8 text-[var(--muted)]">{getValue(data, "aboutText")}</p>
-        </Reveal>
+      <div className="mx-auto max-w-6xl">
+        <div className="border-y border-black/10 py-4 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{getValue(data, "aboutEyebrow")}</p>
+        </div>
+        <div className="mt-10 grid gap-10 lg:grid-cols-[1fr_0.78fr] lg:items-start">
+          <Reveal variant="right" className="text-right">
+            <h2 className="ag-display text-4xl font-bold leading-tight md:text-6xl">{getValue(data, "aboutTitle")}</h2>
+            <p className="mt-8 text-lg leading-9 text-[var(--muted)]">
+              <span className="ag-display ml-3 inline-block align-top text-7xl font-bold leading-none text-[var(--p)]">{firstLetter}</span>
+              {restText}
+            </p>
+            <div className="mt-8 grid gap-4 border-y border-black/10 py-5 sm:grid-cols-2">
+              <p className="text-sm leading-7 text-[var(--muted)]">מערכת מסרים, דוברות ויחסי עיתונות שנבנים סביב קו editorial אחד.</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">כל לקוח מקבל זווית, לוח פרסום וקצב עבודה ברור מול המדיה.</p>
+            </div>
+          </Reveal>
+          <Reveal variant="scale">
+            <figure className="border border-black/10 bg-[var(--surface)] p-3">
+              <img src={getValue(data, "aboutImage")} alt="" className="aspect-[4/5] w-full object-cover" />
+              <figcaption className="mt-3 border-t border-black/10 pt-3 text-xs font-bold uppercase tracking-[0.18em] text-[var(--muted)]">
+                Editorial desk · {getValue(data, "brandName")}
+              </figcaption>
+            </figure>
+          </Reveal>
+        </div>
       </div>
     </section>
   );
@@ -143,17 +164,21 @@ function Cases({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "casesEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "casesTitle")}</h2>
         </Reveal>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <div className="mt-12 grid gap-5 lg:grid-cols-3">
           {items.map(([title, text, image], i) => (
             <Reveal key={title} delayMs={i * 90} variant="up">
-              <article className="ag-card overflow-hidden border border-black/10 bg-[var(--surface)] text-right">
-                <div className="relative aspect-[16/11] overflow-hidden">
-                  <img src={image} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" />
-                  <span className="absolute right-4 top-4 bg-[var(--p)] px-3 py-1 text-xs font-black text-white">0{i + 1}</span>
+              <article className="ag-card min-h-full border border-black/10 bg-[var(--surface)] p-5 text-right">
+                <div className="flex items-start justify-between gap-4 border-b border-black/10 pb-4">
+                  <div>
+                    <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">Press</p>
+                    <h3 className="ag-display mt-3 text-3xl font-bold leading-tight">{title}</h3>
+                  </div>
+                  <img src={image} alt="" className="h-24 w-24 shrink-0 border border-black/10 object-cover" />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-2xl font-bold">{title}</h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
+                <p className="mt-5 text-sm leading-8 text-[var(--muted)]">{text}</p>
+                <div className="mt-8 flex items-center justify-between border-t border-black/10 pt-4 text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+                  <span>Clipping 0{i + 1}</span>
+                  <span>{getValue(data, "brandName")}</span>
                 </div>
               </article>
             </Reveal>
@@ -172,23 +197,23 @@ function Team({ data }: { data: Record<string, any> }) {
   ];
   return (
     <section className="bg-[var(--surface)] px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-6xl">
         <Reveal className="mx-auto max-w-3xl text-center">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "teamEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "teamTitle")}</h2>
         </Reveal>
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
+        <div className="mt-12 border-y border-black/10">
           {items.map(([name, role, image], i) => (
-            <Reveal key={name} delayMs={i * 90} variant="scale">
-              <article className="ag-card overflow-hidden border border-black/10 bg-[var(--bg)] text-center">
-                <div className="relative aspect-[4/5] overflow-hidden">
-                  <img src={image} alt="" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+            <Reveal key={name} delayMs={i * 90} variant="right">
+              <article className="flex flex-col gap-4 border-b border-black/10 py-5 text-right last:border-b-0 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                  <img src={image} alt="" className="h-16 w-16 rounded-full border border-black/10 object-cover" />
+                  <div>
+                    <h3 className="ag-display text-2xl font-bold">{name}</h3>
+                    <p className="mt-1 text-sm font-bold text-[var(--muted)]">{name} · {role}</p>
+                  </div>
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold">{name}</h3>
-                  <p className="mt-2 text-sm font-semibold text-[var(--muted)]">{role}</p>
-                </div>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">Byline 0{i + 1}</p>
               </article>
             </Reveal>
           ))}
@@ -207,16 +232,26 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
   ];
   return (
     <section className="px-5 py-16 lg:px-8 lg:py-20">
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="mb-8 text-center">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">גלריה</p>
-          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">רגעים מהעבודה</h2>
+      <div className="mx-auto max-w-6xl">
+        <Reveal className="mb-8 border-y border-black/10 py-5 text-center">
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "galleryEyebrow")}</p>
+          <h2 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{getValue(data, "galleryTitle")}</h2>
         </Reveal>
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          {images.map((src, i) => (
+        <div className="grid gap-4 md:grid-cols-2">
+          {images.slice(0, 2).map((src, i) => (
             <Reveal key={src} delayMs={i * 70} variant="scale">
-              <div className="overflow-hidden border border-black/10">
-                <img src={src} alt="" className={`w-full object-cover ${i % 2 === 0 ? "aspect-[3/4]" : "aspect-square"}`} />
+              <figure className="border border-black/10 bg-[var(--surface)] p-3">
+                <img src={src} alt="" className="aspect-[4/3] w-full object-cover" />
+                <figcaption className="mt-3 text-xs font-bold uppercase tracking-[0.16em] text-[var(--muted)]">Spread image 0{i + 1}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          {images.slice(2).map((src, i) => (
+            <Reveal key={src} delayMs={(i + 2) * 70} variant="scale">
+              <div className="border border-black/10 bg-[var(--surface)] p-3">
+                <img src={src} alt="" className="aspect-[16/7] w-full object-cover" />
               </div>
             </Reveal>
           ))}
@@ -234,18 +269,22 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
   ];
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className="mx-auto max-w-7xl">
-        <Reveal className="mx-auto max-w-3xl text-center">
+      <div className="mx-auto max-w-4xl">
+        <Reveal className="border-y border-black/10 py-6 text-center">
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "insightsEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "insightsTitle")}</h2>
         </Reveal>
-        <div className="mt-12 grid gap-4 md:grid-cols-3">
+        <div className="mt-10 space-y-8">
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
-              <article className={`ag-card border border-black/10 bg-[var(--surface)] p-7 text-right`}>
-                <h3 className="text-xl font-bold">{title}</h3>
-                <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
-                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">קראו עוד ←</button>
+              <article className="border-b border-black/10 pb-8 text-right">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">Column 0{i + 1}</p>
+                <h3 className="ag-display mt-3 text-3xl font-bold">{title}</h3>
+                <p className="mt-4 text-base leading-8 text-[var(--muted)]">{text}</p>
+                <blockquote className="mt-6 border-r-4 border-[var(--p)] bg-[var(--surface)] p-5 text-xl font-bold leading-9">
+                  "{i === 0 ? "כותרת טובה מתחילה בזווית, לא ברשימת מסרים." : i === 1 ? "מדיה אוהבת קצב עקבי יותר מהבטחה גדולה." : "משבר נמדד בדקות הראשונות ובשקט שאחריו."}"
+                </blockquote>
+                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">שלחו נושא לכתבה</button>
               </article>
             </Reveal>
           ))}
@@ -269,12 +308,12 @@ function Process({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "processEyebrow")}</p>
           <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "processTitle")}</h2>
         </Reveal>
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-12 grid border border-black/10 md:grid-cols-4">
           {steps.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 80} variant="up">
-              <article className={`ag-card border border-black/10 bg-[var(--bg)] p-6 text-right`}>
-                <p className="text-sm font-black text-[var(--p)]">שלב 0{i + 1}</p>
-                <h3 className="mt-3 text-xl font-bold">{title}</h3>
+              <article className="min-h-full border-b border-black/10 p-6 text-right md:border-b-0 md:border-l md:last:border-l-0">
+                <p className="ag-display text-3xl font-bold text-[var(--p)]">Week {i + 1}</p>
+                <h3 className="mt-5 text-xl font-bold">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
               </article>
             </Reveal>
@@ -288,27 +327,28 @@ function Process({ data }: { data: Record<string, any> }) {
 function Contact({ data }: { data: Record<string, any> }) {
   return (
     <section className="px-5 py-20 lg:px-8 lg:py-28">
-      <div className={`mx-auto grid max-w-7xl gap-8 border border-black/10 bg-[var(--surface)] p-6 md:p-10 lg:grid-cols-2`}>
-        <Reveal variant="right" className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "contactEyebrow")}</p>
-          <h2 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{getValue(data, "contactTitle")}</h2>
-          <p className="mt-5 text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
-          <div className="mt-8 space-y-2 text-sm font-bold">
+      <Reveal className="mx-auto max-w-4xl border border-black/10 bg-[var(--surface)] p-6 text-right md:p-10">
+        <div className="border-y border-black/10 py-5 text-center">
+          <p className="ag-display text-4xl font-bold">{getValue(data, "brandName")}</p>
+          <p className="mt-2 text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">{getValue(data, "contactEyebrow")}</p>
+        </div>
+        <div className="py-8">
+          <h2 className="ag-display text-3xl font-bold md:text-5xl">{getValue(data, "contactTitle")}</h2>
+          <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
+          <div className="mt-6 grid gap-2 border-y border-black/10 py-4 text-sm font-bold md:grid-cols-3">
             <p>{getValue(data, "phone")}</p>
             <p>{getValue(data, "email")}</p>
             <p>{getValue(data, "address")}</p>
           </div>
-        </Reveal>
-        <Reveal variant="left" delayMs={100}>
-          <form className="grid gap-3">
-            <input className={`border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="שם מלא" />
-            <input className={`border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="טלפון" />
-            <input className={`border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="חברה / תחום" />
-            <textarea className={`min-h-32 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="במה נוכל לעזור?" />
-            <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
-          </form>
-        </Reveal>
-      </div>
+        </div>
+        <form className="grid gap-3">
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="נושא / ארגון" />
+          <textarea className="min-h-36 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="מה הסיפור שצריך להגיע לעיתונות?" />
+          <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+        </form>
+      </Reveal>
     </section>
   );
 }
@@ -337,13 +377,16 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
 
 function PageHero({ data, title }: { data: Record<string, any>; title: string }) {
   return (
-    <section className="relative overflow-hidden border-b border-black/10">
-      <img src={getValue(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-35" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[var(--bg)] via-[var(--bg)]/85 to-[var(--bg)]/55" />
-      <Reveal className="relative z-10 mx-auto max-w-7xl px-5 py-16 text-right lg:px-8 lg:py-24">
-        <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "brandName")} · {getValue(data, "nicheLabel")}</p>
-        <h1 className="ag-display mt-4 max-w-4xl text-4xl font-extrabold md:text-6xl">{title}</h1>
-        <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
+    <section className="border-b border-black/10 px-5 py-14 lg:px-8 lg:py-20">
+      <Reveal className="mx-auto max-w-6xl text-center">
+        <div className="flex flex-wrap items-center justify-between gap-4 border-y border-black/10 py-4 text-xs font-black uppercase tracking-[0.24em] text-[var(--muted)]">
+          <span>Vol. 02</span>
+          <span>{getValue(data, "brandName")}</span>
+          <span>{getValue(data, "nicheLabel")}</span>
+        </div>
+        <h1 className="ag-display mx-auto mt-8 max-w-4xl text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-8 text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
+        <div className="mt-8 border-t border-black/10 pt-4 text-xs font-bold uppercase tracking-[0.22em] text-[var(--p)]">{getValue(data, "tagline")}</div>
       </Reveal>
     </section>
   );
@@ -389,12 +432,12 @@ function HomePage({ data, goTo }: { data: Record<string, any>; goTo: (id: string
   return (
     <>
       <Hero data={data} goTo={goTo} />
+      <Insights data={data} goTo={goTo} />
       <About data={data} />
       <Services data={data} goTo={goTo} />
       <Cases data={data} />
       <GalleryStrip data={data} />
       <Team data={data} />
-      <Insights data={data} goTo={goTo} />
       <Process data={data} />
       <Contact data={data} />
       <Footer data={data} goTo={goTo} />
@@ -413,12 +456,12 @@ function InnerPage({ data, type, goTo }: { data: Record<string, any>; type: stri
     contact: getValue(data, "navContact"),
   };
   const map: Record<string, React.ReactNode> = {
-    about: (<><About data={data} /><GalleryStrip data={data} /><Team data={data} /><Process data={data} /></>),
+    about: (<><About data={data} /><Insights data={data} goTo={goTo} /><GalleryStrip data={data} /><Team data={data} /></>),
     services: (<><Services data={data} goTo={goTo} /><Cases data={data} /><Process data={data} /><Contact data={data} /></>),
     cases: (<><Cases data={data} /><GalleryStrip data={data} /><Insights data={data} goTo={goTo} /><Contact data={data} /></>),
-    team: (<><Team data={data} /><About data={data} /><GalleryStrip data={data} /><Contact data={data} /></>),
-    insights: (<><Insights data={data} goTo={goTo} /><Cases data={data} /><Process data={data} /><Contact data={data} /></>),
-    process: (<><Process data={data} /><Services data={data} goTo={goTo} /><Team data={data} /><Contact data={data} /></>),
+    team: (<><Team data={data} /><About data={data} /><Process data={data} /><Contact data={data} /></>),
+    insights: (<><Insights data={data} goTo={goTo} /><About data={data} /><Cases data={data} /><Contact data={data} /></>),
+    process: (<><Process data={data} /><Insights data={data} goTo={goTo} /><Team data={data} /><Contact data={data} /></>),
     contact: (<><Contact data={data} /><About data={data} /><GalleryStrip data={data} /></>),
   };
   return (
