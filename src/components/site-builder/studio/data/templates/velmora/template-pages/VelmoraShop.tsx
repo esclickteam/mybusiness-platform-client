@@ -9,10 +9,11 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import type { VelmoraPageId } from "../pages";
+import type { VelmoraCartInput, VelmoraPageId } from "../pages";
 
 type Props = {
   onPageChange: (page: VelmoraPageId) => void;
+  onAddToCart?: (item: VelmoraCartInput) => void;
 };
 
 type ProductCategory =
@@ -199,11 +200,34 @@ function ProductCard({
   product,
   index,
   onPageChange,
+  onAddToCart,
 }: {
   product: Product;
   index: number;
   onPageChange: (page: VelmoraPageId) => void;
+  onAddToCart?: (item: VelmoraCartInput) => void;
 }) {
+  function handleAddToCart(event: React.MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (onAddToCart) {
+      onAddToCart({
+        productId: product.id,
+        ref: product.ref,
+        title: product.name,
+        image: product.image,
+        price: product.price,
+        size: "M",
+        color: product.colors[0] || "ברירת מחדל",
+        quantity: 1,
+      });
+      return;
+    }
+
+    onPageChange("product");
+  }
+
   return (
     <Reveal delay={(index % 8) * 70}>
       <article className="group relative overflow-hidden rounded-[7px] border border-black/10 bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
@@ -283,7 +307,7 @@ function ProductCard({
 
           <button
             type="button"
-            onClick={() => onPageChange("product")}
+            onClick={handleAddToCart}
             className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-black"
           >
             הוספה לסל
@@ -295,7 +319,7 @@ function ProductCard({
   );
 }
 
-export default function VelmoraShop({ onPageChange }: Props) {
+export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
   const [activeCategory, setActiveCategory] =
     React.useState<ProductCategory>("הכל");
   const [query, setQuery] = React.useState("");
@@ -499,6 +523,7 @@ export default function VelmoraShop({ onPageChange }: Props) {
                   product={product}
                   index={index}
                   onPageChange={onPageChange}
+                  onAddToCart={onAddToCart}
                 />
               ))}
             </div>

@@ -399,6 +399,19 @@ export function applySitePageNavSubmenusToDom(
 ) {
   if (!root) return;
 
+  /*
+    Velmora floating header uses React-owned nav labels. Injecting Site Pages
+    submenus + content sync into those anchors caused duplicated text under
+    each item (short label + page title).
+  */
+  if (
+    root.getAttribute("data-template-id") === "velmora" ||
+    root.querySelector('[data-template-id="velmora"]')
+  ) {
+    clearPreviousSubmenus(root);
+    return;
+  }
+
   const data = asPlainObject(visualData);
   const pages = (
     Array.isArray(data.__sitePages) ? data.__sitePages : []

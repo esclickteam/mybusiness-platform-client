@@ -141,22 +141,26 @@ function NavButton({
     <a
       href={getVelmoraPageHref(id)}
       data-velmora-page-link="true"
+      data-bizuply-lock-text="true"
       data-page-id={id}
       data-visual-link-href={getVelmoraPageHref(id)}
       data-link-url={getVelmoraPageHref(id)}
       aria-current={active ? "page" : undefined}
       onClick={(event) => handleVelmoraNavClick(event, id, onPageChange)}
       className={[
-        "relative text-[13px] font-medium transition duration-300 hover:text-black",
+        "relative isolate inline-flex items-center text-[13px] font-medium transition duration-300 hover:text-black",
         active ? "text-black" : "text-black/55",
       ].join(" ")}
     >
-      {label}
+      <span data-velmora-nav-label="true" className="relative z-[1] block leading-none">
+        {label}
+      </span>
 
       <span
         aria-hidden="true"
+        data-bizuply-editor-only="true"
         className={[
-          "absolute -bottom-2 right-0 h-px bg-black transition-all duration-300",
+          "pointer-events-none absolute -bottom-2 right-0 z-0 h-px bg-black transition-all duration-300",
           active ? "w-full" : "w-0",
         ].join(" ")}
       />
@@ -221,14 +225,16 @@ export default function VelmoraShell({
       ) : null}
 
       {/* FLOATING HEADER */}
-      <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
+      <header
+        data-visual-flow-lock="true"
+        data-template-section-type="header"
         data-section-kind="header"
         data-section-title="Header"
         data-template-section-id="header"
         data-bizuply-editor-section="true"
-        className="sticky top-4 z-50 mx-auto mt-4 w-[min(1120px,calc(100%-32px))] rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl"
+        className="sticky top-4 z-50 mx-auto mt-4 w-[min(1120px,calc(100%-32px))] overflow-visible rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl"
       >
-        <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
+        <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center overflow-hidden px-5">
           <nav className="hidden items-center justify-start gap-9 lg:flex" aria-label="ניווט ראשי">
             {leftNavItems.map((item) => (
               <NavButton
@@ -244,6 +250,7 @@ export default function VelmoraShell({
           <a
             href={getVelmoraPageHref("home")}
             data-velmora-page-link="true"
+            data-bizuply-lock-text="true"
             data-page-id="home"
             data-visual-link-href={getVelmoraPageHref("home")}
             data-link-url={getVelmoraPageHref("home")}
@@ -274,6 +281,7 @@ export default function VelmoraShell({
             <a
               href={getVelmoraPageHref("cart")}
               data-velmora-page-link="true"
+              data-bizuply-lock-text="true"
               data-page-id="cart"
               data-visual-link-href={getVelmoraPageHref("cart")}
               data-link-url={getVelmoraPageHref("cart")}
@@ -283,7 +291,7 @@ export default function VelmoraShell({
                 activePage === "cart" ? "bg-[#b98f58]" : "bg-[#caa36d]",
               ].join(" ")}
             >
-              {cartLabel}
+              <span data-velmora-nav-label="true">{cartLabel}</span>
               <ShoppingBag className="h-4 w-4" />
 
               {cartCount > 0 && (
@@ -298,6 +306,7 @@ export default function VelmoraShell({
             <a
               href={getVelmoraPageHref("cart")}
               data-velmora-page-link="true"
+              data-bizuply-lock-text="true"
               data-page-id="cart"
               data-visual-link-href={getVelmoraPageHref("cart")}
               data-link-url={getVelmoraPageHref("cart")}
@@ -343,6 +352,7 @@ export default function VelmoraShell({
             <a
               href={getVelmoraPageHref("home")}
               data-velmora-page-link="true"
+              data-bizuply-lock-text="true"
               data-page-id="home"
               data-visual-link-href={getVelmoraPageHref("home")}
               data-link-url={getVelmoraPageHref("home")}
@@ -374,13 +384,14 @@ export default function VelmoraShell({
                   key={item.id}
                   href={getVelmoraPageHref(item.id)}
                   data-velmora-page-link="true"
+                  data-bizuply-lock-text="true"
                   data-page-id={item.id}
                   data-visual-link-href={getVelmoraPageHref(item.id)}
                   data-link-url={getVelmoraPageHref(item.id)}
                   onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="text-right hover:text-black"
                 >
-                  {item.label}
+                  <span data-velmora-nav-label="true">{item.label}</span>
                 </a>
               ))}
             </div>
@@ -397,13 +408,14 @@ export default function VelmoraShell({
                   key={item.id}
                   href={getVelmoraPageHref(item.id)}
                   data-velmora-page-link="true"
+                  data-bizuply-lock-text="true"
                   data-page-id={item.id}
                   data-visual-link-href={getVelmoraPageHref(item.id)}
                   data-link-url={getVelmoraPageHref(item.id)}
                   onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="text-right hover:text-black"
                 >
-                  {item.label}
+                  <span data-velmora-nav-label="true">{item.label}</span>
                 </a>
               ))}
             </div>
@@ -420,6 +432,7 @@ export default function VelmoraShell({
                   key={item.id}
                   href={getVelmoraPageHref(item.id)}
                   data-velmora-page-link="true"
+                  data-bizuply-lock-text="true"
                   data-page-id={item.id}
                   data-visual-link-href={getVelmoraPageHref(item.id)}
                   data-link-url={getVelmoraPageHref(item.id)}
@@ -429,7 +442,7 @@ export default function VelmoraShell({
                     activePage === item.id ? "font-black text-black" : "",
                   ].join(" ")}
                 >
-                  {item.label}
+                  <span data-velmora-nav-label="true">{item.label}</span>
                 </a>
               ))}
             </div>
@@ -446,13 +459,14 @@ export default function VelmoraShell({
                   key={item.id}
                   href={getVelmoraPageHref(item.id)}
                   data-velmora-page-link="true"
+                  data-bizuply-lock-text="true"
                   data-page-id={item.id}
                   data-visual-link-href={getVelmoraPageHref(item.id)}
                   data-link-url={getVelmoraPageHref(item.id)}
                   onClick={(event) => handleVelmoraNavClick(event, item.id, onPageChange)}
                   className="hover:text-black"
                 >
-                  {item.label}
+                  <span data-velmora-nav-label="true">{item.label}</span>
                 </a>
               ))}
             </div>

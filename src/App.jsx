@@ -394,6 +394,18 @@ function PublicMiniSitePage() {
 
       if (!link) return;
 
+      /*
+        Template SPA nav (Velmora etc.) owns its own page state. Let the
+        React onClick run instead of remounting the public site via loadSite.
+      */
+      if (
+        link.getAttribute("data-velmora-page-link") === "true" ||
+        link.getAttribute("data-bizuply-spa-nav") === "true" ||
+        link.closest('[data-velmora-page-link="true"], [data-bizuply-spa-nav="true"]')
+      ) {
+        return;
+      }
+
       const rawHref =
         link.getAttribute("href") ||
         link.getAttribute("data-visual-link-href") ||

@@ -906,6 +906,41 @@ type VelmoraPagesProps = {
   studioData?: VelmoraTemplateData;
 };
 
+const VELMORA_CART_STORAGE_KEY = "bizuply:velmora-cart";
+
+function readStoredCartItems(): VelmoraCartItem[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.localStorage.getItem(VELMORA_CART_STORAGE_KEY);
+    if (!raw) return [];
+
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+
+    return parsed.filter(
+      (item) =>
+        item &&
+        typeof item === "object" &&
+        typeof item.cartId === "string" &&
+        typeof item.productId === "string" &&
+        typeof item.title === "string",
+    ) as VelmoraCartItem[];
+  } catch {
+    return [];
+  }
+}
+
+function writeStoredCartItems(items: VelmoraCartItem[]) {
+  if (typeof window === "undefined") return;
+
+  try {
+    window.localStorage.setItem(VELMORA_CART_STORAGE_KEY, JSON.stringify(items));
+  } catch {
+    // ignore quota / private mode
+  }
+}
+
 export default function VelmoraPages({
   initialPage = "home",
   activePageId,
@@ -933,22 +968,19 @@ export default function VelmoraPages({
     return resolveVelmoraPageId(requestedPage || "home");
   }, [requestedPage]);
 
+  /*
+    Always render from local SPA state (like Pulsecore / useTemplatePageNavigation).
+    Sync FROM external page props, but never lock the UI to them — otherwise
+    public sites that pass activePageId cannot open cart/product after add-to-cart.
+  */
   const [activePage, setActivePage] =
     React.useState<VelmoraPageId>(safeInitialPage);
 
-  const [cartItems, setCartItems] = React.useState<VelmoraCartItem[]>([]);
+  const [cartItems, setCartItems] = React.useState<VelmoraCartItem[]>(() =>
+    isStudioStatic ? [] : readStoredCartItems(),
+  );
 
-  /**
-   * חשוב:
-   * רק activePageId / pageId הם שליטה חיצונית אמיתית.
-   * isStudioStatic לא אומר שאסור להחליף דף בתוך הפריוויו.
-   * אחרת לחיצה על קטגוריות לא עושה כלום, כי pageToRender נשאר תמיד initialPage.
-   */
-  const isControlledPage = Boolean(activePageId || pageId);
-
-  const pageToRender: VelmoraPageId = isControlledPage
-    ? safeInitialPage
-    : activePage;
+  const pageToRender = activePage;
 
   const cartCount = React.useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -958,6 +990,11 @@ export default function VelmoraPages({
   React.useEffect(() => {
     setActivePage(safeInitialPage);
   }, [safeInitialPage]);
+
+  React.useEffect(() => {
+    if (isStudioStatic) return;
+    writeStoredCartItems(cartItems);
+  }, [cartItems, isStudioStatic]);
 
   function scrollTemplateToTop() {
     requestAnimationFrame(() => {
@@ -980,11 +1017,6 @@ export default function VelmoraPages({
     const nextPage = resolveVelmoraPageId(page);
 
     onPageChange?.(nextPage);
-
-    /**
-     * אם יש שליטה חיצונית דרך Preview, מודיעים החוצה.
-     * אם אין שליטה חיצונית, מחליפים דף פנימי כאן.
-     */
     setActivePage(nextPage);
     scrollTemplateToTop();
   }
@@ -1019,6 +1051,7 @@ export default function VelmoraPages({
       ];
     });
 
+    onPageChange?.("cart");
     setActivePage("cart");
     scrollTemplateToTop();
   }
@@ -1105,7 +1138,12 @@ export default function VelmoraPages({
               },
               {
                 id: "shop",
-                content: <VelmoraShop onPageChange={handlePageChange} />,
+                content: (
+                  <VelmoraShop
+                    onPageChange={handlePageChange}
+                    onAddToCart={handleAddToCart}
+                  />
+                ),
               },
               {
                 id: "projects",
