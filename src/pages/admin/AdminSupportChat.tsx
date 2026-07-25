@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Bell, Headphones, RefreshCw, Send } from "lucide-react";
+import { ArrowRight, Bell, Headphones, RefreshCw, Send } from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -73,6 +73,32 @@ function formatTime(value?: string) {
   }
 }
 
+function mergeMessagesById(
+  prev: SupportMessage[],
+  incoming: SupportMessage[]
+): SupportMessage[] {
+  const byId = new Map(prev.map((m) => [m._id, m]));
+  for (const m of incoming) {
+    byId.set(m._id, m);
+  }
+  const seen = new Set<string>();
+  const merged: SupportMessage[] = [];
+  for (const m of prev) {
+    const next = byId.get(m._id);
+    if (next && !seen.has(next._id)) {
+      merged.push(next);
+      seen.add(next._id);
+    }
+  }
+  for (const m of incoming) {
+    if (!seen.has(m._id)) {
+      merged.push(m);
+      seen.add(m._id);
+    }
+  }
+  return merged;
+}
+
 export default function AdminSupportChat() {
   const { user, socket } = useAuth() as {
     user: { name?: string; _id?: string; userId?: string } | null;
@@ -96,53 +122,77 @@ export default function AdminSupportChat() {
   const [pushStatus, setPushStatus] = useState(getPermission());
   const [pushBusy, setPushBusy] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const selectedIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    selectedIdRef.current = selectedId;
+  }, [selectedId]);
 
   const selected = useMemo(
     () => conversations.find((c) => c._id === selectedId) || null,
     [conversations, selectedId]
   );
 
-  const loadConversations = useCallback(async () => {
-    setLoadingList(true);
-    setError("");
-    try {
-      const statusParam =
-        filter === "open" ? "all" : filter === "all" ? "all" : filter;
-      const { data } = await API.get("/support-chat/admin/conversations", {
-        params: { status: statusParam },
-      });
-      let list: SupportConversation[] = data.conversations || [];
-      if (filter === "open") {
-        list = list.filter((c) =>
-          ["waiting", "active", "bot"].includes(c.status)
-        );
-      } else if (filter === "closed") {
-        list = list.filter((c) => c.status === "closed");
+  const loadConversations = useCallback(
+    async (opts?: { silent?: boolean }) => {
+      const silent = !!opts?.silent;
+      if (!silent) {
+        setLoadingList(true);
+        setError("");
       }
-      setConversations(list);
-      setOnlineAgents(data.onlineAgents || []);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "שגיאה בטעינת השיחות");
-    } finally {
-      setLoadingList(false);
-    }
-  }, [filter]);
+      try {
+        const statusParam =
+          filter === "open" ? "all" : filter === "all" ? "all" : filter;
+        const { data } = await API.get("/support-chat/admin/conversations", {
+          params: { status: statusParam },
+        });
+        let list: SupportConversation[] = data.conversations || [];
+        if (filter === "open") {
+          list = list.filter((c) =>
+            ["waiting", "active", "bot"].includes(c.status)
+          );
+        } else if (filter === "closed") {
+          list = list.filter((c) => c.status === "closed");
+        }
+        setConversations(list);
+        setOnlineAgents(data.onlineAgents || []);
+      } catch (err: any) {
+        if (!silent) {
+          setError(err?.response?.data?.error || "שגיאה בטעינת השיחות");
+        }
+      } finally {
+        if (!silent) setLoadingList(false);
+      }
+    },
+    [filter]
+  );
 
-  const loadMessages = useCallback(async (id: string) => {
-    setLoadingMessages(true);
-    try {
-      const { data } = await API.get(`/support-chat/${id}/messages`);
-      setMessages(data.messages || []);
-      await API.post(`/support-chat/admin/${id}/read`).catch(() => {});
-      setConversations((prev) =>
-        prev.map((c) => (c._id === id ? { ...c, unreadByAgent: 0 } : c))
-      );
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "שגיאה בטעינת הודעות");
-    } finally {
-      setLoadingMessages(false);
-    }
-  }, []);
+  const loadMessages = useCallback(
+    async (id: string, opts?: { silent?: boolean }) => {
+      const silent = !!opts?.silent;
+      if (!silent) setLoadingMessages(true);
+      try {
+        const { data } = await API.get(`/support-chat/${id}/messages`);
+        const incoming: SupportMessage[] = data.messages || [];
+        if (silent) {
+          setMessages((prev) => mergeMessagesById(prev, incoming));
+        } else {
+          setMessages(incoming);
+        }
+        await API.post(`/support-chat/admin/${id}/read`).catch(() => {});
+        setConversations((prev) =>
+          prev.map((c) => (c._id === id ? { ...c, unreadByAgent: 0 } : c))
+        );
+      } catch (err: any) {
+        if (!silent) {
+          setError(err?.response?.data?.error || "שגיאה בטעינת הודעות");
+        }
+      } finally {
+        if (!silent) setLoadingMessages(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
     loadConversations();
@@ -150,6 +200,7 @@ export default function AdminSupportChat() {
 
   useEffect(() => {
     if (selectedId) loadMessages(selectedId);
+    else setMessages([]);
   }, [selectedId, loadMessages]);
 
   useEffect(() => {
@@ -170,6 +221,34 @@ export default function AdminSupportChat() {
     void ensurePushSubscription().then(() => setPushStatus(getPermission()));
   }, []);
 
+  // Join / leave conversation room when selection changes
+  useEffect(() => {
+    if (!socket || !selectedId) return;
+    const id = selectedId;
+    socket.emit("support:join", id);
+    return () => {
+      socket.emit("support:leave", id);
+    };
+  }, [socket, selectedId]);
+
+  // Poll messages every 2s while a conversation is open
+  useEffect(() => {
+    if (!selectedId) return;
+    const id = selectedId;
+    const interval = window.setInterval(() => {
+      void loadMessages(id, { silent: true });
+    }, 2000);
+    return () => window.clearInterval(interval);
+  }, [selectedId, loadMessages]);
+
+  // Light refresh of conversation list every 5s
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      void loadConversations({ silent: true });
+    }, 5000);
+    return () => window.clearInterval(interval);
+  }, [loadConversations]);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -181,7 +260,12 @@ export default function AdminSupportChat() {
       });
     };
 
-    const showLocalAlert = (title: string, body: string, conversationId?: string) => {
+    const showLocalAlert = (
+      title: string,
+      body: string,
+      conversationId?: string
+    ) => {
+      // Always show in-page toast
       setToast(`${title}: ${body}`);
       window.setTimeout(() => setToast(""), 5000);
 
@@ -194,10 +278,16 @@ export default function AdminSupportChat() {
         /* ignore */
       }
 
+      const sameConversationOpen =
+        !!conversationId &&
+        String(selectedIdRef.current) === String(conversationId);
+      const skipBrowserNotification =
+        sameConversationOpen && document.hasFocus();
+
       if (
         typeof Notification !== "undefined" &&
         Notification.permission === "granted" &&
-        document.hidden
+        !skipBrowserNotification
       ) {
         try {
           const n = new Notification(title, {
@@ -222,7 +312,10 @@ export default function AdminSupportChat() {
       const conversation = payload?.conversation;
       const message = payload?.message;
       if (conversation) upsertConversation(conversation);
-      if (message && String(conversation?._id) === String(selectedId)) {
+      if (
+        message &&
+        String(conversation?._id) === String(selectedIdRef.current)
+      ) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === message._id)) return prev;
           return [...prev, message];
@@ -241,7 +334,7 @@ export default function AdminSupportChat() {
       if (payload?.conversation) upsertConversation(payload.conversation);
       if (
         payload?.systemMessage &&
-        String(payload.conversation?._id) === String(selectedId)
+        String(payload.conversation?._id) === String(selectedIdRef.current)
       ) {
         setMessages((prev) => {
           if (prev.some((m) => m._id === payload.systemMessage._id)) return prev;
@@ -269,6 +362,7 @@ export default function AdminSupportChat() {
     socket.on("support:conversationAssigned", onUpdated);
     socket.on("support:waiting", onUpdated);
     socket.on("support:notify", onNotify);
+    socket.on("support:notifyParty", onNotify);
     socket.on("support:agentsOnline", onAgents);
 
     return () => {
@@ -277,9 +371,22 @@ export default function AdminSupportChat() {
       socket.off("support:conversationAssigned", onUpdated);
       socket.off("support:waiting", onUpdated);
       socket.off("support:notify", onNotify);
+      socket.off("support:notifyParty", onNotify);
       socket.off("support:agentsOnline", onAgents);
     };
-  }, [socket, selectedId, setSearchParams]);
+  }, [socket, setSearchParams]);
+
+  function goBackToList() {
+    const previousId = selectedIdRef.current;
+    if (socket && previousId) {
+      socket.emit("support:leave", previousId);
+    }
+    setSelectedId(null);
+    setMessages([]);
+    const next = new URLSearchParams(searchParams);
+    next.delete("c");
+    setSearchParams(next);
+  }
 
   async function enablePushAlerts() {
     setPushBusy(true);
@@ -333,51 +440,71 @@ export default function AdminSupportChat() {
     }
   }
 
+  function applySendResult(data: {
+    message?: SupportMessage;
+    conversation?: SupportConversation;
+  }) {
+    if (data.message) {
+      setMessages((prev) => {
+        if (prev.some((m) => m._id === data.message!._id)) return prev;
+        return [...prev, data.message!];
+      });
+    }
+    if (data.conversation) {
+      const conversation = data.conversation;
+      setConversations((prev) =>
+        prev.map((c) => (c._id === conversation._id ? conversation : c))
+      );
+    }
+  }
+
+  async function sendViaRest(conversationId: string, text: string) {
+    const { data } = await API.post(`/support-chat/${conversationId}/messages`, {
+      text,
+    });
+    applySendResult(data);
+  }
+
   async function sendMessage() {
     const text = input.trim();
     if (!text || !selectedId || sending) return;
     setSending(true);
     setInput("");
+    const conversationId = selectedId;
 
     try {
       if (socket?.connected) {
-        await new Promise<void>((resolve, reject) => {
-          socket.emit(
-            "support:sendMessage",
-            { conversationId: selectedId, text },
-            (ack: any) => {
-              if (!ack?.ok) {
-                reject(new Error(ack?.error || "send failed"));
-                return;
+        try {
+          await new Promise<void>((resolve, reject) => {
+            let settled = false;
+            const timer = window.setTimeout(() => {
+              if (settled) return;
+              settled = true;
+              reject(new Error("timeout"));
+            }, 2500);
+
+            socket.emit(
+              "support:sendMessage",
+              { conversationId, text },
+              (ack: any) => {
+                if (settled) return;
+                settled = true;
+                window.clearTimeout(timer);
+                if (!ack?.ok) {
+                  reject(new Error(ack?.error || "send failed"));
+                  return;
+                }
+                applySendResult(ack);
+                resolve();
               }
-              if (ack.message) {
-                setMessages((prev) => {
-                  if (prev.some((m) => m._id === ack.message._id)) return prev;
-                  return [...prev, ack.message];
-                });
-              }
-              if (ack.conversation) {
-                setConversations((prev) =>
-                  prev.map((c) =>
-                    c._id === selectedId ? ack.conversation : c
-                  )
-                );
-              }
-              resolve();
-            }
-          );
-        });
-      } else {
-        const { data } = await API.post(
-          `/support-chat/${selectedId}/messages`,
-          { text }
-        );
-        if (data.message) setMessages((prev) => [...prev, data.message]);
-        if (data.conversation) {
-          setConversations((prev) =>
-            prev.map((c) => (c._id === selectedId ? data.conversation : c))
-          );
+            );
+          });
+        } catch {
+          // Socket ack failed / timed out — REST fallback
+          await sendViaRest(conversationId, text);
         }
+      } else {
+        await sendViaRest(conversationId, text);
       }
     } catch (err: any) {
       setError(err?.message || "שליחת ההודעה נכשלה");
@@ -433,7 +560,7 @@ export default function AdminSupportChat() {
             )}
             <button
               type="button"
-              onClick={loadConversations}
+              onClick={() => void loadConversations()}
               className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm"
             >
               <RefreshCw size={14} />
@@ -455,7 +582,11 @@ export default function AdminSupportChat() {
         )}
 
         <div className="grid min-h-[70vh] grid-cols-1 overflow-hidden rounded-[28px] border border-violet-100 bg-white shadow-xl lg:grid-cols-[340px_1fr]">
-          <aside className="border-b border-violet-50 lg:border-b-0 lg:border-l">
+          <aside
+            className={`border-b border-violet-50 lg:border-b-0 lg:border-l ${
+              selectedId ? "hidden lg:block" : "block"
+            }`}
+          >
             <div className="flex gap-1 border-b border-violet-50 p-3">
               {(
                 [
@@ -537,25 +668,39 @@ export default function AdminSupportChat() {
             </div>
           </aside>
 
-          <section className="flex min-h-[60vh] flex-col">
+          <section
+            className={`flex min-h-[60vh] flex-col ${
+              selectedId ? "block" : "hidden lg:flex"
+            }`}
+          >
             {!selected ? (
               <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-slate-500">
                 <Headphones size={36} className="text-violet-300" />
                 <p className="text-sm font-bold">בחרו שיחה מהרשימה</p>
                 <p className="text-xs">
-                שלום {user?.name || "מנהל"} — שיחות חדשות יופיעו כאן בזמן אמת
+                  שלום {user?.name || "מנהל"} — שיחות חדשות יופיעו כאן בזמן אמת
                 </p>
               </div>
             ) : (
               <>
                 <header className="flex flex-wrap items-center justify-between gap-3 border-b border-violet-50 px-5 py-4">
-                  <div>
-                    <h2 className="text-lg font-black">
-                      {selected.name || "אורח"}
-                    </h2>
-                    <p className="text-xs font-medium text-slate-500">
-                      {selected.email || "—"} · {statusLabel(selected.status)}
-                    </p>
+                  <div className="flex min-w-0 items-start gap-3">
+                    <button
+                      type="button"
+                      onClick={goBackToList}
+                      className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm"
+                    >
+                      <ArrowRight size={14} />
+                      חזרה לרשימה
+                    </button>
+                    <div className="min-w-0">
+                      <h2 className="text-lg font-black">
+                        {selected.name || "אורח"}
+                      </h2>
+                      <p className="text-xs font-medium text-slate-500">
+                        {selected.email || "—"} · {statusLabel(selected.status)}
+                      </p>
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {selected.status === "waiting" && (
@@ -599,9 +744,13 @@ export default function AdminSupportChat() {
                       return (
                         <div
                           key={msg._id}
-                          className={`flex ${mine ? "justify-start" : "justify-end"}`}
+                          dir="ltr"
+                          className={
+                            mine ? "flex justify-end" : "flex justify-start"
+                          }
                         >
                           <div
+                            dir="rtl"
                             className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
                               mine
                                 ? "rounded-br-sm bg-violet-700 text-white"
