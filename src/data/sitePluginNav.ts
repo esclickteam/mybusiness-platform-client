@@ -169,8 +169,8 @@ export const SECTION_META: Record<
     pluginKey: "club",
   },
   "site-auth": {
-    label: "התחברות ועיצוב",
-    description: "כפתור, טופס והגדרות התחברות ללקוחות האתר",
+    label: "התחברות לקוחות האתר",
+    description: "מערכת נפרדת מ-BizUply — כפתור, טפסים ועיצוב",
     pluginKey: "site-auth",
   },
   "site-members": {

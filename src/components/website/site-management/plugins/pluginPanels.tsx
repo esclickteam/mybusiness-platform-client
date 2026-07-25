@@ -314,8 +314,8 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
         <div className="rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4">
           <p className="mb-2 text-sm font-black text-indigo-900">1. כפתור התחברות</p>
           <p className="mb-4 text-xs font-bold leading-relaxed text-indigo-700">
-            בעורך: תוספים → «הפעלת תוסף צף» → גררו את האייקון (כמו גלגל המזל). הכפתור
-            מוביל לדף התחברות.
+            הכפתור הצף הוא היחיד שמופיע באתר — לא כפתור בכותרת. בעורך: תוספים →
+            «הפעלת תוסף צף» → גררו למיקום. העיצוב כאן = מה שיופיע באתר.
           </p>
           <Toggle
             label="הצג כפתור באתר"

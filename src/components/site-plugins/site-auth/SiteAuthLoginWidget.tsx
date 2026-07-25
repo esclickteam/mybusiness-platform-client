@@ -144,7 +144,7 @@ export default function SiteAuthLoginWidget({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className={`fixed z-[99990] flex items-center justify-center gap-2 font-black transition hover:scale-105 ${shapeClass} ${
+      className={`fixed z-[99990] relative flex items-center justify-center gap-2 font-black transition hover:scale-105 ${shapeClass} ${
         isEditor ? "cursor-grab ring-2 ring-violet-400 ring-offset-2" : "cursor-pointer"
       } ${!transparent && display !== "text" ? "shadow-[0_8px_32px_rgba(99,102,241,0.35)]" : ""}`}
       style={{
@@ -162,7 +162,17 @@ export default function SiteAuthLoginWidget({
       dir="rtl"
     >
       {isEditor ? (
-        <GripVertical size={16} className="opacity-80" />
+        <>
+          {display !== "text" ? (
+            <SiteAuthTriggerIcon icon={iconKey as any} size={iconSize} />
+          ) : null}
+          {display !== "icon" ? (
+            <span className="text-xs">{buttonLabel}</span>
+          ) : null}
+          <span className="pointer-events-none absolute -left-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-violet-600 text-white shadow">
+            <GripVertical size={10} />
+          </span>
+        </>
       ) : display !== "text" ? (
         <SiteAuthTriggerIcon icon={iconKey as any} size={iconSize} />
       ) : null}

@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteAuthLoginForm from "../../site-plugins/site-auth/SiteAuthLoginForm";
+import { openSiteMemberLogin } from "../../site-plugins/site-auth/siteAuthNavigation";
 import { mergeSiteAuthSettings } from "../../site-plugins/site-auth/siteAuthUtils";
 import { buildSiteAuthFormShellStyle } from "../../site-plugins/site-auth/siteAuthFormStyles";
 import {
@@ -240,7 +241,7 @@ export function PublicSiteResetPasswordPage({
         password,
       });
       setMessage(data.message);
-      setTimeout(() => navigate("/login", { replace: true }), 1200);
+      setTimeout(() => openSiteMemberLogin(site), 1200);
     } catch (err: any) {
       setError(err?.message || "שגיאה");
     } finally {
