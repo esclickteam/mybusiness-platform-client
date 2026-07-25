@@ -30,6 +30,46 @@ export type PaymentProviderCatalogItem = {
 
 export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
   {
+    key: "stripe",
+    name: "Stripe",
+    description: "קבלו תשלומים בכרטיס אשראי דרך Stripe — סליקה בינלאומית מאובטחת.",
+    accent: "#635BFF",
+    logoText: "Stripe",
+    badges: ["תומך בהוראות קבע", "בינלאומי"],
+    supportsRecurring: true,
+    createAccountUrl: "https://dashboard.stripe.com/register",
+    contactUrl: "https://support.stripe.com/",
+    learnMoreUrl: "https://stripe.com/docs/keys",
+    instructions: [
+      "היכנסו ל-Stripe Dashboard והעתיקו את Publishable key ואת Secret key.",
+      "הזינו את המפתחות בטופס ולחצו חיבור.",
+      "אופציונלי: הוסיפו Webhook secret לקבלת עדכוני תשלום.",
+    ],
+    fields: [
+      {
+        key: "publicKey",
+        label: "Publishable key",
+        placeholder: "pk_live_... או pk_test_...",
+        required: true,
+      },
+      {
+        key: "apiSecret",
+        label: "Secret key",
+        placeholder: "sk_live_... או sk_test_...",
+        type: "password",
+        required: true,
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על המפתח הקיים",
+      },
+      {
+        key: "webhookSecret",
+        label: "Webhook secret (אופציונלי)",
+        placeholder: "whsec_...",
+        type: "password",
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על הסוד הקיים",
+      },
+    ],
+  },
+  {
     key: "hyp",
     name: "Max by Hyp",
     description: "קבלו תשלומים בכרטיס אשראי או חיוב דרך Max.",

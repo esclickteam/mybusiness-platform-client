@@ -180,7 +180,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         icon={CreditCard}
         accent="#059669"
         title="תשלומים"
-        description="חברו ספקי סליקה לקבלת תשלומים מהאתר — Max, PayPal, bit, Grow, PayPlus, Tranzila ו-Cal."
+        description="חברו ספקי סליקה לקבלת תשלומים מהאתר — Stripe, Max, PayPal, bit, Grow, PayPlus, Tranzila ו-Cal."
       />
 
       {message ? (
