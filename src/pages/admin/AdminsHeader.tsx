@@ -1,14 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../context/AuthContext";
 
 function AdminHeader() {
-  const { user, logout } = useAuth();
+  const { user, logout, socket } = useAuth() as {
+    user: { name?: string; email?: string } | null;
+    logout: () => void;
+    socket: any;
+  };
   const navigate = useNavigate();
   const location = useLocation();
+  const [supportBadge, setSupportBadge] = useState(0);
 
   const displayName = user?.name || user?.email || "מנהל";
+
+  useEffect(() => {
+    if (!socket) return;
+
+    const bump = () => setSupportBadge((n) => n + 1);
+
+    socket.emit("joinRoom", "admin-support");
+    socket.on("support:notify", bump);
+    socket.on("support:waiting", bump);
+    socket.on("support:newMessage", (payload: any) => {
+      if (payload?.message?.senderType === "visitor") bump();
+    });
+
+    return () => {
+      socket.off("support:notify", bump);
+      socket.off("support:waiting", bump);
+      socket.off("support:newMessage");
+    };
+  }, [socket]);
+
+  useEffect(() => {
+    if (location.pathname.startsWith("/admin/support-chat")) {
+      setSupportBadge(0);
+    }
+  }, [location.pathname]);
 
   function isActive(path: string) {
     if (path === "/admin/dashboard") {
@@ -109,9 +139,14 @@ function AdminHeader() {
           <button
             type="button"
             onClick={() => navigate("/admin/support-chat")}
-            className={navClass("/admin/support-chat")}
+            className={`${navClass("/admin/support-chat")} relative`}
           >
             צ׳אט תמיכה
+            {supportBadge > 0 && (
+              <span className="absolute -left-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white">
+                {supportBadge > 9 ? "9+" : supportBadge}
+              </span>
+            )}
           </button>
         </nav>
 

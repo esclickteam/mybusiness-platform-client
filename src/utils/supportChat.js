@@ -50,9 +50,11 @@ export function clearSupportSession() {
 }
 
 async function supportFetch(path, { method = "GET", body, token } = {}) {
+  const visitorId = getSupportVisitorId();
   const headers = {
     "Content-Type": "application/json",
-    "X-Support-Visitor-Id": getSupportVisitorId(),
+    // Keep both casings for proxies that normalize oddly.
+    "X-Support-Visitor-Id": visitorId,
   };
 
   const authToken = token || localStorage.getItem("token");
@@ -60,11 +62,19 @@ async function supportFetch(path, { method = "GET", body, token } = {}) {
     headers.Authorization = `Bearer ${authToken}`;
   }
 
+  const canSendBody = method !== "GET" && method !== "HEAD";
+  const payload =
+    canSendBody && body && typeof body === "object"
+      ? { visitorId, ...body }
+      : canSendBody
+        ? body
+        : undefined;
+
   const res = await fetch(`${API_BASE}${path}`, {
     method,
     headers,
     credentials: "include",
-    body: body ? JSON.stringify(body) : undefined,
+    body: payload != null ? JSON.stringify(payload) : undefined,
   });
 
   const data = await res.json().catch(() => ({}));

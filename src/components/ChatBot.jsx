@@ -277,7 +277,15 @@ export default function ChatBot({
       setIsLoading(true);
 
       try {
-        const session = await ensureSession();
+        // Session is best-effort — chatbot answers must work even if support
+        // session/CORS fails.
+        let session = null;
+        try {
+          session = await ensureSession();
+        } catch {
+          session = null;
+        }
+
         const headers = { "Content-Type": "application/json" };
         const token = localStorage.getItem("token");
         if (token) headers.Authorization = `Bearer ${token}`;

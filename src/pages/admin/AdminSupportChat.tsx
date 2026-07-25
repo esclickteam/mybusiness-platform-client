@@ -1,8 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Headphones, RefreshCw, Send } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Bell, Headphones, RefreshCw, Send } from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import {
+  ensurePushSubscription,
+  getPermission,
+  subscribeToPush,
+} from "../../utils/push";
 import AdminHeader from "./AdminsHeader";
 
 type SupportConversation = {
@@ -72,6 +78,7 @@ export default function AdminSupportChat() {
     user: { name?: string; _id?: string; userId?: string } | null;
     socket: any;
   };
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [conversations, setConversations] = useState<SupportConversation[]>([]);
   const [onlineAgents, setOnlineAgents] = useState<any[]>([]);
@@ -80,11 +87,14 @@ export default function AdminSupportChat() {
   const [input, setInput] = useState("");
   const [loadingList, setLoadingList] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [filter, setFilter] = useState<"open" | "all" | "waiting" | "active">(
-    "open"
-  );
+  const [filter, setFilter] = useState<
+    "open" | "all" | "waiting" | "active" | "closed"
+  >("open");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
+  const [toast, setToast] = useState("");
+  const [pushStatus, setPushStatus] = useState(getPermission());
+  const [pushBusy, setPushBusy] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const selected = useMemo(
@@ -106,6 +116,8 @@ export default function AdminSupportChat() {
         list = list.filter((c) =>
           ["waiting", "active", "bot"].includes(c.status)
         );
+      } else if (filter === "closed") {
+        list = list.filter((c) => c.status === "closed");
       }
       setConversations(list);
       setOnlineAgents(data.onlineAgents || []);
@@ -144,6 +156,20 @@ export default function AdminSupportChat() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Deep-link from PWA / push: /admin/support-chat?c=<id>
+  useEffect(() => {
+    const c = searchParams.get("c");
+    if (c) {
+      setSelectedId(c);
+      setFilter("all");
+    }
+  }, [searchParams]);
+
+  // Enable PWA push for admins (platform support alerts)
+  useEffect(() => {
+    void ensurePushSubscription().then(() => setPushStatus(getPermission()));
+  }, []);
+
   useEffect(() => {
     if (!socket) return;
 
@@ -155,6 +181,43 @@ export default function AdminSupportChat() {
       });
     };
 
+    const showLocalAlert = (title: string, body: string, conversationId?: string) => {
+      setToast(`${title}: ${body}`);
+      window.setTimeout(() => setToast(""), 5000);
+
+      try {
+        const audio = new Audio(
+          "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
+        );
+        void audio.play().catch(() => {});
+      } catch {
+        /* ignore */
+      }
+
+      if (
+        typeof Notification !== "undefined" &&
+        Notification.permission === "granted" &&
+        document.hidden
+      ) {
+        try {
+          const n = new Notification(title, {
+            body,
+            tag: conversationId ? `support-${conversationId}` : "support",
+          });
+          n.onclick = () => {
+            window.focus();
+            if (conversationId) {
+              setSelectedId(conversationId);
+              setSearchParams({ c: conversationId });
+            }
+            n.close();
+          };
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
     const onNewMessage = (payload: any) => {
       const conversation = payload?.conversation;
       const message = payload?.message;
@@ -164,6 +227,13 @@ export default function AdminSupportChat() {
           if (prev.some((m) => m._id === message._id)) return prev;
           return [...prev, message];
         });
+      }
+      if (message?.senderType === "visitor") {
+        showLocalAlert(
+          "הודעה חדשה בתמיכה",
+          `${conversation?.name || "אורח"}: ${message.text || ""}`,
+          conversation?._id
+        );
       }
     };
 
@@ -180,6 +250,15 @@ export default function AdminSupportChat() {
       }
     };
 
+    const onNotify = (payload: any) => {
+      if (payload?.conversation) upsertConversation(payload.conversation);
+      showLocalAlert(
+        payload?.title || "פניית תמיכה",
+        payload?.body || "יש פנייה חדשה",
+        payload?.conversationId || payload?.conversation?._id
+      );
+    };
+
     const onAgents = (payload: any) => {
       setOnlineAgents(payload?.agents || []);
     };
@@ -189,6 +268,7 @@ export default function AdminSupportChat() {
     socket.on("support:conversationUpdated", onUpdated);
     socket.on("support:conversationAssigned", onUpdated);
     socket.on("support:waiting", onUpdated);
+    socket.on("support:notify", onNotify);
     socket.on("support:agentsOnline", onAgents);
 
     return () => {
@@ -196,9 +276,30 @@ export default function AdminSupportChat() {
       socket.off("support:conversationUpdated", onUpdated);
       socket.off("support:conversationAssigned", onUpdated);
       socket.off("support:waiting", onUpdated);
+      socket.off("support:notify", onNotify);
       socket.off("support:agentsOnline", onAgents);
     };
-  }, [socket, selectedId]);
+  }, [socket, selectedId, setSearchParams]);
+
+  async function enablePushAlerts() {
+    setPushBusy(true);
+    try {
+      const result = await subscribeToPush();
+      setPushStatus(getPermission());
+      if (!result.ok) {
+        setError(
+          result.reason === "ios-install"
+            ? "באייפון צריך להתקין את האפליקציה למסך הבית (PWA) כדי לקבל התראות"
+            : "לא הצלחנו להפעיל התראות בדפדפן"
+        );
+      } else {
+        setToast("התראות PWA הופעלו בהצלחה");
+        window.setTimeout(() => setToast(""), 4000);
+      }
+    } finally {
+      setPushBusy(false);
+    }
+  }
 
   async function claimConversation(id: string) {
     try {
@@ -313,6 +414,23 @@ export default function AdminSupportChat() {
                 ממתינות: {waitingCount}
               </span>
             )}
+            {pushStatus !== "granted" && (
+              <button
+                type="button"
+                disabled={pushBusy}
+                onClick={() => void enablePushAlerts()}
+                className="inline-flex items-center gap-1 rounded-xl bg-violet-700 px-3 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50"
+              >
+                <Bell size={14} />
+                הפעלת התראות PWA
+              </button>
+            )}
+            {pushStatus === "granted" && (
+              <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-800">
+                <Bell size={12} />
+                התראות PWA פעילות
+              </span>
+            )}
             <button
               type="button"
               onClick={loadConversations}
@@ -323,6 +441,12 @@ export default function AdminSupportChat() {
             </button>
           </div>
         </div>
+
+        {toast && (
+          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+            {toast}
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
@@ -338,6 +462,7 @@ export default function AdminSupportChat() {
                   ["open", "פתוחות"],
                   ["waiting", "ממתינות"],
                   ["active", "פעילות"],
+                  ["closed", "היסטוריה"],
                   ["all", "הכל"],
                 ] as const
               ).map(([key, label]) => (
@@ -366,7 +491,10 @@ export default function AdminSupportChat() {
                   <button
                     key={c._id}
                     type="button"
-                    onClick={() => setSelectedId(c._id)}
+                    onClick={() => {
+                      setSelectedId(c._id);
+                      setSearchParams({ c: c._id });
+                    }}
                     className={`w-full border-b border-slate-50 px-4 py-3 text-right transition ${
                       selectedId === c._id
                         ? "bg-violet-50"
