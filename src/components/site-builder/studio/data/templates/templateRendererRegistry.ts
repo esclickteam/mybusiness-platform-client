@@ -507,6 +507,56 @@ import NarrativaPages, { narrativaPages } from "./narrativa/pages";
 import { narrativaEditorCss } from "./narrativa/editorCss";
 import { narrativaSchema } from "./narrativa/schema";
 import { narrativaDefaultData } from "./narrativa/defaultData";
+import LumenwarePages, { lumenwarePages } from "./lumenware/pages";
+import { lumenwareEditorCss } from "./lumenware/editorCss";
+import { lumenwareSchema } from "./lumenware/schema";
+import { lumenwareDefaultData } from "./lumenware/defaultData";
+
+import GreenbitePages, { greenbitePages } from "./greenbite/pages";
+import { greenbiteEditorCss } from "./greenbite/editorCss";
+import { greenbiteSchema } from "./greenbite/schema";
+import { greenbiteDefaultData } from "./greenbite/defaultData";
+
+import SportifyaPages, { sportifyaPages } from "./sportifya/pages";
+import { sportifyaEditorCss } from "./sportifya/editorCss";
+import { sportifyaSchema } from "./sportifya/schema";
+import { sportifyaDefaultData } from "./sportifya/defaultData";
+
+import BabynestPages, { babynestPages } from "./babynest/pages";
+import { babynestEditorCss } from "./babynest/editorCss";
+import { babynestSchema } from "./babynest/schema";
+import { babynestDefaultData } from "./babynest/defaultData";
+
+import HomecraftPages, { homecraftPages } from "./homecraft/pages";
+import { homecraftEditorCss } from "./homecraft/editorCss";
+import { homecraftSchema } from "./homecraft/schema";
+import { homecraftDefaultData } from "./homecraft/defaultData";
+
+import PetoraPages, { petoraPages } from "./petora/pages";
+import { petoraEditorCss } from "./petora/editorCss";
+import { petoraSchema } from "./petora/schema";
+import { petoraDefaultData } from "./petora/defaultData";
+
+import BooknookPages, { booknookPages } from "./booknook/pages";
+import { booknookEditorCss } from "./booknook/editorCss";
+import { booknookSchema } from "./booknook/schema";
+import { booknookDefaultData } from "./booknook/defaultData";
+
+import GlowlabPages, { glowlabPages } from "./glowlab/pages";
+import { glowlabEditorCss } from "./glowlab/editorCss";
+import { glowlabSchema } from "./glowlab/schema";
+import { glowlabDefaultData } from "./glowlab/defaultData";
+
+import ToolhausPages, { toolhausPages } from "./toolhaus/pages";
+import { toolhausEditorCss } from "./toolhaus/editorCss";
+import { toolhausSchema } from "./toolhaus/schema";
+import { toolhausDefaultData } from "./toolhaus/defaultData";
+
+import JewelisPages, { jewelisPages } from "./jewelis/pages";
+import { jewelisEditorCss } from "./jewelis/editorCss";
+import { jewelisSchema } from "./jewelis/schema";
+import { jewelisDefaultData } from "./jewelis/defaultData";
+
 
 import type {
   StudioTemplateEditorMode,
@@ -1723,6 +1773,116 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: narrativaDefaultData as unknown as Record<string, any>,
     editorCss: narrativaEditorCss,
   }),
+  lumenware: createRenderer({
+    key: "lumenware",
+    name: "Lumenware",
+    Component: LumenwarePages,
+    pages: lumenwarePages,
+    editorMode: "visual-react",
+    schema: lumenwareSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lumenwareDefaultData as unknown as Record<string, any>,
+    editorCss: lumenwareEditorCss,
+  }),
+
+  greenbite: createRenderer({
+    key: "greenbite",
+    name: "Greenbite",
+    Component: GreenbitePages,
+    pages: greenbitePages,
+    editorMode: "visual-react",
+    schema: greenbiteSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: greenbiteDefaultData as unknown as Record<string, any>,
+    editorCss: greenbiteEditorCss,
+  }),
+
+  sportifya: createRenderer({
+    key: "sportifya",
+    name: "Sportifya",
+    Component: SportifyaPages,
+    pages: sportifyaPages,
+    editorMode: "visual-react",
+    schema: sportifyaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: sportifyaDefaultData as unknown as Record<string, any>,
+    editorCss: sportifyaEditorCss,
+  }),
+
+  babynest: createRenderer({
+    key: "babynest",
+    name: "Babynest",
+    Component: BabynestPages,
+    pages: babynestPages,
+    editorMode: "visual-react",
+    schema: babynestSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: babynestDefaultData as unknown as Record<string, any>,
+    editorCss: babynestEditorCss,
+  }),
+
+  homecraft: createRenderer({
+    key: "homecraft",
+    name: "Homecraft",
+    Component: HomecraftPages,
+    pages: homecraftPages,
+    editorMode: "visual-react",
+    schema: homecraftSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: homecraftDefaultData as unknown as Record<string, any>,
+    editorCss: homecraftEditorCss,
+  }),
+
+  petora: createRenderer({
+    key: "petora",
+    name: "Petora",
+    Component: PetoraPages,
+    pages: petoraPages,
+    editorMode: "visual-react",
+    schema: petoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: petoraDefaultData as unknown as Record<string, any>,
+    editorCss: petoraEditorCss,
+  }),
+
+  booknook: createRenderer({
+    key: "booknook",
+    name: "Booknook",
+    Component: BooknookPages,
+    pages: booknookPages,
+    editorMode: "visual-react",
+    schema: booknookSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: booknookDefaultData as unknown as Record<string, any>,
+    editorCss: booknookEditorCss,
+  }),
+
+  glowlab: createRenderer({
+    key: "glowlab",
+    name: "Glowlab",
+    Component: GlowlabPages,
+    pages: glowlabPages,
+    editorMode: "visual-react",
+    schema: glowlabSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: glowlabDefaultData as unknown as Record<string, any>,
+    editorCss: glowlabEditorCss,
+  }),
+
+  toolhaus: createRenderer({
+    key: "toolhaus",
+    name: "Toolhaus",
+    Component: ToolhausPages,
+    pages: toolhausPages,
+    editorMode: "visual-react",
+    schema: toolhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: toolhausDefaultData as unknown as Record<string, any>,
+    editorCss: toolhausEditorCss,
+  }),
+
+  jewelis: createRenderer({
+    key: "jewelis",
+    name: "Jewelis",
+    Component: JewelisPages,
+    pages: jewelisPages,
+    editorMode: "visual-react",
+    schema: jewelisSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: jewelisDefaultData as unknown as Record<string, any>,
+    editorCss: jewelisEditorCss,
+  }),
+
 };
 
 export function getStudioTemplateRenderer(

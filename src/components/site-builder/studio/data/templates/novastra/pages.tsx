@@ -21,6 +21,10 @@ import {
 
 import { novastraDefaultData } from "./defaultData";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import {
+  formatStorePrice,
+  useStorePluginCatalog,
+} from "../shared/useStorePluginCatalog";
 
 type TemplateMode = "preview" | "editor" | "public";
 
@@ -86,6 +90,7 @@ type NovastraPagesProps = {
   data?: Partial<NovastraData>;
   onNavigate?: (pageId: string) => void;
   onPageChange?: (pageId: string) => void;
+  businessId?: string;
 };
 
 const localNovastraCss = `
@@ -1747,8 +1752,25 @@ export function NovastraPages({
   data,
   onNavigate,
   onPageChange,
+  businessId,
 }: NovastraPagesProps) {
-  const mergedData = useMemo(() => mergeTemplateData(data), [data]);
+  const { products: storeProducts, fromPlugin, currency } = useStorePluginCatalog({
+    businessId,
+  });
+  const mergedData = useMemo(() => {
+    const base = mergeTemplateData(data);
+    if (!fromPlugin || storeProducts.length === 0) return base;
+    return {
+      ...base,
+      products: storeProducts.map((product) => ({
+        title: product.name,
+        category: product.category,
+        price: formatStorePrice(product.price, currency),
+        badge: product.badge,
+        image: product.image,
+      })),
+    };
+  }, [currency, data, fromPlugin, storeProducts]);
   const requestedPage = String(
     activePageId ||
       currentPageId ||
