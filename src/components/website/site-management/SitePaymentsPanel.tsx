@@ -70,10 +70,21 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
     [providers, activeKey]
   );
 
-  const stripeConnected = useMemo(() => {
-    const stripe = providers.find((item) => item.provider === "stripe");
-    return isProviderConnected(stripe?.connectionStatus, stripe?.isEnabled);
-  }, [providers]);
+  const connectedProviders = useMemo(
+    () =>
+      providers.filter((item) =>
+        isProviderConnected(item.connectionStatus, item.isEnabled)
+      ),
+    [providers]
+  );
+
+  const primaryConnected = useMemo(() => {
+    return (
+      connectedProviders.find((item) => item.isPrimary) ||
+      connectedProviders[0] ||
+      null
+    );
+  }, [connectedProviders]);
 
   function openProvider(item: PaymentProviderCatalogItem) {
     setMessage(null);
@@ -187,7 +198,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         icon={CreditCard}
         accent="#059669"
         title="תשלומים"
-        description="חברו ספקי סליקה לאתר. אחרי חיבור Stripe תופיע קופה באתר החי — הוסיפו מוצרים בחנות ולקוחות יוכלו לשלם."
+        description="חברו ספקי סליקה לאתר. הקופה באתר החי תשתמש בספק המחובר שסימנתם כראשי (PayPal, Stripe ועוד)."
       />
 
       {message ? (
@@ -214,17 +225,20 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         />
       ) : (
         <>
-          {stripeConnected ? (
+          {primaryConnected ? (
             <SitePanelCard className="text-right">
               <h3 className="text-sm font-bold text-slate-900">
-                Stripe מחובר לאתר
+                {primaryConnected.label || primaryConnected.provider} מחובר לאתר
               </h3>
               <ol className="mt-2 space-y-1 text-sm text-slate-600">
-                <li>1. הוסיפו מוצרים במנהל החנות (טאב חנות / מוצרים).</li>
-                <li>2. פתחו את האתר החי — יופיע כפתור סל בפינה.</li>
-                <li>3. הלקוח בוחר מוצרים ומשלם ב-Stripe Checkout.</li>
+                <li>1. הוסיפו מוצרים מהחנות / התבנית לסל באתר החי.</li>
+                <li>2. לחצו מעבר לתשלום — הקופה נפתחת לפי הספק המחובר.</li>
+                <li>
+                  3. הלקוח משלם דרך{" "}
+                  {primaryConnected.label || primaryConnected.provider}.
+                </li>
               </ol>
-              {businessId ? (
+              {primaryConnected.provider === "stripe" && businessId ? (
                 <p className="mt-3 text-xs text-slate-400">
                   Webhook (אופציונלי):{" "}
                   <span className="font-mono text-[11px] text-slate-600" dir="ltr">

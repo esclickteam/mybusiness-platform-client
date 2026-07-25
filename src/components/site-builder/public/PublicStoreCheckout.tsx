@@ -9,11 +9,15 @@ import {
 } from "lucide-react";
 
 import {
+  confirmPublicPaypalPayment,
   confirmPublicStripePayment,
   createPublicStoreOrder,
   getPublicPayments,
   getPublicShop,
+  resolveCheckoutProvider,
+  startPublicPaypalCheckout,
   startPublicStripeCheckout,
+  type PublicPaymentsInfo,
   type PublicStoreProduct,
 } from "../../../api/publicStoreApi";
 
@@ -34,6 +38,24 @@ type PublicStoreCheckoutProps = {
 };
 
 const CART_KEY = (businessId: string) => `bizuply_store_cart_${businessId}`;
+
+const PROVIDER_UI: Record<
+  string,
+  { title: string; subtitle: string; button: string; accent: string }
+> = {
+  paypal: {
+    title: "סל ותשלום",
+    subtitle: "תשלום מאובטח דרך PayPal",
+    button: "לתשלום מאובטח ב-PayPal",
+    accent: "#0070BA",
+  },
+  stripe: {
+    title: "סל ותשלום",
+    subtitle: "תשלום מאובטח דרך Stripe",
+    button: "לתשלום מאובטח ב-Stripe",
+    accent: "#635BFF",
+  },
+};
 
 function formatMoney(amount: number, currency = "ILS") {
   try {
@@ -99,7 +121,7 @@ export default function PublicStoreCheckout({
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
-  const [stripeReady, setStripeReady] = useState(false);
+  const [payments, setPayments] = useState<PublicPaymentsInfo | null>(null);
   const [currency, setCurrency] = useState("ILS");
   const [products, setProducts] = useState<PublicStoreProduct[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -111,6 +133,26 @@ export default function PublicStoreCheckout({
     type: "success" | "error" | "info";
     text: string;
   } | null>(null);
+
+  const checkoutProvider = useMemo(
+    () => resolveCheckoutProvider(payments),
+    [payments]
+  );
+
+  const checkoutReady = Boolean(
+    payments?.checkoutReady ||
+      checkoutProvider === "paypal" ||
+      checkoutProvider === "stripe"
+  );
+
+  const providerUi = PROVIDER_UI[checkoutProvider] || {
+    title: "סל ותשלום",
+    subtitle: checkoutProvider
+      ? `תשלום דרך ${payments?.providers?.find((item) => item.provider === checkoutProvider)?.label || checkoutProvider}`
+      : "בחרו ספק תשלום בלשונית תשלומים",
+    button: "המשך לתשלום",
+    accent: "#0f172a",
+  };
 
   const cartCount = useMemo(
     () => cart.reduce((sum, item) => sum + item.quantity, 0),
@@ -194,15 +236,17 @@ export default function PublicStoreCheckout({
     async function load() {
       setLoading(true);
       try {
-        const [payments, shop] = await Promise.all([
+        const [paymentsInfo, shop] = await Promise.all([
           getPublicPayments(businessId),
           getPublicShop(businessId),
         ]);
 
         if (cancelled) return;
 
-        setStripeReady(Boolean(payments.stripeReady));
-        setCurrency(payments.currency || shop.settings?.currency || "ILS");
+        setPayments(paymentsInfo);
+        setCurrency(
+          paymentsInfo.currency || shop.settings?.currency || "ILS"
+        );
         setProducts(
           (shop.products || []).filter((item) => item.status !== "draft")
         );
@@ -231,10 +275,10 @@ export default function PublicStoreCheckout({
         syncCart([]);
       }
 
-      if (!stripeReady) {
+      if (!checkoutReady) {
         setMessage({
           type: "error",
-          text: "Stripe עדיין לא מחובר. חברו Stripe בלשונית תשלומים בניהול האתר.",
+          text: "אין ספק תשלום מחובר. חברו PayPal או Stripe בלשונית תשלומים בניהול האתר.",
         });
       } else {
         setMessage(null);
@@ -253,10 +297,10 @@ export default function PublicStoreCheckout({
         onOpenCheckout as EventListener
       );
     };
-  }, [businessId, enabled, stripeReady, syncCart]);
+  }, [businessId, checkoutReady, enabled, syncCart]);
 
   useEffect(() => {
-    if (!businessId || !enabled || !stripeReady) return;
+    if (!businessId || !enabled || !checkoutReady) return;
 
     function onClick(event: MouseEvent) {
       const target = event.target as HTMLElement | null;
@@ -319,7 +363,7 @@ export default function PublicStoreCheckout({
         onCustomAdd as EventListener
       );
     };
-  }, [addProduct, businessId, enabled, products, stripeReady, syncCart]);
+  }, [addProduct, businessId, checkoutReady, enabled, products, syncCart]);
 
   useEffect(() => {
     if (!businessId || !enabled) return;
@@ -328,6 +372,7 @@ export default function PublicStoreCheckout({
     const paymentState = params.get("store_payment");
     const orderId = params.get("orderId") || "";
     const sessionId = params.get("session_id") || "";
+    const provider = String(params.get("provider") || "").toLowerCase();
 
     if (paymentState === "cancel") {
       setMessage({ type: "info", text: "התשלום בוטל. אפשר לנסות שוב מהסל." });
@@ -335,12 +380,37 @@ export default function PublicStoreCheckout({
       return;
     }
 
-    if (paymentState !== "success" || !orderId || !sessionId) return;
+    if (paymentState !== "success" || !orderId) return;
 
     let cancelled = false;
 
     async function confirm() {
       try {
+        if (provider === "paypal" || (!sessionId && provider !== "stripe")) {
+          const result = await confirmPublicPaypalPayment(businessId, orderId);
+          if (cancelled) return;
+
+          syncCart([]);
+          setMessage({
+            type: "success",
+            text: result.paid
+              ? `התשלום התקבל בהצלחה${
+                  result.order?.orderNumber
+                    ? ` (הזמנה ${result.order.orderNumber})`
+                    : ""
+                }`
+              : `ההזמנה נשלחה לתשלום ב-PayPal${
+                  result.order?.orderNumber
+                    ? ` (הזמנה ${result.order.orderNumber})`
+                    : ""
+                }. נא לאשר את התשלום בחשבון PayPal של העסק.`,
+          });
+          setOpen(true);
+          return;
+        }
+
+        if (!sessionId) return;
+
         const result = await confirmPublicStripePayment(
           businessId,
           orderId,
@@ -377,6 +447,7 @@ export default function PublicStoreCheckout({
         url.searchParams.delete("store_payment");
         url.searchParams.delete("orderId");
         url.searchParams.delete("session_id");
+        url.searchParams.delete("provider");
         window.history.replaceState({}, "", url.toString());
       }
     }
@@ -396,8 +467,11 @@ export default function PublicStoreCheckout({
       setMessage({ type: "error", text: "הסל ריק" });
       return;
     }
-    if (!stripeReady) {
-      setMessage({ type: "error", text: "Stripe עדיין לא מחובר לעסק" });
+    if (!checkoutReady || !checkoutProvider) {
+      setMessage({
+        type: "error",
+        text: "אין ספק תשלום מחובר. חברו ספק בלשונית תשלומים.",
+      });
       return;
     }
 
@@ -406,7 +480,7 @@ export default function PublicStoreCheckout({
 
     try {
       const returnBase = `${window.location.origin}${window.location.pathname}`;
-      const cancelUrl = `${returnBase}?store_payment=cancel`;
+      const cancelUrl = `${returnBase}?store_payment=cancel&provider=${checkoutProvider}`;
 
       const draft = await createPublicStoreOrder(businessId, {
         customerName: customerName.trim(),
@@ -421,7 +495,7 @@ export default function PublicStoreCheckout({
           variantLabel: item.variantLabel,
           sku: item.sku,
         })),
-        paymentProvider: "stripe",
+        paymentProvider: checkoutProvider,
         startCheckout: false,
       });
 
@@ -430,10 +504,21 @@ export default function PublicStoreCheckout({
         throw new Error("לא נוצרה הזמנה");
       }
 
-      const pay = await startPublicStripeCheckout(businessId, orderId, {
-        successUrl: `${returnBase}?store_payment=success&orderId=${orderId}&session_id={CHECKOUT_SESSION_ID}`,
-        cancelUrl,
-      });
+      const successUrl =
+        checkoutProvider === "stripe"
+          ? `${returnBase}?store_payment=success&provider=stripe&orderId=${orderId}&session_id={CHECKOUT_SESSION_ID}`
+          : `${returnBase}?store_payment=success&provider=${checkoutProvider}&orderId=${orderId}`;
+
+      const pay =
+        checkoutProvider === "paypal"
+          ? await startPublicPaypalCheckout(businessId, orderId, {
+              successUrl,
+              cancelUrl,
+            })
+          : await startPublicStripeCheckout(businessId, orderId, {
+              successUrl,
+              cancelUrl,
+            });
 
       const checkoutUrl = pay.checkoutUrl || "";
       if (!checkoutUrl) {
@@ -447,18 +532,18 @@ export default function PublicStoreCheckout({
         text:
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בפתיחת תשלום Stripe",
+          "שגיאה בפתיחת התשלום",
       });
       setPaying(false);
     }
   }
 
   if (!enabled || !businessId || loading) return null;
-  if (!stripeReady && !open) return null;
+  if (!checkoutReady && !open) return null;
 
   return (
     <div dir="rtl" className="bizuply-public-store-checkout">
-      {stripeReady && !hasTemplateCartUi ? (
+      {checkoutReady && !hasTemplateCartUi ? (
         <button
           type="button"
           onClick={() => setOpen(true)}
@@ -480,8 +565,10 @@ export default function PublicStoreCheckout({
           <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900">סל ותשלום</h2>
-                <p className="text-xs text-slate-500">תשלום מאובטח דרך Stripe</p>
+                <h2 className="text-base font-bold text-slate-900">
+                  {providerUi.title}
+                </h2>
+                <p className="text-xs text-slate-500">{providerUi.subtitle}</p>
               </div>
               <button
                 type="button"
@@ -644,12 +731,13 @@ export default function PublicStoreCheckout({
             <div className="border-t border-slate-100 p-4">
               <button
                 type="button"
-                disabled={paying || !cart.length}
+                disabled={paying || !cart.length || !checkoutReady}
                 onClick={handlePay}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-[#635BFF] text-sm font-bold text-white disabled:opacity-60"
+                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold text-white disabled:opacity-60"
+                style={{ backgroundColor: providerUi.accent }}
               >
                 {paying ? <Loader2 size={16} className="animate-spin" /> : null}
-                לתשלום מאובטח ב-Stripe
+                {providerUi.button}
               </button>
             </div>
           </div>

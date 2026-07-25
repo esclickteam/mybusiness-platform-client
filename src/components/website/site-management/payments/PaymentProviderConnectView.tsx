@@ -266,7 +266,7 @@ export default function PaymentProviderConnectView({
           אמצעי תשלום זמינים עם {catalogItem.name}
         </h3>
         <p className="mt-2 text-right text-sm text-slate-500">
-          כרטיסי אשראי וחיוב לפי התמיכה של הספק. חיוב בקופה יתווסף בשלב הבא.
+          כרטיסי אשראי וחיוב לפי התמיכה של הספק. אחרי חיבור, הקופה באתר החי תשתמש בספק זה.
         </p>
       </SitePanelCard>
 

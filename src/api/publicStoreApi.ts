@@ -11,13 +11,19 @@ export type PublicStoreProduct = {
   status?: string;
 };
 
+export type PublicPaymentProvider = {
+  provider: string;
+  label: string;
+  isPrimary?: boolean;
+  installmentsEnabled?: boolean;
+};
+
 export type PublicPaymentsInfo = {
-  providers: Array<{
-    provider: string;
-    label: string;
-    installmentsEnabled?: boolean;
-  }>;
+  providers: PublicPaymentProvider[];
+  primaryProvider?: string;
+  checkoutReady?: boolean;
   stripeReady: boolean;
+  paypalReady?: boolean;
   currency: string;
   storeName: string;
   isStoreActive: boolean;
@@ -96,6 +102,23 @@ export async function startPublicStripeCheckout(
   };
 }
 
+export async function startPublicPaypalCheckout(
+  businessId: string,
+  orderId: string,
+  payload: { successUrl: string; cancelUrl: string }
+) {
+  const { data } = await API.post(
+    `/store/${businessId}/orders/${orderId}/pay/paypal`,
+    payload
+  );
+  return data as {
+    success: boolean;
+    alreadyPaid?: boolean;
+    order: PublicStoreOrder;
+    checkoutUrl?: string;
+  };
+}
+
 export async function confirmPublicStripePayment(
   businessId: string,
   orderId: string,
@@ -110,4 +133,32 @@ export async function confirmPublicStripePayment(
     paid: boolean;
     order: PublicStoreOrder;
   };
+}
+
+export async function confirmPublicPaypalPayment(
+  businessId: string,
+  orderId: string
+) {
+  const { data } = await API.get(
+    `/store/${businessId}/orders/${orderId}/paypal/confirm`
+  );
+  return data as {
+    success: boolean;
+    paid: boolean;
+    awaitingConfirmation?: boolean;
+    order: PublicStoreOrder;
+  };
+}
+
+export function resolveCheckoutProvider(payments: PublicPaymentsInfo | null) {
+  if (!payments) return "";
+
+  const primary = String(payments.primaryProvider || "").trim();
+  if (primary === "paypal" && payments.paypalReady) return "paypal";
+  if (primary === "stripe" && payments.stripeReady) return "stripe";
+
+  if (payments.paypalReady) return "paypal";
+  if (payments.stripeReady) return "stripe";
+
+  return primary || "";
 }
