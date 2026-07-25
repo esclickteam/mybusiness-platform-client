@@ -1,3 +1,8 @@
+import {
+  readVisualInsertedElements,
+  removeVisualInsertedElement,
+} from "../../site-builder/studio/visual-editor/utils/visualData";
+
 import type { SiteAuthSettings } from "../../api/siteMemberAuthApi";
 
 export type SiteAuthWidgetSettings = SiteAuthSettings & {
@@ -27,8 +32,12 @@ export function mergeSiteAuthSettings(
     registerSubtitle: String(stored.registerSubtitle ?? base.registerSubtitle),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
-    useLoginModal: stored.useLoginModal !== false,
-    buttonMode: normalizeButtonMode(stored.buttonMode ?? base.buttonMode),
+    showTrigger: stored?.showTrigger !== false,
+    useLoginModal: Boolean(stored.useLoginModal ?? base.useLoginModal),
+    buttonMode: "floating",
+    buttonDisplay: normalizeButtonDisplay(stored.buttonDisplay ?? base.buttonDisplay),
+    buttonTransparent: stored?.buttonTransparent !== false,
+    buttonTextColor: String(stored.buttonTextColor ?? base.buttonTextColor),
     showMemberName: stored.showMemberName !== false,
     memberAreaPath: String(stored.memberAreaPath || base.memberAreaPath),
     defaultAddAsCrmClient: Boolean(
@@ -37,9 +46,7 @@ export function mergeSiteAuthSettings(
     autoAddRegisterAsCrmClient: Boolean(
       stored.autoAddRegisterAsCrmClient ?? base.autoAddRegisterAsCrmClient
     ),
-    registerCollectPhone: Boolean(
-      stored.registerCollectPhone ?? base.registerCollectPhone
-    ),
+    registerCollectPhone: stored?.registerCollectPhone !== false,
     formBackgroundColor: String(stored.formBackgroundColor || base.formBackgroundColor),
     formTextColor: String(stored.formTextColor || base.formTextColor),
     formLabelColor: String(stored.formLabelColor || base.formLabelColor),
@@ -47,10 +54,7 @@ export function mergeSiteAuthSettings(
     formButtonTextColor: String(stored.formButtonTextColor || base.formButtonTextColor),
     formBorderColor: String(stored.formBorderColor || base.formBorderColor),
     formBorderRadius: Number(stored.formBorderRadius ?? base.formBorderRadius),
-    triggerPosition: {
-      x: Number(triggerRaw?.x ?? base.triggerPosition.x),
-      y: Number(triggerRaw?.y ?? base.triggerPosition.y),
-    },
+    triggerPosition: normalizeTriggerPosition(triggerRaw, base.triggerPosition),
   };
 }
 
@@ -68,13 +72,17 @@ function readPartialSettings(
     registerSubtitle: String(fallback?.registerSubtitle || ""),
     forgotPasswordEnabled: fallback?.forgotPasswordEnabled !== false,
     showLoginButton: fallback?.showLoginButton !== false,
-    useLoginModal: fallback?.useLoginModal !== false,
-    buttonMode: normalizeButtonMode(fallback?.buttonMode),
+    showTrigger: fallback?.showTrigger !== false,
+    useLoginModal: Boolean(fallback?.useLoginModal),
+    buttonMode: "floating",
+    buttonDisplay: normalizeButtonDisplay(fallback?.buttonDisplay),
+    buttonTransparent: fallback?.buttonTransparent !== false,
+    buttonTextColor: String(fallback?.buttonTextColor || ""),
     showMemberName: fallback?.showMemberName !== false,
     memberAreaPath: String(fallback?.memberAreaPath || "/member"),
     defaultAddAsCrmClient: Boolean(fallback?.defaultAddAsCrmClient),
     autoAddRegisterAsCrmClient: Boolean(fallback?.autoAddRegisterAsCrmClient),
-    registerCollectPhone: Boolean(fallback?.registerCollectPhone),
+    registerCollectPhone: fallback?.registerCollectPhone !== false,
     formBackgroundColor: String(fallback?.formBackgroundColor || "#ffffff"),
     formTextColor: String(fallback?.formTextColor || "#1e293b"),
     formLabelColor: String(fallback?.formLabelColor || "#334155"),
@@ -82,21 +90,33 @@ function readPartialSettings(
     formButtonTextColor: String(fallback?.formButtonTextColor || "#ffffff"),
     formBorderColor: String(fallback?.formBorderColor || "#e2e8f0"),
     formBorderRadius: Number(fallback?.formBorderRadius ?? 16),
-    triggerPosition: {
-      x: Number(fallback?.triggerPosition?.x ?? 92),
-      y: Number(fallback?.triggerPosition?.y ?? 6),
-    },
+    triggerPosition: { x: 88, y: 82 },
   };
 }
 
-function normalizeButtonMode(value: unknown): SiteAuthWidgetSettings["buttonMode"] {
-  const mode = String(value || "both");
-  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "both";
+function normalizeButtonDisplay(
+  value: unknown
+): SiteAuthWidgetSettings["buttonDisplay"] {
+  const display = String(value || "icon");
+  if (display === "button" || display === "icon" || display === "text") return display;
+  return "icon";
+}
+
+function normalizeTriggerPosition(
+  raw: { x?: number; y?: number } | undefined,
+  fallback: { x: number; y: number }
+) {
+  const x = Number(raw?.x ?? fallback.x);
+  let y = Number(raw?.y ?? fallback.y);
+  if (y < 24) y = 82;
+  return {
+    x: Math.min(96, Math.max(4, x)),
+    y: Math.min(96, Math.max(4, y)),
+  };
 }
 
 export function buildSiteAuthWidgetMarker(label = "כפתור התחברות") {
-  return `<div data-bizuply-plugin="site-auth" data-bizuply-widget="site-auth" data-site-auth-mount="true" style="display:inline-flex;min-height:44px;direction:rtl;box-sizing:border-box"><div style="display:inline-flex;align-items:center;justify-content:center;padding:10px 18px;border-radius:999px;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-family:system-ui,sans-serif;font-size:13px;font-weight:800;box-shadow:0 8px 24px rgba(99,102,241,.35)">${label}</div></div>`;
+  return `<div data-bizuply-plugin="site-auth" data-bizuply-widget="site-auth" style="display:none">${label}</div>`;
 }
 
 export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {
@@ -105,17 +125,30 @@ export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {
 }
 
 export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
-  if (!settings.isActive || !settings.showLoginButton) return false;
-  return settings.buttonMode === "floating" || settings.buttonMode === "both";
+  if (!settings.isActive || settings.showLoginButton === false) return false;
+  if (settings.showTrigger === false) return false;
+  return true;
 }
 
-export function shouldMountInlineAuthButton(settings: SiteAuthWidgetSettings) {
-  if (!settings.isActive) return false;
-  return settings.buttonMode === "inline" || settings.buttonMode === "both";
-}
+export function stripLegacySiteAuthWidgetsFromVisualData(data: Record<string, any>) {
+  const elements = readVisualInsertedElements(data || {});
+  let next = data || {};
+  let changed = false;
 
-export function shouldCollectRegisterPhone(settings: SiteAuthWidgetSettings) {
-  return (
-    settings.registerCollectPhone || settings.autoAddRegisterAsCrmClient
-  );
+  Object.values(elements).forEach((item) => {
+    const id = String(item?.id || "");
+    const html = String(item?.html || "");
+    const label = String(item?.label || "");
+    const isLegacy =
+      html.includes('data-bizuply-widget="site-auth"') ||
+      label.includes("התחברות") ||
+      label.includes("כפתור התחברות");
+
+    if (id && isLegacy) {
+      next = removeVisualInsertedElement(next, id);
+      changed = true;
+    }
+  });
+
+  return { data: next, changed };
 }

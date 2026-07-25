@@ -34,8 +34,12 @@ export type SiteAuthSettings = {
   registerSubtitle: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
+  showTrigger?: boolean;
   useLoginModal: boolean;
   buttonMode: "floating" | "inline" | "both";
+  buttonDisplay: "button" | "icon" | "text";
+  buttonTransparent: boolean;
+  buttonTextColor: string;
   showMemberName: boolean;
   triggerPosition: { x: number; y: number };
   memberAreaPath: string;
@@ -197,6 +201,10 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     | Record<string, unknown>
     | undefined;
 
+  const triggerRaw = stored?.triggerPosition as { x?: number; y?: number } | undefined;
+  let triggerY = Number(triggerRaw?.y ?? 82);
+  if (triggerY < 24) triggerY = 82;
+
   return {
     isActive: stored?.isActive !== false,
     loginButtonLabel: String(stored?.loginButtonLabel || "התחברות"),
@@ -208,17 +216,23 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     registerSubtitle: String(stored?.registerSubtitle || ""),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
-    useLoginModal: stored?.useLoginModal !== false,
-    buttonMode: normalizeButtonMode(stored?.buttonMode),
+    showTrigger: stored?.showTrigger !== false,
+    useLoginModal: false,
+    buttonMode: "floating",
+    buttonDisplay: ["button", "icon", "text"].includes(String(stored?.buttonDisplay))
+      ? (stored?.buttonDisplay as SiteAuthSettings["buttonDisplay"])
+      : "icon",
+    buttonTransparent: stored?.buttonTransparent !== false,
+    buttonTextColor: String(stored?.buttonTextColor || ""),
     showMemberName: stored?.showMemberName !== false,
     triggerPosition: {
-      x: Number((stored?.triggerPosition as { x?: number })?.x ?? 92),
-      y: Number((stored?.triggerPosition as { y?: number })?.y ?? 6),
+      x: Number(triggerRaw?.x ?? 88),
+      y: triggerY,
     },
     memberAreaPath: String(stored?.memberAreaPath || "/member"),
     defaultAddAsCrmClient: Boolean(stored?.defaultAddAsCrmClient),
     autoAddRegisterAsCrmClient: Boolean(stored?.autoAddRegisterAsCrmClient),
-    registerCollectPhone: Boolean(stored?.registerCollectPhone),
+    registerCollectPhone: stored?.registerCollectPhone !== false,
     formBackgroundColor: String(stored?.formBackgroundColor || "#ffffff"),
     formTextColor: String(stored?.formTextColor || "#1e293b"),
     formLabelColor: String(stored?.formLabelColor || "#334155"),
@@ -227,12 +241,6 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     formBorderColor: String(stored?.formBorderColor || "#e2e8f0"),
     formBorderRadius: Number(stored?.formBorderRadius ?? 16),
   };
-}
-
-function normalizeButtonMode(value: unknown): SiteAuthSettings["buttonMode"] {
-  const mode = String(value || "both");
-  if (mode === "floating" || mode === "inline" || mode === "both") return mode;
-  return "both";
 }
 
 export function siteHasAuthPlugin(site: Record<string, unknown> | null | undefined) {
