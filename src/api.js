@@ -167,7 +167,12 @@ API.interceptors.response.use(
           ? response.data
           : JSON.stringify(response.data);
     } else {
-      message = response.data?.message || JSON.stringify(response.data);
+      message =
+        response.data?.error ||
+        response.data?.message ||
+        (typeof response.data === "string"
+          ? response.data
+          : JSON.stringify(response.data));
     }
 
     console.error(`API Error ${response.status}:`, message);

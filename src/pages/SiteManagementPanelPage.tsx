@@ -166,7 +166,14 @@ export default function SiteManagementPanelPage() {
         }
       }
     } catch (err: any) {
-      alert(err?.response?.data?.error || err?.message || "עדכון התוסף נכשל");
+      const serverError =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        (typeof err?.message === "string" &&
+        !err.message.startsWith("Request failed with status code")
+          ? err.message
+          : null);
+      alert(serverError || "עדכון התוסף נכשל — נסו שוב");
     } finally {
       setSavingPlugins(false);
     }
