@@ -12,6 +12,7 @@ export type StudioTemplateCategory =
   | "education"
   | "beauty"
   | "service"
+  | "home-services"
   | "fitness";
 
 export type StudioTemplateDefinition = {

@@ -149,6 +149,30 @@ import { tapasoraTemplate } from "./tapasora/meta";
 import { spiceforgeTemplate } from "./spiceforge/meta";
 import { vineriaTemplate } from "./vineria/meta";
 import { streetbiteTemplate } from "./streetbite/meta";
+import { velvetineTemplate } from "./velvetine/meta";
+import { nailoraTemplate } from "./nailora/meta";
+import { blushlabTemplate } from "./blushlab/meta";
+import { silkbarTemplate } from "./silkbar/meta";
+import { lashoraTemplate } from "./lashora/meta";
+import { dermaraTemplate } from "./dermara/meta";
+import { waxelleTemplate } from "./waxelle/meta";
+import { glowhausTemplate } from "./glowhaus/meta";
+import { petaluxeTemplate } from "./petaluxe/meta";
+import { formellaTemplate } from "./formella/meta";
+
+import { bakoraTemplate } from "./bakora/meta";
+import { tacoflareTemplate } from "./tacoflare/meta";
+import { gelatixTemplate } from "./gelatix/meta";
+import { shawarmiaTemplate } from "./shawarmia/meta";
+import { pokelineTemplate } from "./pokeline/meta";
+import { dimsumixTemplate } from "./dimsumix/meta";
+import { burgerhausTemplate } from "./burgerhaus/meta";
+import { seafoodixTemplate } from "./seafoodix/meta";
+import { plantoraTemplate } from "./plantora/meta";
+import { smokepitTemplate } from "./smokepit/meta";
+import { pastaforaTemplate } from "./pastafora/meta";
+import { dessertlabTemplate } from "./dessertlab/meta";
+import { juicepressTemplate } from "./juicepress/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -299,6 +323,30 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spiceforgeTemplate,
   vineriaTemplate,
   streetbiteTemplate,
+  velvetineTemplate,
+  nailoraTemplate,
+  blushlabTemplate,
+  silkbarTemplate,
+  lashoraTemplate,
+  dermaraTemplate,
+  waxelleTemplate,
+  glowhausTemplate,
+  petaluxeTemplate,
+  formellaTemplate,
+
+  bakoraTemplate,
+  tacoflareTemplate,
+  gelatixTemplate,
+  shawarmiaTemplate,
+  pokelineTemplate,
+  dimsumixTemplate,
+  burgerhausTemplate,
+  seafoodixTemplate,
+  plantoraTemplate,
+  smokepitTemplate,
+  pastaforaTemplate,
+  dessertlabTemplate,
+  juicepressTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

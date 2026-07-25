@@ -2282,10 +2282,8 @@
       "portfolio": "Portfolio & agency",
       "store": "Stores & commerce",
       "food": "Food & restaurants",
-      "medical": "Medical & health",
       "education": "Education & courses",
-      "beauty": "Beauty & care",
-      "service": "Home services"
+      "beauty": "Beauty & care"
     }
   },
   "buildPage": {

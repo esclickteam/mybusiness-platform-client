@@ -745,36 +745,10 @@ export default function DomainSearch() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
 
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h4 className="text-base font-black text-emerald-900">
-                      איש הקשר נוצר ונשמר בהצלחה
+                      איש הקשר נוצר בהצלחה — בחרו תקופה והמשיכו לתשלום
                     </h4>
-
-                    <p className="mt-2 text-sm font-bold text-emerald-700">
-                      Contact Handle:
-                    </p>
-
-                    <code
-                      className="mt-2 block break-all rounded-xl bg-white px-3 py-2 text-left text-sm font-black text-slate-800 ring-1 ring-emerald-200"
-                      dir="ltr"
-                    >
-                      {contactResult.contact.handle}
-                    </code>
-
-                    {contactResult.registrationId ? (
-                      <>
-                        <p className="mt-3 text-sm font-bold text-emerald-700">
-                          מזהה רישום במערכת:
-                        </p>
-
-                        <code
-                          className="mt-2 block break-all rounded-xl bg-white px-3 py-2 text-left text-sm font-black text-slate-800 ring-1 ring-emerald-200"
-                          dir="ltr"
-                        >
-                          {contactResult.registrationId}
-                        </code>
-                      </>
-                    ) : null}
 
                     {contactResult.registrationId &&
                     !registerResult?.success ? (
