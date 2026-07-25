@@ -6,17 +6,22 @@ export type AdminSupportAlert = {
   body: string;
   conversationId?: string | null;
   at: number;
+  read?: boolean;
 };
 
 const STORAGE_KEY = "bizuply_admin_support_alerts";
-const MAX_ALERTS = 30;
+const MAX_ALERTS = 40;
 
 export function loadStoredAlerts(): AdminSupportAlert[] {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed.slice(0, MAX_ALERTS) : [];
+    if (!Array.isArray(parsed)) return [];
+    return parsed.slice(0, MAX_ALERTS).map((item) => ({
+      ...item,
+      read: Boolean(item?.read),
+    }));
   } catch {
     return [];
   }
@@ -77,6 +82,7 @@ export async function notifyAdminSupportEvent(options: {
     body: options.body,
     conversationId: options.conversationId || null,
     at: Date.now(),
+    read: false,
   };
 
   // Socket may emit both support:newMessage and support:notify for one event.

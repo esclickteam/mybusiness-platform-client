@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
-  Bell,
   Headphones,
   History,
   RefreshCw,
@@ -13,12 +12,6 @@ import {
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { notifyAdminSupportEvent } from "../../utils/adminSupportAlerts";
-import {
-  ensurePushSubscription,
-  getPermission,
-  isSubscribed,
-  subscribeToPush,
-} from "../../utils/push";
 import AdminHeader from "./AdminsHeader";
 
 type SupportConversation = {
@@ -132,9 +125,6 @@ export default function AdminSupportChat() {
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
-  const [pushStatus, setPushStatus] = useState(getPermission());
-  const [pushSubscribed, setPushSubscribed] = useState(false);
-  const [pushBusy, setPushBusy] = useState(false);
   const [customerHistoryOpen, setCustomerHistoryOpen] = useState(false);
   const [customerHistoryLoading, setCustomerHistoryLoading] = useState(false);
   const [customerHistoryItems, setCustomerHistoryItems] = useState<
@@ -159,15 +149,6 @@ export default function AdminSupportChat() {
   useEffect(() => {
     selectedIdRef.current = selectedId;
   }, [selectedId]);
-
-  const refreshPushState = useCallback(async () => {
-    setPushStatus(getPermission());
-    try {
-      setPushSubscribed(await isSubscribed());
-    } catch {
-      setPushSubscribed(false);
-    }
-  }, []);
 
   const selected = useMemo(
     () => conversations.find((c) => c._id === selectedId) || null,
@@ -278,13 +259,6 @@ export default function AdminSupportChat() {
       setFilter("all");
     }
   }, [searchParams]);
-
-  // Enable PWA push for admins (platform support alerts)
-  useEffect(() => {
-    void ensurePushSubscription().then(() => {
-      void refreshPushState();
-    });
-  }, [refreshPushState]);
 
   // Join / leave conversation room when selection changes
   useEffect(() => {
@@ -485,54 +459,6 @@ export default function AdminSupportChat() {
     setFilter("all");
   }
 
-  async function enablePushAlerts() {
-    setPushBusy(true);
-    setError("");
-    try {
-      const result = await subscribeToPush();
-      await refreshPushState();
-      if (!result.ok) {
-        setError(
-          result.reason === "ios-install"
-            ? "באייפון צריך להתקין את האפליקציה למסך הבית (PWA) כדי לקבל התראות"
-            : result.reason === "denied"
-              ? "התראות חסומות בדפדפן — יש לאשר בהגדרות האתר"
-              : "לא הצלחנו להפעיל התראות בדפדפן"
-        );
-      } else {
-        setToast("התראות PWA הופעלו — תקבלו התראה על שיחות מלקוחות");
-        window.setTimeout(() => setToast(""), 4000);
-        await notifyAdminSupportEvent({
-          title: "התראות פעילות",
-          body: "כשתגיע שיחה מלקוח — תופיע התראה כאן וב־PWA",
-          skipOsNotification: false,
-        });
-      }
-    } finally {
-      setPushBusy(false);
-    }
-  }
-
-  async function testPushAlert() {
-    setPushBusy(true);
-    try {
-      if (pushStatus !== "granted" || !pushSubscribed) {
-        await enablePushAlerts();
-        return;
-      }
-      await notifyAdminSupportEvent({
-        title: "בדיקת התראת תמיכה",
-        body: "אם אתם רואים את זה — ההתראות עובדות",
-        conversationId: selectedId,
-        skipOsNotification: false,
-      });
-      setToast("נשלחה התראת בדיקה");
-      window.setTimeout(() => setToast(""), 3000);
-    } finally {
-      setPushBusy(false);
-    }
-  }
-
   async function claimConversation(id: string) {
     try {
       const { data } = await API.post(`/support-chat/admin/${id}/claim`);
@@ -668,30 +594,9 @@ export default function AdminSupportChat() {
                 ממתינות: {waitingCount}
               </span>
             )}
-            <button
-              type="button"
-              disabled={pushBusy}
-              onClick={() =>
-                void (pushStatus === "granted" && pushSubscribed
-                  ? testPushAlert()
-                  : enablePushAlerts())
-              }
-              className={`inline-flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-bold shadow-sm disabled:opacity-50 ${
-                pushStatus === "granted" && pushSubscribed
-                  ? "border border-violet-200 bg-violet-50 text-violet-800"
-                  : "bg-violet-700 text-white"
-              }`}
-              title={
-                pushStatus === "granted" && pushSubscribed
-                  ? "התראות פעילות — לחצו לבדיקה"
-                  : "הפעילו התראות בזמן אמת ו־PWA"
-              }
-            >
-              <Bell size={14} />
-              {pushStatus === "granted" && pushSubscribed
-                ? "התראות פעילות · בדיקה"
-                : "הפעלת התראות"}
-            </button>
+            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800 ring-1 ring-amber-100">
+              התראות בצלצול למעלה · הגדרות → Push
+            </span>
             <button
               type="button"
               onClick={() => void loadConversations()}
