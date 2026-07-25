@@ -109,6 +109,16 @@ import { brandforgeTemplate } from "./brandforge/meta";
 import { mediavaultTemplate } from "./mediavault/meta";
 import { summitopsTemplate } from "./summitops/meta";
 import { eventideTemplate } from "./eventide/meta";
+import { lumenwareTemplate } from "./lumenware/meta";
+import { greenbiteTemplate } from "./greenbite/meta";
+import { sportifyaTemplate } from "./sportifya/meta";
+import { babynestTemplate } from "./babynest/meta";
+import { homecraftTemplate } from "./homecraft/meta";
+import { petoraTemplate } from "./petora/meta";
+import { booknookTemplate } from "./booknook/meta";
+import { glowlabTemplate } from "./glowlab/meta";
+import { toolhausTemplate } from "./toolhaus/meta";
+import { jewelisTemplate } from "./jewelis/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -219,6 +229,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   mediavaultTemplate,
   summitopsTemplate,
   eventideTemplate,
+  lumenwareTemplate,
+  greenbiteTemplate,
+  sportifyaTemplate,
+  babynestTemplate,
+  homecraftTemplate,
+  petoraTemplate,
+  booknookTemplate,
+  glowlabTemplate,
+  toolhausTemplate,
+  jewelisTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

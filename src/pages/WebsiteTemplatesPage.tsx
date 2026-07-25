@@ -27,11 +27,6 @@ import {
 
 import DomainSearch from "../components/website/DomainSearch";
 import { createMySite } from "../api/mySitesApi";
-import TemplateCardPreview, {
-  canRenderTemplatePreview,
-} from "../components/website/TemplateCardPreview";
-import { prefetchTemplatePreviewKeys } from "../utils/templatePreviewScheduler";
-import { getStudioTemplateRendererKeys } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -630,19 +625,6 @@ export default function WebsiteTemplatesPage() {
     });
   }, [activeCategory, search, sortValue, templates, i18n.language]);
 
-  // Webflow-style: start batch-loading ALL template previews as soon as the
-  // gallery opens — do not wait for the user to scroll each card into view.
-  useEffect(() => {
-    if (activeWebsiteView !== "templates") return;
-
-    const keys = [
-      ...filteredTemplates.map((template) => template.key),
-      ...getStudioTemplateRendererKeys(),
-    ];
-
-    prefetchTemplatePreviewKeys(keys);
-  }, [activeWebsiteView, filteredTemplates]);
-
   const activeCategoryLabel =
     activeCategory === "all"
       ? t("websiteTemplates.allTemplatesTitle")
@@ -1103,14 +1085,21 @@ export default function WebsiteTemplatesPage() {
                                 aria-label={t("websiteTemplates.previewAria", { name: template.name })}
                               >
                                 <div className="aspect-[4/3] overflow-hidden bg-[#f3f4f6]">
-                                  {canRenderTemplatePreview(template.key) ? (
-                                    <div className="h-full w-full transition duration-500 group-hover:scale-[1.02]">
-                                      <TemplateCardPreview
-                                        templateKey={template.key}
-                                        title={template.name}
-                                        eager={index < 4}
-                                      />
-                                    </div>
+                                  {template.image ||
+                                  template.thumbnailUrl ||
+                                  template.previewImageUrl ? (
+                                    <img
+                                      src={
+                                        template.image ||
+                                        template.thumbnailUrl ||
+                                        template.previewImageUrl
+                                      }
+                                      alt={template.name}
+                                      loading={index < 8 ? "eager" : "lazy"}
+                                      decoding="async"
+                                      fetchPriority={index < 4 ? "high" : "auto"}
+                                      className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                                    />
                                   ) : (
                                     <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
                                       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />

@@ -2,6 +2,10 @@ import React from "react";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
+  formatStorePrice,
+  useStorePluginCatalog,
+} from "../shared/useStorePluginCatalog";
+import {
   chanelDefaultData,
   chanelPages as chanelPagesData,
   type ChanelData,
@@ -17,6 +21,7 @@ type ChanelPagesProps = {
   mode?: "preview" | "editor" | "edit" | "public" | string;
   data?: Partial<ChanelData>;
   isStudioStatic?: boolean;
+  businessId?: string;
 };
 
 type VisualElementType = "text" | "image" | "button" | "section" | "box";
@@ -773,9 +778,42 @@ export default function ChanelPages({
   activePageId,
   mode = "preview",
   data,
+  businessId,
 }: ChanelPagesProps = {}) {
   const rootRef = React.useRef<HTMLElement | null>(null);
-  const templateData = React.useMemo(() => mergeData(data), [data]);
+  const { products: storeProducts, fromPlugin, currency } = useStorePluginCatalog({
+    businessId,
+  });
+  const templateData = React.useMemo(() => {
+    const merged = mergeData(data);
+    if (!fromPlugin || storeProducts.length === 0) return merged;
+    return {
+      ...merged,
+      products: storeProducts.map((product) => ({
+        name: product.name,
+        price: formatStorePrice(product.price, currency),
+        tag: product.badge,
+        image: product.image,
+        href: "/product",
+      })),
+      categories:
+        storeProducts.length > 0
+          ? Array.from(
+              new Map(
+                storeProducts.map((product) => [
+                  product.categorySlug,
+                  {
+                    name: product.category,
+                    description: "קטגוריה מתוסף החנות",
+                    image: product.image,
+                    href: "/products",
+                  },
+                ]),
+              ).values(),
+            )
+          : merged.categories,
+    };
+  }, [currency, data, fromPlugin, storeProducts]);
   const pageId = String(activePageId || initialPage || "home");
   const stackPageId = ["products", "product", "cart"].includes(pageId)
     ? pageId

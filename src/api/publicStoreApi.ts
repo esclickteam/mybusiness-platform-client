@@ -1,14 +1,32 @@
 import API from "../api";
 
+export type PublicStoreCategory = {
+  _id: string;
+  name: string;
+  slug?: string;
+  image?: string;
+  isVisible?: boolean;
+  sortOrder?: number;
+};
+
 export type PublicStoreProduct = {
   _id: string;
   name: string;
   price: number;
   currency?: string;
   image?: string;
+  mainImage?: string;
   images?: string[];
   shortDescription?: string;
+  description?: string;
   status?: string;
+  slug?: string;
+  tags?: string[];
+  isFeatured?: boolean;
+  categoryName?: string;
+  categoryId?: string | PublicStoreCategory | null;
+  compareAtPrice?: number;
+  salePrice?: number;
 };
 
 export type PublicPaymentProvider = {
@@ -44,12 +62,27 @@ export async function getPublicPayments(businessId: string) {
   return data as PublicPaymentsInfo;
 }
 
-export async function getPublicShop(businessId: string) {
-  const { data } = await API.get(`/store/${businessId}/shop`);
+export async function getPublicShop(
+  businessId: string,
+  params?: { categorySlug?: string; search?: string },
+) {
+  const { data } = await API.get(`/store/${businessId}/shop`, {
+    params: {
+      categorySlug: params?.categorySlug,
+      search: params?.search,
+    },
+  });
   return data as {
     settings?: { currency?: string; storeName?: string; isStoreActive?: boolean };
+    categories?: PublicStoreCategory[];
+    activeCategory?: PublicStoreCategory | null;
     products?: PublicStoreProduct[];
   };
+}
+
+export async function getPublicStoreCategories(businessId: string) {
+  const { data } = await API.get(`/store/${businessId}/categories`);
+  return data as { categories?: PublicStoreCategory[] };
 }
 
 export async function createPublicStoreOrder(
