@@ -59,6 +59,8 @@ export const growthlyDefaultData = {
   galleryTwoImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "פריימים מהצמיחה",
+  galleryTitle: "קולנוע של קמפיינים בתנועה.",
   insightsEyebrow: "תובנות",
   insightsTitle: "נקודות מבט מהשטח.",
   insightOneTitle: "איך בונים תוכנית רבעונית שעובדת",

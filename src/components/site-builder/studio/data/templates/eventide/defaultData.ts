@@ -59,6 +59,8 @@ export const eventideDefaultData = {
   galleryTwoImage: "https://images.unsplash.com/photo-1429962714451-bb934ecdc4ec?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "Night filmstrip",
+  galleryTitle: "פריימים מהערב כשהקהל נכנס לקצב.",
   insightsEyebrow: "תובנות",
   insightsTitle: "נקודות מבט מהשטח.",
   insightOneTitle: "איך בונים תוכנית רבעונית שעובדת",

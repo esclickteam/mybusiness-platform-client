@@ -41,8 +41,6 @@ export const insurevaEditorCss = `
 [data-template-id="insureva-preview"] .ag-ken {
   animation: insurevaKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes insurevaFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }

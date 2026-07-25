@@ -41,8 +41,6 @@ export const eventideEditorCss = `
 [data-template-id="eventide-preview"] .ag-ken {
   animation: eventideKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes eventideFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }

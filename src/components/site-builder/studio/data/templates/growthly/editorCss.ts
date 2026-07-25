@@ -41,8 +41,6 @@ export const growthlyEditorCss = `
 [data-template-id="growthly-preview"] .ag-ken {
   animation: growthlyKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes growthlyFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }

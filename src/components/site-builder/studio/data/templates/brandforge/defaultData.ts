@@ -55,6 +55,8 @@ export const brandforgeDefaultData = {
   caseOneImage: "https://images.unsplash.com/photo-1561070791-2526d30994b5?auto=format&fit=crop&w=1200&q=85",
   caseTwoImage: "https://images.unsplash.com/photo-1634942537034-2531766767d1?auto=format&fit=crop&w=1200&q=85",
   caseThreeImage: "https://images.unsplash.com/photo-1558655146-d09347e92766?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "Brand marks",
+  galleryTitle: "לוח סימני מותג ונכסי זהות.",
   galleryOneImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=1200&q=85",
   galleryTwoImage: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1626785774573-4b7993141ae0?auto=format&fit=crop&w=1200&q=85",

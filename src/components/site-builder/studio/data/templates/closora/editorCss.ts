@@ -41,8 +41,6 @@ export const closoraEditorCss = `
 [data-template-id="closora-preview"] .ag-ken {
   animation: closoraKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes closoraFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }
