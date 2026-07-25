@@ -474,6 +474,198 @@ const SKINS: Record<RichStoreLayoutId, RichSkin> = {
     band: "bg-[#9f4668] text-white",
     input: "rounded-full border-rose-900/20 bg-white",
   },
+  runwayRail: {
+    page: "bg-[#fafaf9] text-[#111827]",
+    section: "bg-[#fafaf9]",
+    alt: "bg-[#f5f5f4]",
+    dark: "bg-[#0c0a09] text-white",
+    card: "rounded-none border-stone-900/15 bg-white shadow-none",
+    softCard: "rounded-none border-stone-900/10 bg-white",
+    media: "aspect-[3/4]",
+    radius: "rounded-none",
+    grid: "lg:grid-cols-4",
+    title: "font-serif tracking-[-0.06em]",
+    button: "bg-[#111827] px-6 py-3 text-white",
+    outlineButton: "border border-stone-900/25 px-6 py-3",
+    band: "bg-[#111827] text-white",
+    input: "border-stone-900/20 bg-white",
+  },
+  indigoStack: {
+    page: "bg-[#f8fafc] text-[#0f172a]",
+    section: "bg-[#f8fafc]",
+    alt: "bg-[#e2e8f0]",
+    dark: "bg-[#1e3a8a] text-white",
+    card: "rounded-[0.25rem] border-blue-900/20 bg-white shadow-[6px_6px_0_rgba(30,58,138,0.18)]",
+    softCard: "rounded-[0.5rem] border-blue-900/15 bg-white",
+    media: "aspect-[4/5]",
+    radius: "rounded-[0.25rem]",
+    grid: "lg:grid-cols-3",
+    title: "uppercase tracking-[-0.05em]",
+    button: "bg-[#1e3a8a] px-6 py-3 text-white",
+    outlineButton: "border border-blue-900/30 px-6 py-3",
+    band: "bg-[#f59e0b] text-[#0f172a]",
+    input: "border-blue-900/20 bg-white",
+  },
+  lastBench: {
+    page: "bg-[#fffbeb] text-[#451a03]",
+    section: "bg-[#fffbeb]",
+    alt: "bg-[#fef3c7]",
+    dark: "bg-[#1c1917] text-[#fffbeb]",
+    card: "rounded-[1rem] border-amber-900/15 bg-[#fffdf5] shadow-[0_16px_40px_rgba(120,53,15,0.12)]",
+    softCard: "rounded-[1.25rem] border-amber-900/10 bg-white/80",
+    media: "aspect-[5/4]",
+    radius: "rounded-[1rem]",
+    grid: "lg:grid-cols-4",
+    title: "font-serif tracking-[-0.04em]",
+    button: "rounded-full bg-[#78350f] px-6 py-3 text-[#fffbeb]",
+    outlineButton: "rounded-full border border-amber-900/25 px-6 py-3",
+    band: "bg-[#78350f] text-[#fffbeb]",
+    input: "rounded-full border-amber-900/20 bg-white",
+  },
+  courtDrop: {
+    page: "bg-[#fafafa] text-[#09090b]",
+    section: "bg-[#fafafa]",
+    alt: "bg-[#e4e4e7]",
+    dark: "bg-[#09090b] text-white",
+    card: "rounded-none border-2 border-black bg-white shadow-[8px_8px_0_#22d3ee]",
+    softCard: "rounded-none border-2 border-black bg-white",
+    media: "aspect-square",
+    radius: "rounded-none",
+    grid: "lg:grid-cols-4",
+    title: "uppercase tracking-[-0.08em]",
+    button: "bg-[#09090b] px-6 py-3 text-white",
+    outlineButton: "border-2 border-black px-6 py-3",
+    band: "bg-[#22d3ee] text-black",
+    input: "rounded-none border-2 border-black bg-white",
+  },
+  luxeVitrine: {
+    page: "bg-[#fffbeb] text-[#1c1917]",
+    section: "bg-[#fffbeb]",
+    alt: "bg-[#fef3c7]",
+    dark: "bg-[#0c0a09] text-[#fde68a]",
+    card: "rounded-[2rem] border-amber-700/20 bg-white/80 shadow-[0_28px_70px_rgba(161,98,7,0.12)]",
+    softCard: "rounded-[2.5rem] border-amber-700/15 bg-white/60",
+    media: "aspect-[3/4] rounded-[1.5rem]",
+    radius: "rounded-[2rem]",
+    grid: "lg:grid-cols-3",
+    title: "font-serif tracking-[-0.05em]",
+    button: "rounded-full bg-[#a16207] px-6 py-3 text-white",
+    outlineButton: "rounded-full border border-amber-700/30 px-6 py-3",
+    band: "bg-[#a16207] text-[#fffbeb]",
+    input: "rounded-full border-amber-700/20 bg-white",
+  },
+  roomShelf: {
+    page: "bg-[#f0fdfa] text-[#134e4a]",
+    section: "bg-[#f0fdfa]",
+    alt: "bg-[#ccfbf1]",
+    dark: "bg-[#042f2e] text-[#f0fdfa]",
+    card: "rounded-[1.25rem] border-teal-900/15 bg-white shadow-[0_18px_44px_rgba(15,118,110,0.12)]",
+    softCard: "rounded-[1.5rem] border-teal-900/10 bg-white/70",
+    media: "aspect-[4/3] rounded-[1rem]",
+    radius: "rounded-[1.25rem]",
+    grid: "lg:grid-cols-4",
+    title: "tracking-[-0.04em]",
+    button: "rounded-[0.75rem] bg-[#0f766e] px-6 py-3 text-white",
+    outlineButton: "rounded-[0.75rem] border border-teal-900/25 px-6 py-3",
+    band: "bg-[#0f766e] text-white",
+    input: "rounded-[0.75rem] border-teal-900/20 bg-white",
+  },
+  softFold: {
+    page: "bg-[#fff7ed] text-[#7c2d12]",
+    section: "bg-[#fff7ed]",
+    alt: "bg-[#ffedd5]",
+    dark: "bg-[#431407] text-[#fff7ed]",
+    card: "rounded-[2.5rem] border-orange-900/10 bg-white/75 shadow-[0_24px_60px_rgba(154,52,18,0.10)]",
+    softCard: "rounded-[3rem] border-orange-900/10 bg-white/55",
+    media: "aspect-[4/5] rounded-[2rem]",
+    radius: "rounded-[2.5rem]",
+    grid: "lg:grid-cols-3",
+    title: "font-serif tracking-[-0.05em]",
+    button: "rounded-full bg-[#9a3412] px-6 py-3 text-white",
+    outlineButton: "rounded-full border border-orange-900/20 px-6 py-3",
+    band: "bg-[#9a3412] text-white",
+    input: "rounded-full border-orange-900/20 bg-white",
+  },
+  cleanCabinet: {
+    page: "bg-[#f0f9ff] text-[#0c4a6e]",
+    section: "bg-[#f0f9ff]",
+    alt: "bg-[#e0f2fe]",
+    dark: "bg-[#082f49] text-[#f0f9ff]",
+    card: "rounded-[1rem] border-sky-900/15 bg-white shadow-[0_14px_36px_rgba(3,105,161,0.10)]",
+    softCard: "rounded-[1.25rem] border-sky-900/10 bg-white",
+    media: "aspect-square rounded-[1rem]",
+    radius: "rounded-[1rem]",
+    grid: "lg:grid-cols-4",
+    title: "tracking-[-0.03em]",
+    button: "rounded-[0.5rem] bg-[#0369a1] px-6 py-3 text-white",
+    outlineButton: "rounded-[0.5rem] border border-sky-900/25 px-6 py-3",
+    band: "bg-[#34d399] text-[#082f49]",
+    input: "rounded-[0.5rem] border-sky-900/20 bg-white",
+  },
+  doseGrid: {
+    page: "bg-[#f7fee7] text-[#14532d]",
+    section: "bg-[#f7fee7]",
+    alt: "bg-[#ecfccb]",
+    dark: "bg-[#052e16] text-[#f7fee7]",
+    card: "rounded-[0.75rem] border-lime-900/15 bg-white shadow-[4px_4px_0_rgba(21,128,61,0.18)]",
+    softCard: "rounded-[1rem] border-lime-900/10 bg-white",
+    media: "aspect-[4/3]",
+    radius: "rounded-[0.75rem]",
+    grid: "lg:grid-cols-4",
+    title: "tracking-[-0.04em]",
+    button: "bg-[#15803d] px-6 py-3 text-white",
+    outlineButton: "border border-lime-900/25 px-6 py-3",
+    band: "bg-[#a3e635] text-[#14532d]",
+    input: "border-lime-900/20 bg-white",
+  },
+  strapStudio: {
+    page: "bg-[#fff7ed] text-[#431407]",
+    section: "bg-[#fff7ed]",
+    alt: "bg-[#ffedd5]",
+    dark: "bg-[#1c1917] text-[#fff7ed]",
+    card: "rounded-none border-[#7c2d12]/25 bg-[#fffaf2] shadow-none",
+    softCard: "rounded-t-[2rem] border-[#7c2d12]/15 bg-white/70",
+    media: "aspect-[3/4]",
+    radius: "rounded-t-[2rem]",
+    grid: "lg:grid-cols-3",
+    title: "font-serif tracking-[-0.05em]",
+    button: "bg-[#7c2d12] px-6 py-3 text-white",
+    outlineButton: "border border-[#7c2d12]/30 px-6 py-3",
+    band: "bg-[#fb923c] text-[#431407]",
+    input: "border-[#7c2d12]/20 bg-[#fffaf2]",
+  },
+  dialAtelier: {
+    page: "bg-[#f3f4f6] text-[#111827]",
+    section: "bg-[#f3f4f6]",
+    alt: "bg-[#e5e7eb]",
+    dark: "bg-[#030712] text-[#d4af37]",
+    card: "rounded-full border-stone-900/15 bg-white shadow-[0_20px_50px_rgba(0,0,0,0.10)]",
+    softCard: "rounded-[2rem] border-stone-900/10 bg-white/80",
+    media: "aspect-square rounded-full",
+    radius: "rounded-full",
+    grid: "lg:grid-cols-3",
+    title: "font-serif tracking-[-0.06em]",
+    button: "rounded-full bg-[#1f2937] px-6 py-3 text-[#d4af37]",
+    outlineButton: "rounded-full border border-stone-900/25 px-6 py-3",
+    band: "bg-[#1f2937] text-[#d4af37]",
+    input: "rounded-full border-stone-900/20 bg-white",
+  },
+  quietLounge: {
+    page: "bg-[#faf5ff] text-[#4c1d95]",
+    section: "bg-[#faf5ff]",
+    alt: "bg-[#ede9fe]",
+    dark: "bg-[#2e1065] text-[#faf5ff]",
+    card: "rounded-[2rem] border-violet-900/10 bg-white/80 shadow-[0_26px_70px_rgba(91,33,182,0.12)]",
+    softCard: "rounded-[2.5rem] border-violet-900/10 bg-white/60",
+    media: "aspect-[4/5] rounded-[2rem]",
+    radius: "rounded-[2rem]",
+    grid: "lg:grid-cols-3",
+    title: "font-serif tracking-[-0.05em]",
+    button: "rounded-full bg-[#5b21b6] px-6 py-3 text-white",
+    outlineButton: "rounded-full border border-violet-900/20 px-6 py-3",
+    band: "bg-[#5b21b6] text-white",
+    input: "rounded-full border-violet-900/20 bg-white",
+  },
 };
 
 function StoreImage({
@@ -1508,6 +1700,243 @@ export default function RichStoreSiteRuntime({
           <TestimonialsSection id="drop-community" />
           <JournalSection id="drop-zine" />
           <NewsletterSection id="drop-alerts" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "runwayRail") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("runway-ticker", "promo", "מסלול אופנה")} className="overflow-hidden bg-black text-white"><div className="store-marquee whitespace-nowrap py-3 text-xs font-black uppercase tracking-[0.35em]">{Array.from({ length: 10 }).map((_, i) => <span key={i} className="mx-8">{g("promoText")}</span>)}</div></section>
+          <section {...sectionProps("runway-editorial-hero", "hero", "עריכת מסלול")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1.1fr_0.9fr]"><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[4/5] object-cover" /><Reveal className="flex flex-col justify-end text-right"><p className="text-xs font-black uppercase tracking-[0.35em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 w-fit text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal></div></section>
+          <ProductRail id="runway-looks" label="לוקים נבחרים" title={g("productsTitle")} text={g("productsText")} />
+          <section {...sectionProps("runway-category-rails", "categories", "מסילות קטגוריה")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/5]" />)}</div></section>
+          <section {...sectionProps("runway-offset-products", "products", "מוצרים מוזחים")} className="px-5 py-20 lg:px-8" data-bizuply-widget="products"><div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">{homeProducts.map((product, index) => <ProductCard key={product.id} product={product} currency={currency} skin={skin} index={index} className={index === 1 ? "md:mt-16" : ""} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></section>
+          <ValuesSection id="runway-fit-values" className={skin.dark} />
+          <SimpleInfoSection id="runway-atelier-note" kind="about" label="אטליה" title={g("aboutTitle")} text={g("aboutText")} />
+          <GalleryTriptych id="runway-lookbook" label="לוקבוק" />
+          <TestimonialsSection id="runway-clients" />
+          <JournalSection id="runway-journal" />
+          <NewsletterSection id="runway-list" className={skin.alt} />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "indigoStack") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("indigo-stack-hero", "hero", "ערימת אינדיגו")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-4"><Reveal className="border border-[var(--line)] bg-[var(--dark)] p-8 text-right text-white shadow-[8px_8px_0_#f59e0b]"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--accent)]">{g("heroEyebrow")}</p><h1 className="store-display mt-4 text-6xl font-black uppercase leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-5 max-w-2xl text-lg text-white/75">{g("heroSubtitle")}</p></Reveal><div className="grid gap-3 md:grid-cols-3">{[g("heroImage"), g("lookOne"), g("lookTwo")].map((image, index) => <StoreImage key={index} src={image} alt="" fallbackLabel={g("brandName")} className="aspect-[4/5] object-cover" />)}</div></div></section>
+          <section {...sectionProps("indigo-wash-stats", "features", "מדדי שטיפה")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["14oz", "Raw", "Selvage", "Wash"].map((v, i) => <StatPill key={v} value={v} label={`שכבה 0${i + 1}`} skin={skin} />)}</div></section>
+          <ProductRail id="indigo-stack-rail" label="ערימת דנים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <section {...sectionProps("indigo-categories", "categories", "מדפי דנים")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-2">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[16/7]" />)}</div></section>
+          <ValuesSection id="indigo-street-values" />
+          <SimpleInfoSection id="indigo-fit-guide" kind="features" label="חיתוך" title={g("productDetailOne")} text={g("productDetailTwo")} className={skin.dark} />
+          <GalleryTriptych id="indigo-street-gallery" label="גלריית רחוב" />
+          <ShippingPills id="indigo-shipping" className={skin.alt} />
+          <TestimonialsSection id="indigo-reviews" />
+          <JournalSection id="indigo-zine" />
+          <NewsletterSection id="indigo-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "lastBench") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("last-bench-hero", "hero", "ספסל הנעלן")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.85fr_1.15fr]"><Reveal className="rounded-[2rem] bg-[#1c1917] p-8 text-right text-[#fffbeb] lg:p-12"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--accent)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-7xl">{g("heroTitle")}</h1><p className="mt-6 text-lg leading-8 text-white/75">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 w-fit text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><div className="grid gap-4"><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[16/8] rounded-[1.5rem] object-cover" /><div className="grid gap-4 md:grid-cols-3">{homeProducts.map((product, index) => <ProductCard key={product.id} product={product} currency={currency} skin={skin} index={index} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></div></div></section>
+          <section {...sectionProps("last-size-stats", "features", "מדדי מידה")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["EU", "US", "UK", "CM"].map((v, i) => <StatPill key={v} value={v} label={`מידה 0${i + 1}`} skin={skin} />)}</div></section>
+          <ProductRail id="last-bench-rail" label="שורה על הספסל" title={g("productsTitle")} text={g("productsText")} />
+          <section {...sectionProps("last-categories", "categories", "מדפי נעליים")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5] rounded-[1.25rem]" />)}</div></section>
+          <ValuesSection id="last-craft-values" />
+          <SimpleInfoSection id="last-fit-note" kind="about" label="התאמה" title={g("aboutTitle")} text={g("aboutText")} />
+          <GalleryTriptych id="last-atelier" label="סדנת נעליים" />
+          <ShippingPills id="last-shipping" className={skin.alt} />
+          <TestimonialsSection id="last-reviews" />
+          <JournalSection id="last-journal" />
+          <NewsletterSection id="last-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "courtDrop") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("court-alert", "promo", "התראת דרופ")} className="overflow-hidden bg-[#22d3ee] text-black"><div className="store-marquee whitespace-nowrap py-3 text-xs font-black uppercase tracking-[0.35em]">{Array.from({ length: 10 }).map((_, i) => <span key={i} className="mx-8">{g("promoText")}</span>)}</div></section>
+          <section {...sectionProps("court-stacked-hero", "hero", "ערימת קורט")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-4"><Reveal className="border-2 border-black bg-white p-8 text-right shadow-[12px_12px_0_#22d3ee]"><p className="text-xs font-black uppercase tracking-[0.35em]">{g("heroEyebrow")}</p><h1 className="store-display mt-4 text-6xl font-black uppercase leading-none md:text-9xl">{g("heroTitle")}</h1><p className="mt-5 max-w-2xl text-lg text-[var(--muted)]">{g("heroSubtitle")}</p></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[16/7] border-2 border-black object-cover" /></div></section>
+          <section {...sectionProps("court-release-stack", "products", "שחרורים")} className="px-5 py-20 lg:px-8" data-bizuply-widget="products"><div className="mx-auto grid max-w-7xl gap-4">{showcase.slice(0, 5).map((product, index) => <div key={product.id} className={cx("grid items-center gap-5 border-2 border-black bg-white p-4 md:grid-cols-[160px_1fr_auto]", index % 2 ? "ms-8" : "me-8")}><StoreImage src={product.image} alt={product.name} fallbackLabel={product.name} className="aspect-square object-cover" /><div className="text-right"><p className="text-xs font-black uppercase tracking-[0.2em]">PAIR 0{index + 1}</p><h3 className="store-display text-3xl font-black uppercase">{product.name}</h3></div><button type="button" onClick={() => openProduct(product)} className={skin.button}>פתיחה</button></div>)}</div></section>
+          <section {...sectionProps("court-categories", "categories", "תגי קורט")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square border-2 border-black" />)}</div></section>
+          <section {...sectionProps("court-stats", "features", "ספירת דרופ")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["01", "07", "24", "99"].map((v, i) => <StatPill key={v} value={v} label={`COURT 0${i + 1}`} skin={skin} />)}</div></section>
+          <ValuesSection id="court-values" className={skin.dark} />
+          <GalleryTriptych id="court-gallery" label="גלריית סניקרס" />
+          <ShippingPills id="court-shipping" className={skin.alt} />
+          <TestimonialsSection id="court-reviews" />
+          <JournalSection id="court-zine" />
+          <NewsletterSection id="court-alerts" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "luxeVitrine") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("vitrine-centered-hero", "hero", "ויטרינה")} className="px-5 py-24 text-center lg:px-8 lg:py-36"><Reveal className="mx-auto max-w-4xl"><p className="text-xs font-black uppercase tracking-[0.4em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-8 font-serif text-6xl font-light leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal></section>
+          <section {...sectionProps("vitrine-glass-cases", "categories", "תיבות זכוכית")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[2rem]" />)}</div></section>
+          <ProductRail id="vitrine-pieces" label="יצירות נבחרות" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <section {...sectionProps("vitrine-spotlight", "products", "זרקור")} className={skin.alt + " px-5 py-20 lg:px-8"} data-bizuply-widget="products"><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-3">{homeProducts.map((product, index) => <ProductCard key={product.id} product={product} currency={currency} skin={skin} index={index} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></section>
+          <ValuesSection id="vitrine-values" />
+          <SimpleInfoSection id="vitrine-atelier" kind="about" label="סדנה" title={g("aboutTitle")} text={g("aboutText")} className={skin.dark} />
+          <GalleryTriptych id="vitrine-gallery" label="גלריית ברק" />
+          <ShippingPills id="vitrine-shipping" className={skin.alt} />
+          <TestimonialsSection id="vitrine-reviews" />
+          <JournalSection id="vitrine-journal" />
+          <NewsletterSection id="vitrine-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "roomShelf") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("room-bento-hero", "hero", "בנטו בית")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-12"><Reveal className="rounded-[1.5rem] bg-white p-8 text-right shadow-[0_18px_44px_rgba(15,118,110,0.12)] md:col-span-5 lg:p-12"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-5xl font-black leading-tight md:text-7xl">{g("heroTitle")}</h1><p className="mt-5 leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="min-h-[340px] rounded-[1.5rem] object-cover md:col-span-4" /><div className="grid gap-5 md:col-span-3">{categoryTiles.slice(0, 2).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[1.25rem]" />)}</div></div></section>
+          <section {...sectionProps("room-shelf-grid", "categories", "מדפי חדר")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5] rounded-[1.25rem]" />)}</div></section>
+          <ProductRail id="room-products" label="מוצרים לבית" title={g("productsTitle")} text={g("productsText")} />
+          <ValuesSection id="room-values" className={skin.alt} />
+          <SimpleInfoSection id="room-story" kind="about" label="בית" title={g("aboutTitle")} text={g("aboutText")} />
+          <GalleryTriptych id="room-gallery" label="פינות בית" />
+          <ShippingPills id="room-shipping" className={skin.alt} />
+          <TestimonialsSection id="room-reviews" />
+          <JournalSection id="room-journal" />
+          <NewsletterSection id="room-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "softFold") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("soft-fold-hero", "hero", "קיפול רך")} className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]"><Reveal className="text-right"><p className="text-xs font-black uppercase tracking-[0.35em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 border-y border-[var(--line)] py-6 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-[5/4] rounded-[2.5rem] object-cover" /></div></section>
+          <section {...sectionProps("soft-fabric-stats", "features", "מדדי בד")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["200TC", "Linen", "Wash", "Soft"].map((v, i) => <StatPill key={v} value={v} label={`בד 0${i + 1}`} skin={skin} />)}</div></section>
+          <ProductRail id="soft-fold-rail" title={g("productsTitle")} text={g("productsText")} label="קיפולים נבחרים" railClassName="lg:grid-cols-3" />
+          <section {...sectionProps("soft-categories", "categories", "מגירות בד")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[2rem]" />)}</div></section>
+          <ValuesSection id="soft-values" />
+          <SimpleInfoSection id="soft-care" kind="features" label="טיפול" title={g("productDetailOne")} text={g("productDetailTwo")} />
+          <GalleryTriptych id="soft-gallery" label="חדר שינה" />
+          <ShippingPills id="soft-shipping" className={skin.alt} />
+          <TestimonialsSection id="soft-reviews" />
+          <JournalSection id="soft-journal" />
+          <NewsletterSection id="soft-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "cleanCabinet") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("cabinet-hero", "hero", "ארון נקי")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-6 lg:grid-cols-[1fr_1fr]"><Reveal className="rounded-[1rem] border border-[var(--line)] bg-white p-8 text-right lg:p-12"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-5xl font-black leading-tight md:text-7xl">{g("heroTitle")}</h1><p className="mt-5 leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="min-h-[360px] rounded-[1rem] object-cover" /></div></section>
+          <section {...sectionProps("cabinet-aisles", "categories", "מעברים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[1rem]" />)}</div></section>
+          <ProductRail id="cabinet-shelf" label="מדף נבחר" title={g("productsTitle")} text={g("productsText")} />
+          <section {...sectionProps("cabinet-trust", "features", "אמון")} className={skin.alt + " px-5 py-12 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["ברור", "מדויק", "בטוח", "זמין"].map((v, i) => <StatPill key={v} value={v} label={`ערך 0${i + 1}`} skin={skin} />)}</div></section>
+          <ValuesSection id="cabinet-values" />
+          <SimpleInfoSection id="cabinet-guide" kind="features" label="הכוונה" title={g("productDetailOne")} text={g("productDetailTwo")} />
+          <GalleryTriptych id="cabinet-gallery" label="מדפים מסודרים" />
+          <ShippingPills id="cabinet-shipping" className={skin.alt} />
+          <TestimonialsSection id="cabinet-reviews" />
+          <JournalSection id="cabinet-journal" />
+          <NewsletterSection id="cabinet-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "doseGrid") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("dose-grid-hero", "hero", "גריד מינון")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-12"><Reveal className="rounded-[0.75rem] border border-[var(--line)] bg-white p-8 text-right shadow-[4px_4px_0_rgba(21,128,61,0.18)] md:col-span-7"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 text-5xl font-black leading-tight md:text-7xl">{g("heroTitle")}</h1><p className="mt-5 leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><div className="grid gap-4 md:col-span-5">{homeProducts.slice(0, 2).map((product, index) => <ProductCard key={product.id} product={product} currency={currency} skin={skin} index={index} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></div></section>
+          <section {...sectionProps("dose-goals", "features", "מטרות")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["אנרגיה", "חיסון", "שינה", "מיקוד"].map((v, i) => <StatPill key={v} value={v} label={`מטרה 0${i + 1}`} skin={skin} />)}</div></section>
+          <ProductRail id="dose-rail" label="מינונים נבחרים" title={g("productsTitle")} text={g("productsText")} />
+          <section {...sectionProps("dose-categories", "categories", "מדפי מטרה")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
+          <ValuesSection id="dose-values" />
+          <SimpleInfoSection id="dose-guide" kind="features" label="שגרה" title={g("productDetailOne")} text={g("productDetailTwo")} className={skin.dark} />
+          <GalleryTriptych id="dose-gallery" label="שגרת בוקר" />
+          <ShippingPills id="dose-shipping" className={skin.alt} />
+          <TestimonialsSection id="dose-reviews" />
+          <JournalSection id="dose-journal" />
+          <NewsletterSection id="dose-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "strapStudio") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("strap-hero", "hero", "סטודיו רצועות")} className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.8fr_1.2fr]"><Reveal className="text-right"><p className="text-xs font-black uppercase tracking-[0.35em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mt-6 border-y border-[var(--line)] py-6 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p></Reveal><div className="grid grid-cols-3 gap-3">{[g("heroImage"), g("lookOne"), g("lookTwo")].map((image, index) => <StoreImage key={index} src={image} alt="" fallbackLabel={g("brandName")} className="aspect-[2/5] rounded-t-[2rem] object-cover" />)}</div></div></section>
+          <section {...sectionProps("strap-categories", "categories", "עמודי תיק")} className={cx("px-5 py-20 lg:px-8", skin.dark)}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[2/5] rounded-t-[2rem] border-white/20" />)}</div></section>
+          <ProductRail id="strap-rail" label="רצועות נבחרות" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ValuesSection id="strap-values" />
+          <SimpleInfoSection id="strap-craft" kind="about" label="מלאכה" title={g("aboutTitle")} text={g("aboutText")} className={skin.alt} />
+          <GalleryTriptych id="strap-gallery" label="סטודיו" />
+          <ShippingPills id="strap-shipping" />
+          <TestimonialsSection id="strap-reviews" />
+          <JournalSection id="strap-journal" />
+          <NewsletterSection id="strap-club" className={skin.alt} />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "dialAtelier") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("dial-hero", "hero", "אטליה מחוגים")} className="px-5 py-24 text-center lg:px-8 lg:py-32"><Reveal className="mx-auto max-w-4xl"><p className="text-xs font-black uppercase tracking-[0.4em] text-[var(--accent)]">{g("heroEyebrow")}</p><h1 className="store-display mt-8 font-serif text-6xl font-light leading-none md:text-8xl">{g("heroTitle")}</h1><p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="mx-auto mt-12 aspect-square max-w-md rounded-full object-cover shadow-[0_30px_80px_rgba(0,0,0,0.18)]" /></section>
+          <section {...sectionProps("dial-stats", "features", "מדדי דיוק")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["Swiss", "Auto", "Sapphire", "5ATM"].map((v, i) => <StatPill key={v} value={v} label={`מד 0${i + 1}`} skin={skin} />)}</div></section>
+          <ProductRail id="dial-rail" label="מחוגים נבחרים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <section {...sectionProps("dial-categories", "categories", "ויטרינות")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-full" />)}</div></section>
+          <ValuesSection id="dial-values" className={skin.dark} />
+          <SimpleInfoSection id="dial-service" kind="features" label="שירות" title={g("productDetailOne")} text={g("productDetailTwo")} />
+          <GalleryTriptych id="dial-gallery" label="גלריית שעונים" />
+          <ShippingPills id="dial-shipping" className={skin.alt} />
+          <TestimonialsSection id="dial-reviews" />
+          <JournalSection id="dial-journal" />
+          <NewsletterSection id="dial-club" />
+          {Footer}
+        </div>
+      );
+    }
+
+    if (layoutId === "quietLounge") {
+      return (
+        <div>
+          {Header}
+          <section {...sectionProps("lounge-soft-hero", "hero", "לאונג׳ רך")} className="px-5 py-20 lg:px-8 lg:py-28"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.1fr_0.9fr]"><Reveal className="rounded-[2.5rem] bg-white/80 p-8 text-right shadow-[0_26px_70px_rgba(91,33,182,0.12)] lg:p-12"><p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-5 font-serif text-6xl font-black leading-none md:text-7xl">{g("heroTitle")}</h1><p className="mt-6 text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 w-fit text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="min-h-[380px] rounded-[2.5rem] object-cover" /></div></section>
+          <section {...sectionProps("lounge-categories", "categories", "מגירות רכות")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[2rem]" />)}</div></section>
+          <ProductRail id="lounge-rail" label="סטים רכים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ValuesSection id="lounge-values" className={skin.alt} />
+          <SimpleInfoSection id="lounge-story" kind="about" label="נוחות" title={g("aboutTitle")} text={g("aboutText")} />
+          <GalleryTriptych id="lounge-gallery" label="רגעי בית" />
+          <ShippingPills id="lounge-shipping" className={skin.alt} />
+          <TestimonialsSection id="lounge-reviews" />
+          <JournalSection id="lounge-journal" />
+          <NewsletterSection id="lounge-club" />
           {Footer}
         </div>
       );

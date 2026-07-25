@@ -144,6 +144,18 @@ import { playoraTemplate } from "./playora/meta";
 import { panoraTemplate } from "./panora/meta";
 import { kickoraTemplate } from "./kickora/meta";
 import { scentoraTemplate } from "./scentora/meta";
+import { clothoraTemplate } from "./clothora/meta";
+import { denimlabTemplate } from "./denimlab/meta";
+import { soleoraTemplate } from "./soleora/meta";
+import { sneakhausTemplate } from "./sneakhaus/meta";
+import { gleamoraTemplate } from "./gleamora/meta";
+import { nestwareTemplate } from "./nestware/meta";
+import { linenhausTemplate } from "./linenhaus/meta";
+import { pharmoraTemplate } from "./pharmora/meta";
+import { vitaraTemplate } from "./vitara/meta";
+import { bagoraTemplate } from "./bagora/meta";
+import { watchoraTemplate } from "./watchora/meta";
+import { loungoraTemplate } from "./loungora/meta";
 import { lectoraTemplate } from "./lectora/meta";
 import { mentoraTemplate } from "./mentora/meta";
 import { polyglotaTemplate } from "./polyglota/meta";
@@ -333,6 +345,18 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   panoraTemplate,
   kickoraTemplate,
   scentoraTemplate,
+  clothoraTemplate,
+  denimlabTemplate,
+  soleoraTemplate,
+  sneakhausTemplate,
+  gleamoraTemplate,
+  nestwareTemplate,
+  linenhausTemplate,
+  pharmoraTemplate,
+  vitaraTemplate,
+  bagoraTemplate,
+  watchoraTemplate,
+  loungoraTemplate,
   lectoraTemplate,
   mentoraTemplate,
   polyglotaTemplate,

@@ -3,7 +3,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   Globe2,
-  LockKeyhole,
   Search,
   ShieldCheck,
   UserRound,
@@ -143,6 +142,8 @@ export default function DomainSearch() {
   const [showContactForm, setShowContactForm] = useState(false);
   const [contact, setContact] =
     useState<ContactFormState>(INITIAL_CONTACT);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [isCreatingContact, setIsCreatingContact] = useState(false);
   const [contactError, setContactError] = useState("");
   const [contactResult, setContactResult] =
@@ -158,12 +159,18 @@ export default function DomainSearch() {
   const [registerResult, setRegisterResult] =
     useState<DomainRegisterResult | null>(null);
 
+  const fullDomain = useMemo(() => {
+    const parsed = parseDomainInput(domainName, selectedTld);
+    return parsed.name ? `${parsed.name}.${selectedTld}` : "";
+  }, [domainName, selectedTld]);
+
   const selectedDomainForContact = result?.domain || fullDomain;
   const requiresVat = isIsraeliDomain(selectedDomainForContact);
 
   const canSubmitContact = useMemo(() => {
     return Boolean(
-      contact.name.trim() &&
+      firstName.trim() &&
+        lastName.trim() &&
         contact.address.trim() &&
         contact.postalCode.trim() &&
         contact.city.trim() &&
@@ -172,12 +179,7 @@ export default function DomainSearch() {
         contact.phone.trim() &&
         (!requiresVat || String(contact.vatNumber || "").trim()),
     );
-  }, [contact, requiresVat]);
-
-  const fullDomain = useMemo(() => {
-    const parsed = parseDomainInput(domainName, selectedTld);
-    return parsed.name ? `${parsed.name}.${selectedTld}` : "";
-  }, [domainName, selectedTld]);
+  }, [contact, firstName, lastName, requiresVat]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -359,6 +361,7 @@ export default function DomainSearch() {
 
       const response = await createDomainContact({
         ...contact,
+        name: `${firstName.trim()} ${lastName.trim()}`.trim(),
 
         domain: selectedDomain,
 
@@ -641,10 +644,10 @@ export default function DomainSearch() {
 
               <div>
                 <h3 className="text-xl font-black text-slate-800">
-                  פרטי איש קשר לרישום
+                  פרטי קשר
                 </h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">
-                  הפרטים יישלחו ל־Realtime Register לרישום הדומיין.
+                  פרטי הבעלים לרישום הדומיין
                 </p>
               </div>
             </div>
@@ -670,89 +673,18 @@ export default function DomainSearch() {
             {!contactResult?.success ? (
             <div className="grid gap-4 md:grid-cols-2">
               <Field
-                label="שם מלא"
-                value={contact.name}
-                onChange={(value) => updateContact("name", value)}
-                placeholder="Israel Israeli"
+                label="שם פרטי"
+                value={firstName}
+                onChange={setFirstName}
+                placeholder="ישראל"
                 required
               />
 
               <Field
-                label="שם העסק"
-                value={contact.organization || ""}
-                onChange={(value) =>
-                  updateContact("organization", value)
-                }
-                placeholder="BizUply LLC"
-              />
-
-              <Field
-                label="כתובת"
-                value={contact.address}
-                onChange={(value) => updateContact("address", value)}
-                placeholder="1007 N Orange St."
-                required
-              />
-
-              <Field
-                label="שורת כתובת נוספת"
-                value={contact.addressLine2 || ""}
-                onChange={(value) =>
-                  updateContact("addressLine2", value)
-                }
-                placeholder="אופציונלי"
-              />
-
-              <Field
-                label="שורת כתובת שלישית"
-                value={contact.addressLine3 || ""}
-                onChange={(value) =>
-                  updateContact("addressLine3", value)
-                }
-                placeholder="אופציונלי"
-              />
-
-              <Field
-                label="עיר"
-                value={contact.city}
-                onChange={(value) => updateContact("city", value)}
-                placeholder="Haifa"
-                required
-              />
-
-              <Field
-                label="מיקוד"
-                value={contact.postalCode}
-                onChange={(value) =>
-                  updateContact("postalCode", value)
-                }
-                placeholder="1234567"
-                required
-              />
-
-              <Field
-                label="מדינה"
-                value={contact.country}
-                onChange={(value) => updateContact("country", value)}
-                placeholder="IL"
-                dir="ltr"
-                required
-              />
-
-              <Field
-                label="מחוז / אזור"
-                value={contact.state || ""}
-                onChange={(value) => updateContact("state", value)}
-                placeholder="אופציונלי"
-              />
-
-              <Field
-                label="אימייל"
-                value={contact.email}
-                onChange={(value) => updateContact("email", value)}
-                placeholder="test@example.com"
-                type="email"
-                dir="ltr"
+                label="שם משפחה"
+                value={lastName}
+                onChange={setLastName}
+                placeholder="ישראלי"
                 required
               />
 
@@ -766,9 +698,63 @@ export default function DomainSearch() {
                 required
               />
 
+              <Field
+                label="שם העסק (אופציונלי)"
+                value={contact.organization || ""}
+                onChange={(value) =>
+                  updateContact("organization", value)
+                }
+                placeholder="העסק שלי"
+              />
+
+              <Field
+                label="אימייל"
+                value={contact.email}
+                onChange={(value) => updateContact("email", value)}
+                placeholder="name@email.com"
+                type="email"
+                dir="ltr"
+                required
+              />
+
+              <Field
+                label="רחוב"
+                value={contact.address}
+                onChange={(value) => updateContact("address", value)}
+                placeholder="רחוב הרצל 1"
+                required
+              />
+
+              <Field
+                label="מדינה"
+                value={contact.country}
+                onChange={(value) => updateContact("country", value)}
+                placeholder="IL"
+                dir="ltr"
+                required
+              />
+
+              <Field
+                label="עיר"
+                value={contact.city}
+                onChange={(value) => updateContact("city", value)}
+                placeholder="תל אביב"
+                required
+              />
+
+              <Field
+                label="מיקוד"
+                value={contact.postalCode}
+                onChange={(value) =>
+                  updateContact("postalCode", value)
+                }
+                placeholder="1234567"
+                required
+              />
+
               {requiresVat ? (
                 <Field
-                  label="מספר עוסק / ח.פ. / מע״מ"
+                  label="מספר מזהה / ת.ז. / ח.פ."
                   value={contact.vatNumber || ""}
                   onChange={(value) => updateContact("vatNumber", value)}
                   placeholder="למשל 512345678"
@@ -776,16 +762,6 @@ export default function DomainSearch() {
                   required
                 />
               ) : null}
-            </div>
-            ) : null}
-
-            {!contactResult?.success ? (
-            <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
-              <LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
-              <p className="text-xs font-semibold leading-6 text-slate-500">
-                הזינו פרטי בעלים אמיתיים לרישום הדומיין. הפרטים נשלחים
-                לרישום Production וישמשו כאיש קשר רשמי של הדומיין.
-              </p>
             </div>
             ) : null}
 
@@ -956,7 +932,7 @@ export default function DomainSearch() {
                   ) : (
                     <>
                       <UserRound className="h-5 w-5" />
-                      יצירת איש קשר לרישום
+                      המשך
                     </>
                   )}
                 </button>
