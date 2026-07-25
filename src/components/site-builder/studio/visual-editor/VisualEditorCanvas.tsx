@@ -20,10 +20,6 @@ import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
-import { mountSiteAuthWidgets } from "../../../site-plugins/site-auth/mountSiteAuthWidgets";
-import {
-  stripLegacySiteAuthWidgetsFromVisualData,
-} from "../../../site-plugins/site-auth/siteAuthUtils";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -1236,20 +1232,6 @@ export default function VisualEditorCanvas({
           mountEditorCountdownPreview(root);
         }
 
-        if (plugins.enabledPlugins.includes("site-auth")) {
-          if (cancelled) return;
-
-          const { data: cleaned, changed } = stripLegacySiteAuthWidgetsFromVisualData(
-            editorAny.data || {}
-          );
-          if (changed && typeof editorAny.setData === "function") {
-            editorAny.setData(cleaned);
-            editorAny.clearSelection?.();
-            setSelectionBox(null);
-          }
-
-          mountSiteAuthWidgets(root);
-        }
       } catch {
         if (!cancelled && pageHasCountdownWidget(root)) {
           countdownEditorMountRef.current = {
@@ -1294,7 +1276,6 @@ export default function VisualEditorCanvas({
       syncEditorMediaPreviewsInDom(root);
       disableNativeMediaDrag(root);
       mountEditorCountdownPreview(root);
-      mountSiteAuthWidgets(root);
     }
 
     markSelectedVisualElementInDom(

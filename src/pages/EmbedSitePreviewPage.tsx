@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { getMySite } from "../api/mySitesApi";
-import PublicSiteWithAuth from "../components/site-builder/public/PublicSiteWithAuth";
+import PublicVisualSiteRenderer from "../components/site-builder/public/PublicVisualSiteRenderer";
 
 /**
  * Standalone, isolated render of a single site using the exact same renderer as
@@ -54,7 +54,7 @@ export default function EmbedSitePreviewPage() {
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#fff" }}>
-      <PublicSiteWithAuth site={site} pathname={pathname} disableAnalytics />
+      <PublicVisualSiteRenderer site={site} pathname={pathname} disableAnalytics />
     </div>
   );
 }

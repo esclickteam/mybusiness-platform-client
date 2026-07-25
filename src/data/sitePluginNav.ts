@@ -19,7 +19,6 @@ import {
   Star,
   Timer,
   Users,
-  LogIn,
 } from "lucide-react";
 
 export type SitePanelSection =
@@ -32,8 +31,6 @@ export type SitePanelSection =
   | "leads"
   | "reviews"
   | "club"
-  | "site-auth"
-  | "site-members"
   | "heatmap"
   | "form-abandonment"
   | "journey-recording"
@@ -83,8 +80,6 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   leads: "leads",
   reviews: "reviews",
   club: "club",
-  "site-auth": "site-auth",
-  "site-members": "site-members",
   heatmap: "heatmap",
   "form-abandonment": "form-abandonment",
   "journey-recording": "journey-recording",
@@ -106,8 +101,6 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   leads: "#6366F1",
   reviews: "#F59E0B",
   club: "#8B5CF6",
-  "site-auth": "#6366F1",
-  "site-members": "#4F46E5",
   heatmap: "#EF4444",
   "form-abandonment": "#F97316",
   "journey-recording": "#EC4899",
@@ -167,16 +160,6 @@ export const SECTION_META: Record<
     label: "מועדון לקוחות",
     description: "אזור לקוחות והטבות",
     pluginKey: "club",
-  },
-  "site-auth": {
-    label: "התחברות לקוחות האתר",
-    description: "מערכת נפרדת מ-BizUply — כפתור, טפסים ועיצוב",
-    pluginKey: "site-auth",
-  },
-  "site-members": {
-    label: "משתמשי האתר",
-    description: "ניהול משתמשים, סיסמאות וקישור ל-CRM",
-    pluginKey: "site-auth",
   },
   heatmap: {
     label: "מפת חום",
@@ -255,10 +238,6 @@ export function getPluginIcon(key: string) {
     case "reviews":
       return Star;
     case "club":
-      return Users;
-    case "site-auth":
-      return LogIn;
-    case "site-members":
       return Users;
     case "heatmap":
       return Flame;
