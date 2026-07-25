@@ -557,6 +557,56 @@ import { jewelisEditorCss } from "./jewelis/editorCss";
 import { jewelisSchema } from "./jewelis/schema";
 import { jewelisDefaultData } from "./jewelis/defaultData";
 
+import LectoraPages, { lectoraPages } from "./lectora/pages";
+import { lectoraEditorCss } from "./lectora/editorCss";
+import { lectoraSchema } from "./lectora/schema";
+import { lectoraDefaultData } from "./lectora/defaultData";
+
+import MentoraPages, { mentoraPages } from "./mentora/pages";
+import { mentoraEditorCss } from "./mentora/editorCss";
+import { mentoraSchema } from "./mentora/schema";
+import { mentoraDefaultData } from "./mentora/defaultData";
+
+import PolyglotaPages, { polyglotaPages } from "./polyglota/pages";
+import { polyglotaEditorCss } from "./polyglota/editorCss";
+import { polyglotaSchema } from "./polyglota/schema";
+import { polyglotaDefaultData } from "./polyglota/defaultData";
+
+import CodehausPages, { codehausPages } from "./codehaus/pages";
+import { codehausEditorCss } from "./codehaus/editorCss";
+import { codehausSchema } from "./codehaus/schema";
+import { codehausDefaultData } from "./codehaus/defaultData";
+
+import NotelinePages, { notelinePages } from "./noteline/pages";
+import { notelineEditorCss } from "./noteline/editorCss";
+import { notelineSchema } from "./noteline/schema";
+import { notelineDefaultData } from "./noteline/defaultData";
+
+import KidwisePages, { kidwisePages } from "./kidwise/pages";
+import { kidwiseEditorCss } from "./kidwise/editorCss";
+import { kidwiseSchema } from "./kidwise/schema";
+import { kidwiseDefaultData } from "./kidwise/defaultData";
+
+import CraftoraPages, { craftoraPages } from "./craftora/pages";
+import { craftoraEditorCss } from "./craftora/editorCss";
+import { craftoraSchema } from "./craftora/schema";
+import { craftoraDefaultData } from "./craftora/defaultData";
+
+import SkillforgePages, { skillforgePages } from "./skillforge/pages";
+import { skillforgeEditorCss } from "./skillforge/editorCss";
+import { skillforgeSchema } from "./skillforge/schema";
+import { skillforgeDefaultData } from "./skillforge/defaultData";
+
+import CampuslyPages, { campuslyPages } from "./campusly/pages";
+import { campuslyEditorCss } from "./campusly/editorCss";
+import { campuslySchema } from "./campusly/schema";
+import { campuslyDefaultData } from "./campusly/defaultData";
+
+import MasterlyPages, { masterlyPages } from "./masterly/pages";
+import { masterlyEditorCss } from "./masterly/editorCss";
+import { masterlySchema } from "./masterly/schema";
+import { masterlyDefaultData } from "./masterly/defaultData";
+
 import EmberplatePages, { emberplatePages } from "./emberplate/pages";
 import { emberplateEditorCss } from "./emberplate/editorCss";
 import { emberplateSchema } from "./emberplate/schema";
@@ -1990,6 +2040,116 @@ export const studioTemplateRendererRegistry: Record<
     schema: jewelisSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: jewelisDefaultData as unknown as Record<string, any>,
     editorCss: jewelisEditorCss,
+  }),
+
+  lectora: createRenderer({
+    key: "lectora",
+    name: "Lectora",
+    Component: LectoraPages,
+    pages: lectoraPages,
+    editorMode: "visual-react",
+    schema: lectoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lectoraDefaultData as unknown as Record<string, any>,
+    editorCss: lectoraEditorCss,
+  }),
+
+  mentora: createRenderer({
+    key: "mentora",
+    name: "Mentora",
+    Component: MentoraPages,
+    pages: mentoraPages,
+    editorMode: "visual-react",
+    schema: mentoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: mentoraDefaultData as unknown as Record<string, any>,
+    editorCss: mentoraEditorCss,
+  }),
+
+  polyglota: createRenderer({
+    key: "polyglota",
+    name: "Polyglota",
+    Component: PolyglotaPages,
+    pages: polyglotaPages,
+    editorMode: "visual-react",
+    schema: polyglotaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: polyglotaDefaultData as unknown as Record<string, any>,
+    editorCss: polyglotaEditorCss,
+  }),
+
+  codehaus: createRenderer({
+    key: "codehaus",
+    name: "Codehaus",
+    Component: CodehausPages,
+    pages: codehausPages,
+    editorMode: "visual-react",
+    schema: codehausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: codehausDefaultData as unknown as Record<string, any>,
+    editorCss: codehausEditorCss,
+  }),
+
+  noteline: createRenderer({
+    key: "noteline",
+    name: "Noteline",
+    Component: NotelinePages,
+    pages: notelinePages,
+    editorMode: "visual-react",
+    schema: notelineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: notelineDefaultData as unknown as Record<string, any>,
+    editorCss: notelineEditorCss,
+  }),
+
+  kidwise: createRenderer({
+    key: "kidwise",
+    name: "Kidwise",
+    Component: KidwisePages,
+    pages: kidwisePages,
+    editorMode: "visual-react",
+    schema: kidwiseSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: kidwiseDefaultData as unknown as Record<string, any>,
+    editorCss: kidwiseEditorCss,
+  }),
+
+  craftora: createRenderer({
+    key: "craftora",
+    name: "Craftora",
+    Component: CraftoraPages,
+    pages: craftoraPages,
+    editorMode: "visual-react",
+    schema: craftoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: craftoraDefaultData as unknown as Record<string, any>,
+    editorCss: craftoraEditorCss,
+  }),
+
+  skillforge: createRenderer({
+    key: "skillforge",
+    name: "Skillforge",
+    Component: SkillforgePages,
+    pages: skillforgePages,
+    editorMode: "visual-react",
+    schema: skillforgeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: skillforgeDefaultData as unknown as Record<string, any>,
+    editorCss: skillforgeEditorCss,
+  }),
+
+  campusly: createRenderer({
+    key: "campusly",
+    name: "Campusly",
+    Component: CampuslyPages,
+    pages: campuslyPages,
+    editorMode: "visual-react",
+    schema: campuslySchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: campuslyDefaultData as unknown as Record<string, any>,
+    editorCss: campuslyEditorCss,
+  }),
+
+  masterly: createRenderer({
+    key: "masterly",
+    name: "Masterly",
+    Component: MasterlyPages,
+    pages: masterlyPages,
+    editorMode: "visual-react",
+    schema: masterlySchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: masterlyDefaultData as unknown as Record<string, any>,
+    editorCss: masterlyEditorCss,
   }),
 
   emberplate: createRenderer({
