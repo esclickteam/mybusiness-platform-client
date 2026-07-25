@@ -112,9 +112,9 @@ function sectionProps(id: string, kind: string, label: string) {
   } as Record<string, string | undefined>;
 }
 
-function initialOf(value?: string) {
-  return String(value || "מ").trim().charAt(0) || "מ";
-}
+/** Guaranteed image used when a remote asset fails — never show letter placeholders. */
+const SAFE_IMAGE_FALLBACK =
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80";
 
 const DEFAULT_PAGES: StorePage[] = [
   { id: "home", label: "בית", slug: "/" },
@@ -480,8 +480,8 @@ function StoreImage({
   src,
   alt,
   className,
-  fallbackLabel,
-  fallbackClassName,
+  fallbackLabel: _fallbackLabel,
+  fallbackClassName: _fallbackClassName,
 }: {
   src?: string;
   alt: string;
@@ -490,34 +490,25 @@ function StoreImage({
   fallbackClassName?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const resolved = String(src || "").trim();
 
   useEffect(() => {
     setFailed(false);
   }, [src]);
 
-  if (src && !failed) {
-    return (
-      <img
-        src={src}
-        alt={alt}
-        className={className}
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
   return (
-    <div
-      className={cx(
-        "grid place-items-center bg-gradient-to-br from-[var(--p)]/25 via-[var(--bg-soft)] to-[var(--accent)]/30 text-[var(--text)]",
-        className,
-        fallbackClassName,
-      )}
-    >
-      <span className="grid h-16 w-16 place-items-center rounded-full border border-[var(--line)] bg-[var(--surface)]/80 text-3xl font-black">
-        {initialOf(fallbackLabel || alt)}
-      </span>
-    </div>
+    <img
+      src={!resolved || failed ? SAFE_IMAGE_FALLBACK : resolved}
+      alt={alt}
+      className={className}
+      onError={(event) => {
+        const el = event.currentTarget;
+        if (el.dataset.fallback === "1") return;
+        el.dataset.fallback = "1";
+        setFailed(true);
+        el.src = SAFE_IMAGE_FALLBACK;
+      }}
+    />
   );
 }
 
@@ -742,12 +733,19 @@ export default function RichStoreSiteRuntime({
 
   const categoryTiles: StoreCatalogCategory[] = (
     categories.length
-      ? categories
+      ? categories.map((cat, index) => ({
+          ...cat,
+          image:
+            cat.image ||
+            fallbackCategoryImages[index % fallbackCategoryImages.length] ||
+            g("heroImage") ||
+            SAFE_IMAGE_FALLBACK,
+        }))
       : [
-          { id: "cat-one", name: g("catOne"), slug: "new", image: g("catOneImage") },
-          { id: "cat-two", name: g("catTwo"), slug: "classic", image: g("catTwoImage") },
-          { id: "cat-three", name: g("catThree"), slug: "gifts", image: g("catThreeImage") },
-          { id: "cat-four", name: g("catFour"), slug: "accessories", image: g("catFourImage") },
+          { id: "cat-one", name: g("catOne"), slug: "new", image: g("catOneImage") || SAFE_IMAGE_FALLBACK },
+          { id: "cat-two", name: g("catTwo"), slug: "classic", image: g("catTwoImage") || SAFE_IMAGE_FALLBACK },
+          { id: "cat-three", name: g("catThree"), slug: "gifts", image: g("catThreeImage") || SAFE_IMAGE_FALLBACK },
+          { id: "cat-four", name: g("catFour"), slug: "accessories", image: g("catFourImage") || SAFE_IMAGE_FALLBACK },
         ]
   ).slice(0, 6);
 

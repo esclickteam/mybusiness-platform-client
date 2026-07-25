@@ -84,16 +84,16 @@ function sectionProps(id: string, kind: string, label: string) {
   } as Record<string, string | undefined>;
 }
 
-function initialOf(value?: string) {
-  return String(value || "מ").trim().charAt(0) || "מ";
-}
+/** Guaranteed image used when a remote asset fails — never show letter placeholders. */
+const SAFE_IMAGE_FALLBACK =
+  "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=1200&q=80";
 
 function StoreImage({
   src,
   alt,
   className,
-  fallbackLabel,
-  fallbackClassName,
+  fallbackLabel: _fallbackLabel,
+  fallbackClassName: _fallbackClassName,
 }: {
   src?: string;
   alt: string;
@@ -102,34 +102,25 @@ function StoreImage({
   fallbackClassName?: string;
 }) {
   const [failed, setFailed] = useState(false);
+  const resolved = String(src || "").trim();
 
   useEffect(() => {
     setFailed(false);
   }, [src]);
 
-  if (src && !failed) {
-    return (
-      <img
-        src={src}
-        alt={alt}
-        className={className}
-        onError={() => setFailed(true)}
-      />
-    );
-  }
-
   return (
-    <div
-      className={cx(
-        "grid place-items-center bg-gradient-to-br from-[var(--p)]/25 via-[var(--bg-soft)] to-[var(--accent)]/25 text-[var(--text)]",
-        className,
-        fallbackClassName,
-      )}
-    >
-      <span className="grid h-16 w-16 place-items-center rounded-full border border-[var(--line)] bg-[var(--surface)]/70 text-3xl font-black">
-        {initialOf(fallbackLabel || alt)}
-      </span>
-    </div>
+    <img
+      src={!resolved || failed ? SAFE_IMAGE_FALLBACK : resolved}
+      alt={alt}
+      className={className}
+      onError={(event) => {
+        const el = event.currentTarget;
+        if (el.dataset.fallback === "1") return;
+        el.dataset.fallback = "1";
+        setFailed(true);
+        el.src = SAFE_IMAGE_FALLBACK;
+      }}
+    />
   );
 }
 
@@ -193,20 +184,22 @@ function ProductCard({
       >
         <button type="button" onClick={onOpen} className="relative block overflow-hidden text-start">
           <div className={cx("store-media overflow-hidden bg-[var(--bg-soft)]", productMediaClassByLayout[layout])}>
-            {product.image && !imageFailed ? (
-              <img
-                src={product.image}
-                alt={product.name}
-                className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
-                onError={() => setImageFailed(true)}
-              />
-            ) : (
-              <div className="grid h-full w-full place-items-center bg-gradient-to-br from-[var(--p)]/25 via-[var(--bg-soft)] to-[var(--accent)]/25">
-                <span className="grid h-16 w-16 place-items-center rounded-full border border-[var(--line)] bg-[var(--surface)]/80 text-3xl font-black text-[var(--text)]">
-                  {initialOf(product.name)}
-                </span>
-              </div>
-            )}
+            <img
+              src={
+                product.image && !imageFailed
+                  ? product.image
+                  : SAFE_IMAGE_FALLBACK
+              }
+              alt={product.name}
+              className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+              onError={(event) => {
+                const el = event.currentTarget;
+                if (el.dataset.fallback === "1") return;
+                el.dataset.fallback = "1";
+                setImageFailed(true);
+                el.src = SAFE_IMAGE_FALLBACK;
+              }}
+            />
           </div>
           {product.badge ? (
             <span className="absolute start-4 top-4 bg-[var(--p)] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--on-p)]">
@@ -328,14 +321,28 @@ export default function StoreSiteRuntime({
     }
   }, [products, selectedProductId]);
 
+  const fallbackCategoryImages = [
+    g("catOneImage"),
+    g("catTwoImage"),
+    g("catThreeImage"),
+    g("catFourImage"),
+  ];
+
   const categoryTiles: StoreCatalogCategory[] = (
     categories.length
-      ? categories
+      ? categories.map((cat, index) => ({
+          ...cat,
+          image:
+            cat.image ||
+            fallbackCategoryImages[index % fallbackCategoryImages.length] ||
+            g("heroImage") ||
+            SAFE_IMAGE_FALLBACK,
+        }))
       : [
-          { id: "1", name: g("catOne"), slug: "c1", image: g("catOneImage") },
-          { id: "2", name: g("catTwo"), slug: "c2", image: g("catTwoImage") },
-          { id: "3", name: g("catThree"), slug: "c3", image: g("catThreeImage") },
-          { id: "4", name: g("catFour"), slug: "c4", image: g("catFourImage") },
+          { id: "1", name: g("catOne"), slug: "c1", image: g("catOneImage") || SAFE_IMAGE_FALLBACK },
+          { id: "2", name: g("catTwo"), slug: "c2", image: g("catTwoImage") || SAFE_IMAGE_FALLBACK },
+          { id: "3", name: g("catThree"), slug: "c3", image: g("catThreeImage") || SAFE_IMAGE_FALLBACK },
+          { id: "4", name: g("catFour"), slug: "c4", image: g("catFourImage") || SAFE_IMAGE_FALLBACK },
         ]
   ).slice(0, 6);
 

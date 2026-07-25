@@ -130,24 +130,24 @@ const STORES = [
     heroSubtitle:
       "אוהלים, תרמילים, בישול שטח ושכבות — קטלוג מלא שמגיע מתוסף החנות.",
     heroImage:
-      "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=2200&q=88",
+      "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=2200&q=88",
     aboutImage:
       "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1400&q=88",
     cats: [
       ["אוהלים", "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=900&q=80"],
       ["תרמילים", "https://images.unsplash.com/photo-1622260614153-03223fb72052?auto=format&fit=crop&w=900&q=80"],
-      ["בישול שטח", "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80"],
+      ["בישול שטח", "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80"],
       ["שכבות", "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
       ["אוהל Ridge 2P", 1290, "אוהלים", "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=900&q=80", true, "חדש"],
-      ["אוהל Base 4P", 1890, "אוהלים", "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80"],
+      ["אוהל Base 4P", 1890, "אוהלים", "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80"],
       ["תרמיל Summit 45L", 649, "תרמילים", "https://images.unsplash.com/photo-1622260614153-03223fb72052?auto=format&fit=crop&w=900&q=80", true],
       ["תרמיל Daypack 22L", 289, "תרמילים", "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80"],
-      ["כירת גז Trail", 219, "בישול שטח", "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80"],
+      ["כירת גז Trail", 219, "בישול שטח", "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80"],
       ["סט סירים Titanium", 349, "בישול שטח", "https://images.unsplash.com/photo-1445307806294-bff7f67ff225?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
       ["מעיל Softshell", 459, "שכבות", "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=900&q=80", true],
-      ["כובע Trail Cap", 99, "שכבות", "https://images.unsplash.com/photo-1523381210434-443e30d60bd0?auto=format&fit=crop&w=900&q=80"],
+      ["כובע Trail Cap", 99, "שכבות", "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80"],
     ],
   },
   {
@@ -220,23 +220,23 @@ const STORES = [
     heroSubtitle:
       "כביש, שטח, עיר ואביזרי רכיבה — קטלוג חי מתוסף החנות עם סינון וקולקציות.",
     heroImage:
-      "https://images.unsplash.com/photo-1485965120187-f3fad2a2e4d2?auto=format&fit=crop&w=2200&q=88",
+      "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=2200&q=88",
     aboutImage:
       "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=1400&q=88",
     cats: [
-      ["כביש", "https://images.unsplash.com/photo-1485965120187-f3fad2a2e4d2?auto=format&fit=crop&w=900&q=80"],
-      ["שטח", "https://images.unsplash.com/photo-1576435728678-68d0fbf2e1d8?auto=format&fit=crop&w=900&q=80"],
+      ["כביש", "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=900&q=80"],
+      ["שטח", "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=900&q=80"],
       ["עיר", "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=900&q=80"],
       ["אביזרים", "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
-      ["אופני כביש Aero 12", 8990, "כביש", "https://images.unsplash.com/photo-1485965120187-f3fad2a2e4d2?auto=format&fit=crop&w=900&q=80", true, "חדש"],
+      ["אופני כביש Aero 12", 8990, "כביש", "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=900&q=80", true, "חדש"],
       ["אופני כביש Endurance", 6490, "כביש", "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80"],
-      ["MTB Trail 29", 5790, "שטח", "https://images.unsplash.com/photo-1576435728678-68d0fbf2e1d8?auto=format&fit=crop&w=900&q=80", true],
-      ["MTB Hardtail", 3990, "שטח", "https://images.unsplash.com/photo-1532298229144-0ec0c57567bb?auto=format&fit=crop&w=900&q=80"],
+      ["MTB Trail 29", 5790, "שטח", "https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=900&q=80", true],
+      ["MTB Hardtail", 3990, "שטח", "https://images.unsplash.com/photo-1517649763962-0c623066013b?auto=format&fit=crop&w=900&q=80"],
       ["אופני עיר City Flex", 2890, "עיר", "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=900&q=80"],
       ["קסדת Aero Pro", 449, "אביזרים", "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80", true],
-      ["משאבת רצפה", 189, "אביזרים", "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?auto=format&fit=crop&w=900&q=80"],
+      ["משאבת רצפה", 189, "אביזרים", "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?auto=format&fit=crop&w=900&q=80"],
       ["אור קדמי 800lm", 159, "אביזרים", "https://images.unsplash.com/photo-1571330735066-03aaa9429d89?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
     ],
   },
@@ -265,24 +265,24 @@ const STORES = [
     heroSubtitle:
       "צמחי בית, סוקולנטים ואביזרי טיפול — עם קטגוריות ומוצרים מתוסף החנות.",
     heroImage:
-      "https://images.unsplash.com/photo-1466692476866-aef1dfb1e735?auto=format&fit=crop&w=2200&q=88",
+      "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=2200&q=88",
     aboutImage:
       "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=1400&q=88",
     cats: [
-      ["צמחי בית", "https://images.unsplash.com/photo-1466692476866-aef1dfb1e735?auto=format&fit=crop&w=900&q=80"],
+      ["צמחי בית", "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80"],
       ["סוקולנטים", "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=900&q=80"],
-      ["עציצים", "https://images.unsplash.com/photo-1485955900005-5af25b1e5ebc?auto=format&fit=crop&w=900&q=80"],
+      ["עציצים", "https://images.unsplash.com/photo-1487070183336-b863922373d4?auto=format&fit=crop&w=900&q=80"],
       ["טיפול", "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
-      ["מונסטרה דליסיוזה", 149, "צמחי בית", "https://images.unsplash.com/photo-1466692476866-aef1dfb1e735?auto=format&fit=crop&w=900&q=80", true, "פופולרי"],
+      ["מונסטרה דליסיוזה", 149, "צמחי בית", "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80", true, "פופולרי"],
       ["פיקוס לירטה", 189, "צמחי בית", "https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=900&q=80"],
       ["סוקולנט מיקס", 49, "סוקולנטים", "https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?auto=format&fit=crop&w=900&q=80", true],
       ["אלוורה ביתית", 59, "סוקולנטים", "https://images.unsplash.com/photo-1509423350716-97f9360b4e09?auto=format&fit=crop&w=900&q=80"],
-      ["עציץ קרמיקה Sand", 79, "עציצים", "https://images.unsplash.com/photo-1485955900005-5af25b1e5ebc?auto=format&fit=crop&w=900&q=80"],
+      ["עציץ קרמיקה Sand", 79, "עציצים", "https://images.unsplash.com/photo-1487070183336-b863922373d4?auto=format&fit=crop&w=900&q=80"],
       ["עציץ טרה קוטה", 45, "עציצים", "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
       ["דשן נוזלי Green", 39, "טיפול", "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=900&q=80"],
-      ["מרסס עלים", 29, "טיפול", "https://images.unsplash.com/photo-1466692476866-aef1dfb1e735?auto=format&fit=crop&w=900&q=80", true],
+      ["מרסס עלים", 29, "טיפול", "https://images.unsplash.com/photo-1463320726281-696a485928c7?auto=format&fit=crop&w=900&q=80", true],
     ],
   },
   {
@@ -314,19 +314,19 @@ const STORES = [
     aboutImage:
       "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=1400&q=88",
     cats: [
-      ["משחקי קופסה", "https://images.unsplash.com/photo-1632501641765-e568d28b0019?auto=format&fit=crop&w=900&q=80"],
+      ["משחקי קופסה", "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&w=900&q=80"],
       ["דמויות", "https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=900&q=80"],
       ["יצירה", "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=80"],
       ["חוץ", "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
-      ["משחק אסטרטגיה Quest", 149, "משחקי קופסה", "https://images.unsplash.com/photo-1632501641765-e568d28b0019?auto=format&fit=crop&w=900&q=80", true, "HIT"],
+      ["משחק אסטרטגיה Quest", 149, "משחקי קופסה", "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&w=900&q=80", true, "HIT"],
       ["משחק משפחה Fun 4", 99, "משחקי קופסה", "https://images.unsplash.com/photo-1606092195730-5d7b9af1efc5?auto=format&fit=crop&w=900&q=80"],
       ["דמות Hero Bot", 79, "דמויות", "https://images.unsplash.com/photo-1558060370-d644479cb6f7?auto=format&fit=crop&w=900&q=80", true],
       ["סט דינוזאורים", 119, "דמויות", "https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?auto=format&fit=crop&w=900&q=80"],
       ["ערכת יצירה Colors", 69, "יצירה", "https://images.unsplash.com/photo-1513364776144-60967b0f800f?auto=format&fit=crop&w=900&q=80", true],
       ["פלסטלינה Pro", 39, "יצירה", "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?auto=format&fit=crop&w=900&q=80"],
-      ["כדור פעילות", 89, "חוץ", "https://images.unsplash.com/photo-1575362502814-4f7e0e4c5a8f?auto=format&fit=crop&w=900&q=80"],
+      ["כדור פעילות", 89, "חוץ", "https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=900&q=80"],
       ["ערכת פיקניק משחק", 129, "חוץ", "https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
     ],
   },
@@ -360,14 +360,14 @@ const STORES = [
       "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1400&q=88",
     cats: [
       ["סירים", "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=80"],
-      ["סכינים", "https://images.unsplash.com/photo-1593618998160-e34014e57578?auto=format&fit=crop&w=900&q=80"],
+      ["סכינים", "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=900&q=80"],
       ["אפייה", "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=900&q=80"],
       ["שירות", "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
       ["סיר נירוסטה 5L", 349, "סירים", "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=80", true, "שף"],
       ["מחבת יציקה 28", 289, "סירים", "https://images.unsplash.com/photo-1466637574441-749b8f19452f?auto=format&fit=crop&w=900&q=80"],
-      ["סכין שף 20cm", 219, "סכינים", "https://images.unsplash.com/photo-1593618998160-e34014e57578?auto=format&fit=crop&w=900&q=80", true],
+      ["סכין שף 20cm", 219, "סכינים", "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=900&q=80", true],
       ["סט סכינים 5", 459, "סכינים", "https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?auto=format&fit=crop&w=900&q=80"],
       ["תבנית אפייה Pro", 129, "אפייה", "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?auto=format&fit=crop&w=900&q=80"],
       ["מיקסר ידני", 199, "אפייה", "https://images.unsplash.com/photo-1574269909862-7e1d70bb8078?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
@@ -407,7 +407,7 @@ const STORES = [
       ["סניקרס", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80"],
       ["הודים", "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=80"],
       ["כובעים", "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=900&q=80"],
-      ["אקססוריז", "https://images.unsplash.com/photo-1523381210434-443e30d60bd0?auto=format&fit=crop&w=900&q=80"],
+      ["אקססוריז", "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
       ["Volt Runner", 549, "סניקרס", "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=900&q=80", true, "DROP"],
@@ -415,7 +415,7 @@ const STORES = [
       ["Hoodie Shadow", 289, "הודים", "https://images.unsplash.com/photo-1556821840-3a63f95609a7?auto=format&fit=crop&w=900&q=80"],
       ["Hoodie Neon Zip", 319, "הודים", "https://images.unsplash.com/photo-1578681994506-b8f463449011?auto=format&fit=crop&w=900&q=80"],
       ["כובע Dad Cap", 119, "כובעים", "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=900&q=80", true],
-      ["כובע Beanie", 89, "כובעים", "https://images.unsplash.com/photo-1576871337632-b9aef4c17fa9?auto=format&fit=crop&w=900&q=80"],
+      ["כובע Beanie", 89, "כובעים", "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=900&q=80"],
       ["תיק Crossbody", 199, "אקססוריז", "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?auto=format&fit=crop&w=900&q=80"],
       ["גרבי Crew 3-Pack", 69, "אקססוריז", "https://images.unsplash.com/photo-1586350977771-b3b0abd50c82?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
     ],
@@ -445,24 +445,24 @@ const STORES = [
     heroSubtitle:
       "נרות סויה, דיפיוזרים ומארזי מתנה — חוויית חנות מלאה עם מוצרים מתוסף החנות.",
     heroImage:
-      "https://images.unsplash.com/photo-1603006905003-be21d4048b36?auto=format&fit=crop&w=2200&q=88",
+      "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=2200&q=88",
     aboutImage:
-      "https://images.unsplash.com/photo-1572726729207-a78d6feb5414?auto=format&fit=crop&w=1400&q=88",
+      "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=1400&q=88",
     cats: [
-      ["נרות", "https://images.unsplash.com/photo-1603006905003-be21d4048b36?auto=format&fit=crop&w=900&q=80"],
-      ["דיפיוזרים", "https://images.unsplash.com/photo-1572726729207-a78d6feb5414?auto=format&fit=crop&w=900&q=80"],
+      ["נרות", "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=900&q=80"],
+      ["דיפיוזרים", "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=900&q=80"],
       ["שמנים", "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=80"],
-      ["מארזים", "https://images.unsplash.com/photo-1602606616814-001d1f6b0b2a?auto=format&fit=crop&w=900&q=80"],
+      ["מארזים", "https://images.unsplash.com/photo-1515688594390-b649af70d282?auto=format&fit=crop&w=900&q=80"],
     ],
     products: [
-      ["נר סויה Rose Mist", 129, "נרות", "https://images.unsplash.com/photo-1603006905003-be21d4048b36?auto=format&fit=crop&w=900&q=80", true, "סלון"],
-      ["נר Cedar Night", 119, "נרות", "https://images.unsplash.com/photo-1602606616814-001d1f6b0b2a?auto=format&fit=crop&w=900&q=80"],
-      ["דיפיוזר Linen", 159, "דיפיוזרים", "https://images.unsplash.com/photo-1572726729207-a78d6feb5414?auto=format&fit=crop&w=900&q=80", true],
+      ["נר סויה Rose Mist", 129, "נרות", "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=900&q=80", true, "סלון"],
+      ["נר Cedar Night", 119, "נרות", "https://images.unsplash.com/photo-1515688594390-b649af70d282?auto=format&fit=crop&w=900&q=80"],
+      ["דיפיוזר Linen", 159, "דיפיוזרים", "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=900&q=80", true],
       ["דיפיוזר Amber", 149, "דיפיוזרים", "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=80"],
       ["שמן אתרי לבנדר", 79, "שמנים", "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=900&q=80"],
       ["שמן אתרי הדרים", 69, "שמנים", "https://images.unsplash.com/photo-1596755389378-c31d21fd1273?auto=format&fit=crop&w=900&q=80", false, "מבצע"],
-      ["מארז מתנה Soft", 229, "מארזים", "https://images.unsplash.com/photo-1602606616814-001d1f6b0b2a?auto=format&fit=crop&w=900&q=80", true],
-      ["מארז זוגי Evening", 259, "מארזים", "https://images.unsplash.com/photo-1603006905003-be21d4048b36?auto=format&fit=crop&w=900&q=80"],
+      ["מארז מתנה Soft", 229, "מארזים", "https://images.unsplash.com/photo-1515688594390-b649af70d282?auto=format&fit=crop&w=900&q=80", true],
+      ["מארז זוגי Evening", 259, "מארזים", "https://images.unsplash.com/photo-1600618528240-fb9fc964b853?auto=format&fit=crop&w=900&q=80"],
     ],
   },
 ];

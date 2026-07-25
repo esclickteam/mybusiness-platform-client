@@ -22,7 +22,7 @@ export const trailhausDefaultData = {
   "heroSubtitle": "אוהלים, תרמילים, בישול שטח ושכבות — קטלוג מלא שמגיע מתוסף החנות.",
   "heroPrimaryButton": "לכל המוצרים",
   "heroSecondaryButton": "הסיפור שלנו",
-  "heroImage": "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=2200&q=88",
+  "heroImage": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=2200&q=88",
   "categoriesEyebrow": "קטגוריות",
   "categoriesTitle": "המחלקות של Trailhaus.",
   "categoriesText": "בחרו קטגוריה ועברו ישירות לסינון חי בחנות.",
@@ -34,7 +34,7 @@ export const trailhausDefaultData = {
   "catTwo": "תרמילים",
   "catTwoImage": "https://images.unsplash.com/photo-1622260614153-03223fb72052?auto=format&fit=crop&w=900&q=80",
   "catThree": "בישול שטח",
-  "catThreeImage": "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80",
+  "catThreeImage": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80",
   "catFour": "שכבות",
   "catFourImage": "https://images.unsplash.com/photo-1551632811-561732d1e306?auto=format&fit=crop&w=900&q=80",
   "productsEyebrow": "נבחרים",
@@ -49,7 +49,7 @@ export const trailhausDefaultData = {
   "lookbookEyebrow": "גלריה",
   "lookbookTitle": "תמונות שמספרות את האווירה של המותג.",
   "lookbookText": "גלריה עשירה עם סצנות מוצר ואטמוספירה.",
-  "lookOne": "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=2200&q=88",
+  "lookOne": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=2200&q=88",
   "lookTwo": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=1400&q=88",
   "lookThree": "https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?auto=format&fit=crop&w=900&q=80",
   "testimonialsEyebrow": "לקוחות",
@@ -144,7 +144,7 @@ export const trailhausDemoProducts = [
     "name": "אוהל Base 4P",
     "price": 1890,
     "category": "אוהלים",
-    "image": "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80",
+    "image": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80",
     "shortDescription": "אוהל Base 4P מתוך קטלוג Trailhaus — טיולים וקמפינג.",
     "featured": false
   },
@@ -168,7 +168,7 @@ export const trailhausDemoProducts = [
     "name": "כירת גז Trail",
     "price": 219,
     "category": "בישול שטח",
-    "image": "https://images.unsplash.com/photo-1478131143081-80fbd3c6d8f4?auto=format&fit=crop&w=900&q=80",
+    "image": "https://images.unsplash.com/photo-1501555088652-021faa106b9b?auto=format&fit=crop&w=900&q=80",
     "shortDescription": "כירת גז Trail מתוך קטלוג Trailhaus — טיולים וקמפינג.",
     "featured": false
   },
@@ -193,7 +193,7 @@ export const trailhausDemoProducts = [
     "name": "כובע Trail Cap",
     "price": 99,
     "category": "שכבות",
-    "image": "https://images.unsplash.com/photo-1523381210434-443e30d60bd0?auto=format&fit=crop&w=900&q=80",
+    "image": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",
     "shortDescription": "כובע Trail Cap מתוך קטלוג Trailhaus — טיולים וקמפינג.",
     "featured": false
   }
