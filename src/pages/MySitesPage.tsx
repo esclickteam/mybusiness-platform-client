@@ -577,9 +577,11 @@ export default function MySitesPage() {
                     className="block w-full text-start"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
-                      <MySiteCardPreview site={site} />
+                      <div className="h-full w-full transition duration-500 group-hover:scale-[1.02]">
+                        <MySiteCardPreview site={site} />
+                      </div>
 
-                      <div className="absolute inset-0 flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/0 opacity-0 transition duration-300 group-hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/35 group-hover:opacity-100">
+                      <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition duration-300 group-hover:bg-black/35 group-hover:opacity-100">
                         <span className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-slate-800 shadow-xl">
                           <Pencil className="h-4 w-4" />
                           {t("mySites.openInEditor")}
