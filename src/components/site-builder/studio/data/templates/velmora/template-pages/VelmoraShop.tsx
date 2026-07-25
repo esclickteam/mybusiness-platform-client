@@ -236,7 +236,7 @@ function ProductCard({
           onClick={() => onPageChange("product")}
           className="relative block w-full overflow-hidden bg-[#eee7da]"
         >
-          <img
+          <img data-visual-edit-id={`shop.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`shop.products.${index}.image`} data-image-field={`shop.products.${index}.image`} data-visual-image-field={`shop.products.${index}.image`}
             src={product.image}
             alt={product.name}
             className="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105"

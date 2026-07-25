@@ -1763,6 +1763,33 @@ export function applyMediaContentToNode(
     node.setAttribute("data-visual-media-type", "image");
     node.setAttribute("data-resource-type", "image");
     markMediaNode(node, "image");
+
+    /*
+      Background-style media nodes (hero layers, SafeImageBox wrappers, etc.)
+      have no <img>/<video> child to update. Keep the visible CSS background
+      in sync so the editor can replace those images reliably.
+    */
+    const usesBackgroundMedia =
+      node.getAttribute("data-visual-background-layer") === "true" ||
+      Boolean(node.getAttribute("data-visual-background-src")) ||
+      (typeof node.style?.backgroundImage === "string" &&
+        node.style.backgroundImage.includes("url("));
+
+    if (usesBackgroundMedia) {
+      const safeSrc = src.replace(/"/g, "%22");
+      node.style.setProperty(
+        "background-image",
+        `url("${safeSrc}")`,
+        "important",
+      );
+      if (!node.style.backgroundSize) {
+        node.style.setProperty("background-size", "cover");
+      }
+      if (!node.style.backgroundPosition) {
+        node.style.setProperty("background-position", "center");
+      }
+      node.setAttribute("data-visual-background-src", src);
+    }
   }
 }
 

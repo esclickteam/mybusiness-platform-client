@@ -343,7 +343,7 @@ function createElevoraEditorHtml(page: ElevoraPageId) {
         <div class="elevora-hero-media elevora-reveal elevora-delay-2">
           <span class="elevora-orbit"></span>
           <div class="elevora-media-card">
-            <img src="${escapeHtml(data.hero.image)}" alt="פגישה עסקית מקצועית" />
+            <img src="${escapeHtml(data.hero.image)}" alt="פגישה עסקית מקצועית" data-visual-edit-id="hero.image" data-visual-edit-type="image" data-visual-editable="true" data-image-field="hero.image" data-editable="image" />
           </div>
           <div class="elevora-floating-badge">
             <strong data-gjs-type="text">${escapeHtml(data.hero.badgeTitle)}</strong>
@@ -401,7 +401,7 @@ function createElevoraEditorHtml(page: ElevoraPageId) {
     <div class="elevora-shell">
       <div class="elevora-about-grid">
         <div class="elevora-about-image">
-          <img src="${escapeHtml(data.about.image)}" alt="צוות ייעוץ עסקי" />
+          <img src="${escapeHtml(data.about.image)}" alt="צוות ייעוץ עסקי" data-visual-edit-id="about.image" data-visual-edit-type="image" data-visual-editable="true" data-image-field="about.image" data-editable="image" />
         </div>
 
         <div class="elevora-about-card">

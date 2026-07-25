@@ -105,7 +105,7 @@ function MovingGallery({
         ].join(" ")}
       >
         {repeated.map((image, index) => (
-          <img
+          <img data-visual-edit-id={`contact.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`contact.gallery.${index}.image`} data-image-field={`contact.gallery.${index}.image`} data-visual-image-field={`contact.gallery.${index}.image`}
             key={`${image}-${index}`}
             src={image}
             alt="השראה מהסטודיו"
@@ -229,7 +229,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
 
           <Reveal delay={160}>
             <div className="relative">
-              <img
+              <img data-visual-edit-id="contact.image.2" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="contact.image.2" data-image-field="contact.image.2" data-visual-image-field="contact.image.2"
                 src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1500&q=90"
                 alt="סטודיו אופנה"
                 className="h-[560px] w-full object-cover shadow-[0_28px_90px_rgba(0,0,0,0.12)]"
@@ -417,7 +417,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
       <section className="bg-white px-5 py-28">
         <div className="mx-auto grid max-w-[1500px] gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal>
-            <img
+            <img data-visual-edit-id="contact.image.3" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="contact.image.3" data-image-field="contact.image.3" data-visual-image-field="contact.image.3"
               src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1500&q=90"
               alt="סטודיו"
               className="h-[620px] w-full object-cover"
@@ -531,7 +531,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
 
       {/* 7. FINAL CTA */}
       <section className="relative bg-[#30261d] px-5 py-28 text-white">
-        <img
+        <img data-visual-edit-id="contact.image.4" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="contact.image.4" data-image-field="contact.image.4" data-visual-image-field="contact.image.4"
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1800&q=90"
           alt="קולקציה"
           className="absolute inset-0 h-full w-full object-cover opacity-35"

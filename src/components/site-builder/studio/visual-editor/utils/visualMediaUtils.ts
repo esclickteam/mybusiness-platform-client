@@ -467,7 +467,29 @@ export function getNodeMediaSrc(node: HTMLElement | null) {
       ? node
       : (node.querySelector?.("img") as HTMLImageElement | null);
 
-  return String(imageNode?.getAttribute("src") || imageNode?.src || "");
+  const imageSrc = String(
+    imageNode?.getAttribute("src") || imageNode?.src || "",
+  ).trim();
+
+  if (imageSrc) return imageSrc;
+
+  const attrSrc = String(
+    node.getAttribute("data-visual-current-src") ||
+      node.getAttribute("data-visual-background-src") ||
+      node.getAttribute("data-image-src") ||
+      "",
+  ).trim();
+
+  if (attrSrc) return attrSrc;
+
+  const bg =
+    node.style?.backgroundImage ||
+    (typeof window !== "undefined"
+      ? window.getComputedStyle(node).backgroundImage
+      : "");
+
+  const match = String(bg || "").match(/url\((['"]?)(.*?)\1\)/i);
+  return String(match?.[2] || "").trim();
 }
 
 export function getNodeMediaAlt(node: HTMLElement | null) {

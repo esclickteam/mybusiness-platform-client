@@ -72,18 +72,30 @@ function MediaElement({
   field?: string;
 }) {
   const cleanSrc = String(src || "").trim();
+  const fieldId = String(field || "").trim();
+  const mediaType = isVideoUrl(cleanSrc) ? "video" : "image";
 
   const sharedProps = editable
     ? {
         "data-editable": "image",
-        "data-field": field,
-        "data-image-field": field,
+        "data-field": fieldId,
+        "data-image-field": fieldId,
+        "data-visual-image-field": fieldId,
+        "data-media-field": fieldId,
+        "data-visual-edit-id": fieldId,
+        "data-visual-edit-type": "image",
+        "data-visual-type": "image",
+        "data-visual-editable": "true",
+        "data-visual-edit-label": alt || "תמונה",
+        "data-visual-media-type": mediaType,
+        "data-resource-type": mediaType,
+        "data-visual-current-src": cleanSrc,
       }
     : {
         "data-editable": "false",
       };
 
-  if (isVideoUrl(cleanSrc)) {
+  if (mediaType === "video") {
     return (
       <video
         src={cleanSrc}
