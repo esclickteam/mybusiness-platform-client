@@ -119,6 +119,16 @@ import { booknookTemplate } from "./booknook/meta";
 import { glowlabTemplate } from "./glowlab/meta";
 import { toolhausTemplate } from "./toolhaus/meta";
 import { jewelisTemplate } from "./jewelis/meta";
+import { breworaTemplate } from "./brewora/meta";
+import { vinoraTemplate } from "./vinora/meta";
+import { trailhausTemplate } from "./trailhaus/meta";
+import { audioluxTemplate } from "./audiolux/meta";
+import { wheeloraTemplate } from "./wheelora/meta";
+import { fernoraTemplate } from "./fernora/meta";
+import { playoraTemplate } from "./playora/meta";
+import { panoraTemplate } from "./panora/meta";
+import { kickoraTemplate } from "./kickora/meta";
+import { scentoraTemplate } from "./scentora/meta";
 import { lectoraTemplate } from "./lectora/meta";
 import { mentoraTemplate } from "./mentora/meta";
 import { polyglotaTemplate } from "./polyglota/meta";
@@ -149,6 +159,20 @@ import { waxelleTemplate } from "./waxelle/meta";
 import { glowhausTemplate } from "./glowhaus/meta";
 import { petaluxeTemplate } from "./petaluxe/meta";
 import { formellaTemplate } from "./formella/meta";
+
+import { bakoraTemplate } from "./bakora/meta";
+import { tacoflareTemplate } from "./tacoflare/meta";
+import { gelatixTemplate } from "./gelatix/meta";
+import { shawarmiaTemplate } from "./shawarmia/meta";
+import { pokelineTemplate } from "./pokeline/meta";
+import { dimsumixTemplate } from "./dimsumix/meta";
+import { burgerhausTemplate } from "./burgerhaus/meta";
+import { seafoodixTemplate } from "./seafoodix/meta";
+import { plantoraTemplate } from "./plantora/meta";
+import { smokepitTemplate } from "./smokepit/meta";
+import { pastaforaTemplate } from "./pastafora/meta";
+import { dessertlabTemplate } from "./dessertlab/meta";
+import { juicepressTemplate } from "./juicepress/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -269,6 +293,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   glowlabTemplate,
   toolhausTemplate,
   jewelisTemplate,
+  breworaTemplate,
+  vinoraTemplate,
+  trailhausTemplate,
+  audioluxTemplate,
+  wheeloraTemplate,
+  fernoraTemplate,
+  playoraTemplate,
+  panoraTemplate,
+  kickoraTemplate,
+  scentoraTemplate,
   lectoraTemplate,
   mentoraTemplate,
   polyglotaTemplate,
@@ -299,6 +333,20 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   glowhausTemplate,
   petaluxeTemplate,
   formellaTemplate,
+
+  bakoraTemplate,
+  tacoflareTemplate,
+  gelatixTemplate,
+  shawarmiaTemplate,
+  pokelineTemplate,
+  dimsumixTemplate,
+  burgerhausTemplate,
+  seafoodixTemplate,
+  plantoraTemplate,
+  smokepitTemplate,
+  pastaforaTemplate,
+  dessertlabTemplate,
+  juicepressTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

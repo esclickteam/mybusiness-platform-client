@@ -557,6 +557,56 @@ import { jewelisEditorCss } from "./jewelis/editorCss";
 import { jewelisSchema } from "./jewelis/schema";
 import { jewelisDefaultData } from "./jewelis/defaultData";
 
+import BreworaPages, { breworaPages } from "./brewora/pages";
+import { breworaEditorCss } from "./brewora/editorCss";
+import { breworaSchema } from "./brewora/schema";
+import { breworaDefaultData } from "./brewora/defaultData";
+
+import VinoraPages, { vinoraPages } from "./vinora/pages";
+import { vinoraEditorCss } from "./vinora/editorCss";
+import { vinoraSchema } from "./vinora/schema";
+import { vinoraDefaultData } from "./vinora/defaultData";
+
+import TrailhausPages, { trailhausPages } from "./trailhaus/pages";
+import { trailhausEditorCss } from "./trailhaus/editorCss";
+import { trailhausSchema } from "./trailhaus/schema";
+import { trailhausDefaultData } from "./trailhaus/defaultData";
+
+import AudioluxPages, { audioluxPages } from "./audiolux/pages";
+import { audioluxEditorCss } from "./audiolux/editorCss";
+import { audioluxSchema } from "./audiolux/schema";
+import { audioluxDefaultData } from "./audiolux/defaultData";
+
+import WheeloraPages, { wheeloraPages } from "./wheelora/pages";
+import { wheeloraEditorCss } from "./wheelora/editorCss";
+import { wheeloraSchema } from "./wheelora/schema";
+import { wheeloraDefaultData } from "./wheelora/defaultData";
+
+import FernoraPages, { fernoraPages } from "./fernora/pages";
+import { fernoraEditorCss } from "./fernora/editorCss";
+import { fernoraSchema } from "./fernora/schema";
+import { fernoraDefaultData } from "./fernora/defaultData";
+
+import PlayoraPages, { playoraPages } from "./playora/pages";
+import { playoraEditorCss } from "./playora/editorCss";
+import { playoraSchema } from "./playora/schema";
+import { playoraDefaultData } from "./playora/defaultData";
+
+import PanoraPages, { panoraPages } from "./panora/pages";
+import { panoraEditorCss } from "./panora/editorCss";
+import { panoraSchema } from "./panora/schema";
+import { panoraDefaultData } from "./panora/defaultData";
+
+import KickoraPages, { kickoraPages } from "./kickora/pages";
+import { kickoraEditorCss } from "./kickora/editorCss";
+import { kickoraSchema } from "./kickora/schema";
+import { kickoraDefaultData } from "./kickora/defaultData";
+
+import ScentoraPages, { scentoraPages } from "./scentora/pages";
+import { scentoraEditorCss } from "./scentora/editorCss";
+import { scentoraSchema } from "./scentora/schema";
+import { scentoraDefaultData } from "./scentora/defaultData";
+
 import LectoraPages, { lectoraPages } from "./lectora/pages";
 import { lectoraEditorCss } from "./lectora/editorCss";
 import { lectoraSchema } from "./lectora/schema";
@@ -706,6 +756,71 @@ import FormellaPages, { formellaPages } from "./formella/pages";
 import { formellaEditorCss } from "./formella/editorCss";
 import { formellaSchema } from "./formella/schema";
 import { formellaDefaultData } from "./formella/defaultData";
+
+import BakoraPages, { bakoraPages } from "./bakora/pages";
+import { bakoraEditorCss } from "./bakora/editorCss";
+import { bakoraSchema } from "./bakora/schema";
+import { bakoraDefaultData } from "./bakora/defaultData";
+
+import TacoflarePages, { tacoflarePages } from "./tacoflare/pages";
+import { tacoflareEditorCss } from "./tacoflare/editorCss";
+import { tacoflareSchema } from "./tacoflare/schema";
+import { tacoflareDefaultData } from "./tacoflare/defaultData";
+
+import GelatixPages, { gelatixPages } from "./gelatix/pages";
+import { gelatixEditorCss } from "./gelatix/editorCss";
+import { gelatixSchema } from "./gelatix/schema";
+import { gelatixDefaultData } from "./gelatix/defaultData";
+
+import ShawarmiaPages, { shawarmiaPages } from "./shawarmia/pages";
+import { shawarmiaEditorCss } from "./shawarmia/editorCss";
+import { shawarmiaSchema } from "./shawarmia/schema";
+import { shawarmiaDefaultData } from "./shawarmia/defaultData";
+
+import PokelinePages, { pokelinePages } from "./pokeline/pages";
+import { pokelineEditorCss } from "./pokeline/editorCss";
+import { pokelineSchema } from "./pokeline/schema";
+import { pokelineDefaultData } from "./pokeline/defaultData";
+
+import DimsumixPages, { dimsumixPages } from "./dimsumix/pages";
+import { dimsumixEditorCss } from "./dimsumix/editorCss";
+import { dimsumixSchema } from "./dimsumix/schema";
+import { dimsumixDefaultData } from "./dimsumix/defaultData";
+
+import BurgerhausPages, { burgerhausPages } from "./burgerhaus/pages";
+import { burgerhausEditorCss } from "./burgerhaus/editorCss";
+import { burgerhausSchema } from "./burgerhaus/schema";
+import { burgerhausDefaultData } from "./burgerhaus/defaultData";
+
+import SeafoodixPages, { seafoodixPages } from "./seafoodix/pages";
+import { seafoodixEditorCss } from "./seafoodix/editorCss";
+import { seafoodixSchema } from "./seafoodix/schema";
+import { seafoodixDefaultData } from "./seafoodix/defaultData";
+
+import PlantoraPages, { plantoraPages } from "./plantora/pages";
+import { plantoraEditorCss } from "./plantora/editorCss";
+import { plantoraSchema } from "./plantora/schema";
+import { plantoraDefaultData } from "./plantora/defaultData";
+
+import SmokepitPages, { smokepitPages } from "./smokepit/pages";
+import { smokepitEditorCss } from "./smokepit/editorCss";
+import { smokepitSchema } from "./smokepit/schema";
+import { smokepitDefaultData } from "./smokepit/defaultData";
+
+import PastaforaPages, { pastaforaPages } from "./pastafora/pages";
+import { pastaforaEditorCss } from "./pastafora/editorCss";
+import { pastaforaSchema } from "./pastafora/schema";
+import { pastaforaDefaultData } from "./pastafora/defaultData";
+
+import DessertlabPages, { dessertlabPages } from "./dessertlab/pages";
+import { dessertlabEditorCss } from "./dessertlab/editorCss";
+import { dessertlabSchema } from "./dessertlab/schema";
+import { dessertlabDefaultData } from "./dessertlab/defaultData";
+
+import JuicepressPages, { juicepressPages } from "./juicepress/pages";
+import { juicepressEditorCss } from "./juicepress/editorCss";
+import { juicepressSchema } from "./juicepress/schema";
+import { juicepressDefaultData } from "./juicepress/defaultData";
 
 import BrandforgePages, { brandforgePages } from "./brandforge/pages";
 import { brandforgeEditorCss } from "./brandforge/editorCss";
@@ -2092,6 +2207,116 @@ export const studioTemplateRendererRegistry: Record<
     editorCss: jewelisEditorCss,
   }),
 
+  brewora: createRenderer({
+    key: "brewora",
+    name: "Brewora",
+    Component: BreworaPages,
+    pages: breworaPages,
+    editorMode: "visual-react",
+    schema: breworaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: breworaDefaultData as unknown as Record<string, any>,
+    editorCss: breworaEditorCss,
+  }),
+
+  vinora: createRenderer({
+    key: "vinora",
+    name: "Vinora",
+    Component: VinoraPages,
+    pages: vinoraPages,
+    editorMode: "visual-react",
+    schema: vinoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vinoraDefaultData as unknown as Record<string, any>,
+    editorCss: vinoraEditorCss,
+  }),
+
+  trailhaus: createRenderer({
+    key: "trailhaus",
+    name: "Trailhaus",
+    Component: TrailhausPages,
+    pages: trailhausPages,
+    editorMode: "visual-react",
+    schema: trailhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: trailhausDefaultData as unknown as Record<string, any>,
+    editorCss: trailhausEditorCss,
+  }),
+
+  audiolux: createRenderer({
+    key: "audiolux",
+    name: "Audiolux",
+    Component: AudioluxPages,
+    pages: audioluxPages,
+    editorMode: "visual-react",
+    schema: audioluxSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: audioluxDefaultData as unknown as Record<string, any>,
+    editorCss: audioluxEditorCss,
+  }),
+
+  wheelora: createRenderer({
+    key: "wheelora",
+    name: "Wheelora",
+    Component: WheeloraPages,
+    pages: wheeloraPages,
+    editorMode: "visual-react",
+    schema: wheeloraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: wheeloraDefaultData as unknown as Record<string, any>,
+    editorCss: wheeloraEditorCss,
+  }),
+
+  fernora: createRenderer({
+    key: "fernora",
+    name: "Fernora",
+    Component: FernoraPages,
+    pages: fernoraPages,
+    editorMode: "visual-react",
+    schema: fernoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: fernoraDefaultData as unknown as Record<string, any>,
+    editorCss: fernoraEditorCss,
+  }),
+
+  playora: createRenderer({
+    key: "playora",
+    name: "Playora",
+    Component: PlayoraPages,
+    pages: playoraPages,
+    editorMode: "visual-react",
+    schema: playoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: playoraDefaultData as unknown as Record<string, any>,
+    editorCss: playoraEditorCss,
+  }),
+
+  panora: createRenderer({
+    key: "panora",
+    name: "Panora",
+    Component: PanoraPages,
+    pages: panoraPages,
+    editorMode: "visual-react",
+    schema: panoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: panoraDefaultData as unknown as Record<string, any>,
+    editorCss: panoraEditorCss,
+  }),
+
+  kickora: createRenderer({
+    key: "kickora",
+    name: "Kickora",
+    Component: KickoraPages,
+    pages: kickoraPages,
+    editorMode: "visual-react",
+    schema: kickoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: kickoraDefaultData as unknown as Record<string, any>,
+    editorCss: kickoraEditorCss,
+  }),
+
+  scentora: createRenderer({
+    key: "scentora",
+    name: "Scentora",
+    Component: ScentoraPages,
+    pages: scentoraPages,
+    editorMode: "visual-react",
+    schema: scentoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: scentoraDefaultData as unknown as Record<string, any>,
+    editorCss: scentoraEditorCss,
+  }),
+
   lectora: createRenderer({
     key: "lectora",
     name: "Lectora",
@@ -2420,6 +2645,149 @@ export const studioTemplateRendererRegistry: Record<
     schema: formellaSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: formellaDefaultData as unknown as Record<string, any>,
     editorCss: formellaEditorCss,
+  }),
+
+  bakora: createRenderer({
+    key: "bakora",
+    name: "Bakora",
+    Component: BakoraPages,
+    pages: bakoraPages,
+    editorMode: "visual-react",
+    schema: bakoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: bakoraDefaultData as unknown as Record<string, any>,
+    editorCss: bakoraEditorCss,
+  }),
+
+  tacoflare: createRenderer({
+    key: "tacoflare",
+    name: "Tacoflare",
+    Component: TacoflarePages,
+    pages: tacoflarePages,
+    editorMode: "visual-react",
+    schema: tacoflareSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: tacoflareDefaultData as unknown as Record<string, any>,
+    editorCss: tacoflareEditorCss,
+  }),
+
+  gelatix: createRenderer({
+    key: "gelatix",
+    name: "Gelatix",
+    Component: GelatixPages,
+    pages: gelatixPages,
+    editorMode: "visual-react",
+    schema: gelatixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: gelatixDefaultData as unknown as Record<string, any>,
+    editorCss: gelatixEditorCss,
+  }),
+
+  shawarmia: createRenderer({
+    key: "shawarmia",
+    name: "Shawarmia",
+    Component: ShawarmiaPages,
+    pages: shawarmiaPages,
+    editorMode: "visual-react",
+    schema: shawarmiaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: shawarmiaDefaultData as unknown as Record<string, any>,
+    editorCss: shawarmiaEditorCss,
+  }),
+
+  pokeline: createRenderer({
+    key: "pokeline",
+    name: "Pokeline",
+    Component: PokelinePages,
+    pages: pokelinePages,
+    editorMode: "visual-react",
+    schema: pokelineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pokelineDefaultData as unknown as Record<string, any>,
+    editorCss: pokelineEditorCss,
+  }),
+
+  dimsumix: createRenderer({
+    key: "dimsumix",
+    name: "Dimsumix",
+    Component: DimsumixPages,
+    pages: dimsumixPages,
+    editorMode: "visual-react",
+    schema: dimsumixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dimsumixDefaultData as unknown as Record<string, any>,
+    editorCss: dimsumixEditorCss,
+  }),
+
+  burgerhaus: createRenderer({
+    key: "burgerhaus",
+    name: "Burgerhaus",
+    Component: BurgerhausPages,
+    pages: burgerhausPages,
+    editorMode: "visual-react",
+    schema: burgerhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: burgerhausDefaultData as unknown as Record<string, any>,
+    editorCss: burgerhausEditorCss,
+  }),
+
+  seafoodix: createRenderer({
+    key: "seafoodix",
+    name: "Seafoodix",
+    Component: SeafoodixPages,
+    pages: seafoodixPages,
+    editorMode: "visual-react",
+    schema: seafoodixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: seafoodixDefaultData as unknown as Record<string, any>,
+    editorCss: seafoodixEditorCss,
+  }),
+
+  plantora: createRenderer({
+    key: "plantora",
+    name: "Plantora",
+    Component: PlantoraPages,
+    pages: plantoraPages,
+    editorMode: "visual-react",
+    schema: plantoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: plantoraDefaultData as unknown as Record<string, any>,
+    editorCss: plantoraEditorCss,
+  }),
+
+  smokepit: createRenderer({
+    key: "smokepit",
+    name: "Smokepit",
+    Component: SmokepitPages,
+    pages: smokepitPages,
+    editorMode: "visual-react",
+    schema: smokepitSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: smokepitDefaultData as unknown as Record<string, any>,
+    editorCss: smokepitEditorCss,
+  }),
+
+  pastafora: createRenderer({
+    key: "pastafora",
+    name: "Pastafora",
+    Component: PastaforaPages,
+    pages: pastaforaPages,
+    editorMode: "visual-react",
+    schema: pastaforaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pastaforaDefaultData as unknown as Record<string, any>,
+    editorCss: pastaforaEditorCss,
+  }),
+
+  dessertlab: createRenderer({
+    key: "dessertlab",
+    name: "Dessertlab",
+    Component: DessertlabPages,
+    pages: dessertlabPages,
+    editorMode: "visual-react",
+    schema: dessertlabSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: dessertlabDefaultData as unknown as Record<string, any>,
+    editorCss: dessertlabEditorCss,
+  }),
+
+  juicepress: createRenderer({
+    key: "juicepress",
+    name: "Juicepress",
+    Component: JuicepressPages,
+    pages: juicepressPages,
+    editorMode: "visual-react",
+    schema: juicepressSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: juicepressDefaultData as unknown as Record<string, any>,
+    editorCss: juicepressEditorCss,
   }),
 };
 

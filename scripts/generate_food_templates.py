@@ -8,8 +8,6 @@ from pathlib import Path
 ROOT = Path("src/components/site-builder/studio/data/templates")
 CONFIG = Path("scripts/food-templates-config.json")
 
-from _food_page_sections import LAYOUT_SECTIONS, paint  # noqa: E402
-
 CITIES = [
     "רח׳ הפחם 12, תל אביב",
     "שדרות הנמל 8, חיפה",
@@ -23,155 +21,115 @@ CITIES = [
     "רח׳ הרחוב 31, באר שבע",
 ]
 
+GALLERY_IMAGES = [
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=85",
+]
+
+TEAM_IMAGES = [
+    "https://images.unsplash.com/photo-1583394293214-28ded15ee548?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?auto=format&fit=crop&w=900&q=85",
+]
+
 META_BLOCKS = {
     "flameStack": [
         ("header", "charcoal-ember-nav", "Charcoal ember sticky nav"),
         ("hero", "rising-ember-sparks", "Rising ember sparks hero"),
         ("menu", "vertical-meat-timeline", "Vertical meat timeline"),
-        ("process", "ember-process-strip", "Ember process strip"),
-        ("gallery", "ember-gallery-mosaic", "Ember gallery mosaic"),
-        ("reviews", "ember-reviews-rail", "Ember reviews rail"),
-        ("hours", "glowing-hour-chips", "Glowing hour chips + stats"),
-        ("cta", "ember-home-cta", "Home CTA teaser"),
-        ("menuPage", "full-meat-menu", "Full meat menu page"),
-        ("grillPage", "coal-process-story", "Grill process story page"),
-        ("about", "ash-timeline-portrait", "Ash timeline + pitmaster"),
-        ("contact", "ember-reserve-faq", "Ember reserve + FAQ"),
+        ("hours", "glowing-hour-chips", "Glowing hour chips"),
+        ("about", "ash-texture-reverse", "Ash texture about reverse"),
+        ("contact", "ember-pulse-form", "Ember pulse contact"),
         ("footer", "ember-line", "Ember line footer"),
     ],
     "steamBowl": [
         ("header", "floating-pill-nav", "Floating pill nav"),
         ("hero", "centered-bowl-steam", "Centered bowl steam hero"),
         ("dishes", "radial-circular-dishes", "Radial circular dishes"),
-        ("process", "steam-process-steps", "Steam process steps"),
-        ("gallery", "steam-round-gallery", "Steam round gallery"),
-        ("reviews", "steam-reviews", "Steam reviews"),
-        ("stats", "steam-stats-hours", "Steam stats + hours"),
-        ("cta", "steam-home-cta", "Home CTA teaser"),
-        ("bowlsPage", "full-bowl-menu", "Full bowls menu page"),
-        ("brothPage", "broth-lab-story", "Broth lab story page"),
-        ("about", "steam-timeline-chef", "Steam timeline + chef"),
-        ("contact", "circular-steam-reserve", "Circular reserve + FAQ"),
+        ("process", "chopstick-steps", "Chopstick process steps"),
+        ("about", "stacked-steam-cards", "Stacked steam about cards"),
+        ("contact", "circular-steam-form", "Circular contact form"),
         ("footer", "noodle-wave-svg", "Noodle wave footer"),
     ],
     "doughStretch": [
         ("header", "stretch-underline-logo", "Stretch underline logo nav"),
         ("hero", "diagonal-rotating-pizza", "Diagonal rotating pizza hero"),
         ("menu", "triangular-masonry", "Triangular masonry menu"),
-        ("process", "crust-process-steps", "Crust process steps"),
-        ("gallery", "crust-gallery", "Crust gallery"),
-        ("reviews", "crust-reviews", "Crust reviews"),
-        ("stats", "oven-stats-hours", "Oven stats + hours"),
-        ("cta", "crust-home-cta", "Home CTA teaser"),
-        ("pizzasPage", "full-pizza-menu", "Full pizza menu page"),
-        ("ovenPage", "oven-story", "Oven story page"),
-        ("about", "flour-timeline-chef", "Flour timeline + chef"),
-        ("contact", "ticket-reserve-faq", "Ticket reserve + FAQ"),
+        ("oven", "heat-shimmer-strip", "Oven heat shimmer strip"),
+        ("about", "flour-dust-story", "Flour dust about"),
+        ("contact", "ticket-order-form", "Ticket-style contact"),
         ("footer", "crust-edge", "Crust edge footer"),
     ],
     "mezzeMosaic": [
         ("header", "olive-branch-nav", "Olive branch underline nav"),
         ("hero", "four-tile-olive-orbs", "4-tile mosaic olive orbs hero"),
         ("platter", "horizontal-platter-scroll", "Horizontal platter scroll"),
-        ("process", "mezze-process", "Mezze process"),
-        ("gallery", "mezze-gallery", "Mezze gallery"),
-        ("reviews", "mezze-reviews", "Mezze reviews"),
-        ("stats", "mezze-stats", "Mezze stats + hours"),
-        ("cta", "mezze-home-cta", "Home CTA teaser"),
-        ("mezzePage", "full-mezze-menu", "Full mezze menu page"),
-        ("tablePage", "shared-table-story", "Shared table story page"),
-        ("about", "botanical-timeline", "Botanical timeline + chef"),
-        ("contact", "garden-reserve-faq", "Garden reserve + FAQ"),
+        ("quote", "parchment-quote-band", "Parchment quote band"),
+        ("about", "botanical-garden", "Botanical about"),
+        ("contact", "garden-table-form", "Garden table contact"),
         ("footer", "mezze-shared", "Mezze footer"),
     ],
     "conveyorRail": [
         ("header", "minimal-thin-bar", "Minimal thin bar nav"),
         ("hero", "conveyor-belt-scroll", "Conveyor belt hero"),
         ("nigiri", "nigiri-snap-rail", "Nigiri snap rail"),
-        ("process", "zen-process", "Zen process"),
-        ("gallery", "zen-gallery", "Zen gallery"),
-        ("reviews", "zen-reviews", "Zen reviews"),
         ("stats", "wasabi-pulse-stats", "Wasabi pulse stats"),
-        ("cta", "zen-home-cta", "Home CTA teaser"),
-        ("omakasePage", "omakase-full-menu", "Omakase full menu page"),
-        ("nigiriPage", "nigiri-story", "Nigiri story page"),
-        ("about", "zen-timeline-portrait", "Zen timeline + portrait"),
-        ("contact", "lacquer-reserve-faq", "Lacquer reserve + FAQ"),
+        ("about", "zen-single-portrait", "Zen single-portrait about"),
+        ("contact", "lacquer-gold-form", "Lacquer black gold contact"),
         ("footer", "thin-gold-line", "Thin gold footer"),
     ],
     "sunnyBrunch": [
         ("header", "airy-sunny-circle", "Airy sunny circle logo nav"),
         ("hero", "rotating-sun-rays", "Soft cream sun rays hero"),
-        ("gallery", "polaroid-scatter", "Polaroid featured brunch"),
-        ("process", "sunny-process", "Sunny process"),
-        ("photos", "sunny-gallery", "Sunny gallery"),
-        ("reviews", "sunny-reviews", "Sunny reviews"),
-        ("hours", "weekend-stats-hours", "Weekend stats + hours"),
-        ("cta", "sunny-home-cta", "Home CTA teaser"),
-        ("brunchPage", "full-brunch-menu", "Full brunch menu page"),
-        ("coffeePage", "coffee-story", "Coffee story page"),
-        ("about", "note-timeline-chef", "Note timeline + chef"),
-        ("contact", "postcard-reserve-faq", "Postcard reserve + FAQ"),
+        ("gallery", "polaroid-scatter", "Polaroid scattered cards"),
+        ("hours", "weekend-calendar-grid", "Weekend calendar hours"),
+        ("about", "handwritten-note", "Handwritten note about"),
+        ("contact", "postcard-form", "Postcard contact"),
         ("footer", "dotted-napkin", "Dotted napkin footer"),
     ],
     "nightTapas": [
         ("header", "neon-glow-logo", "Neon glow logo nav"),
         ("hero", "cascade-small-plates", "Cascade rising plates hero"),
         ("menu", "bento-grid-tapas", "Bento grid menu"),
-        ("process", "neon-process", "Neon process"),
-        ("gallery", "neon-gallery", "Neon gallery"),
-        ("reviews", "neon-reviews", "Neon reviews"),
-        ("stats", "neon-stats", "Neon stats + hours"),
-        ("cta", "neon-home-cta", "Home CTA teaser"),
-        ("tapasPage", "full-tapas-menu", "Full tapas menu page"),
-        ("barPage", "bar-story", "Bar story page"),
-        ("about", "chalk-timeline", "Chalk timeline + chef"),
-        ("contact", "bar-tab-reserve-faq", "Bar-tab reserve + FAQ"),
+        ("marquee", "night-market-marquee", "Night market marquee"),
+        ("wine", "wine-pour-bottles", "Wine pour bottles"),
+        ("about", "chalkboard-story", "Chalkboard about"),
+        ("contact", "bar-tab-form", "Bar-tab contact"),
         ("footer", "neon-flicker", "Neon flicker footer"),
     ],
     "spiceWheel": [
         ("header", "ornate-bordered-nav", "Ornate bordered nav"),
         ("hero", "spice-particle-fall", "Spice particle fall hero"),
         ("menu", "conic-spice-wheel", "Conic-gradient spice wheel"),
-        ("process", "spice-process", "Spice process"),
-        ("gallery", "spice-gallery", "Spice gallery"),
-        ("reviews", "spice-reviews", "Spice reviews"),
-        ("stats", "spice-stats", "Spice stats + hours"),
-        ("cta", "spice-home-cta", "Home CTA teaser"),
-        ("thaliPage", "full-thali-menu", "Full thali menu page"),
-        ("spicesPage", "spice-room-story", "Spice room story page"),
-        ("about", "terra-timeline", "Terracotta timeline + chef"),
-        ("contact", "thali-reserve-faq", "Thali reserve + FAQ"),
+        ("recipe", "spiral-recipe-steps", "Spiral recipe steps"),
+        ("about", "terracotta-turmeric", "Terracotta turmeric about"),
+        ("contact", "thali-circular-form", "Thali circular contact"),
         ("footer", "spice-dots", "Spice dots footer"),
     ],
     "cellarDepth": [
         ("header", "centered-elegant-serif", "Centered elegant serif nav"),
         ("hero", "parallax-cellar-layers", "Parallax cellar depth hero"),
         ("tasting", "vertical-notes-timeline", "Vertical tasting notes"),
-        ("process", "cellar-process", "Cellar process"),
-        ("gallery", "cellar-gallery", "Cellar gallery"),
-        ("reviews", "cellar-reviews", "Cellar reviews"),
-        ("stats", "cellar-stats", "Cellar stats + hours"),
-        ("cta", "cellar-home-cta", "Home CTA teaser"),
-        ("winesPage", "full-wine-list", "Full wine list page"),
-        ("tastingPage", "tasting-story", "Tasting story page"),
-        ("about", "letterpress-timeline", "Letterpress timeline + chef"),
-        ("contact", "elegant-reserve-faq", "Elegant reserve + FAQ"),
+        ("corks", "floating-cork-badges", "Floating cork badges"),
+        ("about", "letterpress-story", "Letterpress about"),
+        ("contact", "elegant-reservation", "Elegant reservation contact"),
         ("footer", "vintage-stamp", "Vintage stamp footer"),
     ],
     "neonStreet": [
         ("header", "sticker-badge-nav", "Sticker badge nav"),
         ("hero", "truck-slide-neon-title", "Food truck + neon title hero"),
         ("stack", "night-market-card-stack", "Night market vertical stack"),
-        ("process", "street-process", "Street process"),
-        ("gallery", "street-gallery", "Street gallery"),
-        ("reviews", "street-reviews", "Street reviews"),
-        ("stats", "street-stats-pins", "Street stats + hours"),
-        ("cta", "street-home-cta", "Home CTA teaser"),
-        ("trucksPage", "full-truck-menu", "Full truck menu page"),
-        ("spotsPage", "city-spots-story", "City spots story page"),
-        ("about", "comic-timeline", "Comic timeline + chef"),
-        ("contact", "sms-reserve-faq", "SMS reserve + FAQ"),
+        ("map", "bouncing-map-pins", "Bouncing map pins"),
+        ("about", "comic-panel-story", "Comic panel about"),
+        ("contact", "sms-chat-form", "SMS chat contact"),
         ("footer", "ticket-tear", "Ticket tear footer"),
     ],
 }
@@ -1365,6 +1323,279 @@ def about_jsx(t):
     </section>'''
 
 
+def expanded_sections_jsx(t):
+    p = _p(t)
+    layout = t["layout"]
+    card_shape = {
+        "flameStack": "",
+        "steamBowl": "rounded-[2rem]",
+        "doughStretch": "skew-y-1",
+        "mezzeMosaic": "rounded-tl-[3rem]",
+        "conveyorRail": "rounded-none",
+        "sunnyBrunch": "rounded-3xl",
+        "nightTapas": "rounded-xl",
+        "spiceWheel": "rounded-[2rem]",
+        "cellarDepth": "rounded-none",
+        "neonStreet": "rotate-[-1deg]",
+    }[layout]
+    gallery_grid = {
+        "flameStack": "md:grid-cols-4",
+        "steamBowl": "md:grid-cols-2",
+        "doughStretch": "md:grid-cols-4",
+        "mezzeMosaic": "md:grid-cols-4",
+        "conveyorRail": "md:grid-cols-4",
+        "sunnyBrunch": "md:grid-cols-4",
+        "nightTapas": "md:grid-cols-2",
+        "spiceWheel": "md:grid-cols-4",
+        "cellarDepth": "md:grid-cols-4",
+        "neonStreet": "md:grid-cols-2",
+    }[layout]
+    return f'''
+function SectionKicker({{ label }}: {{ label: string }}) {{
+  return <p className="text-xs font-bold tracking-[0.28em]" style={{{{ color: "{p['primary']}" }}}}>{{label}}</p>;
+}}
+
+function PageHero({{ data, title, pageId }}: {{ data: Record<string, any>; title: string; pageId: string }}) {{
+  const image = pageId === "about" ? v(data, "aboutImage") : pageId === "gallery" ? v(data, "gallery1Image") : pageId === "journal" ? v(data, "gallery2Image") : v(data, "heroImage");
+  return (
+    <section className="relative isolate overflow-hidden border-b px-5 py-20 lg:px-8 lg:py-24" style={{{{ borderColor: "{p['line']}" }}}}>
+      <img src={{image}} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" style={{{{ background: "linear-gradient(135deg, {p['bg']}f5, {p['surface']}cc)" }}}} />
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <div>
+          <SectionKicker label={{v(data, "brandName")}} />
+          <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{{title}}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "pageHeroText")}}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {{[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
+            <div key={{i}} className="tpl-float aspect-square overflow-hidden border" style={{{{ borderColor: "{p['line']}", animationDelay: `${{i * 0.25}}s` }}}}>
+              <img src={{src}} alt="" className="h-full w-full object-cover" />
+            </div>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function WhyUs({{ data }}: {{ data: Record<string, any> }}) {{
+  const reasons = [1, 2, 3].map((i) => ({{ title: v(data, `why${{i}}Title`), text: v(data, `why${{i}}Text`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "whyKicker")}} />
+        <h2 className="tpl-display mt-4 max-w-3xl text-4xl font-bold md:text-5xl">{{v(data, "whyTitle")}}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {{reasons.map((reason, i) => (
+            <Reveal key={{reason.title}} delayMs={{i * 90}} variant="up">
+              <article className="tpl-sweep h-full border p-6 {card_shape}" style={{{{ borderColor: "{p['line']}", background: i % 2 ? "{p['bg']}" : "{p['dark']}" }}}}>
+                <span className="tpl-display text-5xl font-bold" style={{{{ color: "{p['primary']}" }}}}>0{{i + 1}}</span>
+                <h3 className="mt-5 text-xl font-bold">{{reason.title}}</h3>
+                <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{reason.text}}</p>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function MenuShowcase({{ data }}: {{ data: Record<string, any> }}) {{
+  const dishes = [1, 2, 3].map((i) => ({{ title: v(data, `item${{i}}Title`), meta: v(data, `item${{i}}Meta`), text: v(data, `item${{i}}Text`), img: v(data, `item${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <SectionKicker label={{v(data, "menuKicker")}} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "menuShowcaseTitle")}}</h2>
+          </div>
+          <p className="max-w-md text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "menuShowcaseText")}}</p>
+        </div>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {{dishes.map((dish, i) => (
+            <Reveal key={{dish.title}} delayMs={{i * 100}} variant="scale">
+              <article className="group overflow-hidden border {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <img src={{dish.img}} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
+                <div className="p-5">
+                  <p className="text-xs font-bold tracking-[0.18em]" style={{{{ color: "{p['primary']}" }}}}>{{dish.meta}}</p>
+                  <h3 className="tpl-display mt-2 text-2xl font-bold">{{dish.title}}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{dish.text}}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function GallerySection({{ data }}: {{ data: Record<string, any> }}) {{
+  const shots = [1, 2, 3, 4].map((i) => ({{ src: v(data, `gallery${{i}}Image`), label: v(data, `gallery${{i}}Title`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "galleryKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "galleryTitle")}}</h2>
+        <div className="mt-10 grid gap-3 {gallery_grid}">
+          {{shots.map((shot, i) => (
+            <Reveal key={{shot.label}} delayMs={{i * 80}} variant={{i % 2 ? "up" : "scale"}}>
+              <figure className={{`relative overflow-hidden border ${{i === 0 ? "md:row-span-2" : ""}} {card_shape}`}} style={{{{ borderColor: "{p['line']}" }}}}>
+                <img src={{shot.src}} alt="" className={{i === 0 ? "aspect-[4/5] h-full w-full object-cover" : "aspect-square w-full object-cover"}} />
+                <figcaption className="absolute inset-x-3 bottom-3 px-3 py-2 text-sm font-bold" style={{{{ background: "{p['bg']}dd", color: "{p['text']}" }}}}>{{shot.label}}</figcaption>
+              </figure>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function TeamSection({{ data }}: {{ data: Record<string, any> }}) {{
+  const people = [1, 2, 3].map((i) => ({{ name: v(data, `team${{i}}Name`), role: v(data, `team${{i}}Role`), img: v(data, `team${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <SectionKicker label={{v(data, "teamKicker")}} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "teamTitle")}}</h2>
+            <p className="mt-5 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "teamText")}}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {{people.map((person, i) => (
+              <Reveal key={{person.name}} delayMs={{i * 90}} variant="up">
+                <article className="border p-3 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                  <img src={{person.img}} alt="" className="aspect-[4/5] w-full object-cover" />
+                  <h3 className="mt-4 text-lg font-bold">{{person.name}}</h3>
+                  <p className="text-sm" style={{{{ color: "{p['primary']}" }}}}>{{person.role}}</p>
+                </article>
+              </Reveal>
+            ))}}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function KitchenMethod({{ data }}: {{ data: Record<string, any> }}) {{
+  const steps = [1, 2, 3, 4].map((i) => ({{ title: v(data, `process${{i}}Title`), text: v(data, `process${{i}}Text`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['dark']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "processKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "processTitle")}}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-4">
+          {{steps.map((step, i) => (
+            <Reveal key={{step.title}} delayMs={{i * 80}} variant="right">
+              <article className="relative min-h-48 border p-5 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <span className="tpl-display text-5xl font-bold opacity-30" style={{{{ color: "{p['primary']}" }}}}>{{i + 1}}</span>
+                <h3 className="mt-6 text-lg font-bold">{{step.title}}</h3>
+                <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{step.text}}</p>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function Testimonials({{ data }}: {{ data: Record<string, any> }}) {{
+  const reviews = [1, 2, 3].map((i) => ({{ quote: v(data, `review${{i}}Quote`), name: v(data, `review${{i}}Name`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "reviewsKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "reviewsTitle")}}</h2>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {{reviews.map((review, i) => (
+            <Reveal key={{review.name}} delayMs={{i * 90}} variant="fade">
+              <blockquote className="h-full border p-6 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <p className="text-lg leading-8">״{{review.quote}}״</p>
+                <footer className="mt-5 text-sm font-bold" style={{{{ color: "{p['primary']}" }}}}>{{review.name}}</footer>
+              </blockquote>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function VisitBlock({{ data }}: {{ data: Record<string, any> }}) {{
+  const hours = [1, 2, 3].map((i) => ({{ day: v(data, `hours${{i}}Day`), time: v(data, `hours${{i}}Time`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <div>
+          <SectionKicker label={{v(data, "visitKicker")}} />
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "visitTitle")}}</h2>
+          <p className="mt-5 text-lg leading-8" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "visitText")}}</p>
+          <p className="mt-6 text-sm font-bold">{{v(data, "address")}}</p>
+        </div>
+        <div className="grid gap-3">
+          {{hours.map((hour, i) => (
+            <Reveal key={{hour.day}} delayMs={{i * 80}} variant="left">
+              <div className="flex items-center justify-between border px-5 py-4 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['bg']}" }}}}>
+                <span className="font-bold">{{hour.day}}</span>
+                <span style={{{{ color: "{p['primary']}" }}}}>{{hour.time}}</span>
+              </div>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function Insights({{ data }}: {{ data: Record<string, any> }}) {{
+  const posts = [1, 2, 3].map((i) => ({{ title: v(data, `insight${{i}}Title`), text: v(data, `insight${{i}}Text`), image: v(data, `insight${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "insightsKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "insightsTitle")}}</h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {{posts.map((post, i) => (
+            <Reveal key={{post.title}} delayMs={{i * 90}} variant="up">
+              <article className="overflow-hidden border {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <img src={{post.image}} alt="" className="aspect-[16/10] w-full object-cover" />
+                <div className="p-5">
+                  <h3 className="text-lg font-bold">{{post.title}}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{post.text}}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function CTABand({{ data, onCta }}: {{ data: Record<string, any>; onCta: () => void }}) {{
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{{{ borderColor: "{p['line']}", background: "linear-gradient(135deg, {p['primary']}33, {p['surface']})" }}}}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <SectionKicker label={{v(data, "ctaBandKicker")}} />
+          <h2 className="tpl-display mt-3 text-3xl font-bold md:text-5xl">{{v(data, "ctaBandTitle")}}</h2>
+          <p className="mt-3 max-w-2xl leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "ctaBandText")}}</p>
+        </div>
+        <button type="button" onClick={{onCta}} className="tpl-sweep px-7 py-4 text-sm font-bold" style={{{{ background: "{p['primary']}", color: "{p['primaryText']}" }}}}>{{v(data, "cta")}}</button>
+      </div>
+    </section>
+  );
+}}
+'''
+
+
 def contact_jsx(t):
     p = _p(t)
     layout = t["layout"]
@@ -1745,137 +1976,144 @@ def thumbnail_body(t):
     return bodies[layout]
 
 
-def _esc(s: str) -> str:
-    return str(s).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
-
-
 def gen_default_data(t, index):
+    def q(value):
+        return json.dumps(value, ensure_ascii=False)
+
     nav = "\n".join(
-        f'  nav{pid[0].upper() + pid[1:]}: "{_esc(label)}",'
+        f'  nav{pid[0].upper() + pid[1:]}: "{label}",'
         for pid, label, _ in t["pages"]
+    )
+    items = "\n".join(
+        f'  item{i}Title: "{it[0]}",\n  item{i}Meta: "{it[1]}",\n  item{i}Text: "{it[2]}",\n  item{i}Image: "{t["images"][chr(96 + i)]}",'
+        for i, it in enumerate(t["copy"]["items"], 1)
     )
     c = t["copy"]
     imgs = t["images"]
     address = CITIES[index % len(CITIES)]
-    items_lines = []
-    for i, it in enumerate(c["items"], 1):
-        key = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e", 6: "f"}[i]
-        items_lines.append(
-            f'  item{i}Title: "{_esc(it[0])}",\n'
-            f'  item{i}Meta: "{_esc(it[1])}",\n'
-            f'  item{i}Text: "{_esc(it[2])}",\n'
-            f'  item{i}Image: "{imgs[key]}",'
-        )
-    items = "\n".join(items_lines)
-    rev_lines = []
-    for i, (text, name, role) in enumerate(c["reviews"], 1):
-        rev_lines.append(
-            f'  review{i}Text: "{_esc(text)}",\n'
-            f'  review{i}Name: "{_esc(name)}",\n'
-            f'  review{i}Role: "{_esc(role)}",'
-        )
-    faq_lines = []
-    for i, (q, a) in enumerate(c["faq"], 1):
-        faq_lines.append(f'  faq{i}Q: "{_esc(q)}",\n  faq{i}A: "{_esc(a)}",')
-    proc_lines = []
-    for i, (title, text) in enumerate(c["processSteps"], 1):
-        proc_lines.append(f'  process{i}Title: "{_esc(title)}",\n  process{i}Text: "{_esc(text)}",')
-    cat_lines = []
-    for i, (title, text) in enumerate(c["categories"], 1):
-        cat_lines.append(f'  cat{i}Title: "{_esc(title)}",\n  cat{i}Text: "{_esc(text)}",')
-    pair_lines = []
-    for i, (title, text) in enumerate(c["pairings"], 1):
-        pair_lines.append(f'  pair{i}Title: "{_esc(title)}",\n  pair{i}Text: "{_esc(text)}",')
-    tech_lines = []
-    for i, (title, text) in enumerate(c["techSteps"], 1):
-        tech_lines.append(f'  tech{i}Title: "{_esc(title)}",\n  tech{i}Text: "{_esc(text)}",')
-    mat_lines = []
-    for i, (title, text) in enumerate(c["materials"], 1):
-        mat_lines.append(f'  mat{i}Title: "{_esc(title)}",\n  mat{i}Text: "{_esc(text)}",')
-    tl_lines = []
-    for i, (year, text) in enumerate(c["timeline"], 1):
-        tl_lines.append(f'  timeline{i}Year: "{_esc(year)}",\n  timeline{i}Text: "{_esc(text)}",')
-    val_lines = []
-    for i, (title, text) in enumerate(c["values"], 1):
-        val_lines.append(f'  value{i}Title: "{_esc(title)}",\n  value{i}Text: "{_esc(text)}",')
-
+    brand = t["brand"]
+    niche = t["niche"]
+    main_niche = niche.split(" · ")[0]
+    gallery = [
+        imgs["hero"],
+        imgs["a"],
+        imgs["b"],
+        GALLERY_IMAGES[(index * 2) % len(GALLERY_IMAGES)],
+    ]
+    team = [
+        TEAM_IMAGES[(index + 0) % len(TEAM_IMAGES)],
+        TEAM_IMAGES[(index + 1) % len(TEAM_IMAGES)],
+        TEAM_IMAGES[(index + 2) % len(TEAM_IMAGES)],
+    ]
+    insight_images = [
+        imgs["a"],
+        imgs["b"],
+        GALLERY_IMAGES[(index * 2 + 1) % len(GALLERY_IMAGES)],
+    ]
+    rich_about = (
+        f'{c["aboutText"]} מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, '
+        "בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון."
+    )
+    extra = "\n".join([
+        f'  pageHeroText: {q(f"{brand} מציגה חוויה מלאה: תפריט, סיפור המטבח, צוות, גלריה וכל מה שצריך כדי לתכנן ביקור בלתי נשכח.")},',
+        '  whyKicker: "למה אצלנו",',
+        f'  whyTitle: {q(f"שלוש סיבות ש-{brand} מרגישה אחרת")},',
+        f'  why1Title: {q(f"חומרי גלם שמתאימים ל{main_niche}")},',
+        '  why1Text: "בחירה יומית של ספקים, ירקות ותיבול כדי שכל צלחת תרגיש מדויקת ועונתית.",',
+        '  why2Title: "קצב מטבח פתוח",',
+        '  why2Text: "הכנות מוקדמות, אש חיה וצוות שמוציא מנות בקצב נינוח בלי לאבד חדות.",',
+        '  why3Title: "אירוח עם קשב",',
+        '  why3Text: "המלצות אישיות, התאמות לשולחן ושירות שמרגיש כמו שיחה טובה.",',
+        '  menuKicker: "מנות חתימה",',
+        f'  menuShowcaseTitle: {q(f"הטעמים שמובילים את {brand}")},',
+        '  menuShowcaseText: "שלוש מנות שמייצגות את המטבח שלנו: חומר גלם ברור, טכניקה מדויקת וסיומת שמזמינה עוד ביס.",',
+        '  galleryKicker: "גלריה",',
+        '  galleryTitle: "רגעים מהמטבח ומהשולחן",',
+        f'  gallery1Title: {q(f"פתיחת ערב ב-{brand}")},',
+        '  gallery2Title: "צלחת חתימה מקרוב",',
+        '  gallery3Title: "חומרי גלם לפני השירות",',
+        '  gallery4Title: "שולחן שמוכן לאורחים",',
+        f'  gallery1Image: {q(gallery[0])},',
+        f'  gallery2Image: {q(gallery[1])},',
+        f'  gallery3Image: {q(gallery[2])},',
+        f'  gallery4Image: {q(gallery[3])},',
+        '  teamKicker: "הצוות",',
+        f'  teamTitle: {q(f"האנשים מאחורי {brand}")},',
+        '  teamText: "מטבח חזק מתחיל בצוות שמכיר את האש, את הסכין ואת הקצב של האורחים.",',
+        '  team1Name: "נועה ארז",',
+        '  team1Role: "שפית ראשית",',
+        f'  team1Image: {q(team[0])},',
+        '  team2Name: "דניאל כהן",',
+        '  team2Role: "סו-שף ותפעול מטבח",',
+        f'  team2Image: {q(team[1])},',
+        '  team3Name: "מיקה לוי",',
+        '  team3Role: "מנהלת חוויית אורח",',
+        f'  team3Image: {q(team[2])},',
+        '  processKicker: "שיטת המטבח",',
+        '  processTitle: "מהכנה מוקדמת ועד הצלחת",',
+        '  process1Title: "בחירה בבוקר",',
+        '  process1Text: "בודקים ספקים, ירקות, חלבונים ותבלינים לפי עונה וזמינות.",',
+        '  process2Title: "הכנות מדויקות",',
+        '  process2Text: "צירים, רטבים, בצקים או מרינדות מקבלים את הזמן שהם צריכים.",',
+        '  process3Title: "שירות בקצב",',
+        '  process3Text: "כל הזמנה נבנית מול המטבח הפתוח כדי לשמור על חום ומרקם.",',
+        '  process4Title: "סיום ליד השולחן",',
+        '  process4Text: "נגיעה אחרונה של עשבים, רוטב או אש רגע לפני ההגשה.",',
+        '  reviewsKicker: "אורחים מספרים",',
+        '  reviewsTitle: "מה אומרים אחרי הביס האחרון",',
+        '  review1Quote: "הרגשנו שמישהו חשב על כל פרט, מהתיבול ועד הקצב של הארוחה.",',
+        '  review1Name: "יעל ומור",',
+        '  review2Quote: "מקום שחוזרים אליו בשביל מנה אהובה ומגלים בכל פעם משהו חדש.",',
+        '  review2Name: "אורי ש.",',
+        '  review3Quote: "שירות חם, מוזיקה טובה ומטבח שעובד עם ביטחון.",',
+        '  review3Name: "רוני א.",',
+        '  visitKicker: "ביקור",',
+        f'  visitTitle: {q(f"מתי להגיע ל-{brand}")},',
+        '  visitText: "אפשר לקפוץ לארוחה ספונטנית או לשמור מקום מראש לערב ארוך סביב השולחן.",',
+        '  hours1Day: "ראשון–חמישי",',
+        '  hours1Time: "12:00–23:00",',
+        '  hours2Day: "שישי",',
+        '  hours2Time: "11:00–15:30",',
+        '  hours3Day: "שבת",',
+        '  hours3Time: "18:00–23:30",',
+        '  insightsKicker: "יומן מטבח",',
+        f'  insightsTitle: {q(f"חדשות וטיפים מ-{brand}")},',
+        '  insight1Title: "איך בוחרים את מנת הערב",',
+        '  insight1Text: "הצצה קצרה לשיקולים של הצוות לפני שמנה נכנסת לתפריט.",',
+        f'  insight1Image: {q(insight_images[0])},',
+        '  insight2Title: "חומר הגלם שעושה את ההבדל",',
+        '  insight2Text: "סיפור קטן על ספק, עונה או טכניקה שמחזיקים מנה שלמה.",',
+        f'  insight2Image: {q(insight_images[1])},',
+        '  insight3Title: "שולחן מומלץ לחברים",',
+        '  insight3Text: "כך אנחנו מרכיבים ארוחה משותפת שמרגישה מגוונת ולא כבדה.",',
+        f'  insight3Image: {q(insight_images[2])},',
+        '  ctaBandKicker: "רעבים?",',
+        f'  ctaBandTitle: {q(f"שמרו מקום ב-{brand}")},',
+        '  ctaBandText: "ספרו לנו מתי אתם מגיעים, כמה סועדים ומה חשוב לכם — ואנחנו נכין את השולחן.",',
+    ])
     return f'''export const {t["id"]}DefaultData = {{
   templateId: "{t["id"]}",
-  name: "{_esc(t["name"])}",
-  brandName: "{_esc(t["brand"])}",
-  logoText: "{_esc(t["logo"])}",
+  name: "{t["name"]}",
+  brandName: "{t["brand"]}",
+  logoText: "{t["logo"]}",
 {nav}
-  heroEyebrow: "{_esc(t["niche"])}",
-  heroTitle: "{_esc(c["title"])}",
-  heroSubtitle: "{_esc(c["subtitle"])}",
-  heroPrimary: "{_esc(c["primary"])}",
-  heroSecondary: "{_esc(c["secondary"])}",
+  heroEyebrow: "{t["niche"]}",
+  heroTitle: "{c["title"]}",
+  heroSubtitle: "{c["subtitle"]}",
+  heroPrimary: "{c["primary"]}",
+  heroSecondary: "{c["secondary"]}",
   heroImage: "{imgs["hero"]}",
-  featuredTitle: "{_esc(c["featuredTitle"])}",
-  processTitle: "{_esc(c["processTitle"])}",
-{chr(10).join(proc_lines)}
-  galleryTitle: "{_esc(c["galleryTitle"])}",
-  galleryImage1: "{imgs["gallery1"]}",
-  galleryImage2: "{imgs["gallery2"]}",
-  galleryImage3: "{imgs["gallery3"]}",
-  galleryImage4: "{imgs["gallery4"]}",
-  reviewsTitle: "{_esc(c["reviewsTitle"])}",
-{chr(10).join(rev_lines)}
-  stat1: "{_esc(c["stat1"])}",
-  stat1Label: "{_esc(c["stat1Label"])}",
-  stat2: "{_esc(c["stat2"])}",
-  stat2Label: "{_esc(c["stat2Label"])}",
-  stat3: "{_esc(c["stat3"])}",
-  stat3Label: "{_esc(c["stat3Label"])}",
-  hours: "{_esc(c["hours"])}",
-  ctaBandTitle: "{_esc(c["ctaBandTitle"])}",
-  ctaBandText: "{_esc(c["ctaBandText"])}",
-  page1Title: "{_esc(c["page1Title"])}",
-  page1Subtitle: "{_esc(c["page1Subtitle"])}",
-  page2Title: "{_esc(c["page2Title"])}",
-  page2Subtitle: "{_esc(c["page2Subtitle"])}",
-  menuListTitle: "{_esc(c["menuListTitle"])}",
-{chr(10).join(cat_lines)}
-  pairingTitle: "{_esc(c["pairingTitle"])}",
-{chr(10).join(pair_lines)}
-  chefPickEyebrow: "{_esc(c["chefPickEyebrow"])}",
-  chefPickTitle: "{_esc(c["chefPickTitle"])}",
-  chefPickText: "{_esc(c["chefPickText"])}",
-  techTitle: "{_esc(c["techTitle"])}",
-{chr(10).join(tech_lines)}
-  matTitle: "{_esc(c["matTitle"])}",
-{chr(10).join(mat_lines)}
-  eventsTitle: "{_esc(c["eventsTitle"])}",
-  eventsText: "{_esc(c["eventsText"])}",
-  eventsMeta: "{_esc(c["eventsMeta"])}",
-  aboutEyebrow: "{_esc(c["aboutEyebrow"])}",
-  aboutPageTitle: "{_esc(c["aboutPageTitle"])}",
-  aboutPageLead: "{_esc(c["aboutPageLead"])}",
-  aboutTitle: "{_esc(c["aboutTitle"])}",
-  aboutText: "{_esc(c["aboutText"])}",
+  aboutTitle: "{c["aboutTitle"]}",
+  aboutText: {q(rich_about)},
   aboutImage: "{imgs["c"]}",
-  timelineTitle: "{_esc(c["timelineTitle"])}",
-{chr(10).join(tl_lines)}
-  chefLabel: "{_esc(c["chefLabel"])}",
-  chefName: "{_esc(c["chefName"])}",
-  chefBio: "{_esc(c["chefBio"])}",
-  chefQuote: "{_esc(c["chefQuote"])}",
-  chefImage: "{imgs["chef"]}",
-{chr(10).join(val_lines)}
-  contactEyebrow: "{_esc(c["contactEyebrow"])}",
-  contactPageTitle: "{_esc(c["contactPageTitle"])}",
-  contactPageText: "{_esc(c["contactPageText"])}",
-  contactTitle: "{_esc(c["contactTitle"])}",
-  contactText: "{_esc(c["contactText"])}",
-  hoursTitle: "{_esc(c["hoursTitle"])}",
-  mapLabel: "{_esc(c["mapLabel"])}",
-  faqTitle: "{_esc(c["faqTitle"])}",
-{chr(10).join(faq_lines)}
-  cta: "{_esc(c["primary"])}",
+  contactTitle: "{c["contactTitle"]}",
+  contactText: "{c["contactText"]}",
+  cta: "{c["primary"]}",
   phone: "03-555-{1000 + index}",
   email: "hello@{t["id"]}.co.il",
   address: "{address}",
 {items}
+{extra}
 }};
 '''
 
@@ -1942,61 +2180,27 @@ def gen_editor_css(t):
 `;
 '''
 
-def _page_fn_name(pid: str) -> str:
-    return "".join(part.capitalize() for part in pid.replace("-", "_").split("_")) + "Page"
-
-
 def gen_pages(t):
     p = t["palette"]
     tid = t["id"]
     name = t["name"]
     layout = t["layout"]
-    pages = t["pages"]
     pages_arr = "\n".join(
         f'  {{ id: "{pid}", label: "{label}", slug: "{slug}" }},'
-        for pid, label, slug in pages
+        for pid, label, slug in t["pages"]
     )
     hero = hero_jsx(t)
-    header = header_jsx(t)
+    sections = home_sections_jsx(t)
+    expanded = expanded_sections_jsx(t)
+    about = about_jsx(t)
+    contact = contact_jsx(t)
     footer = footer_jsx(t)
-    sec = LAYOUT_SECTIONS[layout]
-    home_defs = paint(sec["home_defs"], p)
-    page1_defs = paint(sec["page1_defs"], p)
-    page2_defs = paint(sec["page2_defs"], p)
-    about_defs = paint(sec["about_defs"], p)
-    contact_defs = paint(sec["contact_defs"], p)
-    home_bits = "\n      ".join(sec["home_uses"])
-    page1_bits = "\n      ".join(sec["page1_uses"])
-    page2_bits = "\n      ".join(sec["page2_uses"])
-    about_bits = "\n      ".join(sec["about_uses"])
-    contact_bits = "\n      ".join(sec["contact_uses"])
+    header = header_jsx(t)
+    home_bits = "\n      ".join(HOME_SECTION_USE[layout])
+    bespoke_bits = "\n      ".join(HOME_SECTION_USE[layout])
 
-    p1_id = pages[1][0]
-    p2_id = pages[2][0]
-    about_id = pages[3][0]
-    contact_id = pages[4][0]
-    p1_fn = _page_fn_name(p1_id)
-    p2_fn = _page_fn_name(p2_id)
-    about_fn = _page_fn_name(about_id)
-    contact_fn = _page_fn_name(contact_id)
-
-    needs_use_state = "setOpen" in header or layout == "flameStack"
-    react_import = (
-        'import React, { useMemo, useState } from "react";'
-        if needs_use_state
-        else 'import React, { useMemo } from "react";'
-    )
-    open_line = "  const [open, setOpen] = useState(false);\n" if "setOpen" in header else ""
-
-    page_content_block = "\n".join(
-        [
-            f'    home: <HomePage data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
-            f'    {p1_id}: <{p1_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
-            f'    {p2_id}: <{p2_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
-            f'    {about_id}: <{about_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
-            f'    {contact_id}: <{contact_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
-        ]
-    )
+    react_import = "import React, { useMemo, useState } from \"react\";" if layout == "flameStack" else "import React, { useMemo } from \"react\";"
+    open_line = "  const [open, setOpen] = useState(false);\n" if layout == "flameStack" else ""
 
     return f'''{react_import}
 import {{ VisualPageStack }} from "../../../../runtime/VisualPageStack";
@@ -2033,18 +2237,48 @@ function Hero({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: 
   );
 }}
 
-{home_defs}
+{sections}
 
-{page1_defs}
+{expanded}
 
-{page2_defs}
+function AboutBlock({{ data }}: {{ data: Record<string, any> }}) {{
+  return ({about}
+  );
+}}
 
-{about_defs}
-
-{contact_defs}
+function ContactBlock({{ data, onCta }}: {{ data: Record<string, any>; onCta: () => void }}) {{
+  return ({contact}
+  );
+}}
 
 function Footer({{ data }}: {{ data: Record<string, any> }}) {{
   return ({footer}
+  );
+}}
+
+function BespokeSections({{ data }}: {{ data: Record<string, any> }}) {{
+  return (
+    <>
+      {bespoke_bits}
+    </>
+  );
+}}
+
+function SharedPageSections({{ data, pageId, onCta }}: {{ data: Record<string, any>; pageId: string; onCta: () => void }}) {{
+  return (
+    <>
+      {{pageId === "contact" ? null : <BespokeSections data={{data}} />}}
+      <AboutBlock data={{data}} />
+      <WhyUs data={{data}} />
+      <MenuShowcase data={{data}} />
+      <GallerySection data={{data}} />
+      <TeamSection data={{data}} />
+      <KitchenMethod data={{data}} />
+      <Testimonials data={{data}} />
+      <VisitBlock data={{data}} />
+      <Insights data={{data}} />
+      <CTABand data={{data}} onCta={{onCta}} />
+    </>
   );
 }}
 
@@ -2053,42 +2287,28 @@ function HomePage({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (
     <>
       <Hero data={{data}} goTo={{goTo}} onCta={{onCta}} />
       {home_bits}
+      <AboutBlock data={{data}} />
+      <WhyUs data={{data}} />
+      <MenuShowcase data={{data}} />
+      <GallerySection data={{data}} />
+      <TeamSection data={{data}} />
+      <KitchenMethod data={{data}} />
+      <Testimonials data={{data}} />
+      <VisitBlock data={{data}} />
+      <Insights data={{data}} />
+      <CTABand data={{data}} onCta={{onCta}} />
+      <ContactBlock data={{data}} onCta={{onCta}} />
       <Footer data={{data}} />
     </>
   );
 }}
 
-function {p1_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
+function InnerPage({{ data, pageId, title, onCta }}: {{ data: Record<string, any>; pageId: string; title: string; onCta: () => void }}) {{
   return (
     <>
-      {page1_bits}
-      <Footer data={{data}} />
-    </>
-  );
-}}
-
-function {p2_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
-  return (
-    <>
-      {page2_bits}
-      <Footer data={{data}} />
-    </>
-  );
-}}
-
-function {about_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
-  return (
-    <>
-      {about_bits}
-      <Footer data={{data}} />
-    </>
-  );
-}}
-
-function {contact_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
-  return (
-    <>
-      {contact_bits}
+      <PageHero data={{data}} title={{title}} pageId={{pageId}} />
+      <SharedPageSections data={{data}} pageId={{pageId}} onCta={{onCta}} />
+      <ContactBlock data={{data}} onCta={{onCta}} />
       <Footer data={{data}} />
     </>
   );
@@ -2104,8 +2324,14 @@ export default function {name}Pages({{
     {{ allowedPages, fallbackPage: "home" }},
   );
   const pageContent: Record<string, React.ReactNode> = {{
-{page_content_block}
+    home: <HomePage data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,
   }};
+  for (const pg of {tid}Pages) {{
+    if (pg.id === "home") continue;
+    pageContent[pg.id] = (
+      <InnerPage data={{merged}} pageId={{pg.id}} title={{pg.label}} onCta={{() => goTo("contact")}} />
+    );
+  }}
   return (
     <div dir="rtl" data-template-id={{mode === "preview" ? "{tid}-preview" : "{tid}"}} className="min-h-screen w-full overflow-x-hidden"
       style={{{{ background: "{p['bg']}", color: "{p['text']}" }}}}>

@@ -7,8 +7,11 @@ import { Reveal } from "../shared/Reveal";
 
 export const spiceforgePages = [
   { id: "home", label: "בית", slug: "/" },
+  { id: "menu", label: "תפריט", slug: "/menu" },
   { id: "thali", label: "תאלי", slug: "/thali" },
   { id: "spices", label: "תבלינים", slug: "/spices" },
+  { id: "gallery", label: "גלריה", slug: "/gallery" },
+  { id: "journal", label: "יומן", slug: "/journal" },
   { id: "about", label: "אודות", slug: "/about" },
   { id: "contact", label: "הזמנה", slug: "/contact" },
 ];
@@ -59,7 +62,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
           <p className="tpl-rise-3 mt-6 max-w-xl text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "heroSubtitle")}</p>
           <div className="tpl-rise-3 mt-8 flex flex-wrap gap-3">
             <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "heroPrimary")}</button>
-            <button type="button" onClick={() => goTo("thali")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(255,241,224,0.14)" }}>{v(data, "heroSecondary")}</button>
+            <button type="button" onClick={() => goTo("menu")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(255,241,224,0.14)" }}>{v(data, "heroSecondary")}</button>
           </div>
         </div>
       </section>
@@ -72,7 +75,7 @@ function SpiceWheelMenu({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{v(data, "featuredTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">גלגל התבלינים</h2></Reveal>
         <div className="mt-12 grid items-center gap-10 lg:grid-cols-[280px_1fr]">
           <div className="tpl-spice-wheel mx-auto h-56 w-56 rounded-full border-4 p-8" style={{ borderColor: "#1a0f0a" }}>
             <div className="flex h-full w-full items-center justify-center rounded-full text-center text-sm font-bold" style={{ background: "#1a0f0a" }}>THALI</div>
@@ -94,21 +97,46 @@ function SpiceWheelMenu({ data }: { data: Record<string, any> }) {
   );
 }
 
-function SpiceProcessSteps({ data }: { data: Record<string, any> }) {
-  const steps = [[v(data, "process1Title"), v(data, "process1Text")], [v(data, "process2Title"), v(data, "process2Text")], [v(data, "process3Title"), v(data, "process3Text")]];
+function SpiralRecipe({ data }: { data: Record<string, any> }) {
+  const steps = [["1", "לטגן בצל"], ["2", "להוסיף מסאלה"], ["3", "לבשל לאט"], ["4", "להגיש חם"]];
   return (
     <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-center text-3xl font-bold md:text-4xl">{v(data, "processTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-6 md:grid-cols-3">
-          {steps.map(([t, x], i) => (
-            <Reveal key={t} delayMs={i * 90} variant="up">
-              <div className="border-t-2 pt-4" style={{ borderColor: "#e76f51" }}>
-                <div className="text-xs font-bold tracking-[0.2em]" style={{ color: "#e76f51" }}>0{i + 1}</div>
-                <h3 className="tpl-display mt-2 text-xl font-bold">{t}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#c4a08a" }}>{x}</p>
-              </div>
-            </Reveal>
+      <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-4">
+        {steps.map(([n, label], i) => (
+          <Reveal key={n} delayMs={i * 80} variant="scale">
+            <div className="tpl-spiral-step border px-5 py-4 text-center" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810", animationDelay: `${i * 0.1}s`, transform: `rotate(${(i - 1.5) * 4}deg)` }}>
+              <div className="text-2xl font-bold" style={{ color: "#e76f51" }}>{n}</div>
+              <p className="mt-1 text-sm">{label}</p>
+            </div>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+
+function SectionKicker({ label }: { label: string }) {
+  return <p className="text-xs font-bold tracking-[0.28em]" style={{ color: "#e76f51" }}>{label}</p>;
+}
+
+function PageHero({ data, title, pageId }: { data: Record<string, any>; title: string; pageId: string }) {
+  const image = pageId === "about" ? v(data, "aboutImage") : pageId === "gallery" ? v(data, "gallery1Image") : pageId === "journal" ? v(data, "gallery2Image") : v(data, "heroImage");
+  return (
+    <section className="relative isolate overflow-hidden border-b px-5 py-20 lg:px-8 lg:py-24" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+      <img src={image} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #1a0f0af5, #2a1810cc)" }} />
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <div>
+          <SectionKicker label={v(data, "brandName")} />
+          <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "pageHeroText")}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
+            <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(255,241,224,0.14)", animationDelay: `${i * 0.25}s` }}>
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </div>
           ))}
         </div>
       </div>
@@ -116,36 +144,146 @@ function SpiceProcessSteps({ data }: { data: Record<string, any> }) {
   );
 }
 
-function SpiceHomeGallery({ data }: { data: Record<string, any> }) {
-  const imgs = [v(data, "galleryImage1"), v(data, "galleryImage2"), v(data, "galleryImage3"), v(data, "galleryImage4")];
+function WhyUs({ data }: { data: Record<string, any> }) {
+  const reasons = [1, 2, 3].map((i) => ({ title: v(data, `why${i}Title`), text: v(data, `why${i}Text`) }));
   return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-7xl text-center">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
-        <div className="mt-10 flex flex-wrap justify-center gap-4">
-          {imgs.map((src, i) => (
-            <Reveal key={i} delayMs={i * 70} variant="scale">
-              <img src={src} alt="" className="h-36 w-36 rounded-full object-cover border-2" style={{ borderColor: "#e76f51" }} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceHomeReviews({ data }: { data: Record<string, any> }) {
-  const revs = [1, 2, 3].map((i) => [v(data, `review${i}Text`), v(data, `review${i}Name`), v(data, `review${i}Role`)]);
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <SectionKicker label={v(data, "whyKicker")} />
+        <h2 className="tpl-display mt-4 max-w-3xl text-4xl font-bold md:text-5xl">{v(data, "whyTitle")}</h2>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {revs.map(([text, name, role], i) => (
-            <Reveal key={name} delayMs={i * 80} variant="up">
-              <blockquote className="border p-5" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-                <p className="text-sm leading-7" style={{ color: "#c4a08a" }}>״{text}״</p>
-                <footer className="mt-4 text-sm font-bold">{name} <span className="font-normal" style={{ color: "#c4a08a" }}>· {role}</span></footer>
+          {reasons.map((reason, i) => (
+            <Reveal key={reason.title} delayMs={i * 90} variant="up">
+              <article className="tpl-sweep h-full border p-6 rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: i % 2 ? "#1a0f0a" : "#0e0805" }}>
+                <span className="tpl-display text-5xl font-bold" style={{ color: "#e76f51" }}>0{i + 1}</span>
+                <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{reason.text}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MenuShowcase({ data }: { data: Record<string, any> }) {
+  const dishes = [1, 2, 3].map((i) => ({ title: v(data, `item${i}Title`), meta: v(data, `item${i}Meta`), text: v(data, `item${i}Text`), img: v(data, `item${i}Image`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <SectionKicker label={v(data, "menuKicker")} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "menuShowcaseTitle")}</h2>
+          </div>
+          <p className="max-w-md text-sm leading-7" style={{ color: "#c4a08a" }}>{v(data, "menuShowcaseText")}</p>
+        </div>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {dishes.map((dish, i) => (
+            <Reveal key={dish.title} delayMs={i * 100} variant="scale">
+              <article className="group overflow-hidden border rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+                <img src={dish.img} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
+                <div className="p-5">
+                  <p className="text-xs font-bold tracking-[0.18em]" style={{ color: "#e76f51" }}>{dish.meta}</p>
+                  <h3 className="tpl-display mt-2 text-2xl font-bold">{dish.title}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{dish.text}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GallerySection({ data }: { data: Record<string, any> }) {
+  const shots = [1, 2, 3, 4].map((i) => ({ src: v(data, `gallery${i}Image`), label: v(data, `gallery${i}Title`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "galleryKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "galleryTitle")}</h2>
+        <div className="mt-10 grid gap-3 md:grid-cols-4">
+          {shots.map((shot, i) => (
+            <Reveal key={shot.label} delayMs={i * 80} variant={i % 2 ? "up" : "scale"}>
+              <figure className={`relative overflow-hidden border ${i === 0 ? "md:row-span-2" : ""} rounded-[2rem]`} style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+                <img src={shot.src} alt="" className={i === 0 ? "aspect-[4/5] h-full w-full object-cover" : "aspect-square w-full object-cover"} />
+                <figcaption className="absolute inset-x-3 bottom-3 px-3 py-2 text-sm font-bold" style={{ background: "#1a0f0add", color: "#fff1e0" }}>{shot.label}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TeamSection({ data }: { data: Record<string, any> }) {
+  const people = [1, 2, 3].map((i) => ({ name: v(data, `team${i}Name`), role: v(data, `team${i}Role`), img: v(data, `team${i}Image`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <SectionKicker label={v(data, "teamKicker")} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "teamTitle")}</h2>
+            <p className="mt-5 text-sm leading-7" style={{ color: "#c4a08a" }}>{v(data, "teamText")}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {people.map((person, i) => (
+              <Reveal key={person.name} delayMs={i * 90} variant="up">
+                <article className="border p-3 rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+                  <img src={person.img} alt="" className="aspect-[4/5] w-full object-cover" />
+                  <h3 className="mt-4 text-lg font-bold">{person.name}</h3>
+                  <p className="text-sm" style={{ color: "#e76f51" }}>{person.role}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function KitchenMethod({ data }: { data: Record<string, any> }) {
+  const steps = [1, 2, 3, 4].map((i) => ({ title: v(data, `process${i}Title`), text: v(data, `process${i}Text`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#0e0805" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "processKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "processTitle")}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-4">
+          {steps.map((step, i) => (
+            <Reveal key={step.title} delayMs={i * 80} variant="right">
+              <article className="relative min-h-48 border p-5 rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#e76f51" }}>{i + 1}</span>
+                <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{step.text}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Testimonials({ data }: { data: Record<string, any> }) {
+  const reviews = [1, 2, 3].map((i) => ({ quote: v(data, `review${i}Quote`), name: v(data, `review${i}Name`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "reviewsKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "reviewsTitle")}</h2>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {reviews.map((review, i) => (
+            <Reveal key={review.name} delayMs={i * 90} variant="fade">
+              <blockquote className="h-full border p-6 rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+                <p className="text-lg leading-8">״{review.quote}״</p>
+                <footer className="mt-5 text-sm font-bold" style={{ color: "#e76f51" }}>{review.name}</footer>
               </blockquote>
             </Reveal>
           ))}
@@ -155,114 +293,23 @@ function SpiceHomeReviews({ data }: { data: Record<string, any> }) {
   );
 }
 
-function SpiceHomeStats({ data }: { data: Record<string, any> }) {
-  const stats = [[v(data, "stat1"), v(data, "stat1Label")], [v(data, "stat2"), v(data, "stat2Label")], [v(data, "stat3"), v(data, "stat3Label")]];
+function VisitBlock({ data }: { data: Record<string, any> }) {
+  const hours = [1, 2, 3].map((i) => ({ day: v(data, `hours${i}Day`), time: v(data, `hours${i}Time`) }));
   return (
-    <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-        <div className="grid grid-cols-3 gap-4 text-center">
-          {stats.map(([n, l], i) => (
-            <Reveal key={l} delayMs={i * 70} variant="scale">
-              <div className=" border px-4 py-3" style={{ borderColor: "#e76f51", animationDelay: `${i * 0.3}s` }}>
-                <div className="tpl-display text-3xl font-bold" style={{ color: "#e76f51" }}>{n}</div>
-                <p className="mt-1 text-xs" style={{ color: "#c4a08a" }}>{l}</p>
-              </div>
-            </Reveal>
-          ))}
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <div>
+          <SectionKicker label={v(data, "visitKicker")} />
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "visitTitle")}</h2>
+          <p className="mt-5 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "visitText")}</p>
+          <p className="mt-6 text-sm font-bold">{v(data, "address")}</p>
         </div>
-        <p className="text-sm" style={{ color: "#c4a08a" }}>{v(data, "hours")}</p>
-      </div>
-    </section>
-  );
-}
-
-function SpiceHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
-  return (
-    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <Reveal>
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-6 border p-8 md:flex-row md:items-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
-          <div>
-            <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
-            <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#c4a08a" }}>{v(data, "ctaBandText")}</p>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <button type="button" onClick={() => goTo("contact")} className="px-6 py-3 text-sm font-bold" style={{ background: "#e76f51", color: "#e76f51Text" }}>{v(data, "cta")}</button>
-            <button type="button" onClick={() => goTo("about")} className="border px-6 py-3 text-sm font-semibold" style={{ borderColor: "rgba(255,241,224,0.14)" }}>{v(data, "navAbout")}</button>
-          </div>
-        </div>
-      </Reveal>
-    </section>
-  );
-}
-
-
-function SpiceSpecialtyBanner({ data }: { data: Record<string, any> }) {
-  return (
-    <section className="relative overflow-hidden border-b px-5 py-20 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <img src={v(data, "item4Image")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-30" />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #1a0f0a, transparent)" }} />
-      <div className="relative z-10 mx-auto max-w-7xl">
-        <p className="text-xs font-semibold tracking-[0.28em]" style={{ color: "#e76f51" }}>{v(data, "brandName")}</p>
-        <h1 className="tpl-display mt-4 text-5xl font-bold md:text-7xl">{v(data, "page1Title")}</h1>
-        <p className="mt-4 max-w-xl text-lg" style={{ color: "#c4a08a" }}>{v(data, "page1Subtitle")}</p>
-      </div>
-    </section>
-  );
-}
-
-function SpiceFullMenuBoard({ data }: { data: Record<string, any> }) {
-  const items = [1, 2, 3, 4, 5, 6].map((i) => [v(data, `item${i}Title`), v(data, `item${i}Meta`), v(data, `item${i}Text`), v(data, `item${i}Image`)]);
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-4xl space-y-6">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "menuListTitle")}</h2></Reveal>
-        {items.map(([title, meta, text, img], i) => (
-          <Reveal key={title} delayMs={i * 60} variant="right">
-            <article className="grid gap-4 border-b pb-6 md:grid-cols-[100px_1fr_auto]" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-              <img src={img} alt="" className="aspect-square w-full object-cover" />
-              <div>
-                <h3 className="tpl-display text-2xl font-bold">{title}</h3>
-                <p className="mt-1 text-sm leading-7" style={{ color: "#c4a08a" }}>{text}</p>
-              </div>
-              <p className="text-sm font-bold" style={{ color: "#e76f51" }}>{meta}</p>
-            </article>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SpiceCategoryGrid({ data }: { data: Record<string, any> }) {
-  const cats = [[v(data, "cat1Title"), v(data, "cat1Text")], [v(data, "cat2Title"), v(data, "cat2Text")], [v(data, "cat3Title"), v(data, "cat3Text")], [v(data, "cat4Title"), v(data, "cat4Text")]];
-  return (
-    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
-        {cats.map(([t, x], i) => (
-          <Reveal key={t} delayMs={i * 70} variant="up">
-            <div className="border p-5" style={{ borderColor: "rgba(255,241,224,0.14)", background: i % 2 ? "#2a1810" : "#1a0f0a" }}>
-              <h3 className="tpl-display text-xl font-bold" style={{ color: "#e76f51" }}>{t}</h3>
-              <p className="mt-2 text-sm" style={{ color: "#c4a08a" }}>{x}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SpicePairingNotes({ data }: { data: Record<string, any> }) {
-  const pairs = [[v(data, "pair1Title"), v(data, "pair1Text")], [v(data, "pair2Title"), v(data, "pair2Text")], [v(data, "pair3Title"), v(data, "pair3Text")]];
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "pairingTitle")}</h2></Reveal>
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {pairs.map(([t, x], i) => (
-            <Reveal key={t} delayMs={i * 80} variant="up">
-              <div className="border-r pr-4" style={{ borderColor: "#e76f51" }}>
-                <h3 className="font-bold">{t}</h3>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#c4a08a" }}>{x}</p>
+        <div className="grid gap-3">
+          {hours.map((hour, i) => (
+            <Reveal key={hour.day} delayMs={i * 80} variant="left">
+              <div className="flex items-center justify-between border px-5 py-4 rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#1a0f0a" }}>
+                <span className="font-bold">{hour.day}</span>
+                <span style={{ color: "#e76f51" }}>{hour.time}</span>
               </div>
             </Reveal>
           ))}
@@ -272,73 +319,23 @@ function SpicePairingNotes({ data }: { data: Record<string, any> }) {
   );
 }
 
-function SpiceChefPicks({ data }: { data: Record<string, any> }) {
+function Insights({ data }: { data: Record<string, any> }) {
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`) }));
   return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
-        <div>
-          <p className="text-xs tracking-[0.24em]" style={{ color: "#e76f51" }}>{v(data, "chefPickEyebrow")}</p>
-          <h2 className="tpl-display mt-3 text-3xl font-bold">{v(data, "chefPickTitle")}</h2>
-          <p className="mt-4 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "chefPickText")}</p>
-        </div>
-        <img src={v(data, "item5Image")} alt="" className="aspect-[4/3] w-full object-cover" />
-      </div>
-    </section>
-  );
-}
-
-
-function SpiceStoryBanner({ data }: { data: Record<string, any> }) {
-  return (
-    <section className="relative min-h-[42vh] overflow-hidden">
-      <img src={v(data, "item6Image")} alt="" className="absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,.55), #1a0f0a)" }} />
-      <div className="relative z-10 mx-auto flex min-h-[42vh] max-w-7xl items-end px-5 pb-12 lg:px-8">
-        <div>
-          <p className="text-xs tracking-[0.28em]" style={{ color: "#e76f51" }}>{v(data, "brandName")}</p>
-          <h1 className="tpl-display mt-3 text-5xl font-bold md:text-6xl">{v(data, "page2Title")}</h1>
-          <p className="mt-3 max-w-xl text-lg" style={{ color: "#c4a08a" }}>{v(data, "page2Subtitle")}</p>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceTechniqueLadder({ data }: { data: Record<string, any> }) {
-  const steps = [[v(data, "tech1Title"), v(data, "tech1Text")], [v(data, "tech2Title"), v(data, "tech2Text")], [v(data, "tech3Title"), v(data, "tech3Text")], [v(data, "tech4Title"), v(data, "tech4Text")]];
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-3xl space-y-8">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "techTitle")}</h2></Reveal>
-        {steps.map(([t, x], i) => (
-          <Reveal key={t} delayMs={i * 80} variant="right">
-            <div className="flex gap-4">
-              <div className="grid h-10 w-10 shrink-0 place-items-center text-sm font-bold" style={{ background: "#e76f51", color: "#e76f51Text" }}>{i + 1}</div>
-              <div>
-                <h3 className="text-xl font-bold">{t}</h3>
-                <p className="mt-1 text-sm leading-7" style={{ color: "#c4a08a" }}>{x}</p>
-              </div>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SpiceMaterialCards({ data }: { data: Record<string, any> }) {
-  const woods = [[v(data, "mat1Title"), v(data, "mat1Text")], [v(data, "mat2Title"), v(data, "mat2Text")], [v(data, "mat3Title"), v(data, "mat3Text")]];
-  return (
-    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "matTitle")}</h2></Reveal>
-        <div className="mt-8 grid gap-4 md:grid-cols-3">
-          {woods.map(([t, x], i) => (
-            <Reveal key={t} delayMs={i * 70} variant="up">
-              <div className="border p-6 text-center" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-                <h3 className="tpl-display text-2xl font-bold" style={{ color: "#e76f51" }}>{t}</h3>
-                <p className="mt-3 text-sm" style={{ color: "#c4a08a" }}>{x}</p>
-              </div>
+        <SectionKicker label={v(data, "insightsKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "insightsTitle")}</h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {posts.map((post, i) => (
+            <Reveal key={post.title} delayMs={i * 90} variant="up">
+              <article className="overflow-hidden border rounded-[2rem]" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
+                <img src={post.image} alt="" className="aspect-[16/10] w-full object-cover" />
+                <div className="p-5">
+                  <h3 className="text-lg font-bold">{post.title}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{post.text}</p>
+                </div>
+              </article>
             </Reveal>
           ))}
         </div>
@@ -347,157 +344,53 @@ function SpiceMaterialCards({ data }: { data: Record<string, any> }) {
   );
 }
 
-function SpiceEventsBand({ data }: { data: Record<string, any> }) {
+function CTABand({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2 lg:items-center">
-        <img src={v(data, "galleryImage3")} alt="" className="aspect-[16/10] w-full object-cover" />
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "linear-gradient(135deg, #e76f5133, #2a1810)" }}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
         <div>
-          <h2 className="tpl-display text-3xl font-bold">{v(data, "eventsTitle")}</h2>
-          <p className="mt-4 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "eventsText")}</p>
-          <p className="mt-4 text-sm font-semibold" style={{ color: "#e76f51" }}>{v(data, "eventsMeta")}</p>
+          <SectionKicker label={v(data, "ctaBandKicker")} />
+          <h2 className="tpl-display mt-3 text-3xl font-bold md:text-5xl">{v(data, "ctaBandTitle")}</h2>
+          <p className="mt-3 max-w-2xl leading-7" style={{ color: "#c4a08a" }}>{v(data, "ctaBandText")}</p>
+        </div>
+        <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "cta")}</button>
+      </div>
+    </section>
+  );
+}
+
+
+function AboutBlock({ data }: { data: Record<string, any> }) {
+  return (
+    <section className="border-t overflow-hidden" style={{ borderColor: "rgba(255,241,224,0.14)", background: "linear-gradient(135deg, #2a1810, #3d2314)" }}>
+      <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
+        <div className="px-5 py-16 lg:px-8 lg:py-20">
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e76f51" }}>אודות</p>
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
+          <p className="mt-6 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "aboutText")}</p>
+        </div>
+        <div className="relative min-h-[320px]">
+          <img src={v(data, "aboutImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-80" />
+          <div className="absolute inset-0" style={{ background: "radial-gradient(circle at 70% 40%, #e9c46a55, transparent 50%)" }} />
         </div>
       </div>
     </section>
   );
 }
 
-
-function SpiceAboutBanner({ data }: { data: Record<string, any> }) {
+function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   return (
-    <section className="border-b px-5 py-20 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-7xl">
-        <p className="text-xs tracking-[0.28em]" style={{ color: "#e76f51" }}>{v(data, "aboutEyebrow")}</p>
-        <h1 className="tpl-display mt-4 max-w-3xl text-5xl font-bold md:text-6xl">{v(data, "aboutPageTitle")}</h1>
-        <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "aboutPageLead")}</p>
-      </div>
-    </section>
-  );
-}
-
-function SpiceAboutTimeline({ data }: { data: Record<string, any> }) {
-  const pts = [[v(data, "timeline1Year"), v(data, "timeline1Text")], [v(data, "timeline2Year"), v(data, "timeline2Text")], [v(data, "timeline3Year"), v(data, "timeline3Text")]];
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto max-w-3xl">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "timelineTitle")}</h2></Reveal>
-        <div className="relative mt-10">
-          <div className="absolute right-2 top-0 bottom-0 w-px" style={{ background: "rgba(255,241,224,0.14)" }} />
-          {pts.map(([y, t], i) => (
-            <Reveal key={y} delayMs={i * 90} variant="right">
-              <div className="relative pb-10 pr-10">
-                <div className="absolute right-0.5 top-1 h-3 w-3 rounded-full" style={{ background: "#e76f51" }} />
-                <p className="text-xs font-bold" style={{ color: "#e76f51" }}>{y}</p>
-                <p className="mt-2 text-sm leading-7" style={{ color: "#c4a08a" }}>{t}</p>
-              </div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceChefPortrait({ data }: { data: Record<string, any> }) {
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2 lg:items-center">
-        <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
-        <div>
-          <p className="text-xs tracking-[0.24em]" style={{ color: "#e76f51" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
-          <p className="mt-5 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "chefBio")}</p>
-          <blockquote className="mt-6 border-r-2 pr-4 text-xl font-semibold" style={{ borderColor: "#e76f51" }}>״{v(data, "chefQuote")}״</blockquote>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceValuesRow({ data }: { data: Record<string, any> }) {
-  const vals = [[v(data, "value1Title"), v(data, "value1Text")], [v(data, "value2Title"), v(data, "value2Text")], [v(data, "value3Title"), v(data, "value3Text")]];
-  return (
-    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3">
-        {vals.map(([t, x], i) => (
-          <Reveal key={t} delayMs={i * 80} variant="up">
-            <div>
-              <h3 className="tpl-display text-2xl font-bold" style={{ color: "#e76f51" }}>{t}</h3>
-              <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{x}</p>
-            </div>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-
-function SpiceContactBanner({ data }: { data: Record<string, any> }) {
-  return (
-    <section className="border-b px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto max-w-7xl">
-        <p className="text-xs tracking-[0.28em]" style={{ color: "#e76f51" }}>{v(data, "contactEyebrow")}</p>
-        <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{v(data, "contactPageTitle")}</h1>
-        <p className="mt-4 max-w-xl text-lg" style={{ color: "#c4a08a" }}>{v(data, "contactPageText")}</p>
-      </div>
-    </section>
-  );
-}
-
-function SpiceReserveForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
       <div className="mx-auto flex max-w-lg flex-col items-center">
-        <div className="relative flex w-full max-w-md flex-col items-center justify-center rounded-full border-4 p-10 text-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
+        <div className="relative flex h-80 w-80 flex-col items-center justify-center rounded-full border-4 p-8 text-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
           <h2 className="tpl-display text-2xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-xs" style={{ color: "#c4a08a" }}>{v(data, "contactText")}</p>
           <form className="mt-4 grid w-full gap-2" onSubmit={(e) => e.preventDefault()}>
             <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="שם" />
             <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="טלפון" />
-            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="תאריך" />
-            <button type="button" onClick={onCta} className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#e76f51Text" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={onCta} className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "cta")}</button>
           </form>
         </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceHoursMap({ data }: { data: Record<string, any> }) {
-  return (
-    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-2">
-        <div className="border p-6" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-          <h3 className="tpl-display text-2xl font-bold">{v(data, "hoursTitle")}</h3>
-          <p className="mt-4 text-sm leading-7" style={{ color: "#c4a08a" }}>{v(data, "hours")}</p>
-          <p className="mt-4 text-sm">{v(data, "address")}</p>
-        </div>
-        <div className="relative min-h-[220px] overflow-hidden border" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-          <img src={v(data, "galleryImage1")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-60" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="border px-4 py-2 text-xs font-bold tracking-wider" style={{ borderColor: "#e76f51", background: "#1a0f0a", color: "#e76f51" }}>{v(data, "mapLabel")}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function SpiceFaqBlock({ data }: { data: Record<string, any> }) {
-  const faqs = [[v(data, "faq1Q"), v(data, "faq1A")], [v(data, "faq2Q"), v(data, "faq2A")], [v(data, "faq3Q"), v(data, "faq3A")]];
-  return (
-    <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
-      <div className="mx-auto max-w-3xl space-y-4">
-        <Reveal><h2 className="tpl-display text-3xl font-bold">{v(data, "faqTitle")}</h2></Reveal>
-        {faqs.map(([q, a], i) => (
-          <Reveal key={q} delayMs={i * 70} variant="up">
-            <details className="border p-4" style={{ borderColor: "rgba(255,241,224,0.14)" }}>
-              <summary className="cursor-pointer font-bold">{q}</summary>
-              <p className="mt-3 text-sm leading-7" style={{ color: "#c4a08a" }}>{a}</p>
-            </details>
-          </Reveal>
-        ))}
       </div>
     </section>
   );
@@ -515,65 +408,61 @@ function Footer({ data }: { data: Record<string, any> }) {
   );
 }
 
+function BespokeSections({ data }: { data: Record<string, any> }) {
+  return (
+    <>
+      <SpiceWheelMenu data={data} />
+      <SpiralRecipe data={data} />
+    </>
+  );
+}
+
+function SharedPageSections({ data, pageId, onCta }: { data: Record<string, any>; pageId: string; onCta: () => void }) {
+  return (
+    <>
+      {pageId === "contact" ? null : <BespokeSections data={data} />}
+      <AboutBlock data={data} />
+      <WhyUs data={data} />
+      <MenuShowcase data={data} />
+      <GallerySection data={data} />
+      <TeamSection data={data} />
+      <KitchenMethod data={data} />
+      <Testimonials data={data} />
+      <VisitBlock data={data} />
+      <Insights data={data} />
+      <CTABand data={data} onCta={onCta} />
+    </>
+  );
+}
+
 function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
   return (
     <>
       <Hero data={data} goTo={goTo} onCta={onCta} />
       <SpiceWheelMenu data={data} />
-      <SpiceProcessSteps data={data} />
-      <SpiceHomeGallery data={data} />
-      <SpiceHomeReviews data={data} />
-      <SpiceHomeStats data={data} />
-      <SpiceHomeCtaTeaser data={data} goTo={goTo} />
+      <SpiralRecipe data={data} />
+      <AboutBlock data={data} />
+      <WhyUs data={data} />
+      <MenuShowcase data={data} />
+      <GallerySection data={data} />
+      <TeamSection data={data} />
+      <KitchenMethod data={data} />
+      <Testimonials data={data} />
+      <VisitBlock data={data} />
+      <Insights data={data} />
+      <CTABand data={data} onCta={onCta} />
+      <ContactBlock data={data} onCta={onCta} />
       <Footer data={data} />
     </>
   );
 }
 
-function ThaliPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
+function InnerPage({ data, pageId, title, onCta }: { data: Record<string, any>; pageId: string; title: string; onCta: () => void }) {
   return (
     <>
-      <SpiceSpecialtyBanner data={data} />
-      <SpiceCategoryGrid data={data} />
-      <SpiceFullMenuBoard data={data} />
-      <SpiceChefPicks data={data} />
-      <SpicePairingNotes data={data} />
-      <Footer data={data} />
-    </>
-  );
-}
-
-function SpicesPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
-  return (
-    <>
-      <SpiceStoryBanner data={data} />
-      <SpiceTechniqueLadder data={data} />
-      <SpiceMaterialCards data={data} />
-      <SpiceEventsBand data={data} />
-      <Footer data={data} />
-    </>
-  );
-}
-
-function AboutPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
-  return (
-    <>
-      <SpiceAboutBanner data={data} />
-      <SpiceAboutTimeline data={data} />
-      <SpiceChefPortrait data={data} />
-      <SpiceValuesRow data={data} />
-      <Footer data={data} />
-    </>
-  );
-}
-
-function ContactPage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
-  return (
-    <>
-      <SpiceContactBanner data={data} />
-      <SpiceReserveForm data={data} onCta={onCta} />
-      <SpiceHoursMap data={data} />
-      <SpiceFaqBlock data={data} />
+      <PageHero data={data} title={title} pageId={pageId} />
+      <SharedPageSections data={data} pageId={pageId} onCta={onCta} />
+      <ContactBlock data={data} onCta={onCta} />
       <Footer data={data} />
     </>
   );
@@ -590,11 +479,13 @@ export default function SpiceforgePages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
-    thali: <ThaliPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
-    spices: <SpicesPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
-    about: <AboutPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
-    contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
+  for (const pg of spiceforgePages) {
+    if (pg.id === "home") continue;
+    pageContent[pg.id] = (
+      <InnerPage data={merged} pageId={pg.id} title={pg.label} onCta={() => goTo("contact")} />
+    );
+  }
   return (
     <div dir="rtl" data-template-id={mode === "preview" ? "spiceforge-preview" : "spiceforge"} className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a0f0a", color: "#fff1e0" }}>

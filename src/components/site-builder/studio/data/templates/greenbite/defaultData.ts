@@ -32,7 +32,7 @@ export const greenbiteDefaultData = {
   catOne: "ירקות",
   catOneImage: "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=900&q=80",
   catTwo: "פירות",
-  catTwoImage: "https://images.unsplash.com/photo-1619566636858-adf3ef4644b9?auto=format&fit=crop&w=900&q=80",
+  catTwoImage: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&w=900&q=80",
   catThree: "דגנים",
   catThreeImage: "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=900&q=80",
   catFour: "ממרחים",

@@ -39,6 +39,16 @@
         "/grill"
       ],
       [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
+      ],
+      [
         "about",
         "אודות",
         "/about"
@@ -321,6 +331,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "bowls",
         "קערות",
         "/bowls"
@@ -329,6 +344,16 @@
         "broth",
         "ציר",
         "/broth"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -613,6 +638,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "pizzas",
         "פיצות",
         "/pizzas"
@@ -621,6 +651,16 @@
         "oven",
         "התנור",
         "/oven"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -905,6 +945,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "mezze",
         "מזטה",
         "/mezze"
@@ -913,6 +958,16 @@
         "table",
         "השולחן",
         "/table"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -1197,6 +1252,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "omakase",
         "אומאקאסה",
         "/omakase"
@@ -1205,6 +1265,16 @@
         "nigiri",
         "ניגירי",
         "/nigiri"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -1489,6 +1559,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "brunch",
         "בראנץ׳",
         "/brunch"
@@ -1497,6 +1572,16 @@
         "coffee",
         "קפה",
         "/coffee"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -1781,6 +1866,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "tapas",
         "טאפס",
         "/tapas"
@@ -1789,6 +1879,16 @@
         "bar",
         "הבר",
         "/bar"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -2073,6 +2173,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "thali",
         "תאלי",
         "/thali"
@@ -2081,6 +2186,16 @@
         "spices",
         "תבלינים",
         "/spices"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -2365,6 +2480,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "wines",
         "יינות",
         "/wines"
@@ -2373,6 +2493,16 @@
         "tasting",
         "טעימות",
         "/tasting"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",
@@ -2657,6 +2787,11 @@
         "/"
       ],
       [
+        "menu",
+        "תפריט",
+        "/menu"
+      ],
+      [
         "trucks",
         "משאיות",
         "/trucks"
@@ -2665,6 +2800,16 @@
         "spots",
         "נקודות",
         "/spots"
+      ],
+      [
+        "gallery",
+        "גלריה",
+        "/gallery"
+      ],
+      [
+        "journal",
+        "יומן",
+        "/journal"
       ],
       [
         "about",

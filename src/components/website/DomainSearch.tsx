@@ -54,6 +54,26 @@ const INITIAL_CONTACT: ContactFormState = {
 
 const DOMAIN_YEAR_OPTIONS: DomainYears[] = [1, 2, 3, 5, 10];
 
+const DOMAIN_EXTENSIONS = [
+  "co.il",
+  "com",
+  "net",
+  "org",
+  "ai",
+  "online",
+  "co",
+  "io",
+  "info",
+  "store",
+  "app",
+] as const;
+
+type DomainExtension = (typeof DOMAIN_EXTENSIONS)[number];
+
+const EXTENSIONS_BY_LENGTH = [...DOMAIN_EXTENSIONS].sort(
+  (a, b) => b.length - a.length,
+);
+
 function formatIls(amount: number) {
   return new Intl.NumberFormat("he-IL", {
     style: "currency",
@@ -62,8 +82,47 @@ function formatIls(amount: number) {
   }).format(amount || 0);
 }
 
+function cleanDomainInput(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/\.$/, "");
+}
+
+function parseDomainInput(
+  value: string,
+  fallbackTld: DomainExtension,
+): { name: string; tld: DomainExtension; full: string } {
+  const clean = cleanDomainInput(value);
+
+  for (const ext of EXTENSIONS_BY_LENGTH) {
+    const suffix = `.${ext}`;
+    if (clean.endsWith(suffix) && clean.length > suffix.length) {
+      return {
+        name: clean.slice(0, -suffix.length),
+        tld: ext,
+        full: clean,
+      };
+    }
+  }
+
+  const name = clean.replace(/^\.+/, "").replace(/\.+$/, "");
+  return {
+    name,
+    tld: fallbackTld,
+    full: name ? `${name}.${fallbackTld}` : "",
+  };
+}
+
 export default function DomainSearch() {
-  const [domain, setDomain] = useState("");
+  const [domainName, setDomainName] = useState("");
+  const [selectedTld, setSelectedTld] =
+    useState<DomainExtension>("co.il");
   const [result, setResult] =
     useState<DomainAvailabilityResult | null>(null);
   const [isChecking, setIsChecking] = useState(false);
@@ -95,6 +154,11 @@ export default function DomainSearch() {
         contact.phone.trim(),
     );
   }, [contact]);
+
+  const fullDomain = useMemo(() => {
+    const parsed = parseDomainInput(domainName, selectedTld);
+    return parsed.name ? `${parsed.name}.${selectedTld}` : "";
+  }, [domainName, selectedTld]);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -181,8 +245,34 @@ export default function DomainSearch() {
     };
   }, [contactResult?.registrationId, selectedYears, registerResult?.success]);
 
+  function handleDomainNameChange(value: string) {
+    const parsed = parseDomainInput(value, selectedTld);
+    setDomainName(parsed.name);
+    if (parsed.name && value.includes(".")) {
+      setSelectedTld(parsed.tld);
+    }
+    setResult(null);
+    setError("");
+    setShowContactForm(false);
+    setContactResult(null);
+    setRegisterResult(null);
+    setQuote(null);
+  }
+
+  function handleSelectTld(tld: DomainExtension) {
+    const parsed = parseDomainInput(domainName, tld);
+    setSelectedTld(tld);
+    setDomainName(parsed.name);
+    setResult(null);
+    setError("");
+    setShowContactForm(false);
+    setContactResult(null);
+    setRegisterResult(null);
+    setQuote(null);
+  }
+
   async function handleCheck() {
-    if (isChecking || !domain.trim()) return;
+    if (isChecking || !fullDomain) return;
 
     setError("");
     setResult(null);
@@ -195,7 +285,7 @@ export default function DomainSearch() {
 
     try {
       const nextResult =
-        await checkDomainAvailability(domain);
+        await checkDomainAvailability(fullDomain);
 
       setResult(nextResult);
     } catch (requestError) {
@@ -227,7 +317,7 @@ export default function DomainSearch() {
 
     try {
       const selectedDomain =
-        result?.domain || domain;
+        result?.domain || fullDomain;
 
       const response = await createDomainContact({
         ...contact,
@@ -342,8 +432,8 @@ export default function DomainSearch() {
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                בדקו זמינות דומיין אמיתית, ולאחר מכן המשיכו ליצירת איש
-                קשר לרישום ב־Realtime Register.
+                הזינו שם דומיין, בחרו סיומת, ובדקו זמינות אמיתית לפני
+                הרישום.
               </p>
             </div>
           </div>
@@ -355,27 +445,30 @@ export default function DomainSearch() {
             className="flex flex-col gap-3 sm:flex-row"
           >
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute right-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-400" />
+
+              <span
+                className="pointer-events-none absolute right-11 top-1/2 z-10 max-w-[6.5rem] -translate-y-1/2 truncate text-sm font-black text-slate-400"
+                dir="ltr"
+              >
+                .{selectedTld}
+              </span>
 
               <input
-                value={domain}
+                value={domainName}
                 onChange={(event) => {
-                  setDomain(event.target.value);
-                  setResult(null);
-                  setError("");
-                  setShowContactForm(false);
-                  setContactResult(null);
+                  handleDomainNameChange(event.target.value);
                 }}
-                placeholder="לדוגמה: mybusiness.co.il"
+                placeholder="לדוגמה: mybusiness"
                 dir="ltr"
                 autoComplete="off"
-                className="h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 pr-12 text-left text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                className="h-14 w-full rounded-2xl border border-slate-200 bg-white py-0 pl-5 pr-36 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
               />
             </div>
 
             <button
               type="submit"
-              disabled={isChecking || !domain.trim()}
+              disabled={isChecking || !fullDomain}
               className="inline-flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
             >
               {isChecking ? (
@@ -391,6 +484,33 @@ export default function DomainSearch() {
               )}
             </button>
           </form>
+
+          <div className="mt-4 flex flex-wrap gap-2" dir="rtl">
+            {DOMAIN_EXTENSIONS.map((tld) => {
+              const active = selectedTld === tld;
+              return (
+                <button
+                  key={tld}
+                  type="button"
+                  onClick={() => handleSelectTld(tld)}
+                  className={[
+                    "inline-flex h-10 items-center rounded-full border px-4 text-sm font-bold transition",
+                    active
+                      ? "border-violet-400 bg-violet-50 text-violet-800 shadow-sm"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-violet-300 hover:bg-slate-50",
+                  ].join(" ")}
+                >
+                  .{tld}
+                </button>
+              );
+            })}
+          </div>
+
+          {fullDomain ? (
+            <p className="mt-3 text-xs font-semibold text-slate-500" dir="ltr">
+              ייבדק: {fullDomain}
+            </p>
+          ) : null}
 
           <div className="mt-4 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
             <ShieldCheck className="h-4 w-4 shrink-0" />
@@ -625,43 +745,10 @@ export default function DomainSearch() {
                 <div className="flex items-start gap-3">
                   <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
 
-                  <div>
+                  <div className="min-w-0 flex-1">
                     <h4 className="text-base font-black text-emerald-900">
-                      איש הקשר נוצר ונשמר בהצלחה
+                      איש הקשר נוצר בהצלחה — בחרו תקופה והמשיכו לתשלום
                     </h4>
-
-                    <p className="mt-2 text-sm font-bold text-emerald-700">
-                      Contact Handle:
-                    </p>
-
-                    <code
-                      className="mt-2 block break-all rounded-xl bg-white px-3 py-2 text-left text-sm font-black text-slate-800 ring-1 ring-emerald-200"
-                      dir="ltr"
-                    >
-                      {contactResult.contact.handle}
-                    </code>
-
-                    {contactResult.registrationId ? (
-                      <>
-                        <p className="mt-3 text-sm font-bold text-emerald-700">
-                          מזהה רישום במערכת:
-                        </p>
-
-                        <code
-                          className="mt-2 block break-all rounded-xl bg-white px-3 py-2 text-left text-sm font-black text-slate-800 ring-1 ring-emerald-200"
-                          dir="ltr"
-                        >
-                          {contactResult.registrationId}
-                        </code>
-                      </>
-                    ) : null}
-
-                    {contactResult.domain ? (
-                      <p className="mt-3 text-xs font-semibold text-emerald-700">
-                        הדומיין {contactResult.domain} נשמר ב־MongoDB
-                        בסטטוס {contactResult.status || "contact_created"}.
-                      </p>
-                    ) : null}
 
                     {contactResult.registrationId &&
                     !registerResult?.success ? (
