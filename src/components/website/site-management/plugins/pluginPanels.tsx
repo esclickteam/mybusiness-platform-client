@@ -23,6 +23,7 @@ import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
 import SiteMembersPanel from "./SiteMembersPanel";
 import SiteAuthFormPreview from "../../../site-plugins/site-auth/SiteAuthFormPreview";
+import { SiteAuthLoginWidgetPreview } from "../../../site-plugins/site-auth/SiteAuthLoginWidget";
 import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import {
   bool,
@@ -36,6 +37,40 @@ import {
   Toggle,
 } from "./SitePluginPanelFrame";
 import { btnSecondary, inputBase } from "../siteManagementUi";
+
+function ColorField({
+  label,
+  value,
+  onChange,
+  placeholder,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+}) {
+  const pickerValue = /^#[0-9A-Fa-f]{6}$/.test(value) ? value : "#6366F1";
+
+  return (
+    <Field label={label}>
+      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/80 p-2">
+        <input
+          type="color"
+          value={pickerValue}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent p-0"
+        />
+        <input
+          type="text"
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          className="min-w-0 flex-1 bg-transparent font-mono text-xs font-semibold uppercase text-slate-700 outline-none"
+        />
+      </div>
+    </Field>
+  );
+}
 
 function makePanel(
   pluginKey: string,
@@ -271,12 +306,32 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
             onChange={(v) => updateField("buttonTransparent", v)}
           />
           <Field label="צבע אייקון/טקסט (ריק = צבע מותג)">
-            <TextInput
-              value={str(settings.buttonTextColor)}
-              onChange={(v) => updateField("buttonTextColor", v)}
-              placeholder="#6366F1"
-            />
+            <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/80 p-2">
+              <input
+                type="color"
+                value={
+                  /^#[0-9A-Fa-f]{6}$/.test(str(settings.buttonTextColor))
+                    ? str(settings.buttonTextColor)
+                    : "#6366F1"
+                }
+                onChange={(e) => updateField("buttonTextColor", e.target.value)}
+                className="h-9 w-9 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent p-0"
+              />
+              <input
+                type="text"
+                value={str(settings.buttonTextColor)}
+                onChange={(e) => updateField("buttonTextColor", e.target.value)}
+                placeholder="צבע מותג"
+                className="min-w-0 flex-1 bg-transparent font-mono text-xs font-semibold uppercase text-slate-700 outline-none"
+              />
+            </div>
           </Field>
+          <div className="mt-4 rounded-xl border border-dashed border-indigo-200 bg-white p-4">
+            <p className="mb-3 text-xs font-bold text-slate-500">תצוגה מקדימה — כפתור</p>
+            <div className="flex min-h-[72px] items-center justify-center rounded-xl bg-slate-100/80 p-4">
+              <SiteAuthLoginWidgetPreview settings={merged} />
+            </div>
+          </div>
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
@@ -342,43 +397,37 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
             />
           </Field>
           <div className="grid gap-4 md:grid-cols-2">
-            <Field label="צבע רקע טופס">
-              <TextInput
-                value={str(settings.formBackgroundColor, "#ffffff")}
-                onChange={(v) => updateField("formBackgroundColor", v)}
-              />
-            </Field>
-            <Field label="צבע טקסט">
-              <TextInput
-                value={str(settings.formTextColor, "#1e293b")}
-                onChange={(v) => updateField("formTextColor", v)}
-              />
-            </Field>
-            <Field label="צבע תוויות">
-              <TextInput
-                value={str(settings.formLabelColor, "#334155")}
-                onChange={(v) => updateField("formLabelColor", v)}
-              />
-            </Field>
-            <Field label="צבע כפתור שליחה">
-              <TextInput
-                value={str(settings.formAccentColor)}
-                onChange={(v) => updateField("formAccentColor", v)}
-                placeholder="צבע מותג"
-              />
-            </Field>
-            <Field label="צבע טקסט כפתור">
-              <TextInput
-                value={str(settings.formButtonTextColor, "#ffffff")}
-                onChange={(v) => updateField("formButtonTextColor", v)}
-              />
-            </Field>
-            <Field label="צבע מסגרת">
-              <TextInput
-                value={str(settings.formBorderColor, "#e2e8f0")}
-                onChange={(v) => updateField("formBorderColor", v)}
-              />
-            </Field>
+            <ColorField
+              label="צבע רקע טופס"
+              value={str(settings.formBackgroundColor, "#ffffff")}
+              onChange={(v) => updateField("formBackgroundColor", v)}
+            />
+            <ColorField
+              label="צבע טקסט"
+              value={str(settings.formTextColor, "#1e293b")}
+              onChange={(v) => updateField("formTextColor", v)}
+            />
+            <ColorField
+              label="צבע תוויות"
+              value={str(settings.formLabelColor, "#334155")}
+              onChange={(v) => updateField("formLabelColor", v)}
+            />
+            <ColorField
+              label="צבע כפתור שליחה"
+              value={str(settings.formAccentColor, "#6366F1")}
+              onChange={(v) => updateField("formAccentColor", v)}
+              placeholder="צבע מותג"
+            />
+            <ColorField
+              label="צבע טקסט כפתור"
+              value={str(settings.formButtonTextColor, "#ffffff")}
+              onChange={(v) => updateField("formButtonTextColor", v)}
+            />
+            <ColorField
+              label="צבע מסגרת"
+              value={str(settings.formBorderColor, "#e2e8f0")}
+              onChange={(v) => updateField("formBorderColor", v)}
+            />
             <Field label="עיגול פינות (px)">
               <TextInput
                 value={String(num(settings.formBorderRadius, 16))}
