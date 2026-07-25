@@ -4,9 +4,11 @@ import { ArrowRight, Bell, Headphones, RefreshCw, Send } from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { notifyAdminSupportEvent } from "../../utils/adminSupportAlerts";
 import {
   ensurePushSubscription,
   getPermission,
+  isSubscribed,
   subscribeToPush,
 } from "../../utils/push";
 import AdminHeader from "./AdminsHeader";
@@ -120,13 +122,27 @@ export default function AdminSupportChat() {
   const [error, setError] = useState("");
   const [toast, setToast] = useState("");
   const [pushStatus, setPushStatus] = useState(getPermission());
+  const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedIdRef = useRef<string | null>(null);
+  const stickToBottomRef = useRef(true);
+  const lastScrolledMsgIdRef = useRef<string | null>(null);
+  const prevSelectedForScrollRef = useRef<string | null>(null);
 
   useEffect(() => {
     selectedIdRef.current = selectedId;
   }, [selectedId]);
+
+  const refreshPushState = useCallback(async () => {
+    setPushStatus(getPermission());
+    try {
+      setPushSubscribed(await isSubscribed());
+    } catch {
+      setPushSubscribed(false);
+    }
+  }, []);
 
   const selected = useMemo(
     () => conversations.find((c) => c._id === selectedId) || null,
@@ -203,9 +219,31 @@ export default function AdminSupportChat() {
     else setMessages([]);
   }, [selectedId, loadMessages]);
 
+  // Auto-scroll only when near bottom / new conversation — never yank while reading up.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+    const lastId = messages[messages.length - 1]?._id || null;
+    const conversationChanged =
+      selectedId !== prevSelectedForScrollRef.current;
+
+    if (conversationChanged) {
+      prevSelectedForScrollRef.current = selectedId;
+      stickToBottomRef.current = true;
+      lastScrolledMsgIdRef.current = null;
+    }
+
+    const lastChanged = lastId !== lastScrolledMsgIdRef.current;
+    if (!stickToBottomRef.current || (!lastChanged && !conversationChanged)) {
+      return;
+    }
+
+    lastScrolledMsgIdRef.current = lastId;
+    const container = messagesContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    } else {
+      messagesEndRef.current?.scrollIntoView({ behavior: "auto", block: "end" });
+    }
+  }, [messages, selectedId]);
 
   // Deep-link from PWA / push: /admin/support-chat?c=<id>
   useEffect(() => {
@@ -218,8 +256,10 @@ export default function AdminSupportChat() {
 
   // Enable PWA push for admins (platform support alerts)
   useEffect(() => {
-    void ensurePushSubscription().then(() => setPushStatus(getPermission()));
-  }, []);
+    void ensurePushSubscription().then(() => {
+      void refreshPushState();
+    });
+  }, [refreshPushState]);
 
   // Join / leave conversation room when selection changes
   useEffect(() => {
@@ -265,47 +305,26 @@ export default function AdminSupportChat() {
       body: string,
       conversationId?: string
     ) => {
-      // Always show in-page toast
       setToast(`${title}: ${body}`);
       window.setTimeout(() => setToast(""), 5000);
-
-      try {
-        const audio = new Audio(
-          "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA="
-        );
-        void audio.play().catch(() => {});
-      } catch {
-        /* ignore */
-      }
 
       const sameConversationOpen =
         !!conversationId &&
         String(selectedIdRef.current) === String(conversationId);
-      const skipBrowserNotification =
-        sameConversationOpen && document.hasFocus();
+      const skipOsNotification =
+        sameConversationOpen && !document.hidden && document.hasFocus();
 
-      if (
-        typeof Notification !== "undefined" &&
-        Notification.permission === "granted" &&
-        !skipBrowserNotification
-      ) {
-        try {
-          const n = new Notification(title, {
-            body,
-            tag: conversationId ? `support-${conversationId}` : "support",
-          });
-          n.onclick = () => {
-            window.focus();
-            if (conversationId) {
-              setSelectedId(conversationId);
-              setSearchParams({ c: conversationId });
-            }
-            n.close();
-          };
-        } catch {
-          /* ignore */
-        }
-      }
+      void notifyAdminSupportEvent({
+        title,
+        body,
+        conversationId,
+        skipOsNotification,
+      }).then((alert) => {
+        if (!alert) return;
+        window.dispatchEvent(
+          new CustomEvent("bizuply:adminSupportAlert", { detail: alert })
+        );
+      });
     };
 
     const onNewMessage = (payload: any) => {
@@ -390,19 +409,47 @@ export default function AdminSupportChat() {
 
   async function enablePushAlerts() {
     setPushBusy(true);
+    setError("");
     try {
       const result = await subscribeToPush();
-      setPushStatus(getPermission());
+      await refreshPushState();
       if (!result.ok) {
         setError(
           result.reason === "ios-install"
             ? "באייפון צריך להתקין את האפליקציה למסך הבית (PWA) כדי לקבל התראות"
-            : "לא הצלחנו להפעיל התראות בדפדפן"
+            : result.reason === "denied"
+              ? "התראות חסומות בדפדפן — יש לאשר בהגדרות האתר"
+              : "לא הצלחנו להפעיל התראות בדפדפן"
         );
       } else {
-        setToast("התראות PWA הופעלו בהצלחה");
+        setToast("התראות PWA הופעלו — תקבלו התראה על שיחות מלקוחות");
         window.setTimeout(() => setToast(""), 4000);
+        await notifyAdminSupportEvent({
+          title: "התראות פעילות",
+          body: "כשתגיע שיחה מלקוח — תופיע התראה כאן וב־PWA",
+          skipOsNotification: false,
+        });
       }
+    } finally {
+      setPushBusy(false);
+    }
+  }
+
+  async function testPushAlert() {
+    setPushBusy(true);
+    try {
+      if (pushStatus !== "granted" || !pushSubscribed) {
+        await enablePushAlerts();
+        return;
+      }
+      await notifyAdminSupportEvent({
+        title: "בדיקת התראת תמיכה",
+        body: "אם אתם רואים את זה — ההתראות עובדות",
+        conversationId: selectedId,
+        skipOsNotification: false,
+      });
+      setToast("נשלחה התראת בדיקה");
+      window.setTimeout(() => setToast(""), 3000);
     } finally {
       setPushBusy(false);
     }
@@ -471,6 +518,8 @@ export default function AdminSupportChat() {
     setSending(true);
     setInput("");
     const conversationId = selectedId;
+
+    stickToBottomRef.current = true;
 
     try {
       if (socket?.connected) {
@@ -541,23 +590,30 @@ export default function AdminSupportChat() {
                 ממתינות: {waitingCount}
               </span>
             )}
-            {pushStatus !== "granted" && (
-              <button
-                type="button"
-                disabled={pushBusy}
-                onClick={() => void enablePushAlerts()}
-                className="inline-flex items-center gap-1 rounded-xl bg-violet-700 px-3 py-2 text-xs font-bold text-white shadow-sm disabled:opacity-50"
-              >
-                <Bell size={14} />
-                הפעלת התראות PWA
-              </button>
-            )}
-            {pushStatus === "granted" && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 px-3 py-1 text-xs font-bold text-violet-800">
-                <Bell size={12} />
-                התראות PWA פעילות
-              </span>
-            )}
+            <button
+              type="button"
+              disabled={pushBusy}
+              onClick={() =>
+                void (pushStatus === "granted" && pushSubscribed
+                  ? testPushAlert()
+                  : enablePushAlerts())
+              }
+              className={`inline-flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-bold shadow-sm disabled:opacity-50 ${
+                pushStatus === "granted" && pushSubscribed
+                  ? "border border-violet-200 bg-violet-50 text-violet-800"
+                  : "bg-violet-700 text-white"
+              }`}
+              title={
+                pushStatus === "granted" && pushSubscribed
+                  ? "התראות פעילות — לחצו לבדיקה"
+                  : "הפעילו התראות בזמן אמת ו־PWA"
+              }
+            >
+              <Bell size={14} />
+              {pushStatus === "granted" && pushSubscribed
+                ? "התראות פעילות · בדיקה"
+                : "הפעלת התראות"}
+            </button>
             <button
               type="button"
               onClick={() => void loadConversations()}
@@ -724,7 +780,17 @@ export default function AdminSupportChat() {
                   </div>
                 </header>
 
-                <div className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-[#faf8ff] px-5 py-4">
+                <div
+                  ref={messagesContainerRef}
+                  onScroll={() => {
+                    const el = messagesContainerRef.current;
+                    if (!el) return;
+                    const distance =
+                      el.scrollHeight - el.scrollTop - el.clientHeight;
+                    stickToBottomRef.current = distance < 140;
+                  }}
+                  className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-[#faf8ff] px-5 py-4"
+                >
                   {loadingMessages ? (
                     <p className="text-sm text-slate-500">טוען הודעות...</p>
                   ) : (
