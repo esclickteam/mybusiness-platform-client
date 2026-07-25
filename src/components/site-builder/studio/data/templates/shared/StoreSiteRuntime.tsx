@@ -517,13 +517,6 @@ export default function StoreSiteRuntime({
     </footer>
   );
 
-  const fallbackCategoryImages = [
-    g("catOneImage"),
-    g("catTwoImage"),
-    g("catThreeImage"),
-    g("catFourImage"),
-  ];
-
   const CategoryTile = ({
     cat,
     index,
