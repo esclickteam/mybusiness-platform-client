@@ -557,6 +557,56 @@ import { jewelisEditorCss } from "./jewelis/editorCss";
 import { jewelisSchema } from "./jewelis/schema";
 import { jewelisDefaultData } from "./jewelis/defaultData";
 
+import BreworaPages, { breworaPages } from "./brewora/pages";
+import { breworaEditorCss } from "./brewora/editorCss";
+import { breworaSchema } from "./brewora/schema";
+import { breworaDefaultData } from "./brewora/defaultData";
+
+import VinoraPages, { vinoraPages } from "./vinora/pages";
+import { vinoraEditorCss } from "./vinora/editorCss";
+import { vinoraSchema } from "./vinora/schema";
+import { vinoraDefaultData } from "./vinora/defaultData";
+
+import TrailhausPages, { trailhausPages } from "./trailhaus/pages";
+import { trailhausEditorCss } from "./trailhaus/editorCss";
+import { trailhausSchema } from "./trailhaus/schema";
+import { trailhausDefaultData } from "./trailhaus/defaultData";
+
+import AudioluxPages, { audioluxPages } from "./audiolux/pages";
+import { audioluxEditorCss } from "./audiolux/editorCss";
+import { audioluxSchema } from "./audiolux/schema";
+import { audioluxDefaultData } from "./audiolux/defaultData";
+
+import WheeloraPages, { wheeloraPages } from "./wheelora/pages";
+import { wheeloraEditorCss } from "./wheelora/editorCss";
+import { wheeloraSchema } from "./wheelora/schema";
+import { wheeloraDefaultData } from "./wheelora/defaultData";
+
+import FernoraPages, { fernoraPages } from "./fernora/pages";
+import { fernoraEditorCss } from "./fernora/editorCss";
+import { fernoraSchema } from "./fernora/schema";
+import { fernoraDefaultData } from "./fernora/defaultData";
+
+import PlayoraPages, { playoraPages } from "./playora/pages";
+import { playoraEditorCss } from "./playora/editorCss";
+import { playoraSchema } from "./playora/schema";
+import { playoraDefaultData } from "./playora/defaultData";
+
+import PanoraPages, { panoraPages } from "./panora/pages";
+import { panoraEditorCss } from "./panora/editorCss";
+import { panoraSchema } from "./panora/schema";
+import { panoraDefaultData } from "./panora/defaultData";
+
+import KickoraPages, { kickoraPages } from "./kickora/pages";
+import { kickoraEditorCss } from "./kickora/editorCss";
+import { kickoraSchema } from "./kickora/schema";
+import { kickoraDefaultData } from "./kickora/defaultData";
+
+import ScentoraPages, { scentoraPages } from "./scentora/pages";
+import { scentoraEditorCss } from "./scentora/editorCss";
+import { scentoraSchema } from "./scentora/schema";
+import { scentoraDefaultData } from "./scentora/defaultData";
+
 import LectoraPages, { lectoraPages } from "./lectora/pages";
 import { lectoraEditorCss } from "./lectora/editorCss";
 import { lectoraSchema } from "./lectora/schema";
@@ -2040,6 +2090,116 @@ export const studioTemplateRendererRegistry: Record<
     schema: jewelisSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: jewelisDefaultData as unknown as Record<string, any>,
     editorCss: jewelisEditorCss,
+  }),
+
+  brewora: createRenderer({
+    key: "brewora",
+    name: "Brewora",
+    Component: BreworaPages,
+    pages: breworaPages,
+    editorMode: "visual-react",
+    schema: breworaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: breworaDefaultData as unknown as Record<string, any>,
+    editorCss: breworaEditorCss,
+  }),
+
+  vinora: createRenderer({
+    key: "vinora",
+    name: "Vinora",
+    Component: VinoraPages,
+    pages: vinoraPages,
+    editorMode: "visual-react",
+    schema: vinoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vinoraDefaultData as unknown as Record<string, any>,
+    editorCss: vinoraEditorCss,
+  }),
+
+  trailhaus: createRenderer({
+    key: "trailhaus",
+    name: "Trailhaus",
+    Component: TrailhausPages,
+    pages: trailhausPages,
+    editorMode: "visual-react",
+    schema: trailhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: trailhausDefaultData as unknown as Record<string, any>,
+    editorCss: trailhausEditorCss,
+  }),
+
+  audiolux: createRenderer({
+    key: "audiolux",
+    name: "Audiolux",
+    Component: AudioluxPages,
+    pages: audioluxPages,
+    editorMode: "visual-react",
+    schema: audioluxSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: audioluxDefaultData as unknown as Record<string, any>,
+    editorCss: audioluxEditorCss,
+  }),
+
+  wheelora: createRenderer({
+    key: "wheelora",
+    name: "Wheelora",
+    Component: WheeloraPages,
+    pages: wheeloraPages,
+    editorMode: "visual-react",
+    schema: wheeloraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: wheeloraDefaultData as unknown as Record<string, any>,
+    editorCss: wheeloraEditorCss,
+  }),
+
+  fernora: createRenderer({
+    key: "fernora",
+    name: "Fernora",
+    Component: FernoraPages,
+    pages: fernoraPages,
+    editorMode: "visual-react",
+    schema: fernoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: fernoraDefaultData as unknown as Record<string, any>,
+    editorCss: fernoraEditorCss,
+  }),
+
+  playora: createRenderer({
+    key: "playora",
+    name: "Playora",
+    Component: PlayoraPages,
+    pages: playoraPages,
+    editorMode: "visual-react",
+    schema: playoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: playoraDefaultData as unknown as Record<string, any>,
+    editorCss: playoraEditorCss,
+  }),
+
+  panora: createRenderer({
+    key: "panora",
+    name: "Panora",
+    Component: PanoraPages,
+    pages: panoraPages,
+    editorMode: "visual-react",
+    schema: panoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: panoraDefaultData as unknown as Record<string, any>,
+    editorCss: panoraEditorCss,
+  }),
+
+  kickora: createRenderer({
+    key: "kickora",
+    name: "Kickora",
+    Component: KickoraPages,
+    pages: kickoraPages,
+    editorMode: "visual-react",
+    schema: kickoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: kickoraDefaultData as unknown as Record<string, any>,
+    editorCss: kickoraEditorCss,
+  }),
+
+  scentora: createRenderer({
+    key: "scentora",
+    name: "Scentora",
+    Component: ScentoraPages,
+    pages: scentoraPages,
+    editorMode: "visual-react",
+    schema: scentoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: scentoraDefaultData as unknown as Record<string, any>,
+    editorCss: scentoraEditorCss,
   }),
 
   lectora: createRenderer({
