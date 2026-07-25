@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   getValidAccessToken,
+  isHardRefreshFailure,
   registerAuthHeaderSetter,
   refreshAccessTokenOnce,
 } from "./utils/tokenRefresh";
@@ -145,7 +146,7 @@ API.interceptors.response.use(
       } catch (err) {
         onRefreshed(null);
 
-        if (err.message !== "NO_REFRESH_TOKEN") {
+        if (!isHardRefreshFailure(err) && err?.code !== "REFRESH_COOLDOWN") {
           console.warn("Error refreshing token:", err?.message || err);
         }
 

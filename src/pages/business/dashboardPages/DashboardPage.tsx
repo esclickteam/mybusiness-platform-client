@@ -1404,7 +1404,7 @@ export default function DashboardPage() {
         const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
-          console.warn("Dashboard socket: token refresh failed — will retry");
+          console.warn("Dashboard socket: token refresh failed — backing off");
           return;
         }
 

@@ -7,6 +7,9 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 let socketInstance = null;   // Singleton instance
 let currentToken = null;     // Cache last token used
 let initialized = false;     // Prevent duplicate setup
+let refreshInFlight = false;
+let lastRefreshAttemptAt = 0;
+const REFRESH_RETRY_COOLDOWN_MS = 8_000;
 
 /**
  * Creates or returns an existing Socket.IO singleton connection
@@ -65,17 +68,24 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     });
 
     /**
-     * 🔁 Auto-refresh token when expired
+     * 🔁 Auto-refresh token when expired (coalesced + cooldown to avoid storms)
      */
     const refreshAndReconnect = async () => {
+      if (refreshInFlight) return;
+      if (Date.now() - lastRefreshAttemptAt < REFRESH_RETRY_COOLDOWN_MS) return;
+
+      refreshInFlight = true;
+      lastRefreshAttemptAt = Date.now();
+
       try {
         const newToken = await getValidAccessToken({ force: true });
         if (!newToken) {
-          console.warn("[Socket] Token refresh failed — will retry on next event");
+          console.warn("[Socket] Token refresh failed — backing off");
           return;
         }
 
         currentToken = newToken;
+        lastRefreshAttemptAt = 0;
 
         // Update auth & reconnect
         socketInstance.auth = {
@@ -88,6 +98,8 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
         if (!socketInstance.connected) socketInstance.connect();
       } catch (err) {
         console.warn("[Socket] Token refresh error:", err?.message || err);
+      } finally {
+        refreshInFlight = false;
       }
     };
 

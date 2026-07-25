@@ -159,7 +159,15 @@ async function tryRefreshWithRetries(maxAttempts = 3) {
     try {
       return await refreshAccessTokenOnce();
     } catch (err) {
-      if (err.message === "NO_REFRESH_TOKEN") return null;
+      if (
+        err.message === "NO_REFRESH_TOKEN" ||
+        err.message === "REFRESH_REVOKED" ||
+        err.code === "REFRESH_TOKEN_NOT_FOUND" ||
+        err.code === "REFRESH_TOKEN_INVALID"
+      ) {
+        return null;
+      }
+      if (err.code === "REFRESH_COOLDOWN") return null;
       if (attempt < maxAttempts - 1) {
         await new Promise((resolve) =>
           setTimeout(resolve, 1000 * (attempt + 1))
