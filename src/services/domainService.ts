@@ -516,6 +516,9 @@ export async function estimateDomainRegistration(payload: {
       getApiErrorMessage(response, data, "הערכת מחיר הדומיין נכשלה"),
     );
   }
+  if (!(Number(data.price) > 0)) {
+    throw new Error("הערכת מחיר הדומיין החזירה מחיר לא תקין");
+  }
   return data;
 }
 
