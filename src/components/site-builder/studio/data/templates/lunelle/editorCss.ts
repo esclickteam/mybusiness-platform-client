@@ -234,6 +234,136 @@ export const lunelleEditorCss = `
 }
 
 /* =========================
+   HERO COMPOSITION LOCK
+   Keep editor + published identical:
+   large image with small detail + appointment slot overlaid.
+========================= */
+
+[data-template-id="lunelle"] .lunelle-hero {
+  overflow-x: clip;
+  overflow-y: visible;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-stage {
+  display: grid;
+  align-items: center;
+  gap: 3.5rem;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-media {
+  position: relative;
+  z-index: 1;
+  max-width: 560px;
+  margin-inline: auto;
+  padding-bottom: 2.5rem;
+  overflow: visible;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-main {
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border-radius: 46px;
+  border: 10px solid #ffffff;
+  background: #f1d7dc;
+  box-shadow: 0 35px 100px rgba(42, 23, 28, 0.18);
+}
+
+[data-template-id="lunelle"] .lunelle-hero-main img {
+  display: block;
+  width: 100%;
+  height: 650px;
+  object-fit: cover;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-chip,
+[data-template-id="lunelle"] .lunelle-hero-slot,
+[data-template-id="lunelle"] .lunelle-hero-detail {
+  position: absolute !important;
+  z-index: 20 !important;
+  display: none;
+  pointer-events: auto;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-chip {
+  top: 2.5rem;
+  right: -1.5rem;
+  border-radius: 999px;
+  background: #2a171c !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  padding: 1rem 1.5rem;
+  font-size: 0.875rem;
+  font-weight: 900;
+  box-shadow: 0 22px 60px rgba(42, 23, 28, 0.24);
+}
+
+[data-template-id="lunelle"] .lunelle-hero-slot {
+  left: -1.5rem;
+  bottom: 3.5rem;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.92) !important;
+  color: #2a171c !important;
+  padding: 1.25rem;
+  box-shadow: 0 24px 70px rgba(42, 23, 28, 0.16);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+}
+
+[data-template-id="lunelle"] .lunelle-hero-slot p {
+  color: inherit;
+}
+
+[data-template-id="lunelle"] .lunelle-hero-detail {
+  right: 4rem;
+  bottom: -2.5rem;
+  width: 210px;
+  overflow: hidden;
+  border-radius: 34px;
+  border: 8px solid #ffffff;
+  background: #f1d7dc;
+  box-shadow: 0 26px 80px rgba(42, 23, 28, 0.18);
+}
+
+[data-template-id="lunelle"] .lunelle-hero-detail img {
+  display: block;
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+@media (min-width: 768px) {
+  [data-template-id="lunelle"] .lunelle-hero-chip,
+  [data-template-id="lunelle"] .lunelle-hero-slot {
+    display: block !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  [data-template-id="lunelle"] .lunelle-hero-stage {
+    grid-template-columns: 1.02fr 0.98fr;
+  }
+
+  [data-template-id="lunelle"] .lunelle-hero-media-col {
+    order: 1;
+  }
+
+  [data-template-id="lunelle"] .lunelle-hero-copy {
+    order: 2;
+    text-align: right;
+  }
+
+  [data-template-id="lunelle"] .lunelle-hero-detail {
+    display: block !important;
+  }
+
+  [data-template-id="lunelle"] .lunelle-hero-ctas {
+    justify-content: flex-start;
+  }
+}
+
+/* =========================
    BUTTONS / LINKS
 ========================= */
 
@@ -251,6 +381,48 @@ export const lunelleEditorCss = `
 [data-template-id="lunelle"] a[data-editable-link="true"]:hover,
 [data-template-id="lunelle"] button:hover {
   transform: translateY(-3px);
+}
+
+/* Prevent global a { color: inherit } from swallowing dark CTAs */
+[data-template-id="lunelle"] .lunelle-btn-primary,
+[data-template-id="lunelle"] a.lunelle-btn-primary,
+[data-template-id="lunelle"] button.lunelle-btn-primary,
+[data-template-id="lunelle"] a[class*="bg-[#2a171c]"],
+[data-template-id="lunelle"] button[class*="bg-[#2a171c]"],
+[data-template-id="lunelle"] .lunelle-hero-chip {
+  background: #2a171c !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+[data-template-id="lunelle"] .lunelle-btn-primary > *,
+[data-template-id="lunelle"] a[class*="bg-[#2a171c]"] > *,
+[data-template-id="lunelle"] button[class*="bg-[#2a171c]"] > * {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+[data-template-id="lunelle"] .lunelle-btn-secondary,
+[data-template-id="lunelle"] a.lunelle-btn-secondary,
+[data-template-id="lunelle"] button.lunelle-btn-secondary,
+[data-template-id="lunelle"] a[class*="bg-white"] {
+  background: #ffffff !important;
+  color: #2a171c !important;
+  -webkit-text-fill-color: #2a171c !important;
+}
+
+[data-template-id="lunelle"] .lunelle-btn-secondary > *,
+[data-template-id="lunelle"] a[class*="bg-white"] > * {
+  color: #2a171c !important;
+  -webkit-text-fill-color: #2a171c !important;
+}
+
+[data-template-id="lunelle"] footer a[data-editable-link="true"] {
+  color: rgba(255, 255, 255, 0.6) !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
 }
 
 [data-template-id="lunelle"] .lunelle-magnetic {

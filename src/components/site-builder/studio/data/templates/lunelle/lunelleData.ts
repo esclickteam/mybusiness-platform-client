@@ -131,7 +131,7 @@ function navHtml() {
       <a data-editable-link="true" href="#contact">צור קשר</a>
     </nav>
 
-    <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.16)]">
+    <a data-editable-link="true" href="#booking" class="lunelle-btn-primary rounded-full bg-[#2a171c] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.16)]">
       קביעת תור
     </a>
   </div>
@@ -295,34 +295,34 @@ function pageShell(content: string) {
 
 export function createLunelleHomeHtml() {
   return pageShell(`
-<section data-section-kind="hero" data-section-title="Hero" class="relative overflow-hidden bg-[#fff7f1] px-5 pb-24 pt-20 lg:pb-28 lg:pt-24">
+<section data-section-kind="hero" data-section-title="Hero" class="lunelle-hero relative overflow-x-clip bg-[#fff7f1] px-5 pb-24 pt-20 lg:pb-28 lg:pt-24">
   <div class="pointer-events-none absolute right-[-160px] top-[-120px] h-[420px] w-[420px] rounded-full bg-[#f2c7cf]/45 blur-3xl lunelle-pulse"></div>
   <div class="pointer-events-none absolute bottom-[-180px] left-[-140px] h-[440px] w-[440px] rounded-full bg-[#e8b8c1]/30 blur-3xl lunelle-pulse"></div>
 
   <div class="mx-auto max-w-7xl">
-    <div class="grid items-center gap-14 lg:grid-cols-[1.02fr_.98fr]">
-      <div class="order-2 lg:order-1">
-        <div class="relative mx-auto max-w-[560px]">
-          <div class="absolute -right-8 top-10 z-20 hidden rounded-full bg-[#2a171c] px-6 py-4 text-sm font-black text-white shadow-[0_22px_60px_rgba(42,23,28,.24)] md:block">
+    <div class="lunelle-hero-stage grid items-center gap-14 lg:grid-cols-[1.02fr_.98fr]">
+      <div class="lunelle-hero-media-col order-2 lg:order-1">
+        <div class="lunelle-hero-media relative mx-auto max-w-[560px]">
+          <div class="lunelle-hero-chip absolute -right-8 top-10 z-20 rounded-full bg-[#2a171c] px-6 py-4 text-sm font-black text-white shadow-[0_22px_60px_rgba(42,23,28,.24)]">
             ג׳ל • מניקור • פדיקור
           </div>
 
-          <div class="absolute -left-8 bottom-14 z-20 hidden rounded-[28px] border border-white/60 bg-white/90 p-5 shadow-[0_24px_70px_rgba(42,23,28,.16)] backdrop-blur-2xl md:block">
+          <div class="lunelle-hero-slot absolute -left-8 bottom-14 z-20 rounded-[28px] border border-white/60 bg-white/90 p-5 shadow-[0_24px_70px_rgba(42,23,28,.16)] backdrop-blur-2xl">
             <p data-gjs-type="text" class="text-[10px] font-black tracking-[0.22em] text-[#8a4f5f]">התור הפנוי הקרוב</p>
             <p data-gjs-type="text" class="mt-2 text-2xl font-black tracking-[-0.04em] text-[#2a171c]">היום 18:30</p>
           </div>
 
-          <div class="lunelle-card lunelle-shine overflow-hidden rounded-[46px] border-[10px] border-white bg-[#f1d7dc] shadow-[0_35px_100px_rgba(42,23,28,.18)]">
+          <div class="lunelle-hero-main lunelle-card lunelle-shine overflow-hidden rounded-[46px] border-[10px] border-white bg-[#f1d7dc] shadow-[0_35px_100px_rgba(42,23,28,.18)]">
             <img data-gjs-type="image" ${visualImageAttrs("hero.image", "Lunelle Studio manicure")} src="${lunelleImages.hero}" alt="Lunelle Studio manicure" class="lunelle-image-hover h-[650px] w-full object-cover" />
           </div>
 
-          <div class="absolute -bottom-10 right-16 hidden w-[210px] overflow-hidden rounded-[34px] border-[8px] border-white bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.18)] lg:block">
+          <div class="lunelle-hero-detail absolute -bottom-10 right-16 z-20 w-[210px] overflow-hidden rounded-[34px] border-[8px] border-white bg-[#f1d7dc] shadow-[0_26px_80px_rgba(42,23,28,.18)]">
             <img data-gjs-type="image" ${visualImageAttrs("hero.detail.image", "Nail art detail")} src="${lunelleImages.nailArt}" alt="Nail art detail" class="lunelle-image-hover h-[220px] w-full object-cover" />
           </div>
         </div>
       </div>
 
-      <div class="order-1 text-center lg:order-2 lg:text-right">
+      <div class="lunelle-hero-copy order-1 text-center lg:order-2 lg:text-right">
         <p data-gjs-type="text" class="text-xs font-black tracking-[0.36em] text-[#8a4f5f]">
           סטודיו בוטיק לציפורניים
         </p>
@@ -335,12 +335,12 @@ export function createLunelleHomeHtml() {
           עיצובי ציפורניים נקיים ועדינים שמשקפים את הסגנון, האנרגיה והיומיום שלך.
         </p>
 
-        <div class="mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
-          <a data-editable-link="true" href="#booking" class="rounded-full bg-[#2a171c] px-9 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(42,23,28,.22)]">
+        <div class="lunelle-hero-ctas mt-10 flex flex-wrap justify-center gap-4 lg:justify-start">
+          <a data-editable-link="true" href="#booking" class="lunelle-btn-primary rounded-full bg-[#2a171c] px-9 py-4 text-sm font-black text-white shadow-[0_20px_45px_rgba(42,23,28,.22)]">
             קביעת תור
           </a>
 
-          <a data-editable-link="true" href="#gallery" class="rounded-full border border-[#2a171c]/12 bg-white px-9 py-4 text-sm font-black text-[#2a171c] shadow-[0_14px_35px_rgba(42,23,28,.06)]">
+          <a data-editable-link="true" href="#gallery" class="lunelle-btn-secondary rounded-full border border-[#2a171c]/12 bg-white px-9 py-4 text-sm font-black text-[#2a171c] shadow-[0_14px_35px_rgba(42,23,28,.06)]">
             צפייה בעבודות
           </a>
         </div>
@@ -518,7 +518,7 @@ ${marqueeHtml()}
 
       <textarea placeholder="הודעה / השראה / בקשה מיוחדת" class="mt-4 min-h-[150px] w-full rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
 
-      <button type="button" class="mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
+      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
         שליחת בקשה
       </button>
     </form>
@@ -549,7 +549,7 @@ ${marqueeHtml()}
 
       <textarea placeholder="כתבי כאן את ההודעה שלך" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
 
-      <button type="button" class="mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
+      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
         שליחת הודעה
       </button>
 
