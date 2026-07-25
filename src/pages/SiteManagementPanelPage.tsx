@@ -191,7 +191,14 @@ export default function SiteManagementPanelPage() {
   }
 
   return (
-    <div dir="rtl" className="min-h-[calc(100vh-64px)] bg-gradient-to-b from-[#faf7ff] via-[#f3f8ff] to-white">
+    <div
+      dir="rtl"
+      className={`min-h-[calc(100vh-64px)] ${
+        activeSection === "plugins"
+          ? "bg-[#f8f9fa]"
+          : "bg-gradient-to-b from-[#faf7ff] via-[#f3f8ff] to-white"
+      }`}
+    >
       <div className="sticky top-0 z-20 border-b border-violet-100/80 bg-white/85 shadow-[0_4px_20px_rgba(99,102,241,0.05)] backdrop-blur-md">
         <div className="mx-auto flex max-w-[1600px] flex-wrap items-center justify-between gap-3 px-4 py-3 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
@@ -276,8 +283,13 @@ export default function SiteManagementPanelPage() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1600px] px-4 py-5 md:px-6 md:py-6">
-        {activeSection !== "overview" && activeSection !== "plugins" ? (
+      <div
+        className={`mx-auto max-w-[1600px] px-4 md:px-6 ${
+          activeSection === "plugins" ? "py-6 md:py-8" : "py-5 md:py-6"
+        }`}
+      >
+        {activeSection !== "overview" &&
+        activeSection !== "plugins" ? (
           <div className="mb-5 rounded-md border border-violet-100/70 bg-white/80 px-4 py-3 backdrop-blur-sm">
             <h2 className="text-base font-bold text-slate-900">{activeMeta.label}</h2>
             <p className="mt-0.5 text-sm text-slate-500">{activeMeta.description}</p>

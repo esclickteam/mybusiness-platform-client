@@ -2,18 +2,20 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Puzzle } from "lucide-react";
 
 import { getMySite } from "../../../../api/mySitesApi";
-import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
+import type { SitePluginDefinition } from "../../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
   bool,
   Field,
+  InfoCallout,
   PluginPanelProps,
+  SettingsSection,
   SitePluginPanelFrame,
   str,
+  TextInput,
   Toggle,
 } from "./SitePluginPanelFrame";
-import { inputBase } from "../siteManagementUi";
 
 type SitePageOption = { id: string; title: string };
 
@@ -85,26 +87,28 @@ export default function SiteDynamicPluginPanel({
       extraActions={
         <a
           href={`${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`}
-          className="inline-flex h-10 items-center gap-1.5 rounded-md border border-violet-200 bg-violet-50 px-3 text-xs font-semibold text-violet-700 transition hover:bg-violet-100"
+          className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           <Puzzle size={14} />
           הוספה בעורך
         </a>
       }
+      sidebar={
+        <InfoCallout>
+          <strong>חיבור לעמודים:</strong> לאחר שמירה, הוסיפו את התוסף דרך{" "}
+          <strong>עורך האתר → הוספה → תוספים</strong>.
+        </InfoCallout>
+      }
     >
-      <Toggle
-        label="תוסף פעיל באתר"
-        checked={bool(settings.isActive, true)}
-        onChange={(v) => updateField("isActive", v)}
-      />
+      <SettingsSection title="הפעלה">
+        <Toggle
+          label="תוסף פעיל באתר"
+          checked={bool(settings.isActive, true)}
+          onChange={(v) => updateField("isActive", v)}
+        />
+      </SettingsSection>
 
-      <div className="rounded-xl border border-sky-100 bg-sky-50/50 px-4 py-3 text-xs leading-relaxed text-sky-900">
-        <strong>חיבור אוטומטי:</strong> לאחר שמירה, הוסיפו את התוסף לעמוד דרך{" "}
-        <strong>עורך האתר → הוספה → תוספים</strong>. חנות ומוצרים מסתנכרנים
-        אוטומטית עם עמוד המוצרים.
-      </div>
-
-      <Field label="הצגה">
+      <SettingsSection title="הצגה" description="היכן התוסף יופיע באתר">
         <div className="flex flex-wrap gap-2">
           {[
             { value: "site-wide", label: "בכל האתר" },
@@ -114,67 +118,72 @@ export default function SiteDynamicPluginPanel({
               key={opt.value}
               type="button"
               onClick={() => updateField("scope", opt.value)}
-              className={`rounded-md px-3 py-2 text-xs font-semibold transition ${
+              className={`rounded-full px-4 py-2 text-xs font-semibold transition ${
                 scope === opt.value
-                  ? "bg-violet-600 text-white"
-                  : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200"
+                  ? "bg-blue-600 text-white"
+                  : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300"
               }`}
             >
               {opt.label}
             </button>
           ))}
         </div>
-      </Field>
 
-      {scope === "pages" ? (
-        <Field label="עמודים באתר">
-          {pages.length === 0 ? (
-            <p className="text-xs text-slate-500">
-              אין עמודים עדיין — צרו עמודים בעורך האתר.
-            </p>
-          ) : (
-            <div className="max-h-48 space-y-1.5 overflow-y-auto rounded-xl border border-slate-200 p-2">
-              {pages.map((page) => {
-                const checked = pageIds.includes(page.id);
-                return (
-                  <label
-                    key={page.id}
-                    className={`flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
-                      checked ? "bg-violet-50 text-violet-900" : "hover:bg-slate-50"
-                    }`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={checked}
-                      onChange={() => togglePage(page.id)}
-                      className="rounded border-slate-300"
-                    />
-                    {page.title}
-                  </label>
-                );
-              })}
-            </div>
-          )}
-        </Field>
-      ) : null}
+        {scope === "pages" ? (
+          <Field label="עמודים באתר">
+            {pages.length === 0 ? (
+              <p className="text-xs text-slate-500">
+                אין עמודים עדיין — צרו עמודים בעורך האתר.
+              </p>
+            ) : (
+              <div className="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-slate-200 p-2">
+                {pages.map((page) => {
+                  const checked = pageIds.includes(page.id);
+                  return (
+                    <label
+                      key={page.id}
+                      className={`flex cursor-pointer items-center gap-2 rounded-lg px-3 py-2 text-sm transition ${
+                        checked
+                          ? "bg-blue-50 text-blue-900"
+                          : "hover:bg-slate-50"
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => togglePage(page.id)}
+                        className="rounded border-slate-300"
+                      />
+                      {page.title}
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </Field>
+        ) : null}
+      </SettingsSection>
 
       {pluginKey === "whatsapp-float" ? (
-        <Field label="מספר WhatsApp">
-          <input
-            className={inputBase}
-            value={str(settings.phone)}
-            onChange={(e) => updateField("phone", e.target.value)}
-            placeholder="972501234567"
-          />
-        </Field>
+        <SettingsSection title="WhatsApp">
+          <Field label="מספר WhatsApp" hint="פורמט בינלאומי, ללא +">
+            <TextInput
+              value={str(settings.phone)}
+              onChange={(v) => updateField("phone", v)}
+              placeholder="972501234567"
+            />
+          </Field>
+        </SettingsSection>
       ) : null}
 
       {pluginKey === "whatsapp-catalog" ? (
-        <Toggle
-          label="סנכרון עם מוצרי החנות"
-          checked={bool(settings.syncWithStore, true)}
-          onChange={(v) => updateField("syncWithStore", v)}
-        />
+        <SettingsSection title="סנכרון">
+          <Toggle
+            label="סנכרון עם מוצרי החנות"
+            checked={bool(settings.syncWithStore, true)}
+            onChange={(v) => updateField("syncWithStore", v)}
+          />
+        </SettingsSection>
       ) : null}
     </SitePluginPanelFrame>
   );
