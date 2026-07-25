@@ -488,6 +488,37 @@ export type DomainCheckoutResult = {
   error?: string;
 };
 
+export async function estimateDomainRegistration(payload: {
+  domain: string;
+  years: DomainYears;
+}): Promise<DomainQuoteResult> {
+  const domain = String(payload.domain || "").trim().toLowerCase();
+  if (!domain) {
+    throw new Error("חסר דומיין להערכת מחיר");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/realtime-register/estimate`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify({
+        domain,
+        years: payload.years,
+      }),
+    },
+  );
+
+  const data = await readJson<DomainQuoteResult>(response);
+  if (!response.ok || !data?.success) {
+    throw new Error(
+      getApiErrorMessage(response, data, "הערכת מחיר הדומיין נכשלה"),
+    );
+  }
+  return data;
+}
+
 export async function quoteDomainRegistration(payload: {
   registrationId: string;
   years: DomainYears;

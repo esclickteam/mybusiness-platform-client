@@ -15,6 +15,7 @@ import {
   checkDomainAvailability,
   checkoutDomainRegistration,
   createDomainContact,
+  estimateDomainRegistration,
   quoteDomainRegistration,
   registerDomain,
   type DomainAvailabilityResult,
@@ -152,8 +153,12 @@ export default function DomainSearch() {
   const [yearOptions, setYearOptions] = useState<DomainYears[]>(
     IL_DOMAIN_YEAR_OPTIONS,
   );
+  const [periodPrices, setPeriodPrices] = useState<
+    Partial<Record<DomainYears, number>>
+  >({});
   const [quote, setQuote] = useState<DomainQuoteResult | null>(null);
   const [isQuoting, setIsQuoting] = useState(false);
+  const [isEstimating, setIsEstimating] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [registerResult, setRegisterResult] =
@@ -239,6 +244,89 @@ export default function DomainSearch() {
   }, []);
 
   useEffect(() => {
+    if (!result?.available || !result.domain || registerResult?.success) {
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadEstimates() {
+      const domain = result.domain;
+      setIsEstimating(true);
+      setError("");
+      try {
+        const seedYears = yearOptionsForDomain(domain)[0] || 1;
+        const seed = await estimateDomainRegistration({
+          domain,
+          years: seedYears,
+        });
+        if (cancelled) return;
+
+        const usableOptions = (
+          Array.isArray(seed.options) && seed.options.length
+            ? seed.options
+            : yearOptionsForDomain(domain)
+        ).filter((year): year is DomainYears =>
+          DEFAULT_DOMAIN_YEAR_OPTIONS.includes(year as DomainYears),
+        );
+        const options = usableOptions.length
+          ? usableOptions
+          : yearOptionsForDomain(domain);
+
+        const estimates = await Promise.all(
+          options.map(async (years) => {
+            if (years === seed.years) {
+              return { years, price: seed.price };
+            }
+            const estimate = await estimateDomainRegistration({
+              domain,
+              years,
+            });
+            return { years, price: estimate.price };
+          }),
+        );
+        if (cancelled) return;
+
+        const prices: Partial<Record<DomainYears, number>> = {};
+        for (const item of estimates) {
+          prices[item.years] = item.price;
+        }
+
+        setYearOptions(options);
+        setPeriodPrices(prices);
+        const nextSelected = options.includes(selectedYears)
+          ? selectedYears
+          : options[0] || 1;
+        setSelectedYears(nextSelected);
+        setQuote({
+          success: true,
+          domain,
+          years: nextSelected,
+          price: prices[nextSelected] || 0,
+          currency: "ILS",
+          options,
+        });
+      } catch (requestError) {
+        if (!cancelled) {
+          setPeriodPrices({});
+          setError(
+            requestError instanceof Error
+              ? requestError.message
+              : "טעינת מחיר הדומיין נכשלה",
+          );
+        }
+      } finally {
+        if (!cancelled) setIsEstimating(false);
+      }
+    }
+
+    void loadEstimates();
+    return () => {
+      cancelled = true;
+    };
+  }, [result?.available, result?.domain, registerResult?.success]);
+
+  useEffect(() => {
     const registrationId = contactResult?.registrationId;
     if (!registrationId || registerResult?.success) return;
 
@@ -266,10 +354,15 @@ export default function DomainSearch() {
               }
             }
           }
+          if (typeof nextQuote.price === "number") {
+            setPeriodPrices((current) => ({
+              ...current,
+              [nextQuote.years as DomainYears]: nextQuote.price,
+            }));
+          }
         }
       } catch (requestError) {
         if (!cancelled) {
-          setQuote(null);
           setRegisterError(
             requestError instanceof Error
               ? requestError.message
@@ -304,6 +397,7 @@ export default function DomainSearch() {
     setContactResult(null);
     setRegisterResult(null);
     setQuote(null);
+    setPeriodPrices({});
   }
 
   function handleSelectTld(tld: DomainExtension) {
@@ -316,6 +410,7 @@ export default function DomainSearch() {
     setContactResult(null);
     setRegisterResult(null);
     setQuote(null);
+    setPeriodPrices({});
   }
 
   async function handleCheck() {
@@ -328,6 +423,7 @@ export default function DomainSearch() {
     setRegisterResult(null);
     setRegisterError("");
     setQuote(null);
+    setPeriodPrices({});
     setIsChecking(true);
 
     try {
@@ -335,6 +431,9 @@ export default function DomainSearch() {
         await checkDomainAvailability(fullDomain);
 
       setResult(nextResult);
+      const options = yearOptionsForDomain(nextResult.domain || fullDomain);
+      setYearOptions(options);
+      setSelectedYears(options[0] || 1);
     } catch (requestError) {
       setError(
         requestError instanceof Error
@@ -616,20 +715,105 @@ export default function DomainSearch() {
                 </div>
 
                 {result.available ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setShowContactForm(true);
-                      setContactError("");
-                      setContactResult(null);
-                    }}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:-translate-y-0.5 hover:bg-black"
-                  >
-                    <UserRound className="h-4 w-4" />
-                    המשך לרישום דומיין
-                  </button>
+                  <div className="text-left sm:text-right">
+                    <p className="text-xs font-semibold text-slate-500">
+                      מחיר לתקופה שנבחרה
+                    </p>
+                    <p className="mt-1 text-2xl font-black text-slate-900">
+                      {isEstimating
+                        ? "מחשב..."
+                        : periodPrices[selectedYears] != null
+                          ? formatIls(periodPrices[selectedYears] || 0)
+                          : "—"}
+                    </p>
+                  </div>
                 ) : null}
               </div>
+
+              {result.available ? (
+                <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                  <div className="rounded-2xl border border-emerald-200 bg-white p-4">
+                    <h5 className="text-sm font-black text-slate-800">
+                      בחירת תקופת רישום
+                    </h5>
+                    <div className="mt-3 grid gap-2">
+                      {yearOptions.map((years) => {
+                        const active = selectedYears === years;
+                        const price = periodPrices[years];
+                        return (
+                          <button
+                            key={years}
+                            type="button"
+                            onClick={() => {
+                              setSelectedYears(years);
+                              if (price != null) {
+                                setQuote({
+                                  success: true,
+                                  domain: result.domain,
+                                  years,
+                                  price,
+                                  currency: "ILS",
+                                  options: yearOptions,
+                                });
+                              }
+                            }}
+                            className={[
+                              "flex items-center justify-between rounded-xl border px-4 py-3 text-sm font-bold transition",
+                              active
+                                ? "border-emerald-500 bg-emerald-50 text-emerald-900"
+                                : "border-slate-200 bg-white text-slate-700 hover:border-emerald-300",
+                            ].join(" ")}
+                          >
+                            <span>
+                              {years === 1 ? "שנה אחת" : `${years} שנים`}
+                            </span>
+                            <span className="text-xs font-black">
+                              {isEstimating
+                                ? "..."
+                                : price != null
+                                  ? formatIls(price)
+                                  : "—"}
+                              {active ? " · נבחר" : ""}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-slate-200 bg-white p-4">
+                    <h5 className="text-sm font-black text-slate-800">סיכום</h5>
+                    <p className="mt-3 text-sm font-semibold text-slate-600">
+                      {selectedYears === 1
+                        ? "שנה אחת"
+                        : `${selectedYears} שנים`}
+                    </p>
+                    <p className="mt-4 text-2xl font-black text-slate-900">
+                      {isEstimating
+                        ? "מחשב מחיר..."
+                        : periodPrices[selectedYears] != null
+                          ? formatIls(periodPrices[selectedYears] || 0)
+                          : "—"}
+                    </p>
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      בחרו תקופה והמשיכו למילוי פרטים
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setShowContactForm(true);
+                        setContactError("");
+                        setContactResult(null);
+                      }}
+                      disabled={isEstimating || periodPrices[selectedYears] == null}
+                      className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-sm font-black text-slate-800 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <UserRound className="h-4 w-4" />
+                      המשך לפרטי קשר
+                    </button>
+                  </div>
+                </div>
+              ) : null}
 
               {result.premium ? (
                 <p className="mt-4 text-sm font-bold text-amber-700">
