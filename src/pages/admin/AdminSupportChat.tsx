@@ -1,6 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { ArrowRight, Bell, Headphones, RefreshCw, Send } from "lucide-react";
+import {
+  ArrowRight,
+  Bell,
+  Headphones,
+  History,
+  RefreshCw,
+  Send,
+  X,
+} from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -17,9 +25,12 @@ type SupportConversation = {
   _id: string;
   name?: string;
   email?: string;
+  visitorId?: string;
+  userId?: string | null;
   status: "bot" | "waiting" | "active" | "closed";
   mode: "bot" | "human";
   lastMessageAt?: string;
+  createdAt?: string;
   lastMessagePreview?: string;
   unreadByAgent?: number;
   assignedTo?: { _id?: string; name?: string } | string | null;
@@ -124,6 +135,20 @@ export default function AdminSupportChat() {
   const [pushStatus, setPushStatus] = useState(getPermission());
   const [pushSubscribed, setPushSubscribed] = useState(false);
   const [pushBusy, setPushBusy] = useState(false);
+  const [customerHistoryOpen, setCustomerHistoryOpen] = useState(false);
+  const [customerHistoryLoading, setCustomerHistoryLoading] = useState(false);
+  const [customerHistoryItems, setCustomerHistoryItems] = useState<
+    SupportConversation[]
+  >([]);
+  const [customerHistoryMeta, setCustomerHistoryMeta] = useState<{
+    name?: string;
+    email?: string;
+  } | null>(null);
+  const [historyPreviewId, setHistoryPreviewId] = useState<string | null>(null);
+  const [historyPreviewMessages, setHistoryPreviewMessages] = useState<
+    SupportMessage[]
+  >([]);
+  const [historyPreviewLoading, setHistoryPreviewLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
   const messagesContainerRef = useRef<HTMLDivElement | null>(null);
   const selectedIdRef = useRef<string | null>(null);
@@ -402,9 +427,62 @@ export default function AdminSupportChat() {
     }
     setSelectedId(null);
     setMessages([]);
+    setCustomerHistoryOpen(false);
+    setHistoryPreviewId(null);
+    setHistoryPreviewMessages([]);
     const next = new URLSearchParams(searchParams);
     next.delete("c");
     setSearchParams(next);
+  }
+
+  async function openCustomerHistory() {
+    if (!selectedId) return;
+    setCustomerHistoryOpen(true);
+    setHistoryPreviewId(null);
+    setHistoryPreviewMessages([]);
+    setCustomerHistoryLoading(true);
+    try {
+      const { data } = await API.get(
+        `/support-chat/admin/conversations/${selectedId}/customer-history`
+      );
+      setCustomerHistoryItems(data.conversations || []);
+      setCustomerHistoryMeta(data.customer || null);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "שגיאה בטעינת היסטוריית הלקוח");
+      setCustomerHistoryItems([]);
+    } finally {
+      setCustomerHistoryLoading(false);
+    }
+  }
+
+  async function openHistoryPreview(conversationId: string) {
+    if (!conversationId) return;
+    setHistoryPreviewId(conversationId);
+    setHistoryPreviewLoading(true);
+    try {
+      const { data } = await API.get(`/support-chat/${conversationId}/messages`);
+      setHistoryPreviewMessages(data.messages || []);
+      if (data.conversation) {
+        setConversations((prev) => {
+          if (prev.some((c) => c._id === data.conversation._id)) return prev;
+          return [data.conversation, ...prev];
+        });
+      }
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "שגיאה בטעינת השיחה");
+      setHistoryPreviewMessages([]);
+    } finally {
+      setHistoryPreviewLoading(false);
+    }
+  }
+
+  function openHistoryConversationLive(conversationId: string) {
+    setCustomerHistoryOpen(false);
+    setHistoryPreviewId(null);
+    setHistoryPreviewMessages([]);
+    setSelectedId(conversationId);
+    setSearchParams({ c: conversationId });
+    setFilter("all");
   }
 
   async function enablePushAlerts() {
@@ -759,6 +837,14 @@ export default function AdminSupportChat() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    <button
+                      type="button"
+                      onClick={() => void openCustomerHistory()}
+                      className="inline-flex items-center gap-1 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800"
+                    >
+                      <History size={14} />
+                      היסטוריית לקוח
+                    </button>
                     {selected.status === "waiting" && (
                       <button
                         type="button"
@@ -780,6 +866,76 @@ export default function AdminSupportChat() {
                   </div>
                 </header>
 
+                {customerHistoryOpen && (
+                  <div className="border-b border-violet-100 bg-white px-4 py-3">
+                    <div className="mb-3 flex items-center justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-black text-slate-900">
+                          היסטוריית שיחות ללקוח
+                        </p>
+                        <p className="text-[11px] font-medium text-slate-500">
+                          {customerHistoryMeta?.name || selected.name || "אורח"}
+                          {customerHistoryMeta?.email || selected.email
+                            ? ` · ${customerHistoryMeta?.email || selected.email}`
+                            : ""}
+                          {" · "}
+                          {customerHistoryItems.length} שיחות
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setCustomerHistoryOpen(false);
+                          setHistoryPreviewId(null);
+                          setHistoryPreviewMessages([]);
+                        }}
+                        className="rounded-lg border border-slate-200 p-1.5 text-slate-500"
+                        aria-label="סגור היסטוריה"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+
+                    {customerHistoryLoading ? (
+                      <p className="text-xs text-slate-500">טוען היסטוריה...</p>
+                    ) : customerHistoryItems.length === 0 ? (
+                      <p className="text-xs text-slate-500">אין שיחות קודמות</p>
+                    ) : (
+                      <div className="grid max-h-48 gap-2 overflow-y-auto sm:grid-cols-2">
+                        {customerHistoryItems.map((item) => (
+                          <button
+                            key={item._id}
+                            type="button"
+                            onClick={() => void openHistoryPreview(item._id)}
+                            className={`rounded-xl border px-3 py-2.5 text-right transition ${
+                              historyPreviewId === item._id ||
+                              selectedId === item._id
+                                ? "border-violet-300 bg-violet-50"
+                                : "border-slate-200 bg-slate-50 hover:border-violet-200 hover:bg-violet-50/50"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-2">
+                              <span
+                                className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${statusTone(
+                                  item.status
+                                )}`}
+                              >
+                                {statusLabel(item.status)}
+                              </span>
+                              <span className="text-[10px] font-medium text-slate-400">
+                                {formatTime(item.lastMessageAt || item.createdAt)}
+                              </span>
+                            </div>
+                            <p className="mt-1 line-clamp-2 text-[11px] text-slate-600">
+                              {item.lastMessagePreview || "—"}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 <div
                   ref={messagesContainerRef}
                   onScroll={() => {
@@ -791,91 +947,186 @@ export default function AdminSupportChat() {
                   }}
                   className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-[#faf8ff] px-5 py-4"
                 >
-                  {loadingMessages ? (
-                    <p className="text-sm text-slate-500">טוען הודעות...</p>
-                  ) : (
-                    messages.map((msg) => {
-                      if (msg.senderType === "system") {
-                        return (
-                          <div
-                            key={msg._id}
-                            className="text-center text-[11px] font-medium text-slate-500"
+                  {historyPreviewId ? (
+                    <>
+                      <div className="mb-2 flex flex-wrap items-center justify-between gap-2 rounded-xl border border-violet-100 bg-white px-3 py-2">
+                        <p className="text-xs font-bold text-violet-800">
+                          צפייה בשיחה מההיסטוריה
+                          {historyPreviewId === selectedId
+                            ? " (השיחה הנוכחית)"
+                            : ""}
+                        </p>
+                        <div className="flex gap-2">
+                          {historyPreviewId !== selectedId && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                openHistoryConversationLive(historyPreviewId)
+                              }
+                              className="rounded-lg bg-violet-700 px-2.5 py-1 text-[11px] font-bold text-white"
+                            >
+                              פתח כשיחה פעילה
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setHistoryPreviewId(null);
+                              setHistoryPreviewMessages([]);
+                            }}
+                            className="rounded-lg border border-slate-200 px-2.5 py-1 text-[11px] font-bold text-slate-600"
                           >
-                            {msg.text}
-                          </div>
-                        );
-                      }
-
-                      const mine = msg.senderType === "agent";
-                      return (
-                        <div
-                          key={msg._id}
-                          dir="ltr"
-                          className={
-                            mine ? "flex justify-end" : "flex justify-start"
-                          }
-                        >
-                          <div
-                            dir="rtl"
-                            className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
-                              mine
-                                ? "rounded-br-sm bg-violet-700 text-white"
-                                : msg.senderType === "bot"
-                                  ? "rounded-bl-sm border border-slate-200 bg-white text-slate-800"
-                                  : "rounded-bl-sm border border-emerald-100 bg-emerald-50 text-slate-800"
-                            }`}
-                          >
-                            <p className="mb-1 text-[10px] font-bold opacity-80">
-                              {msg.senderType === "visitor"
-                                ? selected.name || "לקוח"
-                                : msg.senderType === "bot"
-                                  ? "בוט"
-                                  : msg.senderName || "נציג"}
-                            </p>
-                            <p className="whitespace-pre-wrap break-words">
-                              {msg.text}
-                            </p>
-                            <p className="mt-1 text-[10px] opacity-70">
-                              {formatTime(msg.createdAt)}
-                            </p>
-                          </div>
+                            חזרה לשיחה הנוכחית
+                          </button>
                         </div>
-                      );
-                    })
+                      </div>
+                      {historyPreviewLoading ? (
+                        <p className="text-sm text-slate-500">טוען הודעות...</p>
+                      ) : historyPreviewMessages.length === 0 ? (
+                        <p className="text-sm text-slate-500">אין הודעות בשיחה</p>
+                      ) : (
+                        historyPreviewMessages.map((msg) => {
+                          if (msg.senderType === "system") {
+                            return (
+                              <div
+                                key={msg._id}
+                                className="text-center text-[11px] font-medium text-slate-500"
+                              >
+                                {msg.text}
+                              </div>
+                            );
+                          }
+                          const mine = msg.senderType === "agent";
+                          return (
+                            <div
+                              key={msg._id}
+                              dir="ltr"
+                              className={
+                                mine ? "flex justify-end" : "flex justify-start"
+                              }
+                            >
+                              <div
+                                dir="rtl"
+                                className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                                  mine
+                                    ? "rounded-br-sm bg-violet-700 text-white"
+                                    : msg.senderType === "bot"
+                                      ? "rounded-bl-sm border border-slate-200 bg-white text-slate-800"
+                                      : "rounded-bl-sm border border-emerald-100 bg-emerald-50 text-slate-800"
+                                }`}
+                              >
+                                <p className="mb-1 text-[10px] font-bold opacity-80">
+                                  {msg.senderType === "visitor"
+                                    ? selected.name || "לקוח"
+                                    : msg.senderType === "bot"
+                                      ? "בוט"
+                                      : msg.senderName || "נציג"}
+                                </p>
+                                <p className="whitespace-pre-wrap break-words">
+                                  {msg.text}
+                                </p>
+                                <p className="mt-1 text-[10px] opacity-70">
+                                  {formatTime(msg.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                    </>
+                  ) : null}
+
+                  {!historyPreviewId && (
+                    <>
+                      {loadingMessages ? (
+                        <p className="text-sm text-slate-500">טוען הודעות...</p>
+                      ) : (
+                        messages.map((msg) => {
+                          if (msg.senderType === "system") {
+                            return (
+                              <div
+                                key={msg._id}
+                                className="text-center text-[11px] font-medium text-slate-500"
+                              >
+                                {msg.text}
+                              </div>
+                            );
+                          }
+
+                          const mine = msg.senderType === "agent";
+                          return (
+                            <div
+                              key={msg._id}
+                              dir="ltr"
+                              className={
+                                mine ? "flex justify-end" : "flex justify-start"
+                              }
+                            >
+                              <div
+                                dir="rtl"
+                                className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                                  mine
+                                    ? "rounded-br-sm bg-violet-700 text-white"
+                                    : msg.senderType === "bot"
+                                      ? "rounded-bl-sm border border-slate-200 bg-white text-slate-800"
+                                      : "rounded-bl-sm border border-emerald-100 bg-emerald-50 text-slate-800"
+                                }`}
+                              >
+                                <p className="mb-1 text-[10px] font-bold opacity-80">
+                                  {msg.senderType === "visitor"
+                                    ? selected.name || "לקוח"
+                                    : msg.senderType === "bot"
+                                      ? "בוט"
+                                      : msg.senderName || "נציג"}
+                                </p>
+                                <p className="whitespace-pre-wrap break-words">
+                                  {msg.text}
+                                </p>
+                                <p className="mt-1 text-[10px] opacity-70">
+                                  {formatTime(msg.createdAt)}
+                                </p>
+                              </div>
+                            </div>
+                          );
+                        })
+                      )}
+                      <div ref={messagesEndRef} />
+                    </>
                   )}
-                  <div ref={messagesEndRef} />
                 </div>
 
-                <footer className="border-t border-violet-50 bg-white px-4 py-3">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      value={input}
-                      disabled={selected.status === "closed" || sending}
-                      onChange={(e) => setInput(e.target.value)}
-                      onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                      placeholder={
-                        selected.status === "closed"
-                          ? "השיחה סגורה"
-                          : "כתבו תשובה ללקוח..."
-                      }
-                      className="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-100 disabled:opacity-50"
-                    />
-                    <button
-                      type="button"
-                      onClick={sendMessage}
-                      disabled={
-                        !input.trim() ||
-                        selected.status === "closed" ||
-                        sending
-                      }
-                      className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-700 text-white transition hover:bg-violet-800 disabled:opacity-40"
-                      aria-label="שליחה"
-                    >
-                      <Send size={16} className="-scale-x-100" />
-                    </button>
-                  </div>
-                </footer>
+                {!historyPreviewId && (
+                  <footer className="border-t border-violet-50 bg-white px-4 py-3">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={input}
+                        disabled={selected.status === "closed" || sending}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        placeholder={
+                          selected.status === "closed"
+                            ? "השיחה סגורה"
+                            : "כתבו תשובה ללקוח..."
+                        }
+                        className="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-100 disabled:opacity-50"
+                      />
+                      <button
+                        type="button"
+                        onClick={sendMessage}
+                        disabled={
+                          !input.trim() ||
+                          selected.status === "closed" ||
+                          sending
+                        }
+                        className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-700 text-white transition hover:bg-violet-800 disabled:opacity-40"
+                        aria-label="שליחה"
+                      >
+                        <Send size={16} className="-scale-x-100" />
+                      </button>
+                    </div>
+                  </footer>
+                )}
               </>
             )}
           </section>

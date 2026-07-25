@@ -148,6 +148,9 @@ export default function ChatBot({
   const [handoffLoading, setHandoffLoading] = useState(false);
   const [historyItems, setHistoryItems] = useState([]);
   const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyViewItem, setHistoryViewItem] = useState(null);
+  const [historyViewMessages, setHistoryViewMessages] = useState([]);
+  const [historyViewLoading, setHistoryViewLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
 
   const messagesEndRef = useRef(null);
@@ -711,6 +714,8 @@ export default function ChatBot({
 
   const openHistoryView = useCallback(async () => {
     setMode("history");
+    setHistoryViewItem(null);
+    setHistoryViewMessages([]);
     setHistoryLoading(true);
     try {
       let token = guestToken;
@@ -750,11 +755,48 @@ export default function ChatBot({
         }
       }
 
+      // Read-only full transcript — do not replace the active live session.
+      setHistoryViewItem(item);
+      setHistoryViewLoading(true);
+      setHistoryViewMessages([]);
+      try {
+        const data = await fetchSupportMessages(item._id, token);
+        if (data.conversation) setHistoryViewItem(data.conversation);
+        setHistoryViewMessages(
+          (data.messages || []).map(mapServerMessage).filter(Boolean)
+        );
+      } catch {
+        setHistoryViewMessages([]);
+      } finally {
+        setHistoryViewLoading(false);
+      }
+    },
+    [guestToken, ensureSession]
+  );
+
+  const resumeHistoryConversation = useCallback(
+    async (item) => {
+      if (!item?._id) return;
+      // Only resume open human/bot chats; closed stay read-only.
+      if (item.status === "closed") return;
+
+      let token = guestToken;
+      if (!token) {
+        try {
+          const session = await ensureSession();
+          token = session.guestToken;
+        } catch {
+          return;
+        }
+      }
+
       setConversation(item);
       const nextMode = item.mode === "human" ? "human" : "bot";
       setMode(nextMode);
       setHumanStatus(item.status || "");
       setShowHumanForm(false);
+      setHistoryViewItem(null);
+      setHistoryViewMessages([]);
       if (nextMode === "human") {
         ensureNotifyPermission().catch(() => {});
       }
@@ -783,10 +825,17 @@ export default function ChatBot({
   );
 
   const goBackHome = useCallback(() => {
+    if (mode === "history" && historyViewItem) {
+      setHistoryViewItem(null);
+      setHistoryViewMessages([]);
+      return;
+    }
     setMode("bot");
     setShowHumanForm(false);
     setAgentTyping(false);
-  }, []);
+    setHistoryViewItem(null);
+    setHistoryViewMessages([]);
+  }, [mode, historyViewItem]);
 
   const handleSend = () => {
     if (mode === "human") {
@@ -802,7 +851,12 @@ export default function ChatBot({
         ? t("chatbot.humanActive")
         : t("chatbot.humanWaiting")
       : mode === "history"
-        ? openHistoryLabel
+        ? historyViewItem
+          ? formatHistoryDate(
+              historyViewItem.lastMessageAt || historyViewItem.createdAt,
+              i18n.language
+            )
+          : openHistoryLabel
         : user?.businessId
           ? t("chatbot.statusSystem")
           : t("chatbot.statusBot");
@@ -811,7 +865,11 @@ export default function ChatBot({
     mode === "human"
       ? t("chatbot.humanTitle")
       : mode === "history"
-        ? historyTitle
+        ? historyViewItem
+          ? t("chatbot.supportViewConversation", {
+              defaultValue: "צפייה בשיחה",
+            })
+          : historyTitle
         : t("chatbot.title");
 
   if (!chatOpen) {
@@ -896,7 +954,106 @@ export default function ChatBot({
 
       {mode === "history" ? (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain bg-slate-50 px-3 py-3">
-          {historyLoading ? (
+          {historyViewItem ? (
+            <div className="space-y-3">
+              <div className="rounded-xl border border-violet-100 bg-white px-3 py-2.5">
+                <div className="flex items-center justify-between gap-2">
+                  <p className="text-xs font-black text-slate-800">
+                    {historyViewItem.mode === "human"
+                      ? t("chatbot.humanTitle")
+                      : t("chatbot.title")}
+                  </p>
+                  <span className="text-[10px] font-medium text-slate-400">
+                    {formatHistoryDate(
+                      historyViewItem.lastMessageAt ||
+                        historyViewItem.createdAt,
+                      i18n.language
+                    )}
+                  </span>
+                </div>
+                <p className="mt-1 text-[11px] font-medium text-slate-500">
+                  {historyViewItem.status === "closed"
+                    ? t("chatbot.supportStatusClosed", {
+                        defaultValue: "שיחה סגורה · צפייה בלבד",
+                      })
+                    : historyViewItem.status === "active"
+                      ? t("chatbot.humanActive")
+                      : historyViewItem.status === "waiting"
+                        ? t("chatbot.humanWaiting")
+                        : t("chatbot.statusBot")}
+                </p>
+                {historyViewItem.status !== "closed" && (
+                  <button
+                    type="button"
+                    onClick={() => resumeHistoryConversation(historyViewItem)}
+                    className="mt-2 w-full rounded-lg bg-violet-700 px-3 py-1.5 text-[11px] font-bold text-white"
+                  >
+                    {t("chatbot.supportResumeChat", {
+                      defaultValue: "המשך שיחה זו",
+                    })}
+                  </button>
+                )}
+              </div>
+
+              {historyViewLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <div className="flex items-center gap-1.5">
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:0ms]" />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:150ms]" />
+                    <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:300ms]" />
+                  </div>
+                </div>
+              ) : historyViewMessages.length === 0 ? (
+                <p className="py-8 text-center text-sm font-medium text-slate-500">
+                  {t("chatbot.supportEmptyTranscript", {
+                    defaultValue: "אין הודעות בשיחה זו",
+                  })}
+                </p>
+              ) : (
+                historyViewMessages.map((msg, i) => (
+                  <div key={msg.id || i} className="mb-1">
+                    {msg.sender === "system" ? (
+                      <div className="px-2 text-center text-[11px] font-medium text-slate-500">
+                        {msg.text}
+                      </div>
+                    ) : (
+                      <div
+                        dir="ltr"
+                        className={`flex ${
+                          msg.sender === "user"
+                            ? "justify-end"
+                            : "justify-start"
+                        }`}
+                      >
+                        <div
+                          dir="auto"
+                          className={`max-w-[88%] break-words whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                            msg.sender === "user"
+                              ? "rounded-br-sm bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800"
+                              : msg.sender === "agent"
+                                ? "rounded-bl-sm border border-emerald-200 bg-emerald-50 text-slate-800 shadow-sm"
+                                : "rounded-bl-sm border border-slate-200 bg-white text-slate-800 shadow-sm"
+                          }`}
+                        >
+                          {msg.sender === "agent" && (
+                            <p className="mb-1 text-[10px] font-bold text-emerald-700">
+                              {t("chatbot.agentLabel")}
+                            </p>
+                          )}
+                          {msg.text}
+                          {msg.createdAt && (
+                            <p className="mt-1 text-[10px] opacity-60">
+                              {formatHistoryDate(msg.createdAt, i18n.language)}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+          ) : historyLoading ? (
             <div className="flex items-center justify-center py-10">
               <div className="flex items-center gap-1.5">
                 <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:0ms]" />
@@ -930,9 +1087,22 @@ export default function ChatBot({
                         )}
                       </span>
                     </div>
-                    <p className="mt-1 line-clamp-2 text-[11px] text-slate-500">
-                      {item.lastMessagePreview || item.status || "—"}
-                    </p>
+                    <div className="mt-1 flex items-center justify-between gap-2">
+                      <p className="line-clamp-2 text-[11px] text-slate-500">
+                        {item.lastMessagePreview || item.status || "—"}
+                      </p>
+                      <span className="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-600">
+                        {item.status === "closed"
+                          ? t("chatbot.supportStatusClosedShort", {
+                              defaultValue: "נסגרה",
+                            })
+                          : item.status === "active"
+                            ? t("chatbot.humanActive")
+                            : item.status === "waiting"
+                              ? t("chatbot.humanWaiting")
+                              : t("chatbot.statusBot")}
+                      </span>
+                    </div>
                   </button>
                 </li>
               ))}
