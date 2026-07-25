@@ -21,7 +21,10 @@ import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/s
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
 import { mountSiteAuthWidgets } from "../../../site-plugins/site-auth/mountSiteAuthWidgets";
-import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
+import {
+  mergeSiteAuthSettings,
+  stripLegacySiteAuthWidgetsFromVisualData,
+} from "../../../site-plugins/site-auth/siteAuthUtils";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -1237,6 +1240,14 @@ export default function VisualEditorCanvas({
         if (plugins.enabledPlugins.includes("site-auth")) {
           const authStored = await getSitePluginSettings(siteId, "site-auth");
           if (cancelled) return;
+
+          const { data: cleaned, changed } = stripLegacySiteAuthWidgetsFromVisualData(
+            editorAny.data || {}
+          );
+          if (changed && typeof editorAny.setData === "function") {
+            editorAny.setData(cleaned);
+            editorAny.clearSelection?.();
+          }
 
           mountSiteAuthWidgets(root, mergeSiteAuthSettings(authStored), {
             site: { slug: "", pluginSettings: { "site-auth": authStored } },

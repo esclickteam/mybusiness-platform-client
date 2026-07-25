@@ -8,10 +8,7 @@ import { getSitePlugins, updateSitePlugins } from "../../../../api/sitePluginsAp
 import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import SiteAuthLoginWidget from "../../../site-plugins/site-auth/SiteAuthLoginWidget";
-import {
-  mergeSiteAuthSettings,
-  shouldShowFloatingAuthButton,
-} from "../../../site-plugins/site-auth/siteAuthUtils";
+import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import { SiteMemberAuthProvider } from "../../../../context/SiteMemberAuthContext";
 
 type EditorPluginOverlaysProps = {
@@ -90,6 +87,26 @@ export default function EditorPluginOverlays({
     [siteId, wheelSettings]
   );
 
+  const handleAuthPositionChange = useCallback(
+    async (pos: { x: number; y: number }) => {
+      if (!siteId || !authSettings) return;
+      const next = {
+        ...authSettings,
+        triggerPosition: pos,
+        showTrigger: true,
+        showLoginButton: true,
+        buttonMode: "floating" as const,
+      };
+      setAuthSettings(next);
+      try {
+        await saveSitePluginSettings(siteId, "site-auth", next);
+      } catch {
+        // local preview still updates
+      }
+    },
+    [siteId, authSettings]
+  );
+
   const handleDeactivate = useCallback(async () => {
     if (!siteId) return;
     try {
@@ -109,7 +126,8 @@ export default function EditorPluginOverlays({
     authEnabled &&
     authSettings &&
     authSettings.isActive !== false &&
-    shouldShowFloatingAuthButton(authSettings);
+    authSettings.showLoginButton !== false &&
+    authSettings.showTrigger !== false;
 
   return (
     <>
@@ -130,6 +148,7 @@ export default function EditorPluginOverlays({
             settings={authSettings}
             variant="floating"
             mode="editor"
+            onPositionChange={handleAuthPositionChange}
           />
         </SiteMemberAuthProvider>
       ) : null}
