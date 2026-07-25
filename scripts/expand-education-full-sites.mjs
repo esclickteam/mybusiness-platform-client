@@ -1030,6 +1030,16 @@ function replaceBetween(text, startNeedle, endNeedle, replacement) {
 function updatePagesFile(c) {
   const file = path.join(ROOT, c.id, "pages.tsx");
   let text = fs.readFileSync(file, "utf8");
+  if (!text.includes('from "../shared/SafeImg"')) {
+    if (text.includes('from "../shared/Reveal";')) {
+      text = text.replace(
+        'from "../shared/Reveal";',
+        'from "../shared/Reveal";\nimport SafeImg from "../shared/SafeImg";',
+      );
+    } else {
+      text = `import SafeImg from "../shared/SafeImg";\n${text}`;
+    }
+  }
   text = text.replace(new RegExp(`export const ${c.prefix}Pages = \\[\\{ id: "home", label: "בית", slug: "/" \\}\\];`), pageConst(c.prefix));
   if (!text.includes("type PageEntry =")) {
     text = text.replace(/\n\ntype [A-Za-z]+PagesProps = \{/, `\n\ntype PageEntry = (typeof ${c.prefix}Pages)[number];\n\ntype ${c.component.replace(/Pages$/, "")}PagesProps = {`);
