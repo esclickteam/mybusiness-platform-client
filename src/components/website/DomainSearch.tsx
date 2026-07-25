@@ -445,7 +445,14 @@ export default function DomainSearch() {
             className="flex flex-col gap-3 sm:flex-row"
           >
             <div className="relative flex-1">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
+              <Search className="pointer-events-none absolute right-4 top-1/2 z-10 h-5 w-5 -translate-y-1/2 text-slate-400" />
+
+              <span
+                className="pointer-events-none absolute right-11 top-1/2 z-10 max-w-[6.5rem] -translate-y-1/2 truncate text-sm font-black text-slate-400"
+                dir="ltr"
+              >
+                .{selectedTld}
+              </span>
 
               <input
                 value={domainName}
@@ -455,15 +462,8 @@ export default function DomainSearch() {
                 placeholder="לדוגמה: mybusiness"
                 dir="ltr"
                 autoComplete="off"
-                className="h-14 w-full rounded-2xl border border-slate-200 bg-white py-0 pl-28 pr-12 text-left text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                className="h-14 w-full rounded-2xl border border-slate-200 bg-white py-0 pl-5 pr-36 text-right text-base font-bold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
               />
-
-              <span
-                className="pointer-events-none absolute left-4 top-1/2 max-w-[6.5rem] -translate-y-1/2 truncate text-sm font-black text-slate-400"
-                dir="ltr"
-              >
-                .{selectedTld}
-              </span>
             </div>
 
             <button
@@ -485,7 +485,7 @@ export default function DomainSearch() {
             </button>
           </form>
 
-          <div className="mt-4 flex flex-wrap gap-2" dir="ltr">
+          <div className="mt-4 flex flex-wrap gap-2" dir="rtl">
             {DOMAIN_EXTENSIONS.map((tld) => {
               const active = selectedTld === tld;
               return (
