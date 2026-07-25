@@ -8,8 +8,6 @@ let socketInstance = null;   // Singleton instance
 let currentToken = null;     // Cache last token used
 let initialized = false;     // Prevent duplicate setup
 let refreshInFlight = false;
-let lastRefreshAttemptAt = 0;
-const REFRESH_RETRY_COOLDOWN_MS = 8_000;
 
 /**
  * Creates or returns an existing Socket.IO singleton connection
@@ -68,24 +66,21 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
     });
 
     /**
-     * 🔁 Auto-refresh token when expired (coalesced + cooldown to avoid storms)
+     * 🔁 Auto-refresh token when expired (coalesced to avoid duplicate calls)
      */
     const refreshAndReconnect = async () => {
       if (refreshInFlight) return;
-      if (Date.now() - lastRefreshAttemptAt < REFRESH_RETRY_COOLDOWN_MS) return;
 
       refreshInFlight = true;
-      lastRefreshAttemptAt = Date.now();
 
       try {
         const newToken = await getValidAccessToken({ force: true });
         if (!newToken) {
-          console.warn("[Socket] Token refresh failed — backing off");
+          console.warn("[Socket] Token refresh failed — will retry on next event");
           return;
         }
 
         currentToken = newToken;
-        lastRefreshAttemptAt = 0;
 
         // Update auth & reconnect
         socketInstance.auth = {

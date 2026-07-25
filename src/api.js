@@ -1,6 +1,7 @@
 import axios from "axios";
 import {
   getValidAccessToken,
+  isAccessTokenExpired,
   isHardRefreshFailure,
   registerAuthHeaderSetter,
   refreshAccessTokenOnce,
@@ -146,11 +147,16 @@ API.interceptors.response.use(
       } catch (err) {
         onRefreshed(null);
 
-        if (!isHardRefreshFailure(err) && err?.code !== "REFRESH_COOLDOWN") {
+        const existing = localStorage.getItem("token");
+        if (existing && !isAccessTokenExpired(existing)) {
+          config.headers["Authorization"] = `Bearer ${existing}`;
+          return API(config);
+        }
+
+        if (!isHardRefreshFailure(err)) {
           console.warn("Error refreshing token:", err?.message || err);
         }
 
-        // Do not clear session or redirect — only explicit logout disconnects
         return Promise.reject(err);
       } finally {
         isRefreshing = false;

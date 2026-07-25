@@ -39,6 +39,7 @@ import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
 import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import { getApiErrorMessage } from "../utils/apiErrorMessage";
 
 type MenuState = {
   siteId: string;
@@ -170,7 +171,7 @@ export default function MySitesPage() {
       setSites(dedupeSitesForDisplay(nextSites));
       setFolders(nextFolders);
     } catch (err: any) {
-      setError(err?.message || t("mySites.loadError"));
+      setError(getApiErrorMessage(err, t("mySites.loadError")));
     } finally {
       setLoading(false);
     }

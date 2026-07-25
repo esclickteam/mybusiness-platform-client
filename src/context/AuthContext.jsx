@@ -167,7 +167,6 @@ async function tryRefreshWithRetries(maxAttempts = 3) {
       ) {
         return null;
       }
-      if (err.code === "REFRESH_COOLDOWN") return null;
       if (attempt < maxAttempts - 1) {
         await new Promise((resolve) =>
           setTimeout(resolve, 1000 * (attempt + 1))
