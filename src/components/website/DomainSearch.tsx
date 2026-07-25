@@ -15,7 +15,7 @@ import {
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
   checkDomainAvailability,
-  createOteDomainContact,
+  createDomainContact,
   type DomainAvailabilityResult,
   type DomainContactPayload,
   type DomainContactResult,
@@ -117,7 +117,7 @@ export default function DomainSearch() {
       const selectedDomain =
         result?.domain || domain;
 
-      const response = await createOteDomainContact({
+      const response = await createDomainContact({
         ...contact,
 
         domain: selectedDomain,
@@ -190,8 +190,8 @@ export default function DomainSearch() {
               </h2>
 
               <p className="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500">
-                בדקו זמינות דומיין, ולאחר מכן המשיכו ליצירת איש קשר
-                ניסיוני ב־Realtime Register OT&amp;E.
+                בדקו זמינות דומיין אמיתית, ולאחר מכן המשיכו ליצירת איש
+                קשר לרישום ב־Realtime Register.
               </p>
             </div>
           </div>
@@ -240,10 +240,9 @@ export default function DomainSearch() {
             </button>
           </form>
 
-          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-bold text-amber-800">
+          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
             <ShieldCheck className="h-4 w-4 shrink-0" />
-            התוצאה כרגע היא מסביבת OT&amp;E בלבד ואינה משקפת זמינות
-            אמיתית ב־Production.
+            בדיקת הזמינות ורכישת דומיין מתבצעות בסביבת Production חיה.
           </div>
 
           {error ? (
@@ -287,8 +286,8 @@ export default function DomainSearch() {
                       ].join(" ")}
                     >
                       {result.available
-                        ? "הדומיין זמין בסביבת הניסוי"
-                        : "הדומיין אינו זמין בסביבת הניסוי"}
+                        ? "הדומיין זמין לרישום"
+                        : "הדומיין אינו זמין"}
                     </p>
                   </div>
                 </div>
@@ -304,7 +303,7 @@ export default function DomainSearch() {
                     className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:-translate-y-0.5 hover:bg-black"
                   >
                     <UserRound className="h-4 w-4" />
-                    המשך לרישום ניסיוני
+                    המשך לרישום דומיין
                   </button>
                 ) : null}
               </div>
@@ -329,10 +328,10 @@ export default function DomainSearch() {
 
               <div>
                 <h3 className="text-xl font-black text-slate-800">
-                  פרטי איש קשר לניסוי
+                  פרטי איש קשר לרישום
                 </h3>
                 <p className="mt-1 text-xs font-semibold text-slate-500">
-                  הפרטים יישלחו ל־Realtime Register OT&amp;E בלבד.
+                  הפרטים יישלחו ל־Realtime Register לרישום הדומיין.
                 </p>
               </div>
             </div>
@@ -360,7 +359,7 @@ export default function DomainSearch() {
                 label="שם מלא"
                 value={contact.name}
                 onChange={(value) => updateContact("name", value)}
-                placeholder="Test User"
+                placeholder="Israel Israeli"
                 required
               />
 
@@ -370,14 +369,14 @@ export default function DomainSearch() {
                 onChange={(value) =>
                   updateContact("organization", value)
                 }
-                placeholder="Bizuply Test"
+                placeholder="BizUply LLC"
               />
 
               <Field
                 label="כתובת"
                 value={contact.address}
                 onChange={(value) => updateContact("address", value)}
-                placeholder="1 Test Street"
+                placeholder="1007 N Orange St."
                 required
               />
 
@@ -457,9 +456,8 @@ export default function DomainSearch() {
             <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
               <LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
               <p className="text-xs font-semibold leading-6 text-slate-500">
-                בשלב הניסוי מומלץ להשתמש בפרטי בדיקה בלבד. אין להזין
-                פרטי לקוח אמיתיים עד להשלמת תהליך Production, הרשאות
-                ופרטיות.
+                הזינו פרטי בעלים אמיתיים לרישום הדומיין. הפרטים נשלחים
+                לרישום Production וישמשו כאיש קשר רשמי של הדומיין.
               </p>
             </div>
 
@@ -514,8 +512,8 @@ export default function DomainSearch() {
                     ) : null}
 
                     <p className="mt-3 text-xs font-semibold text-emerald-700">
-                      השלב הבא יהיה להשתמש ב־handle הזה כ־registrant
-                      לרישום הדומיין הניסיוני.
+                      השלב הבא: שימוש ב־handle הזה כ־registrant לרישום
+                      הדומיין בפועל.
                     </p>
                   </div>
                 </div>
@@ -545,7 +543,7 @@ export default function DomainSearch() {
                 ) : (
                   <>
                     <UserRound className="h-5 w-5" />
-                    יצירת איש קשר ניסיוני
+                    יצירת איש קשר לרישום
                   </>
                 )}
               </button>
