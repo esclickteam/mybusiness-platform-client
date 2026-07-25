@@ -105,6 +105,14 @@ function AdminHeader() {
           >
             משיכות
           </button>
+
+          <button
+            type="button"
+            onClick={() => navigate("/admin/support-chat")}
+            className={navClass("/admin/support-chat")}
+          >
+            צ׳אט תמיכה
+          </button>
         </nav>
 
         <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center xl:justify-end">
