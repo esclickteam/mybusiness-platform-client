@@ -14,27 +14,27 @@ import { vitalcareSchema } from "./schema";
 import { vitalcareDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#0EA5E9",
-  secondary: "#0C4A6E",
-  accent: "#38BDF8",
-  background: "#F0F9FF",
+  primary: "#0D5C63",
+  secondary: "#0A3D42",
+  accent: "#B8D8D4",
+  background: "#F5F7F8",
   surface: "#FFFFFF",
-  text: "#0C4A6E",
-  muted: "#64748B",
-  dark: "#082F49",
+  text: "#163033",
+  muted: "#5F6F72",
+  dark: "#0A1F22",
 };
 
 const blocks = [
-  { type: "header", variant: "clinical-clean-header", title: "header" },
-  { type: "hero", variant: "clinical-clean-hero", title: "hero" },
-  { type: "specialties", variant: "clinical-clean-specialties", title: "specialties" },
-  { type: "stats", variant: "clinical-clean-stats", title: "stats" },
-  { type: "doctors", variant: "clinical-clean-doctors", title: "doctors" },
-  { type: "insurance", variant: "clinical-clean-insurance", title: "insurance" },
-  { type: "testimonials", variant: "clinical-clean-testimonials", title: "testimonials" },
-  { type: "faq", variant: "clinical-clean-faq", title: "faq" },
-  { type: "appointment", variant: "clinical-clean-appointment", title: "appointment" },
-  { type: "footer", variant: "clinical-clean-footer", title: "footer" },
+  { type: "header", variant: "premium-clinical-header", title: "Header" },
+  { type: "hero", variant: "premium-clinical-hero", title: "Hero" },
+  { type: "specialties", variant: "premium-clinical-specialties", title: "Specialties" },
+  { type: "stats", variant: "premium-clinical-trust-stats", title: "Trust stats" },
+  { type: "doctors", variant: "premium-clinical-doctors", title: "Doctors" },
+  { type: "insurance", variant: "premium-clinical-insurance", title: "Insurance partners" },
+  { type: "testimonials", variant: "premium-clinical-testimonials", title: "Patient testimonials" },
+  { type: "faq", variant: "premium-clinical-faq", title: "Medical FAQ" },
+  { type: "appointment", variant: "premium-clinical-appointment", title: "Appointment form" },
+  { type: "footer", variant: "premium-clinical-footer-cta", title: "Footer CTA" },
 ];
 
 export const vitalcareSeed = {
@@ -42,7 +42,8 @@ export const vitalcareSeed = {
   key: "vitalcare",
   name: "Vitalcare",
   title: "Vitalcare",
-  description: "דף נחיתה למרפאה: הירו עם תור, התמחויות, צוות רופאים, ביטוחים, ביקורות מטופלים, FAQ רפואי וטופס — כחול-לבן קlinי.",
+  description:
+    "דף נחיתה פרימיום למרפאה רב-תחומית: הירו צילום מלא, התמחויות, נתוני אמון, רופאים, ביטוחים, המלצות, FAQ וטופס תור בגווני טורקיז עמוק ומינט.",
   category: "landing",
   categoryLabel: "דפי נחיתה",
   niche: "health",
@@ -72,7 +73,8 @@ export const vitalcareTemplate = {
   category: "landing",
   categoryLabel: "דפי נחיתה",
   badge: "Premium",
-  description: "דף נחיתה למרפאה: הירו עם תור, התמחויות, צוות רופאים, ביטוחים, ביקורות מטופלים, FAQ רפואי וטופס — כחול-לבן קlinי.",
+  description:
+    "דף נחיתה פרימיום למרפאה רב-תחומית: הירו צילום מלא, התמחויות, נתוני אמון, רופאים, ביטוחים, המלצות, FAQ וטופס תור בגווני טורקיז עמוק ומינט.",
   thumbnail: React.createElement(VitalcareThumbnail),
   preview: React.createElement(VitalcarePreview),
   component: VitalcarePages,
