@@ -776,13 +776,6 @@ export default function DomainSearch() {
                       </>
                     ) : null}
 
-                    {contactResult.domain ? (
-                      <p className="mt-3 text-xs font-semibold text-emerald-700">
-                        הדומיין {contactResult.domain} נשמר ב־MongoDB
-                        בסטטוס {contactResult.status || "contact_created"}.
-                      </p>
-                    ) : null}
-
                     {contactResult.registrationId &&
                     !registerResult?.success ? (
                       <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
