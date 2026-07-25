@@ -105,6 +105,10 @@ import { closoraTemplate } from "./closora/meta";
 import { adspireTemplate } from "./adspire/meta";
 import { talentixTemplate } from "./talentix/meta";
 import { narrativaTemplate } from "./narrativa/meta";
+import { brandforgeTemplate } from "./brandforge/meta";
+import { mediavaultTemplate } from "./mediavault/meta";
+import { summitopsTemplate } from "./summitops/meta";
+import { eventideTemplate } from "./eventide/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -211,6 +215,10 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   adspireTemplate,
   talentixTemplate,
   narrativaTemplate,
+  brandforgeTemplate,
+  mediavaultTemplate,
+  summitopsTemplate,
+  eventideTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =

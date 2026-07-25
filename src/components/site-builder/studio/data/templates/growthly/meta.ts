@@ -9,14 +9,14 @@ import { growthlySchema } from "./schema";
 import { growthlyDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#0F766E",
-  secondary: "#042F2E",
-  accent: "#14B8A6",
-  background: "#F0FDFA",
-  surface: "#FFFFFF",
-  text: "#134E4A",
-  muted: "#5F7A76",
-  dark: "#042F2E",
+  primary: "#0D9488",
+  secondary: "#021412",
+  accent: "#2DD4BF",
+  background: "#041F1E",
+  surface: "#0A2F2D",
+  text: "#ECFDF5",
+  muted: "#99F6E4",
+  dark: "#021412",
 };
 
 export const growthlySeed = {
@@ -24,7 +24,7 @@ export const growthlySeed = {
   key: "growthly",
   name: "Growthly",
   title: "Growthly",
-  description: "אתר מלא לסוכנות שיווק: 8 עמודים כולל אודות, שירותים, פרויקטים, צוות, תובנות, תהליך וצור קשר.",
+  description: "אתר מלא לסוכנות שיווק: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   niche: "marketing-agency",
@@ -59,7 +59,7 @@ export const growthlyTemplate = {
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   badge: "חדש",
-  description: "אתר מלא לסוכנות שיווק עם 8 עמודים, ניווט פנימי ותוכן מוכן לעריכה.",
+  description: "אתר מלא לסוכנות שיווק עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.",
   thumbnail: React.createElement(GrowthlyThumbnail),
   preview: React.createElement(GrowthlyPreview),
   component: GrowthlyPages,
