@@ -23,6 +23,7 @@ import StudioSidebar from "./StudioSidebar";
 import StudioCanvas from "./StudioCanvas";
 import BizuplyLoader from "../../ui/BizuplyLoader";
 import TemplateVisualEditor from "./TemplateVisualEditor";
+import ConnectDomainModal from "../../website/ConnectDomainModal";
 import PageSettingsModal, {
   type PageSettingsModalTab,
 } from "./visual-editor/components/PageSettingsModal";
@@ -4752,6 +4753,7 @@ export default function WebsiteStudioPage({
     useState<VisualTemplateSavePayload | null>(null);
 
   const [publishSuccessOpen, setPublishSuccessOpen] = useState(false);
+  const [connectDomainOpen, setConnectDomainOpen] = useState(false);
   const [publishedSiteUrl, setPublishedSiteUrl] = useState("");
 
   const [ready, setReady] = useState(false);
@@ -7876,20 +7878,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                   <div className="flex items-center gap-2 rounded-2xl border border-violet-100 bg-white p-3">
                     <a
-                      href={publishedSiteUrl}
+                      href={
+                        customDomain
+                          ? `https://${customDomain}`
+                          : publishedSiteUrl
+                      }
                       target="_blank"
                       rel="noreferrer"
                       className="min-w-0 flex-1 truncate text-left text-sm font-black text-slate-800 underline decoration-violet-300 underline-offset-4"
                       dir="ltr"
                     >
-                      {publishedSiteUrl}
+                      {customDomain
+                        ? `https://${customDomain}`
+                        : publishedSiteUrl}
                     </a>
 
                     <button
                       type="button"
                       onClick={async () => {
+                        const url = customDomain
+                          ? `https://${customDomain}`
+                          : publishedSiteUrl;
                         try {
-                          await navigator.clipboard.writeText(publishedSiteUrl);
+                          await navigator.clipboard.writeText(url);
                           alert("הקישור הועתק");
                         } catch {
                           alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
@@ -7900,13 +7911,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       העתקה
                     </button>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setConnectDomainOpen(true)}
+                    className="mt-3 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                  >
+                    {customDomain
+                      ? "ניהול דומיין מותאם"
+                      : "חיבור דומיין מותאם"}
+                  </button>
                 </div>
 
-                <div className="mt-6 grid gap-3 sm:grid-cols-3">
+                <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <button
                     type="button"
                     onClick={() => {
-                      window.open(publishedSiteUrl, "_blank", "noopener,noreferrer");
+                      window.open(
+                        customDomain
+                          ? `https://${customDomain}`
+                          : publishedSiteUrl,
+                        "_blank",
+                        "noopener,noreferrer",
+                      );
                     }}
                     className="h-12 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 text-sm font-black text-black shadow-lg shadow-violet-600/20 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
@@ -7915,9 +7942,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                   <button
                     type="button"
+                    onClick={() => setConnectDomainOpen(true)}
+                    className="h-12 rounded-2xl border border-violet-200 bg-violet-50 px-5 text-sm font-black text-violet-800 transition hover:bg-violet-100"
+                  >
+                    חיבור דומיין
+                  </button>
+
+                  <button
+                    type="button"
                     onClick={async () => {
+                      const url = customDomain
+                        ? `https://${customDomain}`
+                        : publishedSiteUrl;
                       try {
-                        await navigator.clipboard.writeText(publishedSiteUrl);
+                        await navigator.clipboard.writeText(url);
                         alert("הקישור הועתק");
                       } catch {
                         alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
@@ -8001,6 +8039,33 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     <span className="text-slate-400">לדוגמה: beneshet, hadar-beauty, servora-electric</span>
                   )}
                 </div>
+
+                <div className="mt-5 rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-4">
+                  <p className="text-sm font-bold leading-6 text-slate-600">
+                    רוצים כתובת משלכם במקום{" "}
+                    <span dir="ltr" className="font-black text-slate-800">
+                      .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                    </span>
+                    ?
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setConnectDomainOpen(true)}
+                    className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                  >
+                    {customDomain
+                      ? "ניהול דומיין מותאם"
+                      : "חיבור דומיין מותאם"}
+                  </button>
+                  {customDomain ? (
+                    <p
+                      className="mt-2 text-xs font-bold text-emerald-700"
+                      dir="ltr"
+                    >
+                      מחובר: {customDomain}
+                    </p>
+                  ) : null}
+                </div>
               </div>
 
               <div className="flex flex-col-reverse gap-3 border-t border-slate-100 bg-slate-50 px-7 py-5 sm:flex-row sm:justify-between">
@@ -8029,6 +8094,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             </div>
           </div>
         ) : null}
+
+        <ConnectDomainModal
+          open={connectDomainOpen}
+          onClose={() => setConnectDomainOpen(false)}
+          siteId={siteId}
+          siteSlug={normalizePublicBusinessSlug(slug || publishSlugDraft)}
+          initialCustomDomain={customDomain}
+          onConnected={({ customDomain: nextDomain, publicUrl }) => {
+            const clean = String(nextDomain || "")
+              .trim()
+              .toLowerCase();
+            setCustomDomain(clean);
+            if (clean && publicUrl) {
+              setPublishedSiteUrl(publicUrl);
+            } else if (!clean && publishSlugDraft) {
+              setPublishedSiteUrl(buildPublicSiteUrl(publishSlugDraft));
+            }
+          }}
+        />
 
         <TemplateVisualEditor
   siteId={siteId}
