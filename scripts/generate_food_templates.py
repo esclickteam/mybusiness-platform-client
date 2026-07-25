@@ -8,6 +8,8 @@ from pathlib import Path
 ROOT = Path("src/components/site-builder/studio/data/templates")
 CONFIG = Path("scripts/food-templates-config.json")
 
+from _food_page_sections import LAYOUT_SECTIONS, paint  # noqa: E402
+
 CITIES = [
     "רח׳ הפחם 12, תל אביב",
     "שדרות הנמל 8, חיפה",
@@ -26,91 +28,150 @@ META_BLOCKS = {
         ("header", "charcoal-ember-nav", "Charcoal ember sticky nav"),
         ("hero", "rising-ember-sparks", "Rising ember sparks hero"),
         ("menu", "vertical-meat-timeline", "Vertical meat timeline"),
-        ("hours", "glowing-hour-chips", "Glowing hour chips"),
-        ("about", "ash-texture-reverse", "Ash texture about reverse"),
-        ("contact", "ember-pulse-form", "Ember pulse contact"),
+        ("process", "ember-process-strip", "Ember process strip"),
+        ("gallery", "ember-gallery-mosaic", "Ember gallery mosaic"),
+        ("reviews", "ember-reviews-rail", "Ember reviews rail"),
+        ("hours", "glowing-hour-chips", "Glowing hour chips + stats"),
+        ("cta", "ember-home-cta", "Home CTA teaser"),
+        ("menuPage", "full-meat-menu", "Full meat menu page"),
+        ("grillPage", "coal-process-story", "Grill process story page"),
+        ("about", "ash-timeline-portrait", "Ash timeline + pitmaster"),
+        ("contact", "ember-reserve-faq", "Ember reserve + FAQ"),
         ("footer", "ember-line", "Ember line footer"),
     ],
     "steamBowl": [
         ("header", "floating-pill-nav", "Floating pill nav"),
         ("hero", "centered-bowl-steam", "Centered bowl steam hero"),
         ("dishes", "radial-circular-dishes", "Radial circular dishes"),
-        ("process", "chopstick-steps", "Chopstick process steps"),
-        ("about", "stacked-steam-cards", "Stacked steam about cards"),
-        ("contact", "circular-steam-form", "Circular contact form"),
+        ("process", "steam-process-steps", "Steam process steps"),
+        ("gallery", "steam-round-gallery", "Steam round gallery"),
+        ("reviews", "steam-reviews", "Steam reviews"),
+        ("stats", "steam-stats-hours", "Steam stats + hours"),
+        ("cta", "steam-home-cta", "Home CTA teaser"),
+        ("bowlsPage", "full-bowl-menu", "Full bowls menu page"),
+        ("brothPage", "broth-lab-story", "Broth lab story page"),
+        ("about", "steam-timeline-chef", "Steam timeline + chef"),
+        ("contact", "circular-steam-reserve", "Circular reserve + FAQ"),
         ("footer", "noodle-wave-svg", "Noodle wave footer"),
     ],
     "doughStretch": [
         ("header", "stretch-underline-logo", "Stretch underline logo nav"),
         ("hero", "diagonal-rotating-pizza", "Diagonal rotating pizza hero"),
         ("menu", "triangular-masonry", "Triangular masonry menu"),
-        ("oven", "heat-shimmer-strip", "Oven heat shimmer strip"),
-        ("about", "flour-dust-story", "Flour dust about"),
-        ("contact", "ticket-order-form", "Ticket-style contact"),
+        ("process", "crust-process-steps", "Crust process steps"),
+        ("gallery", "crust-gallery", "Crust gallery"),
+        ("reviews", "crust-reviews", "Crust reviews"),
+        ("stats", "oven-stats-hours", "Oven stats + hours"),
+        ("cta", "crust-home-cta", "Home CTA teaser"),
+        ("pizzasPage", "full-pizza-menu", "Full pizza menu page"),
+        ("ovenPage", "oven-story", "Oven story page"),
+        ("about", "flour-timeline-chef", "Flour timeline + chef"),
+        ("contact", "ticket-reserve-faq", "Ticket reserve + FAQ"),
         ("footer", "crust-edge", "Crust edge footer"),
     ],
     "mezzeMosaic": [
         ("header", "olive-branch-nav", "Olive branch underline nav"),
         ("hero", "four-tile-olive-orbs", "4-tile mosaic olive orbs hero"),
         ("platter", "horizontal-platter-scroll", "Horizontal platter scroll"),
-        ("quote", "parchment-quote-band", "Parchment quote band"),
-        ("about", "botanical-garden", "Botanical about"),
-        ("contact", "garden-table-form", "Garden table contact"),
+        ("process", "mezze-process", "Mezze process"),
+        ("gallery", "mezze-gallery", "Mezze gallery"),
+        ("reviews", "mezze-reviews", "Mezze reviews"),
+        ("stats", "mezze-stats", "Mezze stats + hours"),
+        ("cta", "mezze-home-cta", "Home CTA teaser"),
+        ("mezzePage", "full-mezze-menu", "Full mezze menu page"),
+        ("tablePage", "shared-table-story", "Shared table story page"),
+        ("about", "botanical-timeline", "Botanical timeline + chef"),
+        ("contact", "garden-reserve-faq", "Garden reserve + FAQ"),
         ("footer", "mezze-shared", "Mezze footer"),
     ],
     "conveyorRail": [
         ("header", "minimal-thin-bar", "Minimal thin bar nav"),
         ("hero", "conveyor-belt-scroll", "Conveyor belt hero"),
         ("nigiri", "nigiri-snap-rail", "Nigiri snap rail"),
+        ("process", "zen-process", "Zen process"),
+        ("gallery", "zen-gallery", "Zen gallery"),
+        ("reviews", "zen-reviews", "Zen reviews"),
         ("stats", "wasabi-pulse-stats", "Wasabi pulse stats"),
-        ("about", "zen-single-portrait", "Zen single-portrait about"),
-        ("contact", "lacquer-gold-form", "Lacquer black gold contact"),
+        ("cta", "zen-home-cta", "Home CTA teaser"),
+        ("omakasePage", "omakase-full-menu", "Omakase full menu page"),
+        ("nigiriPage", "nigiri-story", "Nigiri story page"),
+        ("about", "zen-timeline-portrait", "Zen timeline + portrait"),
+        ("contact", "lacquer-reserve-faq", "Lacquer reserve + FAQ"),
         ("footer", "thin-gold-line", "Thin gold footer"),
     ],
     "sunnyBrunch": [
         ("header", "airy-sunny-circle", "Airy sunny circle logo nav"),
         ("hero", "rotating-sun-rays", "Soft cream sun rays hero"),
-        ("gallery", "polaroid-scatter", "Polaroid scattered cards"),
-        ("hours", "weekend-calendar-grid", "Weekend calendar hours"),
-        ("about", "handwritten-note", "Handwritten note about"),
-        ("contact", "postcard-form", "Postcard contact"),
+        ("gallery", "polaroid-scatter", "Polaroid featured brunch"),
+        ("process", "sunny-process", "Sunny process"),
+        ("photos", "sunny-gallery", "Sunny gallery"),
+        ("reviews", "sunny-reviews", "Sunny reviews"),
+        ("hours", "weekend-stats-hours", "Weekend stats + hours"),
+        ("cta", "sunny-home-cta", "Home CTA teaser"),
+        ("brunchPage", "full-brunch-menu", "Full brunch menu page"),
+        ("coffeePage", "coffee-story", "Coffee story page"),
+        ("about", "note-timeline-chef", "Note timeline + chef"),
+        ("contact", "postcard-reserve-faq", "Postcard reserve + FAQ"),
         ("footer", "dotted-napkin", "Dotted napkin footer"),
     ],
     "nightTapas": [
         ("header", "neon-glow-logo", "Neon glow logo nav"),
         ("hero", "cascade-small-plates", "Cascade rising plates hero"),
         ("menu", "bento-grid-tapas", "Bento grid menu"),
-        ("marquee", "night-market-marquee", "Night market marquee"),
-        ("wine", "wine-pour-bottles", "Wine pour bottles"),
-        ("about", "chalkboard-story", "Chalkboard about"),
-        ("contact", "bar-tab-form", "Bar-tab contact"),
+        ("process", "neon-process", "Neon process"),
+        ("gallery", "neon-gallery", "Neon gallery"),
+        ("reviews", "neon-reviews", "Neon reviews"),
+        ("stats", "neon-stats", "Neon stats + hours"),
+        ("cta", "neon-home-cta", "Home CTA teaser"),
+        ("tapasPage", "full-tapas-menu", "Full tapas menu page"),
+        ("barPage", "bar-story", "Bar story page"),
+        ("about", "chalk-timeline", "Chalk timeline + chef"),
+        ("contact", "bar-tab-reserve-faq", "Bar-tab reserve + FAQ"),
         ("footer", "neon-flicker", "Neon flicker footer"),
     ],
     "spiceWheel": [
         ("header", "ornate-bordered-nav", "Ornate bordered nav"),
         ("hero", "spice-particle-fall", "Spice particle fall hero"),
         ("menu", "conic-spice-wheel", "Conic-gradient spice wheel"),
-        ("recipe", "spiral-recipe-steps", "Spiral recipe steps"),
-        ("about", "terracotta-turmeric", "Terracotta turmeric about"),
-        ("contact", "thali-circular-form", "Thali circular contact"),
+        ("process", "spice-process", "Spice process"),
+        ("gallery", "spice-gallery", "Spice gallery"),
+        ("reviews", "spice-reviews", "Spice reviews"),
+        ("stats", "spice-stats", "Spice stats + hours"),
+        ("cta", "spice-home-cta", "Home CTA teaser"),
+        ("thaliPage", "full-thali-menu", "Full thali menu page"),
+        ("spicesPage", "spice-room-story", "Spice room story page"),
+        ("about", "terra-timeline", "Terracotta timeline + chef"),
+        ("contact", "thali-reserve-faq", "Thali reserve + FAQ"),
         ("footer", "spice-dots", "Spice dots footer"),
     ],
     "cellarDepth": [
         ("header", "centered-elegant-serif", "Centered elegant serif nav"),
         ("hero", "parallax-cellar-layers", "Parallax cellar depth hero"),
         ("tasting", "vertical-notes-timeline", "Vertical tasting notes"),
-        ("corks", "floating-cork-badges", "Floating cork badges"),
-        ("about", "letterpress-story", "Letterpress about"),
-        ("contact", "elegant-reservation", "Elegant reservation contact"),
+        ("process", "cellar-process", "Cellar process"),
+        ("gallery", "cellar-gallery", "Cellar gallery"),
+        ("reviews", "cellar-reviews", "Cellar reviews"),
+        ("stats", "cellar-stats", "Cellar stats + hours"),
+        ("cta", "cellar-home-cta", "Home CTA teaser"),
+        ("winesPage", "full-wine-list", "Full wine list page"),
+        ("tastingPage", "tasting-story", "Tasting story page"),
+        ("about", "letterpress-timeline", "Letterpress timeline + chef"),
+        ("contact", "elegant-reserve-faq", "Elegant reserve + FAQ"),
         ("footer", "vintage-stamp", "Vintage stamp footer"),
     ],
     "neonStreet": [
         ("header", "sticker-badge-nav", "Sticker badge nav"),
         ("hero", "truck-slide-neon-title", "Food truck + neon title hero"),
         ("stack", "night-market-card-stack", "Night market vertical stack"),
-        ("map", "bouncing-map-pins", "Bouncing map pins"),
-        ("about", "comic-panel-story", "Comic panel about"),
-        ("contact", "sms-chat-form", "SMS chat contact"),
+        ("process", "street-process", "Street process"),
+        ("gallery", "street-gallery", "Street gallery"),
+        ("reviews", "street-reviews", "Street reviews"),
+        ("stats", "street-stats-pins", "Street stats + hours"),
+        ("cta", "street-home-cta", "Home CTA teaser"),
+        ("trucksPage", "full-truck-menu", "Full truck menu page"),
+        ("spotsPage", "city-spots-story", "City spots story page"),
+        ("about", "comic-timeline", "Comic timeline + chef"),
+        ("contact", "sms-reserve-faq", "SMS reserve + FAQ"),
         ("footer", "ticket-tear", "Ticket tear footer"),
     ],
 }
@@ -1684,36 +1745,133 @@ def thumbnail_body(t):
     return bodies[layout]
 
 
+def _esc(s: str) -> str:
+    return str(s).replace("\\", "\\\\").replace('"', '\\"').replace("\n", " ")
+
+
 def gen_default_data(t, index):
     nav = "\n".join(
-        f'  nav{pid[0].upper() + pid[1:]}: "{label}",'
+        f'  nav{pid[0].upper() + pid[1:]}: "{_esc(label)}",'
         for pid, label, _ in t["pages"]
-    )
-    items = "\n".join(
-        f'  item{i}Title: "{it[0]}",\n  item{i}Meta: "{it[1]}",\n  item{i}Text: "{it[2]}",\n  item{i}Image: "{t["images"][chr(96 + i)]}",'
-        for i, it in enumerate(t["copy"]["items"], 1)
     )
     c = t["copy"]
     imgs = t["images"]
     address = CITIES[index % len(CITIES)]
+    items_lines = []
+    for i, it in enumerate(c["items"], 1):
+        key = {1: "a", 2: "b", 3: "c", 4: "d", 5: "e", 6: "f"}[i]
+        items_lines.append(
+            f'  item{i}Title: "{_esc(it[0])}",\n'
+            f'  item{i}Meta: "{_esc(it[1])}",\n'
+            f'  item{i}Text: "{_esc(it[2])}",\n'
+            f'  item{i}Image: "{imgs[key]}",'
+        )
+    items = "\n".join(items_lines)
+    rev_lines = []
+    for i, (text, name, role) in enumerate(c["reviews"], 1):
+        rev_lines.append(
+            f'  review{i}Text: "{_esc(text)}",\n'
+            f'  review{i}Name: "{_esc(name)}",\n'
+            f'  review{i}Role: "{_esc(role)}",'
+        )
+    faq_lines = []
+    for i, (q, a) in enumerate(c["faq"], 1):
+        faq_lines.append(f'  faq{i}Q: "{_esc(q)}",\n  faq{i}A: "{_esc(a)}",')
+    proc_lines = []
+    for i, (title, text) in enumerate(c["processSteps"], 1):
+        proc_lines.append(f'  process{i}Title: "{_esc(title)}",\n  process{i}Text: "{_esc(text)}",')
+    cat_lines = []
+    for i, (title, text) in enumerate(c["categories"], 1):
+        cat_lines.append(f'  cat{i}Title: "{_esc(title)}",\n  cat{i}Text: "{_esc(text)}",')
+    pair_lines = []
+    for i, (title, text) in enumerate(c["pairings"], 1):
+        pair_lines.append(f'  pair{i}Title: "{_esc(title)}",\n  pair{i}Text: "{_esc(text)}",')
+    tech_lines = []
+    for i, (title, text) in enumerate(c["techSteps"], 1):
+        tech_lines.append(f'  tech{i}Title: "{_esc(title)}",\n  tech{i}Text: "{_esc(text)}",')
+    mat_lines = []
+    for i, (title, text) in enumerate(c["materials"], 1):
+        mat_lines.append(f'  mat{i}Title: "{_esc(title)}",\n  mat{i}Text: "{_esc(text)}",')
+    tl_lines = []
+    for i, (year, text) in enumerate(c["timeline"], 1):
+        tl_lines.append(f'  timeline{i}Year: "{_esc(year)}",\n  timeline{i}Text: "{_esc(text)}",')
+    val_lines = []
+    for i, (title, text) in enumerate(c["values"], 1):
+        val_lines.append(f'  value{i}Title: "{_esc(title)}",\n  value{i}Text: "{_esc(text)}",')
+
     return f'''export const {t["id"]}DefaultData = {{
   templateId: "{t["id"]}",
-  name: "{t["name"]}",
-  brandName: "{t["brand"]}",
-  logoText: "{t["logo"]}",
+  name: "{_esc(t["name"])}",
+  brandName: "{_esc(t["brand"])}",
+  logoText: "{_esc(t["logo"])}",
 {nav}
-  heroEyebrow: "{t["niche"]}",
-  heroTitle: "{c["title"]}",
-  heroSubtitle: "{c["subtitle"]}",
-  heroPrimary: "{c["primary"]}",
-  heroSecondary: "{c["secondary"]}",
+  heroEyebrow: "{_esc(t["niche"])}",
+  heroTitle: "{_esc(c["title"])}",
+  heroSubtitle: "{_esc(c["subtitle"])}",
+  heroPrimary: "{_esc(c["primary"])}",
+  heroSecondary: "{_esc(c["secondary"])}",
   heroImage: "{imgs["hero"]}",
-  aboutTitle: "{c["aboutTitle"]}",
-  aboutText: "{c["aboutText"]}",
+  featuredTitle: "{_esc(c["featuredTitle"])}",
+  processTitle: "{_esc(c["processTitle"])}",
+{chr(10).join(proc_lines)}
+  galleryTitle: "{_esc(c["galleryTitle"])}",
+  galleryImage1: "{imgs["gallery1"]}",
+  galleryImage2: "{imgs["gallery2"]}",
+  galleryImage3: "{imgs["gallery3"]}",
+  galleryImage4: "{imgs["gallery4"]}",
+  reviewsTitle: "{_esc(c["reviewsTitle"])}",
+{chr(10).join(rev_lines)}
+  stat1: "{_esc(c["stat1"])}",
+  stat1Label: "{_esc(c["stat1Label"])}",
+  stat2: "{_esc(c["stat2"])}",
+  stat2Label: "{_esc(c["stat2Label"])}",
+  stat3: "{_esc(c["stat3"])}",
+  stat3Label: "{_esc(c["stat3Label"])}",
+  hours: "{_esc(c["hours"])}",
+  ctaBandTitle: "{_esc(c["ctaBandTitle"])}",
+  ctaBandText: "{_esc(c["ctaBandText"])}",
+  page1Title: "{_esc(c["page1Title"])}",
+  page1Subtitle: "{_esc(c["page1Subtitle"])}",
+  page2Title: "{_esc(c["page2Title"])}",
+  page2Subtitle: "{_esc(c["page2Subtitle"])}",
+  menuListTitle: "{_esc(c["menuListTitle"])}",
+{chr(10).join(cat_lines)}
+  pairingTitle: "{_esc(c["pairingTitle"])}",
+{chr(10).join(pair_lines)}
+  chefPickEyebrow: "{_esc(c["chefPickEyebrow"])}",
+  chefPickTitle: "{_esc(c["chefPickTitle"])}",
+  chefPickText: "{_esc(c["chefPickText"])}",
+  techTitle: "{_esc(c["techTitle"])}",
+{chr(10).join(tech_lines)}
+  matTitle: "{_esc(c["matTitle"])}",
+{chr(10).join(mat_lines)}
+  eventsTitle: "{_esc(c["eventsTitle"])}",
+  eventsText: "{_esc(c["eventsText"])}",
+  eventsMeta: "{_esc(c["eventsMeta"])}",
+  aboutEyebrow: "{_esc(c["aboutEyebrow"])}",
+  aboutPageTitle: "{_esc(c["aboutPageTitle"])}",
+  aboutPageLead: "{_esc(c["aboutPageLead"])}",
+  aboutTitle: "{_esc(c["aboutTitle"])}",
+  aboutText: "{_esc(c["aboutText"])}",
   aboutImage: "{imgs["c"]}",
-  contactTitle: "{c["contactTitle"]}",
-  contactText: "{c["contactText"]}",
-  cta: "{c["primary"]}",
+  timelineTitle: "{_esc(c["timelineTitle"])}",
+{chr(10).join(tl_lines)}
+  chefLabel: "{_esc(c["chefLabel"])}",
+  chefName: "{_esc(c["chefName"])}",
+  chefBio: "{_esc(c["chefBio"])}",
+  chefQuote: "{_esc(c["chefQuote"])}",
+  chefImage: "{imgs["chef"]}",
+{chr(10).join(val_lines)}
+  contactEyebrow: "{_esc(c["contactEyebrow"])}",
+  contactPageTitle: "{_esc(c["contactPageTitle"])}",
+  contactPageText: "{_esc(c["contactPageText"])}",
+  contactTitle: "{_esc(c["contactTitle"])}",
+  contactText: "{_esc(c["contactText"])}",
+  hoursTitle: "{_esc(c["hoursTitle"])}",
+  mapLabel: "{_esc(c["mapLabel"])}",
+  faqTitle: "{_esc(c["faqTitle"])}",
+{chr(10).join(faq_lines)}
+  cta: "{_esc(c["primary"])}",
   phone: "03-555-{1000 + index}",
   email: "hello@{t["id"]}.co.il",
   address: "{address}",
@@ -1784,27 +1942,61 @@ def gen_editor_css(t):
 `;
 '''
 
+def _page_fn_name(pid: str) -> str:
+    return "".join(part.capitalize() for part in pid.replace("-", "_").split("_")) + "Page"
+
+
 def gen_pages(t):
     p = t["palette"]
     tid = t["id"]
     name = t["name"]
     layout = t["layout"]
+    pages = t["pages"]
     pages_arr = "\n".join(
         f'  {{ id: "{pid}", label: "{label}", slug: "{slug}" }},'
-        for pid, label, slug in t["pages"]
+        for pid, label, slug in pages
     )
     hero = hero_jsx(t)
-    sections = home_sections_jsx(t)
-    about = about_jsx(t)
-    contact = contact_jsx(t)
-    footer = footer_jsx(t)
     header = header_jsx(t)
-    home_bits = "\n      ".join(HOME_SECTION_USE[layout])
-    inner_bits = "\n        ".join(s.replace("{data}", "{merged}") for s in HOME_SECTION_USE[layout])
-    inner_jsx = "{pg.id.includes(\"contact\") ? null : (<>\n        " + inner_bits + "\n        </>)}"
+    footer = footer_jsx(t)
+    sec = LAYOUT_SECTIONS[layout]
+    home_defs = paint(sec["home_defs"], p)
+    page1_defs = paint(sec["page1_defs"], p)
+    page2_defs = paint(sec["page2_defs"], p)
+    about_defs = paint(sec["about_defs"], p)
+    contact_defs = paint(sec["contact_defs"], p)
+    home_bits = "\n      ".join(sec["home_uses"])
+    page1_bits = "\n      ".join(sec["page1_uses"])
+    page2_bits = "\n      ".join(sec["page2_uses"])
+    about_bits = "\n      ".join(sec["about_uses"])
+    contact_bits = "\n      ".join(sec["contact_uses"])
 
-    react_import = "import React, { useMemo, useState } from \"react\";" if layout == "flameStack" else "import React, { useMemo } from \"react\";"
-    open_line = "  const [open, setOpen] = useState(false);\n" if layout == "flameStack" else ""
+    p1_id = pages[1][0]
+    p2_id = pages[2][0]
+    about_id = pages[3][0]
+    contact_id = pages[4][0]
+    p1_fn = _page_fn_name(p1_id)
+    p2_fn = _page_fn_name(p2_id)
+    about_fn = _page_fn_name(about_id)
+    contact_fn = _page_fn_name(contact_id)
+
+    needs_use_state = "setOpen" in header or layout == "flameStack"
+    react_import = (
+        'import React, { useMemo, useState } from "react";'
+        if needs_use_state
+        else 'import React, { useMemo } from "react";'
+    )
+    open_line = "  const [open, setOpen] = useState(false);\n" if "setOpen" in header else ""
+
+    page_content_block = "\n".join(
+        [
+            f'    home: <HomePage data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
+            f'    {p1_id}: <{p1_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
+            f'    {p2_id}: <{p2_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
+            f'    {about_id}: <{about_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
+            f'    {contact_id}: <{contact_fn} data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,',
+        ]
+    )
 
     return f'''{react_import}
 import {{ VisualPageStack }} from "../../../../runtime/VisualPageStack";
@@ -1841,17 +2033,15 @@ function Hero({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: 
   );
 }}
 
-{sections}
+{home_defs}
 
-function AboutBlock({{ data }}: {{ data: Record<string, any> }}) {{
-  return ({about}
-  );
-}}
+{page1_defs}
 
-function ContactBlock({{ data, onCta }}: {{ data: Record<string, any>; onCta: () => void }}) {{
-  return ({contact}
-  );
-}}
+{page2_defs}
+
+{about_defs}
+
+{contact_defs}
 
 function Footer({{ data }}: {{ data: Record<string, any> }}) {{
   return ({footer}
@@ -1863,24 +2053,42 @@ function HomePage({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (
     <>
       <Hero data={{data}} goTo={{goTo}} onCta={{onCta}} />
       {home_bits}
-      <AboutBlock data={{data}} />
-      <ContactBlock data={{data}} onCta={{onCta}} />
       <Footer data={{data}} />
     </>
   );
 }}
 
-function InnerPage({{ data, title, children, onCta }}: {{ data: Record<string, any>; title: string; children: React.ReactNode; onCta: () => void }}) {{
+function {p1_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
   return (
     <>
-      <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{{{ color: "{p['primary']}" }}}}>{{v(data, "brandName")}}</p>
-          <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{{title}}</h1>
-        </div>
-      </section>
-      {{children}}
-      <ContactBlock data={{data}} onCta={{onCta}} />
+      {page1_bits}
+      <Footer data={{data}} />
+    </>
+  );
+}}
+
+function {p2_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
+  return (
+    <>
+      {page2_bits}
+      <Footer data={{data}} />
+    </>
+  );
+}}
+
+function {about_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
+  return (
+    <>
+      {about_bits}
+      <Footer data={{data}} />
+    </>
+  );
+}}
+
+function {contact_fn}({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
+  return (
+    <>
+      {contact_bits}
       <Footer data={{data}} />
     </>
   );
@@ -1896,16 +2104,8 @@ export default function {name}Pages({{
     {{ allowedPages, fallbackPage: "home" }},
   );
   const pageContent: Record<string, React.ReactNode> = {{
-    home: <HomePage data={{merged}} goTo={{goTo}} onCta={{() => goTo("contact")}} />,
+{page_content_block}
   }};
-  for (const pg of {tid}Pages) {{
-    if (pg.id === "home") continue;
-    pageContent[pg.id] = (
-      <InnerPage data={{merged}} title={{pg.label}} onCta={{() => goTo("contact")}}>
-        {inner_jsx}
-      </InnerPage>
-    );
-  }}
   return (
     <div dir="rtl" data-template-id={{mode === "preview" ? "{tid}-preview" : "{tid}"}} className="min-h-screen w-full overflow-x-hidden"
       style={{{{ background: "{p['bg']}", color: "{p['text']}" }}}}>
