@@ -1102,12 +1102,7 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      coverImage={
-                                        template.image ||
-                                        template.thumbnailUrl ||
-                                        template.previewImageUrl
-                                      }
-                                      eager={index < 6}
+                                      eager={index < 8}
                                     />
                                   ) : template.image ||
                                     template.thumbnailUrl ||

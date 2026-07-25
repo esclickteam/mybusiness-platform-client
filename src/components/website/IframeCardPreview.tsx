@@ -12,17 +12,21 @@ type IframeCardPreviewProps = {
    * visible — mount when near viewport
    */
   activateOn?: "immediate" | "visible";
+  /** Prefer eager iframe fetch for above-the-fold my-site cards */
+  eagerLoad?: boolean;
+  onLoad?: () => void;
 };
 
 /**
- * Scaled live preview iframe. Kept optional/on-demand so gallery scrolling
- * stays smooth; prefer a static poster underneath for instant paint.
+ * Scaled live preview iframe for my-site / embed cards.
  */
 export default function IframeCardPreview({
   src,
   title,
   enableHoverPan = false,
   activateOn = "visible",
+  eagerLoad = false,
+  onLoad,
 }: IframeCardPreviewProps) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState(420);
@@ -111,8 +115,11 @@ export default function IframeCardPreview({
             title={title || "תצוגה מקדימה"}
             tabIndex={-1}
             scrolling="no"
-            loading="lazy"
-            onLoad={() => setIsLoaded(true)}
+            loading={eagerLoad || activateOn === "immediate" ? "eager" : "lazy"}
+            onLoad={() => {
+              setIsLoaded(true);
+              onLoad?.();
+            }}
             style={{
               width: DESIGN_WIDTH,
               height: DESIGN_HEIGHT,
