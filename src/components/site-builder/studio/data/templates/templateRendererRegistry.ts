@@ -177,6 +177,16 @@ import VowlinePages, { vowlinePages } from "./vowline/pages";
 import { vowlineEditorCss } from "./vowline/editorCss";
 import { vowlineSchema } from "./vowline/schema";
 import { vowlineDefaultData } from "./vowline/defaultData";
+import AurayogaPages, { aurayogaPages } from "./aurayoga/pages";
+import { aurayogaEditorCss } from "./aurayoga/editorCss";
+import { aurayogaSchema } from "./aurayoga/schema";
+import { aurayogaDefaultData } from "./aurayoga/defaultData";
+
+import SoundlinePages, { soundlinePages } from "./soundline/pages";
+import { soundlineEditorCss } from "./soundline/editorCss";
+import { soundlineSchema } from "./soundline/schema";
+import { soundlineDefaultData } from "./soundline/defaultData";
+
 import LoteraPages, { loteraPages } from "./lotera/pages";
 import { loteraEditorCss } from "./lotera/editorCss";
 import { loteraSchema } from "./lotera/schema";
@@ -922,6 +932,28 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: vowlineDefaultData as unknown as Record<string, any>,
     editorCss: vowlineEditorCss,
   }),
+  aurayoga: createRenderer({
+    key: "aurayoga",
+    name: "Aurayoga",
+    Component: AurayogaPages,
+    pages: aurayogaPages,
+    editorMode: "visual-react",
+    schema: aurayogaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: aurayogaDefaultData as unknown as Record<string, any>,
+    editorCss: aurayogaEditorCss,
+  }),
+
+  soundline: createRenderer({
+    key: "soundline",
+    name: "Soundline",
+    Component: SoundlinePages,
+    pages: soundlinePages,
+    editorMode: "visual-react",
+    schema: soundlineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: soundlineDefaultData as unknown as Record<string, any>,
+    editorCss: soundlineEditorCss,
+  }),
+
   lotera: createRenderer({
     key: "lotera",
     name: "Lotera",

@@ -39,6 +39,8 @@ import { lenscraftTemplate } from "./lenscraft/meta";
 import { numerisTemplate } from "./numeris/meta";
 import { formaraTemplate } from "./formara/meta";
 import { vowlineTemplate } from "./vowline/meta";
+import { aurayogaTemplate } from "./aurayoga/meta";
+import { soundlineTemplate } from "./soundline/meta";
 import { loteraTemplate } from "./lotera/meta";
 import { keyoraTemplate } from "./keyora/meta";
 import { estateoTemplate } from "./estateo/meta";
@@ -129,6 +131,8 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   numerisTemplate,
   formaraTemplate,
   vowlineTemplate,
+  aurayogaTemplate,
+  soundlineTemplate,
   loteraTemplate,
   keyoraTemplate,
   estateoTemplate,
