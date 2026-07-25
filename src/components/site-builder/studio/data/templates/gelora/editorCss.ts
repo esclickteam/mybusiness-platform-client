@@ -1,0 +1,116 @@
+export const geloraEditorCss = `
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Assistant:wght@400;500;600;700&display=swap');
+
+[data-template-id="gelora"],
+[data-template-id="gelora-preview"] {
+  --p: #DB2777;
+  --s: #FFF1F7;
+  --a: #F9A8D4;
+  --bg: #FFF7FB;
+  --surface: #FFFFFF;
+  --text: #4C0F2E;
+  --muted: #9D6681;
+  --dark: #2A0718;
+  font-family: "Assistant", sans-serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+[data-template-id="gelora"] .t-display,
+[data-template-id="gelora-preview"] .t-display {
+  font-family: "Fraunces", serif;
+}
+
+@keyframes gelora-ken {
+  from { transform: scale(1); }
+  to { transform: scale(1.12); }
+}
+@keyframes gelora-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes gelora-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes gelora-marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(50%); }
+}
+@keyframes gelora-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@keyframes gelora-pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.035); opacity: 0.9; }
+}
+@keyframes gelora-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes gelora-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--p) 35%, transparent); }
+  50% { box-shadow: 0 0 28px 2px color-mix(in srgb, var(--p) 45%, transparent); }
+}
+@keyframes gelora-scalein {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+[data-template-id="gelora"] .t-ken,
+[data-template-id="gelora-preview"] .t-ken { animation: gelora-ken 18s ease-in-out infinite alternate; }
+[data-template-id="gelora"] .t-anim,
+[data-template-id="gelora-preview"] .t-anim { animation: gelora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="gelora"] .t-d1,
+[data-template-id="gelora-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="gelora"] .t-d2,
+[data-template-id="gelora-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="gelora"] .t-d3,
+[data-template-id="gelora-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="gelora"] .t-fade,
+[data-template-id="gelora-preview"] .t-fade { animation: gelora-fade 1s ease both; }
+[data-template-id="gelora"] .t-marquee,
+[data-template-id="gelora-preview"] .t-marquee { animation: gelora-marquee 30s linear infinite; width: max-content; }
+[data-template-id="gelora"] .t-float,
+[data-template-id="gelora-preview"] .t-float { animation: gelora-float 6s ease-in-out infinite; }
+[data-template-id="gelora"] .t-pulse,
+[data-template-id="gelora-preview"] .t-pulse { animation: gelora-pulse 2.8s ease-in-out infinite; }
+[data-template-id="gelora"] .t-shimmer,
+[data-template-id="gelora-preview"] .t-shimmer {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
+  background-size: 200% 100%;
+  animation: gelora-shimmer 2.8s linear infinite;
+}
+[data-template-id="gelora"] .t-glow,
+[data-template-id="gelora-preview"] .t-glow { animation: gelora-glow 3.2s ease-in-out infinite; }
+[data-template-id="gelora"] .t-scalein,
+[data-template-id="gelora-preview"] .t-scalein { animation: gelora-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="gelora"] .t-hover,
+[data-template-id="gelora-preview"] .t-hover {
+  transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
+}
+[data-template-id="gelora"] .t-hover:hover,
+[data-template-id="gelora-preview"] .t-hover:hover { transform: translateY(-5px); }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="gelora"] .t-ken,
+  [data-template-id="gelora-preview"] .t-ken,
+  [data-template-id="gelora"] .t-anim,
+  [data-template-id="gelora-preview"] .t-anim,
+  [data-template-id="gelora"] .t-marquee,
+  [data-template-id="gelora-preview"] .t-marquee,
+  [data-template-id="gelora"] .t-float,
+  [data-template-id="gelora-preview"] .t-float,
+  [data-template-id="gelora"] .t-pulse,
+  [data-template-id="gelora-preview"] .t-pulse,
+  [data-template-id="gelora"] .t-shimmer,
+  [data-template-id="gelora-preview"] .t-shimmer,
+  [data-template-id="gelora"] .t-glow,
+  [data-template-id="gelora-preview"] .t-glow,
+  [data-template-id="gelora"] .t-scalein,
+  [data-template-id="gelora-preview"] .t-scalein,
+  [data-template-id="gelora"] .t-fade,
+  [data-template-id="gelora-preview"] .t-fade { animation: none !important; }
+}
+`;

@@ -159,6 +159,21 @@ import { waxelleTemplate } from "./waxelle/meta";
 import { glowhausTemplate } from "./glowhaus/meta";
 import { petaluxeTemplate } from "./petaluxe/meta";
 import { formellaTemplate } from "./formella/meta";
+import { geloraTemplate } from "./gelora/meta";
+import { tipcraftTemplate } from "./tipcraft/meta";
+import { permanovaTemplate } from "./permanova/meta";
+import { cosmellaTemplate } from "./cosmella/meta";
+import { browlineTemplate } from "./browline/meta";
+import { microarchTemplate } from "./microarch/meta";
+import { nailmuseTemplate } from "./nailmuse/meta";
+import { peeloraTemplate } from "./peelora/meta";
+import { chromabarTemplate } from "./chromabar/meta";
+import { bridaluxeTemplate } from "./bridaluxe/meta";
+import { sugaroseTemplate } from "./sugarose/meta";
+import { clearskinTemplate } from "./clearskin/meta";
+import { groomoraTemplate } from "./groomora/meta";
+import { lashatelierTemplate } from "./lashatelier/meta";
+import { spajadeTemplate } from "./spajade/meta";
 
 import { bakoraTemplate } from "./bakora/meta";
 import { tacoflareTemplate } from "./tacoflare/meta";
@@ -333,6 +348,21 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   glowhausTemplate,
   petaluxeTemplate,
   formellaTemplate,
+  geloraTemplate,
+  tipcraftTemplate,
+  permanovaTemplate,
+  cosmellaTemplate,
+  browlineTemplate,
+  microarchTemplate,
+  nailmuseTemplate,
+  peeloraTemplate,
+  chromabarTemplate,
+  bridaluxeTemplate,
+  sugaroseTemplate,
+  clearskinTemplate,
+  groomoraTemplate,
+  lashatelierTemplate,
+  spajadeTemplate,
 
   bakoraTemplate,
   tacoflareTemplate,

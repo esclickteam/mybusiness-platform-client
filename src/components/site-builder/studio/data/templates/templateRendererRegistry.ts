@@ -758,6 +758,81 @@ import { formellaEditorCss } from "./formella/editorCss";
 import { formellaSchema } from "./formella/schema";
 import { formellaDefaultData } from "./formella/defaultData";
 
+import GeloraPages, { geloraPages } from "./gelora/pages";
+import { geloraEditorCss } from "./gelora/editorCss";
+import { geloraSchema } from "./gelora/schema";
+import { geloraDefaultData } from "./gelora/defaultData";
+
+import TipcraftPages, { tipcraftPages } from "./tipcraft/pages";
+import { tipcraftEditorCss } from "./tipcraft/editorCss";
+import { tipcraftSchema } from "./tipcraft/schema";
+import { tipcraftDefaultData } from "./tipcraft/defaultData";
+
+import PermanovaPages, { permanovaPages } from "./permanova/pages";
+import { permanovaEditorCss } from "./permanova/editorCss";
+import { permanovaSchema } from "./permanova/schema";
+import { permanovaDefaultData } from "./permanova/defaultData";
+
+import CosmellaPages, { cosmellaPages } from "./cosmella/pages";
+import { cosmellaEditorCss } from "./cosmella/editorCss";
+import { cosmellaSchema } from "./cosmella/schema";
+import { cosmellaDefaultData } from "./cosmella/defaultData";
+
+import BrowlinePages, { browlinePages } from "./browline/pages";
+import { browlineEditorCss } from "./browline/editorCss";
+import { browlineSchema } from "./browline/schema";
+import { browlineDefaultData } from "./browline/defaultData";
+
+import MicroarchPages, { microarchPages } from "./microarch/pages";
+import { microarchEditorCss } from "./microarch/editorCss";
+import { microarchSchema } from "./microarch/schema";
+import { microarchDefaultData } from "./microarch/defaultData";
+
+import NailmusePages, { nailmusePages } from "./nailmuse/pages";
+import { nailmuseEditorCss } from "./nailmuse/editorCss";
+import { nailmuseSchema } from "./nailmuse/schema";
+import { nailmuseDefaultData } from "./nailmuse/defaultData";
+
+import PeeloraPages, { peeloraPages } from "./peelora/pages";
+import { peeloraEditorCss } from "./peelora/editorCss";
+import { peeloraSchema } from "./peelora/schema";
+import { peeloraDefaultData } from "./peelora/defaultData";
+
+import ChromabarPages, { chromabarPages } from "./chromabar/pages";
+import { chromabarEditorCss } from "./chromabar/editorCss";
+import { chromabarSchema } from "./chromabar/schema";
+import { chromabarDefaultData } from "./chromabar/defaultData";
+
+import BridaluxePages, { bridaluxePages } from "./bridaluxe/pages";
+import { bridaluxeEditorCss } from "./bridaluxe/editorCss";
+import { bridaluxeSchema } from "./bridaluxe/schema";
+import { bridaluxeDefaultData } from "./bridaluxe/defaultData";
+
+import SugarosePages, { sugarosePages } from "./sugarose/pages";
+import { sugaroseEditorCss } from "./sugarose/editorCss";
+import { sugaroseSchema } from "./sugarose/schema";
+import { sugaroseDefaultData } from "./sugarose/defaultData";
+
+import ClearskinPages, { clearskinPages } from "./clearskin/pages";
+import { clearskinEditorCss } from "./clearskin/editorCss";
+import { clearskinSchema } from "./clearskin/schema";
+import { clearskinDefaultData } from "./clearskin/defaultData";
+
+import GroomoraPages, { groomoraPages } from "./groomora/pages";
+import { groomoraEditorCss } from "./groomora/editorCss";
+import { groomoraSchema } from "./groomora/schema";
+import { groomoraDefaultData } from "./groomora/defaultData";
+
+import LashatelierPages, { lashatelierPages } from "./lashatelier/pages";
+import { lashatelierEditorCss } from "./lashatelier/editorCss";
+import { lashatelierSchema } from "./lashatelier/schema";
+import { lashatelierDefaultData } from "./lashatelier/defaultData";
+
+import SpajadePages, { spajadePages } from "./spajade/pages";
+import { spajadeEditorCss } from "./spajade/editorCss";
+import { spajadeSchema } from "./spajade/schema";
+import { spajadeDefaultData } from "./spajade/defaultData";
+
 import BakoraPages, { bakoraPages } from "./bakora/pages";
 import { bakoraEditorCss } from "./bakora/editorCss";
 import { bakoraSchema } from "./bakora/schema";
@@ -2646,6 +2721,171 @@ export const studioTemplateRendererRegistry: Record<
     schema: formellaSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: formellaDefaultData as unknown as Record<string, any>,
     editorCss: formellaEditorCss,
+  }),
+
+  gelora: createRenderer({
+    key: "gelora",
+    name: "Gelora",
+    Component: GeloraPages,
+    pages: geloraPages,
+    editorMode: "visual-react",
+    schema: geloraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: geloraDefaultData as unknown as Record<string, any>,
+    editorCss: geloraEditorCss,
+  }),
+
+  tipcraft: createRenderer({
+    key: "tipcraft",
+    name: "Tipcraft",
+    Component: TipcraftPages,
+    pages: tipcraftPages,
+    editorMode: "visual-react",
+    schema: tipcraftSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: tipcraftDefaultData as unknown as Record<string, any>,
+    editorCss: tipcraftEditorCss,
+  }),
+
+  permanova: createRenderer({
+    key: "permanova",
+    name: "Permanova",
+    Component: PermanovaPages,
+    pages: permanovaPages,
+    editorMode: "visual-react",
+    schema: permanovaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: permanovaDefaultData as unknown as Record<string, any>,
+    editorCss: permanovaEditorCss,
+  }),
+
+  cosmella: createRenderer({
+    key: "cosmella",
+    name: "Cosmella",
+    Component: CosmellaPages,
+    pages: cosmellaPages,
+    editorMode: "visual-react",
+    schema: cosmellaSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: cosmellaDefaultData as unknown as Record<string, any>,
+    editorCss: cosmellaEditorCss,
+  }),
+
+  browline: createRenderer({
+    key: "browline",
+    name: "Browline",
+    Component: BrowlinePages,
+    pages: browlinePages,
+    editorMode: "visual-react",
+    schema: browlineSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: browlineDefaultData as unknown as Record<string, any>,
+    editorCss: browlineEditorCss,
+  }),
+
+  microarch: createRenderer({
+    key: "microarch",
+    name: "Microarch",
+    Component: MicroarchPages,
+    pages: microarchPages,
+    editorMode: "visual-react",
+    schema: microarchSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: microarchDefaultData as unknown as Record<string, any>,
+    editorCss: microarchEditorCss,
+  }),
+
+  nailmuse: createRenderer({
+    key: "nailmuse",
+    name: "Nailmuse",
+    Component: NailmusePages,
+    pages: nailmusePages,
+    editorMode: "visual-react",
+    schema: nailmuseSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nailmuseDefaultData as unknown as Record<string, any>,
+    editorCss: nailmuseEditorCss,
+  }),
+
+  peelora: createRenderer({
+    key: "peelora",
+    name: "Peelora",
+    Component: PeeloraPages,
+    pages: peeloraPages,
+    editorMode: "visual-react",
+    schema: peeloraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: peeloraDefaultData as unknown as Record<string, any>,
+    editorCss: peeloraEditorCss,
+  }),
+
+  chromabar: createRenderer({
+    key: "chromabar",
+    name: "Chromabar",
+    Component: ChromabarPages,
+    pages: chromabarPages,
+    editorMode: "visual-react",
+    schema: chromabarSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: chromabarDefaultData as unknown as Record<string, any>,
+    editorCss: chromabarEditorCss,
+  }),
+
+  bridaluxe: createRenderer({
+    key: "bridaluxe",
+    name: "Bridaluxe",
+    Component: BridaluxePages,
+    pages: bridaluxePages,
+    editorMode: "visual-react",
+    schema: bridaluxeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: bridaluxeDefaultData as unknown as Record<string, any>,
+    editorCss: bridaluxeEditorCss,
+  }),
+
+  sugarose: createRenderer({
+    key: "sugarose",
+    name: "Sugarose",
+    Component: SugarosePages,
+    pages: sugarosePages,
+    editorMode: "visual-react",
+    schema: sugaroseSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: sugaroseDefaultData as unknown as Record<string, any>,
+    editorCss: sugaroseEditorCss,
+  }),
+
+  clearskin: createRenderer({
+    key: "clearskin",
+    name: "Clearskin",
+    Component: ClearskinPages,
+    pages: clearskinPages,
+    editorMode: "visual-react",
+    schema: clearskinSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: clearskinDefaultData as unknown as Record<string, any>,
+    editorCss: clearskinEditorCss,
+  }),
+
+  groomora: createRenderer({
+    key: "groomora",
+    name: "Groomora",
+    Component: GroomoraPages,
+    pages: groomoraPages,
+    editorMode: "visual-react",
+    schema: groomoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: groomoraDefaultData as unknown as Record<string, any>,
+    editorCss: groomoraEditorCss,
+  }),
+
+  lashatelier: createRenderer({
+    key: "lashatelier",
+    name: "Lashatelier",
+    Component: LashatelierPages,
+    pages: lashatelierPages,
+    editorMode: "visual-react",
+    schema: lashatelierSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lashatelierDefaultData as unknown as Record<string, any>,
+    editorCss: lashatelierEditorCss,
+  }),
+
+  spajade: createRenderer({
+    key: "spajade",
+    name: "Spajade",
+    Component: SpajadePages,
+    pages: spajadePages,
+    editorMode: "visual-react",
+    schema: spajadeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: spajadeDefaultData as unknown as Record<string, any>,
+    editorCss: spajadeEditorCss,
   }),
 
   bakora: createRenderer({
