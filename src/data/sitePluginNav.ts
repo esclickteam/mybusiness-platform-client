@@ -17,6 +17,7 @@ import {
   Route,
   ShoppingBag,
   Star,
+  Search,
   Timer,
   Users,
 } from "lucide-react";
@@ -34,11 +35,9 @@ export type SitePanelSection =
   | "heatmap"
   | "form-abandonment"
   | "journey-recording"
-  | "why-no-lead"
-  | "results-counter"
-  | "waitlist"
   | "countdown"
   | "benefits-wheel"
+  | "smart-search"
   | "sales-agent"
   | "service-finder"
   | "accessibility"
@@ -83,11 +82,9 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   heatmap: "heatmap",
   "form-abandonment": "form-abandonment",
   "journey-recording": "journey-recording",
-  "why-no-lead": "why-no-lead",
-  "results-counter": "results-counter",
-  waitlist: "waitlist",
   countdown: "countdown",
   "benefits-wheel": "benefits-wheel",
+  "smart-search": "smart-search",
   "sales-agent": "sales-agent",
   "service-finder": "service-finder",
   accessibility: "accessibility",
@@ -104,11 +101,9 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   heatmap: "#EF4444",
   "form-abandonment": "#F97316",
   "journey-recording": "#EC4899",
-  "why-no-lead": "#14B8A6",
-  "results-counter": "#3B82F6",
-  waitlist: "#0EA5E9",
   countdown: "#A855F7",
   "benefits-wheel": "#D946EF",
+  "smart-search": "#2563EB",
   "sales-agent": "#4F46E5",
   "service-finder": "#2563EB",
   accessibility: "#0891B2",
@@ -176,21 +171,6 @@ export const SECTION_META: Record<
     description: "הקלטות מסלול גולשים",
     pluginKey: "journey-recording",
   },
-  "why-no-lead": {
-    label: "למה לא השאירו?",
-    description: "תובנות על טפסים שלא נשלחו",
-    pluginKey: "why-no-lead",
-  },
-  "results-counter": {
-    label: "מונה תוצאות",
-    description: "מונה חברתי באתר",
-    pluginKey: "results-counter",
-  },
-  waitlist: {
-    label: "רשימת המתנה",
-    description: "התראה כשמתפנה תור",
-    pluginKey: "waitlist",
-  },
   countdown: {
     label: "ספירה לאחור",
     description: "טיימר דינמי למבצעים",
@@ -200,6 +180,11 @@ export const SECTION_META: Record<
     label: "גלגל הטבות",
     description: "משחק הטבות להמרות",
     pluginKey: "benefits-wheel",
+  },
+  "smart-search": {
+    label: "חיפוש חכם",
+    description: "כפתור חיפוש עם שורת חיפוש באתר",
+    pluginKey: "smart-search",
   },
   "sales-agent": {
     label: "סוכן מכירות",
@@ -227,8 +212,7 @@ export function getPluginIcon(key: string) {
     case "store":
       return ShoppingBag;
     case "booking":
-    case "waitlist":
-      return key === "waitlist" ? Bell : CalendarDays;
+      return CalendarDays;
     case "payments":
       return CreditCard;
     case "invoices":
@@ -245,14 +229,12 @@ export function getPluginIcon(key: string) {
       return FormInput;
     case "journey-recording":
       return Route;
-    case "why-no-lead":
-      return HelpCircle;
-    case "results-counter":
-      return Hash;
     case "countdown":
       return Timer;
     case "benefits-wheel":
       return CircleDot;
+    case "smart-search":
+      return Search;
     case "sales-agent":
       return Bot;
     case "service-finder":
