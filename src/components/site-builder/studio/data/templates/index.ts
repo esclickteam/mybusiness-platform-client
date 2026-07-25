@@ -29,6 +29,16 @@ import { savoryTemplate } from "./savory/meta";
 import { luminelleTemplate } from "./luminelle/meta";
 import { vitalcareTemplate } from "./vitalcare/meta";
 import { handcraftTemplate } from "./handcraft/meta";
+import { advisoraTemplate } from "./advisora/meta";
+import { markoraTemplate } from "./markora/meta";
+import { glinticaTemplate } from "./glintica/meta";
+import { bladehausTemplate } from "./bladehaus/meta";
+import { lexhavenTemplate } from "./lexhaven/meta";
+import { pulsefitTemplate } from "./pulsefit/meta";
+import { lenscraftTemplate } from "./lenscraft/meta";
+import { numerisTemplate } from "./numeris/meta";
+import { formaraTemplate } from "./formara/meta";
+import { vowlineTemplate } from "./vowline/meta";
 import { loteraTemplate } from "./lotera/meta";
 import { keyoraTemplate } from "./keyora/meta";
 import { estateoTemplate } from "./estateo/meta";
@@ -109,6 +119,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   luminelleTemplate,
   vitalcareTemplate,
   handcraftTemplate,
+  advisoraTemplate,
+  markoraTemplate,
+  glinticaTemplate,
+  bladehausTemplate,
+  lexhavenTemplate,
+  pulsefitTemplate,
+  lenscraftTemplate,
+  numerisTemplate,
+  formaraTemplate,
+  vowlineTemplate,
   loteraTemplate,
   keyoraTemplate,
   estateoTemplate,
