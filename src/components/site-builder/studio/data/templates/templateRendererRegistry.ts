@@ -79,6 +79,7 @@ import { justoraDefaultData } from "./justora/defaultData";
 
 import ShinoraPages, { shinoraPages } from "./shinora/pages";
 import { shinoraDefaultData } from "./shinora/defaultData";
+import { shinoraEditorCss } from "./shinora/editorCss";
 
 import CycloraPages, { cycloraPages } from "./cyclora/pages";
 import { cycloraSchema } from "./cyclora/schema";
@@ -1130,7 +1131,7 @@ export const studioTemplateRendererRegistry: Record<
     pages: shinoraPages,
     editorMode: "visual-react",
     defaultData: shinoraDefaultData as unknown as Record<string, any>,
-    editorCss: "",
+    editorCss: shinoraEditorCss,
   }),
 
   cyclora: createRenderer({

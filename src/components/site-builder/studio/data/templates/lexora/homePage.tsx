@@ -58,6 +58,7 @@ export default function LexoraHomePage({
             <SafeImage
               src={data.hero.image}
               alt={data.hero.title}
+              editId="hero.image"
               className="lex-hero-image"
             />
 
@@ -102,7 +103,11 @@ export default function LexoraHomePage({
       <section className="lex-image-band">
         <div className="lex-container">
           <Reveal className="lex-band-image">
-            <SafeImage src={data.intro.image} alt={data.intro.title} />
+            <SafeImage
+              src={data.intro.image}
+              alt={data.intro.title}
+              editId="intro.image"
+            />
           </Reveal>
         </div>
       </section>
@@ -146,7 +151,11 @@ export default function LexoraHomePage({
       <section className="lex-about-strip">
         <div className="lex-container lex-about-grid">
           <Reveal className="lex-about-image">
-            <SafeImage src={data.about.image} alt={data.about.title} />
+            <SafeImage
+              src={data.about.image}
+              alt={data.about.title}
+              editId="about.image"
+            />
           </Reveal>
 
           <Reveal className="lex-about-copy" delay={150}>

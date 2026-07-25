@@ -31,6 +31,7 @@ export default function WantravelHowItWorksPage({
             <SafeImage
               src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1100&q=90"
               alt="איך זה עובד"
+              editId="howItWorks.hero.image"
             />
           </Reveal>
         </div>
@@ -54,6 +55,7 @@ export default function WantravelHowItWorksPage({
               <SafeImage
                 src="https://images.unsplash.com/photo-1510414842594-a61c69b5ae57?auto=format&fit=crop&w=900&q=90"
                 alt="תכנון חופשה"
+                editId="howItWorks.editorial.image.1"
               />
             </Reveal>
 
@@ -64,6 +66,7 @@ export default function WantravelHowItWorksPage({
               <SafeImage
                 src="https://images.unsplash.com/photo-1516483638261-f4dbaf036963?auto=format&fit=crop&w=900&q=90"
                 alt="טיול באיטליה"
+                editId="howItWorks.editorial.image.2"
               />
             </Reveal>
           </div>

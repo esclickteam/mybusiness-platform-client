@@ -194,12 +194,14 @@ function SafeImageBox({
   fallbackIndex = 0,
   className = "",
   imgClassName = "",
+  editId,
 }: {
   image: unknown;
   alt: string;
   fallbackIndex?: number;
   className?: string;
   imgClassName?: string;
+  editId?: string;
 }) {
   const initialSrc = React.useMemo(
     () => safeImageSrc(image, fallbackIndex),
@@ -221,6 +223,8 @@ function SafeImageBox({
   }, [initialSrc]);
 
   const bgUrl = cssUrl(currentSrc);
+  const mediaId =
+    String(editId || "").trim() || `velmora.image.${fallbackIndex}`;
 
   function handleImageError() {
     setCurrentSrc(fallbackSrc);
@@ -230,6 +234,19 @@ function SafeImageBox({
     <div
       data-velmora-safe-image-box="true"
       data-velmora-hard-image="true"
+      data-visual-edit-id={mediaId}
+      data-visual-edit-type="image"
+      data-visual-type="image"
+      data-visual-editable="true"
+      data-visual-edit-label={alt || "תמונה"}
+      data-editable="image"
+      data-field={mediaId}
+      data-image-field={mediaId}
+      data-visual-image-field={mediaId}
+      data-visual-media-type="image"
+      data-resource-type="image"
+      data-visual-current-src={currentSrc}
+      data-visual-background-src={currentSrc}
       aria-label={alt}
       role="img"
       style={
@@ -252,6 +269,7 @@ function SafeImageBox({
         src={currentSrc}
         alt=""
         aria-hidden="true"
+        data-visual-ignore-select="true"
         onError={handleImageError}
         className={[
           "pointer-events-none absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100",
@@ -310,6 +328,18 @@ function ProductFanCard({
       <img
         src={imageSrc}
         alt={product.title}
+        data-visual-edit-id={`hero.products.${index}.image`}
+        data-visual-edit-type="image"
+        data-visual-type="image"
+        data-visual-editable="true"
+        data-visual-edit-label={product.title}
+        data-editable="image"
+        data-field={`hero.products.${index}.image`}
+        data-image-field={`hero.products.${index}.image`}
+        data-visual-image-field={`hero.products.${index}.image`}
+        data-visual-media-type="image"
+        data-resource-type="image"
+        data-visual-current-src={imageSrc}
         onError={(event) => fallbackImageOnError(event, index)}
         className="absolute inset-0 z-[1] block h-full w-full object-cover object-center opacity-100 transition duration-700 group-hover:scale-105"
       />
@@ -366,6 +396,7 @@ function MovingGallery({
             key={`${image}-${index}`}
             image={image}
             alt="גלריית השראה"
+            editId={`gallery.moving.${index}`}
             fallbackIndex={index}
             className="h-[170px] w-[245px] rounded-[4px] shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl md:h-[220px] md:w-[330px]"
           />
@@ -595,6 +626,7 @@ export default function VelmoraHome({
                   "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1400&q=90",
                 )}
                 alt="בוטיק אופנה"
+                editId="about.image"
                 fallbackIndex={5}
                 className="h-[460px] w-full md:h-[560px]"
               />
@@ -655,6 +687,7 @@ export default function VelmoraHome({
             "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1800&q=90",
           )}
           alt="סטודיו"
+          editId="inspiration.backgroundImage"
           fallbackIndex={4}
           className="absolute inset-0 h-full w-full"
           imgClassName="opacity-45"
@@ -731,6 +764,7 @@ export default function VelmoraHome({
                   <SafeImageBox
                     image={project.image}
                     alt={project.title}
+                    editId={`collections.${index}.image`}
                     fallbackIndex={index + 6}
                     className="h-64 w-full"
                     imgClassName="transition duration-700 group-hover:scale-105"
@@ -779,6 +813,7 @@ export default function VelmoraHome({
                 <SafeImageBox
                   image={velmoraGallery[3]}
                   alt="קולקציית מעבר"
+                  editId="collections.4.image"
                   fallbackIndex={4}
                   className="h-64 w-full"
                   imgClassName="transition duration-700 group-hover:scale-105"
@@ -820,6 +855,7 @@ export default function VelmoraHome({
             <SafeImageBox
               image="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=90"
               alt="סקיצה"
+              editId="customBox.image.left"
               fallbackIndex={4}
               className="h-80 w-full shadow-sm"
             />
@@ -861,6 +897,7 @@ export default function VelmoraHome({
             <SafeImageBox
               image="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90"
               alt="סטיילינג"
+              editId="customBox.image.right"
               fallbackIndex={6}
               className="h-80 w-full shadow-sm"
             />
@@ -933,6 +970,7 @@ export default function VelmoraHome({
                   <SafeImageBox
                     image={product.image}
                     alt={product.title}
+                    editId={`productsStrip.${index}.image`}
                     fallbackIndex={index}
                     className="h-[360px] w-full"
                     imgClassName="transition duration-700 group-hover:scale-105"

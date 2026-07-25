@@ -49,17 +49,41 @@ export function SafeImage({
   src,
   alt,
   className,
+  editId,
 }: {
   src: string;
   alt: string;
   className?: string;
+  editId?: string;
 }) {
+  const id = String(editId || "").trim();
+  const mediaAttrs = {
+    "data-visual-edit-type": "image",
+    "data-visual-type": "image",
+    "data-visual-editable": "true",
+    "data-editable": "image",
+    "data-visual-media-type": "image",
+    "data-resource-type": "image",
+    "data-visual-current-src": src,
+    "data-visual-edit-label": alt || "תמונה",
+    ...(id
+      ? {
+          "data-visual-edit-id": id,
+          "data-field": id,
+          "data-image-field": id,
+          "data-visual-image-field": id,
+          "data-media-field": id,
+        }
+      : {}),
+  } as Record<string, string>;
+
   return (
     <img
       src={src}
       alt={alt}
       className={className}
       loading="lazy"
+      {...mediaAttrs}
       onError={(event) => {
         const img = event.currentTarget;
         img.style.display = "none";
@@ -243,7 +267,11 @@ export function PackagesGrid({ data }: { data: WantravelSeed }) {
           delay={index * 120}
         >
           <div className="wan-package-image">
-            <SafeImage src={item.image} alt={item.title} />
+            <SafeImage
+              src={item.image}
+              alt={item.title}
+              editId={`packages.${index}.image`}
+            />
             <span className="wan-package-price">{item.price}</span>
           </div>
 

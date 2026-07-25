@@ -144,7 +144,7 @@ function MovingGallery({
         ].join(" ")}
       >
         {repeated.map((image, index) => (
-          <img
+          <img data-visual-edit-id={`projects.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`projects.gallery.${index}.image`} data-image-field={`projects.gallery.${index}.image`} data-visual-image-field={`projects.gallery.${index}.image`}
             key={`${image}-${index}`}
             src={image}
             alt="קולקציה"
@@ -224,7 +224,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
                     index === 1 ? "md:-mt-10" : "md:mt-10",
                   ].join(" ")}
                 >
-                  <img
+                  <img data-visual-edit-id={`projects.collections.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`projects.collections.${index}.image`} data-image-field={`projects.collections.${index}.image`} data-visual-image-field={`projects.collections.${index}.image`}
                     src={collection.image}
                     alt={collection.title}
                     className="h-[500px] w-full object-cover transition duration-700 group-hover:scale-105"
@@ -261,7 +261,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
       <section className="bg-white px-5 py-28">
         <div className="mx-auto grid max-w-[1500px] gap-16 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
           <Reveal>
-            <img
+            <img data-visual-edit-id="projects.image.3" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="projects.image.3" data-image-field="projects.image.3" data-visual-image-field="projects.image.3"
               src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
               alt="קולקציית אופנה"
               className="h-[680px] w-full object-cover"
@@ -327,7 +327,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
                   onClick={() => onPageChange("shop")}
                   className="group relative min-h-[460px] overflow-hidden bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <img
+                  <img data-visual-edit-id={`projects.collections.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`projects.collections.${index}.image`} data-image-field={`projects.collections.${index}.image`} data-visual-image-field={`projects.collections.${index}.image`}
                     src={collection.image}
                     alt={collection.title}
                     className="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105"
@@ -402,7 +402,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
               <Reveal key={project.title} delay={index * 120}>
                 <article className="group overflow-hidden bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl">
                   <div className="relative overflow-hidden">
-                    <img
+                    <img data-visual-edit-id={`projects.projects.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`projects.projects.${index}.image`} data-image-field={`projects.projects.${index}.image`} data-visual-image-field={`projects.projects.${index}.image`}
                       src={project.image}
                       alt={project.title}
                       className="h-[430px] w-full object-cover transition duration-700 group-hover:scale-105"
@@ -444,7 +444,7 @@ export default function VelmoraProjects({ onPageChange }: Props) {
 
       {/* CTA FULL WIDTH */}
       <section className="relative bg-[#30261d] px-5 py-28 text-white">
-        <img
+        <img data-visual-edit-id="projects.image.6" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="projects.image.6" data-image-field="projects.image.6" data-visual-image-field="projects.image.6"
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1800&q=90"
           alt="קולקציה"
           className="absolute inset-0 h-full w-full object-cover opacity-35"

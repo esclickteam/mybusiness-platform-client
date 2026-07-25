@@ -21,6 +21,7 @@ export default function LexoraContactPage({ data }: { data: LexoraSeed }) {
             <SafeImage
               src="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=90"
               alt="ייעוץ משפטי"
+              editId="contact.image"
             />
           </Reveal>
         </div>

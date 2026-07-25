@@ -105,7 +105,7 @@ function MovingGallery({
         ].join(" ")}
       >
         {repeated.map((image, index) => (
-          <img
+          <img data-visual-edit-id={`custom.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`custom.gallery.${index}.image`} data-image-field={`custom.gallery.${index}.image`} data-visual-image-field={`custom.gallery.${index}.image`}
             key={`${image}-${index}`}
             src={image}
             alt="סטיילינג והשראה"
@@ -241,14 +241,14 @@ export default function VelmoraCustom({ onPageChange }: Props) {
 
           <Reveal delay={160}>
             <div className="relative grid gap-5 md:grid-cols-2">
-              <img
+              <img data-visual-edit-id="custom.image.2" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="custom.image.2" data-image-field="custom.image.2" data-visual-image-field="custom.image.2"
                 src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1100&q=90"
                 alt="סטיילינג אישי"
                 className="h-[560px] w-full object-cover shadow-[0_28px_90px_rgba(0,0,0,0.12)]"
               />
 
               <div className="grid gap-5 pt-16">
-                <img
+                <img data-visual-edit-id="custom.image.3" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="custom.image.3" data-image-field="custom.image.3" data-visual-image-field="custom.image.3"
                   src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=90"
                   alt="סטודיו אופנה"
                   className="h-[260px] w-full object-cover shadow-sm"
@@ -311,13 +311,13 @@ export default function VelmoraCustom({ onPageChange }: Props) {
         <div className="mx-auto grid max-w-[1500px] gap-16 lg:grid-cols-[1fr_1fr] lg:items-center">
           <Reveal>
             <div className="grid grid-cols-2 gap-5">
-              <img
+              <img data-visual-edit-id="custom.image.4" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="custom.image.4" data-image-field="custom.image.4" data-visual-image-field="custom.image.4"
                 src="https://images.unsplash.com/photo-1487222477894-8943e31ef7b2?auto=format&fit=crop&w=900&q=90"
                 alt="לוק לפני התאמה"
                 className="h-[520px] w-full object-cover"
               />
 
-              <img
+              <img data-visual-edit-id="custom.image.5" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="custom.image.5" data-image-field="custom.image.5" data-visual-image-field="custom.image.5"
                 src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90"
                 alt="לוק אחרי התאמה"
                 className="mt-20 h-[520px] w-full object-cover"
@@ -517,7 +517,7 @@ export default function VelmoraCustom({ onPageChange }: Props) {
                   onClick={() => onPageChange("product")}
                   className="group overflow-hidden bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <img
+                  <img data-visual-edit-id={`custom.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`custom.products.${index}.image`} data-image-field={`custom.products.${index}.image`} data-visual-image-field={`custom.products.${index}.image`}
                     src={product.image}
                     alt={product.title}
                     className="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105"
@@ -566,7 +566,7 @@ export default function VelmoraCustom({ onPageChange }: Props) {
 
       {/* 8. CONTACT CTA */}
       <section className="relative bg-[#30261d] px-5 py-28 text-white">
-        <img
+        <img data-visual-edit-id="custom.image.7" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="custom.image.7" data-image-field="custom.image.7" data-visual-image-field="custom.image.7"
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1800&q=90"
           alt="סטיילינג אישי"
           className="absolute inset-0 h-full w-full object-cover opacity-35"

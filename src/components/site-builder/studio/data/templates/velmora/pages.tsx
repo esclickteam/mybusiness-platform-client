@@ -475,7 +475,7 @@ function VelmoraCartPage({
                   key={item.cartId}
                   className="grid gap-5 rounded-[8px] border border-black/10 bg-white p-5 shadow-sm md:grid-cols-[150px_1fr_auto]"
                 >
-                  <img
+                  <img data-visual-edit-id={`pages.items.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`pages.items.${index}.image`} data-image-field={`pages.items.${index}.image`} data-visual-image-field={`pages.items.${index}.image`}
                     src={item.image}
                     alt={item.title}
                     className="h-44 w-full rounded-[6px] object-cover md:h-36"

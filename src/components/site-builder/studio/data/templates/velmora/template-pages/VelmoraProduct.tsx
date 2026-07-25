@@ -177,7 +177,7 @@ function MovingGallery({
         ].join(" ")}
       >
         {repeated.map((image, index) => (
-          <img
+          <img data-visual-edit-id={`product.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`product.gallery.${index}.image`} data-image-field={`product.gallery.${index}.image`} data-visual-image-field={`product.gallery.${index}.image`}
             key={`${image}-${index}`}
             src={image}
             alt="השראה למוצר"
@@ -261,7 +261,7 @@ export default function VelmoraProduct({
                           : "border-black/10 hover:border-black/40",
                       ].join(" ")}
                     >
-                      <img
+                      <img data-visual-edit-id={`product.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`product.gallery.${index}.image`} data-image-field={`product.gallery.${index}.image`} data-visual-image-field={`product.gallery.${index}.image`}
                         src={image}
                         alt="תמונת מוצר"
                         className="h-full w-full object-cover"
@@ -272,7 +272,7 @@ export default function VelmoraProduct({
               </div>
 
               <div className="order-1 overflow-hidden rounded-[8px] bg-white shadow-[0_28px_90px_rgba(0,0,0,0.12)] lg:order-2">
-                <img
+                <img data-visual-edit-id="product.selected.image" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="product.selected.image" data-image-field="product.selected.image" data-visual-image-field="product.selected.image"
                   src={selectedImage}
                   alt={selectedProduct.title}
                   className="h-[620px] w-full object-cover transition duration-700 hover:scale-105"
@@ -554,13 +554,13 @@ export default function VelmoraProduct({
 
           <Reveal delay={160}>
             <div className="grid grid-cols-2 gap-5">
-              <img
+              <img data-visual-edit-id="product.image.4" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="product.image.4" data-image-field="product.image.4" data-visual-image-field="product.image.4"
                 src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90"
                 alt="פריט אופנה"
                 className="h-[520px] w-full object-cover"
               />
 
-              <img
+              <img data-visual-edit-id="product.image.5" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="product.image.5" data-image-field="product.image.5" data-visual-image-field="product.image.5"
                 src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90"
                 alt="סטיילינג"
                 className="mt-20 h-[520px] w-full object-cover"
@@ -634,7 +634,7 @@ export default function VelmoraProduct({
                   onClick={() => onPageChange("product")}
                   className="group overflow-hidden rounded-[8px] bg-white text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
-                  <img
+                  <img data-visual-edit-id={`product.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`product.products.${index}.image`} data-image-field={`product.products.${index}.image`} data-visual-image-field={`product.products.${index}.image`}
                     src={product.image}
                     alt={product.title}
                     className="h-[350px] w-full object-cover transition duration-700 group-hover:scale-105"
@@ -675,7 +675,7 @@ export default function VelmoraProduct({
       </section>
 
       <section className="relative bg-[#30261d] px-5 py-28 text-white">
-        <img
+        <img data-visual-edit-id="product.image.7" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="product.image.7" data-image-field="product.image.7" data-visual-image-field="product.image.7"
           src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1800&q=90"
           alt="קולקציית אופנה"
           className="absolute inset-0 h-full w-full object-cover opacity-35"

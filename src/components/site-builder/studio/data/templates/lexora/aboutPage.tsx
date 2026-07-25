@@ -20,7 +20,11 @@ export default function LexoraAboutPage({ data }: { data: LexoraSeed }) {
           <div className="lex-team-grid">
             {data.about.team.map((member, index) => (
               <Reveal key={member.name} className="lex-team-card" delay={index * 100}>
-                <SafeImage src={member.image} alt={member.name} />
+                <SafeImage
+                  src={member.image}
+                  alt={member.name}
+                  editId={`about.team.${index}.image`}
+                />
                 <div>
                   <h3>{member.name}</h3>
                   <p>{member.role}</p>

@@ -163,7 +163,7 @@ export default function VelmoraAbout({ onPageChange }: Props) {
 
           <Reveal delay={160}>
             <div className="relative">
-              <img
+              <img data-visual-edit-id="about.image.1" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="about.image.1" data-image-field="about.image.1" data-visual-image-field="about.image.1"
                 src="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=1400&q=90"
                 alt="סטודיו אופנה"
                 className="h-[560px] w-full object-cover shadow-[0_28px_90px_rgba(0,0,0,0.12)]"
@@ -254,7 +254,7 @@ export default function VelmoraAbout({ onPageChange }: Props) {
 
       {/* LARGE IMAGE / QUOTE */}
       <section className="relative bg-[#3b3025] px-5 py-28 text-white">
-        <img
+        <img data-visual-edit-id="about.image.2" data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field="about.image.2" data-image-field="about.image.2" data-visual-image-field="about.image.2"
           src="https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=1600&q=90"
           alt="קולקציה"
           className="absolute inset-0 h-full w-full object-cover opacity-35"
@@ -336,7 +336,7 @@ export default function VelmoraAbout({ onPageChange }: Props) {
           <div className="mt-12 grid gap-4 md:grid-cols-3">
             {velmoraGallery.slice(0, 6).map((image, index) => (
               <Reveal key={image} delay={index * 90}>
-                <img
+                <img data-visual-edit-id={`about.gallery.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`about.gallery.${index}.image`} data-image-field={`about.gallery.${index}.image`} data-visual-image-field={`about.gallery.${index}.image`}
                   src={image}
                   alt="סטודיו ואופנה"
                   className={[
