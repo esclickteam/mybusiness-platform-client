@@ -103,6 +103,7 @@ export const velmoraTemplate = {
   category: "store",
   categoryLabel: "קמעונאות / מסחר אלקטרוני",
   badge: "חדש",
+  tags: ["ולמורה", "velmora", "בוטיק", "אופנה", "חנות בגדים"],
   description:
     "תבנית בוטיק עברית לחנות בגדים, קולקציות, מוצרים, לוקבוק וסיפור מותג.",
   previewImage:

@@ -246,7 +246,7 @@ export default function VelmoraProduct({
           <Reveal>
             <div className="grid gap-5 lg:grid-cols-[110px_1fr]">
               <div className="order-2 flex gap-3 overflow-x-auto lg:order-1 lg:grid lg:overflow-visible">
-                {selectedProduct.images.map((image) => {
+                {selectedProduct.images.map((image, index) => {
                   const active = selectedImage === image;
 
                   return (
