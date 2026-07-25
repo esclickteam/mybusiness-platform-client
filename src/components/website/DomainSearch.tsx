@@ -131,7 +131,13 @@ function parseDomainInput(
   };
 }
 
-export default function DomainSearch() {
+type DomainSearchProps = {
+  onRegistered?: (domain: string) => void | Promise<void>;
+};
+
+export default function DomainSearch({
+  onRegistered,
+}: DomainSearchProps = {}) {
   const [domainName, setDomainName] = useState("");
   const [selectedTld, setSelectedTld] =
     useState<DomainExtension>("co.il");
@@ -219,6 +225,9 @@ export default function DomainSearch() {
                 status: response.status,
               },
         );
+        if (response?.success && response.domain) {
+          void onRegistered?.(response.domain);
+        }
       } catch (requestError) {
         if (cancelled) return;
         setRegisterError(
@@ -534,6 +543,9 @@ export default function DomainSearch() {
           registrationId: checkout.registrationId,
           status: checkout.status || "registered",
         });
+        if (checkout.domain) {
+          void onRegistered?.(checkout.domain);
+        }
         return;
       }
 

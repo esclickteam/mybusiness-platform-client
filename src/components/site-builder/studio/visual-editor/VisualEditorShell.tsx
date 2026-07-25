@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   Eye,
   EyeOff,
   FileStack,
+  Globe2,
   Layers3,
   Code2,
   Monitor,
@@ -27,6 +28,7 @@ import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
 import VisualAiToolsPanel from "./VisualAiToolsPanel";
+import ConnectDomainModal from "../../../website/ConnectDomainModal";
 import {
   writeVisualContentItem,
   writeVisualStyleItem,
@@ -35,6 +37,9 @@ import {
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+
+const PUBLIC_SITE_DOMAIN =
+  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
 type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   templateName?: string;
@@ -73,6 +78,7 @@ type VisualEditorShellProps = {
   className?: string;
   siteId?: string;
   siteSlug?: string;
+  customDomain?: string;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   sitePages?: VisualSitePageItem[];
   activeSitePageId?: string;
@@ -121,6 +127,7 @@ export default function VisualEditorShell({
   className = "",
   siteId,
   siteSlug = "",
+  customDomain = "",
   onAddLibraryPage,
   sitePages = [],
   activeSitePageId = "",
@@ -135,6 +142,26 @@ export default function VisualEditorShell({
     "sections" | "pages" | "plugins"
   >("sections");
   const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
+  const [connectDomainOpen, setConnectDomainOpen] = useState(false);
+  const [linkedCustomDomain, setLinkedCustomDomain] = useState(
+    String(customDomain || "").trim().toLowerCase(),
+  );
+
+  useEffect(() => {
+    setLinkedCustomDomain(String(customDomain || "").trim().toLowerCase());
+  }, [customDomain]);
+
+  const siteUrlLabel = useMemo(() => {
+    if (linkedCustomDomain) return `https://${linkedCustomDomain}`;
+    const slug = String(siteSlug || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, "-")
+      .replace(/-+/g, "-")
+      .replace(/^-|-$/g, "");
+    if (!slug) return `https://${PUBLIC_SITE_DOMAIN}`;
+    return `https://${slug}.${PUBLIC_SITE_DOMAIN}`;
+  }, [linkedCustomDomain, siteSlug]);
 
   const templateName =
     editor.templateName ||
@@ -323,30 +350,58 @@ export default function VisualEditorShell({
           </div>
         </div>
 
-        <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-          {DEVICE_OPTIONS.map((device) => (
-            <button
-              key={device.value}
-              type="button"
-              title={device.label}
-              onClick={() => editor.setDeviceMode(device.value)}
-              className={[
-                "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-black transition",
-                editor.deviceMode === device.value
-                  ? "bg-white text-violet-700 shadow-sm"
-                  : "text-slate-500 hover:bg-white/70 hover:text-slate-800",
-              ].join(" ")}
-            >
-              {device.icon}
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 px-2">
+          <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+            {DEVICE_OPTIONS.map((device) => (
+              <button
+                key={device.value}
+                type="button"
+                title={device.label}
+                onClick={() => editor.setDeviceMode(device.value)}
+                className={[
+                  "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-black transition",
+                  editor.deviceMode === device.value
+                    ? "bg-white text-violet-700 shadow-sm"
+                    : "text-slate-500 hover:bg-white/70 hover:text-slate-800",
+                ].join(" ")}
+              >
+                {device.icon}
 
-              <span className="hidden 2xl:inline">
-                {device.label}
-              </span>
+                <span className="hidden 2xl:inline">
+                  {device.label}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          <div
+            dir="ltr"
+            className="hidden min-w-0 max-w-[420px] items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 xl:flex"
+          >
+            <span className="truncate text-xs font-black text-slate-600">
+              {siteUrlLabel}
+            </span>
+            <button
+              type="button"
+              onClick={() => setConnectDomainOpen(true)}
+              className="shrink-0 text-xs font-black text-violet-700 transition hover:text-violet-900"
+            >
+              {linkedCustomDomain ? "ניהול דומיין" : "חיבור דומיין"}
             </button>
-          ))}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setConnectDomainOpen(true)}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200 bg-violet-50 px-3 text-sm font-black text-violet-800 shadow-sm transition hover:bg-violet-100 lg:px-4 xl:hidden"
+            title="חיבור דומיין"
+          >
+            <Globe2 className="h-4 w-4" />
+            <span className="hidden sm:inline">דומיין</span>
+          </button>
+
           {!isPreviewMode ? (
             <>
               <button
@@ -684,6 +739,17 @@ export default function VisualEditorShell({
           }}
         />
       </main>
+
+      <ConnectDomainModal
+        open={connectDomainOpen}
+        onClose={() => setConnectDomainOpen(false)}
+        siteId={siteId}
+        siteSlug={siteSlug}
+        initialCustomDomain={linkedCustomDomain}
+        onConnected={({ customDomain: nextDomain }) => {
+          setLinkedCustomDomain(String(nextDomain || "").trim().toLowerCase());
+        }}
+      />
     </div>
   );
 }

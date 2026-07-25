@@ -2230,7 +2230,7 @@
   "websiteTemplates": {
     "badge": "Set up a business website",
     "title": "What would you like to do now?",
-    "subtitle": "Search for a new domain for your business or choose a ready-made template and start editing the site.",
+    "subtitle": "Choose a ready-made template and start editing your site. Connect a domain from the site editor.",
     "domainSearch": {
       "title": "Domain search",
       "subtitle": "Live availability and registration"

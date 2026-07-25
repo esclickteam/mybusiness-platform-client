@@ -108,6 +108,50 @@ export async function renameMySite(siteId: string, name: string) {
   return data?.site as MySiteSummary;
 }
 
+export type SiteCustomDomainResult = {
+  success: boolean;
+  connected: boolean;
+  customDomain: string;
+  publicUrl?: string;
+  platformUrl?: string;
+  dns?: {
+    target: string;
+    records: Array<{
+      type: string;
+      host: string;
+      value: string;
+      note?: string;
+    }>;
+  } | null;
+  site?: MySiteSummary & Record<string, any>;
+  error?: string;
+};
+
+export async function connectSiteCustomDomain(
+  siteId: string,
+  customDomain: string,
+) {
+  const { data } = await API.put(
+    `/site-builder/sites/${siteId}/custom-domain`,
+    { customDomain },
+  );
+  if (!data?.success) {
+    throw new Error(data?.error || "חיבור הדומיין נכשל");
+  }
+  return data as SiteCustomDomainResult;
+}
+
+export async function disconnectSiteCustomDomain(siteId: string) {
+  const { data } = await API.put(
+    `/site-builder/sites/${siteId}/custom-domain`,
+    { disconnect: true },
+  );
+  if (!data?.success) {
+    throw new Error(data?.error || "ניתוק הדומיין נכשל");
+  }
+  return data as SiteCustomDomainResult;
+}
+
 export async function moveMySiteToFolder(
   siteId: string,
   folderId: string | null

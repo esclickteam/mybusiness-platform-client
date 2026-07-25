@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import type { DeviceMode } from "./types";
+import ConnectDomainModal from "../../website/ConnectDomainModal";
 
 type Props = {
   slug: string;
@@ -8,6 +9,8 @@ type Props = {
   device: DeviceMode;
   setDevice: (value: DeviceMode) => void;
   ready: boolean;
+  siteId?: string;
+  customDomain?: string;
   onUndo: () => void;
   onRedo: () => void;
   onPreview: () => void;
@@ -50,6 +53,8 @@ export default function StudioTopbar({
   setDevice,
   ready,
   slugValid,
+  siteId = "",
+  customDomain = "",
   onUndo,
   onRedo,
   onPreview,
@@ -59,6 +64,10 @@ export default function StudioTopbar({
   onPublish,
 }: Props) {
   const canSave = ready && slugValid;
+  const [connectDomainOpen, setConnectDomainOpen] = useState(false);
+  const [linkedCustomDomain, setLinkedCustomDomain] = useState(
+    String(customDomain || "").trim().toLowerCase(),
+  );
 
   const cleanSlug = (value: string) => {
     return value
@@ -71,6 +80,7 @@ export default function StudioTopbar({
   };
 
   return (
+    <>
     <header className="z-50 flex h-[78px] shrink-0 items-center justify-between gap-4 border-b border-slate-200/70 bg-white/90 px-4 shadow-[0_14px_55px_rgba(15,23,42,0.08)] backdrop-blur-2xl lg:px-5">
       {/* BRAND */}
       <div className="flex min-w-[210px] items-center gap-3 lg:min-w-[270px]">
@@ -117,8 +127,24 @@ export default function StudioTopbar({
         </span>
       </div>
 
+      <button
+        type="button"
+        onClick={() => setConnectDomainOpen(true)}
+        className="hidden shrink-0 text-sm font-black text-violet-700 transition hover:text-violet-900 xl:inline"
+      >
+        {linkedCustomDomain ? "ניהול דומיין" : "חיבור דומיין"}
+      </button>
+
       {/* ACTIONS */}
       <div className="flex min-w-0 flex-1 items-center justify-end gap-2 overflow-x-auto">
+        <button
+          type="button"
+          onClick={() => setConnectDomainOpen(true)}
+          title="חיבור דומיין"
+          className="shrink-0 rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-3 text-xs font-black text-violet-700 transition hover:-translate-y-0.5 hover:bg-violet-100 xl:hidden"
+        >
+          דומיין
+        </button>
         <IconButton title="ביטול פעולה אחרונה" onClick={onUndo} icon="↶">
           ביטול
         </IconButton>
@@ -198,7 +224,19 @@ export default function StudioTopbar({
           פרסום 🚀
         </button>
       </div>
+
     </header>
+    <ConnectDomainModal
+      open={connectDomainOpen}
+      onClose={() => setConnectDomainOpen(false)}
+      siteId={siteId}
+      siteSlug={slug}
+      initialCustomDomain={linkedCustomDomain}
+      onConnected={({ customDomain: nextDomain }) => {
+        setLinkedCustomDomain(String(nextDomain || "").trim().toLowerCase());
+      }}
+    />
+    </>
   );
 }
 

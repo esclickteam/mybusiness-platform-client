@@ -42,6 +42,7 @@ type TemplateVisualEditorProps = {
   slug?: string;
   publicUrl?: string;
   siteDomain?: string;
+  customDomain?: string;
   isSaving?: boolean;
 
   onBack?: () => void;
@@ -244,6 +245,7 @@ export default function TemplateVisualEditor({
   slug,
   publicUrl,
   siteDomain,
+  customDomain = "",
   isSaving,
   onBack,
   onSave,
@@ -437,6 +439,7 @@ export default function TemplateVisualEditor({
       }}
       siteId={siteId}
       siteSlug={normalizedSlug}
+      customDomain={customDomain}
       onBack={onBack}
       onAddLibraryPage={onAddLibraryPage}
       sitePages={sitePages}

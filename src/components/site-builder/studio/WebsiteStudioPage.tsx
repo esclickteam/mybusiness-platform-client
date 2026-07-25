@@ -4768,6 +4768,7 @@ export default function WebsiteStudioPage({
     return createInitialPages();
   });
   const [siteName, setSiteName] = useState("האתר שלי");
+  const [customDomain, setCustomDomain] = useState("");
   const [siteSeoSettings, setSiteSeoSettings] = useState<SiteSeoSettings>(() =>
     normalizeSiteSeoSettings(null),
   );
@@ -4960,6 +4961,12 @@ export default function WebsiteStudioPage({
         if (data.site.name) {
           setSiteName(String(data.site.name));
         }
+
+        setCustomDomain(
+          String(data.site?.domain?.domain || "")
+            .trim()
+            .toLowerCase(),
+        );
 
         setSiteSeoSettings(
           normalizeSiteSeoSettings(
@@ -5389,6 +5396,11 @@ export default function WebsiteStudioPage({
         if (data.site.name) {
           setSiteName(String(data.site.name));
         }
+        setCustomDomain(
+          String(data.site?.domain?.domain || "")
+            .trim()
+            .toLowerCase(),
+        );
         setSiteSeoSettings(
           normalizeSiteSeoSettings(
             data.site.seoSettings || data.site.seo,
@@ -8054,6 +8066,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     normalizePublicBusinessSlug(slug) || "your-business",
   )}
   siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
+  customDomain={customDomain}
   isSaving={saving}
   onBack={() => {
     if (typeof window !== "undefined") {
@@ -8151,6 +8164,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             setSlugError("");
           }}
           slugValid={slugValid}
+          siteId={siteId}
+          customDomain={customDomain}
           device={device}
           setDevice={handleSetDevice}
           ready={ready && !saving && !loadingSite && slugAvailable !== false}
