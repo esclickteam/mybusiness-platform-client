@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { handcraftDefaultData } from "./defaultData";
+import { handcraftEditorCss } from "./editorCss";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 
 export const handcraftPages = [{ id: "home", label: "בית", slug: "/" }];
@@ -28,216 +29,480 @@ function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
 }
 
+function phoneHref(data: Record<string, any>) {
+  return `tel:${getValue(data, "phoneHref") || getValue(data, "phone")}`;
+}
 
+function SectionHeading({
+  data,
+  eyebrowKey,
+  titleKey,
+  textKey,
+  invert = false,
+}: {
+  data: Record<string, any>;
+  eyebrowKey: string;
+  titleKey: string;
+  textKey?: string;
+  invert?: boolean;
+}) {
+  return (
+    <div className="h-copper-line pt-7">
+      <p
+        className={cx(
+          "h-anim text-xs font-extrabold uppercase tracking-[0.34em]",
+          invert ? "text-[var(--h-accent)]" : "text-[var(--h-primary)]",
+        )}
+      >
+        {getValue(data, eyebrowKey)}
+      </p>
+      <h2
+        className={cx(
+          "h-rise h-anim-d1 mt-4 max-w-4xl whitespace-pre-line text-4xl font-extrabold leading-[0.98] md:text-6xl",
+          invert ? "text-[var(--h-background)]" : "text-[var(--h-text)]",
+        )}
+      >
+        {getValue(data, titleKey)}
+      </h2>
+      {textKey ? (
+        <p
+          className={cx(
+            "h-rise h-anim-d2 mt-5 max-w-2xl text-base leading-8 md:text-lg",
+            invert ? "text-white/70" : "text-[var(--h-muted)]",
+          )}
+        >
+          {getValue(data, textKey)}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+function PrimaryButton({
+  children,
+  onClick,
+  className,
+}: {
+  children: React.ReactNode;
+  onClick?: () => void;
+  className?: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cx(
+        "inline-flex items-center justify-center bg-[var(--h-primary)] px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] text-white transition duration-300 hover:bg-[var(--h-accent)] hover:text-[var(--h-dark)]",
+        className,
+      )}
+    >
+      {children}
+    </button>
+  );
+}
 
 function Header({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
+  const navItems = [
+    [getValue(data, "navServices"), "#handcraft-services"],
+    [getValue(data, "navBeforeAfter"), "#handcraft-before-after"],
+    [getValue(data, "navPricing"), "#handcraft-pricing"],
+    [getValue(data, "navAreas"), "#handcraft-areas"],
+    [getValue(data, "navReviews"), "#handcraft-reviews"],
+  ];
+
   return (
     <header
       data-visual-flow-lock="true"
       data-template-section-type="header"
-      className={cx("sticky top-0 z-50", "border-b-4 border-[#F97316] bg-[#1C1917] text-white")}
+      className="sticky inset-x-0 top-0 z-50 border-b border-white/10 bg-[var(--h-secondary)] text-[var(--h-background)]"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
-        <div className="flex items-center gap-3">
-          <span className={"grid h-10 w-10 place-items-center bg-[#F97316] text-lg font-black text-white"}>{getValue(data, "logoText")}</span>
-          <span className={"text-xl font-black uppercase tracking-tight"}>{getValue(data, "brandName")}</span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-5 py-4 lg:px-8">
+        <a href="#handcraft-hero" className="flex items-center gap-3">
+          <span className="grid h-11 w-11 place-items-center border border-[var(--h-primary)] text-[11px] font-extrabold tracking-[0.18em] text-[var(--h-accent)]">
+            {getValue(data, "logoText")}
+          </span>
+          <span className="h-display text-2xl leading-none text-white md:text-3xl">{getValue(data, "brandName")}</span>
+        </a>
+        <nav className="hidden items-center gap-7 text-[11px] font-bold uppercase tracking-[0.22em] text-white/70 xl:flex">
+          {navItems.map(([label, href]) => (
+            <a key={href} href={href} className="transition hover:text-[var(--h-accent)]">
+              {label}
+            </a>
+          ))}
+        </nav>
+        <div className="flex items-center gap-4">
+          <a
+            href={phoneHref(data)}
+            className="hidden text-sm font-extrabold tracking-[0.12em] text-[var(--h-accent)] md:inline-flex"
+          >
+            {getValue(data, "phone")}
+          </a>
+          <button
+            type="button"
+            onClick={openModal}
+            className="border border-[var(--h-primary)] px-4 py-2.5 text-[11px] font-extrabold uppercase tracking-[0.2em] text-white transition hover:bg-[var(--h-primary)]"
+          >
+            {getValue(data, "navContact")}
+          </button>
         </div>
-        <button type="button" onClick={openModal} className={"hidden bg-[#F97316] px-5 py-2.5 text-sm font-black uppercase text-white sm:inline-flex"}>
-          {getValue(data, "heroPrimaryButton")}
-        </button>
       </div>
     </header>
   );
 }
 
 function Hero({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
-  const stats = [
-    [getValue(data, "heroStatOne"), getValue(data, "heroStatOneLabel")],
-    [getValue(data, "heroStatTwo"), getValue(data, "heroStatTwoLabel")],
-    [getValue(data, "heroStatThree"), getValue(data, "heroStatThreeLabel")],
-  ];
   return (
-    <section data-template-section-type="hero" className={"relative overflow-hidden px-5 py-16 lg:px-8 lg:py-24"}>
-      <div className="absolute inset-0 -z-10 bg-[#1C1917]" />
-        <div className="absolute right-0 top-0 -z-10 h-full w-1/2 skew-x-[-8deg] bg-[#F97316]/10" />
-        <div className="mx-auto grid max-w-7xl items-center gap-10 lg:grid-cols-2">
-          <div className="text-white">
-            <p className="mb-3 text-xs font-black uppercase tracking-[0.25em] text-[#F97316]">{getValue(data, "heroEyebrow")}</p>
-            <h1 className="whitespace-pre-line text-5xl font-black leading-[0.95] md:text-7xl">{getValue(data, "heroTitle")}</h1>
-            <p className="mt-5 max-w-lg text-white/70">{getValue(data, "heroSubtitle")}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <button type="button" onClick={openModal} className="bg-[#F97316] px-8 py-4 text-sm font-black uppercase">{getValue(data, "heroPrimaryButton")}</button>
-              <a href={"tel:" + getValue(data, "phone")} className="text-2xl font-black text-[#F97316]">{getValue(data, "phone")}</a>
+    <section
+      id="handcraft-hero"
+      data-template-section-type="hero"
+      className="relative min-h-[calc(100svh-76px)] overflow-hidden bg-[var(--h-dark)] text-[var(--h-background)]"
+    >
+      <img
+        src={getValue(data, "heroImage")}
+        alt={getValue(data, "heroImageAlt")}
+        className="h-image-anim absolute inset-0 h-full w-full object-cover"
+      />
+      <div className="absolute inset-0 bg-gradient-to-l from-[#16181A] via-[#16181A]/80 to-[#16181A]/20" />
+      <div className="absolute inset-x-0 bottom-0 h-px bg-[var(--h-primary)]" />
+      <div className="relative z-10 mx-auto flex min-h-[calc(100svh-76px)] max-w-7xl flex-col justify-end px-5 pb-14 pt-24 lg:px-8 lg:pb-20">
+        <p className="h-anim text-xs font-extrabold uppercase tracking-[0.42em] text-[var(--h-accent)]">
+          {getValue(data, "heroEyebrow")}
+        </p>
+        <div className="h-line-anim mt-5 h-[3px] w-28 bg-[var(--h-primary)]" />
+        <div className="mt-8 grid items-end gap-8 lg:grid-cols-[1.05fr_0.95fr]">
+          <div>
+            <div className="h-display h-anim h-anim-d1 text-7xl leading-[0.72] text-white md:text-9xl lg:text-[10.5rem]">
+              {getValue(data, "brandName")}
             </div>
+            <h1 className="h-rise h-anim-d2 mt-8 max-w-3xl whitespace-pre-line text-4xl font-extrabold leading-[0.98] md:text-6xl lg:text-7xl">
+              {getValue(data, "heroTitle")}
+            </h1>
           </div>
-          <div className="overflow-hidden border-4 border-[#F97316]">
-            <img src={getValue(data, "heroImage")} alt="" className="h-[380px] w-full object-cover grayscale hover:grayscale-0 transition duration-500" />
+          <div className="h-rise h-anim-d2 border-r-4 border-[var(--h-primary)] pr-6">
+            <p className="max-w-xl text-base leading-8 text-white/80 md:text-lg">{getValue(data, "heroSubtitle")}</p>
+            <div className="mt-8 flex flex-wrap items-center gap-5">
+              <PrimaryButton onClick={openModal}>{getValue(data, "heroPrimaryButton")}</PrimaryButton>
+              <a href={phoneHref(data)} className="text-2xl font-extrabold text-[var(--h-accent)] md:text-3xl">
+                {getValue(data, "phone")}
+              </a>
+            </div>
           </div>
         </div>
-      <div className="mt-8 grid grid-cols-3 gap-4">
-        {stats.map(([num, label]) => (
-          <div key={label} className={"border-2 border-[#F97316] bg-white p-5 text-center"}>
-            <div className={"text-3xl font-black text-[#F97316]"}>{num}</div>
-            <div className={"mt-1 text-xs font-bold uppercase text-[#78716C]"}>{label}</div>
-          </div>
-        ))}
       </div>
     </section>
   );
 }
 
-function SectionTwo({ data }: { data: Record<string, any> }) {
-  const items = [
-    [getValue(data, "itemOneTitle"), getValue(data, "itemOneText")],
-    [getValue(data, "itemTwoTitle"), getValue(data, "itemTwoText")],
-    [getValue(data, "itemThreeTitle"), getValue(data, "itemThreeText")],
+function Services({ data }: { data: Record<string, any> }) {
+  const services = [
+    ["serviceOneNumber", "serviceOneTitle", "serviceOneText", "serviceOneMeta"],
+    ["serviceTwoNumber", "serviceTwoTitle", "serviceTwoText", "serviceTwoMeta"],
+    ["serviceThreeNumber", "serviceThreeTitle", "serviceThreeText", "serviceThreeMeta"],
+    ["serviceFourNumber", "serviceFourTitle", "serviceFourText", "serviceFourMeta"],
   ];
+
   return (
-    <section data-template-section-type="section-2" className={"px-5 py-20 lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionTwoTitle")}</h2>
-      <div className="mx-auto mt-12 grid max-w-6xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {["אינסטלציה","חשמל","שיפוצים","מיזוג"].map((svc) => (
-          <div key={svc} className="group border-2 border-[#1C1917] p-6 transition hover:border-[#F97316] hover:bg-[#F97316] hover:text-white">
-            <span className="text-3xl">🔧</span>
-            <h3 className="mt-4 text-lg font-black uppercase">{svc}</h3>
+    <section
+      id="handcraft-services"
+      data-template-section-type="services"
+      className="h-section bg-[var(--h-background)] px-5 py-24 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr]">
+          <SectionHeading data={data} eyebrowKey="sectionTwoEyebrow" titleKey="sectionTwoTitle" textKey="sectionTwoText" />
+          <div className="grid border-t border-[var(--h-line)] md:grid-cols-2">
+            {services.map(([numberKey, titleKey, textKey, metaKey]) => (
+              <article
+                key={titleKey}
+                className="group min-h-[310px] border-b border-r border-[var(--h-line)] bg-[var(--h-surface)] p-7 transition duration-300 hover:bg-[var(--h-secondary)] hover:text-[var(--h-background)]"
+              >
+                <div className="h-display text-6xl leading-none text-[var(--h-primary)] transition group-hover:text-[var(--h-accent)]">
+                  {getValue(data, numberKey)}
+                </div>
+                <h3 className="mt-10 text-3xl font-extrabold leading-none">{getValue(data, titleKey)}</h3>
+                <p className="mt-5 text-sm leading-7 text-[var(--h-muted)] transition group-hover:text-white/70">
+                  {getValue(data, textKey)}
+                </p>
+                <p className="mt-8 border-t border-current/20 pt-4 text-[11px] font-extrabold uppercase tracking-[0.22em] text-[var(--h-primary)] transition group-hover:text-[var(--h-accent)]">
+                  {getValue(data, metaKey)}
+                </p>
+              </article>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionThree({ data }: { data: Record<string, any> }) {
+function BeforeAfter({ data }: { data: Record<string, any> }) {
   return (
-    <section data-template-section-type="section-3" className={"bg-[#1C1917] px-5 py-20 text-white lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionThreeTitle")}</h2>
-      <div className="mx-auto mt-12 grid max-w-5xl gap-4 lg:grid-cols-2">
-        <div className="border-2 border-red-500/50 p-4"><div className="flex h-48 items-center justify-center bg-red-500/10 text-sm font-black uppercase text-red-500">לפני — דליפה</div></div>
-        <div className="border-2 border-[#F97316] p-4"><div className="flex h-48 items-center justify-center bg-[#F97316]/10 text-sm font-black uppercase text-[#F97316]">אחרי — תוקן ✓</div></div>
+    <section
+      id="handcraft-before-after"
+      data-template-section-type="before-after"
+      className="h-dark-section px-5 py-24 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading
+          data={data}
+          eyebrowKey="sectionThreeEyebrow"
+          titleKey="sectionThreeTitle"
+          textKey="sectionThreeText"
+          invert
+        />
+        <div className="mt-14 grid gap-px bg-white/20 lg:grid-cols-2">
+          {[
+            ["beforeLabel", "beforeTitle", "beforeText", "beforeImage"],
+            ["afterLabel", "afterTitle", "afterText", "afterImage"],
+          ].map(([labelKey, titleKey, textKey, imageKey]) => (
+            <article key={labelKey} className="bg-[var(--h-secondary)]">
+              <div className="aspect-[4/3] overflow-hidden">
+                <img
+                  src={getValue(data, imageKey)}
+                  alt=""
+                  className="h-full w-full object-cover grayscale transition duration-700 hover:grayscale-0"
+                />
+              </div>
+              <div className="border-t border-white/20 p-7 lg:p-9">
+                <p className="text-xs font-extrabold uppercase tracking-[0.32em] text-[var(--h-accent)]">
+                  {getValue(data, labelKey)}
+                </p>
+                <h3 className="mt-4 text-3xl font-extrabold leading-tight text-white">{getValue(data, titleKey)}</h3>
+                <p className="mt-4 text-sm leading-7 text-white/60">{getValue(data, textKey)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionFour({ data }: { data: Record<string, any> }) {
-  return (
-    <section data-template-section-type="section-4" className={"px-5 py-20 lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionFourTitle")}</h2>
-      <div className="mx-auto mt-12 max-w-3xl space-y-4">
-        {["טכנאים מוסמכים ומבוטחים","מחיר קבוע לפני תחילת עבודה","אחריות מלאה על כל עבודה","זמינות 24/7 לקריאות דחופות"].map((item) => (
-          <div key={item} className="flex items-center gap-4 border-l-4 border-[#F97316] bg-white/5 py-3 pl-4">
-            <span className="text-[#F97316]">✓</span><span className="font-bold">{item}</span>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionFive({ data }: { data: Record<string, any> }) {
-  return (
-    <section data-template-section-type="section-5" className={"bg-[#1C1917] px-5 py-20 text-white lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionFiveTitle")}</h2>
-      <div className="mx-auto mt-12 grid max-w-5xl gap-4 md:grid-cols-3">
-        {[["קריאה","₪199","ביקור + אבחון"],["תיקון","₪350","עד שעתיים"],["פרויקט","הצעת מחיר","שיפוץ מלא"]].map(([name, price, desc]) => (
-          <div key={name} className="border-2 border-[#F97316]/30 bg-[#FAFAF9] p-6 text-[#1C1917]">
-            <h3 className="text-lg font-black uppercase">{name}</h3>
-            <div className="mt-3 text-3xl font-black text-[#F97316]">{price}</div>
-            <p className="mt-2 text-sm text-[#78716C]">{desc}</p>
-          </div>
-        ))}
-      </div>
-    </section>
-  );
-}
-
-function SectionSix({ data }: { data: Record<string, any> }) {
-  const reviews = [
-    [getValue(data, "reviewOneText"), getValue(data, "reviewOneName"), getValue(data, "reviewOneRole")],
-    [getValue(data, "reviewTwoText"), getValue(data, "reviewTwoName"), getValue(data, "reviewTwoRole")],
-    [getValue(data, "reviewThreeText"), getValue(data, "reviewThreeName"), getValue(data, "reviewThreeRole")],
+function WhyUs({ data }: { data: Record<string, any> }) {
+  const statements = [
+    ["whyOneTitle", "whyOneText"],
+    ["whyTwoTitle", "whyTwoText"],
+    ["whyThreeTitle", "whyThreeText"],
+    ["whyFourTitle", "whyFourText"],
   ];
+
   return (
-    <section data-template-section-type="section-6" className={"px-5 py-20 lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionSixTitle")}</h2>
-      <div className="mt-10 grid gap-5 lg:grid-cols-3">
-        {reviews.map(([text, name, role], i) => (
-          <article key={i} className={"border-2 border-[#F97316]/30 bg-[#FAFAF9] p-8 text-[#1C1917]"}>
-            <p className="text-base leading-8">"{text}"</p>
-            <div className="mt-5 border-t pt-4">
-              <p className="font-bold">{name}</p>
-              <p className="text-sm opacity-60">{role}</p>
-            </div>
-          </article>
-        ))}
+    <section data-template-section-type="why-us" className="h-section px-5 py-24 lg:px-8 lg:py-32">
+      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[0.95fr_1.05fr]">
+        <SectionHeading data={data} eyebrowKey="sectionFourEyebrow" titleKey="sectionFourTitle" textKey="sectionFourText" />
+        <div className="border-t border-[var(--h-text)]">
+          {statements.map(([titleKey, textKey], index) => (
+            <article key={titleKey} className="grid gap-5 border-b border-[var(--h-line)] py-8 md:grid-cols-[110px_1fr]">
+              <span className="h-display text-5xl leading-none text-[var(--h-primary)]">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h3 className="text-2xl font-extrabold">{getValue(data, titleKey)}</h3>
+                <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--h-muted)]">{getValue(data, textKey)}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionSeven({ data }: { data: Record<string, any> }) {
-  const [open, setOpen] = useState(0);
-  const faqs = [
-    [getValue(data, "faqOneQuestion"), getValue(data, "faqOneAnswer")],
-    [getValue(data, "faqTwoQuestion"), getValue(data, "faqTwoAnswer")],
-    [getValue(data, "faqThreeQuestion"), getValue(data, "faqThreeAnswer")],
+function Pricing({ data }: { data: Record<string, any> }) {
+  const tiers = [
+    ["pricingOneName", "pricingOnePrice", "pricingOneText", "pricingOneMeta"],
+    ["pricingTwoName", "pricingTwoPrice", "pricingTwoText", "pricingTwoMeta"],
+    ["pricingThreeName", "pricingThreePrice", "pricingThreeText", "pricingThreeMeta"],
   ];
+
   return (
-    <section data-template-section-type="section-7" className={"bg-[#1C1917] px-5 py-20 text-white lg:px-8 lg:py-28"}>
-      <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "sectionSevenTitle")}</h2>
-      <div className="mx-auto mt-10 max-w-3xl space-y-3">
-        {faqs.map(([q, a], i) => (
-          <div key={q} className={"border-2 border-white/10 bg-white/5"}>
-            <button type="button" onClick={() => setOpen(open === i ? -1 : i)} className="flex w-full items-center justify-between gap-4 p-5 text-right">
-              <span className="font-bold">{q}</span>
-              <span className={"grid h-8 w-8 place-items-center bg-[#F97316] font-black text-white"}>{open === i ? "−" : "+"}</span>
-            </button>
-            {open === i ? <p className="px-5 pb-5 text-sm leading-7 opacity-70">{a}</p> : null}
+    <section
+      id="handcraft-pricing"
+      data-template-section-type="pricing"
+      className="h-section h-grid px-5 py-24 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+          <SectionHeading data={data} eyebrowKey="sectionFiveEyebrow" titleKey="sectionFiveTitle" textKey="sectionFiveText" />
+          <div className="grid gap-5 md:grid-cols-3">
+            {tiers.map(([nameKey, priceKey, textKey, metaKey]) => (
+              <article key={nameKey} className="border border-[var(--h-text)] bg-[var(--h-background)] p-7">
+                <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--h-primary)]">
+                  {getValue(data, nameKey)}
+                </p>
+                <div className="mt-8 min-h-[92px] border-y border-[var(--h-line)] py-6 text-4xl font-extrabold leading-tight">
+                  {getValue(data, priceKey)}
+                </div>
+                <p className="mt-6 text-sm leading-7 text-[var(--h-muted)]">{getValue(data, textKey)}</p>
+                <p className="mt-8 bg-[var(--h-secondary)] px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--h-background)]">
+                  {getValue(data, metaKey)}
+                </p>
+              </article>
+            ))}
           </div>
-        ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function SectionEight({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
+function ServiceAreas({ data }: { data: Record<string, any> }) {
+  const areas = [
+    ["areaOneTitle", "areaOneText"],
+    ["areaTwoTitle", "areaTwoText"],
+    ["areaThreeTitle", "areaThreeText"],
+    ["areaFourTitle", "areaFourText"],
+  ];
+
   return (
-    <section data-template-section-type="section-8" className={"px-5 py-20 lg:px-8 lg:py-28"}>
-      <div className={"mx-auto grid max-w-7xl gap-10 lg:grid-cols-2"}>
+    <section
+      id="handcraft-areas"
+      data-template-section-type="areas"
+      className="h-dark-section px-5 py-24 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto grid max-w-7xl gap-14 lg:grid-cols-[1fr_1fr]">
         <div>
-          <h2 className={"text-center text-4xl font-black uppercase md:text-5xl"}>{getValue(data, "contactTitle")}</h2>
-          <p className="mt-4 opacity-70">{getValue(data, "contactText")}</p>
-          <div className="mt-6 space-y-2 text-sm">
-            <p><strong>טלפון:</strong> {getValue(data, "phone")}</p>
-            <p><strong>אימייל:</strong> {getValue(data, "email")}</p>
-            <p><strong>כתובת:</strong> {getValue(data, "address")}</p>
+          <SectionHeading data={data} eyebrowKey="sectionSixEyebrow" titleKey="sectionSixTitle" textKey="sectionSixText" invert />
+          <p className="mt-9 border-r-4 border-[var(--h-primary)] pr-5 text-sm font-bold leading-7 text-white/70">
+            {getValue(data, "mapNote")}
+          </p>
+        </div>
+        <div className="relative min-h-[520px] border border-white/20 bg-[var(--h-dark)] p-5">
+          <div className="absolute inset-5 h-grid opacity-50" />
+          <div className="relative grid h-full grid-rows-4 gap-4">
+            {areas.map(([titleKey, textKey], index) => (
+              <article
+                key={titleKey}
+                className={cx(
+                  "border border-white/20 bg-[#2B2F33]/90 p-5 shadow-2xl shadow-black/20",
+                  index % 2 === 0 ? "ml-10" : "mr-10",
+                )}
+              >
+                <div className="flex items-start justify-between gap-6">
+                  <div>
+                    <h3 className="text-2xl font-extrabold text-white">{getValue(data, titleKey)}</h3>
+                    <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, textKey)}</p>
+                  </div>
+                  <span className="h-display text-5xl leading-none text-[var(--h-primary)]">{index + 1}</span>
+                </div>
+              </article>
+            ))}
           </div>
         </div>
-        <form className={"grid gap-4 border-2 border-[#F97316] bg-white p-8 text-[#1C1917]"}>
-          <input className={"border-2 border-[#1C1917]/20 px-5 py-4 text-right outline-none focus:border-[#F97316]"} placeholder="שם מלא" />
-          <input className={"border-2 border-[#1C1917]/20 px-5 py-4 text-right outline-none focus:border-[#F97316]"} placeholder="טלפון" />
-          <input className={"border-2 border-[#1C1917]/20 px-5 py-4 text-right outline-none focus:border-[#F97316]"} placeholder="אימייל" />
-          <button type="button" onClick={openModal} className={"w-full bg-[#F97316] px-7 py-4 text-sm font-black uppercase text-white"}>
+      </div>
+    </section>
+  );
+}
+
+function Reviews({ data }: { data: Record<string, any> }) {
+  const reviews = [
+    ["reviewOneText", "reviewOneName", "reviewOneRole"],
+    ["reviewTwoText", "reviewTwoName", "reviewTwoRole"],
+    ["reviewThreeText", "reviewThreeName", "reviewThreeRole"],
+  ];
+
+  return (
+    <section
+      id="handcraft-reviews"
+      data-template-section-type="reviews"
+      className="h-section bg-[var(--h-background)] px-5 py-24 lg:px-8 lg:py-32"
+    >
+      <div className="mx-auto max-w-7xl">
+        <SectionHeading data={data} eyebrowKey="sectionSevenEyebrow" titleKey="sectionSevenTitle" />
+        <div className="mt-14 grid gap-px bg-[var(--h-line)] lg:grid-cols-3">
+          {reviews.map(([textKey, nameKey, roleKey]) => (
+            <blockquote key={nameKey} className="bg-[var(--h-surface)] p-8 lg:p-10">
+              <div className="h-display text-7xl leading-none text-[var(--h-primary)]">"</div>
+              <p className="-mt-4 text-lg font-semibold leading-9 text-[var(--h-text)]">{getValue(data, textKey)}</p>
+              <footer className="mt-8 border-t border-[var(--h-line)] pt-5">
+                <p className="font-extrabold">{getValue(data, nameKey)}</p>
+                <p className="mt-1 text-sm text-[var(--h-muted)]">{getValue(data, roleKey)}</p>
+              </footer>
+            </blockquote>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function EmergencyCta({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
+  return (
+    <section data-template-section-type="emergency" className="bg-[var(--h-primary)] px-5 py-16 text-[var(--h-dark)] lg:px-8">
+      <div className="mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[0.9fr_1.1fr_auto]">
+        <p className="text-xs font-extrabold uppercase tracking-[0.34em] text-[#16181A]/70">
+          {getValue(data, "sectionEightEyebrow")}
+        </p>
+        <div>
+          <h2 className="text-3xl font-extrabold leading-tight md:text-5xl">{getValue(data, "sectionEightTitle")}</h2>
+          <p className="mt-4 max-w-3xl text-sm font-semibold leading-7 text-[#16181A]/80">
+            {getValue(data, "sectionEightText")}
+          </p>
+        </div>
+        <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+          <a
+            href={phoneHref(data)}
+            className="inline-flex items-center justify-center bg-[var(--h-dark)] px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] text-white"
+          >
+            {getValue(data, "phone")}
+          </a>
+          <button
+            type="button"
+            onClick={openModal}
+            className="border border-[var(--h-dark)] px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] transition hover:bg-[var(--h-dark)] hover:text-white"
+          >
             {getValue(data, "contactButton")}
           </button>
-        </form>
+        </div>
       </div>
     </section>
   );
 }
 
 function Footer({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
+  const footerLinks = [
+    [getValue(data, "navServices"), "#handcraft-services"],
+    [getValue(data, "navPricing"), "#handcraft-pricing"],
+    [getValue(data, "navAreas"), "#handcraft-areas"],
+    [getValue(data, "navReviews"), "#handcraft-reviews"],
+  ];
+
   return (
-    <footer data-template-section-type="footer" className={"px-5 pb-10 lg:px-8"}>
-      <div className={"mx-auto max-w-7xl border-4 border-[#F97316] bg-[#1C1917] p-10 text-center text-white lg:p-16"}>
-        <h2 className="text-3xl font-bold md:text-4xl">{getValue(data, "ctaTitle")}</h2>
-        <p className="mt-4 opacity-80">{getValue(data, "ctaText")}</p>
-        <button type="button" onClick={openModal} className={cx("mt-8", "w-full bg-[#F97316] px-7 py-4 text-sm font-black uppercase text-white")}>
-          {getValue(data, "ctaButton")}
-        </button>
+    <footer data-template-section-type="footer" className="bg-[var(--h-dark)] px-5 py-16 text-[var(--h-background)] lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <div className="h-display text-6xl leading-none text-white md:text-8xl">{getValue(data, "brandName")}</div>
+          <h2 className="mt-8 max-w-2xl text-3xl font-extrabold leading-tight md:text-5xl">{getValue(data, "ctaTitle")}</h2>
+          <p className="mt-5 max-w-2xl text-base leading-8 text-white/60">{getValue(data, "ctaText")}</p>
+          <div className="mt-8 flex flex-wrap gap-4">
+            <PrimaryButton onClick={openModal}>{getValue(data, "ctaButton")}</PrimaryButton>
+            <a
+              href={phoneHref(data)}
+              className="inline-flex items-center justify-center border border-white/20 px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] text-white transition hover:border-[var(--h-primary)]"
+            >
+              {getValue(data, "phone")}
+            </a>
+          </div>
+        </div>
+        <div className="border-t border-white/20 pt-8 lg:border-r lg:border-t-0 lg:pr-8 lg:pt-0">
+          <p className="text-xs font-extrabold uppercase tracking-[0.34em] text-[var(--h-accent)]">{getValue(data, "contactTitle")}</p>
+          <div className="mt-6 space-y-4 text-sm leading-7 text-white/70">
+            <p>{getValue(data, "contactText")}</p>
+            <p>{getValue(data, "email")}</p>
+            <p>{getValue(data, "address")}</p>
+          </div>
+          <nav className="mt-9 grid grid-cols-2 gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white">
+            {footerLinks.map(([label, href]) => (
+              <a key={href} href={href} className="border-b border-white/20 pb-3 transition hover:text-[var(--h-accent)]">
+                {label}
+              </a>
+            ))}
+          </nav>
+        </div>
       </div>
-      <div className="mx-auto mt-8 max-w-7xl border-t pt-6 text-center text-sm opacity-50">
-        © {new Date().getFullYear()} {getValue(data, "brandName")} · Handcraft
+      <div className="mx-auto mt-12 flex max-w-7xl flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6 text-xs text-white/40">
+        <span>
+          © {new Date().getFullYear()} {getValue(data, "brandName")}
+        </span>
+        <span>אינסטלציה · חשמל · שיפוצים · תחזוקת נכסים</span>
       </div>
     </footer>
   );
@@ -245,15 +510,32 @@ function Footer({ data, openModal }: { data: Record<string, any>; openModal: () 
 
 function ContactModal({ data, open, onClose }: { data: Record<string, any>; open: boolean; onClose: () => void }) {
   if (!open) return null;
+
   return (
-    <div className="fixed inset-0 z-[80] grid place-items-center bg-black/60 px-4 backdrop-blur-sm">
-      <div className={"relative w-full max-w-md border-4 border-[#F97316] bg-white p-8"}>
-        <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
-        <h3 className="text-2xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className={"border-2 border-[#1C1917]/20 px-5 py-4 text-right outline-none focus:border-[#F97316]"} placeholder="שם מלא" />
-          <input className={"border-2 border-[#1C1917]/20 px-5 py-4 text-right outline-none focus:border-[#F97316]"} placeholder="טלפון" />
-          <button type="button" className={"w-full bg-[#F97316] px-7 py-4 text-sm font-black uppercase text-white"}>{getValue(data, "contactButton")}</button>
+    <div className="fixed inset-0 z-[80] grid place-items-center bg-black/70 px-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-lg border border-[var(--h-primary)] bg-[var(--h-secondary)] p-8 text-[var(--h-background)] shadow-2xl shadow-black/40">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute left-4 top-4 text-3xl leading-none text-white/60 transition hover:text-white"
+        >
+          ×
+        </button>
+        <p className="text-xs font-extrabold uppercase tracking-[0.34em] text-[var(--h-accent)]">
+          {getValue(data, "sectionEightEyebrow")}
+        </p>
+        <h3 className="mt-4 text-3xl font-extrabold leading-tight">{getValue(data, "contactTitle")}</h3>
+        <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, "contactText")}</p>
+        <form className="mt-7 grid gap-3">
+          <input className="h-input px-5 py-4 text-right" placeholder="שם מלא" />
+          <input className="h-input px-5 py-4 text-right" placeholder="טלפון" />
+          <input className="h-input px-5 py-4 text-right" placeholder="מה התקלה?" />
+          <button
+            type="button"
+            className="mt-2 bg-[var(--h-primary)] px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] text-white transition hover:bg-[var(--h-accent)] hover:text-[var(--h-dark)]"
+          >
+            {getValue(data, "contactButton")}
+          </button>
         </form>
       </div>
     </div>
@@ -264,19 +546,32 @@ function HomePage({ data, openModal }: { data: Record<string, any>; openModal: (
   return (
     <>
       <Hero data={data} openModal={openModal} />
-      <SectionTwo data={data} />
-      <SectionThree data={data} />
-      <SectionFour data={data} />
-      <SectionFive data={data} />
-      <SectionSix data={data} />
-      <SectionSeven data={data} />
-      <SectionEight data={data} openModal={openModal} />
+      <Services data={data} />
+      <BeforeAfter data={data} />
+      <WhyUs data={data} />
+      <Pricing data={data} />
+      <ServiceAreas data={data} />
+      <Reviews data={data} />
+      <EmergencyCta data={data} openModal={openModal} />
       <Footer data={data} openModal={openModal} />
     </>
   );
 }
 
-export default function HandcraftPages({ initialPage = "home", mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode, page, pageId, initialPageId, activePageId, currentPageId }: HandcraftPagesProps) {
+export default function HandcraftPages({
+  initialPage = "home",
+  mode = "preview",
+  data,
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
+  page,
+  pageId,
+  initialPageId,
+  activePageId,
+  currentPageId,
+}: HandcraftPagesProps) {
   const mergedData = useMemo(() => ({ ...handcraftDefaultData, ...(data ?? {}) }), [data]);
   const { currentPage } = useTemplatePageNavigation(
     { page, pageId, initialPage, initialPageId, activePageId, currentPageId, onPageChange, isPublic, viewMode, runtimeMode },
@@ -288,8 +583,9 @@ export default function HandcraftPages({ initialPage = "home", mode = "preview",
     <div
       dir="rtl"
       data-template-id={mode === "preview" ? "handcraft-preview" : "handcraft"}
-      className={cx("min-h-screen w-full overflow-x-hidden", "bg-[#FAFAF9] font-sans text-[#1C1917]")}
+      className="min-h-screen w-full overflow-x-hidden bg-[var(--h-background)] text-[var(--h-text)]"
     >
+      <style dangerouslySetInnerHTML={{ __html: handcraftEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack
         activePageId={currentPage}

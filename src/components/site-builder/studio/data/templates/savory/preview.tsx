@@ -7,7 +7,7 @@ export default function SavoryPreview() {
       dir="rtl"
       data-template-id="savory-preview"
       className="min-h-screen w-full"
-      style={{ background: "#FAF6F0", overflowX: "hidden" }}
+      style={{ background: "#12100E", overflowX: "hidden" }}
     >
       <SavoryPages initialPage="home" mode="preview" />
     </div>

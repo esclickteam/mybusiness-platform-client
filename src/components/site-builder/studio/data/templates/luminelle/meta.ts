@@ -14,27 +14,27 @@ import { luminelleSchema } from "./schema";
 import { luminelleDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#D4A5A5",
-  secondary: "#3D2C2E",
-  accent: "#F5E6E0",
-  background: "#FDF8F6",
-  surface: "#FFFFFF",
-  text: "#3D2C2E",
-  muted: "#9B8585",
-  dark: "#2A1F21",
+  primary: "#7A8B76",
+  secondary: "#2A2430",
+  accent: "#A8B5A3",
+  background: "#E8E4DF",
+  surface: "#F4F1EC",
+  text: "#2A2430",
+  muted: "#7A736C",
+  dark: "#1A161C",
 };
 
 const blocks = [
-  { type: "header", variant: "soft-spa-header", title: "header" },
-  { type: "hero", variant: "soft-spa-hero", title: "hero" },
-  { type: "treatments", variant: "soft-spa-treatments", title: "treatments" },
-  { type: "transform", variant: "soft-spa-transform", title: "transform" },
-  { type: "products", variant: "soft-spa-products", title: "products" },
-  { type: "team", variant: "soft-spa-team", title: "team" },
-  { type: "pricing", variant: "soft-spa-pricing", title: "pricing" },
-  { type: "faq", variant: "soft-spa-faq", title: "faq" },
-  { type: "booking", variant: "soft-spa-booking", title: "booking" },
-  { type: "footer", variant: "soft-spa-footer", title: "footer" },
+  { type: "header", variant: "editorial-beauty-header", title: "header" },
+  { type: "hero", variant: "editorial-beauty-hero", title: "hero" },
+  { type: "treatments", variant: "editorial-beauty-treatments", title: "treatments" },
+  { type: "transformation", variant: "editorial-beauty-transformation", title: "transformation" },
+  { type: "products", variant: "editorial-beauty-products", title: "products" },
+  { type: "team", variant: "editorial-beauty-team", title: "team" },
+  { type: "pricing", variant: "editorial-beauty-pricing", title: "pricing" },
+  { type: "faq", variant: "editorial-beauty-faq", title: "faq" },
+  { type: "booking", variant: "editorial-beauty-booking", title: "booking" },
+  { type: "footer", variant: "editorial-beauty-footer-cta", title: "footer" },
 ];
 
 export const luminelleSeed = {
@@ -42,7 +42,7 @@ export const luminelleSeed = {
   key: "luminelle",
   name: "Luminelle",
   title: "Luminelle",
-  description: "דף נחיתה לסalon יופי: הירו אלגנטי, טיפולים, לפני/אחרי, מוצרים, צוות מעצבים, FAQ וטופס תור — ורוד-שמפניה רך.",
+  description: "דף נחיתה אלגנטי לסלון יופי בוטיק: טיפולים, לפני/אחרי, מוצרי פרימיום, צוות, חבילות, FAQ וטופס תור בשפה editorial נקייה.",
   category: "landing",
   categoryLabel: "דפי נחיתה",
   niche: "beauty",
@@ -72,7 +72,7 @@ export const luminelleTemplate = {
   category: "landing",
   categoryLabel: "דפי נחיתה",
   badge: "חדש",
-  description: "דף נחיתה לסalon יופי: הירו אלגנטי, טיפולים, לפני/אחרי, מוצרים, צוות מעצבים, FAQ וטופס תור — ורוד-שמפניה רך.",
+  description: "דף נחיתה אלגנטי לסלון יופי בוטיק: טיפולים, לפני/אחרי, מוצרי פרימיום, צוות, חבילות, FAQ וטופס תור בשפה editorial נקייה.",
   thumbnail: React.createElement(LuminelleThumbnail),
   preview: React.createElement(LuminellePreview),
   component: LuminellePages,
