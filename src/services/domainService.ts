@@ -429,6 +429,7 @@ export const createOteDomainContact = createDomainContact;
 export type DomainRegisterPayload = {
   registrationId: string;
   period?: number;
+  stripeSessionId?: string;
 };
 
 export type DomainRegisterResult = {
@@ -574,6 +575,7 @@ export async function registerDomain(
       headers: buildHeaders(true),
       body: JSON.stringify({
         registrationId,
+        stripeSessionId: payload.stripeSessionId || undefined,
       }),
     },
   );

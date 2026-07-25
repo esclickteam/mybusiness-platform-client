@@ -185,6 +185,8 @@ export default function DomainSearch() {
     const params = new URLSearchParams(window.location.search);
     const domainPaid = params.get("domain_paid");
     const registrationId = params.get("registrationId") || "";
+    const stripeSessionId =
+      params.get("session_id") || params.get("stripeSessionId") || "";
 
     if (domainPaid !== "1" || !registrationId) return;
 
@@ -196,7 +198,10 @@ export default function DomainSearch() {
       setIsCheckingOut(true);
 
       try {
-        const response = await registerDomain({ registrationId });
+        const response = await registerDomain({
+          registrationId,
+          stripeSessionId: stripeSessionId || undefined,
+        });
         if (cancelled) return;
         setRegisterResult(response);
         setContactResult((current) =>
@@ -221,6 +226,8 @@ export default function DomainSearch() {
         const url = new URL(window.location.href);
         url.searchParams.delete("domain_paid");
         url.searchParams.delete("registrationId");
+        url.searchParams.delete("session_id");
+        url.searchParams.delete("stripeSessionId");
         window.history.replaceState({}, "", url.toString());
       }
     }
