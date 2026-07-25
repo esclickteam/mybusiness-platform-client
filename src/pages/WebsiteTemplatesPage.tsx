@@ -292,10 +292,19 @@ function mapDefinitionToGalleryTemplate(
     getStudioTemplateSeedById(definition?.id || definition?.key) ||
     {}) as any;
 
+  const defaultData =
+    (definition?.defaultData as Record<string, any> | undefined) ||
+    (seed?.defaultData as Record<string, any> | undefined) ||
+    (seed?.data as Record<string, any> | undefined) ||
+    {};
+
   const image =
     seed.image ||
     definition?.previewImage ||
     definition?.image ||
+    defaultData.heroImage ||
+    defaultData.image ||
+    defaultData.coverImage ||
     "";
 
   const badge =
@@ -313,8 +322,9 @@ function mapDefinitionToGalleryTemplate(
     niche: seed.niche,
     layout: seed.layout,
     image,
-    heroTitle: seed.heroTitle || definition?.name,
-    heroSubtitle: seed.heroSubtitle || definition?.description,
+    heroTitle: seed.heroTitle || defaultData.heroTitle || definition?.name,
+    heroSubtitle:
+      seed.heroSubtitle || defaultData.heroSubtitle || definition?.description,
     isNew: badge === "חדש" || badge === "NEW",
     badge,
     thumbnailUrl: image,

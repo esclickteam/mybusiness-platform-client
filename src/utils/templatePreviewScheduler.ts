@@ -5,10 +5,10 @@ const activated = new Set<string>();
 const queue: string[] = [];
 let pumping = false;
 
-/** Keep gallery light: only a few live cards at once. */
-const BATCH_SIZE = 2;
-const BATCH_DELAY_MS = 48;
-const MAX_ACTIVE = 8;
+/** Keep gallery light, but never drop visible cards forever. */
+const BATCH_SIZE = 3;
+const BATCH_DELAY_MS = 40;
+const MAX_ACTIVE = 12;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
@@ -25,25 +25,28 @@ function pump() {
   pumping = true;
 
   const step = () => {
-    while (activated.size >= MAX_ACTIVE && queue.length) {
-      // Drop oldest queued keys that are not yet active — IO will re-request.
-      queue.shift();
-    }
-
     if (!queue.length) {
       pumping = false;
       return;
     }
 
-    const batch = queue.splice(0, BATCH_SIZE);
-    for (const key of batch) {
-      if (activated.has(key)) continue;
-      if (activated.size >= MAX_ACTIVE) {
-        queue.unshift(key);
-        break;
-      }
+    if (activated.size >= MAX_ACTIVE) {
+      // Wait for a slot — do NOT drop queued cards.
+      window.setTimeout(step, 120);
+      return;
+    }
+
+    let activatedThisTick = 0;
+    while (
+      queue.length &&
+      activated.size < MAX_ACTIVE &&
+      activatedThisTick < BATCH_SIZE
+    ) {
+      const key = queue.shift();
+      if (!key || activated.has(key)) continue;
       activated.add(key);
       notify(key, true);
+      activatedThisTick += 1;
     }
 
     if (queue.length) {
@@ -59,7 +62,10 @@ function pump() {
 /**
  * Schedule a gallery card preview mount (viewport-driven callers).
  */
-export function scheduleGalleryPreview(keyValue: string | null | undefined) {
+export function scheduleGalleryPreview(
+  keyValue: string | null | undefined,
+  options?: { priority?: boolean },
+) {
   const key = normalizeKey(keyValue);
   if (!key) return () => undefined;
 
@@ -71,8 +77,16 @@ export function scheduleGalleryPreview(keyValue: string | null | undefined) {
   }
 
   if (!queue.includes(key)) {
-    queue.push(key);
+    if (options?.priority) queue.unshift(key);
+    else queue.push(key);
     pump();
+  } else if (options?.priority) {
+    const idx = queue.indexOf(key);
+    if (idx > 0) {
+      queue.splice(idx, 1);
+      queue.unshift(key);
+      pump();
+    }
   }
 
   return (listener: Listener) => {
@@ -96,12 +110,40 @@ export function scheduleGalleryPreview(keyValue: string | null | undefined) {
   };
 }
 
+/** Force-activate a card immediately (e.g. on hover). */
+export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
+  const key = normalizeKey(keyValue);
+  if (!key) return;
+
+  if (activated.has(key)) {
+    notify(key, true);
+    return;
+  }
+
+  // Free one slot if needed so hover always wins.
+  if (activated.size >= MAX_ACTIVE) {
+    const oldest = activated.values().next().value as string | undefined;
+    if (oldest && oldest !== key) {
+      activated.delete(oldest);
+      notify(oldest, false);
+    }
+  }
+
+  const idx = queue.indexOf(key);
+  if (idx >= 0) queue.splice(idx, 1);
+  activated.add(key);
+  notify(key, true);
+  pump();
+}
+
 /** Release a card when it leaves the viewport so other cards can mount. */
 export function releaseGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
   if (!key || !activated.has(key)) return;
   activated.delete(key);
   notify(key, false);
+  // Freeing a slot — continue the queue.
+  if (queue.length) pump();
 }
 
 export function prefetchGalleryPreviewKeys(
