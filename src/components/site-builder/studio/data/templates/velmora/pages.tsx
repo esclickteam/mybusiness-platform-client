@@ -470,7 +470,7 @@ function VelmoraCartPage({
         ) : (
           <div className="grid gap-8 lg:grid-cols-[1fr_420px]">
             <div className="grid gap-4">
-              {cartItems.map((item) => (
+              {cartItems.map((item, index) => (
                 <article
                   key={item.cartId}
                   className="grid gap-5 rounded-[8px] border border-black/10 bg-white p-5 shadow-sm md:grid-cols-[150px_1fr_auto]"

@@ -534,13 +534,10 @@ export default function VelmoraCustom({ onPageChange }: Props) {
                       {product.subtitle}
                     </p>
 
-                    <button
-                      type="button"
-                      className="mt-4 inline-flex items-center gap-2 border-b border-black pb-1 text-sm font-medium"
-                    >
+                    <span className="mt-4 inline-flex items-center gap-2 border-b border-black pb-1 text-sm font-medium">
                       צפייה
                       <Eye className="h-4 w-4" />
-                    </button>
+                    </span>
                   </div>
                 </button>
               </Reveal>

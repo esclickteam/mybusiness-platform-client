@@ -218,6 +218,35 @@ const nailoraInspiredEffectsCss = `
     transform: translateY(-3px);
   }
 
+  .lunelle-template-root .lunelle-btn-primary,
+  .lunelle-template-root a[class*="bg-[#2a171c]"],
+  .lunelle-template-root button[class*="bg-[#2a171c]"],
+  .lunelle-template-root .lunelle-hero-chip {
+    background: #2a171c !important;
+    color: #ffffff !important;
+    -webkit-text-fill-color: #ffffff !important;
+  }
+
+  .lunelle-template-root .lunelle-btn-secondary,
+  .lunelle-template-root a.lunelle-btn-secondary {
+    background: #ffffff !important;
+    color: #2a171c !important;
+    -webkit-text-fill-color: #2a171c !important;
+  }
+
+  .lunelle-template-root .lunelle-hero-media {
+    position: relative;
+    overflow: visible;
+    padding-bottom: 2.5rem;
+  }
+
+  .lunelle-template-root .lunelle-hero-chip,
+  .lunelle-template-root .lunelle-hero-slot,
+  .lunelle-template-root .lunelle-hero-detail {
+    position: absolute !important;
+    z-index: 20 !important;
+  }
+
   .lunelle-template-root .lunelle-magnetic {
     will-change: transform;
   }

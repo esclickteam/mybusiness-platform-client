@@ -608,6 +608,66 @@ import { scentoraEditorCss } from "./scentora/editorCss";
 import { scentoraSchema } from "./scentora/schema";
 import { scentoraDefaultData } from "./scentora/defaultData";
 
+import ClothoraPages, { clothoraPages } from "./clothora/pages";
+import { clothoraEditorCss } from "./clothora/editorCss";
+import { clothoraSchema } from "./clothora/schema";
+import { clothoraDefaultData } from "./clothora/defaultData";
+
+import DenimlabPages, { denimlabPages } from "./denimlab/pages";
+import { denimlabEditorCss } from "./denimlab/editorCss";
+import { denimlabSchema } from "./denimlab/schema";
+import { denimlabDefaultData } from "./denimlab/defaultData";
+
+import SoleoraPages, { soleoraPages } from "./soleora/pages";
+import { soleoraEditorCss } from "./soleora/editorCss";
+import { soleoraSchema } from "./soleora/schema";
+import { soleoraDefaultData } from "./soleora/defaultData";
+
+import SneakhausPages, { sneakhausPages } from "./sneakhaus/pages";
+import { sneakhausEditorCss } from "./sneakhaus/editorCss";
+import { sneakhausSchema } from "./sneakhaus/schema";
+import { sneakhausDefaultData } from "./sneakhaus/defaultData";
+
+import GleamoraPages, { gleamoraPages } from "./gleamora/pages";
+import { gleamoraEditorCss } from "./gleamora/editorCss";
+import { gleamoraSchema } from "./gleamora/schema";
+import { gleamoraDefaultData } from "./gleamora/defaultData";
+
+import NestwarePages, { nestwarePages } from "./nestware/pages";
+import { nestwareEditorCss } from "./nestware/editorCss";
+import { nestwareSchema } from "./nestware/schema";
+import { nestwareDefaultData } from "./nestware/defaultData";
+
+import LinenhausPages, { linenhausPages } from "./linenhaus/pages";
+import { linenhausEditorCss } from "./linenhaus/editorCss";
+import { linenhausSchema } from "./linenhaus/schema";
+import { linenhausDefaultData } from "./linenhaus/defaultData";
+
+import PharmoraPages, { pharmoraPages } from "./pharmora/pages";
+import { pharmoraEditorCss } from "./pharmora/editorCss";
+import { pharmoraSchema } from "./pharmora/schema";
+import { pharmoraDefaultData } from "./pharmora/defaultData";
+
+import VitaraPages, { vitaraPages } from "./vitara/pages";
+import { vitaraEditorCss } from "./vitara/editorCss";
+import { vitaraSchema } from "./vitara/schema";
+import { vitaraDefaultData } from "./vitara/defaultData";
+
+import BagoraPages, { bagoraPages } from "./bagora/pages";
+import { bagoraEditorCss } from "./bagora/editorCss";
+import { bagoraSchema } from "./bagora/schema";
+import { bagoraDefaultData } from "./bagora/defaultData";
+
+import WatchoraPages, { watchoraPages } from "./watchora/pages";
+import { watchoraEditorCss } from "./watchora/editorCss";
+import { watchoraSchema } from "./watchora/schema";
+import { watchoraDefaultData } from "./watchora/defaultData";
+
+import LoungoraPages, { loungoraPages } from "./loungora/pages";
+import { loungoraEditorCss } from "./loungora/editorCss";
+import { loungoraSchema } from "./loungora/schema";
+import { loungoraDefaultData } from "./loungora/defaultData";
+
 import LectoraPages, { lectoraPages } from "./lectora/pages";
 import { lectoraEditorCss } from "./lectora/editorCss";
 import { lectoraSchema } from "./lectora/schema";
@@ -917,6 +977,81 @@ import EventidePages, { eventidePages } from "./eventide/pages";
 import { eventideEditorCss } from "./eventide/editorCss";
 import { eventideSchema } from "./eventide/schema";
 import { eventideDefaultData } from "./eventide/defaultData";
+import PitchoraPages, { pitchoraPages } from "./pitchora/pages";
+import { pitchoraEditorCss } from "./pitchora/editorCss";
+import { pitchoraSchema } from "./pitchora/schema";
+import { pitchoraDefaultData } from "./pitchora/defaultData";
+
+import SocialuxPages, { socialuxPages } from "./socialux/pages";
+import { socialuxEditorCss } from "./socialux/editorCss";
+import { socialuxSchema } from "./socialux/schema";
+import { socialuxDefaultData } from "./socialux/defaultData";
+
+import InfluencixPages, { influencixPages } from "./influencix/pages";
+import { influencixEditorCss } from "./influencix/editorCss";
+import { influencixSchema } from "./influencix/schema";
+import { influencixDefaultData } from "./influencix/defaultData";
+
+import SeoraPages, { seoraPages } from "./seora/pages";
+import { seoraEditorCss } from "./seora/editorCss";
+import { seoraSchema } from "./seora/schema";
+import { seoraDefaultData } from "./seora/defaultData";
+
+import ContentraPages, { contentraPages } from "./contentra/pages";
+import { contentraEditorCss } from "./contentra/editorCss";
+import { contentraSchema } from "./contentra/schema";
+import { contentraDefaultData } from "./contentra/defaultData";
+
+import ProductixPages, { productixPages } from "./productix/pages";
+import { productixEditorCss } from "./productix/editorCss";
+import { productixSchema } from "./productix/schema";
+import { productixDefaultData } from "./productix/defaultData";
+
+import LaunchoraPages, { launchoraPages } from "./launchora/pages";
+import { launchoraEditorCss } from "./launchora/editorCss";
+import { launchoraSchema } from "./launchora/schema";
+import { launchoraDefaultData } from "./launchora/defaultData";
+
+import PartnerlyPages, { partnerlyPages } from "./partnerly/pages";
+import { partnerlyEditorCss } from "./partnerly/editorCss";
+import { partnerlySchema } from "./partnerly/schema";
+import { partnerlyDefaultData } from "./partnerly/defaultData";
+
+import InsightixPages, { insightixPages } from "./insightix/pages";
+import { insightixEditorCss } from "./insightix/editorCss";
+import { insightixSchema } from "./insightix/schema";
+import { insightixDefaultData } from "./insightix/defaultData";
+
+import UxforgePages, { uxforgePages } from "./uxforge/pages";
+import { uxforgeEditorCss } from "./uxforge/editorCss";
+import { uxforgeSchema } from "./uxforge/schema";
+import { uxforgeDefaultData } from "./uxforge/defaultData";
+
+import ReelhausPages, { reelhausPages } from "./reelhaus/pages";
+import { reelhausEditorCss } from "./reelhaus/editorCss";
+import { reelhausSchema } from "./reelhaus/schema";
+import { reelhausDefaultData } from "./reelhaus/defaultData";
+
+import PodcastixPages, { podcastixPages } from "./podcastix/pages";
+import { podcastixEditorCss } from "./podcastix/editorCss";
+import { podcastixSchema } from "./podcastix/schema";
+import { podcastixDefaultData } from "./podcastix/defaultData";
+
+import CrisisdeskPages, { crisisdeskPages } from "./crisisdesk/pages";
+import { crisisdeskEditorCss } from "./crisisdesk/editorCss";
+import { crisisdeskSchema } from "./crisisdesk/schema";
+import { crisisdeskDefaultData } from "./crisisdesk/defaultData";
+
+import LobbyhausPages, { lobbyhausPages } from "./lobbyhaus/pages";
+import { lobbyhausEditorCss } from "./lobbyhaus/editorCss";
+import { lobbyhausSchema } from "./lobbyhaus/schema";
+import { lobbyhausDefaultData } from "./lobbyhaus/defaultData";
+
+import FranchoraPages, { franchoraPages } from "./franchora/pages";
+import { franchoraEditorCss } from "./franchora/editorCss";
+import { franchoraSchema } from "./franchora/schema";
+import { franchoraDefaultData } from "./franchora/defaultData";
+
 
 import type {
   StudioTemplateEditorMode,
@@ -2173,6 +2308,156 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: eventideDefaultData as unknown as Record<string, any>,
     editorCss: eventideEditorCss,
   }),
+  pitchora: createRenderer({
+    key: "pitchora",
+    name: "Pitchora",
+    Component: PitchoraPages,
+    pages: pitchoraPages,
+    editorMode: "visual-react",
+    schema: pitchoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pitchoraDefaultData as unknown as Record<string, any>,
+    editorCss: pitchoraEditorCss,
+  }),
+  socialux: createRenderer({
+    key: "socialux",
+    name: "Socialux",
+    Component: SocialuxPages,
+    pages: socialuxPages,
+    editorMode: "visual-react",
+    schema: socialuxSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: socialuxDefaultData as unknown as Record<string, any>,
+    editorCss: socialuxEditorCss,
+  }),
+  influencix: createRenderer({
+    key: "influencix",
+    name: "Influencix",
+    Component: InfluencixPages,
+    pages: influencixPages,
+    editorMode: "visual-react",
+    schema: influencixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: influencixDefaultData as unknown as Record<string, any>,
+    editorCss: influencixEditorCss,
+  }),
+  seora: createRenderer({
+    key: "seora",
+    name: "Seora",
+    Component: SeoraPages,
+    pages: seoraPages,
+    editorMode: "visual-react",
+    schema: seoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: seoraDefaultData as unknown as Record<string, any>,
+    editorCss: seoraEditorCss,
+  }),
+  contentra: createRenderer({
+    key: "contentra",
+    name: "Contentra",
+    Component: ContentraPages,
+    pages: contentraPages,
+    editorMode: "visual-react",
+    schema: contentraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: contentraDefaultData as unknown as Record<string, any>,
+    editorCss: contentraEditorCss,
+  }),
+  productix: createRenderer({
+    key: "productix",
+    name: "Productix",
+    Component: ProductixPages,
+    pages: productixPages,
+    editorMode: "visual-react",
+    schema: productixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: productixDefaultData as unknown as Record<string, any>,
+    editorCss: productixEditorCss,
+  }),
+  launchora: createRenderer({
+    key: "launchora",
+    name: "Launchora",
+    Component: LaunchoraPages,
+    pages: launchoraPages,
+    editorMode: "visual-react",
+    schema: launchoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: launchoraDefaultData as unknown as Record<string, any>,
+    editorCss: launchoraEditorCss,
+  }),
+  partnerly: createRenderer({
+    key: "partnerly",
+    name: "Partnerly",
+    Component: PartnerlyPages,
+    pages: partnerlyPages,
+    editorMode: "visual-react",
+    schema: partnerlySchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: partnerlyDefaultData as unknown as Record<string, any>,
+    editorCss: partnerlyEditorCss,
+  }),
+  insightix: createRenderer({
+    key: "insightix",
+    name: "Insightix",
+    Component: InsightixPages,
+    pages: insightixPages,
+    editorMode: "visual-react",
+    schema: insightixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: insightixDefaultData as unknown as Record<string, any>,
+    editorCss: insightixEditorCss,
+  }),
+  uxforge: createRenderer({
+    key: "uxforge",
+    name: "UXForge",
+    Component: UxforgePages,
+    pages: uxforgePages,
+    editorMode: "visual-react",
+    schema: uxforgeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: uxforgeDefaultData as unknown as Record<string, any>,
+    editorCss: uxforgeEditorCss,
+  }),
+  reelhaus: createRenderer({
+    key: "reelhaus",
+    name: "Reelhaus",
+    Component: ReelhausPages,
+    pages: reelhausPages,
+    editorMode: "visual-react",
+    schema: reelhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: reelhausDefaultData as unknown as Record<string, any>,
+    editorCss: reelhausEditorCss,
+  }),
+  podcastix: createRenderer({
+    key: "podcastix",
+    name: "Podcastix",
+    Component: PodcastixPages,
+    pages: podcastixPages,
+    editorMode: "visual-react",
+    schema: podcastixSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: podcastixDefaultData as unknown as Record<string, any>,
+    editorCss: podcastixEditorCss,
+  }),
+  crisisdesk: createRenderer({
+    key: "crisisdesk",
+    name: "CrisisDesk",
+    Component: CrisisdeskPages,
+    pages: crisisdeskPages,
+    editorMode: "visual-react",
+    schema: crisisdeskSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: crisisdeskDefaultData as unknown as Record<string, any>,
+    editorCss: crisisdeskEditorCss,
+  }),
+  lobbyhaus: createRenderer({
+    key: "lobbyhaus",
+    name: "Lobbyhaus",
+    Component: LobbyhausPages,
+    pages: lobbyhausPages,
+    editorMode: "visual-react",
+    schema: lobbyhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lobbyhausDefaultData as unknown as Record<string, any>,
+    editorCss: lobbyhausEditorCss,
+  }),
+  franchora: createRenderer({
+    key: "franchora",
+    name: "Franchora",
+    Component: FranchoraPages,
+    pages: franchoraPages,
+    editorMode: "visual-react",
+    schema: franchoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: franchoraDefaultData as unknown as Record<string, any>,
+    editorCss: franchoraEditorCss,
+  }),
   lumenware: createRenderer({
     key: "lumenware",
     name: "Lumenware",
@@ -2391,6 +2676,138 @@ export const studioTemplateRendererRegistry: Record<
     schema: scentoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: scentoraDefaultData as unknown as Record<string, any>,
     editorCss: scentoraEditorCss,
+  }),
+
+  clothora: createRenderer({
+    key: "clothora",
+    name: "Clothora",
+    Component: ClothoraPages,
+    pages: clothoraPages,
+    editorMode: "visual-react",
+    schema: clothoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: clothoraDefaultData as unknown as Record<string, any>,
+    editorCss: clothoraEditorCss,
+  }),
+
+  denimlab: createRenderer({
+    key: "denimlab",
+    name: "Denimlab",
+    Component: DenimlabPages,
+    pages: denimlabPages,
+    editorMode: "visual-react",
+    schema: denimlabSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: denimlabDefaultData as unknown as Record<string, any>,
+    editorCss: denimlabEditorCss,
+  }),
+
+  soleora: createRenderer({
+    key: "soleora",
+    name: "Soleora",
+    Component: SoleoraPages,
+    pages: soleoraPages,
+    editorMode: "visual-react",
+    schema: soleoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: soleoraDefaultData as unknown as Record<string, any>,
+    editorCss: soleoraEditorCss,
+  }),
+
+  sneakhaus: createRenderer({
+    key: "sneakhaus",
+    name: "Sneakhaus",
+    Component: SneakhausPages,
+    pages: sneakhausPages,
+    editorMode: "visual-react",
+    schema: sneakhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: sneakhausDefaultData as unknown as Record<string, any>,
+    editorCss: sneakhausEditorCss,
+  }),
+
+  gleamora: createRenderer({
+    key: "gleamora",
+    name: "Gleamora",
+    Component: GleamoraPages,
+    pages: gleamoraPages,
+    editorMode: "visual-react",
+    schema: gleamoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: gleamoraDefaultData as unknown as Record<string, any>,
+    editorCss: gleamoraEditorCss,
+  }),
+
+  nestware: createRenderer({
+    key: "nestware",
+    name: "Nestware",
+    Component: NestwarePages,
+    pages: nestwarePages,
+    editorMode: "visual-react",
+    schema: nestwareSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: nestwareDefaultData as unknown as Record<string, any>,
+    editorCss: nestwareEditorCss,
+  }),
+
+  linenhaus: createRenderer({
+    key: "linenhaus",
+    name: "Linenhaus",
+    Component: LinenhausPages,
+    pages: linenhausPages,
+    editorMode: "visual-react",
+    schema: linenhausSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: linenhausDefaultData as unknown as Record<string, any>,
+    editorCss: linenhausEditorCss,
+  }),
+
+  pharmora: createRenderer({
+    key: "pharmora",
+    name: "Pharmora",
+    Component: PharmoraPages,
+    pages: pharmoraPages,
+    editorMode: "visual-react",
+    schema: pharmoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: pharmoraDefaultData as unknown as Record<string, any>,
+    editorCss: pharmoraEditorCss,
+  }),
+
+  vitara: createRenderer({
+    key: "vitara",
+    name: "Vitara",
+    Component: VitaraPages,
+    pages: vitaraPages,
+    editorMode: "visual-react",
+    schema: vitaraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: vitaraDefaultData as unknown as Record<string, any>,
+    editorCss: vitaraEditorCss,
+  }),
+
+  bagora: createRenderer({
+    key: "bagora",
+    name: "Bagora",
+    Component: BagoraPages,
+    pages: bagoraPages,
+    editorMode: "visual-react",
+    schema: bagoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: bagoraDefaultData as unknown as Record<string, any>,
+    editorCss: bagoraEditorCss,
+  }),
+
+  watchora: createRenderer({
+    key: "watchora",
+    name: "Watchora",
+    Component: WatchoraPages,
+    pages: watchoraPages,
+    editorMode: "visual-react",
+    schema: watchoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: watchoraDefaultData as unknown as Record<string, any>,
+    editorCss: watchoraEditorCss,
+  }),
+
+  loungora: createRenderer({
+    key: "loungora",
+    name: "Loungora",
+    Component: LoungoraPages,
+    pages: loungoraPages,
+    editorMode: "visual-react",
+    schema: loungoraSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: loungoraDefaultData as unknown as Record<string, any>,
+    editorCss: loungoraEditorCss,
   }),
 
   lectora: createRenderer({

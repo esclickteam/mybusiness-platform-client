@@ -41,6 +41,7 @@ export type DomainContactPayload = {
 
   email: string;
   phone: string;
+  vatNumber?: string;
 
   brand?: string;
 
@@ -489,6 +490,7 @@ export type DomainCheckoutResult = {
 export async function quoteDomainRegistration(payload: {
   registrationId: string;
   years: DomainYears;
+  vatNumber?: string;
 }): Promise<DomainQuoteResult> {
   const registrationId = String(payload.registrationId || "").trim();
   if (!registrationId) {
@@ -504,6 +506,7 @@ export async function quoteDomainRegistration(payload: {
       body: JSON.stringify({
         registrationId,
         years: payload.years,
+        vatNumber: payload.vatNumber || undefined,
       }),
     },
   );
@@ -520,6 +523,7 @@ export async function quoteDomainRegistration(payload: {
 export async function checkoutDomainRegistration(payload: {
   registrationId: string;
   years: DomainYears;
+  vatNumber?: string;
 }): Promise<DomainCheckoutResult> {
   const registrationId = String(payload.registrationId || "").trim();
   if (!registrationId) {
@@ -535,6 +539,7 @@ export async function checkoutDomainRegistration(payload: {
       body: JSON.stringify({
         registrationId,
         years: payload.years,
+        vatNumber: payload.vatNumber || undefined,
       }),
     },
   );
