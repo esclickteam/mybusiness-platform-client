@@ -9,6 +9,7 @@ import { mergeAccessibilitySettings } from "../../site-plugins/accessibility/acc
 import type { BenefitsWheelSettings } from "../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../site-plugins/smart-search/smartSearchUtils";
 import type { AccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
+import PublicStoreCheckout from "./PublicStoreCheckout";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
@@ -17,6 +18,7 @@ type PublicSitePluginOverlaysProps = {
 export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverlaysProps) {
   const siteId = String(site?._id || site?.id || "");
   const slug = String(site?.slug || "");
+  const businessId = String(site?.businessId || site?.business?._id || "");
   const enabledPlugins: string[] = Array.isArray(site?.enabledPlugins)
     ? site.enabledPlugins
     : [];
@@ -47,8 +49,9 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showWheel = Boolean(siteId && wheelSettings?.isActive);
   const showSearch = Boolean(searchSettings?.isActive);
   const showAccessibility = Boolean(accessibilitySettings?.isActive);
+  const showStoreCheckout = Boolean(businessId);
 
-  if (!showWheel && !showSearch && !showAccessibility) {
+  if (!showWheel && !showSearch && !showAccessibility && !showStoreCheckout) {
     return null;
   }
 
@@ -66,6 +69,9 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
           settings={accessibilitySettings}
           mode="live"
         />
+      ) : null}
+      {showStoreCheckout ? (
+        <PublicStoreCheckout businessId={businessId} />
       ) : null}
     </>
   );

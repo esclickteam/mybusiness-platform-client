@@ -14,8 +14,10 @@ import PaymentsProviderGallery from "./payments/PaymentsProviderGallery";
 import PaymentProviderConnectView from "./payments/PaymentProviderConnectView";
 import {
   getPaymentProviderCatalogItem,
+  isProviderConnected,
   type PaymentProviderCatalogItem,
 } from "./payments/paymentProvidersCatalog";
+import { SitePanelCard } from "./SitePanelShell";
 
 type SitePaymentsPanelProps = {
   businessId: string;
@@ -67,6 +69,11 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
     () => providers.find((item) => item.provider === activeKey) || null,
     [providers, activeKey]
   );
+
+  const stripeConnected = useMemo(() => {
+    const stripe = providers.find((item) => item.provider === "stripe");
+    return isProviderConnected(stripe?.connectionStatus, stripe?.isEnabled);
+  }, [providers]);
 
   function openProvider(item: PaymentProviderCatalogItem) {
     setMessage(null);
@@ -180,7 +187,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         icon={CreditCard}
         accent="#059669"
         title="תשלומים"
-        description="חברו ספקי סליקה לקבלת תשלומים מהאתר — Stripe, Max, PayPal, bit, Grow, PayPlus, Tranzila ו-Cal."
+        description="חברו ספקי סליקה לאתר. אחרי חיבור Stripe תופיע קופה באתר החי — הוסיפו מוצרים בחנות ולקוחות יוכלו לשלם."
       />
 
       {message ? (
@@ -206,11 +213,33 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
           onDisconnect={handleDisconnect}
         />
       ) : (
-        <PaymentsProviderGallery
-          savedProviders={providers}
-          onConnect={openProvider}
-          onManage={openProvider}
-        />
+        <>
+          {stripeConnected ? (
+            <SitePanelCard className="text-right">
+              <h3 className="text-sm font-bold text-slate-900">
+                Stripe מחובר לאתר
+              </h3>
+              <ol className="mt-2 space-y-1 text-sm text-slate-600">
+                <li>1. הוסיפו מוצרים במנהל החנות (טאב חנות / מוצרים).</li>
+                <li>2. פתחו את האתר החי — יופיע כפתור סל בפינה.</li>
+                <li>3. הלקוח בוחר מוצרים ומשלם ב-Stripe Checkout.</li>
+              </ol>
+              {businessId ? (
+                <p className="mt-3 text-xs text-slate-400">
+                  Webhook (אופציונלי):{" "}
+                  <span className="font-mono text-[11px] text-slate-600" dir="ltr">
+                    https://api.bizuply.com/api/store/stripe/webhook/{businessId}
+                  </span>
+                </p>
+              ) : null}
+            </SitePanelCard>
+          ) : null}
+          <PaymentsProviderGallery
+            savedProviders={providers}
+            onConnect={openProvider}
+            onManage={openProvider}
+          />
+        </>
       )}
     </div>
   );
