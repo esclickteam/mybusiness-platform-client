@@ -1,6 +1,9 @@
 export const dentelleEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&display=swap');
 [data-template-id="dentelle"], [data-template-id="dentelle-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #2DD4BF;
   --bg: #F8FAFC;
   --surface: #FFFFFF;
@@ -98,5 +101,10 @@ export const dentelleEditorCss = `
 @keyframes dentelleTealGlow {
   0%, 100% { box-shadow: 0 20px 70px rgba(45, 212, 191, 0.16); }
   50% { box-shadow: 0 28px 90px rgba(45, 212, 191, 0.28); }
+}
+
+[data-template-id="dentelle"] .text-center,
+[data-template-id="dentelle-preview"] .text-center {
+  text-align: center;
 }
 `;

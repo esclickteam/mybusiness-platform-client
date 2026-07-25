@@ -137,7 +137,7 @@ function Programs({ data }: { data: Record<string, any> }) {
                     <h3 className="t-display text-5xl uppercase leading-none text-white md:text-7xl">{title}</h3>
                     <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
                   </div>
-                  <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)] md:text-left">{meta}</p>
+                  <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)] md:text-right">{meta}</p>
                 </div>
               </article>
             </Reveal>

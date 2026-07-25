@@ -195,34 +195,32 @@ function LogoCloud({ data }: { data: Record<string, any> }) {
 
 function FeaturesBento({ data }: { data: Record<string, any> }) {
   const features = [
-    [getValue(data, "featureOneTitle"), getValue(data, "featureOneText"), "lg:col-span-2 lg:row-span-2"],
-    [getValue(data, "featureTwoTitle"), getValue(data, "featureTwoText"), ""],
-    [getValue(data, "featureThreeTitle"), getValue(data, "featureThreeText"), ""],
-    [getValue(data, "featureFourTitle"), getValue(data, "featureFourText"), ""],
-    [getValue(data, "featureFiveTitle"), getValue(data, "featureFiveText"), ""],
-    [getValue(data, "featureSixTitle"), getValue(data, "featureSixText"), "lg:col-span-2"],
+    [getValue(data, "featureOneTitle"), getValue(data, "featureOneText")],
+    [getValue(data, "featureTwoTitle"), getValue(data, "featureTwoText")],
+    [getValue(data, "featureThreeTitle"), getValue(data, "featureThreeText")],
+    [getValue(data, "featureFourTitle"), getValue(data, "featureFourText")],
+    [getValue(data, "featureFiveTitle"), getValue(data, "featureFiveText")],
+    [getValue(data, "featureSixTitle"), getValue(data, "featureSixText")],
   ];
 
   return (
     <section id="product" data-template-section-type="features" className="px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-7xl">
         <Reveal>
-          <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.38em] text-cyan-300">{getValue(data, "featuresEyebrow")}</p>
-              <h2 className="neuralis-display mt-4 text-5xl font-bold leading-none text-white md:text-7xl">{getValue(data, "featuresTitle")}</h2>
-            </div>
-            <p className="max-w-2xl text-lg leading-8 text-[var(--muted)]">{getValue(data, "featuresText")}</p>
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="text-xs font-black uppercase tracking-[0.38em] text-cyan-300">{getValue(data, "featuresEyebrow")}</p>
+            <h2 className="neuralis-display mt-4 text-5xl font-bold leading-tight text-white md:text-7xl">{getValue(data, "featuresTitle")}</h2>
+            <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{getValue(data, "featuresText")}</p>
           </div>
         </Reveal>
-        <div className="mt-14 grid auto-rows-fr gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {features.map(([title, text, span], index) => (
-            <Reveal key={title} delayMs={index * 85} variant="up" className={span}>
-              <article className="neuralis-card relative flex aspect-square h-full flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70">
-                <span className="neuralis-display text-6xl font-bold text-cyan-300/22">0{index + 1}</span>
+        <div className="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map(([title, text], index) => (
+            <Reveal key={title} delayMs={index * 85} variant="up">
+              <article className="neuralis-card relative flex min-h-[280px] flex-col justify-between overflow-hidden border border-cyan-300/22 bg-white/[0.045] p-7 text-right transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 md:min-h-[320px]">
+                <span className="neuralis-display text-5xl font-bold text-cyan-300/28 md:text-6xl">0{index + 1}</span>
                 <div className="relative z-10">
-                  <h3 className="neuralis-display text-3xl font-bold text-white">{title}</h3>
-                  <p className="mt-4 text-sm font-medium leading-7 text-cyan-50/62">{text}</p>
+                  <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
+                  <p className="mt-4 text-sm font-medium leading-7 text-cyan-50/72">{text}</p>
                 </div>
               </article>
             </Reveal>

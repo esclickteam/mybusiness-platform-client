@@ -1,6 +1,9 @@
 export const autovoltEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;600;700&family=Oswald:wght@500;600;700&display=swap');
 [data-template-id="autovolt"], [data-template-id="autovolt-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #38BDF8;
   --blue: #38BDF8;
   --bg: #0A0F14;
@@ -110,5 +113,10 @@ export const autovoltEditorCss = `
 @keyframes autovolt-scan {
   0%, 100% { opacity: 0.18; transform: translateY(-32vh); }
   50% { opacity: 0.82; transform: translateY(32vh); }
+}
+
+[data-template-id="autovolt"] .text-center,
+[data-template-id="autovolt-preview"] .text-center {
+  text-align: center;
 }
 `;

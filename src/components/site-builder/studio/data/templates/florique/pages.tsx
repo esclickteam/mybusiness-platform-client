@@ -173,10 +173,10 @@ function Occasions({ data }: { data: Record<string, any> }) {
 
 function BouquetMosaic({ data }: { data: Record<string, any> }) {
   const bouquets = [
-    [getValue(data, "bouquetOneName"), getValue(data, "bouquetOnePrice"), getValue(data, "bouquetOneText"), getValue(data, "bouquetOneImage"), "md:col-span-2 md:row-span-2"],
-    [getValue(data, "bouquetTwoName"), getValue(data, "bouquetTwoPrice"), getValue(data, "bouquetTwoText"), getValue(data, "bouquetTwoImage"), ""],
-    [getValue(data, "bouquetThreeName"), getValue(data, "bouquetThreePrice"), getValue(data, "bouquetThreeText"), getValue(data, "bouquetThreeImage"), ""],
-    [getValue(data, "bouquetFourName"), getValue(data, "bouquetFourPrice"), getValue(data, "bouquetFourText"), getValue(data, "bouquetFourImage"), "md:col-span-2"],
+    [getValue(data, "bouquetOneName"), getValue(data, "bouquetOnePrice"), getValue(data, "bouquetOneText"), getValue(data, "bouquetOneImage")],
+    [getValue(data, "bouquetTwoName"), getValue(data, "bouquetTwoPrice"), getValue(data, "bouquetTwoText"), getValue(data, "bouquetTwoImage")],
+    [getValue(data, "bouquetThreeName"), getValue(data, "bouquetThreePrice"), getValue(data, "bouquetThreeText"), getValue(data, "bouquetThreeImage")],
+    [getValue(data, "bouquetFourName"), getValue(data, "bouquetFourPrice"), getValue(data, "bouquetFourText"), getValue(data, "bouquetFourImage")],
   ];
 
   return (
@@ -191,13 +191,13 @@ function BouquetMosaic({ data }: { data: Record<string, any> }) {
             <p className="florique-script text-6xl leading-none text-[var(--p)]">signature</p>
           </div>
         </Reveal>
-        <div className="mt-14 grid auto-rows-fr gap-5 md:grid-cols-4">
-          {bouquets.map(([name, price, text, image, span], index) => (
-            <Reveal key={name} delayMs={index * 90} variant="scale" className={span}>
-              <article className="florique-card group relative flex aspect-square min-h-full flex-col justify-end overflow-hidden bg-[#fff7fb]">
+        <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {bouquets.map(([name, price, text, image], index) => (
+            <Reveal key={name} delayMs={index * 90} variant="scale" className={index === 0 ? "sm:col-span-2 lg:col-span-2" : ""}>
+              <article className={`florique-card group relative flex flex-col justify-end overflow-hidden bg-[#fff7fb] ${index === 0 ? "aspect-[16/10] lg:aspect-[16/11]" : "aspect-square"}`}>
                 <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-white/48 to-transparent" />
-                <div className="relative z-10 p-7">
+                <div className="relative z-10 p-7 text-right">
                   <div className="mb-4 inline-flex bg-[var(--p)] px-4 py-2 text-sm font-black text-white">{price}</div>
                   <h3 className="florique-script text-5xl leading-none text-[var(--p)]">{name}</h3>
                   <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{text}</p>
@@ -257,29 +257,39 @@ function Gallery({ data }: { data: Record<string, any> }) {
   return (
     <section id="gallery" data-template-section-type="gallery" className="bg-[#fffdf7] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-10 lg:grid-cols-[0.72fr_1.28fr] lg:items-center">
-          <Reveal variant="right">
+        <Reveal>
+          <div className="mx-auto max-w-3xl text-center">
             <p className="text-xs font-black uppercase tracking-[0.34em] text-[var(--p)]">{getValue(data, "galleryEyebrow")}</p>
             <h2 className="mt-4 text-5xl font-semibold leading-tight md:text-7xl">{getValue(data, "galleryTitle")}</h2>
             <p className="mt-6 text-base font-semibold leading-8 text-[var(--muted)]">{getValue(data, "galleryText")}</p>
-          </Reveal>
-          <div className="grid h-[680px] grid-cols-6 grid-rows-6 gap-4">
-            <Reveal variant="scale" className="col-span-4 row-span-3">
-              <img src={images[0]} alt="" className="h-full w-full object-cover" />
-            </Reveal>
-            <Reveal variant="scale" delayMs={80} className="col-span-2 row-span-2">
-              <img src={images[1]} alt="" className="h-full w-full object-cover" />
-            </Reveal>
-            <Reveal variant="scale" delayMs={140} className="col-span-2 row-span-4">
-              <img src={images[2]} alt="" className="h-full w-full object-cover" />
-            </Reveal>
-            <Reveal variant="scale" delayMs={200} className="col-span-2 row-span-3">
-              <img src={images[3]} alt="" className="h-full w-full object-cover" />
-            </Reveal>
-            <Reveal variant="scale" delayMs={260} className="col-span-4 row-span-3">
-              <img src={images[4]} alt="" className="h-full w-full object-cover" />
-            </Reveal>
           </div>
+        </Reveal>
+        <div className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-6 md:grid-rows-2">
+          <Reveal variant="scale" className="col-span-2 md:col-span-3">
+            <div className="overflow-hidden">
+              <img src={images[0]} alt="" className="aspect-[4/3] h-full w-full object-cover md:aspect-[5/3]" />
+            </div>
+          </Reveal>
+          <Reveal variant="scale" delayMs={80} className="col-span-1 md:col-span-3">
+            <div className="overflow-hidden">
+              <img src={images[1]} alt="" className="aspect-[4/3] h-full w-full object-cover md:aspect-[5/3]" />
+            </div>
+          </Reveal>
+          <Reveal variant="scale" delayMs={140} className="col-span-1 md:col-span-2">
+            <div className="overflow-hidden">
+              <img src={images[2]} alt="" className="aspect-square h-full w-full object-cover" />
+            </div>
+          </Reveal>
+          <Reveal variant="scale" delayMs={200} className="col-span-1 md:col-span-2">
+            <div className="overflow-hidden">
+              <img src={images[3]} alt="" className="aspect-square h-full w-full object-cover" />
+            </div>
+          </Reveal>
+          <Reveal variant="scale" delayMs={260} className="col-span-2 md:col-span-2">
+            <div className="overflow-hidden">
+              <img src={images[4]} alt="" className="aspect-square h-full w-full object-cover" />
+            </div>
+          </Reveal>
         </div>
       </div>
     </section>

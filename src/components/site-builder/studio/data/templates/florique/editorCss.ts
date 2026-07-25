@@ -1,6 +1,9 @@
 export const floriqueEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@400;500;600;700;800&display=swap');
 [data-template-id="florique"], [data-template-id="florique-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #E11D8C;
   --rose: #BE185D;
   --bg: #FFF7FB;
@@ -72,5 +75,10 @@ export const floriqueEditorCss = `
   [data-template-id="florique-preview"] .florique-soft-float {
     animation: none;
   }
+}
+
+[data-template-id="florique"] .text-center,
+[data-template-id="florique-preview"] .text-center {
+  text-align: center;
 }
 `;

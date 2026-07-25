@@ -197,7 +197,7 @@ function Treatments({ data }: { data: Record<string, any> }) {
                   <p className="text-sm leading-7 text-[var(--muted)]">{text}</p>
                   <span className="de-dot-leader hidden h-4 md:block" />
                 </div>
-                <strong className="text-left text-lg font-black text-[var(--p)] md:text-xl">{price}</strong>
+                <strong className="text-right text-lg font-black text-[var(--p)] md:text-xl">{price}</strong>
               </article>
             </Reveal>
           ))}

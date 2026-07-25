@@ -147,7 +147,7 @@ function Menu({ data }: { data: Record<string, any> }) {
               <article className="bl-menu-row grid gap-3 border-b border-[var(--espresso)]/20 py-7 last:border-b-0 md:grid-cols-[1fr_1.25fr_auto] md:items-end">
                 <h3 className="t-serif text-5xl leading-none tracking-[-0.04em] md:text-7xl">{name}</h3>
                 <p className="max-w-xl text-sm font-semibold leading-7 text-[#6B5749]">{text}</p>
-                <strong className="t-serif text-left text-6xl leading-none text-[var(--clay)]">{price}</strong>
+                <strong className="t-serif text-right text-6xl leading-none text-[var(--clay)]">{price}</strong>
               </article>
             </Reveal>
           ))}

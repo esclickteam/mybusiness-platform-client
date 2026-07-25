@@ -3,6 +3,9 @@ export const aurayogaEditorCss = `
 
 [data-template-id="aurayoga"],
 [data-template-id="aurayoga-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #A78BFA;
   --bg: #1C1526;
   --surface: #2A2036;
@@ -234,5 +237,10 @@ export const aurayogaEditorCss = `
   [data-template-id="aurayoga-preview"] .aura-orb {
     display: none;
   }
+}
+
+[data-template-id="aurayoga"] .text-center,
+[data-template-id="aurayoga-preview"] .text-center {
+  text-align: center;
 }
 `;

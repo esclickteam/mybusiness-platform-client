@@ -1,6 +1,9 @@
 export const neuralisEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
 [data-template-id="neuralis"], [data-template-id="neuralis-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #22D3EE;
   --p2: #0EA5E9;
   --bg: #050816;
@@ -107,5 +110,10 @@ export const neuralisEditorCss = `
   [data-template-id="neuralis-preview"] .neuralis-scan::after {
     animation: none;
   }
+}
+
+[data-template-id="neuralis"] .text-center,
+[data-template-id="neuralis-preview"] .text-center {
+  text-align: center;
 }
 `;
