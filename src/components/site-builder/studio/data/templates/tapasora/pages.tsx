@@ -7,8 +7,11 @@ import { Reveal } from "../shared/Reveal";
 
 export const tapasoraPages = [
   { id: "home", label: "בית", slug: "/" },
+  { id: "menu", label: "תפריט", slug: "/menu" },
   { id: "tapas", label: "טאפס", slug: "/tapas" },
   { id: "bar", label: "הבר", slug: "/bar" },
+  { id: "gallery", label: "גלריה", slug: "/gallery" },
+  { id: "journal", label: "יומן", slug: "/journal" },
   { id: "about", label: "אודות", slug: "/about" },
   { id: "contact", label: "הזמנה", slug: "/contact" },
 ];
@@ -62,7 +65,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
           </div>
           <div className="tpl-rise-3 mt-10 flex flex-wrap gap-3">
             <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#ff2d95", color: "#12081a" }}>{v(data, "heroPrimary")}</button>
-            <button type="button" onClick={() => goTo("tapas")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(248,238,248,0.14)" }}>{v(data, "heroSecondary")}</button>
+            <button type="button" onClick={() => goTo("menu")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(248,238,248,0.14)" }}>{v(data, "heroSecondary")}</button>
           </div>
         </div>
       </section>
@@ -126,6 +129,251 @@ function WinePour({ data }: { data: Record<string, any> }) {
   );
 }
 
+
+function SectionKicker({ label }: { label: string }) {
+  return <p className="text-xs font-bold tracking-[0.28em]" style={{ color: "#ff2d95" }}>{label}</p>;
+}
+
+function PageHero({ data, title, pageId }: { data: Record<string, any>; title: string; pageId: string }) {
+  const image = pageId === "about" ? v(data, "aboutImage") : pageId === "gallery" ? v(data, "gallery1Image") : pageId === "journal" ? v(data, "gallery2Image") : v(data, "heroImage");
+  return (
+    <section className="relative isolate overflow-hidden border-b px-5 py-20 lg:px-8 lg:py-24" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+      <img src={image} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #12081af5, #1e1028cc)" }} />
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <div>
+          <SectionKicker label={v(data, "brandName")} />
+          <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#b89bc4" }}>{v(data, "pageHeroText")}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
+            <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(248,238,248,0.14)", animationDelay: `${i * 0.25}s` }}>
+              <img src={src} alt="" className="h-full w-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function WhyUs({ data }: { data: Record<string, any> }) {
+  const reasons = [1, 2, 3].map((i) => ({ title: v(data, `why${i}Title`), text: v(data, `why${i}Text`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "whyKicker")} />
+        <h2 className="tpl-display mt-4 max-w-3xl text-4xl font-bold md:text-5xl">{v(data, "whyTitle")}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {reasons.map((reason, i) => (
+            <Reveal key={reason.title} delayMs={i * 90} variant="up">
+              <article className="tpl-sweep h-full border p-6 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: i % 2 ? "#12081a" : "#080410" }}>
+                <span className="tpl-display text-5xl font-bold" style={{ color: "#ff2d95" }}>0{i + 1}</span>
+                <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{reason.text}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MenuShowcase({ data }: { data: Record<string, any> }) {
+  const dishes = [1, 2, 3].map((i) => ({ title: v(data, `item${i}Title`), meta: v(data, `item${i}Meta`), text: v(data, `item${i}Text`), img: v(data, `item${i}Image`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <SectionKicker label={v(data, "menuKicker")} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "menuShowcaseTitle")}</h2>
+          </div>
+          <p className="max-w-md text-sm leading-7" style={{ color: "#b89bc4" }}>{v(data, "menuShowcaseText")}</p>
+        </div>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {dishes.map((dish, i) => (
+            <Reveal key={dish.title} delayMs={i * 100} variant="scale">
+              <article className="group overflow-hidden border rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+                <img src={dish.img} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
+                <div className="p-5">
+                  <p className="text-xs font-bold tracking-[0.18em]" style={{ color: "#ff2d95" }}>{dish.meta}</p>
+                  <h3 className="tpl-display mt-2 text-2xl font-bold">{dish.title}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{dish.text}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function GallerySection({ data }: { data: Record<string, any> }) {
+  const shots = [1, 2, 3, 4].map((i) => ({ src: v(data, `gallery${i}Image`), label: v(data, `gallery${i}Title`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "galleryKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "galleryTitle")}</h2>
+        <div className="mt-10 grid gap-3 md:grid-cols-2">
+          {shots.map((shot, i) => (
+            <Reveal key={shot.label} delayMs={i * 80} variant={i % 2 ? "up" : "scale"}>
+              <figure className={`relative overflow-hidden border ${i === 0 ? "md:row-span-2" : ""} rounded-xl`} style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+                <img src={shot.src} alt="" className={i === 0 ? "aspect-[4/5] h-full w-full object-cover" : "aspect-square w-full object-cover"} />
+                <figcaption className="absolute inset-x-3 bottom-3 px-3 py-2 text-sm font-bold" style={{ background: "#12081add", color: "#f8eef8" }}>{shot.label}</figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TeamSection({ data }: { data: Record<string, any> }) {
+  const people = [1, 2, 3].map((i) => ({ name: v(data, `team${i}Name`), role: v(data, `team${i}Role`), img: v(data, `team${i}Image`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <SectionKicker label={v(data, "teamKicker")} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "teamTitle")}</h2>
+            <p className="mt-5 text-sm leading-7" style={{ color: "#b89bc4" }}>{v(data, "teamText")}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {people.map((person, i) => (
+              <Reveal key={person.name} delayMs={i * 90} variant="up">
+                <article className="border p-3 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+                  <img src={person.img} alt="" className="aspect-[4/5] w-full object-cover" />
+                  <h3 className="mt-4 text-lg font-bold">{person.name}</h3>
+                  <p className="text-sm" style={{ color: "#ff2d95" }}>{person.role}</p>
+                </article>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function KitchenMethod({ data }: { data: Record<string, any> }) {
+  const steps = [1, 2, 3, 4].map((i) => ({ title: v(data, `process${i}Title`), text: v(data, `process${i}Text`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#080410" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "processKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "processTitle")}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-4">
+          {steps.map((step, i) => (
+            <Reveal key={step.title} delayMs={i * 80} variant="right">
+              <article className="relative min-h-48 border p-5 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#ff2d95" }}>{i + 1}</span>
+                <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
+                <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{step.text}</p>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Testimonials({ data }: { data: Record<string, any> }) {
+  const reviews = [1, 2, 3].map((i) => ({ quote: v(data, `review${i}Quote`), name: v(data, `review${i}Name`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "reviewsKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "reviewsTitle")}</h2>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {reviews.map((review, i) => (
+            <Reveal key={review.name} delayMs={i * 90} variant="fade">
+              <blockquote className="h-full border p-6 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+                <p className="text-lg leading-8">״{review.quote}״</p>
+                <footer className="mt-5 text-sm font-bold" style={{ color: "#ff2d95" }}>{review.name}</footer>
+              </blockquote>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function VisitBlock({ data }: { data: Record<string, any> }) {
+  const hours = [1, 2, 3].map((i) => ({ day: v(data, `hours${i}Day`), time: v(data, `hours${i}Time`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <div>
+          <SectionKicker label={v(data, "visitKicker")} />
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "visitTitle")}</h2>
+          <p className="mt-5 text-lg leading-8" style={{ color: "#b89bc4" }}>{v(data, "visitText")}</p>
+          <p className="mt-6 text-sm font-bold">{v(data, "address")}</p>
+        </div>
+        <div className="grid gap-3">
+          {hours.map((hour, i) => (
+            <Reveal key={hour.day} delayMs={i * 80} variant="left">
+              <div className="flex items-center justify-between border px-5 py-4 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#12081a" }}>
+                <span className="font-bold">{hour.day}</span>
+                <span style={{ color: "#ff2d95" }}>{hour.time}</span>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Insights({ data }: { data: Record<string, any> }) {
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`) }));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={v(data, "insightsKicker")} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "insightsTitle")}</h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {posts.map((post, i) => (
+            <Reveal key={post.title} delayMs={i * 90} variant="up">
+              <article className="overflow-hidden border rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
+                <img src={post.image} alt="" className="aspect-[16/10] w-full object-cover" />
+                <div className="p-5">
+                  <h3 className="text-lg font-bold">{post.title}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{post.text}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CTABand({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor: "rgba(248,238,248,0.14)", background: "linear-gradient(135deg, #ff2d9533, #1e1028)" }}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <SectionKicker label={v(data, "ctaBandKicker")} />
+          <h2 className="tpl-display mt-3 text-3xl font-bold md:text-5xl">{v(data, "ctaBandTitle")}</h2>
+          <p className="mt-3 max-w-2xl leading-7" style={{ color: "#b89bc4" }}>{v(data, "ctaBandText")}</p>
+        </div>
+        <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-bold" style={{ background: "#ff2d95", color: "#12081a" }}>{v(data, "cta")}</button>
+      </div>
+    </section>
+  );
+}
+
+
 function AboutBlock({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1a1520" }}>
@@ -169,6 +417,34 @@ function Footer({ data }: { data: Record<string, any> }) {
   );
 }
 
+function BespokeSections({ data }: { data: Record<string, any> }) {
+  return (
+    <>
+      <BentoTapas data={data} />
+      <NightMarquee data={data} />
+      <WinePour data={data} />
+    </>
+  );
+}
+
+function SharedPageSections({ data, pageId, onCta }: { data: Record<string, any>; pageId: string; onCta: () => void }) {
+  return (
+    <>
+      {pageId === "contact" ? null : <BespokeSections data={data} />}
+      <AboutBlock data={data} />
+      <WhyUs data={data} />
+      <MenuShowcase data={data} />
+      <GallerySection data={data} />
+      <TeamSection data={data} />
+      <KitchenMethod data={data} />
+      <Testimonials data={data} />
+      <VisitBlock data={data} />
+      <Insights data={data} />
+      <CTABand data={data} onCta={onCta} />
+    </>
+  );
+}
+
 function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
   return (
     <>
@@ -177,22 +453,26 @@ function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id:
       <NightMarquee data={data} />
       <WinePour data={data} />
       <AboutBlock data={data} />
+      <WhyUs data={data} />
+      <MenuShowcase data={data} />
+      <GallerySection data={data} />
+      <TeamSection data={data} />
+      <KitchenMethod data={data} />
+      <Testimonials data={data} />
+      <VisitBlock data={data} />
+      <Insights data={data} />
+      <CTABand data={data} onCta={onCta} />
       <ContactBlock data={data} onCta={onCta} />
       <Footer data={data} />
     </>
   );
 }
 
-function InnerPage({ data, title, children, onCta }: { data: Record<string, any>; title: string; children: React.ReactNode; onCta: () => void }) {
+function InnerPage({ data, pageId, title, onCta }: { data: Record<string, any>; pageId: string; title: string; onCta: () => void }) {
   return (
     <>
-      <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(248,238,248,0.14)" }}>
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#ff2d95" }}>{v(data, "brandName")}</p>
-          <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{title}</h1>
-        </div>
-      </section>
-      {children}
+      <PageHero data={data} title={title} pageId={pageId} />
+      <SharedPageSections data={data} pageId={pageId} onCta={onCta} />
       <ContactBlock data={data} onCta={onCta} />
       <Footer data={data} />
     </>
@@ -214,13 +494,7 @@ export default function TapasoraPages({
   for (const pg of tapasoraPages) {
     if (pg.id === "home") continue;
     pageContent[pg.id] = (
-      <InnerPage data={merged} title={pg.label} onCta={() => goTo("contact")}>
-        {pg.id.includes("contact") ? null : (<>
-        <BentoTapas data={merged} />
-        <NightMarquee data={merged} />
-        <WinePour data={merged} />
-        </>)}
-      </InnerPage>
+      <InnerPage data={merged} pageId={pg.id} title={pg.label} onCta={() => goTo("contact")} />
     );
   }
   return (

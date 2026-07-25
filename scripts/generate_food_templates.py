@@ -21,6 +21,25 @@ CITIES = [
     "רח׳ הרחוב 31, באר שבע",
 ]
 
+GALLERY_IMAGES = [
+    "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1551218808-94e220e084d2?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1400&q=85",
+    "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=85",
+]
+
+TEAM_IMAGES = [
+    "https://images.unsplash.com/photo-1583394293214-28ded15ee548?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1600565193348-f74bd3c7ccdf?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=900&q=85",
+    "https://images.unsplash.com/photo-1607631568010-a87245c0daf8?auto=format&fit=crop&w=900&q=85",
+]
+
 META_BLOCKS = {
     "flameStack": [
         ("header", "charcoal-ember-nav", "Charcoal ember sticky nav"),
@@ -1304,6 +1323,279 @@ def about_jsx(t):
     </section>'''
 
 
+def expanded_sections_jsx(t):
+    p = _p(t)
+    layout = t["layout"]
+    card_shape = {
+        "flameStack": "",
+        "steamBowl": "rounded-[2rem]",
+        "doughStretch": "skew-y-1",
+        "mezzeMosaic": "rounded-tl-[3rem]",
+        "conveyorRail": "rounded-none",
+        "sunnyBrunch": "rounded-3xl",
+        "nightTapas": "rounded-xl",
+        "spiceWheel": "rounded-[2rem]",
+        "cellarDepth": "rounded-none",
+        "neonStreet": "rotate-[-1deg]",
+    }[layout]
+    gallery_grid = {
+        "flameStack": "md:grid-cols-4",
+        "steamBowl": "md:grid-cols-2",
+        "doughStretch": "md:grid-cols-4",
+        "mezzeMosaic": "md:grid-cols-4",
+        "conveyorRail": "md:grid-cols-4",
+        "sunnyBrunch": "md:grid-cols-4",
+        "nightTapas": "md:grid-cols-2",
+        "spiceWheel": "md:grid-cols-4",
+        "cellarDepth": "md:grid-cols-4",
+        "neonStreet": "md:grid-cols-2",
+    }[layout]
+    return f'''
+function SectionKicker({{ label }}: {{ label: string }}) {{
+  return <p className="text-xs font-bold tracking-[0.28em]" style={{{{ color: "{p['primary']}" }}}}>{{label}}</p>;
+}}
+
+function PageHero({{ data, title, pageId }}: {{ data: Record<string, any>; title: string; pageId: string }}) {{
+  const image = pageId === "about" ? v(data, "aboutImage") : pageId === "gallery" ? v(data, "gallery1Image") : pageId === "journal" ? v(data, "gallery2Image") : v(data, "heroImage");
+  return (
+    <section className="relative isolate overflow-hidden border-b px-5 py-20 lg:px-8 lg:py-24" style={{{{ borderColor: "{p['line']}" }}}}>
+      <img src={{image}} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-30" />
+      <div className="absolute inset-0" style={{{{ background: "linear-gradient(135deg, {p['bg']}f5, {p['surface']}cc)" }}}} />
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-end">
+        <div>
+          <SectionKicker label={{v(data, "brandName")}} />
+          <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{{title}}</h1>
+          <p className="mt-5 max-w-2xl text-lg leading-8" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "pageHeroText")}}</p>
+        </div>
+        <div className="grid grid-cols-3 gap-2">
+          {{[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
+            <div key={{i}} className="tpl-float aspect-square overflow-hidden border" style={{{{ borderColor: "{p['line']}", animationDelay: `${{i * 0.25}}s` }}}}>
+              <img src={{src}} alt="" className="h-full w-full object-cover" />
+            </div>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function WhyUs({{ data }}: {{ data: Record<string, any> }}) {{
+  const reasons = [1, 2, 3].map((i) => ({{ title: v(data, `why${{i}}Title`), text: v(data, `why${{i}}Text`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "whyKicker")}} />
+        <h2 className="tpl-display mt-4 max-w-3xl text-4xl font-bold md:text-5xl">{{v(data, "whyTitle")}}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-3">
+          {{reasons.map((reason, i) => (
+            <Reveal key={{reason.title}} delayMs={{i * 90}} variant="up">
+              <article className="tpl-sweep h-full border p-6 {card_shape}" style={{{{ borderColor: "{p['line']}", background: i % 2 ? "{p['bg']}" : "{p['dark']}" }}}}>
+                <span className="tpl-display text-5xl font-bold" style={{{{ color: "{p['primary']}" }}}}>0{{i + 1}}</span>
+                <h3 className="mt-5 text-xl font-bold">{{reason.title}}</h3>
+                <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{reason.text}}</p>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function MenuShowcase({{ data }}: {{ data: Record<string, any> }}) {{
+  const dishes = [1, 2, 3].map((i) => ({{ title: v(data, `item${{i}}Title`), meta: v(data, `item${{i}}Meta`), text: v(data, `item${{i}}Text`), img: v(data, `item${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div>
+            <SectionKicker label={{v(data, "menuKicker")}} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "menuShowcaseTitle")}}</h2>
+          </div>
+          <p className="max-w-md text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "menuShowcaseText")}}</p>
+        </div>
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
+          {{dishes.map((dish, i) => (
+            <Reveal key={{dish.title}} delayMs={{i * 100}} variant="scale">
+              <article className="group overflow-hidden border {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <img src={{dish.img}} alt="" className="aspect-[4/3] w-full object-cover transition duration-500 group-hover:scale-105" />
+                <div className="p-5">
+                  <p className="text-xs font-bold tracking-[0.18em]" style={{{{ color: "{p['primary']}" }}}}>{{dish.meta}}</p>
+                  <h3 className="tpl-display mt-2 text-2xl font-bold">{{dish.title}}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{dish.text}}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function GallerySection({{ data }}: {{ data: Record<string, any> }}) {{
+  const shots = [1, 2, 3, 4].map((i) => ({{ src: v(data, `gallery${{i}}Image`), label: v(data, `gallery${{i}}Title`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "galleryKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "galleryTitle")}}</h2>
+        <div className="mt-10 grid gap-3 {gallery_grid}">
+          {{shots.map((shot, i) => (
+            <Reveal key={{shot.label}} delayMs={{i * 80}} variant={{i % 2 ? "up" : "scale"}}>
+              <figure className={{`relative overflow-hidden border ${{i === 0 ? "md:row-span-2" : ""}} {card_shape}`}} style={{{{ borderColor: "{p['line']}" }}}}>
+                <img src={{shot.src}} alt="" className={{i === 0 ? "aspect-[4/5] h-full w-full object-cover" : "aspect-square w-full object-cover"}} />
+                <figcaption className="absolute inset-x-3 bottom-3 px-3 py-2 text-sm font-bold" style={{{{ background: "{p['bg']}dd", color: "{p['text']}" }}}}>{{shot.label}}</figcaption>
+              </figure>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function TeamSection({{ data }}: {{ data: Record<string, any> }}) {{
+  const people = [1, 2, 3].map((i) => ({{ name: v(data, `team${{i}}Name`), role: v(data, `team${{i}}Role`), img: v(data, `team${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-start">
+          <div>
+            <SectionKicker label={{v(data, "teamKicker")}} />
+            <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "teamTitle")}}</h2>
+            <p className="mt-5 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "teamText")}}</p>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {{people.map((person, i) => (
+              <Reveal key={{person.name}} delayMs={{i * 90}} variant="up">
+                <article className="border p-3 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                  <img src={{person.img}} alt="" className="aspect-[4/5] w-full object-cover" />
+                  <h3 className="mt-4 text-lg font-bold">{{person.name}}</h3>
+                  <p className="text-sm" style={{{{ color: "{p['primary']}" }}}}>{{person.role}}</p>
+                </article>
+              </Reveal>
+            ))}}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function KitchenMethod({{ data }}: {{ data: Record<string, any> }}) {{
+  const steps = [1, 2, 3, 4].map((i) => ({{ title: v(data, `process${{i}}Title`), text: v(data, `process${{i}}Text`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['dark']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "processKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "processTitle")}}</h2>
+        <div className="mt-10 grid gap-4 md:grid-cols-4">
+          {{steps.map((step, i) => (
+            <Reveal key={{step.title}} delayMs={{i * 80}} variant="right">
+              <article className="relative min-h-48 border p-5 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <span className="tpl-display text-5xl font-bold opacity-30" style={{{{ color: "{p['primary']}" }}}}>{{i + 1}}</span>
+                <h3 className="mt-6 text-lg font-bold">{{step.title}}</h3>
+                <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{step.text}}</p>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function Testimonials({{ data }}: {{ data: Record<string, any> }}) {{
+  const reviews = [1, 2, 3].map((i) => ({{ quote: v(data, `review${{i}}Quote`), name: v(data, `review${{i}}Name`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "reviewsKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "reviewsTitle")}}</h2>
+        <div className="mt-10 grid gap-4 lg:grid-cols-3">
+          {{reviews.map((review, i) => (
+            <Reveal key={{review.name}} delayMs={{i * 90}} variant="fade">
+              <blockquote className="h-full border p-6 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <p className="text-lg leading-8">״{{review.quote}}״</p>
+                <footer className="mt-5 text-sm font-bold" style={{{{ color: "{p['primary']}" }}}}>{{review.name}}</footer>
+              </blockquote>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function VisitBlock({{ data }}: {{ data: Record<string, any> }}) {{
+  const hours = [1, 2, 3].map((i) => ({{ day: v(data, `hours${{i}}Day`), time: v(data, `hours${{i}}Time`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_1fr] lg:items-center">
+        <div>
+          <SectionKicker label={{v(data, "visitKicker")}} />
+          <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "visitTitle")}}</h2>
+          <p className="mt-5 text-lg leading-8" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "visitText")}}</p>
+          <p className="mt-6 text-sm font-bold">{{v(data, "address")}}</p>
+        </div>
+        <div className="grid gap-3">
+          {{hours.map((hour, i) => (
+            <Reveal key={{hour.day}} delayMs={{i * 80}} variant="left">
+              <div className="flex items-center justify-between border px-5 py-4 {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['bg']}" }}}}>
+                <span className="font-bold">{{hour.day}}</span>
+                <span style={{{{ color: "{p['primary']}" }}}}>{{hour.time}}</span>
+              </div>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function Insights({{ data }}: {{ data: Record<string, any> }}) {{
+  const posts = [1, 2, 3].map((i) => ({{ title: v(data, `insight${{i}}Title`), text: v(data, `insight${{i}}Text`), image: v(data, `insight${{i}}Image`) }}));
+  return (
+    <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
+      <div className="mx-auto max-w-7xl">
+        <SectionKicker label={{v(data, "insightsKicker")}} />
+        <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{{v(data, "insightsTitle")}}</h2>
+        <div className="mt-10 grid gap-5 md:grid-cols-3">
+          {{posts.map((post, i) => (
+            <Reveal key={{post.title}} delayMs={{i * 90}} variant="up">
+              <article className="overflow-hidden border {card_shape}" style={{{{ borderColor: "{p['line']}", background: "{p['surface']}" }}}}>
+                <img src={{post.image}} alt="" className="aspect-[16/10] w-full object-cover" />
+                <div className="p-5">
+                  <h3 className="text-lg font-bold">{{post.title}}</h3>
+                  <p className="mt-3 text-sm leading-7" style={{{{ color: "{p['muted']}" }}}}>{{post.text}}</p>
+                </div>
+              </article>
+            </Reveal>
+          ))}}
+        </div>
+      </div>
+    </section>
+  );
+}}
+
+function CTABand({{ data, onCta }}: {{ data: Record<string, any>; onCta: () => void }}) {{
+  return (
+    <section className="border-t px-5 py-14 lg:px-8" style={{{{ borderColor: "{p['line']}", background: "linear-gradient(135deg, {p['primary']}33, {p['surface']})" }}}}>
+      <div className="mx-auto flex max-w-7xl flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div>
+          <SectionKicker label={{v(data, "ctaBandKicker")}} />
+          <h2 className="tpl-display mt-3 text-3xl font-bold md:text-5xl">{{v(data, "ctaBandTitle")}}</h2>
+          <p className="mt-3 max-w-2xl leading-7" style={{{{ color: "{p['muted']}" }}}}>{{v(data, "ctaBandText")}}</p>
+        </div>
+        <button type="button" onClick={{onCta}} className="tpl-sweep px-7 py-4 text-sm font-bold" style={{{{ background: "{p['primary']}", color: "{p['primaryText']}" }}}}>{{v(data, "cta")}}</button>
+      </div>
+    </section>
+  );
+}}
+'''
+
+
 def contact_jsx(t):
     p = _p(t)
     layout = t["layout"]
@@ -1685,6 +1977,9 @@ def thumbnail_body(t):
 
 
 def gen_default_data(t, index):
+    def q(value):
+        return json.dumps(value, ensure_ascii=False)
+
     nav = "\n".join(
         f'  nav{pid[0].upper() + pid[1:]}: "{label}",'
         for pid, label, _ in t["pages"]
@@ -1696,6 +1991,106 @@ def gen_default_data(t, index):
     c = t["copy"]
     imgs = t["images"]
     address = CITIES[index % len(CITIES)]
+    brand = t["brand"]
+    niche = t["niche"]
+    main_niche = niche.split(" · ")[0]
+    gallery = [
+        imgs["hero"],
+        imgs["a"],
+        imgs["b"],
+        GALLERY_IMAGES[(index * 2) % len(GALLERY_IMAGES)],
+    ]
+    team = [
+        TEAM_IMAGES[(index + 0) % len(TEAM_IMAGES)],
+        TEAM_IMAGES[(index + 1) % len(TEAM_IMAGES)],
+        TEAM_IMAGES[(index + 2) % len(TEAM_IMAGES)],
+    ]
+    insight_images = [
+        imgs["a"],
+        imgs["b"],
+        GALLERY_IMAGES[(index * 2 + 1) % len(GALLERY_IMAGES)],
+    ]
+    rich_about = (
+        f'{c["aboutText"]} מאחורי כל מנה עומד צוות שמכיר את חומרי הגלם בשמם, '
+        "בונה הכנות מוקדמות בקצב יומי ושומר על אירוח חם מהרגע שנכנסים ועד הקינוח האחרון."
+    )
+    extra = "\n".join([
+        f'  pageHeroText: {q(f"{brand} מציגה חוויה מלאה: תפריט, סיפור המטבח, צוות, גלריה וכל מה שצריך כדי לתכנן ביקור בלתי נשכח.")},',
+        '  whyKicker: "למה אצלנו",',
+        f'  whyTitle: {q(f"שלוש סיבות ש-{brand} מרגישה אחרת")},',
+        f'  why1Title: {q(f"חומרי גלם שמתאימים ל{main_niche}")},',
+        '  why1Text: "בחירה יומית של ספקים, ירקות ותיבול כדי שכל צלחת תרגיש מדויקת ועונתית.",',
+        '  why2Title: "קצב מטבח פתוח",',
+        '  why2Text: "הכנות מוקדמות, אש חיה וצוות שמוציא מנות בקצב נינוח בלי לאבד חדות.",',
+        '  why3Title: "אירוח עם קשב",',
+        '  why3Text: "המלצות אישיות, התאמות לשולחן ושירות שמרגיש כמו שיחה טובה.",',
+        '  menuKicker: "מנות חתימה",',
+        f'  menuShowcaseTitle: {q(f"הטעמים שמובילים את {brand}")},',
+        '  menuShowcaseText: "שלוש מנות שמייצגות את המטבח שלנו: חומר גלם ברור, טכניקה מדויקת וסיומת שמזמינה עוד ביס.",',
+        '  galleryKicker: "גלריה",',
+        '  galleryTitle: "רגעים מהמטבח ומהשולחן",',
+        f'  gallery1Title: {q(f"פתיחת ערב ב-{brand}")},',
+        '  gallery2Title: "צלחת חתימה מקרוב",',
+        '  gallery3Title: "חומרי גלם לפני השירות",',
+        '  gallery4Title: "שולחן שמוכן לאורחים",',
+        f'  gallery1Image: {q(gallery[0])},',
+        f'  gallery2Image: {q(gallery[1])},',
+        f'  gallery3Image: {q(gallery[2])},',
+        f'  gallery4Image: {q(gallery[3])},',
+        '  teamKicker: "הצוות",',
+        f'  teamTitle: {q(f"האנשים מאחורי {brand}")},',
+        '  teamText: "מטבח חזק מתחיל בצוות שמכיר את האש, את הסכין ואת הקצב של האורחים.",',
+        '  team1Name: "נועה ארז",',
+        '  team1Role: "שפית ראשית",',
+        f'  team1Image: {q(team[0])},',
+        '  team2Name: "דניאל כהן",',
+        '  team2Role: "סו-שף ותפעול מטבח",',
+        f'  team2Image: {q(team[1])},',
+        '  team3Name: "מיקה לוי",',
+        '  team3Role: "מנהלת חוויית אורח",',
+        f'  team3Image: {q(team[2])},',
+        '  processKicker: "שיטת המטבח",',
+        '  processTitle: "מהכנה מוקדמת ועד הצלחת",',
+        '  process1Title: "בחירה בבוקר",',
+        '  process1Text: "בודקים ספקים, ירקות, חלבונים ותבלינים לפי עונה וזמינות.",',
+        '  process2Title: "הכנות מדויקות",',
+        '  process2Text: "צירים, רטבים, בצקים או מרינדות מקבלים את הזמן שהם צריכים.",',
+        '  process3Title: "שירות בקצב",',
+        '  process3Text: "כל הזמנה נבנית מול המטבח הפתוח כדי לשמור על חום ומרקם.",',
+        '  process4Title: "סיום ליד השולחן",',
+        '  process4Text: "נגיעה אחרונה של עשבים, רוטב או אש רגע לפני ההגשה.",',
+        '  reviewsKicker: "אורחים מספרים",',
+        '  reviewsTitle: "מה אומרים אחרי הביס האחרון",',
+        '  review1Quote: "הרגשנו שמישהו חשב על כל פרט, מהתיבול ועד הקצב של הארוחה.",',
+        '  review1Name: "יעל ומור",',
+        '  review2Quote: "מקום שחוזרים אליו בשביל מנה אהובה ומגלים בכל פעם משהו חדש.",',
+        '  review2Name: "אורי ש.",',
+        '  review3Quote: "שירות חם, מוזיקה טובה ומטבח שעובד עם ביטחון.",',
+        '  review3Name: "רוני א.",',
+        '  visitKicker: "ביקור",',
+        f'  visitTitle: {q(f"מתי להגיע ל-{brand}")},',
+        '  visitText: "אפשר לקפוץ לארוחה ספונטנית או לשמור מקום מראש לערב ארוך סביב השולחן.",',
+        '  hours1Day: "ראשון–חמישי",',
+        '  hours1Time: "12:00–23:00",',
+        '  hours2Day: "שישי",',
+        '  hours2Time: "11:00–15:30",',
+        '  hours3Day: "שבת",',
+        '  hours3Time: "18:00–23:30",',
+        '  insightsKicker: "יומן מטבח",',
+        f'  insightsTitle: {q(f"חדשות וטיפים מ-{brand}")},',
+        '  insight1Title: "איך בוחרים את מנת הערב",',
+        '  insight1Text: "הצצה קצרה לשיקולים של הצוות לפני שמנה נכנסת לתפריט.",',
+        f'  insight1Image: {q(insight_images[0])},',
+        '  insight2Title: "חומר הגלם שעושה את ההבדל",',
+        '  insight2Text: "סיפור קטן על ספק, עונה או טכניקה שמחזיקים מנה שלמה.",',
+        f'  insight2Image: {q(insight_images[1])},',
+        '  insight3Title: "שולחן מומלץ לחברים",',
+        '  insight3Text: "כך אנחנו מרכיבים ארוחה משותפת שמרגישה מגוונת ולא כבדה.",',
+        f'  insight3Image: {q(insight_images[2])},',
+        '  ctaBandKicker: "רעבים?",',
+        f'  ctaBandTitle: {q(f"שמרו מקום ב-{brand}")},',
+        '  ctaBandText: "ספרו לנו מתי אתם מגיעים, כמה סועדים ומה חשוב לכם — ואנחנו נכין את השולחן.",',
+    ])
     return f'''export const {t["id"]}DefaultData = {{
   templateId: "{t["id"]}",
   name: "{t["name"]}",
@@ -1709,7 +2104,7 @@ def gen_default_data(t, index):
   heroSecondary: "{c["secondary"]}",
   heroImage: "{imgs["hero"]}",
   aboutTitle: "{c["aboutTitle"]}",
-  aboutText: "{c["aboutText"]}",
+  aboutText: {q(rich_about)},
   aboutImage: "{imgs["c"]}",
   contactTitle: "{c["contactTitle"]}",
   contactText: "{c["contactText"]}",
@@ -1718,6 +2113,7 @@ def gen_default_data(t, index):
   email: "hello@{t["id"]}.co.il",
   address: "{address}",
 {items}
+{extra}
 }};
 '''
 
@@ -1795,13 +2191,13 @@ def gen_pages(t):
     )
     hero = hero_jsx(t)
     sections = home_sections_jsx(t)
+    expanded = expanded_sections_jsx(t)
     about = about_jsx(t)
     contact = contact_jsx(t)
     footer = footer_jsx(t)
     header = header_jsx(t)
     home_bits = "\n      ".join(HOME_SECTION_USE[layout])
-    inner_bits = "\n        ".join(s.replace("{data}", "{merged}") for s in HOME_SECTION_USE[layout])
-    inner_jsx = "{pg.id.includes(\"contact\") ? null : (<>\n        " + inner_bits + "\n        </>)}"
+    bespoke_bits = "\n      ".join(HOME_SECTION_USE[layout])
 
     react_import = "import React, { useMemo, useState } from \"react\";" if layout == "flameStack" else "import React, { useMemo } from \"react\";"
     open_line = "  const [open, setOpen] = useState(false);\n" if layout == "flameStack" else ""
@@ -1843,6 +2239,8 @@ function Hero({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: 
 
 {sections}
 
+{expanded}
+
 function AboutBlock({{ data }}: {{ data: Record<string, any> }}) {{
   return ({about}
   );
@@ -1858,28 +2256,58 @@ function Footer({{ data }}: {{ data: Record<string, any> }}) {{
   );
 }}
 
+function BespokeSections({{ data }}: {{ data: Record<string, any> }}) {{
+  return (
+    <>
+      {bespoke_bits}
+    </>
+  );
+}}
+
+function SharedPageSections({{ data, pageId, onCta }}: {{ data: Record<string, any>; pageId: string; onCta: () => void }}) {{
+  return (
+    <>
+      {{pageId === "contact" ? null : <BespokeSections data={{data}} />}}
+      <AboutBlock data={{data}} />
+      <WhyUs data={{data}} />
+      <MenuShowcase data={{data}} />
+      <GallerySection data={{data}} />
+      <TeamSection data={{data}} />
+      <KitchenMethod data={{data}} />
+      <Testimonials data={{data}} />
+      <VisitBlock data={{data}} />
+      <Insights data={{data}} />
+      <CTABand data={{data}} onCta={{onCta}} />
+    </>
+  );
+}}
+
 function HomePage({{ data, goTo, onCta }}: {{ data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }}) {{
   return (
     <>
       <Hero data={{data}} goTo={{goTo}} onCta={{onCta}} />
       {home_bits}
       <AboutBlock data={{data}} />
+      <WhyUs data={{data}} />
+      <MenuShowcase data={{data}} />
+      <GallerySection data={{data}} />
+      <TeamSection data={{data}} />
+      <KitchenMethod data={{data}} />
+      <Testimonials data={{data}} />
+      <VisitBlock data={{data}} />
+      <Insights data={{data}} />
+      <CTABand data={{data}} onCta={{onCta}} />
       <ContactBlock data={{data}} onCta={{onCta}} />
       <Footer data={{data}} />
     </>
   );
 }}
 
-function InnerPage({{ data, title, children, onCta }}: {{ data: Record<string, any>; title: string; children: React.ReactNode; onCta: () => void }}) {{
+function InnerPage({{ data, pageId, title, onCta }}: {{ data: Record<string, any>; pageId: string; title: string; onCta: () => void }}) {{
   return (
     <>
-      <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{{{ borderColor: "{p['line']}" }}}}>
-        <div className="mx-auto max-w-7xl">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{{{ color: "{p['primary']}" }}}}>{{v(data, "brandName")}}</p>
-          <h1 className="tpl-display mt-4 text-5xl font-bold md:text-6xl">{{title}}</h1>
-        </div>
-      </section>
-      {{children}}
+      <PageHero data={{data}} title={{title}} pageId={{pageId}} />
+      <SharedPageSections data={{data}} pageId={{pageId}} onCta={{onCta}} />
       <ContactBlock data={{data}} onCta={{onCta}} />
       <Footer data={{data}} />
     </>
@@ -1901,9 +2329,7 @@ export default function {name}Pages({{
   for (const pg of {tid}Pages) {{
     if (pg.id === "home") continue;
     pageContent[pg.id] = (
-      <InnerPage data={{merged}} title={{pg.label}} onCta={{() => goTo("contact")}}>
-        {inner_jsx}
-      </InnerPage>
+      <InnerPage data={{merged}} pageId={{pg.id}} title={{pg.label}} onCta={{() => goTo("contact")}} />
     );
   }}
   return (
