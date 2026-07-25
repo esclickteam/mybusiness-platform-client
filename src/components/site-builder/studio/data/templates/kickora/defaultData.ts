@@ -36,7 +36,7 @@ export const kickoraDefaultData = {
   "catThree": "כובעים",
   "catThreeImage": "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=900&q=80",
   "catFour": "אקססוריז",
-  "catFourImage": "https://images.unsplash.com/photo-1523381210434-443e30d60bd0?auto=format&fit=crop&w=900&q=80",
+  "catFourImage": "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?auto=format&fit=crop&w=900&q=80",
   "productsEyebrow": "נבחרים",
   "productsTitle": "מוצרים שנבחרו לתצוגה עשירה.",
   "productsText": "הקטלוג נטען מתוסף החנות — עם דמו עד שתמלאו מוצרים אמיתיים.",
@@ -176,7 +176,7 @@ export const kickoraDemoProducts = [
     "name": "כובע Beanie",
     "price": 89,
     "category": "כובעים",
-    "image": "https://images.unsplash.com/photo-1576871337632-b9aef4c17fa9?auto=format&fit=crop&w=900&q=80",
+    "image": "https://images.unsplash.com/photo-1521369909029-2afed882baee?auto=format&fit=crop&w=900&q=80",
     "shortDescription": "כובע Beanie מתוך קטלוג Kickora — סניקרס וסטריטוור.",
     "featured": false
   },
