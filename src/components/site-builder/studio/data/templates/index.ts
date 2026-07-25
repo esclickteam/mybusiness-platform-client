@@ -119,6 +119,16 @@ import { booknookTemplate } from "./booknook/meta";
 import { glowlabTemplate } from "./glowlab/meta";
 import { toolhausTemplate } from "./toolhaus/meta";
 import { jewelisTemplate } from "./jewelis/meta";
+import { lectoraTemplate } from "./lectora/meta";
+import { mentoraTemplate } from "./mentora/meta";
+import { polyglotaTemplate } from "./polyglota/meta";
+import { codehausTemplate } from "./codehaus/meta";
+import { notelineTemplate } from "./noteline/meta";
+import { kidwiseTemplate } from "./kidwise/meta";
+import { craftoraTemplate } from "./craftora/meta";
+import { skillforgeTemplate } from "./skillforge/meta";
+import { campuslyTemplate } from "./campusly/meta";
+import { masterlyTemplate } from "./masterly/meta";
 
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
@@ -239,6 +249,16 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   glowlabTemplate,
   toolhausTemplate,
   jewelisTemplate,
+  lectoraTemplate,
+  mentoraTemplate,
+  polyglotaTemplate,
+  codehausTemplate,
+  notelineTemplate,
+  kidwiseTemplate,
+  craftoraTemplate,
+  skillforgeTemplate,
+  campuslyTemplate,
+  masterlyTemplate,
 ];
 
 export const studioTemplateSeeds: ReadyWebsiteTemplateSeed[] =
