@@ -13,7 +13,6 @@ import BusinessChatPage from "./components/BusinessChatPage";
 import PublicVisualSiteRenderer from "./components/site-builder/public/PublicVisualSiteRenderer";
 
 import { useAuth } from "./context/AuthContext";
-import { useOnceLogger } from "./utils/useOnceLogger";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 import AdminWithdrawalsPage from "./pages/admin/AdminWithdrawalsPage";
 
@@ -610,9 +609,6 @@ export default function App() {
   const isPublicBusinessProfile = /^\/business\/[^/]+$/.test(
     location.pathname
   );
-
-  useOnceLogger("App render - user", user);
-  useOnceLogger("App render - loading", loading);
 
   useEffect(() => {
     preloadDashboardComponents();

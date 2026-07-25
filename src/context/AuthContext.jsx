@@ -713,8 +713,8 @@ export function AuthProvider({ children }) {
         if (refreshed) {
           setToken(refreshed);
         }
-      } catch (err) {
-        console.warn("Background token refresh failed:", err?.message || err);
+      } catch {
+        // Expected when the refresh cookie is missing/expired — next API call will re-auth
       }
     }, CHECK_MS);
 

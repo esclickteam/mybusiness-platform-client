@@ -38,7 +38,11 @@ export function isHardRefreshFailure(err) {
   const code = err?.code || err?.response?.data?.code;
   const message = err?.message || err?.response?.data?.message || "";
 
-  if (code === "NO_REFRESH_TOKEN" || code === "REFRESH_TOKEN_NOT_FOUND" || code === "REFRESH_TOKEN_INVALID") {
+  if (
+    code === "NO_REFRESH_TOKEN" ||
+    code === "REFRESH_TOKEN_NOT_FOUND" ||
+    code === "REFRESH_TOKEN_INVALID"
+  ) {
     return true;
   }
   if (message === "NO_REFRESH_TOKEN" || message === "REFRESH_REVOKED") return true;
@@ -126,16 +130,17 @@ export async function getValidAccessToken(options = {}) {
       return token || null;
     }
 
-    // Keep session alive — reuse valid token on any transient failure
+    // Hard failures: never hand sockets an expired token (retry storm)
+    if (isHardRefreshFailure(err)) {
+      return null;
+    }
+
+    // Transient failure: reuse cached token only while still valid
     if (token && !isAccessTokenExpired(token)) {
       return token;
     }
 
-    if (!isHardRefreshFailure(err)) {
-      console.warn("Failed to refresh access token:", err?.message || err);
-    }
-
-    return token || null;
+    return null;
   }
 }
 
