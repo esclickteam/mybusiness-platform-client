@@ -149,6 +149,17 @@ import { tapasoraTemplate } from "./tapasora/meta";
 import { spiceforgeTemplate } from "./spiceforge/meta";
 import { vineriaTemplate } from "./vineria/meta";
 import { streetbiteTemplate } from "./streetbite/meta";
+import { velvetineTemplate } from "./velvetine/meta";
+import { nailoraTemplate } from "./nailora/meta";
+import { blushlabTemplate } from "./blushlab/meta";
+import { silkbarTemplate } from "./silkbar/meta";
+import { lashoraTemplate } from "./lashora/meta";
+import { dermaraTemplate } from "./dermara/meta";
+import { waxelleTemplate } from "./waxelle/meta";
+import { glowhausTemplate } from "./glowhaus/meta";
+import { petaluxeTemplate } from "./petaluxe/meta";
+import { formellaTemplate } from "./formella/meta";
+
 import { bakoraTemplate } from "./bakora/meta";
 import { tacoflareTemplate } from "./tacoflare/meta";
 import { gelatixTemplate } from "./gelatix/meta";
@@ -312,6 +323,17 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   spiceforgeTemplate,
   vineriaTemplate,
   streetbiteTemplate,
+  velvetineTemplate,
+  nailoraTemplate,
+  blushlabTemplate,
+  silkbarTemplate,
+  lashoraTemplate,
+  dermaraTemplate,
+  waxelleTemplate,
+  glowhausTemplate,
+  petaluxeTemplate,
+  formellaTemplate,
+
   bakoraTemplate,
   tacoflareTemplate,
   gelatixTemplate,
