@@ -1185,7 +1185,7 @@ export default function WebsiteTemplatesPage() {
                                   }
                                   className="
                                     rounded-lg border border-[#111827] bg-[#111827]
-                                    px-3 py-2 text-xs font-bold text-black
+                                    px-3 py-2 text-xs font-bold text-white
                                     transition hover:bg-black active:scale-[0.98]
                                   "
                                 >

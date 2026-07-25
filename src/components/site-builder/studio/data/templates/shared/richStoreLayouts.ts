@@ -8,7 +8,19 @@ export type RichStoreLayoutId =
   | "toyArcade"
   | "chefAtelier"
   | "streetDrop"
-  | "aromaSalon";
+  | "aromaSalon"
+  | "runwayRail"
+  | "indigoStack"
+  | "lastBench"
+  | "courtDrop"
+  | "luxeVitrine"
+  | "roomShelf"
+  | "softFold"
+  | "cleanCabinet"
+  | "doseGrid"
+  | "strapStudio"
+  | "dialAtelier"
+  | "quietLounge";
 
 export const RICH_STORE_LAYOUT_BY_TEMPLATE: Record<string, RichStoreLayoutId> = {
   brewora: "roastBar",
@@ -21,6 +33,18 @@ export const RICH_STORE_LAYOUT_BY_TEMPLATE: Record<string, RichStoreLayoutId> = 
   panora: "chefAtelier",
   kickora: "streetDrop",
   scentora: "aromaSalon",
+  clothora: "runwayRail",
+  denimlab: "indigoStack",
+  soleora: "lastBench",
+  sneakhaus: "courtDrop",
+  gleamora: "luxeVitrine",
+  nestware: "roomShelf",
+  linenhaus: "softFold",
+  pharmora: "cleanCabinet",
+  vitara: "doseGrid",
+  bagora: "strapStudio",
+  watchora: "dialAtelier",
+  loungora: "quietLounge",
 };
 
 export function resolveRichStoreLayout(
