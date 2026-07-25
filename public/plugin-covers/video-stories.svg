@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <linearGradient id="bg-video-stories" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgb(238,172,248)"/>
+      <stop offset="45%" stop-color="rgb(247,214,251)"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg-video-stories)"/>
+  <circle cx="520" cy="80" r="90" fill="#D946EF" opacity="0.08"/>
+  <circle cx="100" cy="320" r="70" fill="#D946EF" opacity="0.06"/>
+  
+    <g filter="url(#shadow)">
+      <rect x="220" y="80" width="120" height="220" rx="16" fill="#1e293b"/>
+      <rect x="226" y="86" width="108" height="208" rx="12" fill="#fff"/>
+      <rect x="260" y="92" width="40" height="6" rx="3" fill="#e2e8f0"/>
+      
+    
+      <circle cx="270" cy="105" r="16" fill="none" stroke="#D946EF" stroke-width="2"/>
+      <circle cx="270" cy="105" r="12" fill="rgb(217,70,239)"/>
+    
+      <circle cx="295" cy="105" r="16" fill="none" stroke="#D946EF" stroke-width="2"/>
+      <circle cx="295" cy="105" r="12" fill="rgb(221,89,241)"/>
+    
+      <circle cx="320" cy="105" r="16" fill="none" stroke="#D946EF" stroke-width="2"/>
+      <circle cx="320" cy="105" r="12" fill="rgb(225,107,242)"/>
+    
+    <rect x="232" y="135" width="92" height="140" rx="8" fill="rgb(163,53,179)" opacity="0.6"/>
+    <polygon points="270,200 270,220 285,210" fill="#fff"/>
+  
+    </g>
+</svg>

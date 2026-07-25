@@ -12,6 +12,7 @@ import {
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
+import PluginCoverImage from "./PluginCoverImage";
 import {
   CATEGORY_LABELS,
   formatPluginPrice,
@@ -95,14 +96,14 @@ export default function SitePluginHelpModal({
             }}
           >
             <div className="flex items-start gap-5">
-              <div
-                className="grid h-24 w-24 shrink-0 place-items-center rounded-2xl text-white shadow-lg"
-                style={{
-                  background: `linear-gradient(135deg, ${accent}, ${accent}bb)`,
-                }}
-              >
-                <Icon size={44} strokeWidth={1.5} />
-              </div>
+              <PluginCoverImage
+                pluginKey={plugin.key}
+                pluginName={plugin.name}
+                accent={accent}
+                Icon={Icon}
+                className="h-24 w-24 shrink-0 rounded-2xl shadow-lg"
+                variant="hero"
+              />
 
               <div className="min-w-0 flex-1 pt-1">
                 <h1
@@ -166,26 +167,16 @@ export default function SitePluginHelpModal({
             </div>
           </div>
 
-          {/* Preview placeholder — CWS-style screenshot area */}
-          <div className="mx-6 mb-6 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-            <div
-              className="flex aspect-video items-center justify-center"
-              style={{
-                background: `linear-gradient(135deg, ${accent}08, ${accent}04)`,
-              }}
-            >
-              <div className="text-center">
-                <div
-                  className="mx-auto grid h-16 w-16 place-items-center rounded-xl text-white shadow-md"
-                  style={{ background: accent }}
-                >
-                  <Icon size={28} />
-                </div>
-                <p className="mt-3 text-xs font-medium text-slate-500">
-                  תצוגה מקדימה של {plugin.name}
-                </p>
-              </div>
-            </div>
+          {/* Cover preview */}
+          <div className="mx-6 mb-6 overflow-hidden rounded-xl border border-slate-200 shadow-sm">
+            <PluginCoverImage
+              pluginKey={plugin.key}
+              pluginName={plugin.name}
+              accent={accent}
+              Icon={Icon}
+              className="aspect-video w-full"
+              variant="detail"
+            />
           </div>
 
           {/* Description */}

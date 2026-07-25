@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" width="640" height="400">
+  <defs>
+    <linearGradient id="bg-exit-popup" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="rgb(248,171,171)"/>
+      <stop offset="45%" stop-color="rgb(251,214,214)"/>
+      <stop offset="100%" stop-color="#f8fafc"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#0f172a" flood-opacity="0.12"/>
+    </filter>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="20" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+  <rect width="640" height="400" fill="url(#bg-exit-popup)"/>
+  <circle cx="520" cy="80" r="90" fill="#EF4444" opacity="0.08"/>
+  <circle cx="100" cy="320" r="70" fill="#EF4444" opacity="0.06"/>
+  
+    <g filter="url(#shadow)">
+      <rect x="180" y="115" width="280" height="170" rx="10" fill="#fff"/>
+      <rect x="180" y="115" width="280" height="28" rx="10" fill="rgb(253,227,227)"/>
+      <rect x="180" y="133" width="280" height="10" fill="rgb(253,227,227)"/>
+      <circle cx="198" cy="129" r="5" fill="#FCA5A5"/>
+      <circle cx="214" cy="129" r="5" fill="#FCD34D"/>
+      <circle cx="230" cy="129" r="5" fill="#86EFAC"/>
+      <rect x="250" y="123" width="190" height="12" rx="6" fill="#fff" opacity="0.8"/>
+      
+    <rect x="210" y="160" width="230" height="110" rx="8" fill="rgb(254,240,240)" opacity="0.5"/>
+    <rect x="240" y="175" width="170" height="80" rx="10" fill="#fff" stroke="#EF4444" stroke-width="2" filter="url(#shadow)"/>
+    <rect x="255" y="190" width="140" height="10" rx="3" fill="#EF4444"/>
+    <rect x="255" y="210" width="100" height="8" rx="3" fill="#e2e8f0"/>
+    <rect x="255" y="230" width="70" height="18" rx="5" fill="#EF4444"/>
+  
+    </g>
+</svg>
