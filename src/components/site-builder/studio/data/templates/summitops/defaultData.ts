@@ -59,6 +59,8 @@ export const summitopsDefaultData = {
   galleryTwoImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1497215842964-222b430dc094?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "Evidence rail",
+  galleryTitle: "תמונות קצרות מתוך חדרי העבודה.",
   insightsEyebrow: "תובנות",
   insightsTitle: "נקודות מבט מהשטח.",
   insightOneTitle: "איך בונים תוכנית רבעונית שעובדת",

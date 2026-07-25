@@ -59,6 +59,8 @@ export const adspireDefaultData = {
   galleryTwoImage: "https://images.unsplash.com/photo-1475721027785-f74eccf877e2?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "Showreel cuts",
+  galleryTitle: "פריימים שמדליקים את הבריף.",
   insightsEyebrow: "תובנות",
   insightsTitle: "נקודות מבט מהשטח.",
   insightOneTitle: "איך בונים תוכנית רבעונית שעובדת",

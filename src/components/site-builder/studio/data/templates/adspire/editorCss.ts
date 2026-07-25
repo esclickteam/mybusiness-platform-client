@@ -41,8 +41,6 @@ export const adspireEditorCss = `
 [data-template-id="adspire-preview"] .ag-ken {
   animation: adspireKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes adspireFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }

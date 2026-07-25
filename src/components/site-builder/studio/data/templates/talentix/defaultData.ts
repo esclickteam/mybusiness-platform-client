@@ -59,6 +59,8 @@ export const talentixDefaultData = {
   galleryTwoImage: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1200&q=85",
   galleryThreeImage: "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?auto=format&fit=crop&w=1200&q=85",
   galleryFourImage: "https://images.unsplash.com/photo-1497366811353-6870744d04b2?auto=format&fit=crop&w=1200&q=85",
+  galleryEyebrow: "Talent Mosaic",
+  galleryTitle: "רגעים של אנשים, צוותים וחיבורים.",
   insightsEyebrow: "תובנות",
   insightsTitle: "נקודות מבט מהשטח.",
   insightOneTitle: "איך בונים תוכנית רבעונית שעובדת",

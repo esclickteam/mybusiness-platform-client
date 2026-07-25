@@ -41,8 +41,6 @@ export const brandforgeEditorCss = `
 [data-template-id="brandforge-preview"] .ag-ken {
   animation: brandforgeKen 18s ease-in-out infinite alternate;
 }
-  to { transform: translateX(50%); }
-}
 @keyframes brandforgeFloat {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-14px); }
