@@ -7,6 +7,9 @@ import {
   refreshAccessTokenOnce,
   isAccessTokenExpired,
   clearAccessToken,
+  shouldAttemptRefresh,
+  clearRefreshDead,
+  markRefreshDead,
 } from "../utils/tokenRefresh";
 import {
   clearLastDashboardRoute,
@@ -257,6 +260,7 @@ export function AuthProvider({ children }) {
     accessToken,
     { skipRedirect = false } = {}
   ) => {
+    clearRefreshDead();
     localStorage.setItem("token", accessToken);
     setAuthToken(accessToken);
     setToken(accessToken);
@@ -313,8 +317,7 @@ export function AuthProvider({ children }) {
 
       const { accessToken, user: loggedInUser, redirectUrl } = data;
 
-      console.log("RAW /auth/login response:", data);
-
+      clearRefreshDead();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
@@ -403,6 +406,7 @@ export function AuthProvider({ children }) {
 
       const { accessToken, user: staffUser } = data;
 
+      clearRefreshDead();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
@@ -474,6 +478,7 @@ export function AuthProvider({ children }) {
 
     // Explicit logout → next login lands on main dashboard
     clearLocalAuth({ clearDashboardRoute: true });
+    markRefreshDead();
 
     setToken(null);
     setUser(null);
@@ -515,8 +520,8 @@ export function AuthProvider({ children }) {
 
       let activeToken = token;
 
-      // Restore or refresh access token before loading the dashboard
-      if (!localStorage.getItem("impersonatedBy")) {
+      // Restore or refresh only when a prior session is likely (avoids 401 spam for guests)
+      if (!localStorage.getItem("impersonatedBy") && shouldAttemptRefresh()) {
         const shouldRefresh =
           !activeToken ||
           isAccessTokenExpired(activeToken, { skewMs: 30_000 });
@@ -544,12 +549,14 @@ export function AuthProvider({ children }) {
           setLoading(false);
           setInitialized(true);
 
-          tryRefreshWithRetries().then((refreshed) => {
-            if (refreshed && !cancelled) {
-              setToken(refreshed);
-              refreshUser().catch(() => {});
-            }
-          });
+          if (shouldAttemptRefresh()) {
+            tryRefreshWithRetries().then((refreshed) => {
+              if (refreshed && !cancelled) {
+                setToken(refreshed);
+                refreshUser().catch(() => {});
+              }
+            });
+          }
           return;
         }
 
@@ -704,6 +711,8 @@ export function AuthProvider({ children }) {
 
     const timer = setInterval(async () => {
       try {
+        if (!shouldAttemptRefresh()) return;
+
         const current = localStorage.getItem("token");
         if (current && !isAccessTokenExpired(current, { skewMs: REFRESH_SKEW_MS })) {
           return;
@@ -714,7 +723,7 @@ export function AuthProvider({ children }) {
           setToken(refreshed);
         }
       } catch {
-        // Expected when the refresh cookie is missing/expired — next API call will re-auth
+        // Expected when the refresh cookie is missing/expired
       }
     }, CHECK_MS);
 

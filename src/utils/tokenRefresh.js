@@ -4,8 +4,9 @@ import jwtDecode from "jwt-decode";
 const isProd = import.meta.env.MODE === "production";
 const BASE_URL = isProd ? "https://api.bizuply.com/api" : "/api";
 
-let ongoingRefresh = null;
+const REFRESH_DEAD_KEY = "bizuply:refreshDead";
 
+let ongoingRefresh = null;
 let authHeaderSetter = null;
 
 /**
@@ -18,6 +19,7 @@ export function registerAuthHeaderSetter(setter) {
 function applyAccessToken(accessToken) {
   if (!accessToken) return;
   localStorage.setItem("token", accessToken);
+  clearRefreshDead();
   if (typeof authHeaderSetter === "function") {
     authHeaderSetter(accessToken);
   }
@@ -50,6 +52,49 @@ export function isHardRefreshFailure(err) {
   return false;
 }
 
+/** True when a prior refresh already proved there is no usable session cookie. */
+export function isRefreshDead() {
+  try {
+    return sessionStorage.getItem(REFRESH_DEAD_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function markRefreshDead() {
+  try {
+    sessionStorage.setItem(REFRESH_DEAD_KEY, "1");
+  } catch {
+    // ignore
+  }
+}
+
+export function clearRefreshDead() {
+  try {
+    sessionStorage.removeItem(REFRESH_DEAD_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Only call /auth/refresh-token when something suggests a session may exist.
+ * Anonymous first visits must not hit the endpoint (browser logs every 401 in red).
+ */
+export function shouldAttemptRefresh() {
+  if (isRefreshDead()) return false;
+  if (localStorage.getItem("impersonatedBy")) return false;
+  if (localStorage.getItem("token")) return true;
+  if (localStorage.getItem("businessDetails")) return true;
+  return false;
+}
+
+function throwHardRefreshError(code) {
+  const e = new Error(code === "NO_REFRESH_TOKEN" ? "NO_REFRESH_TOKEN" : "REFRESH_REVOKED");
+  e.code = code;
+  throw e;
+}
+
 /**
  * Single-flight refresh via httpOnly cookie.
  * Safe to call from Axios interceptor and AuthContext.
@@ -59,6 +104,10 @@ export async function refreshAccessTokenOnce() {
 
   if (isImpersonating) {
     throw new Error("Refresh disabled during impersonation");
+  }
+
+  if (isRefreshDead()) {
+    throwHardRefreshError("NO_REFRESH_TOKEN");
   }
 
   if (!ongoingRefresh) {
@@ -85,9 +134,9 @@ export async function refreshAccessTokenOnce() {
           status === 401 &&
           (code === "NO_REFRESH_TOKEN" || message === "No refresh token")
         ) {
-          const e = new Error("NO_REFRESH_TOKEN");
-          e.code = "NO_REFRESH_TOKEN";
-          throw e;
+          markRefreshDead();
+          clearAccessToken();
+          throwHardRefreshError("NO_REFRESH_TOKEN");
         }
 
         if (
@@ -95,9 +144,9 @@ export async function refreshAccessTokenOnce() {
           (code === "REFRESH_TOKEN_NOT_FOUND" ||
             code === "REFRESH_TOKEN_INVALID")
         ) {
-          const e = new Error("REFRESH_REVOKED");
-          e.code = code;
-          throw e;
+          markRefreshDead();
+          clearAccessToken();
+          throwHardRefreshError(code);
         }
 
         throw err;
@@ -123,6 +172,11 @@ export async function getValidAccessToken(options = {}) {
     return token;
   }
 
+  // No session signal / known-dead cookie → never hit the network (avoids red 401)
+  if (!shouldAttemptRefresh()) {
+    return token && !isAccessTokenExpired(token) ? token : null;
+  }
+
   try {
     return await refreshAccessTokenOnce();
   } catch (err) {
@@ -145,7 +199,7 @@ export async function getValidAccessToken(options = {}) {
 }
 
 /**
- * Clear access token from storage. Call only from explicit logout.
+ * Clear access token from storage. Call only from explicit logout / hard refresh miss.
  */
 export function clearAccessToken() {
   localStorage.removeItem("token");
