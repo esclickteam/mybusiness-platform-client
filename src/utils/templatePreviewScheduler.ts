@@ -5,8 +5,10 @@ const activated = new Set<string>();
 const queue: string[] = [];
 let pumping = false;
 
-const BATCH_SIZE = 4;
-const BATCH_DELAY_MS = 24;
+/** Keep gallery light: only a few live cards at once. */
+const BATCH_SIZE = 2;
+const BATCH_DELAY_MS = 48;
+const MAX_ACTIVE = 8;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
@@ -23,6 +25,11 @@ function pump() {
   pumping = true;
 
   const step = () => {
+    while (activated.size >= MAX_ACTIVE && queue.length) {
+      // Drop oldest queued keys that are not yet active — IO will re-request.
+      queue.shift();
+    }
+
     if (!queue.length) {
       pumping = false;
       return;
@@ -31,6 +38,10 @@ function pump() {
     const batch = queue.splice(0, BATCH_SIZE);
     for (const key of batch) {
       if (activated.has(key)) continue;
+      if (activated.size >= MAX_ACTIVE) {
+        queue.unshift(key);
+        break;
+      }
       activated.add(key);
       notify(key, true);
     }
@@ -46,8 +57,7 @@ function pump() {
 }
 
 /**
- * Webflow-style gallery loading: schedule ALL card previews to mount in
- * quick batches on page open (templates + my sites).
+ * Schedule a gallery card preview mount (viewport-driven callers).
  */
 export function scheduleGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
@@ -86,10 +96,18 @@ export function scheduleGalleryPreview(keyValue: string | null | undefined) {
   };
 }
 
+/** Release a card when it leaves the viewport so other cards can mount. */
+export function releaseGalleryPreview(keyValue: string | null | undefined) {
+  const key = normalizeKey(keyValue);
+  if (!key || !activated.has(key)) return;
+  activated.delete(key);
+  notify(key, false);
+}
+
 export function prefetchGalleryPreviewKeys(
   keys: Array<string | null | undefined>,
 ) {
-  keys.forEach((key) => {
+  keys.slice(0, MAX_ACTIVE).forEach((key) => {
     scheduleGalleryPreview(key);
   });
 }
