@@ -3,24 +3,33 @@ import React from "react";
 export default function PulsefitThumbnail() {
   return (
     <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#121212", color: "#F4F4F4" }}>
-      <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(circle at 20% 15%, #C8FF3D55, transparent 42%)" }} />
+      <div className="absolute inset-0 bg-gradient-to-l from-black via-[#121212cc] to-[#C8FF3D22]" />
       <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div className="grid h-9 w-9 place-items-center text-xs font-bold" style={{ background: "#C8FF3D", color: "#0A0A0A", borderRadius: 0 }}>P</div>
-          <span className="text-sm font-bold" style={{ fontFamily: "\"Oswald\"" }}>Pulsefit</span>
+          <div className="grid h-8 w-8 place-items-center text-[10px] font-black" style={{ background: "#C8FF3D", color: "#000" }}>PF</div>
+          <span className="text-base font-bold uppercase" style={{ fontFamily: "\"Oswald\", sans-serif" }}>Pulsefit</span>
         </div>
-        <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "#C8FF3D" }}>אימון אישי</span>
+        <span className="px-3 py-2 text-[9px] font-black uppercase tracking-[0.18em]" style={{ background: "#C8FF3D", color: "#000" }}>התחלה</span>
       </div>
-      <div className="relative z-10 mt-10">
-        <h3 className="max-w-[230px] text-2xl font-bold leading-tight" style={{ fontFamily: "\"Oswald\"" }}>כוח. משמעת.
-תוצאה.</h3>
-        <div className="mt-5 h-px w-14" style={{ background: "#C8FF3D" }} />
-        <div className="mt-6 grid grid-cols-3 gap-2">
-          {["-12kg", "300+", "5★"].map((n) => (
-            <div key={n} className="border py-2 text-center text-xs font-bold" style={{ borderColor: "#C8FF3D44", color: "#C8FF3D", borderRadius: 0 }}>{n}</div>
-          ))}
-        </div>
+      <div className="relative z-10 mt-9 flex gap-3">
+        <div className="h-20 w-3 -skew-x-12" style={{ background: "#C8FF3D" }} />
+        <h3 className="text-4xl font-bold uppercase leading-[0.86]" style={{ fontFamily: "\"Oswald\", sans-serif" }}>
+          תגיעו.
+          <br />
+          תדלקו.
+          <br />
+          תפרצו.
+        </h3>
       </div>
+      <div className="relative z-10 mt-7 space-y-2">
+        {["חיטוב 90", "Build Strong", "Hybrid Engine"].map((item, index) => (
+          <div key={item} className="flex items-center justify-between border px-3 py-2 text-[10px] font-black uppercase" style={{ borderColor: "#C8FF3D", color: index === 1 ? "#000" : "#C8FF3D", background: index === 1 ? "#C8FF3D" : "transparent" }}>
+            <span>{item}</span>
+            <span>0{index + 1}</span>
+          </div>
+        ))}
+      </div>
+      <div className="absolute bottom-4 left-5 text-3xl font-bold" style={{ color: "#C8FF3D", fontFamily: "\"Oswald\", sans-serif" }}>-12KG</div>
     </div>
   );
 }
