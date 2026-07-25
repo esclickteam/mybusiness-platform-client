@@ -935,11 +935,12 @@ export default function ChatBot({
             <button
               type="button"
               onClick={openHistoryView}
-              className="flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-white/20"
+              className="inline-flex h-8 items-center gap-1 rounded-lg px-2 text-[11px] font-bold transition hover:bg-white/20"
               aria-label={historyAria}
               title={openHistoryLabel}
             >
-              <History size={18} />
+              <History size={16} />
+              <span className="hidden sm:inline">{openHistoryLabel}</span>
             </button>
           )}
           <button

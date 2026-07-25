@@ -840,10 +840,10 @@ export default function AdminSupportChat() {
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}
-                      className="inline-flex items-center gap-1 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800"
+                      className="inline-flex items-center gap-1.5 rounded-xl bg-violet-700 px-3.5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-violet-800"
                     >
-                      <History size={14} />
-                      היסטוריית לקוח
+                      <History size={15} />
+                      היסטוריית שיחות של הלקוח
                     </button>
                     {selected.status === "waiting" && (
                       <button
