@@ -255,9 +255,28 @@ export default function FacebookStyleNotifications() {
   function ingestRealtimeNotification(data?: SystemNotification | null) {
     if (!data || typeof data !== "object") return;
 
-    const unified = sanitizeUnifiedNotification(mapSystemNotification(data));
+    const mapped = sanitizeUnifiedNotification(mapSystemNotification(data));
+    if (!mapped.id) return;
 
-    if (!unified.id) return;
+    const isLeadRow =
+      Boolean(mapped.leadId) &&
+      (mapped.kind === "new_lead" ||
+        mapped.type === "new_lead" ||
+        mapped.type === "lead");
+
+    // Panel uses stable synthetic ids for leads (`lead-${leadId}`).
+    const unified = isLeadRow
+      ? {
+          ...mapped,
+          id: `lead-${mapped.leadId}`,
+          kind: "new_lead" as NotificationKind,
+        }
+      : mapped;
+
+    const alreadySeenLead =
+      isLeadRow &&
+      Boolean(unified.leadId) &&
+      getStoredArray(seenLeadsKey).includes(String(unified.leadId));
 
     /*
       Decide whether to pop a toast BEFORE calling setState.
@@ -269,8 +288,38 @@ export default function FacebookStyleNotifications() {
       unread message must still toast even though the id already exists.
     */
     const existing = notificationsRef.current.find(
-      (item) => item.id === unified.id
+      (item) =>
+        item.id === unified.id ||
+        (isLeadRow &&
+          item.leadId &&
+          String(item.leadId) === String(unified.leadId))
     );
+
+    // Never re-toast a lead the user already dismissed/read.
+    if (alreadySeenLead || existing?.read) {
+      setNotifications((prev) => {
+        const found = prev.find(
+          (item) =>
+            item.id === unified.id ||
+            (unified.leadId &&
+              item.leadId &&
+              String(item.leadId) === String(unified.leadId))
+        );
+        if (!found) {
+          return [
+            { ...unified, read: true },
+            ...prev,
+          ].sort(
+            (a, b) =>
+              new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+          );
+        }
+        return prev.map((item) =>
+          item.id === found.id ? { ...item, ...unified, read: true } : item
+        );
+      });
+      return;
+    }
 
     const isNewer = existing
       ? new Date(unified.timestamp).getTime() >
@@ -1011,6 +1060,7 @@ export default function FacebookStyleNotifications() {
       ]);
 
       const map = new Map<string, UnifiedNotification>();
+      const seenLeadIds = getStoredArray(seenLeadsKey);
 
       [...newLeads, ...dueTasks, ...regular].forEach((item) => {
         // One Meta/CRM lead = one notification row (DB type "lead" + synthetic "new_lead").
@@ -1020,9 +1070,32 @@ export default function FacebookStyleNotifications() {
             item.type === "new_lead" ||
             item.type === "lead");
         const key = isLeadRow ? `lead-${item.leadId}` : item.id;
+        if (!key) return;
 
-        if (!key || map.has(key)) return;
-        map.set(key, { ...item, id: key, kind: isLeadRow ? "new_lead" : item.kind });
+        const seenLocally =
+          isLeadRow &&
+          item.leadId &&
+          seenLeadIds.includes(String(item.leadId));
+
+        const nextItem: UnifiedNotification = {
+          ...item,
+          id: key,
+          kind: isLeadRow ? "new_lead" : item.kind,
+          // Local dismiss must win over a still-unread DB row from polling.
+          read: Boolean(item.read) || Boolean(seenLocally),
+        };
+
+        const existing = map.get(key);
+        if (!existing) {
+          map.set(key, nextItem);
+          return;
+        }
+
+        map.set(key, {
+          ...existing,
+          ...nextItem,
+          read: Boolean(existing.read) || Boolean(nextItem.read),
+        });
       });
 
       const merged = Array.from(map.values())
@@ -1094,13 +1167,29 @@ export default function FacebookStyleNotifications() {
       }
 
       if (notification.kind === "new_lead" && notification.leadId) {
+        const leadId = String(notification.leadId);
         const seenIds = getStoredArray(seenLeadsKey);
-        setStoredArray(seenLeadsKey, [...seenIds, notification.leadId]);
+        if (!seenIds.includes(leadId)) {
+          setStoredArray(seenLeadsKey, [...seenIds, leadId]);
+        }
+
+        // Panel id is synthetic (`lead-${id}`). Persist read on the DB lead row
+        // so the 60s poll cannot resurrect it as unread.
+        if (isValidMongoId(leadId)) {
+          await API.put(
+            `/business/my/notifications/by-lead/${leadId}/read`
+          ).catch(() => {});
+        }
       }
 
       setNotifications((prev) =>
         prev.map((item) =>
-          item.id === notification.id ? { ...item, read: true } : item
+          item.id === notification.id ||
+          (notification.leadId &&
+            item.leadId &&
+            String(item.leadId) === String(notification.leadId))
+            ? { ...item, read: true }
+            : item
         )
       );
     } catch (err) {
