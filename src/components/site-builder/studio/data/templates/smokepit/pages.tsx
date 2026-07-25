@@ -492,7 +492,7 @@ function SmokeFaqBlock({ data }: { data: Record<string, any> }) {
 function Footer({ data }: { data: Record<string, any> }) {
   return (
     <footer className="border-t px-5 py-8 lg:px-8" style={{ borderColor: "rgba(243,232,216,0.12)" }}>
-      <div className="mx-auto h-px max-w-7xl" style={{ background: f"linear-gradient(90deg, transparent, #ea580c, transparent)" }} />
+      <div className="mx-auto h-px max-w-7xl" style={{ background: "linear-gradient(90deg, transparent, #ea580c, transparent)" }} />
       <div className="mx-auto mt-6 flex max-w-7xl justify-between text-sm" style={{ color: "#a89078" }}>
         <span className="tpl-display text-lg font-bold" style={{ color: "#f3e8d8" }}>{v(data, "brandName")}</span>
         <span>{v(data, "email")} · {v(data, "phone")}</span>
