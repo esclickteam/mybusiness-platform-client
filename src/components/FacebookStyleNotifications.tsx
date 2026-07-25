@@ -842,12 +842,15 @@ export default function FacebookStyleNotifications() {
   function mapSystemNotification(item: SystemNotification): UnifiedNotification {
     const source = flattenSystemNotification(item);
 
+    const sourceType = String(source.type || item.type || "");
     const kind: NotificationKind =
-      item.kind === "task_due" ||
-      item.kind === "new_lead" ||
-      item.kind === "regular"
-        ? item.kind
-        : "regular";
+      item.kind === "task_due"
+        ? "task_due"
+        : item.kind === "new_lead" ||
+            sourceType === "new_lead" ||
+            sourceType === "lead"
+          ? "new_lead"
+          : "regular";
 
     const conversationId = String(
       source.conversationId || source.threadId || ""
@@ -1010,14 +1013,16 @@ export default function FacebookStyleNotifications() {
       const map = new Map<string, UnifiedNotification>();
 
       [...newLeads, ...dueTasks, ...regular].forEach((item) => {
-        // One Meta/CRM lead = one notification row.
-        const key =
-          (item.kind === "new_lead" || item.type === "new_lead") && item.leadId
-            ? `lead-${item.leadId}`
-            : item.id;
+        // One Meta/CRM lead = one notification row (DB type "lead" + synthetic "new_lead").
+        const isLeadRow =
+          Boolean(item.leadId) &&
+          (item.kind === "new_lead" ||
+            item.type === "new_lead" ||
+            item.type === "lead");
+        const key = isLeadRow ? `lead-${item.leadId}` : item.id;
 
         if (!key || map.has(key)) return;
-        map.set(key, { ...item, id: key });
+        map.set(key, { ...item, id: key, kind: isLeadRow ? "new_lead" : item.kind });
       });
 
       const merged = Array.from(map.values())
