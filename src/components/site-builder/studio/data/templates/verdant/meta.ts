@@ -14,14 +14,14 @@ import { verdantSchema } from "./schema";
 import { verdantDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#B8956B",
-  secondary: "#1C1C1C",
-  accent: "#D4AF7A",
-  background: "#F7F3ED",
-  surface: "#FFFFFF",
-  text: "#1C1C1C",
-  muted: "#6B6560",
-  dark: "#0F0E0C",
+  primary: "#7A9A78",
+  secondary: "#0E1210",
+  accent: "#5C7A5E",
+  background: "#0E1210",
+  surface: "#161C19",
+  text: "#F2EFE8",
+  muted: "#9A958C",
+  dark: "#080A09",
 };
 
 const blocks = [

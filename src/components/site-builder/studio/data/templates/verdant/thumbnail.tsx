@@ -4,36 +4,30 @@ export default function VerdantThumbnail() {
   return (
     <div
       dir="rtl"
-      className="relative h-full min-h-[260px] w-full overflow-hidden rounded-3xl p-5"
-      style={{ background: "#F7F3ED", color: "#1C1C1C" }}
+      className="relative h-full min-h-[260px] w-full overflow-hidden bg-[#0e1210] p-5 text-[#f2efe8]"
     >
-      <div className="flex items-center justify-between">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(122,154,120,0.22),transparent_45%)]" />
+      <div className="relative z-10 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <div
-            className="grid h-9 w-9 place-items-center rounded-xl text-sm font-bold text-white"
-            style={{ background: "#B8956B" }}
-          >
+          <div className="grid h-9 w-9 place-items-center border border-[#7a9a78] text-xs font-semibold tracking-[0.2em] text-[#7a9a78]">
             V
           </div>
-          <span className="text-sm font-bold">Verdant</span>
+          <span className="font-serif text-lg font-semibold">Verdant</span>
         </div>
-        <span
-          className="rounded-full px-3 py-1 text-[10px] font-semibold"
-          style={{ background: "#B8956B22", color: "#B8956B" }}
-        >
-          נדל״ן יוקרה
-        </span>
+        <span className="text-[10px] uppercase tracking-[0.22em] text-[#7a9a78]">נדל״ן יוקרה</span>
       </div>
-      <div className="mt-8 text-center">
-        <p
-          className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em]"
-          style={{ color: "#B8956B" }}
-        >
-          נדל״ן יוקרה
-        </p>
-        <h3 className="mx-auto max-w-[220px] text-xl font-bold leading-tight">
-          הבית שמחכה לכם כבר כאן.
+      <div className="relative z-10 mt-10">
+        <h3 className="max-w-[220px] font-serif text-3xl font-semibold leading-[1.05]">
+          בתים שנבחרו בדיוק כמוכם.
         </h3>
+        <div className="mt-5 h-px w-16 bg-[#7a9a78]" />
+        <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+          {["₪2.4B", "340+", "15"].map((stat) => (
+            <div key={stat} className="border border-white/10 py-2 text-sm font-semibold text-[#7a9a78]">
+              {stat}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

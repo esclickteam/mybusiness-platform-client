@@ -7,7 +7,7 @@ export default function VerdantPreview() {
       dir="rtl"
       data-template-id="verdant-preview"
       className="min-h-screen w-full"
-      style={{ background: "#F7F3ED", overflowX: "hidden" }}
+      style={{ background: "#0e1210", overflowX: "hidden" }}
     >
       <VerdantPages initialPage="home" mode="preview" />
     </div>
