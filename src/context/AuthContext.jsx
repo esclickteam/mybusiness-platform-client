@@ -539,30 +539,32 @@ export function AuthProvider({ children }) {
       }
 
       if (!activeToken) {
-        const cachedRaw = localStorage.getItem("businessDetails");
-        if (cachedRaw && !cancelled) {
-          try {
-            setUser(normalizeUser(JSON.parse(cachedRaw)));
-          } catch {
-            localStorage.removeItem("businessDetails");
+        // Cached profile without a usable access/refresh session = zombie login.
+        // Clear it instead of rendering a dashboard that 401s on every API call.
+        if (shouldAttemptRefresh()) {
+          const recovered = await tryRefreshWithRetries();
+          if (recovered && !cancelled) {
+            activeToken = recovered;
+            setToken(recovered);
+          } else if (!cancelled) {
+            clearLocalAuth();
+            markRefreshDead();
+            finishLoggedOut();
+            return;
+          } else {
+            return;
           }
-          setLoading(false);
-          setInitialized(true);
-
-          if (shouldAttemptRefresh()) {
-            tryRefreshWithRetries().then((refreshed) => {
-              if (refreshed && !cancelled) {
-                setToken(refreshed);
-                refreshUser().catch(() => {});
-              }
-            });
+        } else {
+          if (!cancelled) {
+            clearLocalAuth();
+            finishLoggedOut();
           }
           return;
         }
+      }
 
-        if (!cancelled) {
-          finishLoggedOut();
-        }
+      if (!activeToken) {
+        if (!cancelled) finishLoggedOut();
         return;
       }
 

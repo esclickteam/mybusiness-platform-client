@@ -136,6 +136,11 @@ export async function refreshAccessTokenOnce() {
         ) {
           markRefreshDead();
           clearAccessToken();
+          try {
+            localStorage.removeItem("businessDetails");
+          } catch {
+            /* ignore */
+          }
           throwHardRefreshError("NO_REFRESH_TOKEN");
         }
 
@@ -146,6 +151,11 @@ export async function refreshAccessTokenOnce() {
         ) {
           markRefreshDead();
           clearAccessToken();
+          try {
+            localStorage.removeItem("businessDetails");
+          } catch {
+            /* ignore */
+          }
           throwHardRefreshError(code);
         }
 

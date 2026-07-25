@@ -3,8 +3,10 @@ import {
   getValidAccessToken,
   isAccessTokenExpired,
   isHardRefreshFailure,
+  isRefreshDead,
   registerAuthHeaderSetter,
   refreshAccessTokenOnce,
+  shouldAttemptRefresh,
 } from "./utils/tokenRefresh";
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 
@@ -118,7 +120,9 @@ API.interceptors.response.use(
       config &&
       !isRefreshEndpoint(config.url) &&
       !isLoginOrRegisterEndpoint(config.url) &&
-      !config._retry
+      !config._retry &&
+      !isRefreshDead() &&
+      shouldAttemptRefresh()
     ) {
       config._retry = true;
 

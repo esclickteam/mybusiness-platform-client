@@ -49,6 +49,17 @@ export function clearSupportSession() {
   }
 }
 
+function isJwtExpired(token) {
+  if (!token || typeof token !== "string") return true;
+  try {
+    const payload = JSON.parse(atob(token.split(".")[1] || ""));
+    if (!payload?.exp) return false;
+    return Date.now() >= payload.exp * 1000;
+  } catch {
+    return true;
+  }
+}
+
 async function supportFetch(path, { method = "GET", body, token } = {}) {
   const visitorId = getSupportVisitorId();
   const headers = {
@@ -56,7 +67,13 @@ async function supportFetch(path, { method = "GET", body, token } = {}) {
     "X-Support-Visitor-Id": visitorId,
   };
 
-  const authToken = token || localStorage.getItem("token");
+  // Prefer explicit guest/session token. Never send an expired dashboard access token.
+  const authToken =
+    token ||
+    (() => {
+      const stored = localStorage.getItem("token");
+      return stored && !isJwtExpired(stored) ? stored : null;
+    })();
   if (authToken) {
     headers.Authorization = `Bearer ${authToken}`;
   }
