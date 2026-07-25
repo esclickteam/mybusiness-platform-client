@@ -8,7 +8,6 @@ import {
   ChevronDown,
   Eye,
   GraduationCap,
-  HeartPulse,
   Home,
   LayoutTemplate,
   Paintbrush,
@@ -17,7 +16,6 @@ import {
   Sparkles,
   Utensils,
   Wand2,
-  Wrench,
 } from "lucide-react";
 
 import {
@@ -109,10 +107,8 @@ type TemplateCategoryId =
   | "portfolio"
   | "store"
   | "food"
-  | "medical"
   | "education"
-  | "beauty"
-  | "service";
+  | "beauty";
 
 type TemplateCategory = {
   id: TemplateCategoryId;
@@ -132,10 +128,8 @@ const templateCategoryDefs: TemplateCategory[] = [
   { id: "portfolio", icon: LayoutTemplate },
   { id: "store", icon: ShoppingBag },
   { id: "food", icon: Utensils },
-  { id: "medical", icon: HeartPulse },
   { id: "education", icon: GraduationCap },
   { id: "beauty", icon: Sparkles },
-  { id: "service", icon: Wrench },
 ];
 
 function getToken() {
@@ -232,16 +226,6 @@ function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
   }
 
   if (
-    rawCategory === "medical" ||
-    rawLabel.includes("רפואה") ||
-    rawLabel.includes("בריאות") ||
-    rawLabel.includes("medical") ||
-    rawLabel.includes("health")
-  ) {
-    return "medical";
-  }
-
-  if (
     rawCategory === "education" ||
     rawLabel.includes("חינוך") ||
     rawLabel.includes("קורס") ||
@@ -257,15 +241,6 @@ function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
     rawLabel.includes("beauty")
   ) {
     return "beauty";
-  }
-
-  if (
-    rawCategory === "service" ||
-    rawLabel.includes("שירותים לבית") ||
-    rawLabel.includes("לבית") ||
-    rawLabel.includes("home service")
-  ) {
-    return "service";
   }
 
   return "business";
@@ -590,10 +565,8 @@ export default function WebsiteTemplatesPage() {
       portfolio: 0,
       store: 0,
       food: 0,
-      medical: 0,
       education: 0,
       beauty: 0,
-      service: 0,
     };
 
     templates.forEach((template) => {
