@@ -458,6 +458,96 @@ export type DomainRegisterResult = {
   errorType?: string;
 };
 
+export type DomainYears = 1 | 2 | 3 | 5 | 10;
+
+export type DomainQuoteResult = {
+  success: boolean;
+  registrationId?: string;
+  domain?: string;
+  years: number;
+  periodMonths?: number;
+  price: number;
+  currency: string;
+  options?: number[];
+  error?: string;
+};
+
+export type DomainCheckoutResult = {
+  success: boolean;
+  alreadyRegistered?: boolean;
+  paymentUrl?: string;
+  lowProfileCode?: string;
+  registrationId?: string;
+  domain?: string;
+  years?: number;
+  price?: number;
+  currency?: string;
+  status?: DomainRegistrationStatus;
+  error?: string;
+};
+
+export async function quoteDomainRegistration(payload: {
+  registrationId: string;
+  years: DomainYears;
+}): Promise<DomainQuoteResult> {
+  const registrationId = String(payload.registrationId || "").trim();
+  if (!registrationId) {
+    throw new Error("חסר מזהה רישום");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/realtime-register/quote`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify({
+        registrationId,
+        years: payload.years,
+      }),
+    },
+  );
+
+  const data = await readJson<DomainQuoteResult>(response);
+  if (!response.ok || !data?.success) {
+    throw new Error(
+      getApiErrorMessage(response, data, "קבלת מחיר הדומיין נכשלה"),
+    );
+  }
+  return data;
+}
+
+export async function checkoutDomainRegistration(payload: {
+  registrationId: string;
+  years: DomainYears;
+}): Promise<DomainCheckoutResult> {
+  const registrationId = String(payload.registrationId || "").trim();
+  if (!registrationId) {
+    throw new Error("חסר מזהה רישום");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/realtime-register/checkout`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify({
+        registrationId,
+        years: payload.years,
+      }),
+    },
+  );
+
+  const data = await readJson<DomainCheckoutResult>(response);
+  if (!response.ok || !data?.success) {
+    throw new Error(
+      getApiErrorMessage(response, data, "יצירת תשלום לדומיין נכשלה"),
+    );
+  }
+  return data;
+}
+
 export async function registerDomain(
   payload: DomainRegisterPayload,
 ): Promise<DomainRegisterResult> {
@@ -479,7 +569,6 @@ export async function registerDomain(
       headers: buildHeaders(true),
       body: JSON.stringify({
         registrationId,
-        period: Math.max(1, Number(payload.period) || 12),
       }),
     },
   );
