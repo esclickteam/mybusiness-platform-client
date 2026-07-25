@@ -41,15 +41,14 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
       }
       const newToken = await refreshAccessToken({ force: true });
       if (!newToken) {
-        if (logout) logout();
+        console.warn("Token refresh failed — will retry on reconnect");
         return;
       }
       socketRef.current.auth.token = newToken;
       // במקום disconnect/connect, משתמשים ב-emit authenticate
       socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
         if (!ack?.ok) {
-          console.warn("❌ Authentication failed after token refresh");
-          if (logout) logout();
+          console.warn("Authentication failed after token refresh");
         } else {
           console.log("✅ Authentication succeeded after token refresh");
         }
@@ -66,7 +65,7 @@ export default function useDashboardSocket({ token, businessId, refreshAccessTok
         console.log("🔌 Disconnected dashboard socket");
       }
     };
-  }, [token, businessId, refreshAccessToken, logout]);
+  }, [token, businessId, refreshAccessToken]);
 
   return stats;
 }

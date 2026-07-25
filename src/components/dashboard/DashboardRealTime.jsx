@@ -6,7 +6,7 @@ import { useAuth } from "../context/AuthContext";
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
 const DashboardRealTime = ({ businessId }) => {
-  const { refreshAccessToken, logout } = useAuth();
+  const { refreshAccessToken } = useAuth();
   const [stats, setStats] = useState(null);
   const socketRef = useRef(null);
 
@@ -21,8 +21,7 @@ const DashboardRealTime = ({ businessId }) => {
     async function setupSocket() {
       const token = await refreshAccessToken();
       if (!token) {
-        console.warn("No valid token, logging out");
-        logout();
+        console.warn("No valid token yet — skipping socket setup");
         return;
       }
 
@@ -66,14 +65,13 @@ const DashboardRealTime = ({ businessId }) => {
         console.log("Token expired, refreshing token...");
         const newToken = await refreshAccessToken({ force: true });
         if (!newToken) {
-          logout();
+          console.warn("Token refresh failed — will retry on reconnect");
           return;
         }
         socket.auth.token = newToken;
         socket.emit("authenticate", { token: newToken }, (ack) => {
           if (!ack?.ok) {
             console.warn("Authentication failed after token refresh");
-            logout();
           } else {
             console.log("Authentication succeeded after token refresh");
           }
@@ -94,7 +92,7 @@ const DashboardRealTime = ({ businessId }) => {
         socketRef.current = null;
       }
     };
-  }, [businessId, refreshAccessToken, logout]);
+  }, [businessId, refreshAccessToken]);
 
   return <LineChart stats={stats} />;
 };

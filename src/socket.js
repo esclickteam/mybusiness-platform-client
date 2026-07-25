@@ -25,7 +25,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   // Ensure valid access token
   const token = await getValidAccessToken();
   if (!token) {
-    onLogout?.();
+    console.warn("[Socket] No access token yet — skipping connection");
     return null;
   }
   currentToken = token;
@@ -35,7 +35,6 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
   const needBiz = ["business", "business-dashboard"];
   if (needBiz.includes(role) && !businessId) {
     console.warn("[Socket] Missing businessId for role:", role);
-    onLogout?.();
     return null;
   }
 
@@ -72,8 +71,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
       try {
         const newToken = await getValidAccessToken({ force: true });
         if (!newToken) {
-          console.warn("[Socket] Token refresh failed → logging out");
-          onLogout?.();
+          console.warn("[Socket] Token refresh failed — will retry on next event");
           return;
         }
 
@@ -89,8 +87,7 @@ export async function createSocket(getValidAccessToken, onLogout, businessId = n
 
         if (!socketInstance.connected) socketInstance.connect();
       } catch (err) {
-        console.error("[Socket] Token refresh error:", err);
-        onLogout?.();
+        console.warn("[Socket] Token refresh error:", err?.message || err);
       }
     };
 

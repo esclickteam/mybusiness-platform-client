@@ -8,7 +8,7 @@ import createSocket from "../socket";
 
 export default function BusinessChatWrapper() {
   const { businessId: routeBusinessId } = useParams();
-  const { user, getValidAccessToken, logout } = useAuth();
+  const { user, getValidAccessToken } = useAuth();
   const businessId = user?.businessId || routeBusinessId;
 
   const [convos, setConvos] = useState([]);
@@ -27,12 +27,12 @@ export default function BusinessChatWrapper() {
     async function setupSocket() {
       const token = await getValidAccessToken();
       if (!token) {
-        logout();
+        console.warn("No valid token yet — skipping chat socket");
         return;
       }
 
       // Here we send the getValidAccessToken function, not the token itself!
-      const sock = await createSocket(getValidAccessToken, logout, businessId);
+      const sock = await createSocket(getValidAccessToken, null, businessId);
       if (!sock) return;
 
       if (!sock.connected) sock.connect();
@@ -82,7 +82,7 @@ export default function BusinessChatWrapper() {
       setSelected(null);
       hasJoinedRef.current = false;
     };
-  }, [businessId, getValidAccessToken, logout, selected]);
+  }, [businessId, getValidAccessToken, selected]);
 
   const handleSelect = (conversationId) => {
     const sock = socketRef.current;

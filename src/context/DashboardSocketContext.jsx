@@ -6,7 +6,7 @@ const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 const DashboardSocketContext = createContext(null);
 
 export function DashboardSocketProvider({ businessId, children }) {
-  const { refreshAccessToken, logout } = useAuth();
+  const { refreshAccessToken } = useAuth();
 
   const [stats, setStats] = useState({
     views_count: 0,
@@ -31,7 +31,7 @@ export function DashboardSocketProvider({ businessId, children }) {
     async function initSocket() {
       const token = await refreshAccessToken();
       if (!token) {
-        logout();
+        console.warn("[SocketProvider] No token yet — skipping socket init");
         return;
       }
 
@@ -141,14 +141,13 @@ export function DashboardSocketProvider({ businessId, children }) {
         console.log("🚨 [SocketProvider] Token expired, refreshing...");
         const newToken = await refreshAccessToken({ force: true });
         if (!newToken) {
-          logout();
+          console.warn("[SocketProvider] Token refresh failed — will retry");
           return;
         }
         socketRef.current.auth.token = newToken;
         socketRef.current.emit("authenticate", { token: newToken }, (ack) => {
           if (!ack?.ok) {
-            console.warn("❌ Re-auth failed, logging out");
-            logout();
+            console.warn("[SocketProvider] Re-auth failed — will retry on reconnect");
           } else {
             console.log("✅ Re-auth succeeded");
           }
@@ -190,7 +189,7 @@ export function DashboardSocketProvider({ businessId, children }) {
         socketRef.current = null;
       }
     };
-  }, [businessId, refreshAccessToken, logout]);
+  }, [businessId, refreshAccessToken]);
 
   return (
     <DashboardSocketContext.Provider value={{ stats, socket: socketRef.current }}>

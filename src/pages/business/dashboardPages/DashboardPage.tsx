@@ -1120,7 +1120,6 @@ export default function DashboardPage() {
   const {
     user,
     initialized,
-    logout,
     refreshAccessToken,
     refreshUser,
     setUser,
@@ -1315,12 +1314,12 @@ export default function DashboardPage() {
       );
 
       if (err?.message === "Missing token") {
-        logout();
+        console.warn("Dashboard stats: missing token — will retry on next load");
       }
     } finally {
       setLoading(false);
     }
-  }, [businessId, refreshAccessToken, logout, tx]);
+  }, [businessId, refreshAccessToken, tx]);
 
   const refreshAppointmentsFromAPI = useCallback(async () => {
     if (!businessId) return;
@@ -1367,13 +1366,13 @@ export default function DashboardPage() {
       const token = await refreshAccessToken();
 
       if (!token) {
-        logout();
+        console.warn("Dashboard socket: no token yet — skipping setup");
         return;
       }
 
       const sock = (await createSocket(
         refreshAccessToken,
-        logout,
+        null,
         businessId
       )) as SocketLike | null;
 
@@ -1405,7 +1404,7 @@ export default function DashboardPage() {
         const newToken = await refreshAccessToken({ force: true });
 
         if (!newToken) {
-          logout();
+          console.warn("Dashboard socket: token refresh failed — will retry");
           return;
         }
 
@@ -1595,7 +1594,6 @@ export default function DashboardPage() {
   }, [
     initialized,
     businessId,
-    logout,
     refreshAccessToken,
     debouncedSetStats,
     refreshAppointmentsFromAPI,

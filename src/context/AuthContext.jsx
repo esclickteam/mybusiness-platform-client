@@ -6,6 +6,7 @@ import {
   getValidAccessToken,
   refreshAccessTokenOnce,
   isAccessTokenExpired,
+  clearAccessToken,
 } from "../utils/tokenRefresh";
 import {
   clearLastDashboardRoute,
@@ -143,8 +144,7 @@ function isPublicRoute(pathname) {
    🧹 Clear local auth only
 =========================== */
 function clearLocalAuth({ clearDashboardRoute = false } = {}) {
-  setAuthToken(null);
-  localStorage.removeItem("token");
+  clearAccessToken();
   localStorage.removeItem("businessDetails");
   localStorage.removeItem("dashboardStats");
   localStorage.removeItem("impersonatedBy");
@@ -152,6 +152,22 @@ function clearLocalAuth({ clearDashboardRoute = false } = {}) {
   if (clearDashboardRoute) {
     clearLastDashboardRoute();
   }
+}
+
+async function tryRefreshWithRetries(maxAttempts = 3) {
+  for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
+    try {
+      return await refreshAccessTokenOnce();
+    } catch (err) {
+      if (err.message === "NO_REFRESH_TOKEN") return null;
+      if (attempt < maxAttempts - 1) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, 1000 * (attempt + 1))
+        );
+      }
+    }
+  }
+  return null;
 }
 
 /* ===========================
@@ -511,6 +527,25 @@ export function AuthProvider({ children }) {
       }
 
       if (!activeToken) {
+        const cachedRaw = localStorage.getItem("businessDetails");
+        if (cachedRaw && !cancelled) {
+          try {
+            setUser(normalizeUser(JSON.parse(cachedRaw)));
+          } catch {
+            localStorage.removeItem("businessDetails");
+          }
+          setLoading(false);
+          setInitialized(true);
+
+          tryRefreshWithRetries().then((refreshed) => {
+            if (refreshed && !cancelled) {
+              setToken(refreshed);
+              refreshUser().catch(() => {});
+            }
+          });
+          return;
+        }
+
         if (!cancelled) {
           finishLoggedOut();
         }
@@ -551,7 +586,7 @@ export function AuthProvider({ children }) {
 
         const newSocket = await createSocket(
           getValidAccessToken,
-          () => logout({ callServer: false, redirect: true }),
+          null,
           freshUser.businessId
         );
 
@@ -613,9 +648,18 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.error("❌ Auth init failed:", err);
 
-        clearLocalAuth();
+        const cachedRaw = localStorage.getItem("businessDetails");
 
-        if (!cancelled) {
+        if (cachedRaw && !cancelled) {
+          try {
+            setUser(normalizeUser(JSON.parse(cachedRaw)));
+          } catch {
+            clearLocalAuth();
+            setToken(null);
+            setUser(null);
+          }
+        } else if (!cancelled) {
+          clearLocalAuth();
           setToken(null);
           setUser(null);
 
@@ -640,6 +684,35 @@ export function AuthProvider({ children }) {
       cancelled = true;
     };
   }, [token, initialized, location.pathname]);
+
+  /* ===========================
+     🔁 Proactive token refresh
+  =========================== */
+  useEffect(() => {
+    if (!initialized || !user) return;
+    if (localStorage.getItem("impersonatedBy")) return;
+
+    const CHECK_MS = 60_000;
+    const REFRESH_SKEW_MS = 5 * 60_000;
+
+    const timer = setInterval(async () => {
+      try {
+        const current = localStorage.getItem("token");
+        if (current && !isAccessTokenExpired(current, { skewMs: REFRESH_SKEW_MS })) {
+          return;
+        }
+
+        const refreshed = await refreshAccessTokenOnce();
+        if (refreshed) {
+          setToken(refreshed);
+        }
+      } catch (err) {
+        console.warn("Background token refresh failed:", err?.message || err);
+      }
+    }, CHECK_MS);
+
+    return () => clearInterval(timer);
+  }, [initialized, user]);
 
   /* ===========================
      Toast timeout
@@ -675,8 +748,15 @@ export function AuthProvider({ children }) {
         return await fn();
       } catch (err) {
         if ([401, 403].includes(err.response?.status)) {
-          await logout({ callServer: false, redirect: true });
-          setError("❌ יש להתחבר מחדש");
+          try {
+            const newToken = await getValidAccessToken({ force: true });
+            if (newToken) {
+              return await fn();
+            }
+          } catch (retryErr) {
+            console.warn("fetchWithAuth retry failed:", retryErr?.message || retryErr);
+          }
+          setError("❌ שגיאת הרשאה — נסה שוב");
         }
 
         throw err;
