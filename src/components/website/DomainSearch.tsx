@@ -50,9 +50,21 @@ const INITIAL_CONTACT: ContactFormState = {
   country: "IL",
   email: "",
   phone: "",
+  vatNumber: "",
 };
 
-const DOMAIN_YEAR_OPTIONS: DomainYears[] = [1, 2, 3, 5, 10];
+const DEFAULT_DOMAIN_YEAR_OPTIONS: DomainYears[] = [1, 2, 3, 5, 10];
+const IL_DOMAIN_YEAR_OPTIONS: DomainYears[] = [1, 2];
+
+function isIsraeliDomain(domain: string) {
+  return /\.il$/i.test(String(domain || "").trim());
+}
+
+function yearOptionsForDomain(domain: string): DomainYears[] {
+  return isIsraeliDomain(domain)
+    ? IL_DOMAIN_YEAR_OPTIONS
+    : DEFAULT_DOMAIN_YEAR_OPTIONS;
+}
 
 const DOMAIN_EXTENSIONS = [
   "co.il",
@@ -135,13 +147,19 @@ export default function DomainSearch() {
   const [contactError, setContactError] = useState("");
   const [contactResult, setContactResult] =
     useState<DomainContactResult | null>(null);
-  const [selectedYears, setSelectedYears] = useState<DomainYears>(3);
+  const [selectedYears, setSelectedYears] = useState<DomainYears>(1);
+  const [yearOptions, setYearOptions] = useState<DomainYears[]>(
+    IL_DOMAIN_YEAR_OPTIONS,
+  );
   const [quote, setQuote] = useState<DomainQuoteResult | null>(null);
   const [isQuoting, setIsQuoting] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [registerError, setRegisterError] = useState("");
   const [registerResult, setRegisterResult] =
     useState<DomainRegisterResult | null>(null);
+
+  const selectedDomainForContact = result?.domain || fullDomain;
+  const requiresVat = isIsraeliDomain(selectedDomainForContact);
 
   const canSubmitContact = useMemo(() => {
     return Boolean(
@@ -151,9 +169,10 @@ export default function DomainSearch() {
         contact.city.trim() &&
         contact.country.trim() &&
         contact.email.trim() &&
-        contact.phone.trim(),
+        contact.phone.trim() &&
+        (!requiresVat || String(contact.vatNumber || "").trim()),
     );
-  }, [contact]);
+  }, [contact, requiresVat]);
 
   const fullDomain = useMemo(() => {
     const parsed = parseDomainInput(domainName, selectedTld);
@@ -223,8 +242,22 @@ export default function DomainSearch() {
         const nextQuote = await quoteDomainRegistration({
           registrationId,
           years: selectedYears,
+          vatNumber: contact.vatNumber,
         });
-        if (!cancelled) setQuote(nextQuote);
+        if (!cancelled) {
+          setQuote(nextQuote);
+          if (Array.isArray(nextQuote.options) && nextQuote.options.length) {
+            const nextOptions = nextQuote.options.filter((year): year is DomainYears =>
+              DEFAULT_DOMAIN_YEAR_OPTIONS.includes(year as DomainYears),
+            );
+            if (nextOptions.length) {
+              setYearOptions(nextOptions);
+              if (!nextOptions.includes(selectedYears)) {
+                setSelectedYears(nextOptions[0]);
+              }
+            }
+          }
+        }
       } catch (requestError) {
         if (!cancelled) {
           setQuote(null);
@@ -243,7 +276,12 @@ export default function DomainSearch() {
     return () => {
       cancelled = true;
     };
-  }, [contactResult?.registrationId, selectedYears, registerResult?.success]);
+  }, [
+    contactResult?.registrationId,
+    selectedYears,
+    registerResult?.success,
+    contact.vatNumber,
+  ]);
 
   function handleDomainNameChange(value: string) {
     const parsed = parseDomainInput(value, selectedTld);
@@ -351,7 +389,9 @@ export default function DomainSearch() {
       });
 
       setContactResult(response);
-      setSelectedYears(3);
+      const options = yearOptionsForDomain(selectedDomain);
+      setYearOptions(options);
+      setSelectedYears(options[0] || 1);
       setQuote(null);
     } catch (requestError) {
       setContactError(
@@ -374,6 +414,7 @@ export default function DomainSearch() {
       const checkout = await checkoutDomainRegistration({
         registrationId: contactResult.registrationId,
         years: selectedYears,
+        vatNumber: contact.vatNumber,
       });
 
       if (checkout.alreadyRegistered) {
@@ -626,6 +667,7 @@ export default function DomainSearch() {
             onSubmit={handleCreateContact}
             className="px-6 py-7 md:px-9"
           >
+            {!contactResult?.success ? (
             <div className="grid gap-4 md:grid-cols-2">
               <Field
                 label="שם מלא"
@@ -723,8 +765,21 @@ export default function DomainSearch() {
                 dir="ltr"
                 required
               />
-            </div>
 
+              {requiresVat ? (
+                <Field
+                  label="מספר עוסק / ח.פ. / מע״מ"
+                  value={contact.vatNumber || ""}
+                  onChange={(value) => updateContact("vatNumber", value)}
+                  placeholder="למשל 512345678"
+                  dir="ltr"
+                  required
+                />
+              ) : null}
+            </div>
+            ) : null}
+
+            {!contactResult?.success ? (
             <div className="mt-5 flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4">
               <LockKeyhole className="mt-0.5 h-5 w-5 shrink-0 text-slate-500" />
               <p className="text-xs font-semibold leading-6 text-slate-500">
@@ -732,6 +787,7 @@ export default function DomainSearch() {
                 לרישום Production וישמשו כאיש קשר רשמי של הדומיין.
               </p>
             </div>
+            ) : null}
 
             {contactError ? (
               <div className="mt-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700">
@@ -740,25 +796,28 @@ export default function DomainSearch() {
               </div>
             ) : null}
 
-            {contactResult?.success && contactResult.contact?.handle ? (
-              <div className="mt-5 rounded-[24px] border border-emerald-200 bg-emerald-50 p-5">
-                <div className="flex items-start gap-3">
-                  <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
+            {contactResult?.success &&
+            contactResult.registrationId &&
+            !registerResult?.success ? (
+              <div className="mt-5 rounded-[24px] border border-slate-200 bg-white p-5">
+                <div className="min-w-0">
+                  <h4 className="text-base font-black text-slate-900">
+                    בחרו תקופת רישום והמשיכו לתשלום
+                  </h4>
+                  {requiresVat ? (
+                    <p className="mt-2 text-xs font-semibold text-slate-500">
+                      לדומייני .il נדרש מספר עוסק / ח.פ. / מע״מ, ותקופת רישום של
+                      שנה או שנתיים בלבד.
+                    </p>
+                  ) : null}
 
-                  <div className="min-w-0 flex-1">
-                    <h4 className="text-base font-black text-emerald-900">
-                      איש הקשר נוצר בהצלחה — בחרו תקופה והמשיכו לתשלום
-                    </h4>
-
-                    {contactResult.registrationId &&
-                    !registerResult?.success ? (
-                      <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-                        <div className="rounded-2xl border border-emerald-200 bg-white p-4">
+                  <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
+                        <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                           <h5 className="text-sm font-black text-slate-800">
                             בחירת תקופת רישום
                           </h5>
                           <div className="mt-3 grid gap-2">
-                            {DOMAIN_YEAR_OPTIONS.map((years) => {
+                            {yearOptions.map((years) => {
                               const active = selectedYears === years;
                               return (
                                 <button
@@ -826,8 +885,6 @@ export default function DomainSearch() {
                             )}
                           </button>
                         </div>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </div>
