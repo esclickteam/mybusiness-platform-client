@@ -1,0 +1,3798 @@
+[
+  {
+    "id": "bakora",
+    "name": "Bakora",
+    "brand": "Bakora",
+    "logo": "B",
+    "niche": "מאפייה · מאפים",
+    "nicheKey": "bakery",
+    "desc": "תבנית מאפייה: שכבות בצק כמו למינציה, מדפי מאפים אופקיים, אדים עדינים וטופס הזמנה בסגנון תג מחיר — חמימות של תנור בבוקר.",
+    "fonts": {
+      "display": "Libre+Baskerville:wght@700&family=Heebo:wght@500;700",
+      "displayCss": "\"Libre Baskerville\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#faf6f0",
+      "surface": "#fffaf3",
+      "text": "#2a1f18",
+      "muted": "#8a6f5c",
+      "primary": "#c4784a",
+      "primaryText": "#fffaf3",
+      "line": "rgba(42,31,24,0.12)",
+      "dark": "#1c140f"
+    },
+    "layout": "laminateLayers",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "pastries",
+        "מאפים",
+        "/pastries"
+      ],
+      [
+        "oven",
+        "התנור",
+        "/oven"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1517433670267-04ce80171fa1?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1586444248902-2f64eddc13df?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1495147466023-ac5c588e2e94?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1517433670267-04ce80171fa1?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "שכבה על שכבה. חמאה על חמאה.",
+      "subtitle": "Bakora — מאפים שיוצאים מהתנור כל בוקר. קרואסונים, לחמים ובצק עלים שנפרם ברכות.",
+      "primary": "הזמינו מאפים",
+      "secondary": "למדפי הבוקר",
+      "aboutTitle": "נולדנו מהקמח.",
+      "aboutText": "כל שכבה מגולגלת ביד. אנחנו מאמינים בחמאה קרה, תסיסה איטית וריח של בוקר.",
+      "contactTitle": "מתי לאסוף מהמדף?",
+      "contactText": "ספרו מה אתם רוצים ומתי — נכין לכם סל טרי מהתנור.",
+      "items": [
+        [
+          "קרואסון חמאה",
+          "₪18 · שכבות",
+          "בצק עלים 48 שעות, חמאה צרפתית."
+        ],
+        [
+          "לחמניית שאור",
+          "₪22 · יומית",
+          "קרום פריך, פנים רך."
+        ],
+        [
+          "עוגת שמרים קינמון",
+          "₪28 · פרוסה",
+          "קרמל קינמון וגלייז וניל."
+        ],
+        [
+          "טארט פירות יער",
+          "₪36 · אישי",
+          "קרם פטיסייר ופירות העונה."
+        ],
+        [
+          "בייגל זרעים",
+          "₪14 · חם",
+          "שומשום, פרג ומלח ים."
+        ],
+        [
+          "עוגיות חמאה",
+          "₪42 · קופסה",
+          "מתפוררות, עם שבבי שוקולד."
+        ]
+      ],
+      "reviews": [
+        [
+          "הקרואסון הכי טוב בתל אביב. שכבות מושלמות.",
+          "מיכל ר.",
+          "אורחת קבועה"
+        ],
+        [
+          "ריח של מאפייה אמיתית. הלחמים נגמרים עד הצהריים.",
+          "דני כ.",
+          "שכן מהרחוב"
+        ],
+        [
+          "הזמנתי לאירוע — הכל היה טרי ומדויק.",
+          "נועה ל.",
+          "מארגנת אירועים"
+        ]
+      ],
+      "faq": [
+        [
+          "אפשר להזמין מראש?",
+          "כן — בטופס ההזמנה או בטלפון עד יום לפני."
+        ],
+        [
+          "יש אפשרויות ללא גלוטן?",
+          "יש עוגות שקדים נבחרות — בדקו במדף היומי."
+        ],
+        [
+          "יש משלוחים?",
+          "איסוף עצמי ומסירה באזור עד 3 ק״מ."
+        ]
+      ],
+      "hours": "א׳–ה׳ 07:00–18:00 · ו׳ 07:00–14:00 · שבת סגור",
+      "chefName": "האופה יעל שכבות",
+      "chefBio": "12 שנות אפייה בפריז ותל אביב. מאמינה בחמאה ובסבלנות.",
+      "chefQuote": "בצק טוב לא ממהר — הוא נח, עולה, ונפרם.",
+      "pageTitles": {
+        "pastries": "מדפי המאפים",
+        "oven": "סיפור התנור",
+        "about": "מי אנחנו בקמח",
+        "contact": "הזמנת מאפים"
+      },
+      "stat1": "48",
+      "stat1Label": "שעות בצק",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "12",
+      "stat3Label": "סוגי לחם",
+      "ctaBandTitle": "רוצים סל בוקר?",
+      "ctaBandText": "הזמינו מאפים טריים — נכין לפני שאתם מגיעים.",
+      "processTitle": "מהקמח עד הקרום",
+      "processSteps": [
+        [
+          "לישה איטית",
+          "מים קרים וקמח חזק."
+        ],
+        [
+          "שכבות חמאה",
+          "קיפול מדויק כל שעתיים."
+        ],
+        [
+          "אפייה חמה",
+          "תנור אבן ב־220°."
+        ]
+      ],
+      "categories": [
+        [
+          "קרואסונים",
+          "חמאה, שקדים, שוקולד"
+        ],
+        [
+          "לחמים",
+          "שאור, חיטה וזרעים"
+        ],
+        [
+          "עוגות",
+          "שמרים וטארטים"
+        ],
+        [
+          "עוגיות",
+          "חמאה ושוקולד"
+        ]
+      ],
+      "pairings": [
+        [
+          "קרואסון + קפה שחור",
+          "מרירות מול חמאה"
+        ],
+        [
+          "שאור + גבינה רכה",
+          "חומציות עדינה"
+        ],
+        [
+          "קינמון + חלב חם",
+          "מתיקות עגולה"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנת הבצק",
+          "ערבוב בלי לחמם."
+        ],
+        [
+          "הנחת חמאה",
+          "בלוק קר במרכז."
+        ],
+        [
+          "קיפולים",
+          "שלושה טורנים."
+        ],
+        [
+          "אפייה",
+          "אדים ראשונים, ייבוש בסוף."
+        ]
+      ],
+      "materials": [
+        [
+          "חמאה AOP",
+          "טעם עמוק"
+        ],
+        [
+          "קמח T55",
+          "גמישות לשכבות"
+        ],
+        [
+          "שאור חי",
+          "חומציות עדינה"
+        ]
+      ],
+      "timeline": [
+        [
+          "2014",
+          "התנור הראשון בסלון."
+        ],
+        [
+          "2019",
+          "פתיחת Bakora בנווה צדק."
+        ],
+        [
+          "2025",
+          "מדף הזמנות יומי דיגיטלי."
+        ]
+      ],
+      "values": [
+        [
+          "טריות יומית",
+          "בלי הקפאה."
+        ],
+        [
+          "שקיפות",
+          "רשימת אלרגנים על המדף."
+        ],
+        [
+          "יחס אישי",
+          "כל סל נארז ביד."
+        ]
+      ],
+      "featuredTitle": "מדף הבוקר",
+      "galleryTitle": "רגעי תנור",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המאפים",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת האופה",
+      "chefPickTitle": "קרואסון חמאה בן 48 שעות",
+      "chefPickText": "שכבות פריכות, לב רך, וריח חמאה שנשאר באוויר.",
+      "page1Subtitle": "קרואסונים, לחמים וטארטים — כל מה שעולה מהתנור.",
+      "page2Subtitle": "איך אנחנו בונים שכבות, בוחרים קמח ואופים.",
+      "techTitle": "סולם השכבות",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "בוקר אפייה משותף",
+      "eventsText": "פעם בחודש אופים איתנו קרואסונים מאפס.",
+      "eventsMeta": "עד 12 משתתפים · הרשמה מראש",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "נולדנו מהקמח.",
+      "aboutPageLead": "כל שכבה מגולגלת ביד. חמאה קרה, תסיסה איטית וריח של בוקר.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "האופה / המארחת",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנת מאפים",
+      "contactPageText": "ספרו מה אתם רוצים ומתי — נכין לכם סל טרי.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "מדפי המאפים",
+      "page2Title": "סיפור התנור"
+    }
+  },
+  {
+    "id": "tacoflare",
+    "name": "Tacoflare",
+    "brand": "Tacoflare",
+    "logo": "T",
+    "niche": "מקסיקני · טאקו",
+    "nicheKey": "mexican",
+    "desc": "תבנית טאקוס: נייר צלופן מרפרף, מדף טאקו אופקי, צבעי צ׳ילי וטופס הזמנה בסגנון פתק שוק — אנרגיה רחוב לוהטת.",
+    "fonts": {
+      "display": "Oswald:wght@500;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Oswald\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#1a0e0a",
+      "surface": "#251610",
+      "text": "#fff3e8",
+      "muted": "#c49a7a",
+      "primary": "#e85d04",
+      "primaryText": "#1a0e0a",
+      "line": "rgba(255,243,232,0.12)",
+      "dark": "#0d0705"
+    },
+    "layout": "papelFlutter",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "tacos",
+        "טאקוס",
+        "/tacos"
+      ],
+      [
+        "salsa",
+        "סלסות",
+        "/salsa"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1599974579688-8dbdd724d45e?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1613514785940-daed07799e9b?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1626700051175-6818013e1d4f?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1562059390-a761a08463cd?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1615870216519-2f9fa575fa5c?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1504544750208-dc04614f1eaa?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1565299585323-38d6b0865b47?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1551504734-5ee1c4a1479b?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1599974579688-8dbdd724d45e?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1613514785940-daed07799e9b?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "אש על טורטייה.",
+      "subtitle": "Tacoflare — טאקוס רחוב, בשר על פלנצ׳ה וסלסות שבונות חום.",
+      "primary": "הזמינו טאקוס",
+      "secondary": "לתפריט החריף",
+      "aboutTitle": "נולדנו מהפלנצ׳ה.",
+      "aboutText": "טורטיות יד, בשר צרוב וסלסה טרייה כל יום.",
+      "contactTitle": "כמה טאקוס הערב?",
+      "contactText": "כתבו כמה אתם ומתי — נכין על האש.",
+      "items": [
+        [
+          "קרנה אסאדה",
+          "₪48 · 2 יח׳",
+          "בשר צרוב, בצל וכוסברה."
+        ],
+        [
+          "אל פסטור",
+          "₪46 · 2 יח׳",
+          "אננס צרוב וצ׳ילי."
+        ],
+        [
+          "קאמיטאס",
+          "₪44 · 2 יח׳",
+          "חזיר מפורק איטי."
+        ],
+        [
+          "פיש טאקו",
+          "₪52 · 2 יח׳",
+          "דג מטוגן וקולסלו."
+        ],
+        [
+          "ווג׳י פלנצ׳ה",
+          "₪42 · 2 יח׳",
+          "פטריות ופלפלים."
+        ],
+        [
+          "אלות צ׳וריסו",
+          "₪40 · 3 יח׳",
+          "צ׳וריסו וביצה."
+        ]
+      ],
+      "reviews": [
+        [
+          "האל פסטור מטורף. חום מדויק.",
+          "יואב ס.",
+          "חובב טאקוס"
+        ],
+        [
+          "כמו מקסיקו סיטי בתל אביב.",
+          "ליאור מ.",
+          "בלוגר"
+        ],
+        [
+          "סלסות מדהימות, שירות מהיר.",
+          "שירה כ.",
+          "אורחת"
+        ]
+      ],
+      "faq": [
+        [
+          "כמה חריף?",
+          "יש סולם — עדין, בינוני ולוהט."
+        ],
+        [
+          "טבעוני?",
+          "כן — טאקו פטריות ואבוקדו."
+        ],
+        [
+          "איסוף?",
+          "כן, תוך 20 דקות בשעות השיא."
+        ]
+      ],
+      "hours": "א׳–ה׳ 12:00–23:30 · ו׳ 12:00–16:00 · מוצ״ש 19:00–23:30",
+      "chefName": "שף דייגו להבה",
+      "chefBio": "גדל על טאקוס רחוב. מביא אש וסלסה לתל אביב.",
+      "chefQuote": "טורטייה חמה היא הבית.",
+      "pageTitles": {
+        "tacos": "תפריט הטאקוס",
+        "salsa": "חדר הסלסות",
+        "about": "מי אנחנו באש",
+        "contact": "הזמנה"
+      },
+      "stat1": "7",
+      "stat1Label": "סלסות",
+      "stat2": "4.8",
+      "stat2Label": "דירוג",
+      "stat3": "90",
+      "stat3Label": "שניות לטאקו",
+      "ctaBandTitle": "רעבים לאש?",
+      "ctaBandText": "הזמינו טאקוס — נצרוב עכשיו.",
+      "processTitle": "מהפלנצ׳ה לצלחת",
+      "processSteps": [
+        [
+          "טורטייה חמה",
+          "מחממים על ברזל."
+        ],
+        [
+          "צריבה",
+          "בשר על אש גבוהה."
+        ],
+        [
+          "סלסה",
+          "כף אחת שמשנה הכל."
+        ]
+      ],
+      "categories": [
+        [
+          "בשר",
+          "אסאדה ופסטור"
+        ],
+        [
+          "ים",
+          "פיש טאקו"
+        ],
+        [
+          "ירק",
+          "פטריות וקולסלאו"
+        ],
+        [
+          "צדדים",
+          "נאצ׳וס ואלות"
+        ]
+      ],
+      "pairings": [
+        [
+          "אסאדה + בירה בהירה",
+          "רענון מול עשן"
+        ],
+        [
+          "פסטור + מרגריטה",
+          "מתוק-חריף"
+        ],
+        [
+          "פיש + ליים",
+          "חמיצות חיה"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הדלקת הפלנצ׳ה",
+          "חום גבוה יציב."
+        ],
+        [
+          "צריבת הבשר",
+          "בלי להזיז מוקדם."
+        ],
+        [
+          "חימום טורטייה",
+          "שתי שניות לכל צד."
+        ],
+        [
+          "הרכבה",
+          "בשר, בצל, סלסה."
+        ]
+      ],
+      "materials": [
+        [
+          "צ׳ילי גוואחילו",
+          "עשן עדין"
+        ],
+        [
+          "ליים טרי",
+          "חמיצות"
+        ],
+        [
+          "כוסברה",
+          "רעננות"
+        ]
+      ],
+      "timeline": [
+        [
+          "2016",
+          "עגלת טאקוס ראשונה."
+        ],
+        [
+          "2021",
+          "Tacoflare נפתח."
+        ],
+        [
+          "2025",
+          "בר סלסות ייעודי."
+        ]
+      ],
+      "values": [
+        [
+          "אש אמיתית",
+          "בלי מיקרוגל."
+        ],
+        [
+          "סלסה יומית",
+          "נטחנת כל בוקר."
+        ],
+        [
+          "קצב רחוב",
+          "מהיר ובגובה העיניים."
+        ]
+      ],
+      "featuredTitle": "מדף הטאקוס",
+      "galleryTitle": "רגעי פלנצ׳ה",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל הטאקוס",
+      "pairingTitle": "זיווגים חריפים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "אל פסטור עם אננס צרוב",
+      "chefPickText": "מתיקות האננס מול צ׳ילי — הקלאסיקה שלנו.",
+      "page1Subtitle": "טאקוס, מחירים וסלסות — כל מה שעולה מהאש.",
+      "page2Subtitle": "איך בונים סלסה, צורבים בשר ומגישים.",
+      "techTitle": "סולם הפלנצ׳ה",
+      "matTitle": "תבליני הבית",
+      "eventsTitle": "ליל טאקוס פתוח",
+      "eventsText": "פעם בחודש — טאקוס חופשי ומגשי שיתוף.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "נולדנו מהפלנצ׳ה.",
+      "aboutPageLead": "טורטיות יד, בשר צרוב וסלסה טרייה כל יום.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנת טאקוס",
+      "contactPageText": "כתבו כמה אתם ומתי — נכין על האש.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "תפריט הטאקוס",
+      "page2Title": "חדר הסלסות"
+    }
+  },
+  {
+    "id": "gelatix",
+    "name": "Gelatix",
+    "brand": "Gelatix",
+    "logo": "G",
+    "niche": "גלידה · ג׳לאטו",
+    "nicheKey": "gelato",
+    "desc": "תבנית ג׳לאטו: טפטופי המסה, כדורים צפים וטופס הזמנה מתוק — קרירות איטלקית רכה.",
+    "fonts": {
+      "display": "Cormorant+Garamond:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Cormorant Garamond\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#fff5f8",
+      "surface": "#ffffff",
+      "text": "#2b1822",
+      "muted": "#9a6b7c",
+      "primary": "#e85a8c",
+      "primaryText": "#ffffff",
+      "line": "rgba(43,24,34,0.1)",
+      "dark": "#1a0f14"
+    },
+    "layout": "meltDrip",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "scoops",
+        "טעמים",
+        "/scoops"
+      ],
+      [
+        "lab",
+        "המעבדה",
+        "/lab"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1488900128323-14446388c3d0?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1567206563064-6f60f55a5ce7?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1516559828984-fb3b99548b21?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1501443762994-82bd5dace89a?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1488900128323-14446388c3d0?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "ההמסה היא חלק מהחוויה.",
+      "subtitle": "Gelatix — גלידה · ג׳לאטו. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לטעמים",
+      "aboutTitle": "הסיפור של Gelatix.",
+      "aboutText": "ההמסה היא חלק מהחוויה. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "פיסטוק סיציליאני",
+          "₪28 · קלאסי",
+          "פיסטוק סיציליאני — ההמסה היא חלק מהחוויה."
+        ],
+        [
+          "שוקולד מריר 70%",
+          "₪32 · מומלץ",
+          "שוקולד מריר 70% — ההמסה היא חלק מהחוויה."
+        ],
+        [
+          "לימון אמלפי",
+          "₪36 · שף",
+          "לימון אמלפי — ההמסה היא חלק מהחוויה."
+        ],
+        [
+          "וניל מדגסקר",
+          "₪40 · עונתי",
+          "וניל מדגסקר — ההמסה היא חלק מהחוויה."
+        ],
+        [
+          "תות שדה",
+          "₪24 · ביתי",
+          "תות שדה — ההמסה היא חלק מהחוויה."
+        ],
+        [
+          "מלוח-קרמל",
+          "₪30 · מיוחד",
+          "מלוח-קרמל — ההמסה היא חלק מהחוויה."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של פיסטוק סיציליאני הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Gelatix הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "מאסטרו לוקה ג׳לאטו",
+      "chefBio": "15 שנות ג׳לאטו במילאנו. מאמין בחלב טרי ופירות העונה.",
+      "chefQuote": "ההמסה מספרת אם עשינו נכון.",
+      "pageTitles": {
+        "scoops": "טעמים",
+        "lab": "המעבדה",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Gelatix — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Gelatix."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "פיסטוק סיציליאני",
+      "chefPickText": "ההמסה היא חלק מהחוויה.",
+      "page1Subtitle": "טעמים — כל מה שצריך לדעת.",
+      "page2Subtitle": "המעבדה — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Gelatix.",
+      "aboutPageLead": "ההמסה היא חלק מהחוויה.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "טעמים",
+      "page2Title": "המעבדה"
+    }
+  },
+  {
+    "id": "shawarmia",
+    "name": "Shawarmia",
+    "brand": "Shawarmia",
+    "logo": "S",
+    "niche": "שווארמה · גריל",
+    "nicheKey": "shawarma",
+    "desc": "תבנית שווארמה: שיפוד מסתובב, פיתות חמות וטופס הזמנה מהיר — רחוב מזרחי עם קצב.",
+    "fonts": {
+      "display": "Rubik:wght@600;800&family=Heebo:wght@500;700",
+      "displayCss": "\"Rubik\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#14110e",
+      "surface": "#1e1914",
+      "text": "#f5ebe0",
+      "muted": "#b9a08a",
+      "primary": "#d97706",
+      "primaryText": "#14110e",
+      "line": "rgba(245,235,224,0.12)",
+      "dark": "#0a0806"
+    },
+    "layout": "spitRotate",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "plates",
+        "מנות",
+        "/plates"
+      ],
+      [
+        "spit",
+        "השיפוד",
+        "/spit"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1529006557810-274fd0ec1b3b?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1529006557810-274fd0ec1b3b?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1561651823-34feb355f96d?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1529006557810-274fd0ec1b3b?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1603360946369-dc9bb6258143?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1529006557810-274fd0ec1b3b?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1561651823-34feb355f96d?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1529006557810-274fd0ec1b3b?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "השיפוד מסתובב — הטעם נשאר.",
+      "subtitle": "Shawarmia — שווארמה · גריל. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "למנות",
+      "aboutTitle": "הסיפור של Shawarmia.",
+      "aboutText": "השיפוד מסתובב — הטעם נשאר. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "שווארמה הודו",
+          "₪28 · קלאסי",
+          "שווארמה הודו — השיפוד מסתובב — הטעם נשאר."
+        ],
+        [
+          "שווארמה בקר",
+          "₪32 · מומלץ",
+          "שווארמה בקר — השיפוד מסתובב — הטעם נשאר."
+        ],
+        [
+          "מגש משפחתי",
+          "₪36 · שף",
+          "מגש משפחתי — השיפוד מסתובב — הטעם נשאר."
+        ],
+        [
+          "פיתה ענק",
+          "₪40 · עונתי",
+          "פיתה ענק — השיפוד מסתובב — הטעם נשאר."
+        ],
+        [
+          "סלט ירוק",
+          "₪24 · ביתי",
+          "סלט ירוק — השיפוד מסתובב — הטעם נשאר."
+        ],
+        [
+          "צ׳יפס ביתי",
+          "₪30 · מיוחד",
+          "צ׳יפס ביתי — השיפוד מסתובב — הטעם נשאר."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של שווארמה הודו הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Shawarmia הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שף רמי שיפוד",
+      "chefBio": "20 שנה על השיפוד. מתבל במלח, פפריקה וסבלנות.",
+      "chefQuote": "הסיבוב עושה את העסיסיות.",
+      "pageTitles": {
+        "plates": "מנות",
+        "spit": "השיפוד",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Shawarmia — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Shawarmia."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "שווארמה הודו",
+      "chefPickText": "השיפוד מסתובב — הטעם נשאר.",
+      "page1Subtitle": "מנות — כל מה שצריך לדעת.",
+      "page2Subtitle": "השיפוד — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Shawarmia.",
+      "aboutPageLead": "השיפוד מסתובב — הטעם נשאר.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "מנות",
+      "page2Title": "השיפוד"
+    }
+  },
+  {
+    "id": "pokeline",
+    "name": "Pokeline",
+    "brand": "Pokeline",
+    "logo": "P",
+    "niche": "פוקה · קערות",
+    "nicheKey": "poke",
+    "desc": "תבנית פוקה: קערות במסלול עיגול, מרכיבים צבעוניים וטופס הזמנה קליל — רעננות פסיפית.",
+    "fonts": {
+      "display": "Sora:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Sora\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#071a1f",
+      "surface": "#0d262c",
+      "text": "#e8f7f6",
+      "muted": "#7eb8b4",
+      "primary": "#2dd4bf",
+      "primaryText": "#071a1f",
+      "line": "rgba(232,247,246,0.12)",
+      "dark": "#031014"
+    },
+    "layout": "bowlOrbit",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "bowls",
+        "קערות",
+        "/bowls"
+      ],
+      [
+        "build",
+        "בנו קערה",
+        "/build"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1551248429-40975aa4d904?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "כל קערה היא מסלול טעמים.",
+      "subtitle": "Pokeline — פוקה · קערות. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לקערות",
+      "aboutTitle": "הסיפור של Pokeline.",
+      "aboutText": "כל קערה היא מסלול טעמים. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "סלמון קלאסי",
+          "₪28 · קלאסי",
+          "סלמון קלאסי — כל קערה היא מסלול טעמים."
+        ],
+        [
+          "טונה חריפה",
+          "₪32 · מומלץ",
+          "טונה חריפה — כל קערה היא מסלול טעמים."
+        ],
+        [
+          "טofu ירוק",
+          "₪36 · שף",
+          "טofu ירוק — כל קערה היא מסלול טעמים."
+        ],
+        [
+          "שרימפס מנגו",
+          "₪40 · עונתי",
+          "שרימפס מנגו — כל קערה היא מסלול טעמים."
+        ],
+        [
+          "מיקס צבעוני",
+          "₪24 · ביתי",
+          "מיקס צבעוני — כל קערה היא מסלול טעמים."
+        ],
+        [
+          "קינואה בודהה",
+          "₪30 · מיוחד",
+          "קינואה בודהה — כל קערה היא מסלול טעמים."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של סלמון קלאסי הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Pokeline הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שפית היילי קערה",
+      "chefBio": "גדלה בהוואי. בונה קערות כמו פלטות צבע.",
+      "chefQuote": "כל מרכיב צריך מקום לנשום.",
+      "pageTitles": {
+        "bowls": "קערות",
+        "build": "בנו קערה",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Pokeline — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Pokeline."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "סלמון קלאסי",
+      "chefPickText": "כל קערה היא מסלול טעמים.",
+      "page1Subtitle": "קערות — כל מה שצריך לדעת.",
+      "page2Subtitle": "בנו קערה — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Pokeline.",
+      "aboutPageLead": "כל קערה היא מסלול טעמים.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "קערות",
+      "page2Title": "בנו קערה"
+    }
+  },
+  {
+    "id": "dimsumix",
+    "name": "Dimsumix",
+    "brand": "Dimsumix",
+    "logo": "D",
+    "niche": "דימ סאם · כיסונים",
+    "nicheKey": "dimsum",
+    "desc": "תבנית דימ סאם: סלי במבוק מאודים, ענני קיטור וטופס הזמנה עגול — סעודת בוקר אסייתית.",
+    "fonts": {
+      "display": "Noto+Serif+SC:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Noto Serif SC\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#0f1412",
+      "surface": "#18201c",
+      "text": "#f0f5f2",
+      "muted": "#8aa89a",
+      "primary": "#86efac",
+      "primaryText": "#0f1412",
+      "line": "rgba(240,245,242,0.12)",
+      "dark": "#080b09"
+    },
+    "layout": "basketSteam",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "baskets",
+        "סלים",
+        "/baskets"
+      ],
+      [
+        "steam",
+        "הקיטור",
+        "/steam"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1496116218417-ba7f5b9971f5?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1496116218417-ba7f5b9971f5?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1582878826629-29b7ad1cdc43?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1617093727343-374698b1b08d?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1496116218417-ba7f5b9971f5?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1534422298391-e4f8c172dddb?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1563245372-f21724e3856d?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1555126634-323283e090fa?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "הקיטור מרים — הסל יורד לשולחן.",
+      "subtitle": "Dimsumix — דימ סאם · כיסונים. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לסלים",
+      "aboutTitle": "הסיפור של Dimsumix.",
+      "aboutText": "הקיטור מרים — הסל יורד לשולחן. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "שיאו לונג באו",
+          "₪28 · קלאסי",
+          "שיאו לונג באו — הקיטור מרים — הסל יורד לשולחן."
+        ],
+        [
+          "גיאוזה חזיר",
+          "₪32 · מומלץ",
+          "גיאוזה חזיר — הקיטור מרים — הסל יורד לשולחן."
+        ],
+        [
+          "חרגו וונטון",
+          "₪36 · שף",
+          "חרגו וונטון — הקיטור מרים — הסל יורד לשולחן."
+        ],
+        [
+          "באו צמחוני",
+          "₪40 · עונתי",
+          "באו צמחוני — הקיטור מרים — הסל יורד לשולחן."
+        ],
+        [
+          "אגרול שרימפס",
+          "₪24 · ביתי",
+          "אגרול שרימפס — הקיטור מרים — הסל יורד לשולחן."
+        ],
+        [
+          "עוגת ביצה",
+          "₪30 · מיוחד",
+          "עוגת ביצה — הקיטור מרים — הסל יורד לשולחן."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של שיאו לונג באו הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Dimsumix הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שף וון קיטור",
+      "chefBio": "התמחות בהונג קונג. סלים כל בוקר מחדש.",
+      "chefQuote": "הבצק חייב להיות שקוף כמו משי.",
+      "pageTitles": {
+        "baskets": "סלים",
+        "steam": "הקיטור",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Dimsumix — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Dimsumix."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "שיאו לונג באו",
+      "chefPickText": "הקיטור מרים — הסל יורד לשולחן.",
+      "page1Subtitle": "סלים — כל מה שצריך לדעת.",
+      "page2Subtitle": "הקיטור — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Dimsumix.",
+      "aboutPageLead": "הקיטור מרים — הסל יורד לשולחן.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "סלים",
+      "page2Title": "הקיטור"
+    }
+  },
+  {
+    "id": "burgerhaus",
+    "name": "Burgerhaus",
+    "brand": "Burgerhaus",
+    "logo": "H",
+    "niche": "המבורגר · סמאש",
+    "nicheKey": "burger",
+    "desc": "תבנית בורגר: שכבות סמאש, לחמנייה זהובה וטופס הזמנה כבד — גריל אמריקאי ישיר.",
+    "fonts": {
+      "display": "Archivo+Black&family=Heebo:wght@500;700",
+      "displayCss": "\"Archivo Black\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#111111",
+      "surface": "#1a1a1a",
+      "text": "#f5f5f5",
+      "muted": "#a3a3a3",
+      "primary": "#f59e0b",
+      "primaryText": "#111111",
+      "line": "rgba(245,245,245,0.12)",
+      "dark": "#050505"
+    },
+    "layout": "smashStack",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "burgers",
+        "בורגרים",
+        "/burgers"
+      ],
+      [
+        "smash",
+        "הסמאש",
+        "/smash"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1551782450-a2132b4ba21d?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1606755962773-d324e0a13086?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1550547660-d9450f859349?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1572802419224-296b0aeee0d9?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "לחמנייה, בשר, גבינה — בלי פילוסופיה.",
+      "subtitle": "Burgerhaus — המבורגר · סמאש. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לבורגרים",
+      "aboutTitle": "הסיפור של Burgerhaus.",
+      "aboutText": "לחמנייה, בשר, גבינה — בלי פילוסופיה. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "סמאש קלאסי",
+          "₪28 · קלאסי",
+          "סמאש קלאסי — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ],
+        [
+          "דאבל צ׳דר",
+          "₪32 · מומלץ",
+          "דאבל צ׳דר — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ],
+        [
+          "בייקון סמאש",
+          "₪36 · שף",
+          "בייקון סמאש — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ],
+        [
+          "פטריות סויה",
+          "₪40 · עונתי",
+          "פטריות סויה — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ],
+        [
+          "צ׳ילי קראנץ׳",
+          "₪24 · ביתי",
+          "צ׳ילי קראנץ׳ — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ],
+        [
+          "קריספי צ׳יקן",
+          "₪30 · מיוחד",
+          "קריספי צ׳יקן — לחמנייה, בשר, גבינה — בלי פילוסופיה."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של סמאש קלאסי הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Burgerhaus הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שף מקס סמאש",
+      "chefBio": "גריל אמריקאי טהור. בשר, מלח, ברזל חם.",
+      "chefQuote": "הסמאש קורה בשנייה — והטעם נשאר.",
+      "pageTitles": {
+        "burgers": "בורגרים",
+        "smash": "הסמאש",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Burgerhaus — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Burgerhaus."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "סמאש קלאסי",
+      "chefPickText": "לחמנייה, בשר, גבינה — בלי פילוסופיה.",
+      "page1Subtitle": "בורגרים — כל מה שצריך לדעת.",
+      "page2Subtitle": "הסמאש — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Burgerhaus.",
+      "aboutPageLead": "לחמנייה, בשר, גבינה — בלי פילוסופיה.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "בורגרים",
+      "page2Title": "הסמאש"
+    }
+  },
+  {
+    "id": "seafoodix",
+    "name": "Seafoodix",
+    "brand": "Seafoodix",
+    "logo": "X",
+    "niche": "פירות ים · דגים",
+    "nicheKey": "seafood",
+    "desc": "תבנית פירות ים: גלי קצף, צדפות וטופס הזמנה ימי — רעננות חוף כחולה-ירוקה.",
+    "fonts": {
+      "display": "Fraunces:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Fraunces\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#04151c",
+      "surface": "#0a2430",
+      "text": "#e6f4f8",
+      "muted": "#7aa8b8",
+      "primary": "#38bdf8",
+      "primaryText": "#04151c",
+      "line": "rgba(230,244,248,0.12)",
+      "dark": "#020b10"
+    },
+    "layout": "foamWave",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "catch",
+        "התפיסה",
+        "/catch"
+      ],
+      [
+        "waves",
+        "הגלים",
+        "/waves"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1551248429-40975aa4d904?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1611599537845-1c7aca0091c0?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1448043552756-e747b7a2b2b8?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1519708227418-c8fd9a32b7a2?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1559339352-11d035aa65de?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1615141982883-c7ad0e69fd62?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1551248429-40975aa4d904?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1534604973900-c43ab4c2e0ab?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "הים מגיע לצלחת — בלי עיכובים.",
+      "subtitle": "Seafoodix — פירות ים · דגים. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "להתפיסה",
+      "aboutTitle": "הסיפור של Seafoodix.",
+      "aboutText": "הים מגיע לצלחת — בלי עיכובים. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "צדפות חיות",
+          "₪28 · קלאסי",
+          "צדפות חיות — הים מגיע לצלחת — בלי עיכובים."
+        ],
+        [
+          "דניס בתנור",
+          "₪32 · מומלץ",
+          "דניס בתנור — הים מגיע לצלחת — בלי עיכובים."
+        ],
+        [
+          "פסטה פירות ים",
+          "₪36 · שף",
+          "פסטה פירות ים — הים מגיע לצלחת — בלי עיכובים."
+        ],
+        [
+          "קלמרי מטוגן",
+          "₪40 · עונתי",
+          "קלמרי מטוגן — הים מגיע לצלחת — בלי עיכובים."
+        ],
+        [
+          "טרטר טונה",
+          "₪24 · ביתי",
+          "טרטר טונה — הים מגיע לצלחת — בלי עיכובים."
+        ],
+        [
+          "מרק דגים",
+          "₪30 · מיוחד",
+          "מרק דגים — הים מגיע לצלחת — בלי עיכובים."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של צדפות חיות הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Seafoodix הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שפית נגה גל",
+      "chefBio": "דייגת לשעבר. קונה מהנמל לפני הזריחה.",
+      "chefQuote": "דג טוב לא צריך להסתיר.",
+      "pageTitles": {
+        "catch": "התפיסה",
+        "waves": "הגלים",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Seafoodix — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Seafoodix."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "צדפות חיות",
+      "chefPickText": "הים מגיע לצלחת — בלי עיכובים.",
+      "page1Subtitle": "התפיסה — כל מה שצריך לדעת.",
+      "page2Subtitle": "הגלים — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Seafoodix.",
+      "aboutPageLead": "הים מגיע לצלחת — בלי עיכובים.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "התפיסה",
+      "page2Title": "הגלים"
+    }
+  },
+  {
+    "id": "plantora",
+    "name": "Plantora",
+    "brand": "Plantora",
+    "logo": "P",
+    "niche": "טבעוני · צמחי",
+    "nicheKey": "vegan",
+    "desc": "תבנית טבעונית: שורשים צומחים, ירק חי וטופס הזמנה ירוק — מטבח צמחי אלגנטי.",
+    "fonts": {
+      "display": "DM+Serif+Display&family=Heebo:wght@500;700",
+      "displayCss": "\"DM Serif Display\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#f4f7f0",
+      "surface": "#ffffff",
+      "text": "#1a2e1a",
+      "muted": "#5c7a5c",
+      "primary": "#65a30d",
+      "primaryText": "#f4f7f0",
+      "line": "rgba(26,46,26,0.12)",
+      "dark": "#0f1a0f"
+    },
+    "layout": "rootGrow",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "plates",
+        "מנות",
+        "/plates"
+      ],
+      [
+        "garden",
+        "הגינה",
+        "/garden"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1547592166-23ac45744acd?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1607532941433-304659e8198a?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1625944230946-1b10401abdd4?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1511690656952-34342bb7c2f2?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "מהאדמה לצלחת — בלי פשרות על טעם.",
+      "subtitle": "Plantora — טבעוני · צמחי. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "למנות",
+      "aboutTitle": "הסיפור של Plantora.",
+      "aboutText": "מהאדמה לצלחת — בלי פשרות על טעם. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "קערת שורשים",
+          "₪28 · קלאסי",
+          "קערת שורשים — מהאדמה לצלחת — בלי פשרות על טעם."
+        ],
+        [
+          "בורגר עדשים",
+          "₪32 · מומלץ",
+          "בורגר עדשים — מהאדמה לצלחת — בלי פשרות על טעם."
+        ],
+        [
+          "פסטה פסטו קשיו",
+          "₪36 · שף",
+          "פסטה פסטו קשיו — מהאדמה לצלחת — בלי פשרות על טעם."
+        ],
+        [
+          "טאקו כרובית",
+          "₪40 · עונתי",
+          "טאקו כרובית — מהאדמה לצלחת — בלי פשרות על טעם."
+        ],
+        [
+          "סלט ירוק ענק",
+          "₪24 · ביתי",
+          "סלט ירוק ענק — מהאדמה לצלחת — בלי פשרות על טעם."
+        ],
+        [
+          "מוס שוקולד טבעוני",
+          "₪30 · מיוחד",
+          "מוס שוקולד טבעוני — מהאדמה לצלחת — בלי פשרות על טעם."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של קערת שורשים הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Plantora הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שפית עלה ירוק",
+      "chefBio": "מטבח צמחי עשור. שורשים, קטניות וירק חי.",
+      "chefQuote": "הצמח הוא הכוכב — לא תחליף.",
+      "pageTitles": {
+        "plates": "מנות",
+        "garden": "הגינה",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Plantora — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Plantora."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "קערת שורשים",
+      "chefPickText": "מהאדמה לצלחת — בלי פשרות על טעם.",
+      "page1Subtitle": "מנות — כל מה שצריך לדעת.",
+      "page2Subtitle": "הגינה — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Plantora.",
+      "aboutPageLead": "מהאדמה לצלחת — בלי פשרות על טעם.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "מנות",
+      "page2Title": "הגינה"
+    }
+  },
+  {
+    "id": "smokepit",
+    "name": "Smokepit",
+    "brand": "Smokepit",
+    "logo": "M",
+    "niche": "ברביקיו · מעשנה",
+    "nicheKey": "bbq",
+    "desc": "תבנית ברביקיו: עמודות עשן, בשר מעושן וטופס הזמנה כהה — בור כפרי לוהט.",
+    "fonts": {
+      "display": "Bebas+Neue&family=Heebo:wght@500;700",
+      "displayCss": "\"Bebas Neue\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#120c08",
+      "surface": "#1c140e",
+      "text": "#f3e8d8",
+      "muted": "#a89078",
+      "primary": "#ea580c",
+      "primaryText": "#120c08",
+      "line": "rgba(243,232,216,0.12)",
+      "dark": "#080604"
+    },
+    "layout": "smokePlume",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "meats",
+        "בשרים",
+        "/meats"
+      ],
+      [
+        "smoke",
+        "העשן",
+        "/smoke"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1432139555190-58575bd5c8ea?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1600891964092-4316c288032e?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1529692236671-f1f6cf9683ba?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1432139555190-58575bd5c8ea?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "עשן נמוך, חום ארוך, טעם עמוק.",
+      "subtitle": "Smokepit — ברביקיו · מעשנה. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לבשרים",
+      "aboutTitle": "הסיפור של Smokepit.",
+      "aboutText": "עשן נמוך, חום ארוך, טעם עמוק. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "ברסקט 12 שעות",
+          "₪28 · קלאסי",
+          "ברסקט 12 שעות — עשן נמוך, חום ארוך, טעם עמוק."
+        ],
+        [
+          "רברס מעושן",
+          "₪32 · מומלץ",
+          "רברס מעושן — עשן נמוך, חום ארוך, טעם עמוק."
+        ],
+        [
+          "כנפיים גלייז",
+          "₪36 · שף",
+          "כנפיים גלייז — עשן נמוך, חום ארוך, טעם עמוק."
+        ],
+        [
+          "נקניקיות בית",
+          "₪40 · עונתי",
+          "נקניקיות בית — עשן נמוך, חום ארוך, טעם עמוק."
+        ],
+        [
+          "תירס מעושן",
+          "₪24 · ביתי",
+          "תירס מעושן — עשן נמוך, חום ארוך, טעם עמוק."
+        ],
+        [
+          "צלעות Baby",
+          "₪30 · מיוחד",
+          "צלעות Baby — עשן נמוך, חום ארוך, טעם עמוק."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של ברסקט 12 שעות הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Smokepit הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "פיטמאסטר אסף עשן",
+      "chefBio": "עישון נמוך ואיטי. עצים מקומיים בלבד.",
+      "chefQuote": "העשן הוא תבלין — לא מסך.",
+      "pageTitles": {
+        "meats": "בשרים",
+        "smoke": "העשן",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Smokepit — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Smokepit."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "ברסקט 12 שעות",
+      "chefPickText": "עשן נמוך, חום ארוך, טעם עמוק.",
+      "page1Subtitle": "בשרים — כל מה שצריך לדעת.",
+      "page2Subtitle": "העשן — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Smokepit.",
+      "aboutPageLead": "עשן נמוך, חום ארוך, טעם עמוק.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "בשרים",
+      "page2Title": "העשן"
+    }
+  },
+  {
+    "id": "pastafora",
+    "name": "Pastafora",
+    "brand": "Pastafora",
+    "logo": "F",
+    "niche": "פסטה · איטלקי",
+    "nicheKey": "pasta",
+    "desc": "תבנית פסטה: מערבולות נודלס, רטבים עשירים וטופס הזמנה איטלקי — טרטוריה חמה.",
+    "fonts": {
+      "display": "Playfair+Display:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Playfair Display\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#faf7f2",
+      "surface": "#ffffff",
+      "text": "#2c1810",
+      "muted": "#8b6b5a",
+      "primary": "#b91c1c",
+      "primaryText": "#faf7f2",
+      "line": "rgba(44,24,16,0.12)",
+      "dark": "#1a0e0a"
+    },
+    "layout": "noodleSwirl",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "pastas",
+        "פסטות",
+        "/pastas"
+      ],
+      [
+        "sauce",
+        "הרטבים",
+        "/sauce"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1625220194771-7ebdea0b6162?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1598866594230-a7c12756260f?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1481931093639-3e9aca12165c?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1611270629569-8b357cb88da9?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1473093295043-cdd812d0e601?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "הבצק טרי — הרטב מספר סיפור.",
+      "subtitle": "Pastafora — פסטה · איטלקי. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "לפסטות",
+      "aboutTitle": "הסיפור של Pastafora.",
+      "aboutText": "הבצק טרי — הרטב מספר סיפור. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "קאצ׳יו אה פפה",
+          "₪28 · קלאסי",
+          "קאצ׳יו אה פפה — הבצק טרי — הרטב מספר סיפור."
+        ],
+        [
+          "טליאטלה בולונז",
+          "₪32 · מומלץ",
+          "טליאטלה בולונז — הבצק טרי — הרטב מספר סיפור."
+        ],
+        [
+          "רביולי דלעת",
+          "₪36 · שף",
+          "רביולי דלעת — הבצק טרי — הרטב מספר סיפור."
+        ],
+        [
+          "ספגטי וונגולה",
+          "₪40 · עונתי",
+          "ספגטי וונגולה — הבצק טרי — הרטב מספר סיפור."
+        ],
+        [
+          "פנה ארביאטה",
+          "₪24 · ביתי",
+          "פנה ארביאטה — הבצק טרי — הרטב מספר סיפור."
+        ],
+        [
+          "לזניה ביתית",
+          "₪30 · מיוחד",
+          "לזניה ביתית — הבצק טרי — הרטב מספר סיפור."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של קאצ׳יו אה פפה הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Pastafora הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "שף מרקו נודלס",
+      "chefBio": "פסטה טרייה כל יום. ביצים מקמפיליה.",
+      "chefQuote": "הרטב מחבק — לא מטביע.",
+      "pageTitles": {
+        "pastas": "פסטות",
+        "sauce": "הרטבים",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Pastafora — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Pastafora."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "קאצ׳יו אה פפה",
+      "chefPickText": "הבצק טרי — הרטב מספר סיפור.",
+      "page1Subtitle": "פסטות — כל מה שצריך לדעת.",
+      "page2Subtitle": "הרטבים — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Pastafora.",
+      "aboutPageLead": "הבצק טרי — הרטב מספר סיפור.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "פסטות",
+      "page2Title": "הרטבים"
+    }
+  },
+  {
+    "id": "dessertlab",
+    "name": "Dessertlab",
+    "brand": "Dessertlab",
+    "logo": "L",
+    "niche": "קינוחים · פטיסרי",
+    "nicheKey": "dessert",
+    "desc": "תבנית פטיסרי: גבישי סוכר, קינוחים גיאומטריים וטופס הזמנה אלגנטי — מעבדת מתיקות.",
+    "fonts": {
+      "display": "Great+Vibes&family=Heebo:wght@500;700",
+      "displayCss": "\"Great Vibes\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#1a1220",
+      "surface": "#241832",
+      "text": "#f8eef8",
+      "muted": "#b89bb8",
+      "primary": "#e879f9",
+      "primaryText": "#1a1220",
+      "line": "rgba(248,238,248,0.12)",
+      "dark": "#0e0a14"
+    },
+    "layout": "sugarCrystal",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "sweets",
+        "מתוקים",
+        "/sweets"
+      ],
+      [
+        "atelier",
+        "האטלייה",
+        "/atelier"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1565958011703-44f9829ba187?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1563729784474-d77dbb933a9e?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "סוכר כחומר גלם — לא רק מתיקות.",
+      "subtitle": "Dessertlab — קינוחים · פטיסרי. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "למתוקים",
+      "aboutTitle": "הסיפור של Dessertlab.",
+      "aboutText": "סוכר כחומר גלם — לא רק מתיקות. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "טארטלט לימון",
+          "₪28 · קלאסי",
+          "טארטלט לימון — סוכר כחומר גלם — לא רק מתיקות."
+        ],
+        [
+          "אקלר וניל",
+          "₪32 · מומלץ",
+          "אקלר וניל — סוכר כחומר גלם — לא רק מתיקות."
+        ],
+        [
+          "מוס שוקולד",
+          "₪36 · שף",
+          "מוס שוקולד — סוכר כחומר גלם — לא רק מתיקות."
+        ],
+        [
+          "מאקרון שקד",
+          "₪40 · עונתי",
+          "מאקרון שקד — סוכר כחומר גלם — לא רק מתיקות."
+        ],
+        [
+          "פנקוטה דבש",
+          "₪24 · ביתי",
+          "פנקוטה דבש — סוכר כחומר גלם — לא רק מתיקות."
+        ],
+        [
+          "עוגת שכבות",
+          "₪30 · מיוחד",
+          "עוגת שכבות — סוכר כחומר גלם — לא רק מתיקות."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של טארטלט לימון הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Dessertlab הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "פטיסייר נועה גביש",
+      "chefBio": "מעבדת קינוחים עם דיוק מדעי.",
+      "chefQuote": "סוכר הוא מבנה — לא רק מתיקות.",
+      "pageTitles": {
+        "sweets": "מתוקים",
+        "atelier": "האטלייה",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Dessertlab — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Dessertlab."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "טארטלט לימון",
+      "chefPickText": "סוכר כחומר גלם — לא רק מתיקות.",
+      "page1Subtitle": "מתוקים — כל מה שצריך לדעת.",
+      "page2Subtitle": "האטלייה — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Dessertlab.",
+      "aboutPageLead": "סוכר כחומר גלם — לא רק מתיקות.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "מתוקים",
+      "page2Title": "האטלייה"
+    }
+  },
+  {
+    "id": "juicepress",
+    "name": "Juicepress",
+    "brand": "Juicepress",
+    "logo": "J",
+    "niche": "מיצים · בר בריאות",
+    "nicheKey": "juice",
+    "desc": "תבנית מיצים: פרצי הדרים, בקבוקים זוהרים וטופס הזמנה רענן — בר מיצים אנרגטי.",
+    "fonts": {
+      "display": "Space+Grotesk:wght@600;700&family=Heebo:wght@500;700",
+      "displayCss": "\"Space Grotesk\", \"Heebo\""
+    },
+    "palette": {
+      "bg": "#fffbeb",
+      "surface": "#ffffff",
+      "text": "#1c1917",
+      "muted": "#78716c",
+      "primary": "#f59e0b",
+      "primaryText": "#1c1917",
+      "line": "rgba(28,25,23,0.1)",
+      "dark": "#0c0a09"
+    },
+    "layout": "citrusBurst",
+    "pages": [
+      [
+        "home",
+        "בית",
+        "/"
+      ],
+      [
+        "juices",
+        "מיצים",
+        "/juices"
+      ],
+      [
+        "press",
+        "הסחיטה",
+        "/press"
+      ],
+      [
+        "about",
+        "אודות",
+        "/about"
+      ],
+      [
+        "contact",
+        "הזמנה",
+        "/contact"
+      ]
+    ],
+    "images": {
+      "hero": "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=2000&q=85",
+      "a": "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=1400&q=85",
+      "b": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1400&q=85",
+      "c": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=1400&q=85",
+      "d": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=1400&q=85",
+      "e": "https://images.unsplash.com/photo-1589733955941-5eeaf752f6dd?auto=format&fit=crop&w=1400&q=85",
+      "f": "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=1400&q=85",
+      "g": "https://images.unsplash.com/photo-1570831739434-3f4c2d4e0d8a?auto=format&fit=crop&w=1400&q=85",
+      "chef": "https://images.unsplash.com/photo-1577219491135-ce391730fb2c?auto=format&fit=crop&w=1400&q=85",
+      "gallery1": "https://images.unsplash.com/photo-1622597467836-f3285f2131b8?auto=format&fit=crop&w=1200&q=85",
+      "gallery2": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?auto=format&fit=crop&w=1200&q=85",
+      "gallery3": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&w=1200&q=85",
+      "gallery4": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=1200&q=85"
+    },
+    "copy": {
+      "title": "סחוט עכשיו — נשתייה מיד.",
+      "subtitle": "Juicepress — מיצים · בר בריאות. טעם מדויק, חוויה שלמה.",
+      "primary": "הזמינו עכשיו",
+      "secondary": "למיצים",
+      "aboutTitle": "הסיפור של Juicepress.",
+      "aboutText": "סחוט עכשיו — נשתייה מיד. אנחנו עובדים טרי, כל יום מחדש.",
+      "contactTitle": "מתי נתראה?",
+      "contactText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "items": [
+        [
+          "כתום ג׳ינג׳ר",
+          "₪28 · קלאסי",
+          "כתום ג׳ינג׳ר — סחוט עכשיו — נשתייה מיד."
+        ],
+        [
+          "ירוק כלורופיל",
+          "₪32 · מומלץ",
+          "ירוק כלורופיל — סחוט עכשיו — נשתייה מיד."
+        ],
+        [
+          "סלק תפוח",
+          "₪36 · שף",
+          "סלק תפוח — סחוט עכשיו — נשתייה מיד."
+        ],
+        [
+          "אננס מנטה",
+          "₪40 · עונתי",
+          "אננס מנטה — סחוט עכשיו — נשתייה מיד."
+        ],
+        [
+          "גזר כורכום",
+          "₪24 · ביתי",
+          "גזר כורכום — סחוט עכשיו — נשתייה מיד."
+        ],
+        [
+          "לימונדה ורודה",
+          "₪30 · מיוחד",
+          "לימונדה ורודה — סחוט עכשיו — נשתייה מיד."
+        ]
+      ],
+      "reviews": [
+        [
+          "המנה של כתום ג׳ינג׳ר הייתה מושלמת.",
+          "יובל מ.",
+          "אורח קבוע"
+        ],
+        [
+          "Juicepress הפך להרגל שלי בסופי שבוע.",
+          "מאיה כ.",
+          "בלוגרית"
+        ],
+        [
+          "שירות חם, מנות מדויקות, אווירה מדויקת.",
+          "איתי ל.",
+          "חוגג"
+        ]
+      ],
+      "faq": [
+        [
+          "יש אפשרויות טבעוניות?",
+          "כן — בדקו בתפריט המסומן."
+        ],
+        [
+          "אפשר להזמין מראש?",
+          "בהחלט דרך טופס ההזמנה."
+        ],
+        [
+          "יש חניה?",
+          "חניון קרוב במרחק הליכה קצרה."
+        ]
+      ],
+      "hours": "א׳–ה׳ 11:00–22:00 · ו׳ 10:00–15:00 · שבת 18:00–22:00",
+      "chefName": "ג׳וסר תמר פרץ",
+      "chefBio": "סחיטה קרה ומאזן טעמים.",
+      "chefQuote": "המיץ חייב להיות חי.",
+      "pageTitles": {
+        "juices": "מיצים",
+        "press": "הסחיטה",
+        "about": "אודות",
+        "contact": "הזמנה"
+      },
+      "stat1": "10",
+      "stat1Label": "שנות ניסיון",
+      "stat2": "4.9",
+      "stat2Label": "דירוג",
+      "stat3": "6",
+      "stat3Label": "מנות חתימה",
+      "ctaBandTitle": "מוכנים להזמין?",
+      "ctaBandText": "הזמינו מ-Juicepress — נדאג לשאר.",
+      "processTitle": "מהמטבח עד אליכם",
+      "processSteps": [
+        [
+          "בחירה",
+          "חומרי גלם טריים בלבד."
+        ],
+        [
+          "הכנה",
+          "טכניקה מדויקת בלי קיצורי דרך."
+        ],
+        [
+          "הגשה",
+          "חמים, יפים, בזמן."
+        ]
+      ],
+      "categories": [
+        [
+          "חתימה",
+          "המנות המובילות"
+        ],
+        [
+          "קלאסיקה",
+          "טעמים שחוזרים"
+        ],
+        [
+          "עונתי",
+          "לפי השוק"
+        ],
+        [
+          "צדדים",
+          "השלמות מושלמות"
+        ]
+      ],
+      "pairings": [
+        [
+          "מנה + שתייה",
+          "איזון מושלם"
+        ],
+        [
+          "חריף + רענון",
+          "חום מול קרירות"
+        ],
+        [
+          "מתוק + מלוח",
+          "ניגוד שעובד"
+        ]
+      ],
+      "techSteps": [
+        [
+          "הכנה",
+          "מיז-אן-פלאס מסודר."
+        ],
+        [
+          "בישול",
+          "חום נכון בזמן הנכון."
+        ],
+        [
+          "טעימה",
+          "כוונון אחרון."
+        ],
+        [
+          "הגשה",
+          "צלחת נקייה ומדויקת."
+        ]
+      ],
+      "materials": [
+        [
+          "חומר ראשי",
+          "מקור איכותי"
+        ],
+        [
+          "תבלין בית",
+          "תערובת שלנו"
+        ],
+        [
+          "שמן/חמאה",
+          "טעם עמוק"
+        ]
+      ],
+      "timeline": [
+        [
+          "2015",
+          "הניסויים הראשונים."
+        ],
+        [
+          "2020",
+          "פתיחת Juicepress."
+        ],
+        [
+          "2025",
+          "תפריט חתימה מחודש."
+        ]
+      ],
+      "values": [
+        [
+          "טריות",
+          "כל יום מחדש."
+        ],
+        [
+          "דיוק",
+          "בלי פשרות."
+        ],
+        [
+          "אירוח",
+          "אורחים במרכז."
+        ]
+      ],
+      "featuredTitle": "החתימות שלנו",
+      "galleryTitle": "רגעים מהמטבח",
+      "reviewsTitle": "מה אומרים האורחים",
+      "menuListTitle": "כל המנות",
+      "pairingTitle": "זיווגים מומלצים",
+      "chefPickEyebrow": "בחירת השף",
+      "chefPickTitle": "כתום ג׳ינג׳ר",
+      "chefPickText": "סחוט עכשיו — נשתייה מיד.",
+      "page1Subtitle": "מיצים — כל מה שצריך לדעת.",
+      "page2Subtitle": "הסחיטה — מאחורי הקלעים.",
+      "techTitle": "תהליך העבודה",
+      "matTitle": "חומרי הגלם",
+      "eventsTitle": "אירועים מיוחדים",
+      "eventsText": "ערבי שיתוף ותפריטים עונתיים.",
+      "eventsMeta": "מקומות מוגבלים",
+      "aboutEyebrow": "הסיפור המלא",
+      "aboutPageTitle": "הסיפור של Juicepress.",
+      "aboutPageLead": "סחוט עכשיו — נשתייה מיד.",
+      "timelineTitle": "איך הגענו לכאן",
+      "chefLabel": "השף / המארח",
+      "contactEyebrow": "יצירת קשר",
+      "contactPageTitle": "הזמנה",
+      "contactPageText": "ספרו כמה אתם ומתי — נשמור לכם מקום.",
+      "hoursTitle": "שעות פעילות",
+      "mapLabel": "מיקום",
+      "faqTitle": "שאלות נפוצות",
+      "page1Title": "מיצים",
+      "page2Title": "הסחיטה"
+    }
+  }
+]
