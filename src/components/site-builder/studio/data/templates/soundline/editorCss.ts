@@ -3,6 +3,9 @@ export const soundlineEditorCss = `
 
 [data-template-id="soundline"],
 [data-template-id="soundline-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #FF4D6D;
   --bg: #060609;
   --surface: #101016;
@@ -247,5 +250,10 @@ export const soundlineEditorCss = `
   [data-template-id="soundline-preview"] .sound-hero-title {
     text-shadow: 5px 5px 0 rgba(255, 77, 109, .72);
   }
+}
+
+[data-template-id="soundline"] .text-center,
+[data-template-id="soundline-preview"] .text-center {
+  text-align: center;
 }
 `;

@@ -3,6 +3,9 @@ export const pawhausEditorCss = `
 
 [data-template-id="pawhaus"],
 [data-template-id="pawhaus-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #F59E0B;
   --bg: #FAF7F2;
   --surface: #FFFFFF;
@@ -125,5 +128,10 @@ export const pawhausEditorCss = `
 [data-template-id="pawhaus-preview"] input,
 [data-template-id="pawhaus-preview"] textarea {
   font-family: "Sora", sans-serif;
+}
+
+[data-template-id="pawhaus"] .text-center,
+[data-template-id="pawhaus-preview"] .text-center {
+  text-align: center;
 }
 `;

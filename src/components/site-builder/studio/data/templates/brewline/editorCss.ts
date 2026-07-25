@@ -1,6 +1,9 @@
 export const brewlineEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;600;700;800&display=swap');
 [data-template-id="brewline"], [data-template-id="brewline-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #8B5E3C;
   --clay: #8B5E3C;
   --bg: #1A1410;
@@ -94,5 +97,10 @@ export const brewlineEditorCss = `
 @keyframes brewline-orbit {
   0% { transform: rotate(0deg) translateX(10px) rotate(0deg); }
   100% { transform: rotate(360deg) translateX(10px) rotate(-360deg); }
+}
+
+[data-template-id="brewline"] .text-center,
+[data-template-id="brewline-preview"] .text-center {
+  text-align: center;
 }
 `;

@@ -1,22 +1,37 @@
 export const archoraEditorCss = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap');
 [data-template-id="archora"], [data-template-id="archora-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #D4FF00;
   --bg: #111111;
   --surface: #1A1A1A;
   --text: #F5F5F0;
   --muted: #9A9A92;
   --dark: #0A0A0A;
-  font-family: "Space Grotesk", sans-serif;
+  font-family: "Heebo", sans-serif;
   color: var(--text);
   background: var(--bg);
   scroll-behavior: smooth;
+  text-align: right;
+}
+[data-template-id="archora"] .text-center,
+[data-template-id="archora-preview"] .text-center {
+  text-align: center;
 }
 [data-template-id="archora"] *, [data-template-id="archora-preview"] * {
   border-radius: 0 !important;
 }
-[data-template-id="archora"] .ar-display, [data-template-id="archora-preview"] .ar-display {
-  font-family: "Syne", "Space Grotesk", sans-serif;
+[data-template-id="archora"] .ar-latin,
+[data-template-id="archora-preview"] .ar-latin {
+  font-family: "Space Grotesk", "Heebo", sans-serif;
+  letter-spacing: -0.04em;
+}
+[data-template-id="archora"] .ar-display,
+[data-template-id="archora-preview"] .ar-display {
+  font-family: "Heebo", sans-serif;
+  letter-spacing: -0.02em;
 }
 [data-template-id="archora"] .ar-hero-image, [data-template-id="archora-preview"] .ar-hero-image {
   animation: archoraKenBurns 22s ease-in-out infinite alternate;
@@ -37,15 +52,8 @@ export const archoraEditorCss = `
 }
 [data-template-id="archora"] .ar-project-card:hover .ar-project-img,
 [data-template-id="archora-preview"] .ar-project-card:hover .ar-project-img {
-  transform: scale(1.12);
-  filter: saturate(1.15) contrast(1.08);
-}
-[data-template-id="archora"] .ar-horizontal-scroll, [data-template-id="archora-preview"] .ar-horizontal-scroll {
-  scrollbar-width: none;
-}
-[data-template-id="archora"] .ar-horizontal-scroll::-webkit-scrollbar,
-[data-template-id="archora-preview"] .ar-horizontal-scroll::-webkit-scrollbar {
-  display: none;
+  transform: scale(1.08);
+  filter: saturate(1.12) contrast(1.05);
 }
 [data-template-id="archora"] .ar-service-panel, [data-template-id="archora-preview"] .ar-service-panel {
   background:
@@ -55,7 +63,7 @@ export const archoraEditorCss = `
 }
 [data-template-id="archora"] .ar-service-panel:hover,
 [data-template-id="archora-preview"] .ar-service-panel:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
   border-color: var(--p);
 }
 [data-template-id="archora"] .ar-grid-noise, [data-template-id="archora-preview"] .ar-grid-noise {
@@ -63,9 +71,6 @@ export const archoraEditorCss = `
     linear-gradient(rgba(212,255,0,0.08) 1px, transparent 1px),
     linear-gradient(90deg, rgba(212,255,0,0.08) 1px, transparent 1px);
   background-size: 72px 72px;
-}
-[data-template-id="archora"] .ar-lime-band, [data-template-id="archora-preview"] .ar-lime-band {
-  animation: archoraBandPulse 5s ease-in-out infinite;
 }
 [data-template-id="archora"] .ar-timeline-line, [data-template-id="archora-preview"] .ar-timeline-line {
   background: linear-gradient(180deg, transparent, var(--p), transparent);
@@ -78,10 +83,30 @@ export const archoraEditorCss = `
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(245, 245, 240, 0.18);
   color: var(--text);
+  text-align: right;
 }
 [data-template-id="archora"] .ar-field::placeholder,
 [data-template-id="archora-preview"] .ar-field::placeholder {
   color: rgba(245, 245, 240, 0.45);
+}
+[data-template-id="archora"] .ar-cta-btn,
+[data-template-id="archora-preview"] .ar-cta-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 220px;
+  background: #111111;
+  color: var(--p);
+  border: 3px solid #111111;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  transition: background 250ms ease, color 250ms ease, transform 250ms ease;
+}
+[data-template-id="archora"] .ar-cta-btn:hover,
+[data-template-id="archora-preview"] .ar-cta-btn:hover {
+  background: transparent;
+  color: #111111;
+  transform: translateY(-2px);
 }
 
 @keyframes archoraKenBurns {
@@ -95,10 +120,6 @@ export const archoraEditorCss = `
 @keyframes archoraMarquee {
   from { transform: translateX(0); }
   to { transform: translateX(50%); }
-}
-@keyframes archoraBandPulse {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.08); }
 }
 @keyframes archoraNodePulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(212, 255, 0, 0.48); }

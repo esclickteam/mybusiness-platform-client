@@ -154,7 +154,7 @@ function Services({ data }: { data: Record<string, any> }) {
                   <h3 className="t-display text-4xl font-bold uppercase leading-none text-white">{title}</h3>
                   <p className="mt-4 text-sm font-semibold leading-6 text-white/58">{text}</p>
                 </div>
-                <strong className="t-display text-left text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
+                <strong className="t-display text-right text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -246,7 +246,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <p className="mt-6 max-w-md text-base font-semibold leading-8 text-white/62">{text}</p>
                 <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-5 border-t border-white/14 pt-6">
                   <strong className="t-display text-7xl font-bold leading-none text-[var(--blue)]">{price}</strong>
-                  <span className="max-w-[14rem] text-left text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
+                  <span className="max-w-[14rem] text-right text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
                 </div>
               </article>
             </Reveal>

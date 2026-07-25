@@ -3,6 +3,9 @@ export const atelierxEditorCss = `
 
 [data-template-id="atelierx"],
 [data-template-id="atelierx-preview"] {
+  /* wow-rtl-align */
+  text-align: right;
+
   --p: #111111;
   --a: #E11D48;
   --bg: #FAFAFA;
@@ -98,5 +101,10 @@ export const atelierxEditorCss = `
 [data-template-id="atelierx-preview"] input,
 [data-template-id="atelierx-preview"] textarea {
   font-family: "Inter Tight", sans-serif;
+}
+
+[data-template-id="atelierx"] .text-center,
+[data-template-id="atelierx-preview"] .text-center {
+  text-align: center;
 }
 `;
