@@ -1,35 +1,98 @@
-import React, { useEffect, useState } from "react";
-import { LayoutTemplate } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 import type { MySiteSummary } from "../../api/mySitesApi";
 import { getTemplateCoverUrl } from "../../utils/templateCover";
-import { scheduleGalleryPreview } from "../../utils/templatePreviewScheduler";
+import {
+  releaseGalleryPreview,
+  scheduleGalleryPreview,
+} from "../../utils/templatePreviewScheduler";
 import IframeCardPreview from "./IframeCardPreview";
 
 type MySiteCardPreviewProps = {
   site: MySiteSummary;
 };
 
+function NeutralSitePlaceholder({
+  label,
+  loading = false,
+}: {
+  label?: string;
+  loading?: boolean;
+}) {
+  return (
+    <div
+      className={`absolute inset-0 flex items-end justify-start bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 p-4 ${
+        loading ? "animate-pulse" : ""
+      }`}
+    >
+      <div className="rounded-md bg-white/80 px-3 py-2 text-xs font-black text-slate-700 shadow-sm">
+        {label || "האתר שלי"}
+      </div>
+    </div>
+  );
+}
+
 /**
- * My Sites card preview — live embed of the saved site so the card
- * reflects the latest published/draft content (text, media, layout).
- * Template cover paints instantly as a poster until the embed mounts.
+ * My Sites card preview — live embed of the saved/published site.
+ * Never flash the template's stock cover; show a neutral placeholder until
+ * the latest saved site iframe is ready.
  */
 export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
   const siteId = String(site._id || "").trim();
   const templateKey = String(site.templateKey || "").trim();
-  const cover =
-    String(site.thumbnailUrl || "").trim() || getTemplateCoverUrl(templateKey);
-  const cacheKey = String(site.updatedAt || site.publishedAt || "").trim();
+  const templateCover = getTemplateCoverUrl(templateKey);
+  const rawThumbnail = String(site.thumbnailUrl || "").trim();
+  // Skip thumbnails that are just the template stock poster — those look
+  // unrelated to the user's edited site.
+  const sitePoster =
+    rawThumbnail && rawThumbnail !== templateCover ? rawThumbnail : "";
+  const cacheKey = String(
+    site.updatedAt || (site as { publishedAt?: string }).publishedAt || "",
+  ).trim();
+  const previewKey = siteId ? `site:${siteId}` : "";
 
+  const frameRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(true);
   const [active, setActive] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
   useEffect(() => {
-    if (!siteId) return;
+    const frame = frameRef.current;
+    if (!frame || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
 
-    const subscribe = scheduleGalleryPreview(`site:${siteId}`);
-    return subscribe((isActive) => setActive(isActive));
-  }, [siteId]);
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting || entry.intersectionRatio > 0);
+      },
+      { rootMargin: "360px 0px", threshold: 0.01 },
+    );
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!previewKey) return;
+
+    if (!inView) {
+      releaseGalleryPreview(previewKey);
+      setActive(false);
+      setIframeLoaded(false);
+      return;
+    }
+
+    const subscribe = scheduleGalleryPreview(previewKey, { priority: true });
+    return subscribe((isActive) => {
+      setActive(isActive);
+      if (!isActive) setIframeLoaded(false);
+    });
+  }, [inView, previewKey]);
+
+  useEffect(() => {
+    setIframeLoaded(false);
+  }, [cacheKey, siteId]);
 
   const embedSrc = siteId
     ? `/embed/site/${encodeURIComponent(siteId)}${
@@ -37,45 +100,47 @@ export default function MySiteCardPreview({ site }: MySiteCardPreviewProps) {
       }`
     : "";
 
-  return (
-    <div className="relative h-full w-full overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
-      {cover ? (
-        <img
-          src={cover}
-          alt={site.name || "תצוגה מקדימה של האתר"}
-          loading="eager"
-          decoding="async"
-          className="absolute inset-0 h-full w-full object-cover object-top transition duration-500 group-hover:scale-[1.025]"
-        />
-      ) : (
-        <div className="relative flex h-full flex-col items-center justify-center gap-3 overflow-hidden px-4">
-          <div className="absolute -left-8 -top-8 h-32 w-32 rounded-full bg-violet-200/45 blur-3xl" />
-          <div className="absolute -bottom-12 -right-8 h-36 w-36 rounded-full bg-fuchsia-200/35 blur-3xl" />
-          <div className="relative flex h-14 w-14 items-center justify-center rounded-[18px] border border-white bg-white/80 shadow-md backdrop-blur">
-            <LayoutTemplate className="h-7 w-7 text-violet-500" />
-          </div>
-          <div className="relative text-center">
-            <p className="text-sm font-black text-slate-700">
-              {site.templateName || site.templateKey || "אתר Bizuply"}
-            </p>
-            <p className="mt-1 text-xs text-slate-400">
-              תצוגה מקדימה תופיע לאחר השמירה
-            </p>
-          </div>
-        </div>
-      )}
+  const showLive = active && iframeLoaded;
 
-      {!active && cover ? (
-        <div className="pointer-events-none absolute inset-0 animate-pulse bg-white/10" />
-      ) : null}
+  return (
+    <div
+      ref={frameRef}
+      className="relative h-full w-full overflow-hidden bg-[#eef1f4]"
+    >
+      <div
+        className={`absolute inset-0 transition-opacity duration-200 ${
+          showLive ? "opacity-0" : "opacity-100"
+        }`}
+      >
+        {sitePoster ? (
+          <img
+            src={sitePoster}
+            alt={site.name || "תצוגה מקדימה של האתר"}
+            loading="eager"
+            decoding="async"
+            className="absolute inset-0 h-full w-full object-cover object-top"
+          />
+        ) : (
+          <NeutralSitePlaceholder
+            label={site.name || site.templateName || "האתר שלי"}
+            loading={!showLive}
+          />
+        )}
+      </div>
 
       {active && embedSrc ? (
-        <div className="absolute inset-0 bg-white">
+        <div
+          className={`absolute inset-0 bg-transparent transition-opacity duration-200 ${
+            showLive ? "opacity-100" : "opacity-0"
+          }`}
+        >
           <IframeCardPreview
             src={embedSrc}
             title={site.name || "תצוגה מקדימה של האתר"}
             activateOn="immediate"
             enableHoverPan
+            eagerLoad
+            onLoad={() => setIframeLoaded(true)}
           />
         </div>
       ) : null}

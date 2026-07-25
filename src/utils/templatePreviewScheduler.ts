@@ -5,10 +5,10 @@ const activated = new Set<string>();
 const queue: string[] = [];
 let pumping = false;
 
-/** Keep gallery light, but never drop visible cards forever. */
-const BATCH_SIZE = 3;
-const BATCH_DELAY_MS = 40;
-const MAX_ACTIVE = 12;
+/** Keep gallery light, but mount visible cards quickly. */
+const BATCH_SIZE = 6;
+const BATCH_DELAY_MS = 24;
+const MAX_ACTIVE = 16;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "").trim().toLowerCase();
