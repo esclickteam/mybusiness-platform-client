@@ -34,5 +34,13 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["business", "productivity", "management", "tools"]
+  "categories": ["business", "productivity", "management", "tools"],
+  "shortcuts": [
+    {
+      "name": "Support Chat",
+      "short_name": "Support",
+      "url": "/admin/support-chat",
+      "description": "Open live customer support inbox"
+    }
+  ]
 }
