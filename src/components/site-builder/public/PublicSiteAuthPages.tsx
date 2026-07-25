@@ -18,7 +18,12 @@ type PublicSiteAuthShellProps = {
   children: React.ReactNode;
 };
 
-function PublicSiteAuthShell({ site, title, children }: PublicSiteAuthShellProps) {
+function PublicSiteAuthShell({
+  site,
+  title,
+  subtitle,
+  children,
+}: PublicSiteAuthShellProps & { subtitle?: string }) {
   const siteName = String(site?.name || "האתר");
   const brandColor = String(site?.brand?.primaryColor || "#6366F1");
   const settings = mergeSiteAuthSettings(site?.pluginSettings?.["site-auth"]);
@@ -35,6 +40,14 @@ function PublicSiteAuthShell({ site, title, children }: PublicSiteAuthShellProps
           >
             {title}
           </h1>
+          {subtitle ? (
+            <p
+              className="mt-2 text-sm font-medium opacity-80"
+              style={{ color: settings.formTextColor || "#1e293b" }}
+            >
+              {subtitle}
+            </p>
+          ) : null}
         </div>
 
         <div className="border p-6 shadow-sm" style={shellStyle}>
@@ -109,7 +122,11 @@ export function PublicSiteLoginPage({ site }: { site: Record<string, any> }) {
   }, [isAuthenticated, navigate, settings.memberAreaPath]);
 
   return (
-    <PublicSiteAuthShell site={site} title={settings.loginPageTitle}>
+    <PublicSiteAuthShell
+      site={site}
+      title={settings.loginPageTitle}
+      subtitle={settings.loginSubtitle}
+    >
       <SiteAuthLoginForm
         settings={settings}
         brandColor={brandColor}

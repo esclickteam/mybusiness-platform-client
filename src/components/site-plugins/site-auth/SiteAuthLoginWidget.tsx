@@ -1,13 +1,28 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { GripVertical, LogIn, LogOut, UserRound } from "lucide-react";
+import { GripVertical, UserRound } from "lucide-react";
 
 import {
   mergeSiteAuthSettings,
   type SiteAuthWidgetSettings,
 } from "./siteAuthUtils";
 import { resolveSiteAuthAccentColor } from "./siteAuthFormStyles";
+import { SiteAuthTriggerIcon } from "./siteAuthTriggerIcons";
 import { useOptionalSiteMemberAuth } from "../../../context/SiteMemberAuthContext";
+
+function resolveButtonDimensions(size: SiteAuthWidgetSettings["buttonSize"], display: string) {
+  if (display === "text") {
+    return { className: "rounded-lg px-2 py-1", iconSize: 16 };
+  }
+  if (display === "button") {
+    if (size === "sm") return { className: "rounded-full px-3 py-2 text-xs", iconSize: 14 };
+    if (size === "lg") return { className: "rounded-full px-5 py-3 text-base", iconSize: 18 };
+    return { className: "rounded-full px-4 py-2.5 text-sm", iconSize: 16 };
+  }
+  if (size === "sm") return { className: "h-10 w-10 rounded-full", iconSize: 18 };
+  if (size === "lg") return { className: "h-14 w-14 rounded-full", iconSize: 26 };
+  return { className: "h-12 w-12 rounded-full", iconSize: 22 };
+}
 
 type SiteAuthLoginWidgetProps = {
   site: Record<string, any>;
@@ -103,20 +118,25 @@ export default function SiteAuthLoginWidget({
   }
 
   const buttonLabel = isAuthenticated ? settings.logoutButtonLabel : settings.loginButtonLabel;
-  const ButtonIcon = isAuthenticated ? LogOut : LogIn;
+  const iconKey = isAuthenticated ? settings.logoutIcon : settings.loginIcon;
   const display = settings.buttonDisplay || "icon";
   const transparent = settings.buttonTransparent !== false;
   const textColor =
     settings.buttonTextColor ||
     (transparent ? accent : settings.formButtonTextColor || "#ffffff");
+  const backgroundColor = transparent
+    ? "transparent"
+    : settings.buttonBackgroundColor || accent;
+  const { className: shapeClass, iconSize } = resolveButtonDimensions(
+    settings.buttonSize || "md",
+    display
+  );
+  const borderRadius =
+    display === "text"
+      ? Math.min(16, settings.buttonBorderRadius || 8)
+      : settings.buttonBorderRadius || 999;
 
   const pos = isEditor ? dragPos : position;
-  const shapeClass =
-    display === "icon"
-      ? "h-12 w-12 rounded-full"
-      : display === "text"
-        ? "rounded-lg px-2 py-1"
-        : "rounded-full px-4 py-2.5";
 
   return (
     <button
@@ -125,17 +145,18 @@ export default function SiteAuthLoginWidget({
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
-      className={`fixed z-[99990] flex items-center justify-center gap-2 text-sm font-black transition hover:scale-105 ${shapeClass} ${
+      className={`fixed z-[99990] flex items-center justify-center gap-2 font-black transition hover:scale-105 ${shapeClass} ${
         isEditor ? "cursor-grab ring-2 ring-violet-400 ring-offset-2" : "cursor-pointer"
       } ${!transparent && display !== "text" ? "shadow-[0_8px_32px_rgba(99,102,241,0.35)]" : ""}`}
       style={{
         right: `${pos.x}%`,
         bottom: `${100 - pos.y}%`,
         transform: "translate(50%, 50%)",
-        background: transparent ? "transparent" : accent,
-        color: transparent ? textColor : settings.formButtonTextColor || "#ffffff",
+        background: backgroundColor,
+        color: textColor,
         boxShadow: transparent ? "none" : undefined,
         border: transparent ? "none" : undefined,
+        borderRadius: `${borderRadius}px`,
       }}
       data-bizuply-site-auth-button="true"
       aria-label={buttonLabel}
@@ -144,7 +165,7 @@ export default function SiteAuthLoginWidget({
       {isEditor ? (
         <GripVertical size={16} className="opacity-80" />
       ) : display !== "text" ? (
-        <ButtonIcon size={display === "icon" ? 22 : 16} />
+        <SiteAuthTriggerIcon icon={iconKey as any} size={iconSize} />
       ) : null}
       {!isEditor && display !== "icon" ? <span>{buttonLabel}</span> : null}
       {!isEditor &&
@@ -172,24 +193,40 @@ export function SiteAuthLoginWidgetPreview({
   const textColor =
     settings.buttonTextColor ||
     (settings.buttonTransparent !== false ? accent : settings.formButtonTextColor || "#ffffff");
+  const backgroundColor =
+    settings.buttonTransparent !== false
+      ? "transparent"
+      : settings.buttonBackgroundColor || accent;
+  const { className: shapeClass, iconSize } = resolveButtonDimensions(
+    settings.buttonSize || "md",
+    settings.buttonDisplay || "icon"
+  );
+  const borderRadius =
+    settings.buttonDisplay === "text"
+      ? Math.min(16, settings.buttonBorderRadius || 8)
+      : settings.buttonBorderRadius || 999;
 
   if (settings.buttonDisplay === "icon") {
     return (
       <span
-        className="inline-flex h-12 w-12 items-center justify-center rounded-full"
+        className={`inline-flex items-center justify-center ${shapeClass}`}
         style={{
-          background: settings.buttonTransparent !== false ? "transparent" : accent,
+          background: backgroundColor,
           color: textColor,
+          borderRadius: `${borderRadius}px`,
         }}
       >
-        <LogIn size={22} />
+        <SiteAuthTriggerIcon icon={settings.loginIcon as any} size={iconSize} />
       </span>
     );
   }
 
   if (settings.buttonDisplay === "text") {
     return (
-      <span className="text-sm font-black underline" style={{ color: textColor }}>
+      <span
+        className="text-sm font-black underline"
+        style={{ color: textColor, borderRadius: `${borderRadius}px` }}
+      >
         {settings.loginButtonLabel}
       </span>
     );
@@ -197,13 +234,14 @@ export function SiteAuthLoginWidgetPreview({
 
   return (
     <span
-      className="inline-flex items-center gap-2 rounded-full px-4 py-2.5 text-xs font-black shadow-lg"
+      className={`inline-flex items-center gap-2 font-black shadow-lg ${shapeClass}`}
       style={{
-        background: settings.buttonTransparent !== false ? "transparent" : accent,
+        background: backgroundColor,
         color: textColor,
+        borderRadius: `${borderRadius}px`,
       }}
     >
-      <LogIn size={14} />
+      <SiteAuthTriggerIcon icon={settings.loginIcon as any} size={iconSize} />
       {settings.loginButtonLabel}
     </span>
   );

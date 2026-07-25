@@ -4,6 +4,10 @@ import {
 } from "../../site-builder/studio/visual-editor/utils/visualData";
 
 import type { SiteAuthSettings } from "../../api/siteMemberAuthApi";
+import {
+  resolveSiteAuthTriggerIcon,
+  type SiteAuthTriggerIcon,
+} from "./siteAuthTriggerIcons";
 
 export type SiteAuthWidgetSettings = SiteAuthSettings & {
   triggerPosition?: { x: number; y: number };
@@ -30,6 +34,8 @@ export function mergeSiteAuthSettings(
     loginSubtitle: String(stored.loginSubtitle ?? base.loginSubtitle),
     registerTitle: String(stored.registerTitle || base.registerTitle),
     registerSubtitle: String(stored.registerSubtitle ?? base.registerSubtitle),
+    registerLinkText: String(stored.registerLinkText || base.registerLinkText),
+    loginLinkText: String(stored.loginLinkText || base.loginLinkText),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
     showTrigger: stored?.showTrigger !== false,
@@ -38,6 +44,11 @@ export function mergeSiteAuthSettings(
     buttonDisplay: normalizeButtonDisplay(stored.buttonDisplay ?? base.buttonDisplay),
     buttonTransparent: stored?.buttonTransparent !== false,
     buttonTextColor: String(stored.buttonTextColor ?? base.buttonTextColor),
+    buttonBackgroundColor: String(stored.buttonBackgroundColor ?? base.buttonBackgroundColor),
+    buttonBorderRadius: Number(stored.buttonBorderRadius ?? base.buttonBorderRadius),
+    buttonSize: normalizeButtonSize(stored.buttonSize ?? base.buttonSize),
+    loginIcon: resolveSiteAuthTriggerIcon(stored.loginIcon, base.loginIcon as SiteAuthTriggerIcon),
+    logoutIcon: resolveSiteAuthTriggerIcon(stored.logoutIcon, base.logoutIcon as SiteAuthTriggerIcon),
     showMemberName: stored.showMemberName !== false,
     memberAreaPath: String(stored.memberAreaPath || base.memberAreaPath),
     defaultAddAsCrmClient: Boolean(
@@ -70,6 +81,8 @@ function readPartialSettings(
     loginSubtitle: String(fallback?.loginSubtitle || ""),
     registerTitle: String(fallback?.registerTitle || "הרשמה"),
     registerSubtitle: String(fallback?.registerSubtitle || ""),
+    registerLinkText: String(fallback?.registerLinkText || "אין לכם משתמש? הירשמו עכשיו"),
+    loginLinkText: String(fallback?.loginLinkText || "יש לכם משתמש? התחברו"),
     forgotPasswordEnabled: fallback?.forgotPasswordEnabled !== false,
     showLoginButton: fallback?.showLoginButton !== false,
     showTrigger: fallback?.showTrigger !== false,
@@ -78,6 +91,11 @@ function readPartialSettings(
     buttonDisplay: normalizeButtonDisplay(fallback?.buttonDisplay),
     buttonTransparent: fallback?.buttonTransparent !== false,
     buttonTextColor: String(fallback?.buttonTextColor || ""),
+    buttonBackgroundColor: String(fallback?.buttonBackgroundColor || ""),
+    buttonBorderRadius: Number(fallback?.buttonBorderRadius ?? 999),
+    buttonSize: normalizeButtonSize(fallback?.buttonSize),
+    loginIcon: resolveSiteAuthTriggerIcon(fallback?.loginIcon, "log-in"),
+    logoutIcon: resolveSiteAuthTriggerIcon(fallback?.logoutIcon, "log-out"),
     showMemberName: fallback?.showMemberName !== false,
     memberAreaPath: String(fallback?.memberAreaPath || "/member"),
     defaultAddAsCrmClient: Boolean(fallback?.defaultAddAsCrmClient),
@@ -92,6 +110,12 @@ function readPartialSettings(
     formBorderRadius: Number(fallback?.formBorderRadius ?? 16),
     triggerPosition: { x: 88, y: 82 },
   };
+}
+
+function normalizeButtonSize(value: unknown): SiteAuthWidgetSettings["buttonSize"] {
+  const size = String(value || "md");
+  if (size === "sm" || size === "md" || size === "lg") return size;
+  return "md";
 }
 
 function normalizeButtonDisplay(
@@ -130,6 +154,24 @@ export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
   return true;
 }
 
+export function isLegacySiteAuthInsertedElement(item: Record<string, unknown>) {
+  const id = String(item?.id || "");
+  const html = String(item?.html || "");
+  const label = String(item?.label || "");
+  const pluginWidget = Boolean(item?.pluginWidget);
+
+  if (!id) return false;
+
+  return (
+    html.includes('data-bizuply-widget="site-auth"') ||
+    html.includes('data-bizuply-plugin="site-auth"') ||
+    label.includes("התחברות") ||
+    label.includes("אזור אישי") ||
+    label.includes("כפתור התחברות") ||
+    (pluginWidget && html.includes("site-auth"))
+  );
+}
+
 export function stripLegacySiteAuthWidgetsFromVisualData(data: Record<string, any>) {
   const elements = readVisualInsertedElements(data || {});
   let next = data || {};
@@ -137,14 +179,7 @@ export function stripLegacySiteAuthWidgetsFromVisualData(data: Record<string, an
 
   Object.values(elements).forEach((item) => {
     const id = String(item?.id || "");
-    const html = String(item?.html || "");
-    const label = String(item?.label || "");
-    const isLegacy =
-      html.includes('data-bizuply-widget="site-auth"') ||
-      label.includes("התחברות") ||
-      label.includes("כפתור התחברות");
-
-    if (id && isLegacy) {
+    if (id && isLegacySiteAuthInsertedElement(item as Record<string, unknown>)) {
       next = removeVisualInsertedElement(next, id);
       changed = true;
     }

@@ -195,14 +195,14 @@ export default function SiteAuthLoginForm({
       {settings.allowSelfRegister ? (
         <button
           type="button"
-          className="w-full text-sm font-bold"
-          style={{ color: accent }}
+          className="w-full text-center text-sm font-bold"
+          style={linkStyle}
           onClick={() => {
             setMode(mode === "login" ? "register" : "login");
             setError("");
           }}
         >
-          {mode === "login" ? "אין לך חשבון? הרשמה" : "יש לך חשבון? התחברות"}
+          {mode === "login" ? settings.registerLinkText : settings.loginLinkText}
         </button>
       ) : null}
     </form>

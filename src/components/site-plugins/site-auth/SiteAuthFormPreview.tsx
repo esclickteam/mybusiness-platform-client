@@ -107,7 +107,7 @@ export default function SiteAuthFormPreview({
               ) : null}
               {settings.allowSelfRegister ? (
                 <p className="text-center text-xs font-bold" style={{ color: accent }}>
-                  אין לך חשבון? הרשמה
+                  {settings.registerLinkText}
                 </p>
               ) : null}
             </div>
@@ -139,7 +139,7 @@ export default function SiteAuthFormPreview({
                 {settings.registerTitle || "הרשמה"}
               </div>
               <p className="text-center text-xs font-bold" style={{ color: accent }}>
-                יש לך חשבון? התחברות
+                {settings.loginLinkText}
               </p>
             </div>
           </>

@@ -26,6 +26,10 @@ import SiteAuthFormPreview from "../../../site-plugins/site-auth/SiteAuthFormPre
 import { SiteAuthLoginWidgetPreview } from "../../../site-plugins/site-auth/SiteAuthLoginWidget";
 import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import {
+  SITE_AUTH_ICON_OPTIONS,
+  type SiteAuthTriggerIcon,
+} from "../../../site-plugins/site-auth/siteAuthTriggerIcons";
+import {
   bool,
   Field,
   num,
@@ -67,6 +71,41 @@ function ColorField({
           placeholder={placeholder}
           className="min-w-0 flex-1 bg-transparent font-mono text-xs font-semibold uppercase text-slate-700 outline-none"
         />
+      </div>
+    </Field>
+  );
+}
+
+function IconPicker({
+  label,
+  value,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  onChange: (v: SiteAuthTriggerIcon) => void;
+}) {
+  return (
+    <Field label={label}>
+      <div className="grid grid-cols-4 gap-2 sm:grid-cols-5">
+        {SITE_AUTH_ICON_OPTIONS.map(({ value: iconValue, label: iconLabel, Icon }) => {
+          const active = value === iconValue;
+          return (
+            <button
+              key={iconValue}
+              type="button"
+              onClick={() => onChange(iconValue)}
+              className={`flex flex-col items-center gap-1 rounded-xl border p-2 transition ${
+                active
+                  ? "border-violet-500 bg-violet-50 text-violet-700"
+                  : "border-slate-200 bg-white text-slate-600 hover:border-violet-200"
+              }`}
+            >
+              <Icon size={18} />
+              <span className="text-[10px] font-bold">{iconLabel}</span>
+            </button>
+          );
+        })}
       </div>
     </Field>
   );
@@ -295,16 +334,51 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
               value={str(settings.buttonDisplay, "icon")}
               onChange={(e) => updateField("buttonDisplay", e.target.value)}
             >
-              <option value="icon">אייקון</option>
-              <option value="button">כפתור + טקסט</option>
+              <option value="icon">אייקון בלבד</option>
+              <option value="button">אייקון + טקסט</option>
               <option value="text">טקסט בלבד</option>
             </select>
           </Field>
+          <Field label="גודל כפתור">
+            <select
+              className={inputBase}
+              value={str(settings.buttonSize, "md")}
+              onChange={(e) => updateField("buttonSize", e.target.value)}
+            >
+              <option value="sm">קטן</option>
+              <option value="md">בינוני</option>
+              <option value="lg">גדול</option>
+            </select>
+          </Field>
+          <IconPicker
+            label="אייקון התחברות"
+            value={str(settings.loginIcon, "log-in")}
+            onChange={(v) => updateField("loginIcon", v)}
+          />
+          <IconPicker
+            label="אייקון התנתקות"
+            value={str(settings.logoutIcon, "log-out")}
+            onChange={(v) => updateField("logoutIcon", v)}
+          />
           <Toggle
             label="ללא רקע (שקוף)"
             checked={bool(settings.buttonTransparent, true)}
             onChange={(v) => updateField("buttonTransparent", v)}
           />
+          {!bool(settings.buttonTransparent, true) ? (
+            <ColorField
+              label="צבע רקע כפתור"
+              value={str(settings.buttonBackgroundColor, "#6366F1")}
+              onChange={(v) => updateField("buttonBackgroundColor", v)}
+            />
+          ) : null}
+          <Field label="עיגול פינות כפתור (px)">
+            <TextInput
+              value={String(num(settings.buttonBorderRadius, 999))}
+              onChange={(v) => updateField("buttonBorderRadius", Number(v) || 999)}
+              type="number"
+            />
+          </Field>
           <Field label="צבע אייקון/טקסט (ריק = צבע מותג)">
             <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50/80 p-2">
               <input
@@ -368,6 +442,22 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
               placeholder="/member"
             />
           </Field>
+          {settings.allowSelfRegister ? (
+            <>
+              <Field label="טקסט קישור להרשמה (בדף התחברות)">
+                <TextInput
+                  value={str(settings.registerLinkText, "אין לכם משתמש? הירשמו עכשיו")}
+                  onChange={(v) => updateField("registerLinkText", v)}
+                />
+              </Field>
+              <Field label="טקסט קישור להתחברות (בדף הרשמה)">
+                <TextInput
+                  value={str(settings.loginLinkText, "יש לכם משתמש? התחברו")}
+                  onChange={(v) => updateField("loginLinkText", v)}
+                />
+              </Field>
+            </>
+          ) : null}
         </div>
 
         <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4">

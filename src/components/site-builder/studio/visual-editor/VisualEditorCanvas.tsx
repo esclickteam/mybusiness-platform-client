@@ -1245,6 +1245,7 @@ export default function VisualEditorCanvas({
           if (changed && typeof editorAny.setData === "function") {
             editorAny.setData(cleaned);
             editorAny.clearSelection?.();
+            setSelectionBox(null);
           }
 
           mountSiteAuthWidgets(root);
@@ -1293,6 +1294,7 @@ export default function VisualEditorCanvas({
       syncEditorMediaPreviewsInDom(root);
       disableNativeMediaDrag(root);
       mountEditorCountdownPreview(root);
+      mountSiteAuthWidgets(root);
     }
 
     markSelectedVisualElementInDom(

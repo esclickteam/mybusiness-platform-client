@@ -32,6 +32,8 @@ export type SiteAuthSettings = {
   loginSubtitle: string;
   registerTitle: string;
   registerSubtitle: string;
+  registerLinkText: string;
+  loginLinkText: string;
   forgotPasswordEnabled: boolean;
   showLoginButton: boolean;
   showTrigger?: boolean;
@@ -40,6 +42,11 @@ export type SiteAuthSettings = {
   buttonDisplay: "button" | "icon" | "text";
   buttonTransparent: boolean;
   buttonTextColor: string;
+  buttonBackgroundColor: string;
+  buttonBorderRadius: number;
+  buttonSize: "sm" | "md" | "lg";
+  loginIcon: string;
+  logoutIcon: string;
   showMemberName: boolean;
   triggerPosition: { x: number; y: number };
   memberAreaPath: string;
@@ -214,6 +221,8 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
     loginSubtitle: String(stored?.loginSubtitle || ""),
     registerTitle: String(stored?.registerTitle || "הרשמה"),
     registerSubtitle: String(stored?.registerSubtitle || ""),
+    registerLinkText: String(stored?.registerLinkText || "אין לכם משתמש? הירשמו עכשיו"),
+    loginLinkText: String(stored?.loginLinkText || "יש לכם משתמש? התחברו"),
     forgotPasswordEnabled: stored?.forgotPasswordEnabled !== false,
     showLoginButton: stored?.showLoginButton !== false,
     showTrigger: stored?.showTrigger !== false,
@@ -224,6 +233,13 @@ export function readSiteAuthSettings(site: Record<string, unknown> | null | unde
       : "icon",
     buttonTransparent: stored?.buttonTransparent !== false,
     buttonTextColor: String(stored?.buttonTextColor || ""),
+    buttonBackgroundColor: String(stored?.buttonBackgroundColor || ""),
+    buttonBorderRadius: Number(stored?.buttonBorderRadius ?? 999),
+    buttonSize: ["sm", "md", "lg"].includes(String(stored?.buttonSize))
+      ? (stored?.buttonSize as SiteAuthSettings["buttonSize"])
+      : "md",
+    loginIcon: String(stored?.loginIcon || "log-in"),
+    logoutIcon: String(stored?.logoutIcon || "log-out"),
     showMemberName: stored?.showMemberName !== false,
     triggerPosition: {
       x: Number(triggerRaw?.x ?? 88),
