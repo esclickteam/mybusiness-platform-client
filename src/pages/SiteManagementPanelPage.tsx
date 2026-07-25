@@ -15,8 +15,6 @@ import {
   updateSitePlugins,
   type SitePluginDefinition,
 } from "../api/sitePluginsApi";
-import { saveSitePluginSettings } from "../api/sitePluginSettingsApi";
-import { ensureSiteAuthOverlayDefaults } from "../components/site-plugins/site-auth/siteAuthUtils";
 import SitePluginStore from "../components/website/site-management/SitePluginStore";
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
@@ -93,10 +91,6 @@ export default function SiteManagementPanelPage() {
 
   useEffect(() => {
     if (activeSection === "overview" || activeSection === "plugins") return;
-    if (activeSection === "site-members") {
-      if (!enabledPlugins.includes("site-auth")) setActiveSection("plugins");
-      return;
-    }
     const pluginKey =
       getSectionMetaForPlugin(activeSection, catalog).pluginKey ||
       catalog.find((p) => resolvePluginSection(p.key) === activeSection)?.key ||
@@ -118,17 +112,8 @@ export default function SiteManagementPanelPage() {
       }
     });
 
-    if (enabledSet.has("site-auth") && !items.includes("site-members")) {
-      const authIndex = items.indexOf("site-auth");
-      if (authIndex >= 0) {
-        items.splice(authIndex + 1, 0, "site-members");
-      } else {
-        items.push("site-members");
-      }
-    }
-
     return items;
-  }, [enabledPlugins, enabledSet]);
+  }, [enabledPlugins]);
 
   const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
 
@@ -160,18 +145,6 @@ export default function SiteManagementPanelPage() {
       if (enabled) {
         const section = resolvePluginSection(pluginKey);
         if (section) setActiveSection(section);
-
-        if (pluginKey === "site-auth") {
-          try {
-            await saveSitePluginSettings(
-              siteId,
-              "site-auth",
-              ensureSiteAuthOverlayDefaults({})
-            );
-          } catch {
-            // server-side init also runs on plugin enable
-          }
-        }
       } else {
         handlePluginUninstalled(pluginKey);
       }

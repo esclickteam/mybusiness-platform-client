@@ -4,10 +4,6 @@ import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
-import SiteAuthLoginWidget from "../../../site-plugins/site-auth/SiteAuthLoginWidget";
-import { loadSiteAuthOverlaySettings } from "../../../site-plugins/site-auth/siteAuthOverlaySettings";
-import type { SiteAuthWidgetSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
-import { SiteMemberAuthProvider } from "../../../../context/SiteMemberAuthContext";
 
 type EditorPluginOverlaysProps = {
   siteId?: string;
@@ -17,13 +13,10 @@ type EditorPluginOverlaysProps = {
 
 export default function EditorPluginOverlays({
   siteId,
-  siteSlug = "",
   refreshKey = 0,
 }: EditorPluginOverlaysProps) {
   const [wheelSettings, setWheelSettings] = useState<BenefitsWheelSettings | null>(null);
   const [wheelEnabled, setWheelEnabled] = useState(false);
-  const [authSettings, setAuthSettings] = useState<SiteAuthWidgetSettings | null>(null);
-  const [authEnabled, setAuthEnabled] = useState(false);
 
   useEffect(() => {
     if (!siteId) return;
@@ -34,12 +27,10 @@ export default function EditorPluginOverlays({
       try {
         const plugins = await getSitePlugins(siteId);
         const wheelOn = plugins.enabledPlugins.includes("benefits-wheel");
-        const authOn = plugins.enabledPlugins.includes("site-auth");
 
         if (cancelled) return;
 
         setWheelEnabled(wheelOn);
-        setAuthEnabled(authOn);
 
         if (!wheelOn) {
           setWheelSettings(null);
@@ -50,19 +41,10 @@ export default function EditorPluginOverlays({
           const settings = await getSitePluginSettings(siteId, "benefits-wheel");
           if (!cancelled) setWheelSettings(settings as BenefitsWheelSettings);
         }
-
-        if (!authOn) {
-          setAuthSettings(null);
-        } else {
-          const settings = await loadSiteAuthOverlaySettings(siteId);
-          if (!cancelled) setAuthSettings(settings);
-        }
       } catch {
         if (!cancelled) {
           setWheelEnabled(false);
           setWheelSettings(null);
-          setAuthEnabled(false);
-          setAuthSettings(null);
         }
       }
     })();
@@ -86,25 +68,6 @@ export default function EditorPluginOverlays({
     [siteId, wheelSettings]
   );
 
-  const handleAuthPositionChange = useCallback(
-    async (pos: { x: number; y: number }) => {
-      if (!siteId || !authSettings) return;
-      const next = {
-        ...authSettings,
-        triggerPosition: pos,
-        showTrigger: true,
-        showLoginButton: true,
-      };
-      setAuthSettings(next);
-      try {
-        await saveSitePluginSettings(siteId, "site-auth", next);
-      } catch {
-        // local preview still updates
-      }
-    },
-    [siteId, authSettings]
-  );
-
   const handleDeactivate = useCallback(async () => {
     if (!siteId) return;
     try {
@@ -121,8 +84,6 @@ export default function EditorPluginOverlays({
     }
   }, [siteId]);
 
-  const showAuth = authEnabled && authSettings && authSettings.isActive !== false;
-
   return (
     <>
       {siteId && wheelEnabled && wheelSettings && wheelSettings.isActive !== false ? (
@@ -133,17 +94,6 @@ export default function EditorPluginOverlays({
           onPositionChange={handleWheelPositionChange}
           onDeactivate={handleDeactivate}
         />
-      ) : null}
-
-      {showAuth ? (
-        <SiteMemberAuthProvider slug={siteSlug}>
-          <SiteAuthLoginWidget
-            site={{ slug: siteSlug, pluginSettings: { "site-auth": authSettings } }}
-            settings={authSettings}
-            mode="editor"
-            onPositionChange={handleAuthPositionChange}
-          />
-        </SiteMemberAuthProvider>
       ) : null}
     </>
   );

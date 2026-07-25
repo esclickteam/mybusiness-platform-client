@@ -10,7 +10,7 @@ import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
 import BusinessChatPage from "./components/BusinessChatPage";
-import PublicSiteWithAuth from "./components/site-builder/public/PublicSiteWithAuth";
+import PublicVisualSiteRenderer from "./components/site-builder/public/PublicVisualSiteRenderer";
 
 import { useAuth } from "./context/AuthContext";
 import { useOnceLogger } from "./utils/useOnceLogger";
@@ -555,7 +555,7 @@ function PublicMiniSiteContent({ site, location }) {
       ? window.location.pathname
       : location.pathname;
 
-  return <PublicSiteWithAuth site={site} pathname={pathname} />;
+  return <PublicVisualSiteRenderer site={site} pathname={pathname} />;
 }
 
 function ScrollToTop() {

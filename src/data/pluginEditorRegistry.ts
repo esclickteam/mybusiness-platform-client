@@ -1,5 +1,4 @@
 import { buildCountdownWidgetMarker } from "../components/site-plugins/countdown/mountCountdownWidgets";
-import { buildSiteAuthWidgetMarker } from "../components/site-plugins/site-auth/mountSiteAuthWidgets";
 
 /**
  * Maps installed plugins to editor actions — sections, pages, or widget placeholders.
@@ -14,12 +13,6 @@ export type PluginEditorAction = {
 };
 
 export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
-  "site-auth": {
-    pluginKey: "site-auth",
-    kind: "overlay",
-    label: "כפתור התחברות",
-    description: "כפתור צף — גרירה כמו גלגל המזל, לחיצה לדף התחברות",
-  },
   "benefits-wheel": {
     pluginKey: "benefits-wheel",
     kind: "overlay",
@@ -144,10 +137,6 @@ export function getPluginEditorAction(pluginKey: string): PluginEditorAction | n
 export function buildPluginWidgetMarker(pluginKey: string, label: string) {
   if (pluginKey === "countdown") {
     return buildCountdownWidgetMarker(label);
-  }
-
-  if (pluginKey === "site-auth") {
-    return buildSiteAuthWidgetMarker(label);
   }
 
   return `<div data-bizuply-plugin="${pluginKey}" data-bizuply-widget="${pluginKey}" style="padding:48px 24px;text-align:center;border:2px dashed #c4b5fd;border-radius:12px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);font-family:system-ui,sans-serif;direction:rtl"><div style="font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:6px">תוסף Bizuply</div><div style="font-size:18px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:12px;color:#64748b;margin-top:8px">יופיע באתר החי לפי ההגדרות בפאנל</div></div>`;

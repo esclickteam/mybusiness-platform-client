@@ -25,7 +25,6 @@ import {
 import PublicSitePluginOverlays from "./PublicSitePluginOverlays";
 import { mergeCountdownSettings } from "./countdownPublicUtils";
 import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
-import { mountSiteAuthWidgets } from "../../site-plugins/site-auth/mountSiteAuthWidgets";
 import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
@@ -1710,10 +1709,6 @@ function applyPublicVisualData(root, visualData, pathname, site) {
       root,
       mergeCountdownSettings(site?.pluginSettings?.countdown),
     );
-  }
-
-  if (enabledPlugins.includes("site-auth")) {
-    mountSiteAuthWidgets(root);
   }
 }
 

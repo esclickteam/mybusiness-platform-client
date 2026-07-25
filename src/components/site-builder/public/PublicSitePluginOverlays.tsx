@@ -3,8 +3,6 @@ import React, { useMemo } from "react";
 import BenefitsWheelWidget from "../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import { mergePluginSettings } from "./benefitsWheelPublicUtils";
 import type { BenefitsWheelSettings } from "../site-plugins/benefits-wheel/benefitsWheelUtils";
-import PublicSiteAuthBar from "./PublicSiteAuthBar";
-import { siteHasAuthPlugin } from "../../../api/siteMemberAuthApi";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
@@ -23,16 +21,11 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     return mergePluginSettings(stored) as BenefitsWheelSettings;
   }, [enabledPlugins, site?.pluginSettings]);
 
-  const authBar = siteHasAuthPlugin(site) ? <PublicSiteAuthBar site={site} /> : null;
-
   if (!siteId || !wheelSettings?.isActive) {
-    return authBar;
+    return null;
   }
 
   return (
-    <>
-      {authBar}
-      <BenefitsWheelWidget siteId={siteId} slug={slug} settings={wheelSettings} mode="live" />
-    </>
+    <BenefitsWheelWidget siteId={siteId} slug={slug} settings={wheelSettings} mode="live" />
   );
 }
