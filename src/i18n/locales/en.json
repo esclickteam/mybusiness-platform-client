@@ -1765,20 +1765,26 @@
   "chatbot": {
     "openAria": "Open Bizuply smart assistant",
     "title": "Bizuply Assistant",
-    "available247": "Available 24/7",
+    "available247": "Smart assistant",
+    "statusBot": "Smart assistant · human when available",
+    "statusSystem": "Connected to your account · reading system data",
+    "fromSystem": "Based on your account data",
     "closeAria": "Close chat",
     "greeting": "Hi! How can I help?",
-    "greetingHint": "Ask anything about Bizuply",
+    "greetingHint": "Ask about Bizuply, get help from your account, or talk to a human",
     "placeholder": "Ask a question...",
     "inputAria": "Question for the smart assistant",
     "sendAria": "Send question",
-    "noAnswer": "Sorry, I couldn't find a suitable answer. Try rephrasing.",
-    "error": "Something went wrong. Please try again later.",
+    "noAnswer": "Sorry, I couldn't find a suitable answer. Try rephrasing or talk to a human.",
+    "error": "Something went wrong. Try again or talk to a human agent.",
     "quickPrompts": {
       "createSite": "How do I create a new website?",
       "dashboard": "What's in the dashboard?",
       "crmLeads": "How do I get leads into CRM?",
-      "publishSite": "How do I publish my website?"
+      "publishSite": "How do I publish my website?",
+      "myLeads": "How many open leads do I have?",
+      "myAppointments": "What upcoming appointments do I have?",
+      "myTasks": "What open tasks do I have?"
     },
     "fallbackSuggestions": {
       "editSite": "How do I edit the site in the editor?",

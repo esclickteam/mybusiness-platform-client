@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { Bot, Headphones, Send, UserRound, X } from "lucide-react";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import { isHebrewLanguage } from "../i18n/localeUtils";
@@ -66,6 +67,7 @@ export default function ChatBot({
 }) {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
+  const navigate = useNavigate();
   const { user } = useAuth();
 
   const [chatInput, setChatInput] = useState("");
@@ -87,15 +89,22 @@ export default function ChatBot({
   const initialSentRef = useRef(false);
   const sessionReadyRef = useRef(false);
 
-  const quickPrompts = useMemo(
-    () => [
+  const quickPrompts = useMemo(() => {
+    if (user?.businessId) {
+      return [
+        t("chatbot.quickPrompts.myLeads"),
+        t("chatbot.quickPrompts.myAppointments"),
+        t("chatbot.quickPrompts.myTasks"),
+        t("chatbot.quickPrompts.createSite"),
+      ];
+    }
+    return [
       t("chatbot.quickPrompts.createSite"),
       t("chatbot.quickPrompts.dashboard"),
       t("chatbot.quickPrompts.crmLeads"),
       t("chatbot.quickPrompts.publishSite"),
-    ],
-    [t, i18n.language]
-  );
+    ];
+  }, [t, i18n.language, user?.businessId]);
 
   const fallbackSuggestions = useMemo(
     () => [
@@ -269,10 +278,18 @@ export default function ChatBot({
 
       try {
         const session = await ensureSession();
+        const headers = { "Content-Type": "application/json" };
+        const token = localStorage.getItem("token");
+        if (token) headers.Authorization = `Bearer ${token}`;
+
         const response = await fetch("/api/chatbot", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: text }),
+          headers,
+          credentials: "include",
+          body: JSON.stringify({
+            question: text,
+            businessId: user?.businessId || undefined,
+          }),
         });
 
         const data = await response.json();
@@ -293,9 +310,17 @@ export default function ChatBot({
             sender: "bot",
             text: answer,
             suggestions,
+            links: Array.isArray(data.links) ? data.links : [],
+            actions: Array.isArray(data.actions) ? data.actions : [],
+            offerHuman: Boolean(data.offerHuman),
+            usedSystemData: Boolean(data.usedSystemData),
             source: data.source || "Bizuply AI",
           },
         ]);
+
+        if (data.offerHuman) {
+          setShowHumanForm(true);
+        }
 
         if (session?.conversation?._id && session?.guestToken) {
           saveBotExchange(
@@ -308,8 +333,13 @@ export default function ChatBot({
       } catch {
         setChatMessages((msgs) => [
           ...msgs,
-          { sender: "bot", text: t("chatbot.error") },
+          {
+            sender: "bot",
+            text: t("chatbot.error"),
+            offerHuman: true,
+          },
         ]);
+        setShowHumanForm(true);
       } finally {
         setIsLoading(false);
       }
@@ -321,6 +351,7 @@ export default function ChatBot({
       fallbackSuggestions,
       t,
       ensureSession,
+      user?.businessId,
     ]
   );
 
@@ -462,7 +493,9 @@ export default function ChatBot({
       ? humanStatus === "active"
         ? t("chatbot.humanActive")
         : t("chatbot.humanWaiting")
-      : t("chatbot.available247");
+      : user?.businessId
+        ? t("chatbot.statusSystem")
+        : t("chatbot.statusBot");
 
   if (!chatOpen) {
     return (
@@ -623,8 +656,70 @@ export default function ChatBot({
                       {t("chatbot.agentLabel")}
                     </p>
                   )}
+                  {msg.sender === "bot" && msg.usedSystemData && (
+                    <p className="mb-1 text-[10px] font-bold text-sky-700">
+                      {t("chatbot.fromSystem")}
+                    </p>
+                  )}
                   {msg.text}
                 </div>
+              </div>
+            )}
+
+            {msg.sender === "bot" && mode === "bot" && msg.links?.length > 0 && (
+              <div
+                className={`mt-2 flex flex-wrap gap-1.5 ${
+                  dir === "rtl" ? "justify-end" : "justify-start"
+                }`}
+              >
+                {msg.links.map((link) => (
+                  <button
+                    key={link.to}
+                    type="button"
+                    onClick={() => {
+                      setChatOpen(false);
+                      navigate(link.to);
+                    }}
+                    className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-[11px] font-semibold text-sky-800 transition hover:bg-sky-100"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {msg.sender === "bot" &&
+              mode === "bot" &&
+              msg.actions?.length > 0 && (
+                <div
+                  className={`mt-2 space-y-1 ${
+                    dir === "rtl" ? "text-right" : "text-left"
+                  }`}
+                >
+                  {msg.actions.map((action, idx) => (
+                    <p
+                      key={`${action.actionType || action.tool}-${idx}`}
+                      className="text-[11px] font-semibold text-emerald-700"
+                    >
+                      ✓ {action.message || action.actionType || action.tool}
+                    </p>
+                  ))}
+                </div>
+              )}
+
+            {msg.sender === "bot" && msg.offerHuman && mode === "bot" && (
+              <div
+                className={`mt-2 ${
+                  dir === "rtl" ? "text-right" : "text-left"
+                }`}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowHumanForm(true)}
+                  className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-[11px] font-bold text-emerald-800 transition hover:bg-emerald-100"
+                >
+                  {t("chatbot.talkToHuman")}
+                </button>
               </div>
             )}
 
