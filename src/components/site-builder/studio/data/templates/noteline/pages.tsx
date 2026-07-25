@@ -276,7 +276,9 @@ function priceItems(data: Record<string, any>) {
 }
 
 function galleryItems(data: Record<string, any>) {
-  return [getValue(data,"galleryOneImage"), getValue(data,"galleryTwoImage"), getValue(data,"galleryThreeImage"), getValue(data,"galleryFourImage")];
+  const fallback = "https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=85";
+  return [getValue(data,"galleryOneImage"), getValue(data,"galleryTwoImage"), getValue(data,"galleryThreeImage"), getValue(data,"galleryFourImage")]
+    .map((image) => String(image || "").trim() || fallback);
 }
 
 function PageHero({ data, page, goTo }: PageProps & { page: PageEntry }) {
