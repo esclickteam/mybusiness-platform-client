@@ -5,7 +5,9 @@ import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
   bool,
   Field,
+  InfoCallout,
   PluginPanelProps,
+  SettingsSection,
   SitePluginPanelFrame,
   str,
   TextInput,
@@ -27,38 +29,53 @@ export default function SmartSearchPanel(props: PluginPanelProps) {
       saving={saving}
       message={message}
       onSave={() => save()}
+      sidebar={
+        <InfoCallout variant="tip">
+          בעורך: תוספים → «הפעלת תוסף צף» → גררו את כפתור החיפוש למיקום הרצוי.
+          בלחיצה על הכפתור באתר החי תיפתח שורת חיפוש.
+        </InfoCallout>
+      }
     >
-      <Toggle
-        label="תוסף פעיל באתר"
-        checked={bool(settings.isActive, true)}
-        onChange={(v) => updateField("isActive", v)}
-      />
-      <Toggle
-        label="הצג כפתור חיפוש"
-        checked={bool(settings.showTrigger, true)}
-        onChange={(v) => updateField("showTrigger", v)}
-      />
-      <Field label="טקסט בשורת החיפוש">
-        <TextInput
-          value={str(settings.placeholder, "חיפוש באתר...")}
-          onChange={(v) => updateField("placeholder", v)}
+      <SettingsSection
+        title="הפעלה"
+        description="שליטה על זמינות התוסף באתר"
+      >
+        <Toggle
+          label="תוסף פעיל באתר"
+          checked={bool(settings.isActive, true)}
+          onChange={(v) => updateField("isActive", v)}
         />
-      </Field>
-      <Field label="צבע כפתור">
-        <TextInput
-          value={str(settings.accentColor, "#2563EB")}
-          onChange={(v) => updateField("accentColor", v)}
+        <Toggle
+          label="הצג כפתור חיפוש"
+          description="כפתור צף שפותח את שורת החיפוש"
+          checked={bool(settings.showTrigger, true)}
+          onChange={(v) => updateField("showTrigger", v)}
         />
-      </Field>
-      <Toggle
-        label="כלול גם כותרות עמודים בתוצאות"
-        checked={bool(settings.showPages, true)}
-        onChange={(v) => updateField("showPages", v)}
-      />
-      <p className="rounded-xl border border-dashed border-blue-200 bg-blue-50/60 p-3 text-xs font-bold leading-relaxed text-blue-900">
-        בעורך: תוספים → «הפעלת תוסף צף» → גררו את כפתור החיפוש למיקום הרצוי.
-        בלחיצה על הכפתור באתר החי תיפתח שורת חיפוש.
-      </p>
+      </SettingsSection>
+
+      <SettingsSection title="מראה וטקסט">
+        <Field label="טקסט בשורת החיפוש">
+          <TextInput
+            value={str(settings.placeholder, "חיפוש באתר...")}
+            onChange={(v) => updateField("placeholder", v)}
+          />
+        </Field>
+        <Field label="צבע כפתור" hint="קוד HEX, למשל #2563EB">
+          <TextInput
+            value={str(settings.accentColor, "#2563EB")}
+            onChange={(v) => updateField("accentColor", v)}
+          />
+        </Field>
+      </SettingsSection>
+
+      <SettingsSection title="תוצאות חיפוש">
+        <Toggle
+          label="כלול גם כותרות עמודים"
+          description="חיפוש יציג גם שמות עמודים באתר"
+          checked={bool(settings.showPages, true)}
+          onChange={(v) => updateField("showPages", v)}
+        />
+      </SettingsSection>
     </SitePluginPanelFrame>
   );
 }
