@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getTextDirection } from "./i18n/localeUtils";
 
 import PreLoginBot from "./components/PreLoginBot";
+import SupportChatWidget from "./components/SupportChatWidget";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -97,6 +98,7 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
+const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
 
 const AffiliatePage = lazy(() =>
   import("./pages/business/dashboardPages/AffiliatePage")
@@ -1022,6 +1024,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/support-chat"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSupportChat />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/affiliate-payouts"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1062,6 +1073,13 @@ export default function App() {
       </div>
 
       {!user && !isEarlyAccessLanding && <PreLoginBot />}
+
+      {!isEarlyAccessLanding &&
+        !isBusinessChatRoute &&
+        !location.pathname.startsWith("/admin") &&
+        !location.pathname.startsWith("/embed/") && (
+          <SupportChatWidget />
+        )}
     </NotificationsProvider>
   );
 }

@@ -1784,7 +1784,21 @@
       "editSite": "How do I edit the site in the editor?",
       "seo": "How do I set up SEO for the site?",
       "dashboardStuck": "What if the dashboard isn't updating?"
-    }
+    },
+    "talkToHuman": "Talk to a human agent now",
+    "humanTitle": "Customer Support",
+    "humanFormHint": "Leave your details and we'll connect you live",
+    "humanName": "Full name",
+    "humanEmail": "Email",
+    "humanNote": "How can we help? (optional)",
+    "humanSubmit": "Connect me to an agent",
+    "humanCancel": "Cancel",
+    "humanConnecting": "Connecting to an agent...",
+    "humanWaiting": "Waiting for an available agent",
+    "humanActive": "Connected to a live agent",
+    "humanError": "Couldn't connect to an agent right now. Please try again shortly.",
+    "humanPlaceholder": "Write a message to the agent...",
+    "agentLabel": "Support agent"
   },
   "aiInsights": {
     "loadingAria": "Loading recommendations",

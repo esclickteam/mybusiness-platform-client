@@ -24,7 +24,6 @@ import {
 } from "lucide-react";
 
 import { useAuth } from "../context/AuthContext";
-import ChatBot from "../components/ChatBot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type AuthUser = {
@@ -120,11 +119,6 @@ export default function HelpCenter() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
-  const [initialChatMessage, setInitialChatMessage] = useState<string | null>(
-    null
-  );
-
   const basePath = businessId ? `/business/${businessId}/dashboard` : "/";
 
   const suggestedQueries: QuickAction[] = useMemo(
@@ -385,8 +379,11 @@ export default function HelpCenter() {
     filteredArticles.length > 0 || filteredCategories.length > 0;
 
   const openChatWithPrompt = useCallback((prompt: string) => {
-    setInitialChatMessage(prompt);
-    setChatOpen(true);
+    window.dispatchEvent(
+      new CustomEvent("bizuply:openSupportChat", {
+        detail: { message: prompt },
+      })
+    );
   }, []);
 
   const handleSuggestionClick = useCallback((query: string) => {
@@ -878,12 +875,6 @@ export default function HelpCenter() {
         )}
       </div>
 
-      <ChatBot
-        chatOpen={chatOpen}
-        setChatOpen={setChatOpen}
-        initialMessage={initialChatMessage}
-        onInitialMessageSent={() => setInitialChatMessage(null)}
-      />
     </main>
   );
 }

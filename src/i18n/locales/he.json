@@ -1784,7 +1784,21 @@
       "editSite": "איך עורכים את האתר בעורך?",
       "seo": "איך מגדירים SEO לאתר?",
       "dashboardStuck": "מה לעשות אם הדשבורד לא מתעדכן?"
-    }
+    },
+    "talkToHuman": "פנו לנציג אנושי עכשיו",
+    "humanTitle": "שירות לקוחות",
+    "humanFormHint": "השאירו פרטים ונתחבר לנציג בזמן אמת",
+    "humanName": "שם מלא",
+    "humanEmail": "אימייל",
+    "humanNote": "במה אפשר לעזור? (אופציונלי)",
+    "humanSubmit": "חברו אותי לנציג",
+    "humanCancel": "ביטול",
+    "humanConnecting": "מחברים לנציג...",
+    "humanWaiting": "ממתינים לנציג פנוי",
+    "humanActive": "מחוברים לנציג בזמן אמת",
+    "humanError": "לא הצלחנו לחבר לנציג כרגע. נסו שוב בעוד רגע.",
+    "humanPlaceholder": "כתבו הודעה לנציג...",
+    "agentLabel": "נציג שירות"
   },
   "aiInsights": {
     "loadingAria": "טוען המלצות",
