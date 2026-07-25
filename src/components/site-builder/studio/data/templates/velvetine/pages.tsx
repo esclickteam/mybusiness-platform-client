@@ -89,16 +89,11 @@ function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; c
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   return (
-    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-[var(--p)]/20 bg-[var(--dark)]/90 backdrop-blur-md">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b border-[var(--p)]/25 bg-[var(--dark)]/90 text-[var(--text)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3">
-          <span className="grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-bold text-[var(--dark)]">{getValue(data,"logoText")}</span>
-          <span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span>
-        </button>
-        <nav className="hidden gap-6 text-sm md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (
-          <button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>
-        ))}</nav>
-        <button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-5 py-2.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
+        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3"><span className="grid h-11 w-11 place-items-center bg-[var(--p)] text-sm font-bold text-[var(--dark)]">{getValue(data,"logoText")}</span><span className="t-display text-3xl text-[var(--p)]">{getValue(data,"brandName")}</span></button>
+        <nav className="hidden gap-6 text-sm md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
+        <button type="button" onClick={() => goTo("booking")} className="t-pulse px-5 py-2.5 text-sm font-bold bg-[var(--p)] text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
       </div>
     </header>
   );
@@ -107,105 +102,59 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
 function HomePage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <section data-template-section-type="hero" data-section-kind="hero" className="relative min-h-[100svh] overflow-hidden">
-      <img src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)] via-[var(--dark)]/75 to-transparent" />
-      <div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-5 pb-20 pt-32 lg:px-8">
-        <Reveal variant="up">
-          <p className="text-xs tracking-[0.4em] text-[var(--p)]">{getValue(data,"heroEyebrow")}</p>
-          <h1 className="t-display t-anim mt-4 whitespace-pre-line text-6xl leading-[0.95] text-white md:text-8xl">{getValue(data,"brandName")}</h1>
-          <p className="t-anim t-d1 mt-5 max-w-xl text-lg text-white/75">{getValue(data,"heroSubtitle")}</p>
-          <div className="mt-8 flex flex-wrap gap-3">
-            <button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
-            <button type="button" onClick={() => goTo("services")} className="border border-white/30 px-8 py-4 text-sm text-white">{getValue(data,"heroSecondaryButton")}</button>
-          </div>
-        </Reveal>
-      </div>
-    </section>
-      <section data-template-section-type="servicesPreview" data-section-kind="servicesPreview" className="border-y border-[var(--p)]/25 bg-[var(--surface)] py-10">
-      <div className="t-marquee flex gap-10 whitespace-nowrap px-4">
-        {[...[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]], ...[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]]].map(([title], i) => (
-          <span key={i} className="inline-flex items-center gap-3 text-2xl text-[var(--p)]"><span className="h-1.5 w-1.5 rounded-full bg-[var(--a)]" />{title}</span>
-        ))}
-      </div>
-      <div className="mx-auto mt-10 grid max-w-7xl gap-4 px-5 md:grid-cols-3 lg:px-8">
-        {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-          <Reveal key={title} delayMs={i * 90} className="t-hover border border-[var(--p)]/30 p-6">
-            <h3 className="t-display text-2xl text-[var(--p)]">{title}</h3>
-            <p className="mt-2 text-sm text-[var(--muted)]">{text}</p>
-          </Reveal>
-        ))}
-      </div>
-    </section>
-      <section data-template-section-type="ritual" data-section-kind="ritual" className="px-5 py-24 lg:px-8">
-      <div className="mx-auto max-w-3xl">
-        <Reveal><h2 className="t-display text-4xl md:text-5xl">{getValue(data,"sectionThreeTitle")}</h2></Reveal>
-        <div className="mt-10 space-y-3">
-          {[["01","הגעה והתאמה"],["02","טיפול מותאם"],["03","סיום והמלצות"]].map(([n,t],i) => (
-            <Reveal key={n} delayMs={i*70}>
-              <div className="t-hover flex gap-5 border border-[var(--p)]/25 bg-[var(--surface)] p-5">
-                <span className="t-display text-2xl text-[var(--p)]">{n}</span>
-                <div><h3 className="font-bold">{t}</h3><p className="mt-1 text-sm text-[var(--muted)]">שלב מודרך בחוויית הטיפול המלאה.</p></div>
-              </div>
-            </Reveal>
-          ))}
+      <section data-template-section-type="hero" data-section-kind="hero" className="relative min-h-[100svh] overflow-hidden"><img src={getValue(data,"heroImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)] via-[var(--dark)]/70 to-transparent" /><div className="relative z-10 mx-auto flex min-h-[100svh] max-w-7xl flex-col justify-end px-5 pb-20 pt-32 lg:px-8"><Reveal><p className="text-xs tracking-[0.4em] text-[var(--p)]">NOIR</p><h1 className="t-display t-anim mt-4 whitespace-pre-line text-6xl leading-[0.95] text-white md:text-8xl">{getValue(data,"heroTitle")}</h1><p className="t-anim t-d1 mt-5 max-w-xl text-lg text-white/75">{getValue(data,"heroSubtitle")}</p><div className="mt-8 flex flex-wrap gap-3"><button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button><button type="button" onClick={() => goTo("services")} className="border border-white/30 px-8 py-4 text-sm text-white">{getValue(data,"heroSecondaryButton")}</button></div></Reveal></div></section>
+      <section data-template-section-type="servicesPreview" data-section-kind="servicesPreview" className="beauty-noirGold-servicesPreview-frame-0 relative isolate overflow-hidden px-5 py-24 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--p)_28%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--surface)_70%,transparent),transparent_58%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / servicesPreview</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionTwoTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"servicesIntroText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"]].map(([title, text, minutes, n], i) => (<Reveal key={title} delayMs={i*80} className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-6"><p className="text-xs font-bold text-[var(--p)]">{n} / {minutes}</p><h3 className="mt-3 text-2xl font-bold">{title}</h3><p className="mt-3 text-sm leading-6 text-[var(--muted)]">{text}</p></Reveal>))}</div>
         </div>
-      </div>
-    </section>
-      <section data-template-section-type="gallery" data-section-kind="gallery" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"sectionFourTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[getValue(data,"galleryImage1"),getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"galleryImage4")].map((src, i) => (
-            <Reveal key={i} delayMs={i*70} variant="scale"><img src={src} alt="" className="aspect-square w-full object-cover" /></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="team" data-section-kind="team" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"sectionFiveTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="testimonials" data-section-kind="testimonials" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"sectionSixTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text, name, role], i) => (
-            <Reveal key={name} delayMs={i*80} className="t-hover"><p className="text-lg leading-8">“{text}”</p><p className="mt-3 text-sm font-bold text-[var(--p)]">{name} · {role}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="packages" data-section-kind="packages" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"sectionSevenTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"packageOneTitle"),getValue(data,"packageOnePrice"),getValue(data,"packageOneText")],[getValue(data,"packageTwoTitle"),getValue(data,"packageTwoPrice"),getValue(data,"packageTwoText")],[getValue(data,"packageThreeTitle"),getValue(data,"packageThreePrice"),getValue(data,"packageThreeText")]].map(([t,p,x], i) => (
-            <Reveal key={t} delayMs={i*80} className="t-hover"><div className="text-2xl font-bold text-[var(--p)]">{p}</div><h3 className="mt-2 font-bold">{t}</h3><p className="mt-2 text-sm text-[var(--muted)]">{x}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="whyUs" data-section-kind="whyUs" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"sectionEightTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l], i) => (
-            <Reveal key={l} delayMs={i*90} variant="scale" className="t-float text-center"><div className="t-display text-4xl text-[var(--p)]">{n}</div><div className="mt-1 text-xs text-[var(--muted)]">{l}</div></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="bookingTeaser" data-section-kind="bookingTeaser" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl border border-[var(--p)]/40 bg-[var(--surface)] px-8 py-14 text-center">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"bookingTeaserTitle")}</h2>
-        <p className="mx-auto mt-4 max-w-lg text-[var(--muted)]">{getValue(data,"ctaText")}</p>
-        <button type="button" onClick={() => goTo("booking")} className="t-pulse mt-8 bg-[var(--p)] px-8 py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal>
-      </div>
-    </section>
-      <footer data-template-section-type="footer" data-section-kind="footer" className="border-t border-[var(--p)]/25 px-5 py-12 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span>
-        <span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span>
-        <span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span>
-      </div>
-    </footer>
+      </section>
+      <section data-template-section-type="ritual" data-section-kind="ritual" className="beauty-noirGold-ritual-frame-1 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="lg:sticky lg:top-28 lg:h-fit"><div className="t-shimmer mb-5 h-px w-32 bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / ritual</p><div className="mt-6 t-display text-5xl leading-none text-[var(--p)]">02</div></aside>
+          <div><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionThreeTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"aboutStoryText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-4">{[["01","שיחה","מגדירות מטרה, רגישויות וסגנון אישי."],["02","הכנה","ניקוי, התאמה ובדיקת נוחות לפני תחילת הטיפול."],["03","ביצוע","עבודה מדויקת בקצב רגוע עם חומרי פרימיום."],["04","המשך","הנחיות בית ותיאום ביקורת לפי הצורך."]].map(([n,title,text], i) => (<Reveal key={n} delayMs={i*70} className="t-hover border-r-2 border-[var(--p)] bg-[var(--surface)]/70 p-5"><span className="text-sm font-bold text-[var(--p)]">{n}</span><h3 className="mt-2 font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>))}</div></div>
+        </div>
+      </section>
+      <section data-template-section-type="gallery" data-section-kind="gallery" className="beauty-noirGold-gallery-frame-2 overflow-hidden px-4 py-20 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[3rem] border border-[var(--p)]/25 bg-[var(--surface)] px-6 py-14 shadow-2xl md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / gallery</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionFourTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"spaceTourText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-4">{[getValue(data,"galleryImage1"),getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"galleryImage4")].map((src, i) => (<Reveal key={i} delayMs={i*70} variant="scale" className={i===0 ? "md:col-span-2 md:row-span-2" : ""}><img src={src} alt="" className="t-ken h-full min-h-[240px] w-full object-cover" /></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="team" data-section-kind="team" className="beauty-noirGold-team-frame-3 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.15fr_0.85fr]">
+          <div className="order-2 md:order-1"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionFiveTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"specialistsText")}</p></Reveal><div className="mt-10 grid gap-5 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"]].map(([title, text], i) => (<Reveal key={title} delayMs={i*90} className="t-hover overflow-hidden bg-[var(--surface)]/75"><img src={[getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"aboutImage")][i]} alt="" className="h-52 w-full object-cover" /><div className="p-5"><p className="text-xs text-[var(--p)]">מומחית {i+1}</p><h3 className="mt-1 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{text}</p></div></Reveal>))}</div></div>
+          <div className="order-1 flex items-start justify-between border-r-4 border-[var(--p)] pr-5 md:order-2"><div><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / team</p></div><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-template-section-type="testimonials" data-section-kind="testimonials" className="beauty-noirGold-testimonials-frame-4 relative overflow-hidden bg-[var(--dark)] px-5 py-24 text-[var(--text)] lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--p)_18%,transparent),transparent)]" />
+        <div className="relative mx-auto max-w-7xl border border-[var(--p)]/45 p-6 shadow-[0_0_44px_color-mix(in_srgb,var(--p)_18%,transparent)] md:p-10">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / testimonials</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionSixTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"pressText")}</p></Reveal><div className="mt-10 grid gap-5 md:grid-cols-[1.2fr_0.8fr_1fr]">{[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text, name, role], i) => (<Reveal key={name} delayMs={i*80} className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-6"><p className="text-2xl text-[var(--p)]">״</p><p className="mt-2 text-lg leading-8">{text}</p><p className="mt-5 text-sm font-bold text-[var(--p)]">{name} · {role}</p></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="packages" data-section-kind="packages" className="beauty-noirGold-packages-frame-5 bg-[var(--bg)] px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-[var(--p)]/20 bg-[var(--surface)] p-7 shadow-xl md:p-12">
+          <div className="mb-8 flex items-center gap-3"><span className="t-pulse h-2.5 w-2.5 rounded-full bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / packages</p></div>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionSevenTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"priceText")}</p></Reveal><div className="mt-10 grid gap-5 lg:grid-cols-3">{[[getValue(data,"packageOneTitle"),getValue(data,"packageOnePrice"),getValue(data,"packageOneText")],[getValue(data,"packageTwoTitle"),getValue(data,"packageTwoPrice"),getValue(data,"packageTwoText")],[getValue(data,"packageThreeTitle"),getValue(data,"packageThreePrice"),getValue(data,"packageThreeText")]].map(([title, price, text], i) => (<Reveal key={title} delayMs={i*90} className="t-hover relative overflow-hidden border border-[var(--p)]/30 bg-[var(--surface)]/75 p-7"><div className="t-shimmer absolute inset-x-0 top-0 h-1 bg-[var(--p)]" /><p className="t-display text-4xl text-[var(--p)]">{price}</p><h3 className="mt-3 text-xl font-bold">{title}</h3><p className="mt-3 text-sm leading-6 text-[var(--muted)]">{text}</p><button type="button" onClick={() => goTo("booking")} className="mt-6 text-sm font-bold text-[var(--p)]">בחירת חבילה</button></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="whyUs" data-section-kind="whyUs" className="beauty-noirGold-whyUs-frame-6 overflow-hidden px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[0.85fr_1.15fr_0.55fr]">
+          <div className="min-h-28 bg-[var(--p)]/15 p-5"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / whyUs</p></div>
+          <div className="bg-[var(--surface)] p-6 md:p-10"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"sectionEightTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"valuesText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n, label], i) => (<Reveal key={label} delayMs={i*90} variant="scale" className="t-float border-b-4 border-[var(--p)] bg-[var(--surface)]/70 p-7 text-center"><div className="t-display text-5xl text-[var(--p)]">{n}</div><p className="mt-2 font-bold">{label}</p><p className="mt-2 text-sm text-[var(--muted)]">מדד שמספר על עקביות, דיוק וחוויה שחוזרות בכל ביקור.</p></Reveal>))}</div></div>
+          <div className="t-float hidden border border-[var(--p)]/35 p-5 md:block"><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-template-section-type="bookingTeaser" data-section-kind="bookingTeaser" className="beauty-noirGold-bookingTeaser-frame-7 px-5 py-24 lg:px-8">
+        <div className="mx-auto max-w-7xl border-y border-[var(--p)]/35 py-10">
+          <div className="mb-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / bookingTeaser</p><div className="h-px bg-[var(--p)]/30" /><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+          <Reveal className="grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr]"><div><h2 className="t-display text-5xl leading-tight text-[var(--p)]">{getValue(data,"bookingTeaserTitle")}</h2><p className="mt-4 max-w-xl text-[var(--muted)]">{getValue(data,"ctaText")}</p></div><button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal>
+        </div>
+      </section>
+      <footer data-template-section-type="footer" data-section-kind="footer" className="beauty-noirGold-footer-noir border-t border-[var(--p)]/25 px-5 py-12 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between"><span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span><span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span><span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span></div></footer>
     </>
   );
 }
@@ -213,83 +162,67 @@ function HomePage({ data, goTo }: { data: Record<string, any>; goTo: (id: string
 function AboutPage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <section data-template-section-type="aboutHero" data-section-kind="aboutHero" className="relative min-h-[50vh] overflow-hidden">
-      <img src={getValue(data,"aboutImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="absolute inset-0 bg-[var(--dark)]/70" />
-      <div className="relative z-10 mx-auto flex min-h-[50vh] max-w-7xl items-end px-5 pb-14 lg:px-8">
-        <Reveal><h1 className="t-display t-anim text-5xl text-white md:text-6xl">{getValue(data,"aboutHeroTitle")}</h1></Reveal>
-      </div>
-    </section>
-      <section data-template-section-type="story" data-section-kind="story" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"aboutStoryTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="spaceTour" data-section-kind="spaceTour" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"spaceTourTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[getValue(data,"galleryImage1"),getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"galleryImage4")].map((src, i) => (
-            <Reveal key={i} delayMs={i*70} variant="scale"><img src={src} alt="" className="aspect-square w-full object-cover" /></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="values" data-section-kind="values" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"valuesTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="specialistsDeep" data-section-kind="specialistsDeep" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"specialistsTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="certifications" data-section-kind="certifications" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"certsTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l], i) => (
-            <Reveal key={l} delayMs={i*90} variant="scale" className="t-float text-center"><div className="t-display text-4xl text-[var(--p)]">{n}</div><div className="mt-1 text-xs text-[var(--muted)]">{l}</div></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="timeline" data-section-kind="timeline" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"timelineTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="pressQuotes" data-section-kind="pressQuotes" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"pressTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text, name, role], i) => (
-            <Reveal key={name} delayMs={i*80} className="t-hover"><p className="text-lg leading-8">“{text}”</p><p className="mt-3 text-sm font-bold text-[var(--p)]">{name} · {role}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="aboutCta" data-section-kind="aboutCta" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl border border-[var(--p)]/40 bg-[var(--surface)] px-8 py-14 text-center">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"aboutCtaTitle")}</h2>
-        <p className="mx-auto mt-4 max-w-lg text-[var(--muted)]">{getValue(data,"ctaText")}</p>
-        <button type="button" onClick={() => goTo("booking")} className="t-pulse mt-8 bg-[var(--p)] px-8 py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal>
-      </div>
-    </section>
-      <footer data-template-section-type="footer" data-section-kind="footer" className="border-t border-[var(--p)]/25 px-5 py-12 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span>
-        <span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span>
-        <span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span>
-      </div>
-    </footer>
+      <section data-template-section-type="aboutHero" data-section-kind="aboutHero" className="beauty-noirGold-aboutHero-frame-8 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--a)_16%,transparent),transparent)] px-5 py-24 text-center lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto mb-8 h-16 w-px bg-[var(--p)]" />
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / aboutHero</p>
+          <Reveal><div className="grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-end"><div><p className="text-xs font-bold tracking-[0.35em] text-[var(--p)]">{getValue(data,"heroEyebrow")}</p><h1 className="t-display t-anim mt-4 text-5xl leading-tight text-[var(--p)] md:text-7xl">{getValue(data,"aboutHeroTitle")}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{getValue(data,"aboutStoryText")}</p></div><img src={getValue(data,"aboutImage")} alt="" className="t-ken min-h-[360px] w-full object-cover" /></div></Reveal>
+        </div>
+      </section>
+      <section data-template-section-type="story" data-section-kind="story" className="beauty-noirGold-story-frame-9 px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[120px_1fr]">
+            <div className="font-mono text-sm text-[var(--p)]">NOIR<div className="mt-3 h-24 w-px bg-[var(--p)]/50" /></div>
+            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"aboutStoryTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"aboutStoryText")}</p></Reveal><div className="mt-10 grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><Reveal><img src={getValue(data,"sectionImage")} alt="" className="t-ken h-full min-h-[420px] w-full object-cover" /></Reveal><div className="space-y-5">{["הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.","כל טיפול מתועד בכרטיס לקוחה, עם העדפות, תגובות עור והמלצות המשך ברורות.","הצוות נפגש בכל שבוע לסקירת תוצאות, שיפור תהליכים ובדיקת חומרי עבודה חדשים."].map((text, i) => (<Reveal key={text} delayMs={i*80} className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-6"><span className="text-sm font-bold text-[var(--p)]">פרק {i+1}</span><p className="mt-3 leading-8 text-[var(--muted)]">{text}</p></Reveal>))}</div></div></div>
+          </div>
+        </div>
+      </section>
+      <section data-template-section-type="spaceTour" data-section-kind="spaceTour" className="beauty-noirGold-spaceTour-frame-0 relative isolate overflow-hidden px-5 py-24 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--p)_28%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--surface)_70%,transparent),transparent_58%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / spaceTour</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"spaceTourTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"spaceTourText")}</p></Reveal><div className="mt-10 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]"><Reveal><img src={getValue(data,"galleryImage1")} alt="" className="t-ken h-full min-h-[460px] w-full object-cover" /></Reveal><div className="grid gap-4">{[[getValue(data,"galleryImage2"),"קבלת פנים","עמדת ייעוץ שקטה עם תאורה רכה וכיבוד קטן."],[getValue(data,"galleryImage3"),"חדר טיפול","מיטה מחוממת, סטריליות מלאה ומוזיקה מותאמת."],[getValue(data,"galleryImage4"),"פינת סיום","מראה גדולה, מוצרי המשך והנחיות כתובות."]].map(([src,title,text], i) => (<Reveal key={title} delayMs={i*80} className="t-hover grid grid-cols-[110px_1fr] gap-4 bg-[var(--surface)]/70 p-4"><img src={src} alt="" className="h-28 w-full object-cover" /><div><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></div></Reveal>))}</div></div>
+        </div>
+      </section>
+      <section data-template-section-type="values" data-section-kind="values" className="beauty-noirGold-values-frame-1 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="lg:sticky lg:top-28 lg:h-fit"><div className="t-shimmer mb-5 h-px w-32 bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / values</p><div className="mt-6 t-display text-5xl leading-none text-[var(--p)]">02</div></aside>
+          <div><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"valuesTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"valuesText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-3">{[["01","דיוק","לא מתחילות טיפול לפני התאמת ציפיות ותיעוד מלא."],["02","היגיינה","כלים מחוטאים, עמדות נקיות וחומרים מאושרים בלבד."],["03","רוגע","לוח תורים מרווח כדי שלא תרגישו חלק מפס ייצור."],["04","שקיפות","מחיר, משך ותוצאה צפויה מוסברים מראש."],["05","למידה","הכשרות קבועות והתנסות בטכניקות חדשות."],["06","אחריות","מעקב אחרי הטיפול והמלצות המשך אמיתיות."]].map(([n,title,text], i) => (<Reveal key={n} delayMs={i*60} className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><span className="text-xs font-bold text-[var(--p)]">{n}</span><h3 className="mt-2 text-xl font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-[var(--muted)]">{text}</p></Reveal>))}</div></div>
+        </div>
+      </section>
+      <section data-template-section-type="specialistsDeep" data-section-kind="specialistsDeep" className="beauty-noirGold-specialistsDeep-frame-2 overflow-hidden px-4 py-20 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[3rem] border border-[var(--p)]/25 bg-[var(--surface)] px-6 py-14 shadow-2xl md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / specialistsDeep</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"specialistsTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"specialistsText")}</p></Reveal><div className="mt-10 space-y-5">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"]].map(([title, text, minutes], i) => (<Reveal key={title} delayMs={i*90} className="t-hover grid gap-5 border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5 md:grid-cols-[180px_1fr_auto]"><img src={[getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"aboutImage")][i]} alt="" className="h-44 w-full object-cover" /><div><p className="text-sm text-[var(--p)]">ביו מקצועי · {minutes}</p><h3 className="mt-1 text-2xl font-bold">{title}</h3><p className="mt-3 leading-7 text-[var(--muted)]">{text} ההתמחות כוללת אבחון, עבודה עדינה וליווי אחרי הטיפול.</p></div><div className="self-center text-center"><div className="t-display text-4xl text-[var(--p)]">{i+4}</div><p className="text-xs text-[var(--muted)]">שנות ניסיון</p></div></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="certifications" data-section-kind="certifications" className="beauty-noirGold-certifications-frame-3 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.15fr_0.85fr]">
+          <div className="order-2 md:order-1"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"certsTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"certsText")}</p></Reveal><div className="mt-10 grid gap-4 md:grid-cols-4">{[["ISO","נהלי חיטוי"],["PRO","הכשרות מוצר"],["CARE","בטיחות לקוחה"],["LAB","בדיקת חומרים"]].map(([code,title], i) => (<Reveal key={code} delayMs={i*70} className="t-hover border border-[var(--p)]/30 bg-[var(--surface)]/70 p-6 text-center"><div className="t-display text-4xl text-[var(--p)]">{code}</div><h3 className="mt-3 font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">תעודה, רענון ויישום בפועל בצוות.</p></Reveal>))}</div></div>
+          <div className="order-1 flex items-start justify-between border-r-4 border-[var(--p)] pr-5 md:order-2"><div><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / certifications</p></div><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-template-section-type="timeline" data-section-kind="timeline" className="beauty-noirGold-timeline-frame-4 relative overflow-hidden bg-[var(--dark)] px-5 py-24 text-[var(--text)] lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--p)_18%,transparent),transparent)]" />
+        <div className="relative mx-auto max-w-7xl border border-[var(--p)]/45 p-6 shadow-[0_0_44px_color-mix(in_srgb,var(--p)_18%,transparent)] md:p-10">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / timeline</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"timelineTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"aboutStoryText")}</p></Reveal><div className="mt-10 space-y-0 border-r border-[var(--p)]/40 pr-6">{[["2018","פתיחת החדר הראשון וקבלת לקוחות קבועות."],["2020","הוספת מערכת תורים ותיעוד דיגיטלי."],["2023","הרחבת הצוות והכשרות מתקדמות."],["2026","חלל חדש עם אזורי טיפול, המתנה ואבחון."]].map(([year,text], i) => (<Reveal key={year} delayMs={i*80} className="relative pb-8"><span className="absolute -right-[31px] top-1 h-3 w-3 rounded-full bg-[var(--p)]" /><div className="grid gap-3 md:grid-cols-[120px_1fr]"><strong className="t-display text-3xl text-[var(--p)]">{year}</strong><p className="leading-7 text-[var(--muted)]">{text}</p></div></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="pressQuotes" data-section-kind="pressQuotes" className="beauty-noirGold-pressQuotes-frame-5 bg-[var(--bg)] px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-[var(--p)]/20 bg-[var(--surface)] p-7 shadow-xl md:p-12">
+          <div className="mb-8 flex items-center gap-3"><span className="t-pulse h-2.5 w-2.5 rounded-full bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / pressQuotes</p></div>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"pressTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"pressText")}</p></Reveal><div className="mt-10 grid gap-5 md:grid-cols-3">{[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text, name, role], i) => (<Reveal key={name} delayMs={i*80} className="t-hover bg-[var(--surface)]/70 p-6"><p className="text-xs font-bold tracking-[0.28em] text-[var(--p)]">BEAUTY NOTE {i+1}</p><p className="mt-4 text-lg leading-8">{text}</p><p className="mt-5 text-sm text-[var(--muted)]">{name} · {role}</p></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="aboutCta" data-section-kind="aboutCta" className="beauty-noirGold-aboutCta-frame-6 overflow-hidden px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[0.85fr_1.15fr_0.55fr]">
+          <div className="min-h-28 bg-[var(--p)]/15 p-5"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / aboutCta</p></div>
+          <div className="bg-[var(--surface)] p-6 md:p-10"><Reveal className="grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr]"><div><h2 className="t-display text-5xl leading-tight text-[var(--p)]">{getValue(data,"aboutCtaTitle")}</h2><p className="mt-4 max-w-xl text-[var(--muted)]">{getValue(data,"ctaText")}</p></div><button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal></div>
+          <div className="t-float hidden border border-[var(--p)]/35 p-5 md:block"><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <footer data-template-section-type="footer" data-section-kind="footer" className="beauty-noirGold-footer-noir border-t border-[var(--p)]/25 px-5 py-12 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between"><span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span><span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span><span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span></div></footer>
     </>
   );
 }
@@ -297,83 +230,66 @@ function AboutPage({ data, goTo }: { data: Record<string, any>; goTo: (id: strin
 function ServicesPage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <section data-template-section-type="servicesHero" data-section-kind="servicesHero" className="relative min-h-[50vh] overflow-hidden">
-      <img src={getValue(data,"aboutImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="absolute inset-0 bg-[var(--dark)]/70" />
-      <div className="relative z-10 mx-auto flex min-h-[50vh] max-w-7xl items-end px-5 pb-14 lg:px-8">
-        <Reveal><h1 className="t-display t-anim text-5xl text-white md:text-6xl">{getValue(data,"servicesHeroTitle")}</h1></Reveal>
-      </div>
-    </section>
-      <section data-template-section-type="catalog" data-section-kind="catalog" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"catalogTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="featuredTreatment" data-section-kind="featuredTreatment" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"featuredTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="durationGuide" data-section-kind="durationGuide" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"durationTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l], i) => (
-            <Reveal key={l} delayMs={i*90} variant="scale" className="t-float text-center"><div className="t-display text-4xl text-[var(--p)]">{n}</div><div className="mt-1 text-xs text-[var(--muted)]">{l}</div></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="addons" data-section-kind="addons" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"addonsTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="beforeAfter" data-section-kind="beforeAfter" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"beforeAfterTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[getValue(data,"galleryImage1"),getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"galleryImage4")].map((src, i) => (
-            <Reveal key={i} delayMs={i*70} variant="scale"><img src={src} alt="" className="aspect-square w-full object-cover" /></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="priceTable" data-section-kind="priceTable" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"priceTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"packageOneTitle"),getValue(data,"packageOnePrice"),getValue(data,"packageOneText")],[getValue(data,"packageTwoTitle"),getValue(data,"packageTwoPrice"),getValue(data,"packageTwoText")],[getValue(data,"packageThreeTitle"),getValue(data,"packageThreePrice"),getValue(data,"packageThreeText")]].map(([t,p,x], i) => (
-            <Reveal key={t} delayMs={i*80} className="t-hover"><div className="text-2xl font-bold text-[var(--p)]">{p}</div><h3 className="mt-2 font-bold">{t}</h3><p className="mt-2 text-sm text-[var(--muted)]">{x}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="serviceFaq" data-section-kind="serviceFaq" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"serviceFaqTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q,a], i) => (
-            <Reveal key={q} delayMs={i*70}><details className="t-hover border border-[var(--p)]/25 p-4"><summary className="cursor-pointer font-bold">{q}</summary><p className="mt-2 text-sm text-[var(--muted)]">{a}</p></details></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="bookCta" data-section-kind="bookCta" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl border border-[var(--p)]/40 bg-[var(--surface)] px-8 py-14 text-center">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"bookCtaTitle")}</h2>
-        <p className="mx-auto mt-4 max-w-lg text-[var(--muted)]">{getValue(data,"ctaText")}</p>
-        <button type="button" onClick={() => goTo("booking")} className="t-pulse mt-8 bg-[var(--p)] px-8 py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal>
-      </div>
-    </section>
-      <footer data-template-section-type="footer" data-section-kind="footer" className="border-t border-[var(--p)]/25 px-5 py-12 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span>
-        <span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span>
-        <span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span>
-      </div>
-    </footer>
+      <section data-template-section-type="servicesHero" data-section-kind="servicesHero" className="beauty-noirGold-servicesHero-frame-7 px-5 py-24 lg:px-8">
+        <div className="mx-auto max-w-7xl border-y border-[var(--p)]/35 py-10">
+          <div className="mb-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / servicesHero</p><div className="h-px bg-[var(--p)]/30" /><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+          <Reveal><div className="grid gap-8 lg:grid-cols-[1fr_0.8fr] lg:items-end"><div><p className="text-xs font-bold tracking-[0.35em] text-[var(--p)]">{getValue(data,"heroEyebrow")}</p><h1 className="t-display t-anim mt-4 text-5xl leading-tight text-[var(--p)] md:text-7xl">{getValue(data,"servicesHeroTitle")}</h1><p className="mt-6 max-w-2xl text-lg leading-8 text-[var(--muted)]">{getValue(data,"servicesIntroText")}</p></div><img src={getValue(data,"sectionImage")} alt="" className="t-ken min-h-[340px] w-full object-cover" /></div></Reveal>
+        </div>
+      </section>
+      <section data-template-section-type="catalog" data-section-kind="catalog" className="beauty-noirGold-catalog-frame-8 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--a)_16%,transparent),transparent)] px-5 py-24 text-center lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto mb-8 h-16 w-px bg-[var(--p)]" />
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / catalog</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"catalogTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"catalogText")}</p></Reveal><div className="mt-10 grid gap-5 md:grid-cols-2">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"],["ייעוץ והתאמה",getValue(data,"servicesIntroText"),"15 דק׳","04"]].map(([title, text, minutes, n], i) => (<Reveal key={title} delayMs={i*70} className="t-hover grid gap-4 border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5 md:grid-cols-[90px_1fr]"><div className="t-display text-4xl text-[var(--p)]">{n}</div><div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-2 leading-7 text-[var(--muted)]">{text}</p><p className="mt-3 text-sm font-bold text-[var(--p)]">משך משוער: {minutes}</p></div></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="featuredTreatment" data-section-kind="featuredTreatment" className="beauty-noirGold-featuredTreatment-frame-9 px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[120px_1fr]">
+            <div className="font-mono text-sm text-[var(--p)]">NOIR<div className="mt-3 h-24 w-px bg-[var(--p)]/50" /></div>
+            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"featuredTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"featuredTreatmentText")}</p></Reveal><div className="mt-10 grid gap-8 lg:grid-cols-[1.1fr_0.9fr]"><Reveal><img src={getValue(data,"galleryImage2")} alt="" className="t-ken h-full min-h-[460px] w-full object-cover" /></Reveal><Reveal delayMs={100} className="bg-[var(--surface)]/75 p-7"><h3 className="t-display text-4xl text-[var(--p)]">{getValue(data,"itemOneTitle")}</h3><p className="mt-4 leading-8 text-[var(--muted)]">{getValue(data,"featuredTreatmentText")}</p><ul className="mt-6 space-y-3 text-sm">{["אבחון לפני התחלה","עבודה בשכבות", "סיום עם המלצות בית"].map((item) => (<li key={item} className="border-b border-[var(--p)]/20 pb-3">{item}</li>))}</ul><button type="button" onClick={() => goTo("booking")} className="mt-7 bg-[var(--p)] px-7 py-3 text-sm font-bold text-[var(--dark)]">קביעת טיפול דגל</button></Reveal></div></div>
+          </div>
+        </div>
+      </section>
+      <section data-template-section-type="durationGuide" data-section-kind="durationGuide" className="beauty-noirGold-durationGuide-frame-0 relative isolate overflow-hidden px-5 py-24 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--p)_28%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--surface)_70%,transparent),transparent_58%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / durationGuide</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"durationTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"durationText")}</p></Reveal><div className="mt-10 overflow-hidden border border-[var(--p)]/30">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"],["ייעוץ והתאמה",getValue(data,"servicesIntroText"),"15 דק׳","04"]].map(([title, text, minutes], i) => (<Reveal key={title} delayMs={i*60} className="grid gap-3 border-b border-[var(--p)]/20 bg-[var(--surface)]/70 p-5 last:border-b-0 md:grid-cols-[1fr_140px_1.4fr]"><strong>{title}</strong><span className="text-[var(--p)]">{minutes}</span><span className="text-sm text-[var(--muted)]">{text}</span></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="addons" data-section-kind="addons" className="beauty-noirGold-addons-frame-1 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="lg:sticky lg:top-28 lg:h-fit"><div className="t-shimmer mb-5 h-px w-32 bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / addons</p><div className="mt-6 t-display text-5xl leading-none text-[var(--p)]">02</div></aside>
+          <div><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"addonsTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"addonsText")}</p></Reveal><div className="mt-10 flex flex-wrap gap-3">{["מסכת הרגעה","עיסוי קרקפת","אמפולת זוהר","תיקון מהיר","ייעוץ ביתי","צילום תוצאה"].map((item, i) => (<Reveal key={item} delayMs={i*45} className="t-hover rounded-full border border-[var(--p)]/35 bg-[var(--surface)]/70 px-5 py-3 text-sm font-bold">+ {item}</Reveal>))}</div><p className="mt-6 max-w-2xl text-[var(--muted)]">{getValue(data,"addonsText")}</p></div>
+        </div>
+      </section>
+      <section data-template-section-type="beforeAfter" data-section-kind="beforeAfter" className="beauty-noirGold-beforeAfter-frame-2 overflow-hidden px-4 py-20 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[3rem] border border-[var(--p)]/25 bg-[var(--surface)] px-6 py-14 shadow-2xl md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / beforeAfter</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"beforeAfterTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"beforeAfterText")}</p></Reveal><div className="mt-10 grid gap-5 lg:grid-cols-2"><Reveal className="relative overflow-hidden"><img src={getValue(data,"galleryImage1")} alt="" className="t-ken h-[420px] w-full object-cover opacity-75" /><span className="absolute right-4 top-4 bg-[var(--dark)] px-4 py-2 text-sm text-white">לפני</span></Reveal><Reveal delayMs={100} className="relative overflow-hidden"><img src={getValue(data,"galleryImage3")} alt="" className="t-ken h-[420px] w-full object-cover" /><span className="absolute right-4 top-4 bg-[var(--p)] px-4 py-2 text-sm font-bold text-[var(--dark)]">אחרי</span></Reveal></div>
+        </div>
+      </section>
+      <section data-template-section-type="priceTable" data-section-kind="priceTable" className="beauty-noirGold-priceTable-frame-3 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.15fr_0.85fr]">
+          <div className="order-2 md:order-1"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"priceTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"priceText")}</p></Reveal><div className="mt-10 grid gap-4">{[[getValue(data,"packageOneTitle"),getValue(data,"packageOnePrice"),getValue(data,"packageOneText")],[getValue(data,"packageTwoTitle"),getValue(data,"packageTwoPrice"),getValue(data,"packageTwoText")],[getValue(data,"packageThreeTitle"),getValue(data,"packageThreePrice"),getValue(data,"packageThreeText")]].map(([title, price, text], i) => (<Reveal key={title} delayMs={i*70} className="t-hover grid items-center gap-4 border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5 md:grid-cols-[1fr_120px_1fr_auto]"><h3 className="text-xl font-bold">{title}</h3><strong className="t-display text-3xl text-[var(--p)]">{price}</strong><p className="text-sm text-[var(--muted)]">{text}</p><button type="button" onClick={() => goTo("booking")} className="border border-[var(--p)] px-4 py-2 text-sm text-[var(--p)]">בחירה</button></Reveal>))}</div></div>
+          <div className="order-1 flex items-start justify-between border-r-4 border-[var(--p)] pr-5 md:order-2"><div><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / priceTable</p></div><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-template-section-type="serviceFaq" data-section-kind="serviceFaq" className="beauty-noirGold-serviceFaq-frame-4 relative overflow-hidden bg-[var(--dark)] px-5 py-24 text-[var(--text)] lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--p)_18%,transparent),transparent)]" />
+        <div className="relative mx-auto max-w-7xl border border-[var(--p)]/45 p-6 shadow-[0_0_44px_color-mix(in_srgb,var(--p)_18%,transparent)] md:p-10">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / serviceFaq</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"serviceFaqTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"servicesIntroText")}</p></Reveal><div className="mt-10 space-y-3">{[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q, a], i) => (<Reveal key={q} delayMs={i*70}><details className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><summary className="cursor-pointer text-lg font-bold">{q}</summary><p className="mt-3 leading-7 text-[var(--muted)]">{a}</p></details></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="bookCta" data-section-kind="bookCta" className="beauty-noirGold-bookCta-frame-5 bg-[var(--bg)] px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-[var(--p)]/20 bg-[var(--surface)] p-7 shadow-xl md:p-12">
+          <div className="mb-8 flex items-center gap-3"><span className="t-pulse h-2.5 w-2.5 rounded-full bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / bookCta</p></div>
+          <Reveal className="grid items-center gap-8 md:grid-cols-[1.2fr_0.8fr]"><div><h2 className="t-display text-5xl leading-tight text-[var(--p)]">{getValue(data,"bookCtaTitle")}</h2><p className="mt-4 max-w-xl text-[var(--muted)]">{getValue(data,"ctaText")}</p></div><button type="button" onClick={() => goTo("booking")} className="t-pulse bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)]">{getValue(data,"ctaButton")}</button></Reveal>
+        </div>
+      </section>
+      <footer data-template-section-type="footer" data-section-kind="footer" className="beauty-noirGold-footer-noir border-t border-[var(--p)]/25 px-5 py-12 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between"><span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span><span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span><span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span></div></footer>
     </>
   );
 }
@@ -381,88 +297,67 @@ function ServicesPage({ data, goTo }: { data: Record<string, any>; goTo: (id: st
 function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <section data-template-section-type="bookingHero" data-section-kind="bookingHero" className="relative min-h-[50vh] overflow-hidden">
-      <img src={getValue(data,"aboutImage")} alt="" className="t-ken absolute inset-0 h-full w-full object-cover opacity-50" />
-      <div className="absolute inset-0 bg-[var(--dark)]/70" />
-      <div className="relative z-10 mx-auto flex min-h-[50vh] max-w-7xl items-end px-5 pb-14 lg:px-8">
-        <Reveal><h1 className="t-display t-anim text-5xl text-white md:text-6xl">{getValue(data,"bookingHeroTitle")}</h1></Reveal>
-      </div>
-    </section>
-      <section data-section-kind="booking" data-bizuply-block="booking" data-template-section-type="booking" className="px-5 py-16 lg:px-8">
-      <div className="mx-auto max-w-4xl border border-[var(--p)]/30 bg-[var(--surface)] p-6 md:p-10">
-        <Reveal><h2 className="t-display text-3xl text-[var(--p)]">{getValue(data,"calendarTitle")}</h2></Reveal>
-        <BookingCalendarPanel />
-      </div>
-    </section>
-      <section data-template-section-type="servicePicker" data-section-kind="servicePicker" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"servicePickerTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="specialistPicker" data-section-kind="specialistPicker" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"specialistTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title, text], i) => (
-            <Reveal key={title} delayMs={i*80} className="t-hover"><h3 className="font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="hoursPanel" data-section-kind="hoursPanel" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"hoursTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l], i) => (
-            <Reveal key={l} delayMs={i*90} variant="scale" className="t-float text-center"><div className="t-display text-4xl text-[var(--p)]">{n}</div><div className="mt-1 text-xs text-[var(--muted)]">{l}</div></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="policies" data-section-kind="policies" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"policiesTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q,a], i) => (
-            <Reveal key={q} delayMs={i*70}><details className="t-hover border border-[var(--p)]/25 p-4"><summary className="cursor-pointer font-bold">{q}</summary><p className="mt-2 text-sm text-[var(--muted)]">{a}</p></details></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <section data-template-section-type="confirmationForm" data-section-kind="confirmationForm" className="px-5 py-16 lg:px-8">
-      <div className="mx-auto max-w-xl border border-[var(--p)]/30 bg-[var(--surface)] p-8">
-        <Reveal><h2 className="t-display text-3xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2>
-        <form className="mt-6 grid gap-3" onSubmit={(e)=>e.preventDefault()}>
-          <input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" />
-          <textarea className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" />
-          <button type="button" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button>
-        </form></Reveal>
-      </div>
-    </section>
-      <section data-template-section-type="locationMap" data-section-kind="locationMap" className="px-5 py-16 lg:px-8">
-      <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2">
-        <Reveal><h2 className="t-display text-3xl text-[var(--p)]">{getValue(data,"locationTitle")}</h2>
-        <p className="mt-3 text-[var(--muted)]">{getValue(data,"address")}</p>
-        <p className="mt-2 text-sm">{getValue(data,"phone")}</p></Reveal>
-        <Reveal delayMs={100}><div className="relative aspect-video overflow-hidden bg-[var(--surface)]">
-          <img src={getValue(data,"mapImage")} alt="" className="t-ken h-full w-full object-cover opacity-70" />
-          <span className="absolute inset-0 grid place-items-center text-sm font-bold text-white">מפה · {getValue(data,"address")}</span>
-        </div></Reveal>
-      </div>
-    </section>
-      <section data-template-section-type="bookingFaq" data-section-kind="bookingFaq" className="px-5 py-20 lg:px-8">
-      <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"bookingFaqTitle")}</h2></Reveal>
-        <div className="mt-10 grid gap-4 md:grid-cols-3">{[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q,a], i) => (
-            <Reveal key={q} delayMs={i*70}><details className="t-hover border border-[var(--p)]/25 p-4"><summary className="cursor-pointer font-bold">{q}</summary><p className="mt-2 text-sm text-[var(--muted)]">{a}</p></details></Reveal>
-          ))}</div>
-      </div>
-    </section>
-      <footer data-template-section-type="footer" data-section-kind="footer" className="border-t border-[var(--p)]/25 px-5 py-12 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span>
-        <span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span>
-        <span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span>
-      </div>
-    </footer>
+      <section data-template-section-type="bookingHero" data-section-kind="bookingHero" className="beauty-noirGold-bookingHero-frame-6 overflow-hidden px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-[0.85fr_1.15fr_0.55fr]">
+          <div className="min-h-28 bg-[var(--p)]/15 p-5"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / bookingHero</p></div>
+          <div className="bg-[var(--surface)] p-6 md:p-10"><Reveal><h1 className="t-display t-anim text-5xl leading-tight text-[var(--p)] md:text-7xl">{getValue(data,"bookingHeroTitle")}</h1><p className="mt-5 max-w-2xl text-lg leading-8 text-[var(--muted)]">{getValue(data,"ctaText")}</p></Reveal></div>
+          <div className="t-float hidden border border-[var(--p)]/35 p-5 md:block"><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-section-kind="booking" data-bizuply-block="booking" data-template-section-type="booking" className="beauty-noirGold-calendar-frame-7 px-5 py-24 lg:px-8">
+        <div className="mx-auto max-w-7xl border-y border-[var(--p)]/35 py-10">
+          <div className="mb-8 grid gap-4 md:grid-cols-[auto_1fr_auto] md:items-end"><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / calendar</p><div className="h-px bg-[var(--p)]/30" /><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+          <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:items-start"><Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"calendarTitle")}</h2><p className="mt-4 text-[var(--muted)]">בחרו יום ושעה פנויה. הלוח כאן לשמירת תור מהירה מתוך התבנית.</p></Reveal><Reveal delayMs={100} className="t-glow bg-[var(--surface)]/80 p-5"><BookingCalendarPanel  /></Reveal></div>
+        </div>
+      </section>
+      <section data-template-section-type="servicePicker" data-section-kind="servicePicker" className="beauty-noirGold-servicePicker-frame-8 bg-[linear-gradient(180deg,color-mix(in_srgb,var(--a)_16%,transparent),transparent)] px-5 py-24 text-center lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <div className="mx-auto mb-8 h-16 w-px bg-[var(--p)]" />
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / servicePicker</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"servicePickerTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"catalogText")}</p></Reveal><div className="mt-8 grid gap-3 md:grid-cols-3">{[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText"),"45-75 דק׳","01"],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText"),"60-90 דק׳","02"],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText"),"30-60 דק׳","03"]].map(([title, text, minutes], i) => (<Reveal key={title} delayMs={i*70} className="t-hover cursor-pointer border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm font-bold text-[var(--p)]">{minutes}</p><h3 className="mt-2 font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></Reveal>))}</div>
+        </div>
+      </section>
+      <section data-template-section-type="specialistPicker" data-section-kind="specialistPicker" className="beauty-noirGold-specialistPicker-frame-9 px-5 py-20 lg:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-6 lg:grid-cols-[120px_1fr]">
+            <div className="font-mono text-sm text-[var(--p)]">NOIR<div className="mt-3 h-24 w-px bg-[var(--p)]/50" /></div>
+            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"specialistTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"specialistsText")}</p></Reveal><div className="mt-8 grid gap-4 md:grid-cols-3">{["מאיה","רוני","תמר"].map((name, i) => (<Reveal key={name} delayMs={i*70} className="t-hover bg-[var(--surface)]/70 p-5 text-center"><img src={[getValue(data,"galleryImage2"),getValue(data,"galleryImage3"),getValue(data,"aboutImage")][i]} alt="" className="mx-auto h-28 w-28 rounded-full object-cover" /><h3 className="mt-4 font-bold">{name}</h3><p className="mt-1 text-sm text-[var(--muted)]">מומחית טיפול {i+1}</p></Reveal>))}</div></div>
+          </div>
+        </div>
+      </section>
+      <section data-template-section-type="hoursPanel" data-section-kind="hoursPanel" className="beauty-noirGold-hoursPanel-frame-0 relative isolate overflow-hidden px-5 py-24 lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--p)_28%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--surface)_70%,transparent),transparent_58%)]" />
+        <div className="relative mx-auto max-w-7xl">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / hoursPanel</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"hoursTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><Reveal className="mt-8 grid gap-4 md:grid-cols-3">{[["א-ה","09:00-20:00"],["ו","09:00-14:00"],["מענה","עד שעה לאישור"]].map(([d,h]) => (<div key={d} className="border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><p className="text-sm text-[var(--muted)]">{d}</p><strong className="text-2xl text-[var(--p)]">{h}</strong></div>))}</Reveal>
+        </div>
+      </section>
+      <section data-template-section-type="policies" data-section-kind="policies" className="beauty-noirGold-policies-frame-1 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.72fr_1.28fr]">
+          <aside className="lg:sticky lg:top-28 lg:h-fit"><div className="t-shimmer mb-5 h-px w-32 bg-[var(--p)]" /><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / policies</p><div className="mt-6 t-display text-5xl leading-none text-[var(--p)]">02</div></aside>
+          <div><Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"policiesTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><div className="mt-8 grid gap-4 md:grid-cols-3">{["ביטול עד 24 שעות ללא חיוב","איחור מעל 15 דקות עלול לקצר טיפול","רגישות או מצב רפואי יש לעדכן מראש"].map((item, i) => (<Reveal key={item} delayMs={i*70} className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><span className="text-sm font-bold text-[var(--p)]">0{i+1}</span><p className="mt-3 leading-7 text-[var(--muted)]">{item}</p></Reveal>))}</div></div>
+        </div>
+      </section>
+      <section data-template-section-type="confirmationForm" data-section-kind="confirmationForm" className="beauty-noirGold-confirmationForm-frame-2 overflow-hidden px-4 py-20 text-center sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-6xl rounded-[3rem] border border-[var(--p)]/25 bg-[var(--surface)] px-6 py-14 shadow-2xl md:px-12">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / confirmationForm</p>
+          <Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" onSubmit={(e)=>e.preventDefault()}><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" /><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" /><textarea className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" /><button type="button" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal>
+        </div>
+      </section>
+      <section data-template-section-type="locationMap" data-section-kind="locationMap" className="beauty-noirGold-locationMap-frame-3 px-5 py-24 lg:px-8">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.15fr_0.85fr]">
+          <div className="order-2 md:order-1"><div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><Reveal><h2 className="t-display text-4xl text-[var(--p)]">{getValue(data,"locationTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"address")}</p><p className="mt-2 text-sm">{getValue(data,"phone")} · {getValue(data,"hours")}</p></Reveal><Reveal delayMs={100} className="relative overflow-hidden"><img src={getValue(data,"mapImage")} alt="" className="t-ken aspect-video w-full object-cover opacity-80" /><span className="absolute inset-0 grid place-items-center bg-[var(--dark)]/35 text-sm font-bold text-white">מפה · {getValue(data,"address")}</span></Reveal></div></div>
+          <div className="order-1 flex items-start justify-between border-r-4 border-[var(--p)] pr-5 md:order-2"><div><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / locationMap</p></div><span className="text-xs text-[var(--muted)]">סוויטה פרטית</span></div>
+        </div>
+      </section>
+      <section data-template-section-type="bookingFaq" data-section-kind="bookingFaq" className="beauty-noirGold-bookingFaq-frame-4 relative overflow-hidden bg-[var(--dark)] px-5 py-24 text-[var(--text)] lg:px-8">
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,color-mix(in_srgb,var(--p)_18%,transparent),transparent)]" />
+        <div className="relative mx-auto max-w-7xl border border-[var(--p)]/45 p-6 shadow-[0_0_44px_color-mix(in_srgb,var(--p)_18%,transparent)] md:p-10">
+          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">NOIR / bookingFaq</p>
+          <Reveal><h2 className="t-display mt-4 text-4xl leading-tight text-[var(--p)] md:text-5xl">{getValue(data,"bookingFaqTitle")}</h2><p className="mt-4 max-w-2xl text-[var(--muted)]">{getValue(data,"policyText")}</p></Reveal><div className="mt-10 space-y-3">{[[getValue(data,"faqOneQuestion"),getValue(data,"faqOneAnswer")],[getValue(data,"faqTwoQuestion"),getValue(data,"faqTwoAnswer")],[getValue(data,"faqThreeQuestion"),getValue(data,"faqThreeAnswer")]].map(([q, a], i) => (<Reveal key={q} delayMs={i*70}><details className="t-hover border border-[var(--p)]/25 bg-[var(--surface)]/70 p-5"><summary className="cursor-pointer text-lg font-bold">{q}</summary><p className="mt-3 leading-7 text-[var(--muted)]">{a}</p></details></Reveal>))}</div>
+        </div>
+      </section>
+      <footer data-template-section-type="footer" data-section-kind="footer" className="beauty-noirGold-footer-noir border-t border-[var(--p)]/25 px-5 py-12 lg:px-8"><div className="mx-auto flex max-w-7xl flex-col gap-3 md:flex-row md:items-center md:justify-between"><span className="t-display text-2xl text-[var(--p)]">{getValue(data,"brandName")}</span><span className="text-sm text-[var(--muted)]">{getValue(data,"phone")} · {getValue(data,"email")}</span><span className="text-xs text-[var(--muted)]">© {new Date().getFullYear()}</span></div></footer>
     </>
   );
 }
