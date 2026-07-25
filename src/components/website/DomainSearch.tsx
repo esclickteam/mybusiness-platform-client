@@ -780,12 +780,6 @@ export default function DomainSearch() {
                   <h4 className="text-base font-black text-slate-900">
                     בחרו תקופת רישום והמשיכו לתשלום
                   </h4>
-                  {requiresVat ? (
-                    <p className="mt-2 text-xs font-semibold text-slate-500">
-                      לדומייני .il נדרש מספר עוסק / ח.פ. / מע״מ, ותקופת רישום של
-                      שנה או שנתיים בלבד.
-                    </p>
-                  ) : null}
 
                   <div className="mt-5 grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
                         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
