@@ -17,5 +17,5 @@ export default function PublicSiteAuthBar({ site }: PublicSiteAuthBarProps) {
   const settings = mergeSiteAuthSettings(site?.pluginSettings?.["site-auth"]);
   if (!shouldShowFloatingAuthButton(settings)) return null;
 
-  return <SiteAuthLoginWidget site={site} settings={settings} variant="floating" mode="live" />;
+  return <SiteAuthLoginWidget site={site} settings={settings} mode="live" />;
 }

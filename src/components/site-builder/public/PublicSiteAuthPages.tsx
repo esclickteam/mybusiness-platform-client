@@ -2,6 +2,8 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 
 import SiteAuthLoginForm from "../../site-plugins/site-auth/SiteAuthLoginForm";
+import { mergeSiteAuthSettings } from "../../site-plugins/site-auth/siteAuthUtils";
+import { buildSiteAuthFormShellStyle } from "../../site-plugins/site-auth/siteAuthFormStyles";
 import {
   readSiteAuthSettings,
   siteMemberForgotPassword,
@@ -19,16 +21,23 @@ type PublicSiteAuthShellProps = {
 function PublicSiteAuthShell({ site, title, children }: PublicSiteAuthShellProps) {
   const siteName = String(site?.name || "האתר");
   const brandColor = String(site?.brand?.primaryColor || "#6366F1");
+  const settings = mergeSiteAuthSettings(site?.pluginSettings?.["site-auth"]);
+  const shellStyle = buildSiteAuthFormShellStyle(settings, brandColor);
 
   return (
     <div className="min-h-screen bg-slate-50 px-4 py-10" dir="rtl">
       <div className="mx-auto w-full max-w-md">
         <div className="mb-6 text-center">
           <p className="text-xs font-bold text-slate-500">{siteName}</p>
-          <h1 className="mt-2 text-2xl font-black text-slate-800">{title}</h1>
+          <h1
+            className="mt-2 text-2xl font-black"
+            style={{ color: settings.formTextColor || "#1e293b" }}
+          >
+            {title}
+          </h1>
         </div>
 
-        <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="border p-6 shadow-sm" style={shellStyle}>
           {children}
         </div>
 
