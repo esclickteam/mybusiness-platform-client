@@ -88,7 +88,13 @@ export default function SiteManagementPanelPage() {
   }, [loadPanel]);
 
   useEffect(() => {
-    if (activeSection === "overview" || activeSection === "plugins") return;
+    if (
+      activeSection === "overview" ||
+      activeSection === "plugins" ||
+      activeSection === "payments"
+    ) {
+      return;
+    }
     const pluginKey =
       getSectionMetaForPlugin(activeSection, catalog).pluginKey ||
       catalog.find((p) => resolvePluginSection(p.key) === activeSection)?.key ||
@@ -101,7 +107,7 @@ export default function SiteManagementPanelPage() {
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
   const navSections = useMemo(() => {
-    const items: SitePanelSection[] = ["overview", "plugins"];
+    const items: SitePanelSection[] = ["overview", "plugins", "payments"];
 
     enabledPlugins.forEach((key) => {
       const section = resolvePluginSection(key);
@@ -425,7 +431,7 @@ export default function SiteManagementPanelPage() {
           <SiteBookingPanel businessId={businessId} siteId={siteId} />
         ) : null}
 
-        {activeSection === "payments" && enabledSet.has("payments") ? (
+        {activeSection === "payments" ? (
           <SitePaymentsPanel businessId={businessId} />
         ) : null}
 

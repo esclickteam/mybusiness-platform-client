@@ -119,6 +119,9 @@ type PaymentProviderType =
   | "grow"
   | "hyp"
   | "tranzila"
+  | "payme"
+  | "payplus"
+  | "cal"
   | "custom";
 
 type PaymentProvider = {
@@ -128,6 +131,7 @@ type PaymentProvider = {
   isEnabled?: boolean;
   isPrimary?: boolean;
   mode?: "test" | "live";
+  installmentsEnabled?: boolean;
   credentials?: {
     terminalNumber?: string;
     username?: string;
@@ -351,18 +355,33 @@ const paymentProviderOptions: Array<{
   },
   {
     value: "grow",
-    label: "Grow",
+    label: "Grow by Meshulam",
     description: "Connect the business Grow payment details.",
   },
   {
     value: "hyp",
-    label: "Hyp",
-    description: "Connect the business Hyp terminal/payment page details.",
+    label: "Max by Hyp",
+    description: "Connect Max by Hyp terminal/API details.",
   },
   {
     value: "tranzila",
     label: "Tranzila",
     description: "Connect the business Tranzila terminal details.",
+  },
+  {
+    value: "payme",
+    label: "bit (PayMe)",
+    description: "Connect bit / PayMe API details.",
+  },
+  {
+    value: "payplus",
+    label: "PayPlus",
+    description: "Connect PayPlus API and payment page UID.",
+  },
+  {
+    value: "cal",
+    label: "Cal",
+    description: "Connect Cal API details.",
   },
   {
     value: "custom",

@@ -12,6 +12,7 @@ import {
   Hash,
   HelpCircle,
   LayoutGrid,
+  LogIn,
   Mail,
   Puzzle,
   Route,
@@ -132,8 +133,8 @@ export const SECTION_META: Record<
     pluginKey: "booking",
   },
   payments: {
-    label: "סליקה",
-    description: "חיבור ספקי תשלום ואמצעי סליקה",
+    label: "תשלומים",
+    description: "חיבור ספקי תשלום ואמצעי סליקה לאתר",
     pluginKey: "payments",
   },
   invoices: {
@@ -214,6 +215,9 @@ export function getPluginIcon(key: string) {
     case "booking":
       return CalendarDays;
     case "payments":
+    case "payme":
+    case "payplus":
+    case "cal":
       return CreditCard;
     case "invoices":
       return FileText;
@@ -223,6 +227,8 @@ export function getPluginIcon(key: string) {
       return Star;
     case "club":
       return Users;
+    case "site-auth":
+      return LogIn;
     case "heatmap":
       return Flame;
     case "form-abandonment":
