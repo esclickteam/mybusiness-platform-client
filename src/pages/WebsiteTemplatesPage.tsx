@@ -440,6 +440,7 @@ function normalizeTemplateForMongo(template: any, index: number) {
       template.categoryLabel,
       template.author,
       seed?.niche,
+      ...((template as { tags?: string[] }).tags || []),
     ].filter(Boolean),
 
     isActive: true,
