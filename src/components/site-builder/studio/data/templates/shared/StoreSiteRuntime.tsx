@@ -47,6 +47,7 @@ export type StoreSiteRuntimeProps = {
   isPublic?: boolean;
   viewMode?: string;
   runtimeMode?: string;
+  isStudioStatic?: boolean;
 };
 
 function getValue(data: Record<string, any>, fallback: Record<string, any>, key: string) {
@@ -145,6 +146,7 @@ export default function StoreSiteRuntime({
   pages,
   businessId,
   data,
+  isStudioStatic = false,
   ...navProps
 }: StoreSiteRuntimeProps) {
   const mergedData = useMemo(
@@ -163,6 +165,8 @@ export default function StoreSiteRuntime({
     useStorePluginCatalog({
       businessId,
       demoProducts,
+      // Gallery/static cards should stay instant — no network.
+      enabled: !isStudioStatic,
     });
 
   const [activeCategory, setActiveCategory] = useState("all");
@@ -977,27 +981,37 @@ export default function StoreSiteRuntime({
     </div>
   );
 
-  const stackPages = [
-    { id: "home", content: homeContent },
-    { id: "shop", content: shopContent },
-    { id: "product", content: productContent },
-    { id: "cart", content: cartContent },
-    { id: "about", content: aboutContent },
-    { id: "contact", content: contactContent },
-    { id: "faq", content: faqContent },
-    { id: "shipping", content: shippingContent },
-  ];
+  // Mount only the active page so store templates stay fast in editor/public.
+  // Cart/product selection state lives above, so navigation remains correct.
+  const activeContent =
+    currentPage === "shop"
+      ? shopContent
+      : currentPage === "product"
+        ? productContent
+        : currentPage === "cart"
+          ? cartContent
+          : currentPage === "about"
+            ? aboutContent
+            : currentPage === "contact"
+              ? contactContent
+              : currentPage === "faq"
+                ? faqContent
+                : currentPage === "shipping"
+                  ? shippingContent
+                  : homeContent;
+
+  const stackPages = [{ id: currentPage || "home", content: activeContent }];
 
   return (
     <div
       dir="rtl"
-      data-template-id={String(navProps.mode || "").includes("preview") ? `${templateId}-preview` : templateId}
+      data-template-id={templateId}
       data-bizuply-site="true"
       data-store-plugin="true"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]"
     >
       <style dangerouslySetInnerHTML={{ __html: editorCss }} />
-      <VisualPageStack activePageId={currentPage} pages={stackPages} />
+      <VisualPageStack activePageId={currentPage || "home"} pages={stackPages} />
     </div>
   );
 }

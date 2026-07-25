@@ -9,14 +9,14 @@ import { talentixSchema } from "./schema";
 import { talentixDefaultData } from "./defaultData";
 
 const palette: ReadyWebsitePalette = {
-  primary: "#0E7490",
-  secondary: "#083344",
-  accent: "#06B6D4",
+  primary: "#0891B2",
+  secondary: "#164E63",
+  accent: "#22D3EE",
   background: "#ECFEFF",
   surface: "#FFFFFF",
-  text: "#164E63",
+  text: "#083344",
   muted: "#0E7490",
-  dark: "#083344",
+  dark: "#164E63",
 };
 
 export const talentixSeed = {
@@ -24,7 +24,7 @@ export const talentixSeed = {
   key: "talentix",
   name: "Talentix",
   title: "Talentix",
-  description: "אתר מלא לסוכנות גיוס: 8 עמודים כולל אודות, שירותים, פרויקטים, צוות, תובנות, תהליך וצור קשר.",
+  description: "אתר מלא לסוכנות גיוס: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   niche: "recruitment-agency",
@@ -59,7 +59,7 @@ export const talentixTemplate = {
   category: "portfolio",
   categoryLabel: "פורטפוליו וסוכנות",
   badge: "חדש",
-  description: "אתר מלא לסוכנות גיוס עם 8 עמודים, ניווט פנימי ותוכן מוכן לעריכה.",
+  description: "אתר מלא לסוכנות גיוס עם 8 עמודים, תנועה ואפקטים — עיצוב ייחודי.",
   thumbnail: React.createElement(TalentixThumbnail),
   preview: React.createElement(TalentixPreview),
   component: TalentixPages,

@@ -558,6 +558,26 @@ import { jewelisSchema } from "./jewelis/schema";
 import { jewelisDefaultData } from "./jewelis/defaultData";
 
 
+import BrandforgePages, { brandforgePages } from "./brandforge/pages";
+import { brandforgeEditorCss } from "./brandforge/editorCss";
+import { brandforgeSchema } from "./brandforge/schema";
+import { brandforgeDefaultData } from "./brandforge/defaultData";
+
+import MediavaultPages, { mediavaultPages } from "./mediavault/pages";
+import { mediavaultEditorCss } from "./mediavault/editorCss";
+import { mediavaultSchema } from "./mediavault/schema";
+import { mediavaultDefaultData } from "./mediavault/defaultData";
+
+import SummitopsPages, { summitopsPages } from "./summitops/pages";
+import { summitopsEditorCss } from "./summitops/editorCss";
+import { summitopsSchema } from "./summitops/schema";
+import { summitopsDefaultData } from "./summitops/defaultData";
+
+import EventidePages, { eventidePages } from "./eventide/pages";
+import { eventideEditorCss } from "./eventide/editorCss";
+import { eventideSchema } from "./eventide/schema";
+import { eventideDefaultData } from "./eventide/defaultData";
+
 import type {
   StudioTemplateEditorMode,
   StudioTemplateRenderer,
@@ -1773,6 +1793,46 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: narrativaDefaultData as unknown as Record<string, any>,
     editorCss: narrativaEditorCss,
   }),
+  brandforge: createRenderer({
+    key: "brandforge",
+    name: "Brandforge",
+    Component: BrandforgePages,
+    pages: brandforgePages,
+    editorMode: "visual-react",
+    schema: brandforgeSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: brandforgeDefaultData as unknown as Record<string, any>,
+    editorCss: brandforgeEditorCss,
+  }),
+  mediavault: createRenderer({
+    key: "mediavault",
+    name: "Mediavault",
+    Component: MediavaultPages,
+    pages: mediavaultPages,
+    editorMode: "visual-react",
+    schema: mediavaultSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: mediavaultDefaultData as unknown as Record<string, any>,
+    editorCss: mediavaultEditorCss,
+  }),
+  summitops: createRenderer({
+    key: "summitops",
+    name: "Summitops",
+    Component: SummitopsPages,
+    pages: summitopsPages,
+    editorMode: "visual-react",
+    schema: summitopsSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: summitopsDefaultData as unknown as Record<string, any>,
+    editorCss: summitopsEditorCss,
+  }),
+  eventide: createRenderer({
+    key: "eventide",
+    name: "Eventide",
+    Component: EventidePages,
+    pages: eventidePages,
+    editorMode: "visual-react",
+    schema: eventideSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: eventideDefaultData as unknown as Record<string, any>,
+    editorCss: eventideEditorCss,
+  }),
   lumenware: createRenderer({
     key: "lumenware",
     name: "Lumenware",
@@ -1882,7 +1942,6 @@ export const studioTemplateRendererRegistry: Record<
     defaultData: jewelisDefaultData as unknown as Record<string, any>,
     editorCss: jewelisEditorCss,
   }),
-
 };
 
 export function getStudioTemplateRenderer(
