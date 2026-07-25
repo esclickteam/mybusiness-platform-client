@@ -419,6 +419,13 @@ export const lunelleEditorCss = `
   -webkit-text-fill-color: #2a171c !important;
 }
 
+[data-template-id="lunelle"] a[class*="hover:bg-[#2a171c]"]:hover,
+[data-template-id="lunelle"] a[class*="hover:text-white"]:hover {
+  background: #2a171c !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
 [data-template-id="lunelle"] footer a[data-editable-link="true"] {
   color: rgba(255, 255, 255, 0.6) !important;
   -webkit-text-fill-color: rgba(255, 255, 255, 0.6) !important;
