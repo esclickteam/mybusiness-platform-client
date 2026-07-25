@@ -520,7 +520,7 @@ export default function WebsiteTemplatesPage() {
   const [syncingTemplates, setSyncingTemplates] = useState(false);
   const [activeWebsiteView, setActiveWebsiteView] = useState<
     "domains" | "templates"
-  >("domains");
+  >("templates");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -1013,23 +1013,6 @@ export default function WebsiteTemplatesPage() {
                 </div>
               </div>
 
-              <div className="mt-7 flex gap-2 overflow-x-auto pb-1">
-                {templateCategories.slice(0, 8).map((category) => (
-                  <button
-                    key={category.id}
-                    type="button"
-                    onClick={() => setActiveCategory(category.id)}
-                    className={[
-                      "h-11 shrink-0 rounded-xl border px-5 text-sm font-bold transition active:scale-[0.98]",
-                      activeCategory === category.id
-                        ? "border-[#2563eb] bg-white text-[#2563eb] ring-2 ring-[#2563eb]/10"
-                        : "border-[#e5e7eb] bg-[#f8fafc] text-[#111827] hover:bg-white",
-                    ].join(" ")}
-                  >
-                    {category.label}
-                  </button>
-                ))}
-              </div>
             </div>
           </div>
 
