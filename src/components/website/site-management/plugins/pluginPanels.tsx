@@ -2,24 +2,23 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   Accessibility,
-  Bell,
   Bot,
   Compass,
   Flame,
   FormInput,
-  Hash,
-  HelpCircle,
   Mail,
   Route,
   Star,
   Users,
   CircleDot,
+  Search,
 } from "lucide-react";
 
 import type { SitePanelSection } from "../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
+import SmartSearchPanel from "./SmartSearchPanel";
 import {
   bool,
   Field,
@@ -299,105 +298,6 @@ export const SiteJourneyRecordingPanel = makePanel(
   )
 );
 
-export const SiteWhyNoLeadPanel = makePanel(
-  "why-no-lead",
-  HelpCircle,
-  "#14B8A6",
-  "למה לא השאירו פרטים?",
-  "תובנות על גולשים שהתחילו למלא טופס ולא שלחו.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="זמן מינימלי על הטופס (שניות)">
-        <TextInput
-          value={String(num(settings.minTimeOnFormSec, 5))}
-          onChange={(v) => updateField("minTimeOnFormSec", Number(v) || 5)}
-          type="number"
-        />
-      </Field>
-      <Toggle
-        label="מעקב היסוס בשדות"
-        checked={bool(settings.trackFieldHesitation, true)}
-        onChange={(v) => updateField("trackFieldHesitation", v)}
-      />
-      <Toggle
-        label="הצגת תובנות בפאנל"
-        checked={bool(settings.showInsights, true)}
-        onChange={(v) => updateField("showInsights", v)}
-      />
-    </>
-  )
-);
-
-export const SiteResultsCounterPanel = makePanel(
-  "results-counter",
-  Hash,
-  "#3B82F6",
-  "מונה תוצאות",
-  "מספרים חיים שמחזקים אמון — לקוחות, פרויקטים, שנות ניסיון.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="תווית">
-        <TextInput
-          value={str(settings.label, "לקוחות מרוצים")}
-          onChange={(v) => updateField("label", v)}
-        />
-      </Field>
-      <Field label="ערך התחלתי">
-        <TextInput
-          value={String(num(settings.value, 1200))}
-          onChange={(v) => updateField("value", Number(v) || 0)}
-          type="number"
-        />
-      </Field>
-      <Field label="סיומת (למשל +)">
-        <TextInput
-          value={str(settings.suffix, "+")}
-          onChange={(v) => updateField("suffix", v)}
-        />
-      </Field>
-      <Toggle
-        label="אנימציית ספירה"
-        checked={bool(settings.animate, true)}
-        onChange={(v) => updateField("animate", v)}
-      />
-    </>
-  )
-);
-
-export const SiteWaitlistPanel = makePanel(
-  "waitlist",
-  Bell,
-  "#0EA5E9",
-  "רשימת המתנה",
-  "לקוחות נרשמים ומקבלים התראה כשמתפנה תור.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="כותרת">
-        <TextInput
-          value={str(settings.title, "רשימת המתנה")}
-          onChange={(v) => updateField("title", v)}
-        />
-      </Field>
-      <Field label="הודעה אחרי הרשמה">
-        <TextArea
-          value={str(settings.successMessage)}
-          onChange={(v) => updateField("successMessage", v)}
-        />
-      </Field>
-      <Toggle
-        label="התראה באימייל"
-        checked={bool(settings.notifyByEmail, true)}
-        onChange={(v) => updateField("notifyByEmail", v)}
-      />
-      <Toggle
-        label="התראה ב-SMS"
-        checked={bool(settings.notifyBySms)}
-        onChange={(v) => updateField("notifyBySms", v)}
-      />
-    </>
-  )
-);
-
 export const SiteSalesAgentPanel = makePanel(
   "sales-agent",
   Bot,
@@ -518,11 +418,9 @@ export const PLUGIN_PANEL_MAP: Partial<
   heatmap: SiteHeatmapPanel,
   "form-abandonment": SiteFormAbandonmentPanel,
   "journey-recording": SiteJourneyRecordingPanel,
-  "why-no-lead": SiteWhyNoLeadPanel,
-  "results-counter": SiteResultsCounterPanel,
-  waitlist: SiteWaitlistPanel,
   countdown: SiteCountdownPanel,
   "benefits-wheel": SiteBenefitsWheelPanel,
+  "smart-search": SmartSearchPanel,
   "sales-agent": SiteSalesAgentPanel,
   "service-finder": SiteServiceFinderPanel,
   accessibility: SiteAccessibilityPanel,

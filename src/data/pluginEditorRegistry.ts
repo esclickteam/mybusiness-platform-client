@@ -19,6 +19,12 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "גלגל הטבות צף",
     description: "מודאל + כפתור צף — לא סקשן בעמוד",
   },
+  "smart-search": {
+    pluginKey: "smart-search",
+    kind: "overlay",
+    label: "כפתור חיפוש",
+    description: "לחיצה פותחת שורת חיפוש באתר",
+  },
   store: {
     pluginKey: "store",
     kind: "page",
