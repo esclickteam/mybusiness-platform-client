@@ -144,6 +144,7 @@ function NavButton({
       data-page-id={id}
       data-visual-link-href={getVelmoraPageHref(id)}
       data-link-url={getVelmoraPageHref(id)}
+      aria-current={active ? "page" : undefined}
       onClick={(event) => handleVelmoraNavClick(event, id, onPageChange)}
       className={[
         "relative text-[13px] font-medium transition duration-300 hover:text-black",
@@ -153,6 +154,7 @@ function NavButton({
       {label}
 
       <span
+        aria-hidden="true"
         className={[
           "absolute -bottom-2 right-0 h-px bg-black transition-all duration-300",
           active ? "w-full" : "w-0",
@@ -212,6 +214,12 @@ export default function VelmoraShell({
       data-visual-editor={isVisualEditor ? "true" : "false"}
       className="min-h-screen bg-[#f6f2ea] text-[#27231f] [font-family:Inter,Arial,sans-serif]"
     >
+      {!isVisualEditor ? (
+        <a href="#bizuply-main-content" className="bizuply-skip-link">
+          דלג לתוכן הראשי
+        </a>
+      ) : null}
+
       {/* FLOATING HEADER */}
       <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
         data-section-kind="header"
@@ -221,7 +229,7 @@ export default function VelmoraShell({
         className="sticky top-4 z-50 mx-auto mt-4 w-[min(1120px,calc(100%-32px))] rounded-[10px] border border-black/10 bg-white/88 shadow-[0_18px_55px_rgba(0,0,0,0.12)] backdrop-blur-xl"
       >
         <div className="grid h-[58px] grid-cols-[1fr_auto_1fr] items-center px-5">
-          <nav className="hidden items-center justify-start gap-9 lg:flex">
+          <nav className="hidden items-center justify-start gap-9 lg:flex" aria-label="ניווט ראשי">
             {leftNavItems.map((item) => (
               <NavButton
                 key={`${item.id}-${item.label}`}
@@ -252,7 +260,7 @@ export default function VelmoraShell({
             </p>
           </a>
 
-          <nav className="hidden items-center justify-end gap-9 lg:flex">
+          <nav className="hidden items-center justify-end gap-9 lg:flex" aria-label="ניווט משני">
             {rightNavItems.map((item) => (
               <NavButton
                 key={`${item.id}-${item.label}`}
@@ -317,7 +325,9 @@ export default function VelmoraShell({
         </div>
       </header>
 
-      {children}
+      <main id="bizuply-main-content" tabIndex={-1}>
+        {children}
+      </main>
 
       {/* FOOTER */}
       <footer
@@ -325,6 +335,7 @@ export default function VelmoraShell({
         data-section-title="Footer"
         data-template-section-id="footer"
         data-bizuply-editor-section="true"
+        role="contentinfo"
         className="border-t border-black/10 bg-[#e8dfcf]"
       >
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-12 lg:grid-cols-[1.1fr_1fr_1fr_1fr]">

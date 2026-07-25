@@ -5,9 +5,12 @@ import { getMySite } from "../../../../api/mySitesApi";
 import { saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import SmartSearchWidget from "../../../site-plugins/smart-search/SmartSearchWidget";
+import AccessibilityWidget from "../../../site-plugins/accessibility/AccessibilityWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
+import type { AccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
+import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 
 type EditorPluginOverlaysProps = {
   siteId?: string;
@@ -23,6 +26,8 @@ export default function EditorPluginOverlays({
   const [wheelEnabled, setWheelEnabled] = useState(false);
   const [searchSettings, setSearchSettings] = useState<SmartSearchSettings | null>(null);
   const [searchEnabled, setSearchEnabled] = useState(false);
+  const [a11ySettings, setA11ySettings] = useState<AccessibilitySettings | null>(null);
+  const [a11yEnabled, setA11yEnabled] = useState(false);
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
 
   useEffect(() => {
@@ -38,11 +43,13 @@ export default function EditorPluginOverlays({
         ]);
         const wheelOn = plugins.enabledPlugins.includes("benefits-wheel");
         const searchOn = plugins.enabledPlugins.includes("smart-search");
+        const a11yOn = plugins.enabledPlugins.includes("accessibility");
 
         if (cancelled) return;
 
         setWheelEnabled(wheelOn);
         setSearchEnabled(searchOn);
+        setA11yEnabled(a11yOn);
         setPages(Array.isArray(site?.pages) ? site.pages : []);
 
         const { getSitePluginSettings } = await import(
@@ -64,12 +71,23 @@ export default function EditorPluginOverlays({
             setSearchSettings(mergeSmartSearchSettings(settings as SmartSearchSettings));
           }
         }
+
+        if (!a11yOn) {
+          setA11ySettings(null);
+        } else {
+          const settings = await getSitePluginSettings(siteId, "accessibility");
+          if (!cancelled) {
+            setA11ySettings(mergeAccessibilitySettings(settings as AccessibilitySettings));
+          }
+        }
       } catch {
         if (!cancelled) {
           setWheelEnabled(false);
           setWheelSettings(null);
           setSearchEnabled(false);
           setSearchSettings(null);
+          setA11yEnabled(false);
+          setA11ySettings(null);
         }
       }
     })();
@@ -141,6 +159,14 @@ export default function EditorPluginOverlays({
           pages={pages}
           mode="editor"
           onPositionChange={handleSearchPositionChange}
+        />
+      ) : null}
+
+      {a11yEnabled && a11ySettings && a11ySettings.isActive !== false ? (
+        <AccessibilityWidget
+          siteKey={siteId || "editor"}
+          settings={a11ySettings}
+          mode="editor"
         />
       ) : null}
     </>

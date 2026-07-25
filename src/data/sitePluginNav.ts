@@ -107,7 +107,7 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   "smart-search": "#2563EB",
   "sales-agent": "#4F46E5",
   "service-finder": "#2563EB",
-  accessibility: "#0891B2",
+  accessibility: "#7C3AED",
 };
 
 export const SECTION_META: Record<

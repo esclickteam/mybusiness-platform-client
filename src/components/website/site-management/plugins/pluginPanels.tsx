@@ -368,45 +368,84 @@ export const SiteServiceFinderPanel = makePanel(
 export const SiteAccessibilityPanel = makePanel(
   "accessibility",
   Accessibility,
-  "#0891B2",
-  "כלי נגישות",
-  "תפריט נגישות מקצועי לגולשים.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="מיקום הווידג'ט">
-        <select
-          value={str(settings.widgetPosition, "bottom-left")}
-          onChange={(e) => updateField("widgetPosition", e.target.value)}
-          className={inputBase}
-        >
-          <option value="bottom-left">שמאל למטה</option>
-          <option value="bottom-right">ימין למטה</option>
-        </select>
-      </Field>
-      <Field label="גודל גופן ברירת מחדל (%)">
-        <TextInput
-          value={String(num(settings.defaultFontScale, 100))}
-          onChange={(v) => updateField("defaultFontScale", Number(v) || 100)}
-          type="number"
+  "#7C3AED",
+  "כלי נגישות BizUply",
+  "תפריט נגישות מקצועי מובנה — ללא UserWay וללא תשלום חיצוני לכל אתר. מופעל אוטומטית בכל עמודי האתר.",
+  ({ settings, updateField }) => {
+    const features =
+      settings.features && typeof settings.features === "object"
+        ? (settings.features as Record<string, boolean>)
+        : {};
+
+    const setFeature = (key: string, value: boolean) => {
+      updateField("features", { ...features, [key]: value });
+    };
+
+    return (
+      <>
+        <p className="rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-xs leading-relaxed text-violet-900">
+          התוסף של BizUply — שליטה מלאה בקוד, ללא מגבלת אתרים וללא הטמעת ספק חיצוני.
+          קיצור מקלדת לגולשים: Ctrl+U.
+        </p>
+        <Field label="מיקום הווידג'ט">
+          <select
+            value={str(settings.widgetPosition, "bottom-left")}
+            onChange={(e) => updateField("widgetPosition", e.target.value)}
+            className={inputBase}
+          >
+            <option value="bottom-left">שמאל למטה</option>
+            <option value="bottom-right">ימין למטה</option>
+          </select>
+        </Field>
+        <Field label="צבע מיתוג">
+          <TextInput
+            value={str(settings.accentColor, "#7C3AED")}
+            onChange={(v) => updateField("accentColor", v || "#7C3AED")}
+          />
+        </Field>
+        <Toggle
+          label="הגדלת טקסט"
+          checked={bool(features.largeText, true)}
+          onChange={(v) => setFeature("largeText", v)}
         />
-      </Field>
-      <Toggle
-        label="ניגודיות גבוהה"
-        checked={bool(settings.highContrast)}
-        onChange={(v) => updateField("highContrast", v)}
-      />
-      <Toggle
-        label="הדגשת קישורים"
-        checked={bool(settings.highlightLinks, true)}
-        onChange={(v) => updateField("highlightLinks", v)}
-      />
-      <Toggle
-        label="גופן קריא"
-        checked={bool(settings.readableFont, true)}
-        onChange={(v) => updateField("readableFont", v)}
-      />
-    </>
-  )
+        <Toggle
+          label="ניגודיות גבוהה"
+          checked={bool(features.highContrast, true)}
+          onChange={(v) => setFeature("highContrast", v)}
+        />
+        <Toggle
+          label="גווני אפור"
+          checked={bool(features.grayscale, true)}
+          onChange={(v) => setFeature("grayscale", v)}
+        />
+        <Toggle
+          label="הדגשת קישורים"
+          checked={bool(features.highlightLinks, true)}
+          onChange={(v) => setFeature("highlightLinks", v)}
+        />
+        <Toggle
+          label="עצירת אנימציות"
+          checked={bool(features.stopAnimations, true)}
+          onChange={(v) => setFeature("stopAnimations", v)}
+        />
+        <Toggle
+          label="פונט קריא"
+          checked={bool(features.readableFont, true)}
+          onChange={(v) => setFeature("readableFont", v)}
+        />
+        <Toggle
+          label="ריווח טקסט"
+          checked={bool(features.textSpacing, true)}
+          onChange={(v) => setFeature("textSpacing", v)}
+        />
+        <Toggle
+          label="סמן מוגדל"
+          checked={bool(features.largeCursor, true)}
+          onChange={(v) => setFeature("largeCursor", v)}
+        />
+      </>
+    );
+  }
 );
 
 export const PLUGIN_PANEL_MAP: Partial<

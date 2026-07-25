@@ -64,6 +64,48 @@ body {
   box-sizing: border-box;
 }
 
+/* Foundation accessibility for all published sites */
+:focus-visible {
+  outline: 3px solid #7c3aed;
+  outline-offset: 3px;
+}
+
+.bizuply-skip-link {
+  position: absolute;
+  top: -100px;
+  right: 16px;
+  z-index: 2147483646;
+  background: #7c3aed;
+  color: #fff;
+  font-weight: 800;
+  font-size: 14px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  text-decoration: none;
+  box-shadow: 0 8px 24px rgba(91, 33, 182, 0.35);
+}
+
+.bizuply-skip-link:focus,
+.bizuply-skip-link:focus-visible {
+  top: 16px;
+  outline: 3px solid #c4b5fd;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 .bizuply-public-mini-site,
 .bizuply-public-render-root,
 [data-bizuply-published-html="true"],
@@ -2384,6 +2426,10 @@ export default function PublicVisualSiteRenderer({
         />
         {css ? <style>{css}</style> : null}
 
+        <a href="#bizuply-main-content" className="bizuply-skip-link">
+          דלג לתוכן הראשי
+        </a>
+
         {customCode.enabled !== false ? (
           <CustomHtmlSlot
             slot="start"
@@ -2392,6 +2438,8 @@ export default function PublicVisualSiteRenderer({
         ) : null}
 
         <div
+          id="bizuply-main-content"
+          tabIndex={-1}
           data-bizuply-published-html="true"
           dangerouslySetInnerHTML={{
             __html: htmlResult.html,
@@ -2436,6 +2484,10 @@ export default function PublicVisualSiteRenderer({
         />
         {css ? <style>{css}</style> : null}
 
+        <a href="#bizuply-main-content" className="bizuply-skip-link">
+          דלג לתוכן הראשי
+        </a>
+
         {customCode.enabled !== false ? (
           <CustomHtmlSlot
             slot="start"
@@ -2443,7 +2495,7 @@ export default function PublicVisualSiteRenderer({
           />
         ) : null}
 
-        <div data-bizuply-template-fallback="true">
+        <div id="bizuply-main-content" tabIndex={-1} data-bizuply-template-fallback="true">
           {/*
             מפתח יציב לפי template בלבד.
             publicRevision/pageId ב-key גרמו ל-remount מלא בכל רענון —

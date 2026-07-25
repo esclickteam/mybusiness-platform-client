@@ -1,17 +1,10 @@
-// src/components/UserWayWidget.jsx
-import { useEffect } from "react";
-
+/**
+ * Deprecated: Do not use UserWay on customer sites.
+ * Use the first-party BizUply accessibility plugin instead:
+ * `src/components/site-plugins/accessibility/AccessibilityWidget.tsx`
+ *
+ * Kept only as a historical stub so old imports fail closed (renders nothing).
+ */
 export default function UserWayWidget() {
-  useEffect(() => {
-    const s = document.createElement("script");
-    s.src = "https://cdn.userway.org/widget.js";
-    s.async = true;
-    s.setAttribute("data-account", "abcd1234");   // ← replace with your ID
-    s.setAttribute("data-lang", "en");            // English
-    s.setAttribute("data-position", "right");     // right / left
-    document.body.appendChild(s);
-    return () => s.remove();                      // Cleanup on unmount
-  }, []);
-
-  return null;   // No UI
+  return null;
 }

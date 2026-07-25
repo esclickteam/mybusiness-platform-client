@@ -25,6 +25,12 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "כפתור חיפוש",
     description: "לחיצה פותחת שורת חיפוש באתר",
   },
+  accessibility: {
+    pluginKey: "accessibility",
+    kind: "overlay",
+    label: "תפריט נגישות",
+    description: "כפתור צף + תפריט נגישות מקצועי של BizUply — ללא UserWay",
+  },
   store: {
     pluginKey: "store",
     kind: "page",
