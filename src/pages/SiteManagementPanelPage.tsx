@@ -15,6 +15,8 @@ import {
   updateSitePlugins,
   type SitePluginDefinition,
 } from "../api/sitePluginsApi";
+import { saveSitePluginSettings } from "../api/sitePluginSettingsApi";
+import { ensureSiteAuthOverlayDefaults } from "../components/site-plugins/site-auth/siteAuthUtils";
 import SitePluginStore from "../components/website/site-management/SitePluginStore";
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
@@ -158,6 +160,18 @@ export default function SiteManagementPanelPage() {
       if (enabled) {
         const section = resolvePluginSection(pluginKey);
         if (section) setActiveSection(section);
+
+        if (pluginKey === "site-auth") {
+          try {
+            await saveSitePluginSettings(
+              siteId,
+              "site-auth",
+              ensureSiteAuthOverlayDefaults({})
+            );
+          } catch {
+            // server-side init also runs on plugin enable
+          }
+        }
       } else {
         handlePluginUninstalled(pluginKey);
       }

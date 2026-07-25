@@ -112,7 +112,7 @@ export default function SiteAuthLoginWidget({
     onPositionChange?.(dragPosRef.current);
   }
 
-  if (!settings.isActive || settings.showLoginButton === false || settings.showTrigger === false) {
+  if (!settings.isActive || settings.showLoginButton === false) {
     return null;
   }
 
@@ -122,7 +122,8 @@ export default function SiteAuthLoginWidget({
   const transparent = settings.buttonTransparent !== false;
   const textColor =
     settings.buttonTextColor ||
-    (transparent ? accent : settings.formButtonTextColor || "#ffffff");
+    accent ||
+    "#6366F1";
   const backgroundColor = transparent
     ? "transparent"
     : settings.buttonBackgroundColor || accent;
@@ -153,7 +154,9 @@ export default function SiteAuthLoginWidget({
         transform: "translate(50%, 50%)",
         background: backgroundColor,
         color: textColor,
-        boxShadow: transparent ? "none" : undefined,
+        boxShadow: transparent
+          ? "0 2px 12px rgba(15,23,42,0.15)"
+          : undefined,
         border: transparent ? "none" : undefined,
         borderRadius: `${borderRadius}px`,
       }}

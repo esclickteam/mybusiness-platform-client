@@ -436,6 +436,7 @@ export default function TemplateVisualEditor({
         sitePages: sitePages || [],
       }}
       siteId={siteId}
+      siteSlug={normalizedSlug}
       onBack={onBack}
       onAddLibraryPage={onAddLibraryPage}
       sitePages={sitePages}

@@ -1,14 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 
-import {
-  getSitePluginSettings,
-  saveSitePluginSettings,
-} from "../../../../api/sitePluginSettingsApi";
-import { getSitePlugins, updateSitePlugins } from "../../../../api/sitePluginsApi";
+import { getSitePlugins } from "../../../../api/sitePluginsApi";
+import { saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import SiteAuthLoginWidget from "../../../site-plugins/site-auth/SiteAuthLoginWidget";
-import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
+import { loadSiteAuthOverlaySettings } from "../../../site-plugins/site-auth/siteAuthOverlaySettings";
+import type { SiteAuthWidgetSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import { SiteMemberAuthProvider } from "../../../../context/SiteMemberAuthContext";
 
 type EditorPluginOverlaysProps = {
@@ -24,9 +22,7 @@ export default function EditorPluginOverlays({
 }: EditorPluginOverlaysProps) {
   const [wheelSettings, setWheelSettings] = useState<BenefitsWheelSettings | null>(null);
   const [wheelEnabled, setWheelEnabled] = useState(false);
-  const [authSettings, setAuthSettings] = useState<ReturnType<typeof mergeSiteAuthSettings> | null>(
-    null
-  );
+  const [authSettings, setAuthSettings] = useState<SiteAuthWidgetSettings | null>(null);
   const [authEnabled, setAuthEnabled] = useState(false);
 
   useEffect(() => {
@@ -48,6 +44,9 @@ export default function EditorPluginOverlays({
         if (!wheelOn) {
           setWheelSettings(null);
         } else {
+          const { getSitePluginSettings } = await import(
+            "../../../../api/sitePluginSettingsApi"
+          );
           const settings = await getSitePluginSettings(siteId, "benefits-wheel");
           if (!cancelled) setWheelSettings(settings as BenefitsWheelSettings);
         }
@@ -55,8 +54,8 @@ export default function EditorPluginOverlays({
         if (!authOn) {
           setAuthSettings(null);
         } else {
-          const settings = await getSitePluginSettings(siteId, "site-auth");
-          if (!cancelled) setAuthSettings(mergeSiteAuthSettings(settings));
+          const settings = await loadSiteAuthOverlaySettings(siteId);
+          if (!cancelled) setAuthSettings(settings);
         }
       } catch {
         if (!cancelled) {
@@ -110,6 +109,7 @@ export default function EditorPluginOverlays({
     if (!siteId) return;
     try {
       const plugins = await getSitePlugins(siteId);
+      const { updateSitePlugins } = await import("../../../../api/sitePluginsApi");
       await updateSitePlugins(
         siteId,
         plugins.enabledPlugins.filter((key) => key !== "benefits-wheel")
@@ -121,12 +121,7 @@ export default function EditorPluginOverlays({
     }
   }, [siteId]);
 
-  const showAuth =
-    authEnabled &&
-    authSettings &&
-    authSettings.isActive !== false &&
-    authSettings.showLoginButton !== false &&
-    authSettings.showTrigger !== false;
+  const showAuth = authEnabled && authSettings && authSettings.isActive !== false;
 
   return (
     <>

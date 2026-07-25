@@ -3,6 +3,7 @@ import React from "react";
 import SiteAuthLoginWidget from "../../site-plugins/site-auth/SiteAuthLoginWidget";
 import {
   mergeSiteAuthSettings,
+  ensureSiteAuthOverlayDefaults,
   shouldShowFloatingAuthButton,
 } from "../../site-plugins/site-auth/siteAuthUtils";
 import { siteHasAuthPlugin } from "../../../api/siteMemberAuthApi";
@@ -14,7 +15,7 @@ type PublicSiteAuthBarProps = {
 export default function PublicSiteAuthBar({ site }: PublicSiteAuthBarProps) {
   if (!siteHasAuthPlugin(site)) return null;
 
-  const settings = mergeSiteAuthSettings(site?.pluginSettings?.["site-auth"]);
+  const settings = ensureSiteAuthOverlayDefaults(site?.pluginSettings?.["site-auth"]);
   if (!shouldShowFloatingAuthButton(settings)) return null;
 
   return <SiteAuthLoginWidget site={site} settings={settings} mode="live" />;

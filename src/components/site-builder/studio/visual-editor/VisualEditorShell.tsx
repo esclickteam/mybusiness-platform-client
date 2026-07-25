@@ -72,6 +72,7 @@ type VisualEditorShellProps = {
   onBack?: () => void;
   className?: string;
   siteId?: string;
+  siteSlug?: string;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   sitePages?: VisualSitePageItem[];
   activeSitePageId?: string;
@@ -119,6 +120,7 @@ export default function VisualEditorShell({
   onBack,
   className = "",
   siteId,
+  siteSlug = "",
   onAddLibraryPage,
   sitePages = [],
   activeSitePageId = "",
@@ -575,9 +577,11 @@ export default function VisualEditorShell({
           />
         ) : null}
 
-        {!isPreviewMode ? (
-          <EditorPluginOverlays siteId={siteId} refreshKey={overlayRefreshKey} />
-        ) : null}
+        <EditorPluginOverlays
+          siteId={siteId}
+          siteSlug={siteSlug}
+          refreshKey={overlayRefreshKey}
+        />
 
         {!isPreviewMode ? (
           <VisualSitePagesPanel

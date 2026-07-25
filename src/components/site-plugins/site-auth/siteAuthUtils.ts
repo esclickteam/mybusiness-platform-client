@@ -38,7 +38,7 @@ export function mergeSiteAuthSettings(
     loginLinkText: String(stored.loginLinkText || base.loginLinkText),
     forgotPasswordEnabled: stored.forgotPasswordEnabled !== false,
     showLoginButton: stored.showLoginButton !== false,
-    showTrigger: stored?.showTrigger !== false,
+    showTrigger: true,
     useLoginModal: Boolean(stored.useLoginModal ?? base.useLoginModal),
     buttonMode: "floating",
     buttonDisplay: normalizeButtonDisplay(stored.buttonDisplay ?? base.buttonDisplay),
@@ -149,9 +149,26 @@ export function pageHasSiteAuthWidget(root: ParentNode | null | undefined) {
 }
 
 export function shouldShowFloatingAuthButton(settings: SiteAuthWidgetSettings) {
-  if (!settings.isActive || settings.showLoginButton === false) return false;
-  if (settings.showTrigger === false) return false;
+  if (settings.isActive === false || settings.showLoginButton === false) return false;
   return true;
+}
+
+/** Defaults used when site-auth plugin is enabled — button must appear without manual setup. */
+export function ensureSiteAuthOverlayDefaults(
+  raw: unknown
+): SiteAuthWidgetSettings {
+  const merged = mergeSiteAuthSettings(raw);
+  return {
+    ...merged,
+    isActive: true,
+    showLoginButton: true,
+    showTrigger: true,
+    buttonMode: "floating",
+    useLoginModal: false,
+    buttonDisplay: merged.buttonDisplay || "icon",
+    buttonTransparent: merged.buttonTransparent !== false,
+    triggerPosition: merged.triggerPosition || { x: 88, y: 82 },
+  };
 }
 
 export function isLegacySiteAuthInsertedElement(item: Record<string, unknown>) {
