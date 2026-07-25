@@ -125,6 +125,7 @@ export default function ChatBot({
   setChatOpen,
   initialMessage = null,
   onInitialMessageSent,
+  hideLauncher = false,
 }) {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
@@ -814,8 +815,13 @@ export default function ChatBot({
         : t("chatbot.title");
 
   if (!chatOpen) {
+    // Launcher can live in SupportChatWidget (hideLauncher) so the button
+    // never disappears if this component errors while open.
+    if (hideLauncher) return null;
+
     return (
       <button
+        type="button"
         onClick={() => {
           setUnreadCount(0);
           setChatOpen(true);
