@@ -16,9 +16,11 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
   checkDomainAvailability,
   createDomainContact,
+  registerDomain,
   type DomainAvailabilityResult,
   type DomainContactPayload,
   type DomainContactResult,
+  type DomainRegisterResult,
 } from "../../services/domainService";
 
 type ContactFormState = Omit<
@@ -61,6 +63,10 @@ export default function DomainSearch() {
   const [contactError, setContactError] = useState("");
   const [contactResult, setContactResult] =
     useState<DomainContactResult | null>(null);
+  const [isRegisteringDomain, setIsRegisteringDomain] = useState(false);
+  const [registerError, setRegisterError] = useState("");
+  const [registerResult, setRegisterResult] =
+    useState<DomainRegisterResult | null>(null);
 
   const canSubmitContact = useMemo(() => {
     return Boolean(
@@ -81,6 +87,8 @@ export default function DomainSearch() {
     setResult(null);
     setShowContactForm(false);
     setContactResult(null);
+    setRegisterResult(null);
+    setRegisterError("");
     setIsChecking(true);
 
     try {
@@ -111,6 +119,8 @@ export default function DomainSearch() {
 
     setContactError("");
     setContactResult(null);
+    setRegisterResult(null);
+    setRegisterError("");
     setIsCreatingContact(true);
 
     try {
@@ -157,6 +167,44 @@ export default function DomainSearch() {
       );
     } finally {
       setIsCreatingContact(false);
+    }
+  }
+
+  async function handleRegisterDomain() {
+    if (
+      !contactResult?.registrationId ||
+      isRegisteringDomain
+    ) {
+      return;
+    }
+
+    setRegisterError("");
+    setRegisterResult(null);
+    setIsRegisteringDomain(true);
+
+    try {
+      const response = await registerDomain({
+        registrationId: contactResult.registrationId,
+        period: 12,
+      });
+
+      setRegisterResult(response);
+      setContactResult((current) =>
+        current
+          ? {
+              ...current,
+              status: response.status || "registered",
+            }
+          : current,
+      );
+    } catch (requestError) {
+      setRegisterError(
+        requestError instanceof Error
+          ? requestError.message
+          : "רישום הדומיין נכשל",
+      );
+    } finally {
+      setIsRegisteringDomain(false);
     }
   }
 
@@ -511,10 +559,74 @@ export default function DomainSearch() {
                       </p>
                     ) : null}
 
-                    <p className="mt-3 text-xs font-semibold text-emerald-700">
-                      השלב הבא: שימוש ב־handle הזה כ־registrant לרישום
-                      הדומיין בפועל.
+                    {contactResult.registrationId &&
+                    !registerResult?.success ? (
+                      <div className="mt-4">
+                        <button
+                          type="button"
+                          onClick={() => void handleRegisterDomain()}
+                          disabled={isRegisteringDomain}
+                          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-6 text-sm font-black text-white shadow-lg shadow-emerald-200 transition hover:-translate-y-0.5 hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
+                        >
+                          {isRegisteringDomain ? (
+                            <>
+                              <BizuplyLoader size="sm" compact />
+                              רושם דומיין...
+                            </>
+                          ) : (
+                            <>
+                              <Globe2 className="h-5 w-5" />
+                              רשום דומיין לשנה (חיוב מיתרה)
+                            </>
+                          )}
+                        </button>
+                        <p className="mt-2 text-xs font-semibold text-emerald-700">
+                          הרישום יורד מיתרת Realtime Register של העסק.
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+                </div>
+              </div>
+            ) : null}
+
+            {registerError ? (
+              <div className="mt-5 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 px-4 py-4 text-red-700">
+                <XCircle className="mt-0.5 h-5 w-5 shrink-0" />
+                <p className="text-sm font-bold">{registerError}</p>
+              </div>
+            ) : null}
+
+            {registerResult?.success ? (
+              <div className="mt-5 rounded-[24px] border border-emerald-200 bg-emerald-50 p-5">
+                <div className="flex items-start gap-3">
+                  <CheckCircle2 className="mt-0.5 h-6 w-6 shrink-0 text-emerald-600" />
+                  <div>
+                    <h4 className="text-base font-black text-emerald-900">
+                      {registerResult.alreadyRegistered
+                        ? "הדומיין כבר רשום"
+                        : "הדומיין נרשם בהצלחה"}
+                    </h4>
+                    <p
+                      className="mt-2 text-sm font-black text-slate-800"
+                      dir="ltr"
+                    >
+                      {registerResult.domain}
                     </p>
+                    {registerResult.registration?.expirationDate ? (
+                      <p className="mt-2 text-xs font-semibold text-emerald-700">
+                        תוקף עד:{" "}
+                        {new Date(
+                          registerResult.registration.expirationDate,
+                        ).toLocaleDateString("he-IL")}
+                      </p>
+                    ) : null}
+                    {registerResult.quote?.total != null ? (
+                      <p className="mt-1 text-xs font-semibold text-emerald-700">
+                        עלות משוערת: {registerResult.quote.total}{" "}
+                        {registerResult.quote.currency || ""}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -530,23 +642,25 @@ export default function DomainSearch() {
                 חזרה
               </button>
 
-              <button
-                type="submit"
-                disabled={!canSubmitContact || isCreatingContact}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
-              >
-                {isCreatingContact ? (
-                  <>
-                    <BizuplyLoader size="sm" compact />
-                    יוצר איש קשר
-                  </>
-                ) : (
-                  <>
-                    <UserRound className="h-5 w-5" />
-                    יצירת איש קשר לרישום
-                  </>
-                )}
-              </button>
+              {!contactResult?.success ? (
+                <button
+                  type="submit"
+                  disabled={!canSubmitContact || isCreatingContact}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-7 text-sm font-black text-slate-800 shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                >
+                  {isCreatingContact ? (
+                    <>
+                      <BizuplyLoader size="sm" compact />
+                      יוצר איש קשר
+                    </>
+                  ) : (
+                    <>
+                      <UserRound className="h-5 w-5" />
+                      יצירת איש קשר לרישום
+                    </>
+                  )}
+                </button>
+              ) : null}
             </div>
           </form>
         </div>

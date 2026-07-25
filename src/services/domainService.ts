@@ -425,6 +425,81 @@ export async function createDomainContact(
 /** @deprecated Use createDomainContact — kept for older imports. */
 export const createOteDomainContact = createDomainContact;
 
+export type DomainRegisterPayload = {
+  registrationId: string;
+  period?: number;
+};
+
+export type DomainRegisterResult = {
+  success: boolean;
+  alreadyRegistered?: boolean;
+  environment?: DomainEnvironment;
+  message?: string;
+  registrationId?: string;
+  domain?: string;
+  status?: DomainRegistrationStatus;
+  contactHandle?: string;
+  quote?: {
+    total: number;
+    currency?: string | null;
+  } | null;
+  registration?: {
+    period?: number;
+    expirationDate?: string | null;
+    registeredAt?: string | null;
+    failedAt?: string | null;
+    error?: string | null;
+  };
+  process?: {
+    id?: string | number | null;
+    status?: string | number | null;
+  };
+  error?: string;
+  errorType?: string;
+};
+
+export async function registerDomain(
+  payload: DomainRegisterPayload,
+): Promise<DomainRegisterResult> {
+  const registrationId = String(
+    payload.registrationId || "",
+  ).trim();
+
+  if (!registrationId) {
+    throw new Error(
+      "חסר מזהה רישום. צרו איש קשר לפני רישום הדומיין",
+    );
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/realtime-register/register`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify({
+        registrationId,
+        period: Math.max(1, Number(payload.period) || 12),
+      }),
+    },
+  );
+
+  const data =
+    await readJson<DomainRegisterResult>(response);
+
+  if (!response.ok || !data?.success) {
+    throw new Error(
+      getApiErrorMessage(
+        response,
+        data,
+        "רישום הדומיין נכשל",
+      ),
+    );
+  }
+
+  return data;
+}
+
 export async function getDomainRegistrations(): Promise<
   DomainRegistrationsResult
 > {
