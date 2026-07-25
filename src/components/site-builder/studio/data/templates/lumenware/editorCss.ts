@@ -85,4 +85,22 @@ export const lumenwareEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="lumenware"] .store-header-techCinema,
+[data-template-id="lumenware-preview"] .store-header-techCinema {
+  box-shadow: 0 1px 0 rgba(56,189,248,0.28), 0 0 40px rgba(14,165,233,0.16);
+}
+[data-template-id="lumenware"] .store-product-card,
+[data-template-id="lumenware-preview"] .store-product-card {
+  animation: lumenware-neon-rail 5.5s ease-in-out infinite;
+}
+@keyframes lumenware-neon-rail {
+  0%, 100% { box-shadow: 0 0 28px rgba(14,165,233,0.08); }
+  50% { box-shadow: 0 0 56px rgba(56,189,248,0.22); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="lumenware"] .store-product-card,
+  [data-template-id="lumenware-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

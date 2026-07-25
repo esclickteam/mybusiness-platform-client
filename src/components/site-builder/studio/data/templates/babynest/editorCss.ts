@@ -85,4 +85,28 @@ export const babynestEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="babynest"] .store-cloud-drift,
+[data-template-id="babynest-preview"] .store-cloud-drift {
+  animation: babynest-cloud-drift 9s ease-in-out infinite;
+}
+[data-template-id="babynest"] .store-product-card,
+[data-template-id="babynest-preview"] .store-product-card {
+  animation: babynest-lullaby-bob 7.5s ease-in-out infinite;
+}
+@keyframes babynest-cloud-drift {
+  0%, 100% { border-radius: 45% 55% 60% 40%; transform: translate3d(0,0,0); }
+  50% { border-radius: 58% 42% 44% 56%; transform: translate3d(0,-12px,0); }
+}
+@keyframes babynest-lullaby-bob {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="babynest"] .store-cloud-drift,
+  [data-template-id="babynest"] .store-product-card,
+  [data-template-id="babynest-preview"] .store-cloud-drift,
+  [data-template-id="babynest-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;

@@ -85,4 +85,29 @@ export const glowlabEditorCss = `
     animation: none !important;
   }
 }
+[data-template-id="glowlab"] .store-shimmer-strip,
+[data-template-id="glowlab-preview"] .store-shimmer-strip {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
+  animation: glowlab-shimmer-sweep 5.8s ease-in-out infinite;
+}
+[data-template-id="glowlab"] .store-product-card,
+[data-template-id="glowlab-preview"] .store-product-card {
+  animation: glowlab-gloss-lift 7s ease-in-out infinite;
+}
+@keyframes glowlab-shimmer-sweep {
+  0%, 100% { transform: translateX(35%) skewX(-18deg); opacity: 0.25; }
+  50% { transform: translateX(-35%) skewX(-18deg); opacity: 0.75; }
+}
+@keyframes glowlab-gloss-lift {
+  0%, 100% { transform: translateY(0); filter: saturate(1); }
+  50% { transform: translateY(-6px); filter: saturate(1.12); }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-template-id="glowlab"] .store-shimmer-strip,
+  [data-template-id="glowlab"] .store-product-card,
+  [data-template-id="glowlab-preview"] .store-shimmer-strip,
+  [data-template-id="glowlab-preview"] .store-product-card {
+    animation: none !important;
+  }
+}
 `;
