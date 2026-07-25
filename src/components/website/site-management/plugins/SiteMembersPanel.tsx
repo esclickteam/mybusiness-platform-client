@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { KeyRound, Plus, Trash2, UserRound } from "lucide-react";
+import { Link } from "react-router-dom";
+import { KeyRound, Plus, Trash2, UserRound, Users } from "lucide-react";
 
 import {
   createSiteMember,
@@ -8,7 +9,7 @@ import {
   resetSiteMemberPassword,
   updateSiteMember,
 } from "../../../../api/siteMembersAdminApi";
-import type { SiteMemberProfile } from "../../../../api/siteMemberAuthApi";
+import type { SiteAuthSettings, SiteMemberProfile } from "../../../../api/siteMemberAuthApi";
 import BizuplyLoader from "../../../ui/BizuplyLoader";
 import {
   btnPrimary,
@@ -24,11 +25,12 @@ const STATUS_OPTIONS = [
   { value: "blocked", label: "חסום" },
 ];
 
-export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
+export default function SiteMembersPanel({ siteId, businessId }: PluginPanelProps) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [members, setMembers] = useState<SiteMemberProfile[]>([]);
   const [pluginEnabled, setPluginEnabled] = useState(false);
+  const [authSettings, setAuthSettings] = useState<SiteAuthSettings | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
@@ -36,8 +38,10 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
     email: "",
     username: "",
     displayName: "",
+    phone: "",
     password: "",
     status: "active" as SiteMemberProfile["status"],
+    addAsCrmClient: false,
   });
 
   const loadMembers = useCallback(async () => {
@@ -48,6 +52,11 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
       const data = await listSiteMembers(siteId);
       setMembers(data.members);
       setPluginEnabled(data.pluginEnabled);
+      setAuthSettings(data.settings);
+      setForm((prev) => ({
+        ...prev,
+        addAsCrmClient: Boolean(data.settings?.defaultAddAsCrmClient),
+      }));
     } catch (err: any) {
       setError(err?.response?.data?.error || err?.message || "שגיאה בטעינה");
     } finally {
@@ -66,13 +75,23 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
     setError("");
 
     try {
-      await createSiteMember(siteId, form);
+      await createSiteMember(siteId, {
+        email: form.email || undefined,
+        username: form.username || undefined,
+        displayName: form.displayName || undefined,
+        phone: form.phone || undefined,
+        password: form.password,
+        status: form.status,
+        addAsCrmClient: form.addAsCrmClient,
+      });
       setForm({
         email: "",
         username: "",
         displayName: "",
+        phone: "",
         password: "",
         status: "active",
+        addAsCrmClient: Boolean(authSettings?.defaultAddAsCrmClient),
       });
       setMessage("המשתמש נוצר בהצלחה");
       await loadMembers();
@@ -141,12 +160,12 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
       <div className={panelSection}>
         <div className="mb-4 flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-indigo-100 text-indigo-700">
-            <UserRound size={20} />
+            <Users size={20} />
           </div>
           <div>
             <h2 className="text-lg font-black text-slate-800">משתמשי האתר</h2>
             <p className="text-sm font-medium text-slate-500">
-              מערכת התחברות נפרדת לחלוטין מ-BizUply — רק ללקוחות של אתר זה.
+              ניהול משתמשים עם גישה לאתר — מערכת נפרדת מ-BizUply.
             </p>
           </div>
         </div>
@@ -197,6 +216,18 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
           </label>
 
           <label className="block space-y-2">
+            <span className="text-sm font-bold text-slate-700">
+              טלפון{form.addAsCrmClient ? " *" : ""}
+            </span>
+            <input
+              className={inputBase}
+              value={form.phone}
+              onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
+              required={form.addAsCrmClient}
+            />
+          </label>
+
+          <label className="block space-y-2">
             <span className="text-sm font-bold text-slate-700">סיסמה</span>
             <input
               className={inputBase}
@@ -210,7 +241,7 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
             />
           </label>
 
-          <label className="block space-y-2 md:col-span-2">
+          <label className="block space-y-2">
             <span className="text-sm font-bold text-slate-700">סטטוס</span>
             <select
               className={inputBase}
@@ -228,6 +259,18 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
                 </option>
               ))}
             </select>
+          </label>
+
+          <label className="flex items-center gap-3 md:col-span-2">
+            <input
+              type="checkbox"
+              checked={form.addAsCrmClient}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, addAsCrmClient: e.target.checked }))
+              }
+              className="h-4 w-4 rounded border-slate-300"
+            />
+            <span className="text-sm font-bold text-slate-700">הוסף גם כלקוח CRM</span>
           </label>
 
           <div className="md:col-span-2">
@@ -258,8 +301,19 @@ export default function SiteMembersPanel({ siteId }: PluginPanelProps) {
                     {member.displayName || member.username || member.email || "משתמש"}
                   </p>
                   <p className="text-xs font-bold text-slate-500">
-                    {[member.email, member.username].filter(Boolean).join(" · ")}
+                    {[member.email, member.username, member.phone]
+                      .filter(Boolean)
+                      .join(" · ")}
                   </p>
+                  {member.crmClientId ? (
+                    <Link
+                      to={`/business/${businessId}/dashboard/crm/clients`}
+                      className="mt-1 inline-flex items-center gap-1 text-xs font-bold text-indigo-600"
+                    >
+                      <UserRound size={12} />
+                      מקושר ל-CRM
+                    </Link>
+                  ) : null}
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2">

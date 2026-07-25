@@ -22,6 +22,8 @@ import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
 import SiteMembersPanel from "./SiteMembersPanel";
+import SiteAuthFormPreview from "../../../site-plugins/site-auth/SiteAuthFormPreview";
+import { mergeSiteAuthSettings } from "../../../site-plugins/site-auth/siteAuthUtils";
 import {
   bool,
   Field,
@@ -234,19 +236,47 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
           onChange={(v) => updateField("showLoginButton", v)}
         />
         <Toggle
-          label="טופס התחברות במודאל (מומלץ)"
-          checked={bool(settings.useLoginModal, true)}
+          label="הצג כפתור צף (גרירה בעורך — כמו גלגל המזל)"
+          checked={bool(settings.showTrigger, true)}
+          onChange={(v) => updateField("showTrigger", v)}
+        />
+        <Toggle
+          label="טופס התחברות במודאל (לא מומלץ — ברירת מחדל: דף ייעודי)"
+          checked={bool(settings.useLoginModal)}
           onChange={(v) => updateField("useLoginModal", v)}
         />
+        <Field label="סוג כפתור באתר">
+          <select
+            className={inputBase}
+            value={str(settings.buttonDisplay, "icon")}
+            onChange={(e) => updateField("buttonDisplay", e.target.value)}
+          >
+            <option value="icon">אייקון בלבד</option>
+            <option value="button">כפתור עם טקסט</option>
+            <option value="text">טקסט בלבד</option>
+          </select>
+        </Field>
+        <Toggle
+          label="כפתור שקוף (ללא רקע)"
+          checked={bool(settings.buttonTransparent, true)}
+          onChange={(v) => updateField("buttonTransparent", v)}
+        />
+        <Field label="צבע כפתור / אייקון (ריק = צבע מותג)">
+          <TextInput
+            value={str(settings.buttonTextColor)}
+            onChange={(v) => updateField("buttonTextColor", v)}
+            placeholder="#6366F1"
+          />
+        </Field>
         <Field label="מיקום הכפתור">
           <select
             className={inputBase}
-            value={str(settings.buttonMode, "both")}
+            value={str(settings.buttonMode, "floating")}
             onChange={(e) => updateField("buttonMode", e.target.value)}
           >
-            <option value="both">צף + בתוך העמוד</option>
-            <option value="floating">כפתור צף בלבד</option>
-            <option value="inline">בתוך העמוד בלבד</option>
+            <option value="floating">כפתור צף (מומלץ — כמו גלגל המזל)</option>
+            <option value="inline">ישן: בתוך העמוד (HTML בעורך)</option>
+            <option value="both">שניהם</option>
           </select>
         </Field>
         <Toggle
@@ -289,14 +319,105 @@ function SiteSiteAuthSettingsPanel(props: PluginPanelProps) {
           checked={bool(settings.forgotPasswordEnabled, true)}
           onChange={(v) => updateField("forgotPasswordEnabled", v)}
         />
-      </SitePluginPanelFrame>
 
-      <SiteMembersPanel {...props} />
+        <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+          <p className="mb-3 text-sm font-black text-slate-800">עיצוב טופס התחברות / הרשמה</p>
+          <Field label="כותרת משנה — התחברות">
+            <TextInput
+              value={str(settings.loginSubtitle)}
+              onChange={(v) => updateField("loginSubtitle", v)}
+            />
+          </Field>
+          <Field label="כותרת הרשמה">
+            <TextInput
+              value={str(settings.registerTitle, "הרשמה")}
+              onChange={(v) => updateField("registerTitle", v)}
+            />
+          </Field>
+          <Field label="כותרת משנה — הרשמה">
+            <TextInput
+              value={str(settings.registerSubtitle)}
+              onChange={(v) => updateField("registerSubtitle", v)}
+            />
+          </Field>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Field label="צבע רקע">
+              <TextInput
+                value={str(settings.formBackgroundColor, "#ffffff")}
+                onChange={(v) => updateField("formBackgroundColor", v)}
+                placeholder="#ffffff"
+              />
+            </Field>
+            <Field label="צבע טקסט">
+              <TextInput
+                value={str(settings.formTextColor, "#1e293b")}
+                onChange={(v) => updateField("formTextColor", v)}
+                placeholder="#1e293b"
+              />
+            </Field>
+            <Field label="צבע תוויות">
+              <TextInput
+                value={str(settings.formLabelColor, "#334155")}
+                onChange={(v) => updateField("formLabelColor", v)}
+              />
+            </Field>
+            <Field label="צבע כפתור (ריק = צבע מותג)">
+              <TextInput
+                value={str(settings.formAccentColor)}
+                onChange={(v) => updateField("formAccentColor", v)}
+                placeholder="#6366F1"
+              />
+            </Field>
+            <Field label="צבע טקסט כפתור">
+              <TextInput
+                value={str(settings.formButtonTextColor, "#ffffff")}
+                onChange={(v) => updateField("formButtonTextColor", v)}
+              />
+            </Field>
+            <Field label="צבע מסגרת">
+              <TextInput
+                value={str(settings.formBorderColor, "#e2e8f0")}
+                onChange={(v) => updateField("formBorderColor", v)}
+              />
+            </Field>
+            <Field label="עיגול פינות (px)">
+              <TextInput
+                value={String(num(settings.formBorderRadius, 16))}
+                onChange={(v) => updateField("formBorderRadius", Number(v) || 16)}
+                type="number"
+              />
+            </Field>
+          </div>
+          <div className="mt-4">
+            <SiteAuthFormPreview settings={mergeSiteAuthSettings(settings)} />
+          </div>
+        </div>
+
+        <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
+          <p className="mb-3 text-sm font-black text-slate-800">CRM והרשמה</p>
+          <Toggle
+            label="ברירת מחדל: הוסף כלקוח CRM בעת יצירת משתמש"
+            checked={bool(settings.defaultAddAsCrmClient)}
+            onChange={(v) => updateField("defaultAddAsCrmClient", v)}
+          />
+          <Toggle
+            label="בהרשמה עצמית — הוסף אוטומטית ל-CRM"
+            checked={bool(settings.autoAddRegisterAsCrmClient)}
+            onChange={(v) => updateField("autoAddRegisterAsCrmClient", v)}
+          />
+          <Toggle
+            label="בהרשמה — הצג שדה טלפון"
+            checked={bool(settings.registerCollectPhone)}
+            onChange={(v) => updateField("registerCollectPhone", v)}
+          />
+        </div>
+      </SitePluginPanelFrame>
     </div>
   );
 }
 
 export const SiteSiteAuthPanel = SiteSiteAuthSettingsPanel;
+export const SiteSiteMembersPanel = SiteMembersPanel;
 
 export const SiteHeatmapPanel = makePanel(
   "heatmap",
@@ -610,6 +731,7 @@ export const PLUGIN_PANEL_MAP: Partial<
   reviews: SiteReviewsPanel,
   club: SiteClubPanel,
   "site-auth": SiteSiteAuthPanel,
+  "site-members": SiteSiteMembersPanel,
   heatmap: SiteHeatmapPanel,
   "form-abandonment": SiteFormAbandonmentPanel,
   "journey-recording": SiteJourneyRecordingPanel,
