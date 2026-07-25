@@ -18,7 +18,8 @@ export function SitePanelHero({
 }: SitePanelHeroProps) {
   return (
     <div
-      className="overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-l from-violet-50 via-white to-indigo-50/40 p-5 shadow-sm md:p-6"
+      dir="rtl"
+      className="overflow-hidden rounded-2xl border border-white/60 bg-gradient-to-l from-violet-50 via-white to-indigo-50/40 p-5 text-right shadow-sm md:p-6"
       style={{ borderColor: `${accent}22` }}
     >
       <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
@@ -31,14 +32,16 @@ export function SitePanelHero({
           >
             <Icon size={22} />
           </div>
-          <div>
+          <div className="min-w-0 text-right">
             <h2 className="text-lg font-bold text-slate-900 md:text-xl">{title}</h2>
             <p className="mt-1 max-w-2xl text-sm leading-relaxed text-slate-500">
               {description}
             </p>
           </div>
         </div>
-        {actions ? <div className="flex flex-wrap gap-2">{actions}</div> : null}
+        {actions ? (
+          <div className="flex flex-wrap justify-start gap-2">{actions}</div>
+        ) : null}
       </div>
     </div>
   );
@@ -53,7 +56,8 @@ export function SitePanelCard({
 }) {
   return (
     <div
-      className={`rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm md:p-6 ${className}`}
+      dir="rtl"
+      className={`rounded-2xl border border-slate-200/80 bg-white p-5 text-right shadow-sm md:p-6 ${className}`}
     >
       {children}
     </div>

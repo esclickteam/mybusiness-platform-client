@@ -37,14 +37,14 @@ export default function PaymentsProviderGallery({
   );
 
   return (
-    <div className="space-y-4">
-      <div>
+    <div dir="rtl" className="space-y-4 text-right">
+      <div className="text-right">
         <h2 className="text-xl font-bold text-slate-900">
           חיבור אמצעי תשלום
         </h2>
         <p className="mt-1 text-sm text-slate-500">
           בחרו איך לקבל תשלומים מלקוחות עבור העסק שלכם ב־
-          <span className="font-semibold text-slate-700"> ישראל</span>
+          <span className="font-semibold text-slate-700">ישראל</span>
         </p>
       </div>
 
@@ -59,12 +59,12 @@ export default function PaymentsProviderGallery({
           return (
             <div
               key={item.key}
-              className="flex flex-col gap-4 rounded-xl border border-slate-200/90 bg-white p-4 shadow-[0_2px_10px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between"
+              className="flex flex-col gap-4 rounded-xl border border-slate-200/90 bg-white p-4 text-right shadow-[0_2px_10px_rgba(15,23,42,0.04)] sm:flex-row sm:items-center sm:justify-between"
             >
-              <div className="flex min-w-0 items-start gap-3">
+              <div className="flex min-w-0 flex-1 items-start gap-3">
                 <ProviderLogo item={item} />
-                <div className="min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
+                <div className="min-w-0 flex-1 text-right">
+                  <div className="flex flex-wrap items-center justify-start gap-2">
                     <h3 className="text-base font-bold text-slate-900">
                       {item.name}
                     </h3>
@@ -84,7 +84,7 @@ export default function PaymentsProviderGallery({
                     {item.description}
                   </p>
                   {item.badges?.length ? (
-                    <div className="mt-2 flex flex-wrap gap-1.5">
+                    <div className="mt-2 flex flex-wrap justify-start gap-1.5">
                       {item.badges.map((badge) => (
                         <span
                           key={badge}
@@ -101,7 +101,7 @@ export default function PaymentsProviderGallery({
                 </div>
               </div>
 
-              <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-stretch">
+              <div className="flex shrink-0 items-center justify-start gap-2 sm:flex-col sm:items-stretch">
                 {connected ? (
                   <button
                     type="button"

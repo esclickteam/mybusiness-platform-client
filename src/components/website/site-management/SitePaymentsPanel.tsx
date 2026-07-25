@@ -175,7 +175,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
   }
 
   return (
-    <div className="space-y-5">
+    <div dir="rtl" className="space-y-5 text-right">
       <SitePanelHero
         icon={CreditCard}
         accent="#059669"
@@ -185,7 +185,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
 
       {message ? (
         <div
-          className={`rounded-xl border px-4 py-3 text-sm font-medium ${
+          className={`rounded-xl border px-4 py-3 text-right text-sm font-medium ${
             message.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-800"
               : "border-rose-200 bg-rose-50 text-rose-700"
