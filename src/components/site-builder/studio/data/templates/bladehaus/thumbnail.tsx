@@ -2,44 +2,24 @@ import React from "react";
 
 export default function BladehausThumbnail() {
   return (
-    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-4" style={{ background: "#111111", color: "#F2F2F2" }}>
-      <div className="absolute inset-0 opacity-50" style={{ background: "linear-gradient(90deg,#C0A06022 1px,transparent 1px) 0 0 / 38px 38px" }} />
-      <div className="relative z-10 flex items-center justify-between border-b-2 pb-3" style={{ borderColor: "#C0A060" }}>
-        <div className="grid h-9 w-9 place-items-center text-lg font-black" style={{ border: "2px solid #C0A060", color: "#C0A060", borderRadius: 0 }}>B</div>
-        <span className="text-2xl leading-none tracking-wide" style={{ fontFamily: "\"Bebas Neue\", sans-serif" }}>Bladehaus</span>
-        <span className="text-[9px] font-black uppercase tracking-[0.2em]" style={{ color: "#C0A060" }}>Barber</span>
-      </div>
-      <div className="relative z-10 mt-5">
-        <h3 className="text-[54px] leading-[0.75] tracking-wide" style={{ fontFamily: "\"Bebas Neue\", sans-serif", textShadow: "3px 3px 0 #C0A06044" }}>
-          Sharp Cuts.
-          <br />
-          No Mercy.
-        </h3>
-        <div className="mt-4 flex gap-2">
-          <div className="flex-1 bg-white px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ borderRadius: 0 }}>קביעת תור</div>
-          <div className="flex-1 px-2 py-2 text-[9px] font-black uppercase tracking-wider text-black" style={{ background: "#C0A060", borderRadius: 0 }}>מחירון</div>
+    <div dir="rtl" className="relative h-full min-h-[260px] w-full overflow-hidden p-5" style={{ background: "#111111", color: "#F2F2F2" }}>
+      <div className="absolute inset-0 opacity-40" style={{ background: "radial-gradient(circle at 20% 15%, #E8E8E855, transparent 42%)" }} />
+      <div className="relative z-10 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center text-xs font-bold" style={{ background: "#E8E8E8", color: "#000000", borderRadius: 0 }}>B</div>
+          <span className="text-sm font-bold" style={{ fontFamily: "\"Bebas Neue\"" }}>Bladehaus</span>
         </div>
+        <span className="text-[10px] uppercase tracking-[0.18em]" style={{ color: "#E8E8E8" }}>מספרת גברים</span>
       </div>
-      <div className="relative z-10 mt-5 grid grid-cols-[1.2fr_0.8fr] gap-3">
-        <div className="grid grid-cols-2 gap-2">
-          {["Cut", "Beard", "Fade", "Ritual"].map((item, index) => (
-            <div key={item} className="border p-2" style={{ borderColor: "#ffffff33", background: "#181818", borderRadius: 0 }}>
-              <div className="text-[8px]" style={{ color: "#C0A060" }}>0{index + 1}</div>
-              <div className="text-lg leading-none" style={{ fontFamily: "\"Bebas Neue\", sans-serif" }}>{item}</div>
-              <div className="mt-1 h-px" style={{ background: "#ffffff33" }} />
-            </div>
+      <div className="relative z-10 mt-10">
+        <h3 className="max-w-[230px] text-2xl font-bold leading-tight" style={{ fontFamily: "\"Bebas Neue\"" }}>תספורת חדה.
+סטייל מדויק.</h3>
+        <div className="mt-5 h-px w-14" style={{ background: "#E8E8E8" }} />
+        <div className="mt-6 grid grid-cols-3 gap-2">
+          {["12K+", "6", "4.9"].map((n) => (
+            <div key={n} className="border py-2 text-center text-xs font-bold" style={{ borderColor: "#E8E8E844", color: "#E8E8E8", borderRadius: 0 }}>{n}</div>
           ))}
         </div>
-        <div className="relative overflow-hidden border" style={{ borderColor: "#C0A060", borderRadius: 0 }}>
-          <div className="absolute inset-0" style={{ background: "linear-gradient(180deg,#777,#111)" }} />
-          <div className="absolute inset-x-0 bottom-0 px-2 py-2 text-black" style={{ background: "#C0A060" }}>
-            <div className="text-lg leading-none" style={{ fontFamily: "\"Bebas Neue\", sans-serif" }}>רוי</div>
-            <div className="text-[8px] font-black uppercase">Fade</div>
-          </div>
-        </div>
-      </div>
-      <div className="absolute inset-x-0 bottom-0 py-1 text-center text-xl leading-none text-black" style={{ background: "#C0A060", fontFamily: "\"Bebas Neue\", sans-serif" }}>
-        Fade · Beard · Hot Towel · Cut
       </div>
     </div>
   );
