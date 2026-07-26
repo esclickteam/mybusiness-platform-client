@@ -242,6 +242,19 @@
   animation: about-marquee 28s linear infinite;
 }
 
+[dir="rtl"] .about-marquee-track {
+  animation-name: about-marquee-rtl;
+}
+
+@keyframes about-marquee-rtl {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 .about-marquee:hover .about-marquee-track {
   animation-play-state: paused;
 }
