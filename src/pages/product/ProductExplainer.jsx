@@ -5,8 +5,11 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   CalendarDays,
+  CheckCircle2,
+  Facebook,
   Globe2,
   Handshake,
+  ShieldCheck,
   UsersRound,
 } from "lucide-react";
 import "../../styles/ProductExplainer.css";
@@ -49,6 +52,10 @@ export default function ProductExplainer({ pageKey }) {
   }));
 
   const audience = [1, 2, 3].map((n) => t(`${base}.audience${n}`));
+  const isCrm = pageKey === "crm";
+  const metaPoints = isCrm
+    ? [1, 2, 3].map((n) => t(`${base}.metaPoint${n}`))
+    : [];
 
   return (
     <div className="product-page">
@@ -76,9 +83,17 @@ export default function ProductExplainer({ pageKey }) {
 
           <div className="grid gap-10 px-6 py-10 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-10 lg:py-14">
             <div className="text-start">
-              <p className="product-enter product-enter-delay-1 text-xs font-black uppercase tracking-[0.22em] text-sky-600">
-                {t(`${base}.badge`)}
-              </p>
+              <div className="product-enter product-enter-delay-1 flex flex-wrap items-center gap-2">
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">
+                  {t(`${base}.badge`)}
+                </p>
+                {isCrm ? (
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-[#1877F2]/25 bg-[#1877F2]/10 px-3 py-1 text-[11px] font-black tracking-[0.04em] text-[#1877F2]">
+                    <Facebook size={13} />
+                    {t(`${base}.metaBadge`)}
+                  </span>
+                ) : null}
+              </div>
 
               <h1 className="product-enter product-enter-delay-1 mt-3 text-4xl font-black tracking-tight text-slate-800 sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
                 {t(`${base}.heroTitle`)}{" "}
@@ -92,6 +107,15 @@ export default function ProductExplainer({ pageKey }) {
               <p className="product-enter product-enter-delay-2 mt-5 max-w-xl text-base font-semibold leading-8 text-slate-500 sm:text-lg">
                 {t(`${base}.heroSubtitle`)}
               </p>
+
+              {isCrm ? (
+                <div className="product-enter product-enter-delay-2 mt-4 inline-flex max-w-xl items-start gap-2 rounded-2xl border border-[#1877F2]/20 bg-[#F0F6FF] px-4 py-3 text-start">
+                  <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#1877F2]" />
+                  <p className="text-sm font-bold leading-6 text-slate-700">
+                    {t(`${base}.metaTrustLine`)}
+                  </p>
+                </div>
+              ) : null}
 
               <div className="product-enter product-enter-delay-3 mt-8 flex flex-wrap gap-3">
                 <Link
@@ -141,6 +165,45 @@ export default function ProductExplainer({ pageKey }) {
             </div>
           </div>
         </section>
+
+        {isCrm ? (
+          <motion.section
+            className="mt-10 overflow-hidden rounded-[2rem] border border-[#1877F2]/15 bg-white/90 p-6 shadow-[0_14px_40px_rgba(24,119,242,0.08)] sm:p-8"
+            variants={fadeUp}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
+              <div className="max-w-2xl text-start">
+                <p className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-[#1877F2]">
+                  <Facebook size={14} />
+                  {t(`${base}.metaSectionBadge`)}
+                </p>
+                <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
+                  {t(`${base}.metaSectionTitle`)}
+                </h2>
+                <p className="mt-3 text-base leading-7 text-slate-500">
+                  {t(`${base}.metaSectionText`)}
+                </p>
+              </div>
+
+              <div className="grid w-full max-w-md gap-3">
+                {metaPoints.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-[#F7F8FC] px-4 py-3 text-start"
+                  >
+                    <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#1877F2]" />
+                    <p className="text-sm font-bold leading-6 text-slate-700">
+                      {point}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </motion.section>
+        ) : null}
 
         {/* Benefits */}
         <motion.section
