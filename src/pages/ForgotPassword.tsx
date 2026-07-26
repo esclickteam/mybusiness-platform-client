@@ -1,8 +1,12 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Mail } from "lucide-react";
+
 import API from "../api";
+import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 
 type ForgotPasswordProps = {
-  closePopup: () => void;
+  closePopup?: () => void;
 };
 
 type ApiError = {
@@ -18,141 +22,149 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [success, setSuccess] = useState<boolean>(false);
 
-  const handleSendReset = async () => {
+  const handleSendReset = async (e?: React.FormEvent) => {
+    e?.preventDefault();
+
     if (!email.trim()) {
-      setMessage("Please enter your email address");
+      setSuccess(false);
+      setMessage("אנא הזינו כתובת אימייל");
       return;
     }
 
     setLoading(true);
     setMessage("");
+    setSuccess(false);
 
     try {
       await API.post("/auth/forgot-password", {
         email: email.trim().toLowerCase(),
       });
 
-      setMessage("A reset link has been sent to your email.");
+      setSuccess(true);
+      setMessage("נשלח אליכם קישור לאיפוס סיסמה למייל.");
     } catch (error) {
       const apiError = error as ApiError;
-
-      console.error("❌ Error sending reset link:", apiError);
-
+      console.error("Error sending reset link:", apiError);
+      setSuccess(false);
       setMessage(
-        apiError.response?.data?.error ||
-          "Unexpected error. Please try again."
+        apiError.response?.data?.error || "אירעה שגיאה. נסו שוב מאוחר יותר."
       );
     } finally {
       setLoading(false);
     }
   };
 
-  const isSuccess = message.toLowerCase().includes("reset link");
-
-  return (
-    <div
-      className="fixed inset-0 z-[99999] grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/40 p-4 backdrop-blur-xl"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="forgot-password-title"
+  const card = (
+    <AuthCard
+      title="שכחתי סיסמה"
+      subtitle="הזינו את האימייל שלכם ונשלח קישור מאובטח לאיפוס הסיסמה"
     >
-      {/* Overlay */}
-      <button
-        type="button"
-        aria-label="Close reset password modal"
-        onClick={closePopup}
-        className="absolute inset-0 h-full w-full cursor-default"
-      />
-
-      <div className="relative w-full max-w-[440px] overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-2 shadow-[0_30px_100px_rgba(15,23,42,0.28)] backdrop-blur-2xl sm:rounded-[2.5rem] sm:p-3">
-        <div className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]">
-          {/* Header */}
-          <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-            <div className="pointer-events-none absolute inset-0">
-              <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
-              <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
-            </div>
-
-            <div className="relative">
-              <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl font-black shadow-xl shadow-indigo-950/30">
-                ✦
-              </div>
-
-              <h2
-                id="forgot-password-title"
-                className="text-3xl font-black tracking-[-0.04em]"
-              >
-                Reset Password
-              </h2>
-
-              <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
-                Enter your email address and we’ll send you a secure reset link.
-              </p>
-            </div>
-          </div>
-
-          {/* Body */}
-          <div className="bg-gradient-to-br from-white to-indigo-50/60 px-7 py-7">
-            <label
-              htmlFor="reset-email"
-              className="mb-2 block text-sm font-black text-slate-700"
-            >
-              Email address
-            </label>
-
+      <form onSubmit={handleSendReset} className="space-y-4">
+        <div className="text-right">
+          <label
+            htmlFor="reset-email"
+            className="mb-2 block text-sm font-bold text-slate-700"
+          >
+            אימייל
+          </label>
+          <div className="relative">
+            <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               id="reset-email"
               type="email"
-              placeholder="you@example.com"
+              placeholder="name@company.com"
               value={email}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                setEmail(e.target.value)
-              }
+              onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               autoComplete="email"
-              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
+              dir="ltr"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
             />
-
-            {message && (
-              <div
-                className={`mt-5 rounded-2xl border px-4 py-3 text-sm font-bold leading-6 ${
-                  isSuccess
-                    ? "border-emerald-100 bg-emerald-50 text-emerald-700"
-                    : "border-rose-100 bg-rose-50 text-rose-600"
-                }`}
-                role="alert"
-              >
-                {isSuccess ? "✅ " : "⚠️ "}
-                {message}
-              </div>
-            )}
-
-            <button
-              type="button"
-              onClick={handleSendReset}
-              disabled={loading}
-              className="group mt-6 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-8 py-4 text-base font-black text-black shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
-            >
-              {loading ? "Sending..." : "Send Reset Link"}
-
-              {!loading && (
-                <span className="ml-2 transition group-hover:translate-x-1">
-                  →
-                </span>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={closePopup}
-              className="mt-4 inline-flex w-full items-center justify-center rounded-full border border-slate-200 bg-white px-8 py-4 text-base font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-            >
-              Close
-            </button>
           </div>
         </div>
+
+        {message ? (
+          <div
+            className={`rounded-2xl border px-4 py-3 text-sm font-bold leading-6 ${
+              success
+                ? "border-emerald-100 bg-emerald-50 text-emerald-700"
+                : "border-rose-100 bg-rose-50 text-rose-600"
+            }`}
+            role="alert"
+          >
+            {message}
+          </div>
+        ) : null}
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+        >
+          {loading ? "שולח..." : "שליחת קישור לאיפוס"}
+          {!loading ? <span aria-hidden>←</span> : null}
+        </button>
+
+        {closePopup ? (
+          <button
+            type="button"
+            onClick={closePopup}
+            className="inline-flex h-12 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:border-violet-200 hover:text-violet-700"
+          >
+            סגירה
+          </button>
+        ) : (
+          <p className="pt-1 text-center text-sm font-semibold text-slate-600">
+            נזכרתם בסיסמה?{" "}
+            <Link
+              to="/login"
+              className="font-black text-violet-700 transition hover:text-indigo-700"
+            >
+              חזרה להתחברות
+            </Link>
+          </p>
+        )}
+      </form>
+    </AuthCard>
+  );
+
+  if (closePopup) {
+    return (
+      <div
+        className="fixed inset-0 z-[99999] grid place-items-center bg-slate-900/35 p-4 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="forgot-password-title"
+      >
+        <button
+          type="button"
+          aria-label="סגירת חלון איפוס סיסמה"
+          onClick={closePopup}
+          className="absolute inset-0 h-full w-full cursor-default"
+        />
+        <div className="relative w-full max-w-[440px]">{card}</div>
       </div>
-    </div>
+    );
+  }
+
+  return (
+    <AuthShell
+      headline={
+        <>
+          איפוס סיסמה{" "}
+          <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
+            בקלות
+          </span>
+          <br />
+          <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
+            ובצורה מאובטחת
+          </span>
+        </>
+      }
+    >
+      {card}
+    </AuthShell>
   );
 }
