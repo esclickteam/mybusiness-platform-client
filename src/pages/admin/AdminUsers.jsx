@@ -210,8 +210,8 @@ function AdminUsers() {
             </span>
           </div>
 
-          <div className="mb-5 flex flex-col gap-3 rounded-[24px] border border-slate-100 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.05)] sm:flex-row sm:items-center">
-            <div className="relative min-w-0 flex-1">
+          <div className="mb-5 space-y-3 rounded-[24px] border border-slate-100 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+            <div className="relative min-w-0">
               <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="search"
@@ -222,19 +222,38 @@ function AdminUsers() {
               />
             </div>
 
-            <select
-              value={filter}
-              onChange={(e) => setFilter(e.target.value)}
-              className="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-800 outline-none ring-[#7C4DFF]/30 focus:ring-2"
-            >
-              <option value="all">הכל</option>
-              <option value="customer">לקוחות</option>
-              <option value="business">עסקים</option>
-              <option value="affiliate">שותפים</option>
-              <option value="worker">עובדים</option>
-              <option value="manager">מנהלים</option>
-              <option value="admin">מנהלי מערכת</option>
-            </select>
+            <div>
+              <p className="mb-2 text-xs font-black text-slate-500">
+                סינון לפי סוג משתמש (role)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  ["all", "הכל"],
+                  ["customer", "לקוחות"],
+                  ["business", "עסקים"],
+                  ["affiliate", "שותפים"],
+                  ["worker", "עובדים"],
+                  ["manager", "מנהלים"],
+                  ["admin", "מנהלי מערכת"],
+                ].map(([value, label]) => {
+                  const active = filter === value;
+                  return (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => setFilter(value)}
+                      className={`rounded-full px-3.5 py-2 text-xs font-black transition ${
+                        active
+                          ? "bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25"
+                          : "border border-slate-200 bg-slate-50 text-slate-600 hover:border-violet-200 hover:bg-violet-50 hover:text-[#7C4DFF]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {error ? (

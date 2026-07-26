@@ -101,7 +101,7 @@ function AdminHeader() {
           </span>
         </button>
 
-        <nav className="flex gap-1 overflow-x-auto pb-1 xl:pb-0">
+        <nav className="flex flex-wrap items-center justify-start gap-x-1 gap-y-1 overflow-visible">
           {NAV_ITEMS.map((item) => {
             const active = isActive(item.path);
             const isSupport = item.path === "/admin/support-chat";
@@ -111,7 +111,7 @@ function AdminHeader() {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className={`relative whitespace-nowrap px-3 py-2.5 text-sm font-bold transition md:px-4 ${
+                className={`relative whitespace-nowrap px-2.5 py-2 text-sm font-bold transition md:px-3.5 ${
                   active
                     ? "text-[#7C4DFF]"
                     : "text-slate-500 hover:text-slate-800"
@@ -124,7 +124,7 @@ function AdminHeader() {
                   </span>
                 )}
                 {active ? (
-                  <span className="absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full bg-[#7C4DFF]" />
+                  <span className="absolute inset-x-2.5 -bottom-0.5 h-[3px] rounded-full bg-[#7C4DFF]" />
                 ) : null}
               </button>
             );
