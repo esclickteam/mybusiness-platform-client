@@ -24,8 +24,6 @@ const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
 );
 
-const LOGO_SRC = "/bizuply%20logo.png";
-
 type LoginForm = {
   email: string;
   password: string;
@@ -78,20 +76,12 @@ export function LoginSkeleton() {
 }
 
 function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
-  const box = size === "sm" ? "h-10 w-10" : "h-12 w-12";
-  const text = size === "sm" ? "text-xl" : "text-2xl";
+  const text = size === "sm" ? "text-2xl" : "text-3xl";
 
   return (
-    <div className="inline-flex items-center gap-3">
-      <img
-        src={LOGO_SRC}
-        alt="Bizuply"
-        className={`${box} rounded-2xl object-contain shadow-sm`}
-      />
-      <span className={`${text} font-black tracking-tight text-slate-900`}>
-        Bizuply
-      </span>
-    </div>
+    <span className={`${text} font-black tracking-tight text-slate-900`}>
+      BizUply
+    </span>
   );
 }
 
