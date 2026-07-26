@@ -1,58 +1,84 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import { motion, useInView } from "framer-motion";
+import {
+  Bot,
+  CalendarDays,
+  LayoutDashboard,
+  MessageSquareHeart,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
+import "../styles/About.css";
 
 const offerMeta = [
-  { key: "offer1", icon: "CRM" },
-  { key: "offer2", icon: "WEB" },
-  { key: "offer3", icon: "★" },
-  { key: "offer4", icon: "∞" },
-  { key: "offer5", icon: "AI" },
+  { key: "offer1", icon: UsersRound, to: "/features" },
+  { key: "offer2", icon: LayoutDashboard, to: "/features" },
+  { key: "offer3", icon: MessageSquareHeart, to: "/features" },
+  { key: "offer4", icon: Sparkles, to: "/features" },
+  { key: "offer5", icon: Bot, to: "/features" },
+  { key: "offer6", icon: CalendarDays, to: "/features" },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
 
 function About() {
   const { t } = useTranslation();
+  const [openFaq, setOpenFaq] = useState(0);
 
-  const storyStats = [
-    [t("about.storyStat1"), t("about.storyStat1Label")],
-    [t("about.storyStat2"), t("about.storyStat2Label")],
-    [t("about.storyStat3"), t("about.storyStat3Label")],
-  ];
-
-  const storyItems = [
-    [t("about.storyItem1Title"), t("about.storyItem1Text")],
-    [t("about.storyItem2Title"), t("about.storyItem2Text")],
-    [t("about.storyItem3Title"), t("about.storyItem3Text")],
-    [t("about.storyItem4Title"), t("about.storyItem4Text")],
-  ];
-
+  const marqueeItems = t("about.marqueeItems", { returnObjects: true });
+  const processSteps = [1, 2, 3, 4].map((n) => ({
+    title: t(`about.process${n}Title`),
+    text: t(`about.process${n}Text`),
+  }));
+  const faqs = [1, 2, 3, 4, 5, 6].map((n) => ({
+    q: t(`about.faq${n}Q`),
+    a: t(`about.faq${n}A`),
+  }));
   const offers = offerMeta.map((meta) => ({
     ...meta,
     title: t(`about.${meta.key}Title`),
     text: t(`about.${meta.key}Text`),
+    link: t("about.offerLearnMore"),
   }));
-
   const values = [1, 2, 3].map((n) => ({
     title: t(`about.value${n}Title`),
     text: t(`about.value${n}Text`),
   }));
+  const stats = [
+    { value: 1, suffix: "", label: t("about.stat1Label") },
+    { value: 6, suffix: "+", label: t("about.stat2Label") },
+    { value: 24, suffix: "/7", label: t("about.stat3Label") },
+  ];
+
+  const safeMarquee = Array.isArray(marqueeItems)
+    ? marqueeItems
+    : ["CRM", "Leads", "AI", "Appointments", "Reviews", "Collaborations"];
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <div className="about-page">
       <Helmet>
         <title>{t("about.seoTitle")}</title>
         <meta name="description" content={t("about.seoDescription")} />
         <meta name="keywords" content={t("about.seoKeywords")} />
         <link rel="canonical" href="https://bizuply.com/about" />
         <meta name="robots" content="index, follow" />
-
         <meta property="og:title" content={t("about.ogTitle")} />
         <meta property="og:description" content={t("about.ogDescription")} />
         <meta property="og:url" content="https://bizuply.com/about" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
-
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t("about.twitterTitle")} />
         <meta
@@ -62,244 +88,344 @@ function About() {
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-        <div className="absolute -right-40 top-80 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute -left-40 top-[900px] h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
-      </div>
+      {/* HERO */}
+      <section className="about-hero about-anim-hero">
+        <div className="about-hero-bg" aria-hidden="true" />
+        <div className="about-hero-grid" aria-hidden="true" />
+        <div className="about-hero-overlay" aria-hidden="true" />
+        <div className="about-hero-fade" aria-hidden="true" />
 
-      <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
-        {/* Hero */}
-        <section className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("about.badge")}
-          </div>
-
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            {t("about.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("about.heroTitleHighlight")}
-            </span>
+        <div className="about-hero-content">
+          <p className="about-anim-up-1 text-sm font-extrabold tracking-[0.28em] text-sky-200">
+            BIZUPLY
+          </p>
+          <h1 className="about-anim-up-2 mt-5 text-[clamp(2rem,6.5vw,3.75rem)] font-black leading-[1.12]">
+            {t("about.heroTitleTop")}{" "}
+            <span className="text-sky-200">{t("about.heroTitleHighlight")}</span>
           </h1>
-
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
+          <p className="about-anim-up-3 mx-auto mt-5 max-w-[48ch] text-[clamp(1rem,3vw,1.25rem)] leading-8 text-white/90">
             {t("about.heroSubtitle")}
           </p>
-        </section>
-
-        {/* Main story */}
-        <section className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
-          <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:p-10">
-              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-              <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-
-              <div className="relative">
-                <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  {t("about.storyBadge")}
-                </div>
-
-                <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  {t("about.storyTitle")}
-                </h2>
-
-                <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  {t("about.storyText")}
-                </p>
-
-                <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {storyStats.map(([value, label]) => (
-                    <div
-                      key={label}
-                      className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
-                    >
-                      <p className="text-3xl font-black">{value}</p>
-                      <p className="mt-1 text-sm font-bold text-slate-300">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
-              <div className="grid gap-4">
-                {storyItems.map(([title, text], index) => (
-                  <div
-                    key={title}
-                    className="group flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
-                  >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
-                      {index + 1}
-                    </div>
-
-                    <div className="text-start">
-                      <h3 className="text-lg font-black text-slate-800">
-                        {title}
-                      </h3>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                        {text}
-                      </p>
-                    </div>
-
-                    <div className="ms-auto hidden h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
-                      →
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+          <div className="about-anim-up-4 mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/register" className="about-btn-primary">
+              {t("about.ctaPrimary")}
+            </Link>
+            <Link to="/features" className="about-btn-secondary">
+              {t("about.ctaExplore")}
+            </Link>
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Vision / Journey */}
-        <section className="mt-20 grid gap-7 lg:grid-cols-2">
-          <InfoCard
-            label={t("about.visionLabel")}
-            title={t("about.visionTitle")}
-            text={t("about.visionText")}
-          />
+      {/* MARQUEE */}
+      <section className="relative z-[1] -mt-8 px-4 pb-6">
+        <div className="about-marquee rounded-2xl border border-violet-100/80 bg-white/80 py-4 shadow-[0_14px_40px_rgba(37,99,235,0.1)] backdrop-blur-xl">
+          <div className="about-marquee-track">
+            {[...safeMarquee, ...safeMarquee].map((item, i) => (
+              <div
+                key={`${item}-${i}`}
+                className="flex items-center gap-3 rounded-xl border border-violet-100 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-5 py-2.5 text-sm font-extrabold text-slate-800"
+              >
+                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#2563EB]" />
+                {item}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
-          <InfoCard
-            label={t("about.journeyLabel")}
-            title={t("about.journeyTitle")}
-            text={t("about.journeyText")}
-          />
-        </section>
+      <main className="relative mx-auto max-w-7xl px-5 pb-8 sm:px-8 lg:px-10">
+        {/* ABOUT / STORY */}
+        <RevealSection className="py-20 text-center lg:py-24">
+          <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+            {t("about.badge")}
+          </p>
+          <h2 className="about-shine mx-auto mt-4 max-w-3xl text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight">
+            {t("about.storyTitle")}
+          </h2>
+          <span className="about-title-underline" />
+          <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-8 text-slate-600">
+            {t("about.introQuestion")}
+          </p>
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600">
+            {t("about.storyText")}
+          </p>
+        </RevealSection>
 
-        {/* Offers */}
-        <section className="mt-20">
+        {/* OFFERS / SERVICES */}
+        <RevealSection className="pb-20 lg:pb-24">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
               {t("about.offersBadge")}
-            </div>
-
-            <h2 className="mt-7 text-4xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-5xl">
-              {t("about.offersTitleTop")}
-              <br />
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
+            </p>
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
+              {t("about.offersTitleTop")}{" "}
+              <span className="bg-gradient-to-l from-[#6D28D9] to-[#2563EB] bg-clip-text text-transparent">
                 {t("about.offersTitleHighlight")}
               </span>
             </h2>
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600">
+              {t("about.offersSubtitle")}
+            </p>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {offers.map((item, index) => (
-              <article
-                key={item.key}
-                className={`group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] ${
-                  index === 4 ? "lg:col-span-2" : ""
-                }`}
-              >
-                <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
-
-                <div className="relative">
-                  <div className="mb-6 grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-lg font-black text-black shadow-xl shadow-indigo-100">
-                    {item.icon}
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {offers.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.article
+                  key={item.key}
+                  variants={fadeUp}
+                  className="about-service-card p-8 text-start"
+                >
+                  <div className="about-service-icon relative z-[1] mb-5 grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]">
+                    <Icon size={24} />
                   </div>
-
-                  <h3 className="text-2xl font-black leading-tight tracking-[-0.03em] text-slate-800">
+                  <h3 className="about-service-title relative z-[1] text-xl font-black text-slate-900">
                     {item.title}
                   </h3>
-
-                  <p className="mt-4 text-base font-medium leading-7 text-slate-600">
+                  <p className="about-service-text relative z-[1] mt-3 text-sm font-medium leading-7 text-slate-600">
                     {item.text}
                   </p>
-                </div>
-              </article>
+                  <Link
+                    to={item.to}
+                    className="about-service-link relative z-[1] mt-5 inline-flex text-sm font-extrabold text-[#6D28D9]"
+                  >
+                    {item.link}
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </motion.div>
+        </RevealSection>
+      </main>
+
+      {/* PROCESS */}
+      <section className="about-process px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+        <div className="about-process-pulse" aria-hidden="true" />
+        <div className="relative z-[1] mx-auto max-w-7xl text-center">
+          <h2 className="about-shine text-[clamp(1.9rem,4vw,2.8rem)] font-black">
+            {t("about.processTitle")}
+          </h2>
+          <span className="about-title-underline" />
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/85">
+            {t("about.processSubtitle")}
+          </p>
+
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {processSteps.map((step, index) => (
+              <motion.div
+                key={step.title}
+                variants={fadeUp}
+                className="about-process-step rounded-2xl p-6 text-start"
+              >
+                <p className="text-sm font-extrabold tracking-[0.2em] text-sky-200">
+                  0{index + 1}
+                </p>
+                <h3 className="mt-3 text-xl font-black">{step.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-white/80">{step.text}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      <main className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        {/* WHY + STATS */}
+        <RevealSection className="py-20 lg:py-24">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+              {t("about.valuesBadge")}
+            </p>
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
+              {t("about.whyTitle")}
+            </h2>
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
+              {t("about.valuesText")}
+            </p>
+          </div>
+
+          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+            {values.map((value) => (
+              <div
+                key={value.title}
+                className="rounded-2xl border border-violet-100/80 bg-white/90 p-6 shadow-[0_10px_28px_rgba(37,99,235,0.08)]"
+              >
+                <h3 className="text-lg font-black text-slate-900">{value.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-600">{value.text}</p>
+              </div>
             ))}
           </div>
-        </section>
 
-        {/* Values */}
-        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-8 sm:p-10">
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-              <div>
-                <div className="mb-6 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-                  {t("about.valuesBadge")}
-                </div>
+          <StatsRow stats={stats} />
+        </RevealSection>
 
-                <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-5xl">
-                  {t("about.valuesTitleTop")}
-                  <br />
-                  {t("about.valuesTitleBottom")}
-                </h2>
+        {/* FAQ */}
+        <RevealSection className="pb-20 lg:pb-24">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+              {t("about.faqBadge")}
+            </p>
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black text-slate-900">
+              {t("about.faqTitle")}
+            </h2>
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-2xl text-base text-slate-600">
+              {t("about.faqSubtitle")}
+            </p>
+          </div>
 
-                <p className="mt-5 text-lg leading-8 text-slate-600">
-                  {t("about.valuesText")}
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                {values.map((value, index) => (
-                  <div
-                    key={value.title}
-                    className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-indigo-50/70 p-5 shadow-sm"
+          <div className="mx-auto max-w-3xl space-y-3">
+            {faqs.map((item, index) => {
+              const open = openFaq === index;
+              return (
+                <div
+                  key={item.q}
+                  className="about-faq-item rounded-2xl"
+                  data-open={open}
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start"
+                    onClick={() => setOpenFaq(open ? -1 : index)}
+                    aria-expanded={open}
                   >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
-                      {index + 1}
-                    </div>
-
+                    <span className="text-base font-extrabold text-slate-900">
+                      {item.q}
+                    </span>
+                    <span
+                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-l from-violet-100 to-sky-100 text-lg font-black text-[#6D28D9] transition ${
+                        open ? "rotate-45" : ""
+                      }`}
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div className="about-faq-answer">
                     <div>
-                      <h3 className="text-lg font-black text-slate-800">
-                        {value.title}
-                      </h3>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                        {value.text}
+                      <p className="px-5 pb-5 text-sm leading-7 text-slate-600">
+                        {item.a}
                       </p>
                     </div>
                   </div>
-                ))}
-              </div>
-            </div>
+                </div>
+              );
+            })}
           </div>
-        </section>
+        </RevealSection>
+      </main>
 
-        {/* Final CTA without buttons */}
-        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
-          <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
-            <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
+      {/* FINAL CTA — not a contact form */}
+      <section className="relative overflow-hidden px-5 pb-20 sm:px-8 lg:px-10 lg:pb-24">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] px-6 py-14 text-center text-white shadow-[0_22px_60px_rgba(37,99,235,0.28)] sm:px-10">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2),transparent_45%)]" />
+          <div className="relative">
+            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black leading-tight">
               {t("about.ctaTitleTop")}
               <br />
               {t("about.ctaTitleBottom")}
             </h2>
-
-            <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85">
               {t("about.ctaText")}
             </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/register" className="about-btn-primary">
+                {t("about.ctaPrimary")}
+              </Link>
+              <Link
+                to="/how-it-works"
+                className="about-btn-secondary"
+              >
+                {t("about.ctaHowItWorks")}
+              </Link>
+            </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
     </div>
   );
 }
 
-function InfoCard({ label, title, text }) {
+function RevealSection({ children, className = "" }) {
   return (
-    <article className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-8 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)]">
-      <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
+    <motion.section
+      className={className}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+    >
+      {children}
+    </motion.section>
+  );
+}
 
-      <div className="relative">
-        <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-          {label}
-        </div>
+function StatsRow({ stats }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.4 });
 
-        <h2 className="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-4xl">
-          {title}
-        </h2>
-
-        <p className="mt-5 text-base font-medium leading-8 text-slate-600">
-          {text}
-        </p>
+  return (
+    <div
+      ref={ref}
+      className="mt-12 overflow-hidden rounded-[1.5rem] bg-gradient-to-l from-[#4c1d95] via-[#6D28D9] to-[#2563EB] p-6 text-white shadow-[0_18px_50px_rgba(37,99,235,0.25)] sm:p-8"
+    >
+      <div className="grid gap-4 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6 text-center backdrop-blur-sm"
+          >
+            <p className="text-4xl font-black tracking-tight sm:text-5xl">
+              <AnimatedNumber
+                value={stat.value}
+                suffix={stat.suffix}
+                active={inView}
+              />
+            </p>
+            <p className="mt-2 text-sm font-bold text-white/85">{stat.label}</p>
+          </div>
+        ))}
       </div>
-    </article>
+    </div>
+  );
+}
+
+function AnimatedNumber({ value, suffix = "", active }) {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (!active) return undefined;
+    let frame = 0;
+    const frames = 36;
+    const id = window.setInterval(() => {
+      frame += 1;
+      const progress = Math.min(1, frame / frames);
+      const eased = 1 - (1 - progress) ** 3;
+      setN(Math.round(value * eased));
+      if (progress >= 1) window.clearInterval(id);
+    }, 24);
+    return () => window.clearInterval(id);
+  }, [active, value]);
+
+  return (
+    <>
+      {n}
+      {suffix}
+    </>
   );
 }
 
