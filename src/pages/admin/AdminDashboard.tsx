@@ -1,5 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  Ban,
+  Building2,
+  CalendarDays,
+  CircleDollarSign,
+  HeartHandshake,
+  Sparkles,
+  UserPlus,
+  Users,
+  UsersRound,
+  Wallet,
+  ShieldCheck,
+  ArrowLeft,
+} from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -37,60 +51,50 @@ function formatMoney(value: number) {
   }).format(Number(value || 0));
 }
 
+type MetricTone = "purple" | "blue" | "green" | "orange" | "gold" | "red";
+
 type MetricCardProps = {
   title: string;
   value: string;
-  icon: string;
   note: string;
-  tone?: "purple" | "gold" | "green" | "blue" | "red";
+  icon: ReactNode;
+  tone?: MetricTone;
+};
+
+const metricIconTones: Record<MetricTone, string> = {
+  purple: "bg-[#7C4DFF] text-white shadow-[#7C4DFF]/25",
+  blue: "bg-sky-500 text-white shadow-sky-500/25",
+  green: "bg-emerald-500 text-white shadow-emerald-500/25",
+  orange: "bg-orange-500 text-white shadow-orange-500/25",
+  gold: "bg-amber-500 text-white shadow-amber-500/25",
+  red: "bg-rose-500 text-white shadow-rose-500/25",
 };
 
 function MetricCard({
   title,
   value,
-  icon,
   note,
+  icon,
   tone = "purple",
 }: MetricCardProps) {
-  const tones = {
-    purple:
-      "border-purple-200 bg-gradient-to-br from-white via-purple-50 to-purple-100 text-purple-950",
-    gold:
-      "border-amber-200 bg-gradient-to-br from-white via-amber-50 to-yellow-100 text-amber-950",
-    green:
-      "border-emerald-200 bg-gradient-to-br from-white via-emerald-50 to-teal-100 text-emerald-950",
-    blue:
-      "border-sky-200 bg-gradient-to-br from-white via-sky-50 to-blue-100 text-sky-950",
-    red:
-      "border-rose-200 bg-gradient-to-br from-white via-rose-50 to-red-100 text-rose-950",
-  };
-
-  const iconTones = {
-    purple: "bg-purple-700 text-white shadow-purple-700/25",
-    gold: "bg-amber-500 text-white shadow-amber-500/25",
-    green: "bg-emerald-600 text-white shadow-emerald-600/25",
-    blue: "bg-sky-600 text-white shadow-sky-600/25",
-    red: "bg-rose-600 text-white shadow-rose-600/25",
-  };
-
   return (
     <div
       dir="rtl"
-      className={`rounded-[26px] border p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${tones[tone]}`}
+      className="rounded-[24px] border border-slate-100 bg-white p-5 text-right shadow-[0_8px_28px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_34px_rgba(124,77,255,0.12)]"
     >
       <div className="flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1 text-right">
-          <p className="text-right text-sm font-black opacity-70">{title}</p>
-
-          <strong className="mt-3 block text-right text-4xl font-black tracking-tight">
+          <p className="text-right text-sm font-bold text-slate-500">{title}</p>
+          <strong className="mt-3 block text-right text-4xl font-black tracking-tight text-slate-900">
             {value}
           </strong>
-
-          <p className="mt-2 text-right text-xs font-bold opacity-55">{note}</p>
+          <p className="mt-2 text-right text-xs font-semibold text-slate-400">
+            {note}
+          </p>
         </div>
 
         <div
-          className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl shadow-lg ${iconTones[tone]}`}
+          className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl shadow-lg ${metricIconTones[tone]}`}
         >
           {icon}
         </div>
@@ -102,59 +106,78 @@ function MetricCard({
 type QuickActionProps = {
   title: string;
   description: string;
-  icon: string;
+  icon: ReactNode;
+  iconClassName: string;
   onClick: () => void;
-  primary?: boolean;
 };
 
 function QuickAction({
   title,
   description,
   icon,
+  iconClassName,
   onClick,
-  primary = false,
 }: QuickActionProps) {
   return (
     <button
       type="button"
       dir="rtl"
       onClick={onClick}
-      className={`group flex w-full flex-row items-center gap-4 rounded-[26px] border p-5 text-right shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${
-        primary
-          ? "border-purple-700 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-white"
-          : "border-slate-200 bg-white text-slate-800 hover:border-purple-200 hover:bg-purple-50"
-      }`}
+      className="group flex w-full flex-row items-center gap-4 rounded-[24px] border border-slate-100 bg-white p-5 text-right shadow-[0_8px_28px_rgba(15,23,42,0.05)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_14px_34px_rgba(124,77,255,0.12)]"
     >
       <span
-        className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-xl ${
-          primary ? "bg-white/18" : "bg-purple-100 text-purple-800"
-        }`}
+        className={`grid h-12 w-12 shrink-0 place-items-center rounded-2xl ${iconClassName}`}
       >
         {icon}
       </span>
 
       <span className="min-w-0 flex-1 text-right">
-        <strong className="block text-right text-base font-black">
+        <strong className="block text-right text-base font-black text-slate-900">
           {title}
         </strong>
-
-        <small
-          className={`mt-1 block text-right text-sm font-bold leading-6 ${
-            primary ? "text-white/80" : "text-slate-500"
-          }`}
-        >
+        <small className="mt-1 block text-right text-sm font-semibold leading-6 text-slate-500">
           {description}
         </small>
       </span>
 
-      <span
-        className={`text-xl font-black transition group-hover:-translate-x-1 ${
-          primary ? "text-white/80" : "text-purple-700"
-        }`}
-      >
-        ←
+      <span className="text-slate-300 transition group-hover:-translate-x-1 group-hover:text-[#7C4DFF]">
+        <ArrowLeft className="h-5 w-5" />
       </span>
     </button>
+  );
+}
+
+function AdminFooter() {
+  return (
+    <footer
+      dir="rtl"
+      className="mt-12 border-t border-slate-200/80 bg-white/80 px-4 py-5 text-slate-500 md:px-8"
+    >
+      <div className="mx-auto flex max-w-[1480px] flex-col items-center gap-4 text-sm font-semibold md:flex-row md:justify-between">
+        <div className="flex flex-wrap items-center justify-center gap-4 md:justify-start">
+          <a href="/support" className="transition hover:text-[#7C4DFF]">
+            מרכז עזרה
+          </a>
+          <a href="/privacy-policy" className="transition hover:text-[#7C4DFF]">
+            מדיניות פרטיות
+          </a>
+          <a href="/terms" className="transition hover:text-[#7C4DFF]">
+            תנאי שימוש
+          </a>
+        </div>
+
+        <p className="text-center text-slate-400">
+          © {new Date().getFullYear()} כל הזכויות שמורות.
+        </p>
+
+        <div className="flex items-center gap-2 text-slate-500">
+          <span className="grid h-7 w-7 place-items-center rounded-lg bg-[#7C4DFF]/10 text-[#7C4DFF]">
+            <ShieldCheck className="h-4 w-4" />
+          </span>
+          <span>גרסה 1.0.0</span>
+        </div>
+      </div>
+    </footer>
   );
 }
 
@@ -170,10 +193,10 @@ function AdminDashboard() {
   const displayName = user?.name || user?.email || "מנהל";
 
   const todayLabel = useMemo(() => {
-    return new Intl.DateTimeFormat("he-IL", {
+    return new Intl.DateTimeFormat("en-US", {
       weekday: "long",
-      day: "numeric",
       month: "long",
+      day: "numeric",
     }).format(new Date());
   }, []);
 
@@ -228,74 +251,90 @@ function AdminDashboard() {
   }, []);
 
   return (
-    <>
+    <div
+      className="min-h-screen bg-[#F8F9FA]"
+      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+    >
       <AdminHeader />
 
-      <main
-        dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
-      >
+      <main dir="rtl" className="px-4 py-7 text-right text-slate-800 md:px-8">
         <section dir="rtl" className="mx-auto max-w-[1480px] text-right">
-          <div className="relative overflow-hidden rounded-[34px] border border-purple-200 bg-gradient-to-l from-purple-950 via-purple-900 to-fuchsia-800 p-6 text-white shadow-2xl shadow-purple-950/20 md:p-8">
-            <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-fuchsia-400/20 blur-3xl" />
-            <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-purple-300/20 blur-3xl" />
+          <div className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-l from-[#f3e9ff] via-[#faf7ff] to-white p-6 shadow-[0_18px_50px_rgba(124,77,255,0.08)] md:p-8">
+            <div
+              className="pointer-events-none absolute inset-0 opacity-[0.35]"
+              style={{
+                backgroundImage:
+                  "radial-gradient(circle at 12% 20%, rgba(124,77,255,0.16), transparent 34%), radial-gradient(circle at 88% 10%, rgba(167,139,250,0.18), transparent 28%), radial-gradient(ellipse at 50% 120%, rgba(124,77,255,0.08), transparent 46%)",
+              }}
+            />
+            <div
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-24 opacity-40"
+              style={{
+                background:
+                  "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill='%23e9d5ff' d='M0,64L80,69.3C160,75,320,85,480,80C640,75,800,53,960,48C1120,43,1280,53,1360,58.7L1440,64L1440,120L1360,120C1280,120,1120,120,960,120C800,120,640,120,480,120C320,120,160,120,80,120L0,120Z'/%3E%3C/svg%3E\") bottom/100% 100% no-repeat",
+              }}
+            />
+
+            <div className="relative z-10 mb-5 flex flex-wrap justify-start gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/90 px-4 py-2 text-xs font-bold text-slate-600 shadow-sm">
+                <CalendarDays className="h-3.5 w-3.5 text-[#7C4DFF]" />
+                {todayLabel}
+              </span>
+
+              <span
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold shadow-sm ${
+                  connectedToServer
+                    ? "border-emerald-100 bg-white/90 text-emerald-700"
+                    : "border-amber-100 bg-white/90 text-amber-700"
+                }`}
+              >
+                <span
+                  className={`h-2 w-2 rounded-full ${
+                    connectedToServer ? "bg-emerald-500" : "bg-amber-500"
+                  }`}
+                />
+                {loadingStats
+                  ? "טוען נתונים מהשרת..."
+                  : connectedToServer
+                    ? "מחובר לשרת"
+                    : "נתונים מקומיים ללא שרת"}
+              </span>
+            </div>
 
             <div className="relative z-10 flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
-              <div className="max-w-4xl text-right">
-                <div className="mb-4 flex flex-wrap justify-start gap-2 text-right">
-                  <span className="rounded-full bg-white/14 px-4 py-2 text-xs font-black text-black ring-1 ring-white/20">
-                    פאנל אדמין
-                  </span>
-
-                  <span className="rounded-full bg-white/10 px-4 py-2 text-xs font-bold text-black/75 ring-1 ring-white/15">
-                    {todayLabel}
-                  </span>
-
-                  <span
-                    className={`rounded-full px-4 py-2 text-xs font-bold ring-1 ${
-                      connectedToServer
-                        ? "bg-emerald-300/18 text-emerald-100 ring-emerald-200/25"
-                        : "bg-amber-300/18 text-amber-100 ring-amber-200/25"
-                    }`}
-                  >
-                    {loadingStats
-                      ? "טוען נתונים מהשרת..."
-                      : connectedToServer
-                        ? "מחובר לשרת"
-                        : "נתונים מקומיים ללא שרת"}
-                  </span>
-                </div>
-
-                <h1 className="text-right text-4xl font-black tracking-tight text-white md:text-6xl">
+              <div className="max-w-3xl text-right">
+                <h1 className="text-right text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
                   שלום, {displayName}
                 </h1>
 
-                <p className="mt-4 max-w-3xl text-right text-base font-bold leading-8 text-white/70 md:text-lg">
-                  סקירה מהירה של משתמשים, עסקים, מכירות והרשמות מוקדמות.
-                  אזור ניהול ברור, בעברית ובכיוון ימין לשמאל.
+                <p className="mt-4 max-w-2xl text-right text-base font-semibold leading-8 text-slate-500 md:text-lg">
+                  סקירה מהירה של משתמשים, עסקים, מכירות והרשמות מוקדמות. אזור
+                  ניהול ברור, בעברית ובכיוון ימין לשמאל.
                 </p>
 
                 {statsError ? (
-                  <p className="mt-3 text-sm font-bold text-amber-100">
+                  <p className="mt-3 text-sm font-bold text-amber-600">
                     {statsError}
                   </p>
                 ) : null}
               </div>
 
-              <div className="grid gap-3 sm:grid-cols-2 xl:w-[390px] xl:grid-cols-1">
+              <div className="grid gap-3 sm:grid-cols-2 xl:w-[420px] xl:grid-cols-1">
                 <button
                   type="button"
                   onClick={() => navigate("/admin/early-access")}
-                  className="rounded-2xl bg-white px-6 py-4 text-sm font-black text-purple-950 shadow-xl shadow-black/20 transition hover:-translate-y-1 hover:bg-purple-50"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-6 py-4 text-sm font-black text-white shadow-lg shadow-[#7C4DFF]/30 transition hover:-translate-y-1 hover:bg-[#6B3FE0]"
                 >
+                  <Users className="h-4 w-4" />
                   צפייה בהרשמות מוקדמות
                 </button>
 
                 <button
                   type="button"
                   onClick={() => navigate("/admin/users")}
-                  className="rounded-2xl border border-white/20 bg-white/10 px-6 py-4 text-sm font-black text-black shadow-xl shadow-black/10 transition hover:-translate-y-1 hover:bg-white/15"
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-[#7C4DFF] bg-white px-6 py-4 text-sm font-black text-[#7C4DFF] shadow-sm transition hover:-translate-y-1 hover:bg-violet-50"
                 >
+                  <UserPlus className="h-4 w-4" />
                   ניהול משתמשים
                 </button>
               </div>
@@ -304,11 +343,10 @@ function AdminDashboard() {
 
           <div className="mt-8">
             <div className="mb-4 text-right">
-              <h2 className="text-right text-2xl font-black text-purple-950">
+              <h2 className="text-right text-2xl font-black text-slate-900">
                 סקירת מערכת
               </h2>
-
-              <p className="mt-1 text-right text-sm font-bold text-purple-950/55">
+              <p className="mt-1 text-right text-sm font-semibold text-slate-500">
                 נתונים מרכזיים מכל אזורי המערכת.
               </p>
             </div>
@@ -317,25 +355,25 @@ function AdminDashboard() {
               <MetricCard
                 title="משתמשים במערכת"
                 value={loadingStats ? "…" : formatNumber(stats.totalUsers)}
-                icon="👥"
                 note="כל המשתמשים הרשומים"
                 tone="purple"
+                icon={<Users className="h-5 w-5" />}
               />
 
               <MetricCard
                 title="עסקים רשומים"
                 value={loadingStats ? "…" : formatNumber(stats.totalBusinesses)}
-                icon="🏢"
                 note="עסקים שנפתחו במערכת"
                 tone="blue"
+                icon={<Building2 className="h-5 w-5" />}
               />
 
               <MetricCard
-                title="לקוחות רשומים"
+                title="לקוחות ושותפים"
                 value={loadingStats ? "…" : formatNumber(stats.totalClients)}
-                icon="🧑‍🤝‍🧑"
                 note="לקוחות פעילים ורשומים"
                 tone="green"
+                icon={<UsersRound className="h-5 w-5" />}
               />
 
               <MetricCard
@@ -343,110 +381,113 @@ function AdminDashboard() {
                 value={
                   loadingStats ? "…" : formatNumber(stats.earlyAccessCount)
                 }
-                icon="✨"
                 note="נרשמים מטופס ההשקה"
-                tone="gold"
+                tone="orange"
+                icon={<Sparkles className="h-5 w-5" />}
               />
 
               <MetricCard
                 title="סך מכירות"
                 value={loadingStats ? "…" : formatMoney(stats.totalSales)}
-                icon="💰"
                 note="סה״כ הכנסות שנמדדו"
                 tone="gold"
+                icon={<CircleDollarSign className="h-5 w-5" />}
               />
 
               <MetricCard
                 title="מנהלים פעילים"
                 value={loadingStats ? "…" : formatNumber(stats.activeManagers)}
-                icon="🧑‍💼"
                 note="מנהלי מערכת פעילים"
                 tone="purple"
+                icon={<ShieldCheck className="h-5 w-5" />}
               />
 
               <MetricCard
                 title="משתמשים חסומים"
                 value={loadingStats ? "…" : formatNumber(stats.blockedUsers)}
-                icon="🚫"
                 note="חשבונות שנחסמו"
                 tone="red"
+                icon={<Ban className="h-5 w-5" />}
               />
             </div>
           </div>
 
-          <div className="mt-10 grid gap-6 text-right xl:grid-cols-[1fr_420px]">
+          <div className="mt-10 grid gap-6 text-right xl:grid-cols-[1fr_360px]">
             <section className="text-right">
               <div className="mb-4 text-right">
-                <h2 className="text-right text-2xl font-black text-purple-950">
+                <h2 className="text-right text-2xl font-black text-slate-900">
                   פעולות מהירות
                 </h2>
-
-                <p className="mt-1 text-right text-sm font-bold text-purple-950/55">
+                <p className="mt-1 text-right text-sm font-semibold text-slate-500">
                   מעבר מהיר לאזורי הניהול החשובים.
                 </p>
               </div>
 
-              <div className="grid gap-4 text-right lg:grid-cols-2">
+              <div className="grid gap-4 text-right lg:grid-cols-2 xl:grid-cols-3">
                 <QuickAction
-                  icon="✨"
-                  title="הרשמה מוקדמת"
-                  description="רשימת כל האנשים שנרשמו דרך טופס ההשקה"
-                  onClick={() => navigate("/admin/early-access")}
-                  primary
-                />
-
-                <QuickAction
-                  icon="👥"
+                  icon={<Users className="h-5 w-5" />}
+                  iconClassName="bg-violet-100 text-[#7C4DFF]"
                   title="ניהול משתמשים"
                   description="צפייה, עריכה, חסימה וניהול משתמשים"
                   onClick={() => navigate("/admin/users")}
                 />
 
                 <QuickAction
-                  icon="🏢"
-                  title="כניסה לעסקים"
-                  description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
-                  onClick={() => navigate("/admin/businesses")}
+                  icon={<Sparkles className="h-5 w-5" />}
+                  iconClassName="bg-orange-100 text-orange-600"
+                  title="הרשמה מוקדמת"
+                  description="רשימת כל האנשים שנרשמו דרך טופס ההשקה"
+                  onClick={() => navigate("/admin/early-access")}
                 />
 
                 <QuickAction
-                  icon="🤝"
+                  icon={<HeartHandshake className="h-5 w-5" />}
+                  iconClassName="bg-amber-100 text-amber-600"
                   title="ניהול שותפים"
                   description="ניהול אפיליאייטים ושותפים עסקיים"
                   onClick={() => navigate("/admin/affiliates")}
                 />
 
                 <QuickAction
-                  icon="💸"
-                  title="בקשות משיכה"
-                  description="בדיקה ואישור בקשות משיכה"
-                  onClick={() => navigate("/admin/withdrawals")}
+                  icon={<Building2 className="h-5 w-5" />}
+                  iconClassName="bg-sky-100 text-sky-600"
+                  title="כניסה לעסקים"
+                  description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
+                  onClick={() => navigate("/admin/businesses")}
                 />
 
                 <QuickAction
-                  icon="🏦"
+                  icon={<Wallet className="h-5 w-5" />}
+                  iconClassName="bg-violet-100 text-violet-700"
                   title="תשלומי שותפים"
                   description="מעקב וניהול תשלומים לאפיליאייטים"
                   onClick={() => navigate("/admin/affiliate-payouts")}
                 />
+
+                <QuickAction
+                  icon={<CircleDollarSign className="h-5 w-5" />}
+                  iconClassName="bg-emerald-100 text-emerald-600"
+                  title="בקשות משיכה"
+                  description="בדיקה ואישור בקשות משיכה"
+                  onClick={() => navigate("/admin/withdrawals")}
+                />
               </div>
             </section>
 
-            <aside className="rounded-[28px] border border-purple-200 bg-white p-5 text-right shadow-xl shadow-purple-950/8">
-              <h2 className="text-right text-xl font-black text-purple-950">
+            <aside className="rounded-[28px] border border-slate-100 bg-white p-5 text-right shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+              <h2 className="text-right text-xl font-black text-slate-900">
                 סטטוס מערכת
               </h2>
-
-              <p className="mt-1 text-right text-sm font-bold text-purple-950/45">
+              <p className="mt-1 text-right text-sm font-semibold text-slate-500">
                 מצב החיבורים והמידע בפאנל.
               </p>
 
               <div className="mt-5 space-y-3 text-right">
-                <div className="flex flex-row items-center justify-between rounded-2xl bg-purple-50 p-4">
-                  <span className="text-sm font-bold text-purple-950/55">
+                <div className="flex flex-row items-center justify-between rounded-2xl bg-violet-50 p-4">
+                  <span className="text-sm font-bold text-violet-900/55">
                     מקור נתונים
                   </span>
-                  <strong className="text-sm font-black text-purple-950">
+                  <strong className="rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-[#7C4DFF]">
                     {connectedToServer ? "שרת" : "מקומי"}
                   </strong>
                 </div>
@@ -466,10 +507,10 @@ function AdminDashboard() {
                     שרת
                   </span>
                   <strong
-                    className={`text-sm font-black ${
+                    className={`rounded-full px-3 py-1 text-sm font-black ${
                       connectedToServer
-                        ? "text-emerald-700"
-                        : "text-amber-700"
+                        ? "bg-emerald-100 text-emerald-700"
+                        : "bg-amber-100 text-amber-700"
                     }`}
                   >
                     {loadingStats
@@ -480,11 +521,11 @@ function AdminDashboard() {
                   </strong>
                 </div>
 
-                <div className="flex flex-row items-center justify-between rounded-2xl bg-fuchsia-50 p-4">
-                  <span className="text-sm font-bold text-fuchsia-950/55">
+                <div className="flex flex-row items-center justify-between rounded-2xl bg-violet-50 p-4">
+                  <span className="text-sm font-bold text-violet-900/55">
                     הרשמות
                   </span>
-                  <strong className="text-sm font-black text-fuchsia-700">
+                  <strong className="rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-[#7C4DFF]">
                     {loadingStats
                       ? "…"
                       : formatNumber(stats.earlyAccessCount)}
@@ -495,7 +536,9 @@ function AdminDashboard() {
           </div>
         </section>
       </main>
-    </>
+
+      <AdminFooter />
+    </div>
   );
 }
 
