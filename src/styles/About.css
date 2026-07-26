@@ -72,19 +72,27 @@
   box-shadow: 0 24px 50px rgba(109, 40, 217, 0.16);
 }
 
+.about-bidi {
+  direction: rtl;
+  unicode-bidi: isolate;
+  text-align: center;
+}
+
 .about-hero-dash {
   position: relative;
+  margin-top: 2.75rem;
   filter: none;
   transform: none;
 }
 
 .about-product-frame {
   display: flex;
-  align-items: stretch;
-  overflow: hidden;
+  align-items: flex-start;
+  gap: 0.45rem;
   width: 100%;
   max-width: 68rem;
   margin-inline: auto;
+  padding: 0.85rem;
   border-radius: 1.4rem;
   border: 1px solid rgba(226, 232, 240, 0.95);
   background: #f7f8fc;
@@ -95,25 +103,28 @@
   display: none;
   width: 3.35rem;
   flex-shrink: 0;
-  object-fit: cover;
+  height: auto;
+  object-fit: contain;
   object-position: top center;
-  background: #f7f8fc;
+  background: transparent;
   image-rendering: auto;
 }
 
 .about-shot-main {
   display: block;
   width: 100%;
+  min-width: 0;
   height: auto;
   object-fit: contain;
-  background: #f7f8fc;
+  object-position: top center;
+  background: transparent;
   image-rendering: auto;
 }
 
 .about-widgets-shot-wrap {
   max-width: 58rem;
   margin-inline: auto;
-  overflow: hidden;
+  padding: 0.75rem;
   border-radius: 1.35rem;
   border: 1px solid rgba(226, 232, 240, 0.95);
   background: #f7f8fc;
@@ -163,7 +174,8 @@
 }
 
 .about-who-copy {
-  text-align: start;
+  direction: rtl;
+  text-align: center;
 }
 
 .about-who-brand {
@@ -181,6 +193,7 @@
   font-size: clamp(1.85rem, 3vw, 2.35rem);
   font-weight: 900;
   letter-spacing: -0.02em;
+  text-align: center;
 }
 
 .about-who-lead {
@@ -203,9 +216,16 @@
   overflow: hidden;
   border-radius: 1.6rem;
   border: 1px solid rgba(255, 255, 255, 0.85);
-  aspect-ratio: 4 / 3;
-  max-height: 420px;
   box-shadow: 0 24px 70px rgba(109, 40, 217, 0.18);
+}
+
+.about-who-photo {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 460px;
+  object-fit: cover;
+  object-position: top center;
 }
 
 .about-cta-text {

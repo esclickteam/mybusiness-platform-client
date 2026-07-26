@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -29,12 +29,6 @@ const serviceMeta = [
   { key: "service5", icon: UserRound, to: "/crm", tone: "purple" },
 ];
 
-const STATS = [
-  { key: 1, value: 180, suffix: "+", decimals: 0 },
-  { key: 2, value: 12, suffix: "K+", decimals: 0 },
-  { key: 3, value: 2.4, suffix: "K+", decimals: 1 },
-];
-
 const fade = {
   hidden: { opacity: 0, y: 28 },
   show: {
@@ -49,37 +43,8 @@ const stagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
-function CountUpStat({ value, suffix = "", decimals = 0, active }) {
-  const [n, setN] = useState(0);
-
-  useEffect(() => {
-    if (!active) return undefined;
-    let frame = 0;
-    const total = 48;
-    const id = window.setInterval(() => {
-      frame += 1;
-      const p = Math.min(1, frame / total);
-      const eased = 1 - (1 - p) ** 3;
-      const next = value * eased;
-      setN(decimals ? Number(next.toFixed(decimals)) : Math.round(next));
-      if (p >= 1) window.clearInterval(id);
-    }, 20);
-    return () => window.clearInterval(id);
-  }, [active, value, decimals]);
-
-  const display = decimals ? n.toFixed(decimals) : n.toLocaleString("en-US");
-  return (
-    <>
-      {display}
-      {suffix}
-    </>
-  );
-}
-
 function About() {
   const { t } = useTranslation();
-  const statsRef = React.useRef(null);
-  const statsInView = useInView(statsRef, { once: true, amount: 0.45 });
 
   const values = [1, 2, 3, 4].map((n, i) => ({
     key: n,
@@ -95,7 +60,7 @@ function About() {
   }));
 
   return (
-    <div className="about-page">
+    <div className="about-page" dir="rtl">
       <Helmet>
         <title>{t("about.seoTitle")}</title>
         <meta name="description" content={t("about.seoDescription")} />
@@ -134,7 +99,7 @@ function About() {
           </motion.h1>
 
           <motion.p
-            className="about-title-shine mx-auto mt-4 max-w-3xl text-2xl font-black leading-snug sm:text-4xl"
+            className="about-title-shine about-bidi mx-auto mt-4 max-w-3xl text-2xl font-black leading-snug sm:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.6 }}
@@ -143,7 +108,7 @@ function About() {
           </motion.p>
 
           <motion.p
-            className="mx-auto mt-5 max-w-3xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
+            className="about-bidi mx-auto mt-5 max-w-3xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.18, duration: 0.55 }}
@@ -162,18 +127,18 @@ function About() {
               className="inline-flex h-12 items-center gap-2 rounded-full bg-[#6D28D9] px-7 text-sm font-black text-white shadow-[0_14px_34px_rgba(109,40,217,0.35)] transition hover:-translate-y-1 hover:bg-[#5B21B6]"
             >
               {t("about.ctaPrimary")}
-              <ArrowLeft size={16} className="rtl:rotate-180" />
+              <ArrowLeft size={16} />
             </Link>
             <Link
               to="/crm"
-              className="inline-flex h-12 items-center rounded-full border border-violet-200 bg-white/80 px-7 text-sm font-black text-slate-800 transition hover:-translate-y-1"
+              className="about-bidi inline-flex h-12 items-center rounded-full border border-violet-200 bg-white/80 px-7 text-sm font-black text-slate-800 transition hover:-translate-y-1"
             >
               {t("about.ctaSecondary")}
             </Link>
           </motion.div>
 
           <motion.div
-            className="about-hero-dash mt-10"
+            className="about-hero-dash"
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
@@ -197,36 +162,7 @@ function About() {
           </motion.div>
 
           <motion.div
-            ref={statsRef}
-            className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3"
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.4 }}
-          >
-            {STATS.map((stat) => (
-              <motion.div
-                key={stat.key}
-                variants={fade}
-                className="rounded-2xl border border-violet-100 bg-white px-3 py-5 text-center shadow-[0_10px_28px_rgba(109,40,217,0.08)]"
-              >
-                <p className="text-2xl font-black tabular-nums text-[#6D28D9] sm:text-3xl">
-                  <CountUpStat
-                    value={stat.value}
-                    suffix={stat.suffix}
-                    decimals={stat.decimals}
-                    active={statsInView}
-                  />
-                </p>
-                <p className="mt-1 text-xs font-bold text-slate-500 sm:text-sm">
-                  {t(`about.stat${stat.key}Label`)}
-                </p>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.div
-            className="mt-12 text-center"
+            className="mt-14 text-center"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
@@ -234,7 +170,7 @@ function About() {
             <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
               {t("about.widgetsTitle")}
             </h2>
-            <p className="mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
+            <p className="about-bidi mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
               {t("about.widgetsText")}
             </p>
             <div className="about-widgets-shot-wrap mt-7">
@@ -267,7 +203,7 @@ function About() {
           <h2 className="text-3xl font-black tracking-tight text-slate-900">
             {t("about.missionTitle")}
           </h2>
-          <p className="mt-4 text-base leading-8 text-slate-600 sm:text-lg">
+          <p className="about-bidi mt-4 text-base leading-8 text-slate-600 sm:text-lg">
             {t("about.missionText")}
           </p>
         </motion.section>
@@ -302,14 +238,14 @@ function About() {
                   <Icon size={20} />
                 </div>
                 {value.featured && (
-                  <span className="about-meta-pill mb-2 inline-flex">
+                  <span className="about-meta-pill about-bidi mb-2 inline-flex">
                     {t("about.metaBadge")}
                   </span>
                 )}
-                <h3 className="text-base font-black text-slate-900">
+                <h3 className="about-bidi text-base font-black text-slate-900">
                   {value.title}
                 </h3>
-                <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
+                <p className="about-bidi mt-2 text-sm font-medium leading-6 text-slate-500">
                   {value.text}
                 </p>
               </motion.article>
@@ -317,7 +253,7 @@ function About() {
           })}
         </motion.section>
 
-        {/* WHO — text beside image */}
+        {/* WHO — centered RTL copy beside image */}
         <motion.section
           className="about-who mt-20"
           variants={fade}
@@ -327,14 +263,14 @@ function About() {
         >
           <div className="about-who-grid">
             <div className="about-who-copy">
-              <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-l from-violet-100 to-sky-100 text-[#6D28D9]">
+              <div className="about-who-icon mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-l from-violet-100 to-sky-100 text-[#6D28D9]">
                 <UsersRound size={22} />
               </div>
-              <p className="about-who-brand">{t("about.whoBrand")}</p>
+              <p className="about-who-brand about-bidi">{t("about.whoBrand")}</p>
               <h2>{t("about.whoTitle")}</h2>
-              <p className="about-who-lead">{t("about.whoLead")}</p>
-              <p className="about-who-text">{t("about.whoText")}</p>
-              <p className="about-who-text">{t("about.whoText2")}</p>
+              <p className="about-who-lead about-bidi">{t("about.whoLead")}</p>
+              <p className="about-who-text about-bidi">{t("about.whoText")}</p>
+              <p className="about-who-text about-bidi">{t("about.whoText2")}</p>
             </div>
 
             <motion.div
@@ -345,7 +281,7 @@ function About() {
               <img
                 src="/images/about-team.jpg"
                 alt={t("about.whoImageAlt")}
-                className="h-full w-full object-cover"
+                className="about-who-photo"
               />
             </motion.div>
           </div>
@@ -362,7 +298,7 @@ function About() {
           <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[2rem]">
             {t("about.servicesTitle")}
           </h2>
-          <p className="mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
+          <p className="about-bidi mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
             {t("about.servicesSubtitle")}
           </p>
           <div className="about-services-rule mx-auto mt-4" />
@@ -385,7 +321,7 @@ function About() {
                     <span className="about-service-icon" aria-hidden="true">
                       <Icon size={22} strokeWidth={1.85} />
                     </span>
-                    <h3>{service.title}</h3>
+                    <h3 className="about-bidi">{service.title}</h3>
                   </Link>
                 </motion.div>
               );
@@ -413,7 +349,7 @@ function About() {
               <Sparkles size={20} />
             </div>
             <h2>{t("about.ctaTitle")}</h2>
-            <p className="about-cta-text">{t("about.ctaText")}</p>
+            <p className="about-cta-text about-bidi">{t("about.ctaText")}</p>
             <Link to="/register" className="about-cta-pill">
               {t("about.ctaPrimary")}
             </Link>
