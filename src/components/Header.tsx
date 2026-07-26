@@ -19,11 +19,14 @@ type Language = {
 };
 
 const navLinks: NavLink[] = [
-  { to: "/crm", labelKey: "nav.crm" },
-  { to: "/collaborations", labelKey: "nav.collaborations" },
+  { to: "/about", labelKey: "nav.about" },
   { to: "/website-builder", labelKey: "nav.website" },
-  { to: "/appointments", labelKey: "nav.appointments" },
+  { to: "/crm", labelKey: "nav.crm" },
+  { to: "/automations", labelKey: "nav.automations" },
+  { to: "/agents", labelKey: "nav.agents" },
+  { to: "/collaborations", labelKey: "nav.collaborations" },
   { to: "/pricing", labelKey: "nav.pricing" },
+  { to: "/contact", labelKey: "nav.contact" },
 ];
 
 const languages: Language[] = [
@@ -106,7 +109,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="hidden items-center gap-10 lg:flex">
+        <div className="hidden items-center gap-3 xl:gap-5 lg:flex">
           {navLinks.map((item) => {
             const isActive = location.pathname === item.to;
 
@@ -114,10 +117,10 @@ export default function Header() {
               <Link
                 key={item.to}
                 to={item.to}
-                className={`text-[15px] font-extrabold transition ${
+                className={`whitespace-nowrap text-[13px] font-extrabold transition xl:text-[14px] ${
                   isActive
-                    ? "text-indigo-600"
-                    : "text-slate-800 hover:text-indigo-600"
+                    ? "text-[#6D28D9]"
+                    : "text-slate-800 hover:text-[#6D28D9]"
                 }`}
               >
                 {t(item.labelKey)}
@@ -127,13 +130,6 @@ export default function Header() {
         </div>
 
         <div className="hidden items-center gap-5 lg:flex">
-          <Link
-            to="/contact"
-            className="text-[15px] font-bold text-[#082f5f] underline underline-offset-4 transition hover:text-blue-600"
-          >
-            {t("common.contactUs")}
-          </Link>
-
           <div ref={languageRef} className="relative">
             <button
               type="button"
