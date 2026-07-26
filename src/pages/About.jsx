@@ -1,16 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useInView } from "framer-motion";
 import {
   ArrowLeft,
+  BadgeCheck,
   Bot,
   Handshake,
   Headset,
   LayoutGrid,
   Settings2,
-  ShieldCheck,
   Sparkles,
   Target,
   UserRound,
@@ -20,7 +20,7 @@ import {
 import AboutDashboardShowcase from "../components/about/AboutDashboardShowcase";
 import "../styles/About.css";
 
-const valueIcons = [UsersRound, Zap, ShieldCheck, Settings2];
+const valueIcons = [UsersRound, Zap, BadgeCheck, Settings2];
 /* DOM order is RTL-first: collaborations ends up left, CRM right — matching mockup */
 const serviceMeta = [
   { key: "service1", icon: Handshake, to: "/collaborations", tone: "purple" },
@@ -30,13 +30,18 @@ const serviceMeta = [
   { key: "service5", icon: UserRound, to: "/crm", tone: "purple" },
 ];
 
+const STATS = [
+  { key: 1, value: 180, suffix: "+", decimals: 0 },
+  { key: 2, value: 12, suffix: "K+", decimals: 0 },
+  { key: 3, value: 2.4, suffix: "K+", decimals: 1 },
+];
+
 const fade = {
-  hidden: { opacity: 0, y: 36, filter: "blur(8px)" },
+  hidden: { opacity: 0, y: 28 },
   show: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
-    transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] },
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
 };
 
@@ -45,21 +50,44 @@ const stagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
+function CountUpStat({ value, suffix = "", decimals = 0, active }) {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (!active) return undefined;
+    let frame = 0;
+    const total = 48;
+    const id = window.setInterval(() => {
+      frame += 1;
+      const p = Math.min(1, frame / total);
+      const eased = 1 - (1 - p) ** 3;
+      const next = value * eased;
+      setN(decimals ? Number(next.toFixed(decimals)) : Math.round(next));
+      if (p >= 1) window.clearInterval(id);
+    }, 20);
+    return () => window.clearInterval(id);
+  }, [active, value, decimals]);
+
+  const display = decimals ? n.toFixed(decimals) : n.toLocaleString("en-US");
+  return (
+    <>
+      {display}
+      {suffix}
+    </>
+  );
+}
+
 function About() {
   const { t } = useTranslation();
-  const { scrollYProgress } = useScroll();
-  const heroScale = useTransform(scrollYProgress, [0, 0.2], [1, 0.94]);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.2], [1, 0.75]);
-
-  const stats = [1, 2, 3].map((n) => ({
-    value: t(`about.stat${n}Value`),
-    label: t(`about.stat${n}Label`),
-  }));
+  const statsRef = React.useRef(null);
+  const statsInView = useInView(statsRef, { once: true, amount: 0.45 });
 
   const values = [1, 2, 3, 4].map((n, i) => ({
+    key: n,
     title: t(`about.value${n}Title`),
     text: t(`about.value${n}Text`),
     icon: valueIcons[i],
+    featured: n === 3,
   }));
 
   const services = serviceMeta.map((item) => ({
@@ -129,7 +157,7 @@ function About() {
       <div className="about-orb about-orb-c" aria-hidden="true" />
 
       <main className="relative mx-auto max-w-6xl px-5 py-10 sm:px-8 lg:px-10 lg:py-12">
-        {/* HERO — centered */}
+        {/* HERO */}
         <section className="text-center">
           <motion.p
             className="text-xs font-black uppercase tracking-[0.22em] text-[#6D28D9]"
@@ -142,9 +170,9 @@ function About() {
 
           <motion.h1
             className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-6xl"
-            initial={{ opacity: 0, y: 24, filter: "blur(10px)" }}
-            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
           >
             {t("about.heroTitle")}
           </motion.h1>
@@ -153,16 +181,16 @@ function About() {
             className="about-title-shine mx-auto mt-4 max-w-3xl text-2xl font-black leading-snug sm:text-4xl"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.12, duration: 0.65 }}
+            transition={{ delay: 0.1, duration: 0.6 }}
           >
             {t("about.heroHighlight")}
           </motion.p>
 
           <motion.p
-            className="mx-auto mt-5 max-w-2xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
+            className="mx-auto mt-5 max-w-3xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.55 }}
+            transition={{ delay: 0.18, duration: 0.55 }}
           >
             {t("about.heroSubtitle")}
           </motion.p>
@@ -171,7 +199,7 @@ function About() {
             className="mt-7 flex flex-wrap items-center justify-center gap-3"
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.28 }}
+            transition={{ delay: 0.26 }}
           >
             <Link
               to="/register"
@@ -188,35 +216,41 @@ function About() {
             </Link>
           </motion.div>
 
-          <motion.div style={{ scale: heroScale, opacity: heroOpacity }} className="mt-10">
+          <div className="about-hero-dash mt-10">
             <AboutDashboardShowcase labels={dashLabels} />
-          </motion.div>
+          </div>
 
           <motion.div
+            ref={statsRef}
             className="mx-auto mt-8 grid max-w-3xl grid-cols-3 gap-3"
             variants={stagger}
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.4 }}
           >
-            {stats.map((stat) => (
+            {STATS.map((stat) => (
               <motion.div
-                key={stat.label}
+                key={stat.key}
                 variants={fade}
-                className="rounded-2xl border border-violet-100 bg-white/80 px-3 py-4 text-center shadow-[0_10px_28px_rgba(109,40,217,0.08)]"
+                className="rounded-2xl border border-violet-100 bg-white px-3 py-5 text-center shadow-[0_10px_28px_rgba(109,40,217,0.08)]"
               >
-                <p className="text-2xl font-black text-[#6D28D9] sm:text-3xl">
-                  {stat.value}
+                <p className="text-2xl font-black tabular-nums text-[#6D28D9] sm:text-3xl">
+                  <CountUpStat
+                    value={stat.value}
+                    suffix={stat.suffix}
+                    decimals={stat.decimals}
+                    active={statsInView}
+                  />
                 </p>
                 <p className="mt-1 text-xs font-bold text-slate-500 sm:text-sm">
-                  {stat.label}
+                  {t(`about.stat${stat.key}Label`)}
                 </p>
               </motion.div>
             ))}
           </motion.div>
         </section>
 
-        {/* MISSION — centered */}
+        {/* MISSION */}
         <motion.section
           className="mx-auto mt-20 max-w-3xl text-center"
           variants={fade}
@@ -239,7 +273,7 @@ function About() {
           </p>
         </motion.section>
 
-        {/* VALUES — centered cards */}
+        {/* VALUES */}
         <motion.section
           className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
           variants={stagger}
@@ -251,14 +285,31 @@ function About() {
             const Icon = value.icon;
             return (
               <motion.article
-                key={value.title}
+                key={value.key}
                 variants={fade}
-                className="about-card rounded-2xl border border-violet-100 bg-white/85 p-6 text-center shadow-[0_12px_30px_rgba(15,23,42,0.06)]"
+                className={`about-card rounded-2xl border p-6 text-center shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${
+                  value.featured
+                    ? "about-meta-card border-violet-200 bg-gradient-to-b from-violet-50 to-white"
+                    : "border-violet-100 bg-white/85"
+                }`}
               >
-                <div className="mx-auto mb-3 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]">
+                <div
+                  className={`mx-auto mb-3 grid h-12 w-12 place-items-center rounded-xl ${
+                    value.featured
+                      ? "bg-gradient-to-br from-[#6D28D9] to-[#2563EB] text-white shadow-[0_10px_22px_rgba(109,40,217,0.35)]"
+                      : "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]"
+                  }`}
+                >
                   <Icon size={20} />
                 </div>
-                <h3 className="text-base font-black text-slate-900">{value.title}</h3>
+                {value.featured && (
+                  <span className="about-meta-pill mb-2 inline-flex">
+                    {t("about.metaBadge")}
+                  </span>
+                )}
+                <h3 className="text-base font-black text-slate-900">
+                  {value.title}
+                </h3>
                 <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
                   {value.text}
                 </p>
@@ -267,37 +318,41 @@ function About() {
           })}
         </motion.section>
 
-        {/* WHO — centered with team image */}
+        {/* WHO — text beside image */}
         <motion.section
-          className="mt-20 text-center"
+          className="about-who mt-20"
           variants={fade}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.25 }}
         >
-          <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-l from-violet-100 to-sky-100 text-[#6D28D9]">
-            <UsersRound size={22} />
+          <div className="about-who-grid">
+            <div className="about-who-copy">
+              <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-l from-violet-100 to-sky-100 text-[#6D28D9]">
+                <UsersRound size={22} />
+              </div>
+              <p className="about-who-brand">{t("about.whoBrand")}</p>
+              <h2>{t("about.whoTitle")}</h2>
+              <p className="about-who-lead">{t("about.whoLead")}</p>
+              <p className="about-who-text">{t("about.whoText")}</p>
+              <p className="about-who-text">{t("about.whoText2")}</p>
+            </div>
+
+            <motion.div
+              className="about-who-media"
+              whileHover={{ scale: 1.015 }}
+              transition={{ type: "spring", stiffness: 180, damping: 16 }}
+            >
+              <img
+                src="/images/about-team.jpg"
+                alt={t("about.whoImageAlt")}
+                className="h-full w-full object-cover"
+              />
+            </motion.div>
           </div>
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">
-            {t("about.whoTitle")}
-          </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-base font-medium leading-8 text-slate-600">
-            {t("about.whoText")}
-          </p>
-          <motion.div
-            className="mx-auto mt-8 max-w-xl overflow-hidden rounded-[1.6rem] border border-white/80 shadow-[0_24px_70px_rgba(109,40,217,0.18)]"
-            whileHover={{ scale: 1.02, rotate: -0.4 }}
-            transition={{ type: "spring", stiffness: 180, damping: 16 }}
-          >
-            <img
-              src="/images/about-team.jpg"
-              alt={t("about.whoImageAlt")}
-              className="h-full w-full object-cover"
-            />
-          </motion.div>
         </motion.section>
 
-        {/* SERVICES — mockup: 5 equal white cards + purple CTA */}
+        {/* SERVICES */}
         <motion.section
           className="about-services mt-20 text-center"
           variants={fade}
@@ -308,7 +363,10 @@ function About() {
           <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[2rem]">
             {t("about.servicesTitle")}
           </h2>
-          <div className="about-services-rule mx-auto mt-3" />
+          <p className="mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
+            {t("about.servicesSubtitle")}
+          </p>
+          <div className="about-services-rule mx-auto mt-4" />
 
           <motion.div
             className="about-services-grid mt-9"
@@ -336,7 +394,7 @@ function About() {
           </motion.div>
         </motion.section>
 
-        {/* CTA — purple gradient band from mockup */}
+        {/* CTA */}
         <motion.section
           className="about-cta-band"
           initial={{ opacity: 0, scale: 0.96, y: 28 }}
@@ -356,6 +414,7 @@ function About() {
               <Sparkles size={20} />
             </div>
             <h2>{t("about.ctaTitle")}</h2>
+            <p className="about-cta-text">{t("about.ctaText")}</p>
             <Link to="/register" className="about-cta-pill">
               {t("about.ctaPrimary")}
             </Link>

@@ -95,8 +95,8 @@ export default function AboutDashboardShowcase({ labels }) {
   const my = useMotionValue(0);
   const sx = useSpring(mx, { stiffness: 120, damping: 18 });
   const sy = useSpring(my, { stiffness: 120, damping: 18 });
-  const rotateX = useTransform(sy, [-0.5, 0.5], [8, -8]);
-  const rotateY = useTransform(sx, [-0.5, 0.5], [-10, 10]);
+  const rotateX = useTransform(sy, [-0.5, 0.5], [3.5, -3.5]);
+  const rotateY = useTransform(sx, [-0.5, 0.5], [-4.5, 4.5]);
   const glareX = useTransform(sx, [-0.5, 0.5], [0, 100]);
   const glareY = useTransform(sy, [-0.5, 0.5], [0, 100]);
   const glare = useMotionTemplate`radial-gradient(420px circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.45), transparent 45%)`;
@@ -128,28 +128,28 @@ export default function AboutDashboardShowcase({ labels }) {
       onMouseMove={onMove}
       onMouseLeave={onLeave}
       style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-      className="relative mx-auto w-full max-w-5xl [perspective:1200px]"
-      initial={{ opacity: 0, y: 40, scale: 0.94 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+      className="about-dash relative mx-auto w-full max-w-5xl [perspective:1400px]"
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
     >
-      <div className="pointer-events-none absolute -inset-6 rounded-[2rem] bg-gradient-to-l from-[#6D28D9]/25 via-[#2563EB]/15 to-cyan-300/20 blur-2xl" />
+      <div className="pointer-events-none absolute -inset-4 rounded-[2rem] bg-gradient-to-l from-[#6D28D9]/18 via-[#2563EB]/10 to-cyan-300/12 blur-xl" />
 
-      <div className="relative overflow-hidden rounded-[1.6rem] border border-white/80 bg-[#F7F8FC] shadow-[0_30px_90px_rgba(109,40,217,0.22)]">
+      <div className="about-dash-shell relative overflow-hidden rounded-[1.45rem] border border-slate-200/90 bg-[#F7F8FC] shadow-[0_28px_70px_rgba(109,40,217,0.18)]">
         <motion.div
-          className="pointer-events-none absolute inset-0 z-20 mix-blend-soft-light"
+          className="pointer-events-none absolute inset-0 z-20 opacity-40"
           style={{ background: glare }}
         />
 
-        <div className="grid min-h-[420px] grid-cols-[88px_1fr] sm:grid-cols-[210px_1fr]">
+        <div className="grid min-h-[460px] grid-cols-[92px_1fr] sm:grid-cols-[220px_1fr]">
           {/* Sidebar */}
-          <aside className="border-e border-slate-200/80 bg-white/90 p-3 sm:p-4">
+          <aside className="border-e border-slate-200 bg-white p-3 sm:p-4">
             <div className="mb-5 flex items-center justify-center gap-2 sm:justify-start">
-              <span className="grid h-8 w-8 place-items-center rounded-lg bg-[#6D28D9] text-white">
-                <LayoutDashboard size={16} />
+              <span className="grid h-9 w-9 place-items-center rounded-lg bg-[#6D28D9] text-white">
+                <LayoutDashboard size={17} />
               </span>
-              <span className="hidden text-sm font-black text-slate-900 sm:inline">
-                Bizuply
+              <span className="hidden text-[0.95rem] font-black tracking-tight text-slate-900 sm:inline">
+                BizUply
               </span>
             </div>
 
@@ -159,16 +159,16 @@ export default function AboutDashboardShowcase({ labels }) {
                 return (
                   <motion.div
                     key={item.key}
-                    initial={{ opacity: 0, x: 16 }}
+                    initial={{ opacity: 0, x: 12 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.15 + i * 0.04 }}
-                    className={`flex items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-xs font-bold sm:justify-start sm:px-3 ${
+                    transition={{ delay: 0.12 + i * 0.035 }}
+                    className={`flex items-center justify-center gap-2 rounded-xl px-2 py-2.5 text-[0.8rem] font-bold sm:justify-start sm:px-3 ${
                       item.active
                         ? "bg-[#6D28D9] text-white shadow-[0_10px_24px_rgba(109,40,217,0.35)]"
-                        : "text-slate-500"
+                        : "text-slate-600"
                     }`}
                   >
-                    <Icon size={16} />
+                    <Icon size={17} />
                     <span className="hidden sm:inline">
                       {labels.nav[item.key]}
                     </span>
@@ -190,20 +190,20 @@ export default function AboutDashboardShowcase({ labels }) {
           </aside>
 
           {/* Main */}
-          <div className="relative p-3 sm:p-5">
+          <div className="relative bg-[#F7F8FC] p-3.5 sm:p-5">
             <div className="mb-4 flex items-center justify-between">
               <motion.div
-                className="flex items-center gap-2"
-                initial={{ opacity: 0, y: -10 }}
+                className="flex items-center gap-2.5"
+                initial={{ opacity: 0, y: -8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25 }}
+                transition={{ delay: 0.2 }}
               >
-                <div className="grid h-9 w-9 place-items-center rounded-full bg-[#6D28D9] text-xs font-black text-white">
+                <div className="grid h-10 w-10 place-items-center rounded-full bg-[#6D28D9] text-sm font-black text-white">
                   {labels.avatar}
                 </div>
                 <div className="text-start">
-                  <p className="text-xs font-black text-slate-800">{labels.owner}</p>
-                  <p className="text-[11px] font-semibold text-slate-500">
+                  <p className="text-sm font-black text-slate-900">{labels.owner}</p>
+                  <p className="text-xs font-semibold text-slate-500">
                     {labels.role}
                   </p>
                 </div>
@@ -216,32 +216,32 @@ export default function AboutDashboardShowcase({ labels }) {
                 return (
                   <motion.div
                     key={kpi.key}
-                    initial={{ opacity: 0, y: 24, scale: 0.92 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      delay: 0.3 + i * 0.08,
+                      delay: 0.25 + i * 0.07,
                       type: "spring",
-                      stiffness: 160,
-                      damping: 16,
+                      stiffness: 180,
+                      damping: 18,
                     }}
-                    whileHover={{ y: -4, scale: 1.02 }}
-                    className="rounded-2xl border border-white bg-white p-4 text-center shadow-[0_10px_28px_rgba(15,23,42,0.06)]"
+                    whileHover={{ y: -3 }}
+                    className="rounded-2xl border border-slate-100 bg-white p-4 text-center shadow-[0_8px_22px_rgba(15,23,42,0.05)]"
                   >
                     <div className="mb-2 flex items-center justify-center">
                       <span
                         className={`grid h-9 w-9 place-items-center rounded-xl ${kpi.tone}`}
                       >
-                        <Icon size={16} />
+                        <Icon size={17} />
                       </span>
                     </div>
-                    <p className="text-2xl font-black text-slate-900">
+                    <p className="text-[1.65rem] font-black tabular-nums leading-none text-slate-900">
                       <CountUp
                         value={kpi.value}
                         decimals={kpi.decimals}
                         active={ready}
                       />
                     </p>
-                    <p className="mt-1 text-xs font-bold text-slate-500">
+                    <p className="mt-1.5 text-[0.78rem] font-bold text-slate-600">
                       {labels.kpi[kpi.key]}
                     </p>
                     {kpi.delta ? (
@@ -261,19 +261,19 @@ export default function AboutDashboardShowcase({ labels }) {
             </div>
 
             <motion.div
-              className="mt-4 rounded-2xl border border-violet-100 bg-white p-4 shadow-[0_12px_32px_rgba(109,40,217,0.08)]"
-              initial={{ opacity: 0, y: 28 }}
+              className="mt-4 rounded-2xl border border-violet-100 bg-white p-4 shadow-[0_10px_28px_rgba(109,40,217,0.07)]"
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.7, duration: 0.55 }}
+              transition={{ delay: 0.6, duration: 0.45 }}
             >
               <div className="mb-3 flex flex-col items-center text-center">
                 <div className="mb-2 grid h-9 w-9 place-items-center rounded-xl bg-violet-100 text-[#6D28D9]">
                   <Sparkles size={16} />
                 </div>
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-[0.95rem] font-black text-slate-900">
                   {labels.recsTitle}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-slate-500">
+                <p className="mt-1 text-[0.78rem] font-semibold leading-5 text-slate-500">
                   {labels.recsSubtitle}
                 </p>
               </div>
@@ -301,10 +301,10 @@ export default function AboutDashboardShowcase({ labels }) {
                   return (
                     <motion.div
                       key={row.key}
-                      initial={{ opacity: 0, x: i % 2 ? 30 : -30 }}
+                      initial={{ opacity: 0, x: i % 2 ? 18 : -18 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.85 + i * 0.12, type: "spring" }}
-                      whileHover={{ scale: 1.015 }}
+                      transition={{ delay: 0.75 + i * 0.1, type: "spring" }}
+                      whileHover={{ scale: 1.01 }}
                       className="flex flex-col items-center gap-2 rounded-xl border border-slate-100 bg-[#F7F8FC] p-3 text-center sm:flex-row sm:justify-between"
                     >
                       <button
@@ -319,7 +319,7 @@ export default function AboutDashboardShowcase({ labels }) {
                         >
                           {row.badge}
                         </span>
-                        <p className="mt-1 text-xs font-bold text-slate-700">
+                        <p className="mt-1 text-[0.8rem] font-bold leading-5 text-slate-700">
                           {labels.recText[row.key]}
                         </p>
                       </div>
@@ -335,17 +335,17 @@ export default function AboutDashboardShowcase({ labels }) {
             </motion.div>
 
             <motion.div
-              className="absolute bottom-4 start-4 z-30 flex max-w-[230px] items-center gap-3 rounded-2xl border border-white bg-white/95 p-3 text-start shadow-[0_16px_40px_rgba(16,185,129,0.25)]"
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
+              className="absolute bottom-4 start-4 z-30 flex max-w-[240px] items-center gap-3 rounded-2xl border border-emerald-100 bg-white p-3 text-start shadow-[0_14px_34px_rgba(16,185,129,0.22)]"
+              initial={{ opacity: 0, y: 24, scale: 0.94 }}
               animate={
                 toast
-                  ? { opacity: 1, y: [0, -6, 0], scale: 1 }
-                  : { opacity: 0, y: 30, scale: 0.9 }
+                  ? { opacity: 1, y: [0, -5, 0], scale: 1 }
+                  : { opacity: 0, y: 24, scale: 0.94 }
               }
               transition={
                 toast
                   ? {
-                      opacity: { duration: 0.35 },
+                      opacity: { duration: 0.3 },
                       y: { duration: 2.4, repeat: Infinity, ease: "easeInOut" },
                       scale: { type: "spring", stiffness: 200, damping: 14 },
                     }
@@ -356,10 +356,10 @@ export default function AboutDashboardShowcase({ labels }) {
                 <Sparkles size={18} />
               </div>
               <div>
-                <p className="text-xs font-black text-slate-800">
+                <p className="text-[0.8rem] font-black text-slate-900">
                   {labels.toastTitle}
                 </p>
-                <p className="text-[11px] font-semibold text-slate-500">
+                <p className="text-[0.72rem] font-semibold text-slate-500">
                   {labels.toastText}
                 </p>
               </div>
