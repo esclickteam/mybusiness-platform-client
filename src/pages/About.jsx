@@ -1,60 +1,84 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
+import { motion, useInView } from "framer-motion";
+import {
+  Bot,
+  CalendarDays,
+  LayoutDashboard,
+  MessageSquareHeart,
+  Sparkles,
+  UsersRound,
+} from "lucide-react";
 import "../styles/About.css";
 
 const offerMeta = [
-  { key: "offer1", index: "01" },
-  { key: "offer2", index: "02" },
-  { key: "offer3", index: "03" },
-  { key: "offer4", index: "04" },
-  { key: "offer5", index: "05" },
+  { key: "offer1", icon: UsersRound, to: "/features" },
+  { key: "offer2", icon: LayoutDashboard, to: "/features" },
+  { key: "offer3", icon: MessageSquareHeart, to: "/features" },
+  { key: "offer4", icon: Sparkles, to: "/features" },
+  { key: "offer5", icon: Bot, to: "/features" },
+  { key: "offer6", icon: CalendarDays, to: "/features" },
 ];
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 28 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+};
+
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.1 } },
+};
 
 function About() {
   const { t } = useTranslation();
+  const [openFaq, setOpenFaq] = useState(0);
 
-  const storyStats = [
-    [t("about.storyStat1"), t("about.storyStat1Label")],
-    [t("about.storyStat2"), t("about.storyStat2Label")],
-    [t("about.storyStat3"), t("about.storyStat3Label")],
-  ];
-
-  const storyItems = [
-    [t("about.storyItem1Title"), t("about.storyItem1Text")],
-    [t("about.storyItem2Title"), t("about.storyItem2Text")],
-    [t("about.storyItem3Title"), t("about.storyItem3Text")],
-    [t("about.storyItem4Title"), t("about.storyItem4Text")],
-  ];
-
+  const marqueeItems = t("about.marqueeItems", { returnObjects: true });
+  const processSteps = [1, 2, 3, 4].map((n) => ({
+    title: t(`about.process${n}Title`),
+    text: t(`about.process${n}Text`),
+  }));
+  const faqs = [1, 2, 3, 4, 5, 6].map((n) => ({
+    q: t(`about.faq${n}Q`),
+    a: t(`about.faq${n}A`),
+  }));
   const offers = offerMeta.map((meta) => ({
     ...meta,
     title: t(`about.${meta.key}Title`),
     text: t(`about.${meta.key}Text`),
+    link: t("about.offerLearnMore"),
   }));
-
   const values = [1, 2, 3].map((n) => ({
     title: t(`about.value${n}Title`),
     text: t(`about.value${n}Text`),
   }));
+  const stats = [
+    { value: 1, suffix: "", label: t("about.stat1Label") },
+    { value: 6, suffix: "+", label: t("about.stat2Label") },
+    { value: 24, suffix: "/7", label: t("about.stat3Label") },
+  ];
+
+  const safeMarquee = Array.isArray(marqueeItems)
+    ? marqueeItems
+    : ["CRM", "Leads", "AI", "Appointments", "Reviews", "Collaborations"];
 
   return (
-    <div className="about-page relative overflow-hidden">
+    <div className="about-page">
       <Helmet>
         <title>{t("about.seoTitle")}</title>
         <meta name="description" content={t("about.seoDescription")} />
         <meta name="keywords" content={t("about.seoKeywords")} />
         <link rel="canonical" href="https://bizuply.com/about" />
         <meta name="robots" content="index, follow" />
-
         <meta property="og:title" content={t("about.ogTitle")} />
         <meta property="og:description" content={t("about.ogDescription")} />
         <meta property="og:url" content="https://bizuply.com/about" />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
-
         <meta name="twitter:card" content="summary_large_image" />
         <meta name="twitter:title" content={t("about.twitterTitle")} />
         <meta
@@ -64,216 +88,271 @@ function About() {
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Hero — full-bleed brand plane */}
-      <section className="relative isolate overflow-hidden bg-[var(--about-ink)] text-white">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(31,167,160,0.28),transparent_55%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_90%_80%,rgba(255,255,255,0.06),transparent_45%)]" />
-          <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
-        </div>
+      {/* HERO */}
+      <section className="about-hero about-anim-hero">
+        <div className="about-hero-bg" aria-hidden="true" />
+        <div className="about-hero-grid" aria-hidden="true" />
+        <div className="about-hero-overlay" aria-hidden="true" />
+        <div className="about-hero-fade" aria-hidden="true" />
 
-        <div className="relative mx-auto grid min-h-[88vh] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
-          <div className="max-w-2xl text-start">
-            <p className="about-rise text-sm font-extrabold tracking-[0.22em] text-[var(--about-accent)]">
-              BIZUPLY
-            </p>
-
-            <div className="about-accent-line mt-5 h-[3px] w-20 bg-[var(--about-accent)]" />
-
-            <h1 className="about-rise about-rise-delay-1 mt-7 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
-              {t("about.heroTitleTop")}{" "}
-              <span className="text-[var(--about-accent)]">
-                {t("about.heroTitleHighlight")}
-              </span>
-            </h1>
-
-            <p className="about-rise about-rise-delay-2 mt-6 max-w-xl text-lg leading-8 text-white/75 sm:text-xl">
-              {t("about.heroSubtitle")}
-            </p>
-
-            <div className="about-rise about-rise-delay-3 mt-9 flex flex-wrap items-center gap-3">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center rounded-xl bg-[var(--about-accent)] px-6 py-3.5 text-sm font-extrabold text-[var(--about-ink)] transition hover:bg-[#27c4bc]"
-              >
-                {t("about.ctaPrimary")}
-              </Link>
-              <Link
-                to="/contact"
-                className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 py-3.5 text-sm font-extrabold text-white transition hover:border-white/45 hover:bg-white/10"
-              >
-                {t("about.ctaSecondary")}
-              </Link>
-            </div>
-          </div>
-
-          <div className="about-rise about-rise-delay-4 about-visual-float relative">
-            <WorkspaceVisual
-              badge={t("about.storyBadge")}
-              stats={storyStats}
-            />
+        <div className="about-hero-content">
+          <p className="about-anim-up-1 text-sm font-extrabold tracking-[0.28em] text-sky-200">
+            BIZUPLY
+          </p>
+          <h1 className="about-anim-up-2 mt-5 text-[clamp(2rem,6.5vw,3.75rem)] font-black leading-[1.12]">
+            {t("about.heroTitleTop")}{" "}
+            <span className="text-sky-200">{t("about.heroTitleHighlight")}</span>
+          </h1>
+          <p className="about-anim-up-3 mx-auto mt-5 max-w-[48ch] text-[clamp(1rem,3vw,1.25rem)] leading-8 text-white/90">
+            {t("about.heroSubtitle")}
+          </p>
+          <div className="about-anim-up-4 mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link to="/register" className="about-btn-primary">
+              {t("about.ctaPrimary")}
+            </Link>
+            <Link to="/features" className="about-btn-secondary">
+              {t("about.ctaExplore")}
+            </Link>
           </div>
         </div>
       </section>
 
-      <main className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
-        {/* Story */}
-        <section className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
-          <div>
-            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
-              {t("about.storyBadge")}
-            </p>
-            <h2 className="mt-4 max-w-xl text-4xl font-black leading-[1.08] tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
-              {t("about.storyTitle")}
-            </h2>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--about-muted)]">
-              {t("about.storyText")}
-            </p>
-          </div>
-
-          <div className="border-t border-[var(--about-line)]">
-            {storyItems.map(([title, text], index) => (
+      {/* MARQUEE */}
+      <section className="relative z-[1] -mt-8 px-4 pb-6">
+        <div className="about-marquee rounded-2xl border border-violet-100/80 bg-white/80 py-4 shadow-[0_14px_40px_rgba(37,99,235,0.1)] backdrop-blur-xl">
+          <div className="about-marquee-track">
+            {[...safeMarquee, ...safeMarquee].map((item, i) => (
               <div
-                key={title}
-                className="grid grid-cols-[auto_1fr] gap-5 border-b border-[var(--about-line)] py-6"
+                key={`${item}-${i}`}
+                className="flex items-center gap-3 rounded-xl border border-violet-100 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-5 py-2.5 text-sm font-extrabold text-slate-800"
               >
-                <span className="pt-1 text-sm font-extrabold tracking-[0.16em] text-[var(--about-accent-deep)]">
-                  0{index + 1}
-                </span>
-                <div>
-                  <h3 className="text-xl font-extrabold text-[var(--about-ink)]">
-                    {title}
-                  </h3>
-                  <p className="mt-2 text-base leading-7 text-[var(--about-muted)]">
-                    {text}
-                  </p>
-                </div>
+                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#2563EB]" />
+                {item}
               </div>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Vision / Journey */}
-        <section className="mt-24 grid gap-0 border border-[var(--about-line)] bg-white/70 lg:grid-cols-2">
-          <article className="border-b border-[var(--about-line)] p-8 sm:p-10 lg:border-b-0 lg:border-e">
-            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
-              {t("about.visionLabel")}
-            </p>
-            <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--about-ink)] sm:text-4xl">
-              {t("about.visionTitle")}
-            </h2>
-            <p className="mt-5 text-base leading-8 text-[var(--about-muted)]">
-              {t("about.visionText")}
-            </p>
-          </article>
+      <main className="relative mx-auto max-w-7xl px-5 pb-8 sm:px-8 lg:px-10">
+        {/* ABOUT / STORY */}
+        <RevealSection className="py-20 text-center lg:py-24">
+          <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+            {t("about.badge")}
+          </p>
+          <h2 className="about-shine mx-auto mt-4 max-w-3xl text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight">
+            {t("about.storyTitle")}
+          </h2>
+          <span className="about-title-underline" />
+          <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-8 text-slate-600">
+            {t("about.introQuestion")}
+          </p>
+          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600">
+            {t("about.storyText")}
+          </p>
+        </RevealSection>
 
-          <article className="p-8 sm:p-10">
-            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
-              {t("about.journeyLabel")}
-            </p>
-            <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--about-ink)] sm:text-4xl">
-              {t("about.journeyTitle")}
-            </h2>
-            <p className="mt-5 text-base leading-8 text-[var(--about-muted)]">
-              {t("about.journeyText")}
-            </p>
-          </article>
-        </section>
-
-        {/* Offers */}
-        <section className="mt-24">
-          <div className="max-w-3xl">
-            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+        {/* OFFERS / SERVICES */}
+        <RevealSection className="pb-20 lg:pb-24">
+          <div className="mx-auto mb-12 max-w-3xl text-center">
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
               {t("about.offersBadge")}
             </p>
-            <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
               {t("about.offersTitleTop")}{" "}
-              <span className="text-[var(--about-accent-deep)]">
+              <span className="bg-gradient-to-l from-[#6D28D9] to-[#2563EB] bg-clip-text text-transparent">
                 {t("about.offersTitleHighlight")}
               </span>
             </h2>
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600">
+              {t("about.offersSubtitle")}
+            </p>
           </div>
 
-          <div className="mt-12 grid gap-x-10 gap-y-0 sm:grid-cols-2 lg:grid-cols-3">
-            {offers.map((item) => (
-              <article
-                key={item.key}
-                className="group border-t border-[var(--about-line)] py-8 transition"
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.15 }}
+            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+          >
+            {offers.map((item) => {
+              const Icon = item.icon;
+              return (
+                <motion.article
+                  key={item.key}
+                  variants={fadeUp}
+                  className="about-service-card p-8 text-start"
+                >
+                  <div className="about-service-icon relative z-[1] mb-5 grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]">
+                    <Icon size={24} />
+                  </div>
+                  <h3 className="about-service-title relative z-[1] text-xl font-black text-slate-900">
+                    {item.title}
+                  </h3>
+                  <p className="about-service-text relative z-[1] mt-3 text-sm font-medium leading-7 text-slate-600">
+                    {item.text}
+                  </p>
+                  <Link
+                    to={item.to}
+                    className="about-service-link relative z-[1] mt-5 inline-flex text-sm font-extrabold text-[#6D28D9]"
+                  >
+                    {item.link}
+                  </Link>
+                </motion.article>
+              );
+            })}
+          </motion.div>
+        </RevealSection>
+      </main>
+
+      {/* PROCESS */}
+      <section className="about-process px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
+        <div className="about-process-pulse" aria-hidden="true" />
+        <div className="relative z-[1] mx-auto max-w-7xl text-center">
+          <h2 className="about-shine text-[clamp(1.9rem,4vw,2.8rem)] font-black">
+            {t("about.processTitle")}
+          </h2>
+          <span className="about-title-underline" />
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/85">
+            {t("about.processSubtitle")}
+          </p>
+
+          <motion.div
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
+          >
+            {processSteps.map((step, index) => (
+              <motion.div
+                key={step.title}
+                variants={fadeUp}
+                className="about-process-step rounded-2xl p-6 text-start"
               >
-                <p className="text-sm font-extrabold tracking-[0.18em] text-[var(--about-accent-deep)] transition group-hover:tracking-[0.24em]">
-                  {item.index}
+                <p className="text-sm font-extrabold tracking-[0.2em] text-sky-200">
+                  0{index + 1}
                 </p>
-                <h3 className="mt-4 text-2xl font-extrabold tracking-[-0.02em] text-[var(--about-ink)]">
-                  {item.title}
-                </h3>
-                <p className="mt-3 max-w-sm text-base leading-7 text-[var(--about-muted)]">
-                  {item.text}
-                </p>
-              </article>
+                <h3 className="mt-3 text-xl font-black">{step.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-white/80">{step.text}</p>
+              </motion.div>
             ))}
-          </div>
-        </section>
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Values */}
-        <section className="mt-24">
-          <div className="max-w-2xl">
-            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+      <main className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
+        {/* WHY + STATS */}
+        <RevealSection className="py-20 lg:py-24">
+          <div className="mx-auto max-w-3xl text-center">
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
               {t("about.valuesBadge")}
             </p>
-            <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
-              {t("about.valuesTitleTop")} {t("about.valuesTitleBottom")}
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
+              {t("about.whyTitle")}
             </h2>
-            <p className="mt-5 text-lg leading-8 text-[var(--about-muted)]">
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
               {t("about.valuesText")}
             </p>
           </div>
 
-          <div className="mt-12 grid gap-10 sm:grid-cols-3">
-            {values.map((value, index) => (
-              <div key={value.title} className="text-start">
-                <p className="text-5xl font-black tracking-[-0.05em] text-[var(--about-accent)]">
-                  0{index + 1}
-                </p>
-                <h3 className="mt-4 text-xl font-extrabold text-[var(--about-ink)]">
-                  {value.title}
-                </h3>
-                <p className="mt-2 text-base leading-7 text-[var(--about-muted)]">
-                  {value.text}
-                </p>
+          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+            {values.map((value) => (
+              <div
+                key={value.title}
+                className="rounded-2xl border border-violet-100/80 bg-white/90 p-6 shadow-[0_10px_28px_rgba(37,99,235,0.08)]"
+              >
+                <h3 className="text-lg font-black text-slate-900">{value.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-600">{value.text}</p>
               </div>
             ))}
           </div>
-        </section>
+
+          <StatsRow stats={stats} />
+        </RevealSection>
+
+        {/* FAQ */}
+        <RevealSection className="pb-20 lg:pb-24">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+              {t("about.faqBadge")}
+            </p>
+            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black text-slate-900">
+              {t("about.faqTitle")}
+            </h2>
+            <span className="about-title-underline" />
+            <p className="mx-auto mt-5 max-w-2xl text-base text-slate-600">
+              {t("about.faqSubtitle")}
+            </p>
+          </div>
+
+          <div className="mx-auto max-w-3xl space-y-3">
+            {faqs.map((item, index) => {
+              const open = openFaq === index;
+              return (
+                <div
+                  key={item.q}
+                  className="about-faq-item rounded-2xl"
+                  data-open={open}
+                >
+                  <button
+                    type="button"
+                    className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start"
+                    onClick={() => setOpenFaq(open ? -1 : index)}
+                    aria-expanded={open}
+                  >
+                    <span className="text-base font-extrabold text-slate-900">
+                      {item.q}
+                    </span>
+                    <span
+                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-l from-violet-100 to-sky-100 text-lg font-black text-[#6D28D9] transition ${
+                        open ? "rotate-45" : ""
+                      }`}
+                    >
+                      +
+                    </span>
+                  </button>
+                  <div className="about-faq-answer">
+                    <div>
+                      <p className="px-5 pb-5 text-sm leading-7 text-slate-600">
+                        {item.a}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </RevealSection>
       </main>
 
-      {/* CTA */}
-      <section className="relative overflow-hidden bg-[var(--about-ink)] text-white">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(31,167,160,0.22),transparent_50%)]" />
-        <div className="relative mx-auto flex max-w-7xl flex-col items-start gap-8 px-6 py-20 lg:flex-row lg:items-end lg:justify-between lg:px-8 lg:py-24">
-          <div className="max-w-2xl">
-            <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
+      {/* FINAL CTA — not a contact form */}
+      <section className="relative overflow-hidden px-5 pb-20 sm:px-8 lg:px-10 lg:pb-24">
+        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] px-6 py-14 text-center text-white shadow-[0_22px_60px_rgba(37,99,235,0.28)] sm:px-10">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2),transparent_45%)]" />
+          <div className="relative">
+            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black leading-tight">
               {t("about.ctaTitleTop")}
               <br />
               {t("about.ctaTitleBottom")}
             </h2>
-            <p className="mt-5 max-w-xl text-base leading-7 text-white/70">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85">
               {t("about.ctaText")}
             </p>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <Link
-              to="/register"
-              className="inline-flex items-center justify-center rounded-xl bg-[var(--about-accent)] px-6 py-3.5 text-sm font-extrabold text-[var(--about-ink)] transition hover:bg-[#27c4bc]"
-            >
-              {t("about.ctaPrimary")}
-            </Link>
-            <Link
-              to="/contact"
-              className="inline-flex items-center justify-center rounded-xl border border-white/25 px-6 py-3.5 text-sm font-extrabold text-white transition hover:border-white/45 hover:bg-white/10"
-            >
-              {t("about.ctaSecondary")}
-            </Link>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Link to="/register" className="about-btn-primary">
+                {t("about.ctaPrimary")}
+              </Link>
+              <Link
+                to="/how-it-works"
+                className="about-btn-secondary"
+              >
+                {t("about.ctaHowItWorks")}
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -281,74 +360,72 @@ function About() {
   );
 }
 
-function WorkspaceVisual({ badge, stats }) {
+function RevealSection({ children, className = "" }) {
   return (
-    <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
-      <div className="absolute -inset-6 rounded-[2rem] bg-[var(--about-accent)]/15 blur-2xl" />
+    <motion.section
+      className={className}
+      variants={fadeUp}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, amount: 0.2 }}
+    >
+      {children}
+    </motion.section>
+  );
+}
 
-      <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[var(--about-ink-soft)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
-        <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
-          <div className="flex items-center gap-2">
-            <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-            <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[var(--about-accent)]" />
+function StatsRow({ stats }) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, amount: 0.4 });
+
+  return (
+    <div
+      ref={ref}
+      className="mt-12 overflow-hidden rounded-[1.5rem] bg-gradient-to-l from-[#4c1d95] via-[#6D28D9] to-[#2563EB] p-6 text-white shadow-[0_18px_50px_rgba(37,99,235,0.25)] sm:p-8"
+    >
+      <div className="grid gap-4 sm:grid-cols-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6 text-center backdrop-blur-sm"
+          >
+            <p className="text-4xl font-black tracking-tight sm:text-5xl">
+              <AnimatedNumber
+                value={stat.value}
+                suffix={stat.suffix}
+                active={inView}
+              />
+            </p>
+            <p className="mt-2 text-sm font-bold text-white/85">{stat.label}</p>
           </div>
-          <p className="text-[11px] font-bold tracking-[0.14em] text-white/55">
-            {badge}
-          </p>
-        </div>
-
-        <div className="grid gap-4 p-5 sm:grid-cols-[0.85fr_1.15fr]">
-          <div className="space-y-3 rounded-2xl bg-black/20 p-4">
-            {["CRM", "Calendar", "Inbox", "Reviews"].map((item, i) => (
-              <div
-                key={item}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${
-                  i === 0
-                    ? "bg-[var(--about-accent)] text-[var(--about-ink)]"
-                    : "bg-white/5 text-white/70"
-                }`}
-              >
-                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
-                {item}
-              </div>
-            ))}
-          </div>
-
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <p className="text-sm font-extrabold text-white">Pipeline</p>
-                <span className="about-scan h-px w-16 bg-[var(--about-accent)]" />
-              </div>
-              <div className="grid grid-cols-4 items-end gap-2">
-                {[42, 68, 54, 88].map((h, i) => (
-                  <div
-                    key={i}
-                    className="rounded-t-md bg-gradient-to-t from-[var(--about-accent)]/30 to-[var(--about-accent)]"
-                    style={{ height: `${h}px` }}
-                  />
-                ))}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-3 gap-2">
-              {stats.map(([value, label]) => (
-                <div
-                  key={label}
-                  className="rounded-xl border border-white/10 bg-black/20 px-3 py-3"
-                >
-                  <p className="text-lg font-black text-white">{value}</p>
-                  <p className="mt-0.5 text-[11px] font-bold text-white/50">
-                    {label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </div>
+  );
+}
+
+function AnimatedNumber({ value, suffix = "", active }) {
+  const [n, setN] = useState(0);
+
+  useEffect(() => {
+    if (!active) return undefined;
+    let frame = 0;
+    const frames = 36;
+    const id = window.setInterval(() => {
+      frame += 1;
+      const progress = Math.min(1, frame / frames);
+      const eased = 1 - (1 - progress) ** 3;
+      setN(Math.round(value * eased));
+      if (progress >= 1) window.clearInterval(id);
+    }, 24);
+    return () => window.clearInterval(id);
+  }, [active, value]);
+
+  return (
+    <>
+      {n}
+      {suffix}
+    </>
   );
 }
 
