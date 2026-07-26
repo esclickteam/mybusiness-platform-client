@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
+  Bot,
   CalendarDays,
   CheckCircle2,
   Facebook,
   Globe2,
   Handshake,
+  Headset,
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
@@ -19,6 +21,8 @@ const PAGE_META = {
   collaborations: { icon: Handshake, accent: "from-[#6D28D9] to-[#2563EB]" },
   website: { icon: Globe2, accent: "from-[#6D28D9] to-[#2563EB]" },
   appointments: { icon: CalendarDays, accent: "from-[#6D28D9] to-[#2563EB]" },
+  automations: { icon: Bot, accent: "from-[#6D28D9] to-[#2563EB]" },
+  agents: { icon: Headset, accent: "from-[#6D28D9] to-[#2563EB]" },
 };
 
 const fadeUp = {
