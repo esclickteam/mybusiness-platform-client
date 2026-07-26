@@ -90,7 +90,8 @@ function formatIls(amount: number) {
   return new Intl.NumberFormat("he-IL", {
     style: "currency",
     currency: "ILS",
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 2,
   }).format(amount || 0);
 }
 
