@@ -20,10 +20,11 @@ export default function Footer() {
   const { t } = useTranslation();
 
   const productLinks: FooterLink[] = [
-    { label: t("footer.howItWorks"), to: "/how-it-works" },
-    { label: t("footer.features"), to: "/features" },
+    { label: t("footer.crm"), to: "/crm" },
+    { label: t("footer.collaborations"), to: "/collaborations" },
+    { label: t("footer.website"), to: "/website-builder" },
+    { label: t("footer.appointments"), to: "/appointments" },
     { label: t("footer.pricing"), to: "/pricing" },
-    { label: t("footer.solutions"), to: "/solutions" },
   ];
 
   const companyLinks: FooterLink[] = [

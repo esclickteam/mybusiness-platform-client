@@ -19,11 +19,11 @@ type Language = {
 };
 
 const navLinks: NavLink[] = [
-  { to: "/features", labelKey: "nav.features" },
-  { to: "/solutions", labelKey: "nav.solutions" },
-  { to: "/how-it-works", labelKey: "nav.howItWorks" },
+  { to: "/crm", labelKey: "nav.crm" },
+  { to: "/collaborations", labelKey: "nav.collaborations" },
+  { to: "/website-builder", labelKey: "nav.website" },
+  { to: "/appointments", labelKey: "nav.appointments" },
   { to: "/pricing", labelKey: "nav.pricing" },
-  { to: "/about", labelKey: "nav.about" },
 ];
 
 const languages: Language[] = [
