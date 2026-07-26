@@ -9,11 +9,11 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   const { t } = useTranslation();
 
   const navLinks = [
-    { to: "/features", label: t("nav.features") },
-    { to: "/solutions", label: t("nav.solutions") },
-    { to: "/how-it-works", label: t("nav.howItWorks") },
+    { to: "/crm", label: t("nav.crm") },
+    { to: "/collaborations", label: t("nav.collaborations") },
+    { to: "/website-builder", label: t("nav.website") },
+    { to: "/appointments", label: t("nav.appointments") },
     { to: "/pricing", label: t("nav.pricing") },
-    { to: "/about", label: t("nav.about") },
   ];
 
   useEffect(() => {

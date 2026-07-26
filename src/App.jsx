@@ -47,6 +47,16 @@ const BizuplyEarlyAccessLanding = lazy(() =>
   import("./pages/BizuplyEarlyAccessLanding")
 );
 const About = lazy(() => import("./pages/About"));
+const CrmProductPage = lazy(() => import("./pages/product/CrmProductPage"));
+const CollaborationsProductPage = lazy(() =>
+  import("./pages/product/CollaborationsProductPage")
+);
+const WebsiteProductPage = lazy(() =>
+  import("./pages/product/WebsiteProductPage")
+);
+const AppointmentsProductPage = lazy(() =>
+  import("./pages/product/AppointmentsProductPage")
+);
 const SearchBusinesses = lazy(() => import("./pages/SearchBusinesses"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const HowItWorks = lazy(() => import("./pages/HowItWorks"));
@@ -728,6 +738,19 @@ export default function App() {
                         />
 
                         <Route path="/about" element={<About />} />
+                        <Route path="/crm" element={<CrmProductPage />} />
+                        <Route
+                          path="/collaborations"
+                          element={<CollaborationsProductPage />}
+                        />
+                        <Route
+                          path="/website-builder"
+                          element={<WebsiteProductPage />}
+                        />
+                        <Route
+                          path="/appointments"
+                          element={<AppointmentsProductPage />}
+                        />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
                         <Route
