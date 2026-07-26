@@ -8,11 +8,12 @@ import {
   Bot,
   Handshake,
   Headset,
-  LayoutDashboard,
+  LayoutGrid,
   Settings2,
   ShieldCheck,
   Sparkles,
   Target,
+  UserRound,
   UsersRound,
   Zap,
 } from "lucide-react";
@@ -20,12 +21,13 @@ import AboutDashboardShowcase from "../components/about/AboutDashboardShowcase";
 import "../styles/About.css";
 
 const valueIcons = [UsersRound, Zap, ShieldCheck, Settings2];
+/* DOM order is RTL-first: collaborations ends up left, CRM right — matching mockup */
 const serviceMeta = [
-  { key: "service1", icon: Handshake, to: "/collaborations" },
-  { key: "service2", icon: LayoutDashboard, to: "/website-builder" },
-  { key: "service3", icon: Headset, to: "/agents" },
-  { key: "service4", icon: Bot, to: "/automations" },
-  { key: "service5", icon: UsersRound, to: "/crm" },
+  { key: "service1", icon: Handshake, to: "/collaborations", tone: "purple" },
+  { key: "service2", icon: LayoutGrid, to: "/website-builder", tone: "blue" },
+  { key: "service3", icon: Headset, to: "/agents", tone: "purple" },
+  { key: "service4", icon: Bot, to: "/automations", tone: "blue" },
+  { key: "service5", icon: UserRound, to: "/crm", tone: "purple" },
 ];
 
 const fade = {
@@ -295,21 +297,21 @@ function About() {
           </motion.div>
         </motion.section>
 
-        {/* SERVICES — centered */}
+        {/* SERVICES — mockup: 5 equal white cards + purple CTA */}
         <motion.section
-          className="mt-20 text-center"
+          className="about-services mt-20 text-center"
           variants={fade}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
         >
-          <h2 className="text-3xl font-black tracking-tight text-slate-900">
+          <h2 className="text-3xl font-black tracking-tight text-slate-900 sm:text-[2rem]">
             {t("about.servicesTitle")}
           </h2>
-          <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-gradient-to-l from-[#6D28D9] to-[#2563EB]" />
+          <div className="about-services-rule mx-auto mt-3" />
 
           <motion.div
-            className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-5"
+            className="about-services-grid mt-9"
             variants={stagger}
             initial="hidden"
             whileInView="show"
@@ -321,14 +323,12 @@ function About() {
                 <motion.div key={service.key} variants={fade}>
                   <Link
                     to={service.to}
-                    className="about-card flex h-full flex-col items-center rounded-2xl border border-violet-100 bg-white/85 px-4 py-7 text-center shadow-[0_10px_28px_rgba(15,23,42,0.05)]"
+                    className={`about-service-card about-service-card--${service.tone}`}
                   >
-                    <div className="mb-3 grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]">
-                      <Icon size={22} />
-                    </div>
-                    <h3 className="text-sm font-black text-slate-900 sm:text-base">
-                      {service.title}
-                    </h3>
+                    <span className="about-service-icon" aria-hidden="true">
+                      <Icon size={22} strokeWidth={1.85} />
+                    </span>
+                    <h3>{service.title}</h3>
                   </Link>
                 </motion.div>
               );
@@ -336,33 +336,28 @@ function About() {
           </motion.div>
         </motion.section>
 
-        {/* CTA — centered, no social proof */}
+        {/* CTA — purple gradient band from mockup */}
         <motion.section
-          className="relative mt-20 overflow-hidden rounded-[1.8rem] bg-gradient-to-l from-[#6D28D9] via-[#4c1d95] to-[#0f172a] px-6 py-14 text-center text-white shadow-[0_28px_80px_rgba(109,40,217,0.38)]"
-          initial={{ opacity: 0, scale: 0.94, y: 30 }}
+          className="about-cta-band"
+          initial={{ opacity: 0, scale: 0.96, y: 28 }}
           whileInView={{ opacity: 1, scale: 1, y: 0 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
         >
-          <div className="pointer-events-none absolute inset-0 opacity-30 [background-image:radial-gradient(circle,rgba(255,255,255,0.45)_1px,transparent_1px)] [background-size:16px_16px]" />
+          <div className="about-cta-dots" aria-hidden="true" />
           <motion.div
-            className="pointer-events-none absolute left-1/2 top-0 h-40 w-40 -translate-x-1/2 rounded-full bg-sky-300/30 blur-3xl"
-            animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.7, 0.35] }}
-            transition={{ duration: 4, repeat: Infinity }}
+            className="about-cta-glow"
+            aria-hidden="true"
+            animate={{ scale: [1, 1.2, 1], opacity: [0.35, 0.65, 0.35] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut" }}
           />
-          <div className="relative">
-            <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
-              <Sparkles size={22} />
+          <div className="about-cta-inner">
+            <div className="about-cta-spark">
+              <Sparkles size={20} />
             </div>
-            <h2 className="mx-auto max-w-2xl text-3xl font-black tracking-tight sm:text-4xl">
-              {t("about.ctaTitle")}
-            </h2>
-            <Link
-              to="/register"
-              className="mt-8 inline-flex h-12 items-center gap-2 rounded-full bg-white px-8 text-sm font-black text-[#6D28D9] transition hover:-translate-y-1 hover:bg-violet-50"
-            >
+            <h2>{t("about.ctaTitle")}</h2>
+            <Link to="/register" className="about-cta-pill">
               {t("about.ctaPrimary")}
-              <ArrowLeft size={16} className="rtl:rotate-180" />
             </Link>
           </div>
         </motion.section>
