@@ -74,21 +74,63 @@
 
 .about-hero-dash {
   position: relative;
-  /* keep the live dashboard crisp — no scroll fade/scale blur */
   filter: none;
   transform: none;
 }
 
-.about-dash,
-.about-dash-shell,
-.about-dash-shell * {
-  -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
+.about-product-frame {
+  display: flex;
+  align-items: stretch;
+  overflow: hidden;
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+  border-radius: 1.4rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: #f7f8fc;
+  box-shadow: 0 28px 70px rgba(109, 40, 217, 0.16);
 }
 
-.about-dash-shell {
-  backface-visibility: hidden;
-  transform: translateZ(0);
+.about-shot-rail {
+  display: none;
+  width: 3.35rem;
+  flex-shrink: 0;
+  object-fit: cover;
+  object-position: top center;
+  background: #f7f8fc;
+  image-rendering: auto;
+}
+
+.about-shot-main {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  background: #f7f8fc;
+  image-rendering: auto;
+}
+
+.about-widgets-shot-wrap {
+  max-width: 58rem;
+  margin-inline: auto;
+  overflow: hidden;
+  border-radius: 1.35rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  background: #f7f8fc;
+  box-shadow: 0 22px 54px rgba(109, 40, 217, 0.12);
+}
+
+.about-widgets-shot {
+  display: block;
+  width: 100%;
+  height: auto;
+  image-rendering: auto;
+}
+
+@media (min-width: 768px) {
+  .about-shot-rail {
+    display: block;
+  }
 }
 
 .about-meta-pill {
