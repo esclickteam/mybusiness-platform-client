@@ -390,13 +390,27 @@ export default function StoreSiteRuntime({
   };
 
   const addToCart = (product: StoreCatalogProduct, amount = 1) => {
+    if (product.trackStock && !product.allowBackorder && !product.inStock) {
+      return;
+    }
+    if (product.variants.length > 0) {
+      openProduct(product);
+      return;
+    }
+
     setCart((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
+        const nextQty = existing.qty + amount;
+        if (
+          product.trackStock &&
+          !product.allowBackorder &&
+          nextQty > product.stock
+        ) {
+          return prev;
+        }
         return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, qty: item.qty + amount }
-            : item,
+          item.id === product.id ? { ...item, qty: nextQty } : item
         );
       }
       return [

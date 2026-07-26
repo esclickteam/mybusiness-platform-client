@@ -28,9 +28,37 @@ type CartItem = {
   quantity: number;
   image?: string;
   variantLabel?: string;
+  variantId?: string;
   sku?: string;
   custom?: boolean;
 };
+
+function availableStockForProduct(
+  product: PublicStoreProduct | undefined,
+  item?: Pick<CartItem, "variantId" | "variantLabel">
+) {
+  if (!product) return Number.POSITIVE_INFINITY;
+  if (product.trackStock === false) return Number.POSITIVE_INFINITY;
+
+  const variants = Array.isArray(product.variants) ? product.variants : [];
+  if (variants.length > 0) {
+    const variant =
+      variants.find((entry) => String(entry._id) === String(item?.variantId || "")) ||
+      variants.find((entry) => {
+        const label = [entry.optionName, entry.optionValue]
+          .filter(Boolean)
+          .join(" / ");
+        return (
+          label === item?.variantLabel ||
+          entry.optionValue === item?.variantLabel
+        );
+      });
+    if (!variant) return 0;
+    return Math.max(0, Number(variant.stock || 0));
+  }
+
+  return Math.max(0, Number(product.stock || 0));
+}
 
 type PublicStoreCheckoutProps = {
   businessId: string;
@@ -107,6 +135,7 @@ function normalizeIncomingCartItems(rawItems: unknown): CartItem[] {
         quantity,
         image: String(item.image || ""),
         variantLabel: String(item.variantLabel || item.size || item.color || ""),
+        variantId: String(item.variantId || ""),
         sku: String(item.sku || item.ref || ""),
         custom: Boolean(item.custom) || !/^[a-f\d]{24}$/i.test(productId),
       } as CartItem;
@@ -178,12 +207,49 @@ export default function PublicStoreCheckout({
 
   const addProduct = useCallback(
     (product: PublicStoreProduct, quantity = 1) => {
+      const variants = Array.isArray(product.variants) ? product.variants : [];
+      if (variants.length > 0) {
+        setMessage({
+          type: "error",
+          text: `למוצר "${product.name}" יש וריאציות — בחרו מידה/צבע לפני הוספה לסל`,
+        });
+        setOpen(true);
+        return;
+      }
+
+      if (
+        product.trackStock !== false &&
+        !product.allowBackorder &&
+        (product.status === "out_of_stock" ||
+          availableStockForProduct(product) < quantity)
+      ) {
+        setMessage({
+          type: "error",
+          text: `"${product.name}" אזל מהמלאי`,
+        });
+        setOpen(true);
+        return;
+      }
+
       syncCart((prev) => {
         const existing = prev.find((item) => item.productId === product._id);
         if (existing) {
+          const nextQty = existing.quantity + quantity;
+          const available = availableStockForProduct(product);
+          if (
+            product.trackStock !== false &&
+            !product.allowBackorder &&
+            nextQty > available
+          ) {
+            setMessage({
+              type: "error",
+              text: `מלאי לא מספיק עבור "${product.name}". זמין: ${available}`,
+            });
+            return prev;
+          }
           return prev.map((item) =>
             item.productId === product._id
-              ? { ...item, quantity: item.quantity + quantity }
+              ? { ...item, quantity: nextQty }
               : item
           );
         }
@@ -192,9 +258,14 @@ export default function PublicStoreCheckout({
           {
             productId: product._id,
             name: product.name,
-            price: Number(product.price) || 0,
+            price: Number(product.salePrice ?? product.price) || 0,
             quantity,
-            image: product.image || product.images?.[0] || "",
+            image:
+              product.mainImage ||
+              product.image ||
+              product.images?.[0] ||
+              "",
+            sku: product.sku || "",
             custom: false,
           },
         ];
@@ -482,6 +553,26 @@ export default function PublicStoreCheckout({
       const returnBase = `${window.location.origin}${window.location.pathname}`;
       const cancelUrl = `${returnBase}?store_payment=cancel&provider=${checkoutProvider}`;
 
+      for (const item of cart) {
+        if (item.custom) continue;
+        const product = products.find((entry) => entry._id === item.productId);
+        if (!product || product.trackStock === false || product.allowBackorder) {
+          continue;
+        }
+        const available = availableStockForProduct(product, item);
+        if (item.quantity > available) {
+          setMessage({
+            type: "error",
+            text:
+              available <= 0
+                ? `"${item.name}" אזל מהמלאי`
+                : `מלאי לא מספיק עבור "${item.name}". זמין: ${available}`,
+          });
+          setPaying(false);
+          return;
+        }
+      }
+
       const draft = await createPublicStoreOrder(businessId, {
         customerName: customerName.trim(),
         customerEmail: customerEmail.trim(),
@@ -493,6 +584,7 @@ export default function PublicStoreCheckout({
           quantity: item.quantity,
           image: item.image,
           variantLabel: item.variantLabel,
+          variantId: item.variantId || undefined,
           sku: item.sku,
         })),
         paymentProvider: checkoutProvider,

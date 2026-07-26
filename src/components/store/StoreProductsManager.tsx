@@ -45,6 +45,16 @@ type StoreCategory = {
   sortOrder?: number;
 };
 
+type StoreProductVariant = {
+  _id?: string;
+  optionName?: string;
+  optionValue?: string;
+  price?: number | null;
+  salePrice?: number | null;
+  sku?: string;
+  stock?: number;
+};
+
 type StoreProduct = {
   _id: string;
   name: string;
@@ -61,6 +71,9 @@ type StoreProduct = {
   categoryName?: string;
   sku?: string;
   stock?: number;
+  trackStock?: boolean;
+  allowBackorder?: boolean;
+  variants?: StoreProductVariant[];
   status?: "draft" | "active" | "hidden" | "out_of_stock";
   isFeatured?: boolean;
   isDigital?: boolean;
@@ -263,12 +276,28 @@ const emptyProductForm = {
   categoryId: "",
   sku: "",
   stock: "0",
+  trackStock: true,
+  allowBackorder: false,
+  variants: [] as StoreProductVariant[],
   tags: "",
   status: "active",
   isFeatured: false,
   isDigital: false,
   digitalFileUrl: "",
 };
+
+function productStockTotal(product: {
+  stock?: number;
+  variants?: StoreProductVariant[];
+}) {
+  if (Array.isArray(product.variants) && product.variants.length > 0) {
+    return product.variants.reduce(
+      (sum, variant) => sum + Math.max(0, Number(variant.stock || 0)),
+      0
+    );
+  }
+  return Math.max(0, Number(product.stock || 0));
+}
 
 const emptyCategoryForm = {
   name: "",
@@ -771,6 +800,17 @@ export default function StoreProductsManager({
 
       Object.entries(productForm).forEach(([key, value]) => {
         if (value === undefined || value === null) return;
+        if (key === "variants") {
+          formData.append(
+            "variants",
+            JSON.stringify(Array.isArray(value) ? value : [])
+          );
+          return;
+        }
+        if (typeof value === "boolean") {
+          formData.append(key, value ? "true" : "false");
+          return;
+        }
         formData.append(key, String(value));
       });
 
@@ -826,6 +866,25 @@ export default function StoreProductsManager({
       categoryId,
       sku: product.sku || "",
       stock: String(product.stock ?? 0),
+      trackStock: product.trackStock !== false,
+      allowBackorder: Boolean(product.allowBackorder),
+      variants: Array.isArray(product.variants)
+        ? product.variants.map((variant) => ({
+            _id: variant._id,
+            optionName: variant.optionName || "",
+            optionValue: variant.optionValue || "",
+            price:
+              variant.price === null || variant.price === undefined
+                ? ""
+                : String(variant.price),
+            salePrice:
+              variant.salePrice === null || variant.salePrice === undefined
+                ? ""
+                : String(variant.salePrice),
+            sku: variant.sku || "",
+            stock: String(variant.stock ?? 0),
+          }))
+        : [],
       tags: Array.isArray(product.tags) ? product.tags.join(", ") : "",
       status: product.status || "active",
       isFeatured: Boolean(product.isFeatured),
@@ -1529,8 +1588,20 @@ function ProductsView({
                       <p className="text-[11px] font-black text-slate-400">
                         מלאי
                       </p>
-                      <p className="mt-1 text-sm font-black text-slate-800">
-                        {product.stock ?? 0}
+                      <p
+                        className={`mt-1 text-sm font-black ${
+                          productStockTotal(product) <= 0
+                            ? "text-rose-600"
+                            : productStockTotal(product) <= 3
+                              ? "text-amber-600"
+                              : "text-slate-800"
+                        }`}
+                      >
+                        {productStockTotal(product)}
+                        {Array.isArray(product.variants) &&
+                        product.variants.length > 0
+                          ? ` · ${product.variants.length} וריאציות`
+                          : ""}
                       </p>
                     </div>
 
@@ -1729,10 +1800,15 @@ function ProductFormView({
               </div>
 
               <div>
-                <FieldLabel>מלאי</FieldLabel>
+                <FieldLabel>מלאי כללי</FieldLabel>
                 <TextInput
                   type="number"
+                  min={0}
                   value={productForm.stock}
+                  disabled={
+                    Array.isArray(productForm.variants) &&
+                    productForm.variants.length > 0
+                  }
                   onChange={(e) =>
                     setProductForm((prev) => ({
                       ...prev,
@@ -1740,6 +1816,12 @@ function ProductFormView({
                     }))
                   }
                 />
+                {Array.isArray(productForm.variants) &&
+                productForm.variants.length > 0 ? (
+                  <p className="mt-1 text-[11px] font-bold text-slate-400">
+                    כשיש וריאציות — המלאי מנוהל לכל וריאציה
+                  </p>
+                ) : null}
               </div>
 
               <div>
@@ -1759,6 +1841,193 @@ function ProductFormView({
                   <option value="out_of_stock">אזל מהמלאי</option>
                 </SelectInput>
               </div>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={productForm.trackStock !== false}
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      trackStock: e.target.checked,
+                    }))
+                  }
+                />
+                מעקב מלאי אוטומטי
+              </label>
+
+              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={Boolean(productForm.allowBackorder)}
+                  onChange={(e) =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      allowBackorder: e.target.checked,
+                    }))
+                  }
+                />
+                לאפשר הזמנה גם כשאין מלאי
+              </label>
+            </div>
+
+            <div className="rounded-3xl border border-slate-200 bg-slate-50/80 p-4">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <FieldLabel>וריאציות (מידה / צבע)</FieldLabel>
+                  <p className="mt-1 text-xs font-bold text-slate-500">
+                    מלאי ומק״ט נפרדים לכל אפשרות — מומלץ לאופנה
+                  </p>
+                </div>
+                <SecondaryButton
+                  type="button"
+                  onClick={() =>
+                    setProductForm((prev) => ({
+                      ...prev,
+                      variants: [
+                        ...(Array.isArray(prev.variants) ? prev.variants : []),
+                        {
+                          optionName: "מידה",
+                          optionValue: "",
+                          sku: "",
+                          stock: "0",
+                          price: "",
+                          salePrice: "",
+                        },
+                      ],
+                    }))
+                  }
+                >
+                  + הוספת וריאציה
+                </SecondaryButton>
+              </div>
+
+              {Array.isArray(productForm.variants) &&
+              productForm.variants.length > 0 ? (
+                <div className="space-y-3">
+                  {productForm.variants.map((variant: any, index: number) => (
+                    <div
+                      key={variant._id || `variant-${index}`}
+                      className="grid gap-3 rounded-2xl border border-slate-200 bg-white p-3 md:grid-cols-6"
+                    >
+                      <TextInput
+                        placeholder="שם אפשרות (מידה)"
+                        value={variant.optionName || ""}
+                        onChange={(e) =>
+                          setProductForm((prev) => {
+                            const next = [
+                              ...(Array.isArray(prev.variants)
+                                ? prev.variants
+                                : []),
+                            ];
+                            next[index] = {
+                              ...next[index],
+                              optionName: e.target.value,
+                            };
+                            return { ...prev, variants: next };
+                          })
+                        }
+                      />
+                      <TextInput
+                        placeholder="ערך (M / שחור)"
+                        value={variant.optionValue || ""}
+                        onChange={(e) =>
+                          setProductForm((prev) => {
+                            const next = [
+                              ...(Array.isArray(prev.variants)
+                                ? prev.variants
+                                : []),
+                            ];
+                            next[index] = {
+                              ...next[index],
+                              optionValue: e.target.value,
+                            };
+                            return { ...prev, variants: next };
+                          })
+                        }
+                      />
+                      <TextInput
+                        placeholder="מק״ט"
+                        value={variant.sku || ""}
+                        onChange={(e) =>
+                          setProductForm((prev) => {
+                            const next = [
+                              ...(Array.isArray(prev.variants)
+                                ? prev.variants
+                                : []),
+                            ];
+                            next[index] = {
+                              ...next[index],
+                              sku: e.target.value,
+                            };
+                            return { ...prev, variants: next };
+                          })
+                        }
+                      />
+                      <TextInput
+                        type="number"
+                        min={0}
+                        placeholder="מלאי"
+                        value={variant.stock ?? "0"}
+                        onChange={(e) =>
+                          setProductForm((prev) => {
+                            const next = [
+                              ...(Array.isArray(prev.variants)
+                                ? prev.variants
+                                : []),
+                            ];
+                            next[index] = {
+                              ...next[index],
+                              stock: e.target.value,
+                            };
+                            return { ...prev, variants: next };
+                          })
+                        }
+                      />
+                      <TextInput
+                        type="number"
+                        min={0}
+                        placeholder="מחיר (אופציונלי)"
+                        value={variant.price ?? ""}
+                        onChange={(e) =>
+                          setProductForm((prev) => {
+                            const next = [
+                              ...(Array.isArray(prev.variants)
+                                ? prev.variants
+                                : []),
+                            ];
+                            next[index] = {
+                              ...next[index],
+                              price: e.target.value,
+                            };
+                            return { ...prev, variants: next };
+                          })
+                        }
+                      />
+                      <button
+                        type="button"
+                        className="rounded-2xl bg-rose-50 px-3 text-sm font-black text-rose-600 transition hover:bg-rose-100"
+                        onClick={() =>
+                          setProductForm((prev) => ({
+                            ...prev,
+                            variants: (
+                              Array.isArray(prev.variants) ? prev.variants : []
+                            ).filter((_: any, i: number) => i !== index),
+                          }))
+                        }
+                      >
+                        הסרה
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm font-bold text-slate-400">
+                  אין וריאציות — המלאי הכללי ישמש לרכישה
+                </p>
+              )}
             </div>
 
             <div>

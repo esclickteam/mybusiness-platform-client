@@ -6,6 +6,16 @@ import {
   type PublicStoreProduct,
 } from "../../../../../../api/publicStoreApi";
 
+export type StoreCatalogVariant = {
+  id: string;
+  optionName: string;
+  optionValue: string;
+  label: string;
+  price?: number;
+  sku?: string;
+  stock: number;
+};
+
 export type StoreCatalogProduct = {
   id: string;
   name: string;
@@ -19,6 +29,12 @@ export type StoreCatalogProduct = {
   href: string;
   featured?: boolean;
   tags: string[];
+  sku?: string;
+  stock: number;
+  trackStock: boolean;
+  allowBackorder: boolean;
+  inStock: boolean;
+  variants: StoreCatalogVariant[];
 };
 
 export type StoreCatalogCategory = {
@@ -74,7 +90,44 @@ function categorySlugOf(product: PublicStoreProduct) {
 
 function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
   const price = Number(product.salePrice ?? product.price ?? 0);
-  const compareAt = Number(product.compareAtPrice || 0);
+  const compareAt = Number(product.compareAtPrice || product.price || 0);
+  const trackStock = product.trackStock !== false;
+  const allowBackorder = Boolean(product.allowBackorder);
+  const variants = (Array.isArray(product.variants) ? product.variants : [])
+    .map((variant) => {
+      const optionName = String(variant.optionName || "").trim();
+      const optionValue = String(variant.optionValue || "").trim();
+      const label = [optionName, optionValue].filter(Boolean).join(" / ");
+      const variantPrice =
+        variant.salePrice !== null && variant.salePrice !== undefined
+          ? Number(variant.salePrice)
+          : variant.price !== null && variant.price !== undefined
+            ? Number(variant.price)
+            : undefined;
+      return {
+        id: String(variant._id || ""),
+        optionName,
+        optionValue,
+        label,
+        price: Number.isFinite(variantPrice as number)
+          ? (variantPrice as number)
+          : undefined,
+        sku: variant.sku ? String(variant.sku) : undefined,
+        stock: Math.max(0, Number(variant.stock || 0)),
+      };
+    })
+    .filter((variant) => variant.id || variant.label);
+
+  const stock =
+    variants.length > 0
+      ? variants.reduce((sum, variant) => sum + variant.stock, 0)
+      : Math.max(0, Number(product.stock || 0));
+
+  const inStock =
+    !trackStock ||
+    allowBackorder ||
+    (product.status !== "out_of_stock" && stock > 0);
+
   return {
     id: String(product._id),
     name: String(product.name || "מוצר"),
@@ -84,10 +137,22 @@ function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
     shortDescription: String(product.shortDescription || product.description || ""),
     category: categoryLabel(product),
     categorySlug: categorySlugOf(product),
-    badge: product.isFeatured ? "נבחר" : undefined,
+    badge: !inStock
+      ? "אזל"
+      : product.isFeatured
+        ? "נבחר"
+        : stock > 0 && stock <= 3 && trackStock
+          ? "מלאי נמוך"
+          : undefined,
     href: product.slug ? `/product/${product.slug}` : "/product",
     featured: Boolean(product.isFeatured),
     tags: Array.isArray(product.tags) ? product.tags.map(String) : [],
+    sku: product.sku ? String(product.sku) : undefined,
+    stock,
+    trackStock,
+    allowBackorder,
+    inStock,
+    variants,
   };
 }
 
@@ -117,6 +182,11 @@ function buildDemoCatalog(seeds: DemoStoreProductSeed[]): {
     href: "/product",
     featured: Boolean(seed.featured),
     tags: [],
+    stock: 99,
+    trackStock: false,
+    allowBackorder: true,
+    inStock: true,
+    variants: [] as StoreCatalogVariant[],
   }));
 
   const categoryMap = new Map<string, StoreCatalogCategory>();

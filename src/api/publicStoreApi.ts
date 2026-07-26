@@ -9,6 +9,16 @@ export type PublicStoreCategory = {
   sortOrder?: number;
 };
 
+export type PublicStoreVariant = {
+  _id?: string;
+  optionName?: string;
+  optionValue?: string;
+  price?: number | null;
+  salePrice?: number | null;
+  sku?: string;
+  stock?: number;
+};
+
 export type PublicStoreProduct = {
   _id: string;
   name: string;
@@ -27,6 +37,11 @@ export type PublicStoreProduct = {
   categoryId?: string | PublicStoreCategory | null;
   compareAtPrice?: number;
   salePrice?: number;
+  sku?: string;
+  stock?: number;
+  trackStock?: boolean;
+  allowBackorder?: boolean;
+  variants?: PublicStoreVariant[];
 };
 
 export type PublicPaymentProvider = {
@@ -99,6 +114,7 @@ export async function createPublicStoreOrder(
       price?: number;
       image?: string;
       variantLabel?: string;
+      variantId?: string;
       sku?: string;
       ref?: string;
     }>;
