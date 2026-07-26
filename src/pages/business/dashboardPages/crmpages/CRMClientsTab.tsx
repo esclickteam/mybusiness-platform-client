@@ -32,6 +32,7 @@ import type { TFunction } from "i18next";
 import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { SHOW_BUSINESS_MINI_SAAS } from "./crmFeatureFlags";
 
 type CustomFieldType =
   | "text"
@@ -887,58 +888,50 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   }
 
   return (
-    <div dir={dir} className="space-y-5 text-start">
-      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
-        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
+    <div dir={dir} className="space-y-4 bg-[#F7F8FC] text-start">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            {t("crm.clients.title")}
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+            {t("crm.clients.subtitle")}
+          </p>
+        </div>
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
-              <UsersRound className="h-4 w-4" />
-              {t("crm.clients.badge")}
-            </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={openCreate}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+          >
+            <Plus className="h-4 w-4" />
+            {t("crm.clients.addClient")}
+          </button>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              {t("crm.clients.title")}
-            </h2>
-
-            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              {t("crm.clients.subtitle")}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={openCreate}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
-              >
-                <Plus className="h-5 w-5" />
-                {t("crm.clients.addClient")}
-              </button>
-
-              <button
-                type="button"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
-              >
-                <Download className="h-5 w-5" />
-                {t("crm.clients.importClients")}
-              </button>
-            </div>
-          </div>
-
-          <HeroMock />
+          <button
+            type="button"
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <Download className="h-4 w-4" />
+            {t("crm.clients.importClients")}
+          </button>
         </div>
       </section>
 
-      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-6">
+      <section
+        className={[
+          "grid gap-3 sm:grid-cols-2",
+          SHOW_BUSINESS_MINI_SAAS ? "xl:grid-cols-6" : "xl:grid-cols-5",
+        ].join(" ")}
+      >
         <StatCard
           label={t("crm.clients.stats.totalClients")}
           value={clients.length.toLocaleString()}
           icon={UsersRound}
           trend="12.5%"
           tone="sky"
+          featured
         />
         <StatCard
           label={t("crm.clients.stats.activeClients")}
@@ -968,16 +961,18 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           trend={t("crm.clients.stats.trendReady")}
           tone="amber"
         />
-        <StatCard
-          label={t("crm.clients.stats.portalAccess")}
-          value={portalAccessCount.toLocaleString()}
-          icon={ShieldCheck}
-          trend={t("crm.clients.stats.trendActive")}
-          tone="emerald"
-        />
+        {SHOW_BUSINESS_MINI_SAAS && (
+          <StatCard
+            label={t("crm.clients.stats.portalAccess")}
+            value={portalAccessCount.toLocaleString()}
+            icon={ShieldCheck}
+            trend={t("crm.clients.stats.trendActive")}
+            tone="emerald"
+          />
+        )}
       </section>
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
             <div className="relative w-full xl:max-w-[360px]">
@@ -1015,7 +1010,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
             <p className="text-sm font-bold text-slate-500">{t("crm.clients.loading")}</p>
           </div>
         ) : error ? (
-          <div className="m-5 rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
+          <div className="m-5 rounded-2xl border border-red-100 bg-red-50 p-10 text-center">
             <p className="text-lg font-black text-red-700">
               {t("crm.clients.loadFailedTitle")}
             </p>
@@ -1049,7 +1044,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
                 className={[
                   "flex h-10 w-10 items-center justify-center rounded-xl text-sm font-black transition",
                   page === 1
-                    ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+                    ? "bg-[#6D28D9] text-white"
                     : "bg-white text-slate-600 hover:bg-slate-50",
                 ].join(" ")}
               >
@@ -1099,18 +1094,20 @@ function ClientDetailsView({
   const { t } = useTranslation();
   const portalAccess = getPortalAccessSettings(client, t);
 
-  return (
-    <div className="space-y-5">
-      <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-        <div className="relative bg-gradient-to-br from-white via-sky-50/70 to-violet-50/60 p-5 sm:p-6">
-          <div className="pointer-events-none absolute -right-20 -top-24 h-72 w-72 rounded-full bg-sky-200/45 blur-3xl" />
-          <div className="pointer-events-none absolute left-10 bottom-[-110px] h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
+  const resolvedTab =
+    !SHOW_BUSINESS_MINI_SAAS && activeTab === "portal-access"
+      ? "profile"
+      : activeTab;
 
-          <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-center gap-4">
-              <div className="grid h-16 w-16 shrink-0 place-items-center rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_45px_rgba(15,23,42,0.18)]">
+  return (
+    <div className="space-y-4">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
+        <div className="p-4 sm:p-5">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-violet-100 text-[#6D28D9]">
                 {getInitials(client.fullName) || (
-                  <UserRound className="h-7 w-7" />
+                  <UserRound className="h-6 w-6" />
                 )}
               </div>
 
@@ -1118,17 +1115,17 @@ function ClientDetailsView({
                 <button
                   type="button"
                   onClick={onBack}
-                  className="mb-2 inline-flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 text-xs font-black text-slate-600 shadow-sm ring-1 ring-slate-100 transition hover:bg-white"
+                  className="mb-1.5 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                 >
                   <ArrowLeft className="h-3.5 w-3.5" />
                   {t("crm.clients.details.backToClients")}
                 </button>
 
-                <h2 className="truncate text-3xl font-black tracking-tight text-slate-800">
+                <h2 className="truncate text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
                   {client.fullName || t("crm.common.unnamedClient")}
                 </h2>
 
-                <p className="mt-1 text-sm font-bold text-slate-500">
+                <p className="mt-1 text-sm font-semibold text-slate-500">
                   {t("crm.clients.details.clientFile", {
                     phone: formatPhone(client.phone) || t("crm.common.noPhone"),
                     email: client.email || t("crm.common.noEmail"),
@@ -1141,7 +1138,7 @@ function ClientDetailsView({
               <button
                 type="button"
                 onClick={onEdit}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
               >
                 <Edit3 className="h-4 w-4" />
                 {t("crm.common.edit")}
@@ -1150,7 +1147,7 @@ function ClientDetailsView({
               <button
                 type="button"
                 onClick={onDelete}
-                className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
+                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
               >
                 <Trash2 className="h-4 w-4" />
                 {t("crm.common.delete")}
@@ -1158,7 +1155,12 @@ function ClientDetailsView({
             </div>
           </div>
 
-          <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <div
+            className={[
+              "mt-5 grid gap-3 sm:grid-cols-2",
+              SHOW_BUSINESS_MINI_SAAS ? "xl:grid-cols-4" : "xl:grid-cols-3",
+            ].join(" ")}
+          >
             <ClientMiniMetric label={t("crm.clients.details.status")} value={getClientStatusLabel(getClientStatus(client), t)} />
             <ClientMiniMetric
               label={t("crm.clients.details.appointments")}
@@ -1172,54 +1174,58 @@ function ClientDetailsView({
               label={t("crm.clients.details.clientDataFields")}
               value={configuredFields.length}
             />
-            <ClientMiniMetric
-              label={t("crm.clients.details.portalAccess")}
-              value={
-                portalAccess.enabled
-                  ? accessStatusLabel(portalAccess.status, t)
-                  : t("crm.common.off")
-              }
-            />
+            {SHOW_BUSINESS_MINI_SAAS && (
+              <ClientMiniMetric
+                label={t("crm.clients.details.portalAccess")}
+                value={
+                  portalAccess.enabled
+                    ? accessStatusLabel(portalAccess.status, t)
+                    : t("crm.common.off")
+                }
+              />
+            )}
           </div>
         </div>
 
-        <div className="border-t border-slate-100 bg-white p-3">
-          <div className="flex flex-wrap gap-2">
+        <div className="border-t border-slate-100 bg-white px-2 sm:px-3">
+          <div className="flex flex-wrap gap-1">
             <ClientTabButton
-              active={activeTab === "profile"}
+              active={resolvedTab === "profile"}
               icon={UserRound}
               label={t("crm.clients.details.tabProfile")}
               onClick={() => setActiveTab("profile")}
             />
             <ClientTabButton
-              active={activeTab === "appointments"}
+              active={resolvedTab === "appointments"}
               icon={CalendarDays}
               label={t("crm.clients.details.tabAppointments")}
               onClick={() => setActiveTab("appointments")}
             />
             <ClientTabButton
-              active={activeTab === "client-data"}
+              active={resolvedTab === "client-data"}
               icon={Layers3}
               label={t("crm.clients.details.tabClientData")}
               onClick={() => setActiveTab("client-data")}
             />
-            <ClientTabButton
-              active={activeTab === "portal-access"}
-              icon={LockKeyhole}
-              label={t("crm.clients.details.tabPortalAccess")}
-              onClick={() => setActiveTab("portal-access")}
-            />
+            {SHOW_BUSINESS_MINI_SAAS && (
+              <ClientTabButton
+                active={resolvedTab === "portal-access"}
+                icon={LockKeyhole}
+                label={t("crm.clients.details.tabPortalAccess")}
+                onClick={() => setActiveTab("portal-access")}
+              />
+            )}
           </div>
         </div>
       </section>
 
-      {activeTab === "profile" && <ClientProfilePanel client={client} />}
+      {resolvedTab === "profile" && <ClientProfilePanel client={client} />}
 
-      {activeTab === "appointments" && (
+      {resolvedTab === "appointments" && (
         <ClientAppointmentsPanel client={client} />
       )}
 
-      {activeTab === "client-data" && (
+      {resolvedTab === "client-data" && (
         <ClientDataPanel
           client={client}
           fields={configuredFields}
@@ -1227,7 +1233,7 @@ function ClientDetailsView({
         />
       )}
 
-      {activeTab === "portal-access" && (
+      {SHOW_BUSINESS_MINI_SAAS && resolvedTab === "portal-access" && (
         <PortalAccessPanel
           client={client}
           settings={portalAccess}
@@ -1255,14 +1261,20 @@ function ClientTabButton({
       type="button"
       onClick={onClick}
       className={[
-        "inline-flex h-11 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
+        "relative inline-flex h-11 items-center justify-center gap-2 px-3 text-sm font-black transition",
         active
-          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_14px_34px_rgba(15,23,42,0.16)]"
-          : "bg-slate-50 text-slate-600 hover:bg-sky-50 hover:text-sky-700",
+          ? "text-[#6D28D9]"
+          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
       ].join(" ")}
     >
       <Icon className="h-4 w-4" />
       {label}
+      <span
+        className={[
+          "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
+          active ? "bg-[#6D28D9]" : "bg-transparent",
+        ].join(" ")}
+      />
     </button>
   );
 }
@@ -1275,11 +1287,11 @@ function ClientMiniMetric({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[1.4rem] border border-white/80 bg-white/85 p-4 shadow-sm">
-      <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
+    <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
+      <p className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-400">
         {label}
       </p>
-      <p className="mt-2 text-xl font-black text-slate-800">{value}</p>
+      <p className="mt-1.5 text-lg font-black text-slate-900">{value}</p>
     </div>
   );
 }
@@ -1290,7 +1302,7 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
   const emDash = t("crm.common.emDash");
 
   return (
-    <section className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
+    <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
       <div className="mb-5 flex items-center gap-3">
         <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-50 text-sky-700">
           <UserRound className="h-5 w-5" />
@@ -1318,7 +1330,7 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
         <InfoCard icon={MapPin} label={t("crm.clients.profile.address")} value={client.address || emDash} />
       </div>
 
-      <div className="mt-5 rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
+      <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-5">
         <h4 className="text-base font-black text-slate-800">{t("crm.clients.profile.crmSummary")}</h4>
         <div className="mt-4 grid gap-3 md:grid-cols-3">
           <SummaryBox label={t("crm.clients.profile.created")} value={formatDate(client.createdAt, locale, emDash)} />
@@ -1342,7 +1354,7 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
     : [];
 
   return (
-    <section className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
+    <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-700">
@@ -1360,7 +1372,7 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
       </div>
 
       {appointments.length === 0 ? (
-        <div className="rounded-[1.7rem] border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
           <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.appointmentsPanel.emptyTitle")}
@@ -1402,7 +1414,7 @@ function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
   const paid = Boolean(item.paid);
 
   return (
-    <article className="rounded-[1.6rem] border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
+    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div className="flex min-w-0 items-center gap-3">
           <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-700">
@@ -1483,7 +1495,7 @@ function ClientDataPanel({
   return (
     <section
       dir={dir}
-      className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
+      className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
@@ -1502,7 +1514,7 @@ function ClientDataPanel({
           type="button"
           onClick={save}
           disabled={saving || fields.length === 0}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
         >
           <Save className="h-4 w-4" />
           {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
@@ -1510,7 +1522,7 @@ function ClientDataPanel({
       </div>
 
       {fields.length === 0 ? (
-        <div className="rounded-[1.7rem] border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
+        <div className="rounded-2xl border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
           <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.clientDataPanel.emptyTitle")}
@@ -1598,7 +1610,7 @@ function ConfiguredFieldInput({
             className={[
               "grid h-6 w-6 place-items-center rounded-full border text-xs font-black",
               Boolean(value)
-                ? "border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+                ? "bg-[#6D28D9] text-white"
                 : "border-slate-300 bg-white text-transparent",
             ].join(" ")}
           >
@@ -1750,7 +1762,7 @@ function PortalAccessPanel({
   return (
     <section
       dir={dir}
-      className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
+      className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6"
     >
       <div className="mb-5 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center gap-3">
@@ -1782,7 +1794,7 @@ function PortalAccessPanel({
             type="button"
             onClick={save}
             disabled={saving}
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Save className="h-4 w-4" />
             {saving ? t("crm.common.saving") : t("crm.clients.portal.savingAccess")}
@@ -1791,7 +1803,7 @@ function PortalAccessPanel({
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
+        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
           <button
             type="button"
             onClick={() => update("enabled", !draft.enabled)}
@@ -1853,7 +1865,7 @@ function PortalAccessPanel({
           </div>
         </div>
 
-        <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
+        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
           <div className="grid gap-4">
             <PortalFormField label={t("crm.clients.portal.paymentType")}>
               <select
@@ -1896,7 +1908,7 @@ function PortalAccessPanel({
         </div>
       </div>
 
-      <div className="mt-5 rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5">
+      <div className="mt-5 rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5">
         <div className="grid gap-3 md:grid-cols-3">
           <SummaryBox label={t("crm.clients.portal.statusSummary")} value={accessStatusLabel(draft.status, t)} />
           <SummaryBox label={t("crm.clients.portal.loginEmail")} value={draft.loginEmail || emDash} />
@@ -1941,7 +1953,7 @@ function InfoCard({
   value: React.ReactNode;
 }) {
   return (
-    <div className="rounded-[1.6rem] border border-slate-100 bg-slate-50 p-4">
+    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
       <div className="mb-3 grid h-10 w-10 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
         <Icon className="h-4 w-4" />
       </div>
@@ -2002,7 +2014,9 @@ function ClientsTable({
             <TableHead>{t("crm.clients.table.location")}</TableHead>
             <TableHead>{t("crm.clients.table.status")}</TableHead>
             <TableHead>{t("crm.clients.table.appointments")}</TableHead>
-            <TableHead>{t("crm.clients.table.portalAccess")}</TableHead>
+            {SHOW_BUSINESS_MINI_SAAS && (
+              <TableHead>{t("crm.clients.table.portalAccess")}</TableHead>
+            )}
             <TableHead>{t("crm.clients.table.clientData")}</TableHead>
             <TableHead>{t("crm.clients.table.totalSpent")}</TableHead>
             <TableHead align="right">{t("crm.clients.table.actions")}</TableHead>
@@ -2086,20 +2100,22 @@ function ClientsTable({
                   </p>
                 </td>
 
-                <td className="px-4 py-4">
-                  <span
-                    className={[
-                      "inline-flex rounded-xl px-3 py-1.5 text-xs font-black",
-                      portalAccess.enabled
-                        ? "bg-emerald-50 text-emerald-700"
-                        : "bg-slate-50 text-slate-500",
-                    ].join(" ")}
-                  >
-                    {portalAccess.enabled
-                      ? accessStatusLabel(portalAccess.status, t)
-                      : t("crm.common.off")}
-                  </span>
-                </td>
+                {SHOW_BUSINESS_MINI_SAAS && (
+                  <td className="px-4 py-4">
+                    <span
+                      className={[
+                        "inline-flex rounded-xl px-3 py-1.5 text-xs font-black",
+                        portalAccess.enabled
+                          ? "bg-emerald-50 text-emerald-700"
+                          : "bg-slate-50 text-slate-500",
+                      ].join(" ")}
+                    >
+                      {portalAccess.enabled
+                        ? accessStatusLabel(portalAccess.status, t)
+                        : t("crm.common.off")}
+                    </span>
+                  </td>
+                )}
 
                 <td className="px-4 py-4 text-center">
                   <p className="text-sm font-black text-slate-900">
@@ -2124,7 +2140,7 @@ function ClientsTable({
                     <button
                       type="button"
                       onClick={() => onOpen(client)}
-                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
+                      className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:bg-[#6D28D9] hover:text-white"
                       aria-label={t("crm.clients.table.openClient")}
                     >
                       <MoreHorizontal className="h-4 w-4" />
@@ -2167,7 +2183,7 @@ function ClientFormPanel({
   const { t } = useTranslation();
 
   return (
-    <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+    <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
       <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
         <div>
           <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
@@ -2268,7 +2284,7 @@ function ClientFormPanel({
           type="button"
           onClick={onSave}
           disabled={isSaving}
-          className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+          className="rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSaving ? t("crm.common.saving") : t("crm.clients.form.saveClient")}
         </button>
@@ -2318,6 +2334,7 @@ function StatCard({
   trend,
   tone,
   negative,
+  featured,
 }: {
   label: string;
   value: React.ReactNode;
@@ -2325,6 +2342,7 @@ function StatCard({
   trend: string;
   tone: "sky" | "emerald" | "blue" | "amber";
   negative?: boolean;
+  featured?: boolean;
 }) {
   const { t } = useTranslation();
   const iconClass =
@@ -2336,12 +2354,31 @@ function StatCard({
           ? "bg-blue-50 text-blue-600"
           : "bg-sky-50 text-sky-800";
 
+  if (featured) {
+    return (
+      <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold text-white/80">{label}</p>
+            <p className="mt-2 text-3xl font-black tracking-tight">{value}</p>
+            <p className="mt-2 text-xs font-bold text-white/75">
+              {negative ? "▼" : "▲"} {trend}
+            </p>
+          </div>
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/15">
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.05)]">
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <p className="text-xs font-bold text-slate-400">{label}</p>
-          <p className="mt-2 text-2xl font-black tracking-tight text-slate-800">
+          <p className="text-xs font-bold text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
             {value}
           </p>
           <div className="mt-2 flex items-center gap-2">
@@ -2360,7 +2397,7 @@ function StatCard({
         </div>
 
         <div
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${iconClass}`}
+          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${iconClass}`}
         >
           <Icon className="h-5 w-5" />
         </div>
@@ -2407,7 +2444,7 @@ function FilterPill({ label, active }: { label: string; active?: boolean }) {
       className={[
         "rounded-xl px-4 py-2 text-xs font-black transition",
         active
-          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200"
+          ? "bg-[#6D28D9] text-white shadow-lg shadow-slate-200"
           : "border border-slate-200 bg-white text-slate-500 hover:bg-slate-50",
       ].join(" ")}
     >
@@ -2459,7 +2496,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+    <div className="m-5 rounded-2xl border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-800 shadow-sm">
         <UsersRound className="h-7 w-7" />
       </div>
@@ -2473,7 +2510,7 @@ function EmptyClientsState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6]"
       >
         <Plus className="h-5 w-5" />
         {t("crm.clients.createClient")}

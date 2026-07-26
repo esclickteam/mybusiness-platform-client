@@ -330,44 +330,28 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
   };
 
   return (
-    <div dir={dir} className="space-y-5">
+    <div dir={dir} className="space-y-4 bg-[#F7F8FC]">
       {!isSettingsVariant && (
         <>
-          <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
-            <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
-            <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
-            <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
-
-            <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
-                  <Clock className="h-4 w-4" />
-                  {t("crm.workHours.badge")}
-                </div>
-
-                <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                  {t("crm.workHours.heroTitle")}
-                </h2>
-
-                <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                  {t("crm.workHours.heroSubtitle")}
-                </p>
-
-                <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                  <button
-                    type="button"
-                    onClick={handleSave}
-                    disabled={saving}
-                    className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
-                  >
-                    <Save className="h-5 w-5" />
-                    {saving ? t("crm.common.saving") : t("crm.common.saveChanges")}
-                  </button>
-                </div>
-              </div>
-
-              <WorkHoursHeroMock />
+          <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div>
+              <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+                {t("crm.workHours.heroTitle")}
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+                {t("crm.workHours.heroSubtitle")}
+              </p>
             </div>
+
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              <Save className="h-4 w-4" />
+              {saving ? t("crm.common.saving") : t("crm.common.saveChanges")}
+            </button>
           </section>
 
           <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
@@ -403,10 +387,10 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
       )}
 
       {isSettingsVariant && (
-        <section className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-violet-50/50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
           <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex items-start gap-3">
-              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-[#6D28D9]">
                 <Clock className="h-5 w-5" />
               </div>
 
@@ -429,7 +413,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               type="button"
               onClick={handleSave}
               disabled={saving}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : t("crm.workHours.saveHours")}
@@ -472,7 +456,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
             : "xl:grid-cols-[minmax(0,1fr)_360px]",
         ].join(" ")}
       >
-        <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <div className="border-b border-slate-100 p-5">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <div>
@@ -490,7 +474,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Save className="h-4 w-4" />
                   {saving ? t("crm.common.saving") : t("crm.common.save")}
@@ -573,7 +557,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                           className={[
                             "inline-flex h-11 min-w-[104px] items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
                             isClosed
-                              ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200 hover:bg-sky-950"
+                              ? "bg-[#6D28D9] text-white shadow-lg shadow-slate-200 hover:bg-[#5B21B6]"
                               : "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
                           ].join(" ")}
                         >
@@ -592,7 +576,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
         </div>
 
         <aside className="space-y-5">
-          <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+          <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
             <div className="flex items-center gap-3">
               <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
                 <Clock className="h-5 w-5" />
@@ -638,7 +622,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
           </section>
 
           {!isSettingsVariant && (
-            <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+            <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
               <h3 className="text-base font-black text-slate-800">
                 {t("crm.workHours.tipsTitle")}
               </h3>
@@ -652,7 +636,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
           )}
 
           {isSettingsVariant && (
-            <section className="rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5">
+            <section className="rounded-2xl border border-sky-100 bg-sky-50/50 p-5">
               <h3 className="text-base font-black text-slate-800">
                 {t("crm.workHours.bookingRulesTipTitle")}
               </h3>

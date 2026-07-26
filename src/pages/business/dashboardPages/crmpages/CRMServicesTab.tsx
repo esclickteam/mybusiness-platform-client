@@ -245,50 +245,35 @@ export default function CRMServicesTab() {
   };
 
   return (
-    <div dir={dir} className="space-y-5 text-start">
-      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
-        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
+    <div dir={dir} className="space-y-4 bg-[#F7F8FC] text-start">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            {t("crm.services.title")}
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+            {t("crm.services.subtitle")}
+          </p>
+        </div>
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
-              <Wrench className="h-4 w-4" />
-              {t("crm.services.badge")}
-            </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={openAdd}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+          >
+            <Plus className="h-4 w-4" />
+            {t("crm.services.addService")}
+          </button>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              {t("crm.services.title")}
-            </h2>
-
-
-            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              {t("crm.services.subtitle")}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={openAdd}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
-              >
-                <Plus className="h-5 w-5" />
-                {t("crm.services.addService")}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowForm((prev) => !prev)}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
-              >
-                <Sparkles className="h-5 w-5" />
-                {showForm ? t("crm.services.closeForm") : t("crm.services.quickAdd")}
-              </button>
-            </div>
-          </div>
-
-          <ServicesHeroMock />
+          <button
+            type="button"
+            onClick={() => setShowForm((prev) => !prev)}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <Sparkles className="h-4 w-4" />
+            {showForm ? t("crm.services.closeForm") : t("crm.services.quickAdd")}
+          </button>
         </div>
       </section>
 
@@ -332,7 +317,7 @@ export default function CRMServicesTab() {
         />
       </section>
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
@@ -364,7 +349,7 @@ export default function CRMServicesTab() {
               <button
                 type="button"
                 onClick={openAdd}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6]"
               >
                 <Plus className="h-5 w-5" />
                 {t("crm.services.newService")}
@@ -433,7 +418,7 @@ function ServiceFormPanel({
 
   return (
     <div className="border-b border-slate-100 bg-slate-50/60 p-5">
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-sm">
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
         <div className="mb-5 flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div>
             <p className="text-xs font-black uppercase tracking-[0.18em] text-sky-700">
@@ -573,7 +558,7 @@ function ServiceFormPanel({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-5 w-5" />
             {saving ? t("crm.services.saving") : t("crm.services.saveService")}
@@ -598,7 +583,7 @@ function ServiceCard({
   const price = Number(service.price) || 0;
 
   return (
-    <article className="group overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
+    <article className="group overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-[0_20px_70px_rgba(15,23,42,0.10)]">
       <div className="relative h-44 bg-slate-100">
         {service.imageUrl ? (
           <img
@@ -616,7 +601,7 @@ function ServiceCard({
           <button
             type="button"
             onClick={onEdit}
-            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/90 text-slate-700 shadow-sm backdrop-blur transition hover:bg-[#6D28D9] hover:text-white"
             aria-label={t("crm.services.editAria")}
           >
             <Edit3 className="h-4 w-4" />
@@ -784,7 +769,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
   const { t } = useTranslation();
 
   return (
-    <div className="m-5 rounded-[2rem] border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
+    <div className="m-5 rounded-2xl border border-dashed border-sky-200 bg-sky-50/40 px-6 py-14 text-center">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-800 shadow-sm">
         <Wrench className="h-7 w-7" />
       </div>
@@ -800,7 +785,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
-        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950"
+        className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6]"
       >
         <Plus className="h-5 w-5" />
         {t("crm.services.createService")}

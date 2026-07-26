@@ -27,7 +27,9 @@ import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
 import API from "@api";
-import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
+import BizuplyLoader, {
+  BizuplyLoadingState,
+} from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
 import SelectTimeFromSlots from "./SelectTimeFromSlots";
 import {
@@ -1094,7 +1096,7 @@ export default function CRMAppointmentsTab() {
 
   if (isError) {
     return (
-      <div dir={dir} className="rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
+      <div dir={dir} className="rounded-2xl border border-red-100 bg-red-50 p-10 text-center">
         <p className="text-lg font-black text-red-700">
           {t("crm.appointments.loadErrorTitle")}
         </p>
@@ -1116,85 +1118,75 @@ export default function CRMAppointmentsTab() {
   ];
 
   return (
-    <div dir={dir} className="space-y-6 text-start text-slate-800">
-      <section className="overflow-hidden rounded-[2rem] border border-white/80 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
-        <div className="relative p-5 sm:p-6 lg:p-7">
-          <div className="pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-sky-200/40 blur-3xl" />
-          <div className="pointer-events-none absolute left-0 top-0 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
-
-          <div className="relative flex flex-col gap-5 xl:flex-row xl:items-center xl:justify-between">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-sky-50 px-4 py-2 text-xs font-black text-sky-700 shadow-sm">
-                <CalendarDays className="h-4 w-4" />
-                {t("crm.appointments.badge")}
-              </div>
-
-              <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-                {t("crm.appointments.title")}
-              </h2>
-
-              <p className="mt-2 max-w-3xl text-sm font-bold leading-7 text-slate-500">
-                {t("crm.appointments.subtitle")}
-              </p>
-            </div>
-
-            <div className="flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={refreshAll}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-              >
-                {isFetching ? (
-                  <BizuplyLoader size="xs" compact />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                {t("crm.appointments.refreshSync")}
-              </button>
-
-              <button
-                type="button"
-                onClick={openCreateModal}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_18px_50px_rgba(15,23,42,0.22)] transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
-              >
-                <Plus className="h-4 w-4" />
-                {t("crm.appointments.createAppointment")}
-              </button>
-            </div>
+    <div dir={dir} className="space-y-4 bg-[#F7F8FC] text-start text-slate-800">
+      <section className="space-y-4">
+        <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
+          <div>
+            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+              {t("crm.appointments.title")}
+            </h2>
+            <p className="mt-1 max-w-3xl text-sm font-semibold leading-6 text-slate-500">
+              {t("crm.appointments.subtitle")}
+            </p>
           </div>
 
-          <div className="relative mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
-            <MetricCard
-              label={t("crm.appointments.metricTotal")}
-              value={appointments.length}
-              icon={CalendarDays}
-            />
-            <MetricCard
-              label={t("crm.appointments.metricToday")}
-              value={todayAppointments.length}
-              icon={Clock3}
-            />
-            <MetricCard
-              label={t("crm.appointments.metricUpcoming")}
-              value={upcomingCount}
-              icon={CheckCircle2}
-            />
-            <MetricCard
-              label={t("crm.appointments.metricRevenue")}
-              value={formatMoney(totalRevenue, user)}
-              icon={DollarSign}
-            />
-            <MetricCard
-              label={t("crm.appointments.metricUnpaid")}
-              value={unpaidCount}
-              icon={CreditCard}
-            />
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <button
+              type="button"
+              onClick={refreshAll}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+            >
+              {isFetching ? (
+                <BizuplyLoader size="xs" compact />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              {t("crm.appointments.refreshSync")}
+            </button>
+
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+            >
+              <Plus className="h-4 w-4" />
+              {t("crm.appointments.createAppointment")}
+            </button>
           </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+          <MetricCard
+            label={t("crm.appointments.metricTotal")}
+            value={appointments.length}
+            icon={CalendarDays}
+            featured
+          />
+          <MetricCard
+            label={t("crm.appointments.metricToday")}
+            value={todayAppointments.length}
+            icon={Clock3}
+          />
+          <MetricCard
+            label={t("crm.appointments.metricUpcoming")}
+            value={upcomingCount}
+            icon={CheckCircle2}
+          />
+          <MetricCard
+            label={t("crm.appointments.metricRevenue")}
+            value={formatMoney(totalRevenue, user)}
+            icon={DollarSign}
+          />
+          <MetricCard
+            label={t("crm.appointments.metricUnpaid")}
+            value={unpaidCount}
+            icon={CreditCard}
+          />
         </div>
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
-        <section className="rounded-[2rem] border border-white/80 bg-white p-4 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-5">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_440px]">
+        <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)] sm:p-5">
           <div className="mb-5 flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div>
               <h3 className="text-2xl font-black text-slate-800">
@@ -1274,8 +1266,8 @@ export default function CRMAppointmentsTab() {
                   className={[
                     "min-h-[116px] rounded-2xl border p-3 text-start transition",
                     isSelected
-                      ? "border-sky-300 bg-sky-50 shadow-[0_16px_36px_rgba(14,165,233,0.12)]"
-                      : "border-slate-100 bg-white hover:border-sky-200 hover:bg-sky-50/40",
+                      ? "border-[#6D28D9]/40 bg-violet-50 shadow-[0_12px_28px_rgba(109,40,217,0.12)]"
+                      : "border-slate-100 bg-white hover:border-violet-200 hover:bg-violet-50/40",
                   ].join(" ")}
                 >
                   <div className="flex items-center justify-between">
@@ -1283,7 +1275,7 @@ export default function CRMAppointmentsTab() {
                       className={[
                         "grid h-8 w-8 place-items-center rounded-xl text-sm font-black",
                         isToday
-                          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+                          ? "bg-[#6D28D9] text-white"
                           : "bg-slate-50 text-slate-800",
                       ].join(" ")}
                     >
@@ -1328,7 +1320,7 @@ export default function CRMAppointmentsTab() {
         </section>
 
         <aside className="space-y-5">
-          <section className="rounded-[2rem] border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
+          <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)]">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h3 className="text-2xl font-black text-slate-800">
@@ -1392,7 +1384,7 @@ export default function CRMAppointmentsTab() {
 
             <div className="mt-4 max-h-[720px] space-y-3 overflow-y-auto pr-1">
               {filteredAppointments.length === 0 ? (
-                <div className="rounded-[1.6rem] border border-dashed border-slate-200 bg-slate-50 p-7 text-center">
+                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center">
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
                   <h3 className="mt-3 text-base font-black text-slate-800">
@@ -1423,7 +1415,7 @@ export default function CRMAppointmentsTab() {
             </div>
           </section>
 
-          <section className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
+          <section className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
             <div className="flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
@@ -1490,22 +1482,40 @@ function MetricCard({
   label,
   value,
   icon: Icon,
+  featured,
 }: {
   label: string;
   value: React.ReactNode;
   icon: React.ElementType;
+  featured?: boolean;
 }) {
+  if (featured) {
+    return (
+      <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <p className="text-xs font-bold text-white/80">{label}</p>
+            <p className="mt-2 text-3xl font-black tracking-tight">{value}</p>
+          </div>
+          <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/15">
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="rounded-[1.6rem] border border-slate-100 bg-white/85 p-4 shadow-sm">
+    <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
       <div className="flex items-center justify-between gap-3">
         <div>
-          <p className="text-[11px] font-black uppercase tracking-[0.16em] text-slate-400">
-            {label}
+          <p className="text-xs font-bold text-slate-500">{label}</p>
+          <p className="mt-2 text-3xl font-black tracking-tight text-slate-900">
+            {value}
           </p>
-          <p className="mt-2 text-2xl font-black text-slate-800">{value}</p>
         </div>
 
-        <div className="grid h-11 w-11 place-items-center rounded-2xl bg-sky-50 text-sky-700">
+        <div className="grid h-11 w-11 place-items-center rounded-xl bg-violet-100 text-[#6D28D9]">
           <Icon className="h-5 w-5" />
         </div>
       </div>
@@ -1527,9 +1537,9 @@ function FilterButton({
       type="button"
       onClick={onClick}
       className={[
-        "h-10 rounded-2xl text-xs font-black transition",
+        "h-10 rounded-xl px-3 text-xs font-black transition",
         active
-          ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_12px_28px_rgba(15,23,42,0.18)]"
+          ? "bg-[#6D28D9] text-white shadow-[0_10px_24px_rgba(109,40,217,0.22)]"
           : "bg-slate-50 text-slate-600 hover:bg-slate-100",
       ].join(" ")}
     >
@@ -1590,7 +1600,7 @@ function AppointmentCard({
   });
 
   return (
-    <article className="rounded-[1.6rem] border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
+    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
@@ -1678,7 +1688,7 @@ function AppointmentCard({
         <button
           type="button"
           onClick={onEdit}
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-[#6D28D9] text-white transition hover:bg-[#5B21B6]"
         >
           <Edit3 className="h-3.5 w-3.5" />
           {t("crm.common.edit")}
@@ -1838,24 +1848,24 @@ function AppointmentModal({
   );
 
   return (
-    <div dir={dir} className="fixed inset-0 z-50 grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-4 backdrop-blur-sm">
-      <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-[2.2rem] bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
-        <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-gradient-to-r from-white via-sky-50/50 to-violet-50/50 p-5 md:p-6">
+    <div dir={dir} className="fixed inset-0 z-50 grid place-items-center bg-slate-900/40 p-4 backdrop-blur-sm">
+      <div className="max-h-[92vh] w-full max-w-5xl overflow-hidden rounded-2xl bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)]">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-100 bg-white p-5 md:p-6">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-sky-50 px-3 py-1 text-xs font-black text-sky-700 ring-1 ring-sky-100">
+            <div className="inline-flex items-center gap-2 rounded-lg bg-violet-50 px-3 py-1 text-xs font-black text-[#6D28D9] ring-1 ring-violet-100">
               <CalendarDays className="h-3.5 w-3.5" />
               {editId
                 ? t("crm.appointments.modalBadgeEdit")
                 : t("crm.appointments.modalBadgeNew")}
             </div>
 
-            <h2 className="mt-3 text-2xl font-black text-slate-800">
+            <h2 className="mt-3 text-2xl font-black text-slate-900">
               {editId
                 ? t("crm.appointments.modalTitleEdit")
                 : t("crm.appointments.modalTitleNew")}
             </h2>
 
-            <p className="mt-1 text-sm font-bold text-slate-500">
+            <p className="mt-1 text-sm font-semibold text-slate-500">
               {t("crm.appointments.modalSubtitle")}
             </p>
           </div>
@@ -1872,7 +1882,7 @@ function AppointmentModal({
         <div className="max-h-[calc(92vh-105px)] overflow-y-auto p-5 md:p-6">
           <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
             <div dir={dir} className="space-y-5 text-start">
-              <div className="rounded-[1.7rem] border border-slate-100 bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-sky-50 text-sky-700">
                     <UserRound className="h-5 w-5" />
@@ -1964,7 +1974,7 @@ function AppointmentModal({
                 </div>
               </div>
 
-              <div className="rounded-[1.7rem] border border-slate-100 bg-white p-5 shadow-sm">
+              <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-sm">
                 <div className="mb-4 flex items-center gap-3">
                   <div className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-50 text-violet-700">
                     <CalendarDays className="h-5 w-5" />
@@ -2114,7 +2124,7 @@ function AppointmentModal({
             </div>
 
             <aside className="space-y-4">
-              <div className="rounded-[1.7rem] border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-sm">
+              <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-sky-50 via-white to-violet-50 p-5 shadow-sm">
                 <h3 className="text-base font-black text-slate-800">
                   {t("crm.appointments.bookingSummary")}
                 </h3>
@@ -2155,7 +2165,7 @@ function AppointmentModal({
                 </div>
               </div>
 
-              <div className="rounded-[1.7rem] border border-slate-100 bg-slate-50 p-5">
+              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-5">
                 <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-400">
                   {t("crm.common.required")}
                 </p>
@@ -2179,7 +2189,7 @@ function AppointmentModal({
                 !appointment.date ||
                 !appointment.time
               }
-              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl transition hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-40"
+              className="inline-flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-xl transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-40"
             >
               {isSaving ? (
                 <BizuplyLoader size="xs" compact />
