@@ -66,6 +66,7 @@ const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
 const Register = lazy(() => import("./pages/Register"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
 const StaffLogin = lazy(() => import("./pages/StaffLogin"));
@@ -764,6 +765,10 @@ export default function App() {
                           element={<WebsiteInviteAcceptPage />}
                         />
                         <Route path="/register" element={<Register />} />
+                        <Route
+                          path="/forgot-password"
+                          element={<ForgotPassword />}
+                        />
                         <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/change-password" element={<ChangePassword />} />
                         <Route path="/staff-login" element={<StaffLogin />} />
