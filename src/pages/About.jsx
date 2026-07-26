@@ -18,6 +18,7 @@ import {
   Zap,
 } from "lucide-react";
 import AboutDashboardShowcase from "../components/about/AboutDashboardShowcase";
+import AboutWidgetsShowcase from "../components/about/AboutWidgetsShowcase";
 import "../styles/About.css";
 
 const valueIcons = [UsersRound, Zap, BadgeCheck, Settings2];
@@ -117,11 +118,11 @@ function About() {
       reviews: t("about.dash.kpiReviews"),
       collabs: t("about.dash.kpiCollabs"),
     },
-    kpiSub: {
-      views: t("about.dash.kpiViewsSub"),
-      leads: t("about.dash.kpiLeadsSub"),
-      reviews: t("about.dash.kpiReviewsSub"),
-      collabs: t("about.dash.kpiCollabsSub"),
+    kpiFooters: {
+      views: t("about.dash.kpiFootViews"),
+      leads: t("about.dash.kpiFootLeads"),
+      reviews: t("about.dash.kpiFootReviews"),
+      collabs: t("about.dash.kpiFootCollabs"),
     },
     recsTitle: t("about.dash.recsTitle"),
     recsSubtitle: t("about.dash.recsSubtitle"),
@@ -129,13 +130,31 @@ function About() {
     recommended: t("about.dash.recommended"),
     viewLeads: t("about.dash.viewLeads"),
     sendFollowUp: t("about.dash.sendFollowUp"),
-    viewAllRecs: t("about.dash.viewAllRecs"),
+    recTitles: {
+      urgent: t("about.dash.recUrgentTitle"),
+      recommended: t("about.dash.recRecommendedTitle"),
+    },
     recText: {
       urgent: t("about.dash.recUrgent"),
       recommended: t("about.dash.recRecommended"),
     },
     toastTitle: t("about.heroFloatTitle"),
     toastText: t("about.heroFloatText"),
+  };
+
+  const widgetLabels = {
+    pagesTitle: t("about.widgets.pagesTitle"),
+    collabTitle: t("about.widgets.collabTitle"),
+    showAll: t("about.widgets.showAll"),
+    activeCollabs: t("about.widgets.activeCollabs"),
+    inboundRefs: t("about.widgets.inboundRefs"),
+    pages: {
+      home: t("about.widgets.pageHome"),
+      services: t("about.widgets.pageServices"),
+      gallery: t("about.widgets.pageGallery"),
+      expertise: t("about.widgets.pageExpertise"),
+      products: t("about.widgets.pageProducts"),
+    },
   };
 
   return (
@@ -247,6 +266,23 @@ function About() {
                 </p>
               </motion.div>
             ))}
+          </motion.div>
+
+          <motion.div
+            className="mt-10 text-center"
+            initial={{ opacity: 0, y: 18 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.25 }}
+          >
+            <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+              {t("about.widgetsTitle")}
+            </h2>
+            <p className="mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
+              {t("about.widgetsText")}
+            </p>
+            <div className="mt-7">
+              <AboutWidgetsShowcase labels={widgetLabels} />
+            </div>
           </motion.div>
         </section>
 

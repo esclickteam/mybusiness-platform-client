@@ -175,6 +175,180 @@
   line-height: 1.7;
 }
 
+.about-widgets-grid {
+  display: grid;
+  gap: 1rem;
+  text-align: start;
+}
+
+@media (min-width: 900px) {
+  .about-widgets-grid {
+    grid-template-columns: 1.15fr 0.85fr;
+    gap: 1.1rem;
+  }
+}
+
+.about-widget-card {
+  border-radius: 1.35rem;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: #ffffff;
+  padding: 1.2rem 1.25rem 1.3rem;
+  box-shadow: 0 14px 36px rgba(109, 40, 217, 0.08);
+}
+
+.about-widget-card h3 {
+  margin: 0 0 1rem;
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 900;
+}
+
+.about-widget-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.about-widget-head h3 {
+  margin: 0;
+}
+
+.about-widget-head span {
+  color: #6d28d9;
+  font-size: 0.8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.about-pages-list {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.about-page-row {
+  display: grid;
+  grid-template-columns: 4.4rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.about-page-meta {
+  display: grid;
+  gap: 0.1rem;
+  text-align: start;
+}
+
+.about-page-meta strong {
+  color: #0f172a;
+  font-size: 0.86rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-page-meta span {
+  color: #16a34a;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.about-page-track {
+  position: relative;
+  height: 0.55rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #eef2ff;
+}
+
+.about-page-track > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #6d28d9, #7c3aed);
+}
+
+.about-page-row > p {
+  margin: 0;
+  color: #334155;
+  font-size: 0.84rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.about-donut-wrap {
+  display: grid;
+  place-items: center;
+  padding: 0.4rem 0 0.8rem;
+}
+
+.about-donut {
+  width: 9.5rem;
+  height: 9.5rem;
+}
+
+.about-collab-stats {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.about-collab-stats > div {
+  display: grid;
+  grid-template-columns: 1.6rem auto 1fr;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.about-collab-stats strong {
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.about-collab-stats .dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+}
+
+.about-collab-stats .dot-a {
+  background: #7c3aed;
+}
+
+.about-collab-stats .dot-b {
+  background: #ddd6fe;
+}
+
+.about-collab-stats p {
+  margin: 0;
+  color: #475569;
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+@media (max-width: 639px) {
+  .about-page-row {
+    grid-template-columns: 3.8rem minmax(0, 1fr);
+    grid-template-areas:
+      "meta label"
+      "track track";
+  }
+
+  .about-page-meta {
+    grid-area: meta;
+  }
+
+  .about-page-track {
+    grid-area: track;
+  }
+
+  .about-page-row > p {
+    grid-area: label;
+    white-space: normal;
+  }
+}
+
 /* Services row — matches mockup: 5 white cards + purple CTA band */
 .about-services-rule {
   width: 4.25rem;
