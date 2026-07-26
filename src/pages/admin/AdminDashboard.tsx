@@ -412,127 +412,65 @@ function AdminDashboard() {
             </div>
           </div>
 
-          <div className="mt-10 grid gap-6 text-right xl:grid-cols-[1fr_360px]">
-            <section className="text-right">
-              <div className="mb-4 text-right">
-                <h2 className="text-right text-2xl font-black text-slate-900">
-                  פעולות מהירות
-                </h2>
-                <p className="mt-1 text-right text-sm font-semibold text-slate-500">
-                  מעבר מהיר לאזורי הניהול החשובים.
-                </p>
-              </div>
-
-              <div className="grid gap-4 text-right lg:grid-cols-2 xl:grid-cols-3">
-                <QuickAction
-                  icon={<Users className="h-5 w-5" />}
-                  iconClassName="bg-violet-100 text-[#7C4DFF]"
-                  title="ניהול משתמשים"
-                  description="צפייה, עריכה, חסימה וניהול משתמשים"
-                  onClick={() => navigate("/admin/users")}
-                />
-
-                <QuickAction
-                  icon={<Sparkles className="h-5 w-5" />}
-                  iconClassName="bg-orange-100 text-orange-600"
-                  title="הרשמה מוקדמת"
-                  description="רשימת כל האנשים שנרשמו דרך טופס ההשקה"
-                  onClick={() => navigate("/admin/early-access")}
-                />
-
-                <QuickAction
-                  icon={<HeartHandshake className="h-5 w-5" />}
-                  iconClassName="bg-amber-100 text-amber-600"
-                  title="ניהול שותפים"
-                  description="ניהול אפיליאייטים ושותפים עסקיים"
-                  onClick={() => navigate("/admin/affiliates")}
-                />
-
-                <QuickAction
-                  icon={<Building2 className="h-5 w-5" />}
-                  iconClassName="bg-sky-100 text-sky-600"
-                  title="כניסה לעסקים"
-                  description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
-                  onClick={() => navigate("/admin/businesses")}
-                />
-
-                <QuickAction
-                  icon={<Wallet className="h-5 w-5" />}
-                  iconClassName="bg-violet-100 text-violet-700"
-                  title="תשלומי שותפים"
-                  description="מעקב וניהול תשלומים לאפיליאייטים"
-                  onClick={() => navigate("/admin/affiliate-payouts")}
-                />
-
-                <QuickAction
-                  icon={<CircleDollarSign className="h-5 w-5" />}
-                  iconClassName="bg-emerald-100 text-emerald-600"
-                  title="בקשות משיכה"
-                  description="בדיקה ואישור בקשות משיכה"
-                  onClick={() => navigate("/admin/withdrawals")}
-                />
-              </div>
-            </section>
-
-            <aside className="rounded-[28px] border border-slate-100 bg-white p-5 text-right shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
-              <h2 className="text-right text-xl font-black text-slate-900">
-                סטטוס מערכת
+          <div className="mt-10 text-right">
+            <div className="mb-4 text-right">
+              <h2 className="text-right text-2xl font-black text-slate-900">
+                פעולות מהירות
               </h2>
               <p className="mt-1 text-right text-sm font-semibold text-slate-500">
-                מצב החיבורים והמידע בפאנל.
+                מעבר מהיר לאזורי הניהול החשובים.
               </p>
+            </div>
 
-              <div className="mt-5 space-y-3 text-right">
-                <div className="flex flex-row items-center justify-between rounded-2xl bg-violet-50 p-4">
-                  <span className="text-sm font-bold text-violet-900/55">
-                    מקור נתונים
-                  </span>
-                  <strong className="rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-[#7C4DFF]">
-                    {connectedToServer ? "שרת" : "מקומי"}
-                  </strong>
-                </div>
+            <div className="grid gap-4 text-right sm:grid-cols-2 xl:grid-cols-3">
+              <QuickAction
+                icon={<Users className="h-5 w-5" />}
+                iconClassName="bg-violet-100 text-[#7C4DFF]"
+                title="ניהול משתמשים"
+                description="צפייה, עריכה, חסימה וניהול משתמשים"
+                onClick={() => navigate("/admin/users")}
+              />
 
-                <div
-                  className={`flex flex-row items-center justify-between rounded-2xl p-4 ${
-                    connectedToServer ? "bg-emerald-50" : "bg-amber-50"
-                  }`}
-                >
-                  <span
-                    className={`text-sm font-bold ${
-                      connectedToServer
-                        ? "text-emerald-950/60"
-                        : "text-amber-950/60"
-                    }`}
-                  >
-                    שרת
-                  </span>
-                  <strong
-                    className={`rounded-full px-3 py-1 text-sm font-black ${
-                      connectedToServer
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-amber-100 text-amber-700"
-                    }`}
-                  >
-                    {loadingStats
-                      ? "מתחבר..."
-                      : connectedToServer
-                        ? "מחובר"
-                        : "לא מחובר"}
-                  </strong>
-                </div>
+              <QuickAction
+                icon={<Sparkles className="h-5 w-5" />}
+                iconClassName="bg-orange-100 text-orange-600"
+                title="הרשמה מוקדמת"
+                description="רשימת כל האנשים שנרשמו דרך טופס ההשקה"
+                onClick={() => navigate("/admin/early-access")}
+              />
 
-                <div className="flex flex-row items-center justify-between rounded-2xl bg-violet-50 p-4">
-                  <span className="text-sm font-bold text-violet-900/55">
-                    הרשמות
-                  </span>
-                  <strong className="rounded-full bg-violet-100 px-3 py-1 text-sm font-black text-[#7C4DFF]">
-                    {loadingStats
-                      ? "…"
-                      : formatNumber(stats.earlyAccessCount)}
-                  </strong>
-                </div>
-              </div>
-            </aside>
+              <QuickAction
+                icon={<HeartHandshake className="h-5 w-5" />}
+                iconClassName="bg-amber-100 text-amber-600"
+                title="ניהול שותפים"
+                description="ניהול אפיליאייטים ושותפים עסקיים"
+                onClick={() => navigate("/admin/affiliates")}
+              />
+
+              <QuickAction
+                icon={<Building2 className="h-5 w-5" />}
+                iconClassName="bg-sky-100 text-sky-600"
+                title="כניסה לעסקים"
+                description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
+                onClick={() => navigate("/admin/businesses")}
+              />
+
+              <QuickAction
+                icon={<Wallet className="h-5 w-5" />}
+                iconClassName="bg-violet-100 text-violet-700"
+                title="תשלומי שותפים"
+                description="מעקב וניהול תשלומים לאפיליאייטים"
+                onClick={() => navigate("/admin/affiliate-payouts")}
+              />
+
+              <QuickAction
+                icon={<CircleDollarSign className="h-5 w-5" />}
+                iconClassName="bg-emerald-100 text-emerald-600"
+                title="בקשות משיכה"
+                description="בדיקה ואישור בקשות משיכה"
+                onClick={() => navigate("/admin/withdrawals")}
+              />
+            </div>
           </div>
         </section>
       </main>

@@ -55,14 +55,26 @@ function statusLabel(status: string) {
 function statusTone(status: string) {
   switch (status) {
     case "waiting":
-      return "bg-amber-100 text-amber-900";
+      return "bg-amber-100 text-amber-800 ring-1 ring-amber-200/70";
     case "active":
-      return "bg-emerald-100 text-emerald-900";
+      return "bg-emerald-100 text-emerald-800 ring-1 ring-emerald-200/70";
     case "closed":
-      return "bg-slate-100 text-slate-600";
+      return "bg-slate-100 text-slate-600 ring-1 ring-slate-200/80";
     default:
-      return "bg-violet-100 text-violet-900";
+      return "bg-violet-100 text-violet-800 ring-1 ring-violet-200/70";
   }
+}
+
+function initialsFromName(name?: string) {
+  const value = String(name || "אורח").trim();
+  return (
+    value
+      .split(/\s+/)
+      .slice(0, 2)
+      .map((part) => part.charAt(0))
+      .join("")
+      .toUpperCase() || "א"
+  );
 }
 
 function formatTime(value?: string) {
@@ -570,37 +582,40 @@ export default function AdminSupportChat() {
   const waitingCount = conversations.filter((c) => c.status === "waiting").length;
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f6f3fb] text-slate-900">
+    <div
+      dir="rtl"
+      className="min-h-screen bg-[#F8F9FA] text-slate-900"
+      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+    >
       <AdminHeader />
 
       <main className="mx-auto max-w-[1480px] px-4 py-6 md:px-8">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="flex items-center gap-2 text-2xl font-black">
-              <Headphones className="text-violet-700" size={26} />
+            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 md:text-3xl">
+              <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25">
+                <Headphones size={20} />
+              </span>
               צ׳אט שירות לקוחות
             </h1>
-            <p className="mt-1 text-sm font-medium text-slate-500">
-              שיחות בזמן אמת מהאתר — כרגע מועברות לאדמין המחובר
+            <p className="mt-2 text-sm font-semibold text-slate-500">
+              שיחות בזמן אמת מהאתר — מועברות לנציג המחובר
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-bold text-emerald-800">
+            <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700 ring-1 ring-emerald-100">
               נציגים מחוברים: {onlineAgents.length || (socket?.connected ? 1 : 0)}
             </span>
             {waitingCount > 0 && (
-              <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">
+              <span className="rounded-full bg-amber-50 px-3 py-1.5 text-xs font-black text-amber-800 ring-1 ring-amber-100">
                 ממתינות: {waitingCount}
               </span>
             )}
-            <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800 ring-1 ring-amber-100">
-              התראות בצלצול למעלה · הגדרות → Push
-            </span>
             <button
               type="button"
               onClick={() => void loadConversations()}
-              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm"
+              className="inline-flex items-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF]"
             >
               <RefreshCw size={14} />
               רענון
@@ -609,24 +624,24 @@ export default function AdminSupportChat() {
         </div>
 
         {toast && (
-          <div className="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
+          <div className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800">
             {toast}
           </div>
         )}
 
         {error && (
-          <div className="mb-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
+          <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-semibold text-rose-700">
             {error}
           </div>
         )}
 
-        <div className="grid min-h-[70vh] grid-cols-1 overflow-hidden rounded-[28px] border border-violet-100 bg-white shadow-xl lg:grid-cols-[340px_1fr]">
+        <div className="grid min-h-[72vh] grid-cols-1 overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] lg:grid-cols-[360px_1fr]">
           <aside
-            className={`border-b border-violet-50 lg:border-b-0 lg:border-l ${
+            className={`border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/80 lg:border-b-0 lg:border-l lg:border-slate-100 ${
               selectedId ? "hidden lg:block" : "block"
             }`}
           >
-            <div className="flex gap-1 border-b border-violet-50 p-3">
+            <div className="flex flex-wrap gap-1.5 border-b border-slate-100 p-3">
               {(
                 [
                   ["open", "פתוחות"],
@@ -640,10 +655,10 @@ export default function AdminSupportChat() {
                   key={key}
                   type="button"
                   onClick={() => setFilter(key)}
-                  className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+                  className={`rounded-full px-3 py-1.5 text-xs font-black transition ${
                     filter === key
-                      ? "bg-violet-700 text-white"
-                      : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                      ? "bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25"
+                      : "bg-white text-slate-600 ring-1 ring-slate-200 hover:bg-violet-50 hover:text-[#7C4DFF]"
                   }`}
                 >
                   {label}
@@ -651,11 +666,15 @@ export default function AdminSupportChat() {
               ))}
             </div>
 
-            <div className="max-h-[60vh] overflow-y-auto lg:max-h-[calc(70vh-52px)]">
+            <div className="max-h-[60vh] overflow-y-auto overscroll-contain lg:max-h-[calc(72vh-64px)]">
               {loadingList ? (
-                <p className="p-4 text-sm text-slate-500">טוען שיחות...</p>
+                <p className="p-5 text-sm font-semibold text-slate-500">
+                  טוען שיחות...
+                </p>
               ) : conversations.length === 0 ? (
-                <p className="p-4 text-sm text-slate-500">אין שיחות להצגה</p>
+                <p className="p-5 text-sm font-semibold text-slate-500">
+                  אין שיחות להצגה
+                </p>
               ) : (
                 conversations.map((c) => (
                   <button
@@ -665,42 +684,49 @@ export default function AdminSupportChat() {
                       setSelectedId(c._id);
                       setSearchParams({ c: c._id });
                     }}
-                    className={`w-full border-b border-slate-50 px-4 py-3 text-right transition ${
+                    className={`w-full border-b border-slate-100 px-4 py-3.5 text-right transition ${
                       selectedId === c._id
-                        ? "bg-violet-50"
+                        ? "bg-violet-50/90"
                         : "hover:bg-slate-50"
                     }`}
                   >
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="text-sm font-black text-slate-900">
-                          {c.name || "אורח"}
+                    <div className="flex items-start gap-3">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7C4DFF] to-[#A78BFA] text-xs font-black text-white shadow-sm">
+                        {initialsFromName(c.name)}
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-black text-slate-900">
+                              {c.name || "אורח"}
+                            </p>
+                            <p className="truncate text-[11px] font-semibold text-slate-500">
+                              {c.email || "ללא אימייל"}
+                            </p>
+                          </div>
+                          <div className="shrink-0 text-left">
+                            <span
+                              className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-black ${statusTone(
+                                c.status
+                              )}`}
+                            >
+                              {statusLabel(c.status)}
+                            </span>
+                            {!!c.unreadByAgent && (
+                              <span className="mt-1 block text-[10px] font-black text-rose-600">
+                                {c.unreadByAgent} חדשות
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <p className="mt-2 line-clamp-2 text-xs font-medium leading-5 text-slate-600">
+                          {c.lastMessagePreview || "—"}
                         </p>
-                        <p className="text-[11px] font-medium text-slate-500">
-                          {c.email || "ללא אימייל"}
+                        <p className="mt-1 text-[10px] font-semibold text-slate-400">
+                          {formatTime(c.lastMessageAt)}
                         </p>
-                      </div>
-                      <div className="text-left">
-                        <span
-                          className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold ${statusTone(
-                            c.status
-                          )}`}
-                        >
-                          {statusLabel(c.status)}
-                        </span>
-                        {!!c.unreadByAgent && (
-                          <span className="mt-1 block text-[10px] font-black text-rose-600">
-                            {c.unreadByAgent} חדשות
-                          </span>
-                        )}
                       </div>
                     </div>
-                    <p className="mt-2 line-clamp-2 text-xs text-slate-600">
-                      {c.lastMessagePreview || "—"}
-                    </p>
-                    <p className="mt-1 text-[10px] text-slate-400">
-                      {formatTime(c.lastMessageAt)}
-                    </p>
                   </button>
                 ))
               )}
@@ -709,35 +735,49 @@ export default function AdminSupportChat() {
 
           <section
             className={`flex min-h-[60vh] flex-col ${
-              selectedId ? "block" : "hidden lg:flex"
+              selectedId ? "flex" : "hidden lg:flex"
             }`}
           >
             {!selected ? (
-              <div className="flex flex-1 flex-col items-center justify-center gap-2 p-8 text-center text-slate-500">
-                <Headphones size={36} className="text-violet-300" />
-                <p className="text-sm font-bold">בחרו שיחה מהרשימה</p>
-                <p className="text-xs">
+              <div className="flex flex-1 flex-col items-center justify-center gap-3 bg-[radial-gradient(circle_at_top,_rgba(124,77,255,0.08),_transparent_45%)] p-8 text-center text-slate-500">
+                <span className="grid h-16 w-16 place-items-center rounded-[22px] bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
+                  <Headphones size={30} />
+                </span>
+                <p className="text-base font-black text-slate-800">
+                  בחרו שיחה מהרשימה
+                </p>
+                <p className="max-w-sm text-sm font-semibold leading-6 text-slate-500">
                   שלום {user?.name || "מנהל"} — שיחות חדשות יופיעו כאן בזמן אמת
                 </p>
               </div>
             ) : (
               <>
-                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-violet-50 px-5 py-4">
-                  <div className="flex min-w-0 items-start gap-3">
+                <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 bg-white px-5 py-4">
+                  <div className="flex min-w-0 items-center gap-3">
                     <button
                       type="button"
                       onClick={goBackToList}
-                      className="inline-flex shrink-0 items-center gap-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 shadow-sm"
+                      className="inline-flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF] lg:hidden"
                     >
                       <ArrowRight size={14} />
                       חזרה לרשימה
                     </button>
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#7C4DFF] to-[#A78BFA] text-xs font-black text-white">
+                      {initialsFromName(selected.name)}
+                    </span>
                     <div className="min-w-0">
-                      <h2 className="text-lg font-black">
+                      <h2 className="truncate text-lg font-black text-slate-900">
                         {selected.name || "אורח"}
                       </h2>
-                      <p className="text-xs font-medium text-slate-500">
-                        {selected.email || "—"} · {statusLabel(selected.status)}
+                      <p className="truncate text-xs font-semibold text-slate-500">
+                        {selected.email || "—"} ·{" "}
+                        <span
+                          className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${statusTone(
+                            selected.status
+                          )}`}
+                        >
+                          {statusLabel(selected.status)}
+                        </span>
                       </p>
                     </div>
                   </div>
@@ -745,7 +785,7 @@ export default function AdminSupportChat() {
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}
-                      className="inline-flex items-center gap-1.5 rounded-xl bg-violet-700 px-3.5 py-2 text-xs font-black text-white shadow-sm transition hover:bg-violet-800"
+                      className="inline-flex items-center gap-1.5 rounded-2xl bg-[#7C4DFF] px-3.5 py-2 text-xs font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0]"
                     >
                       <History size={15} />
                       היסטוריית שיחות של הלקוח
@@ -754,7 +794,7 @@ export default function AdminSupportChat() {
                       <button
                         type="button"
                         onClick={() => claimConversation(selected._id)}
-                        className="rounded-xl bg-emerald-600 px-3 py-2 text-xs font-bold text-white"
+                        className="rounded-2xl bg-emerald-600 px-3.5 py-2 text-xs font-black text-white shadow-sm"
                       >
                         קבל שיחה
                       </button>
@@ -763,7 +803,7 @@ export default function AdminSupportChat() {
                       <button
                         type="button"
                         onClick={() => closeConversation(selected._id)}
-                        className="rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700"
+                        className="rounded-2xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-slate-700"
                       >
                         סגור שיחה
                       </button>
@@ -850,7 +890,7 @@ export default function AdminSupportChat() {
                       el.scrollHeight - el.scrollTop - el.clientHeight;
                     stickToBottomRef.current = distance < 140;
                   }}
-                  className="min-h-0 flex-1 space-y-3 overflow-y-auto bg-[#faf8ff] px-5 py-4"
+                  className="min-h-0 flex-1 space-y-4 overflow-y-auto bg-[linear-gradient(180deg,#faf8ff_0%,#f8fafc_100%)] px-4 py-5 md:px-6"
                 >
                   {historyPreviewId ? (
                     <>
@@ -895,7 +935,7 @@ export default function AdminSupportChat() {
                             return (
                               <div
                                 key={msg._id}
-                                className="text-center text-[11px] font-medium text-slate-500"
+                                className="mx-auto max-w-[85%] rounded-full bg-white/80 px-4 py-1.5 text-center text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200/70"
                               >
                                 {msg.text}
                               </div>
@@ -912,25 +952,25 @@ export default function AdminSupportChat() {
                             >
                               <div
                                 dir="rtl"
-                                className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                                className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
                                   mine
-                                    ? "rounded-br-sm bg-violet-700 text-white"
+                                    ? "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
                                     : msg.senderType === "bot"
-                                      ? "rounded-bl-sm border border-slate-200 bg-white text-slate-800"
-                                      : "rounded-bl-sm border border-emerald-100 bg-emerald-50 text-slate-800"
+                                      ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
+                                      : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
                                 }`}
                               >
-                                <p className="mb-1 text-[10px] font-bold opacity-80">
+                                <p className="mb-1 text-[10px] font-black opacity-80">
                                   {msg.senderType === "visitor"
                                     ? selected.name || "לקוח"
                                     : msg.senderType === "bot"
                                       ? "בוט"
                                       : msg.senderName || "נציג"}
                                 </p>
-                                <p className="whitespace-pre-wrap break-words">
+                                <p className="whitespace-pre-wrap break-words font-semibold">
                                   {msg.text}
                                 </p>
-                                <p className="mt-1 text-[10px] opacity-70">
+                                <p className="mt-1.5 text-[10px] font-semibold opacity-70">
                                   {formatTime(msg.createdAt)}
                                 </p>
                               </div>
@@ -944,14 +984,16 @@ export default function AdminSupportChat() {
                   {!historyPreviewId && (
                     <>
                       {loadingMessages ? (
-                        <p className="text-sm text-slate-500">טוען הודעות...</p>
+                        <p className="text-sm font-semibold text-slate-500">
+                          טוען הודעות...
+                        </p>
                       ) : (
                         messages.map((msg) => {
                           if (msg.senderType === "system") {
                             return (
                               <div
                                 key={msg._id}
-                                className="text-center text-[11px] font-medium text-slate-500"
+                                className="mx-auto max-w-[85%] rounded-full bg-white/80 px-4 py-1.5 text-center text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200/70"
                               >
                                 {msg.text}
                               </div>
@@ -969,25 +1011,25 @@ export default function AdminSupportChat() {
                             >
                               <div
                                 dir="rtl"
-                                className={`max-w-[75%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed shadow-sm ${
+                                className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
                                   mine
-                                    ? "rounded-br-sm bg-violet-700 text-white"
+                                    ? "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
                                     : msg.senderType === "bot"
-                                      ? "rounded-bl-sm border border-slate-200 bg-white text-slate-800"
-                                      : "rounded-bl-sm border border-emerald-100 bg-emerald-50 text-slate-800"
+                                      ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
+                                      : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
                                 }`}
                               >
-                                <p className="mb-1 text-[10px] font-bold opacity-80">
+                                <p className="mb-1 text-[10px] font-black opacity-80">
                                   {msg.senderType === "visitor"
                                     ? selected.name || "לקוח"
                                     : msg.senderType === "bot"
                                       ? "בוט"
                                       : msg.senderName || "נציג"}
                                 </p>
-                                <p className="whitespace-pre-wrap break-words">
+                                <p className="whitespace-pre-wrap break-words font-semibold">
                                   {msg.text}
                                 </p>
-                                <p className="mt-1 text-[10px] opacity-70">
+                                <p className="mt-1.5 text-[10px] font-semibold opacity-70">
                                   {formatTime(msg.createdAt)}
                                 </p>
                               </div>
@@ -1001,8 +1043,8 @@ export default function AdminSupportChat() {
                 </div>
 
                 {!historyPreviewId && (
-                  <footer className="border-t border-violet-50 bg-white px-4 py-3">
-                    <div className="flex items-center gap-2">
+                  <footer className="border-t border-slate-100 bg-white px-4 py-4">
+                    <div className="flex items-center gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
                       <input
                         type="text"
                         value={input}
@@ -1014,7 +1056,7 @@ export default function AdminSupportChat() {
                             ? "השיחה סגורה"
                             : "כתבו תשובה ללקוח..."
                         }
-                        className="h-11 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm outline-none focus:border-violet-300 focus:ring-2 focus:ring-violet-100 disabled:opacity-50"
+                        className="h-11 flex-1 rounded-2xl bg-transparent px-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
                       />
                       <button
                         type="button"
@@ -1024,7 +1066,7 @@ export default function AdminSupportChat() {
                           selected.status === "closed" ||
                           sending
                         }
-                        className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-700 text-white transition hover:bg-violet-800 disabled:opacity-40"
+                        className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-40"
                         aria-label="שליחה"
                       >
                         <Send size={16} className="-scale-x-100" />
