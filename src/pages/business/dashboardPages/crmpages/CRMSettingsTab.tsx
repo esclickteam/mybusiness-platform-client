@@ -237,52 +237,38 @@ export default function CRMSettingsTab() {
   };
 
   return (
-    <div dir={dir} className="space-y-5">
-      <section className="relative overflow-hidden rounded-[2.3rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/80 to-violet-50/70 p-6 shadow-[0_26px_80px_rgba(14,165,233,0.10)]">
-        <div className="pointer-events-none absolute -right-24 -top-28 h-80 w-80 rounded-full bg-sky-200/55 blur-3xl" />
-        <div className="pointer-events-none absolute bottom-[-120px] left-10 h-72 w-72 rounded-full bg-violet-200/45 blur-3xl" />
-        <div className="pointer-events-none absolute left-1/3 top-10 h-56 w-56 rounded-full bg-emerald-100/50 blur-3xl" />
+    <div dir={dir} className="space-y-4 bg-[#F7F8FC]">
+      <section className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
+            {t("crm.settings.heroTitle")}
+          </h2>
+          <p className="mt-1 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
+            {t("crm.settings.heroSubtitle")}
+          </p>
+        </div>
 
-        <div className="relative grid gap-6 xl:grid-cols-[minmax(0,1fr)_520px] xl:items-center">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-sky-100 bg-white/80 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-sky-700 shadow-sm">
-              <Settings className="h-4 w-4" />
-              {t("crm.settings.badge")}
-            </div>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <button
+            type="button"
+            onClick={handleSave}
+            disabled={saving}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            <Save className="h-4 w-4" />
+            {saving
+              ? t("crm.common.saving")
+              : t("crm.settings.saveSettings")}
+          </button>
 
-            <h2 className="mt-4 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
-              {t("crm.settings.heroTitle")}
-            </h2>
-
-            <p className="mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-              {t("crm.settings.heroSubtitle")}
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-5 text-sm font-black text-black shadow-xl shadow-sky-200 transition hover:-translate-y-0.5 hover:from-sky-200/80 hover:via-cyan-100 hover:to-white disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <Save className="h-5 w-5" />
-                {saving
-                  ? t("crm.common.saving")
-                  : t("crm.settings.saveSettings")}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab("working-hours")}
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-5 text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-sky-50"
-              >
-                <Clock className="h-5 w-5" />
-                {t("crm.settings.workingHoursCta")}
-              </button>
-            </div>
-          </div>
-
-          <SettingsHeroMock />
+          <button
+            type="button"
+            onClick={() => setActiveTab("working-hours")}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            <Clock className="h-4 w-4" />
+            {t("crm.settings.workingHoursCta")}
+          </button>
         </div>
       </section>
 
@@ -320,11 +306,11 @@ export default function CRMSettingsTab() {
         />
       </section>
 
-      <section className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
         <div className="border-b border-slate-100 p-4">
           <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
             <div>
-              <h3 className="text-2xl font-black text-slate-800">
+              <h3 className="text-xl font-black text-slate-900">
                 {t("crm.settings.setupTitle")}
               </h3>
 
@@ -333,15 +319,21 @@ export default function CRMSettingsTab() {
               </p>
             </div>
 
-            <div className="flex w-fit items-center gap-2 rounded-full border border-emerald-100 bg-emerald-50 px-4 py-2">
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+            <div className="flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span className="text-xs font-black text-emerald-700">
                 {t("crm.settings.liveCrm")}
               </span>
             </div>
           </div>
 
-          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
+          <div
+            className={[
+              "mt-3 flex gap-1 overflow-x-auto",
+              "[scrollbar-width:none] [-ms-overflow-style:none]",
+              "[&::-webkit-scrollbar]:h-0 [&::-webkit-scrollbar]:w-0",
+            ].join(" ")}
+          >
             {settingsTabMeta.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.key;
@@ -352,22 +344,28 @@ export default function CRMSettingsTab() {
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
                   className={[
-                    "flex min-w-fit items-center gap-3 rounded-2xl border px-4 py-3 text-start transition",
+                    "relative flex min-w-fit items-center gap-2 px-3 py-3 text-start transition",
                     isActive
-                      ? "border-slate-950 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-200"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50",
+                      ? "text-[#6D28D9]"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
                   ].join(" ")}
                 >
                   <Icon
                     className={[
                       "h-4 w-4",
-                      isActive ? "text-white" : "text-sky-800",
+                      isActive ? "text-[#6D28D9]" : "text-slate-400",
                     ].join(" ")}
                   />
 
                   <span className="whitespace-nowrap text-sm font-black">
                     {t(tab.labelKey)}
                   </span>
+                  <span
+                    className={[
+                      "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
+                      isActive ? "bg-[#6D28D9]" : "bg-transparent",
+                    ].join(" ")}
+                  />
                 </button>
               );
             })}
@@ -594,7 +592,7 @@ function SpecialDatesSettings({
         {specialDates.map((item) => (
           <article
             key={item.id}
-            className="rounded-[1.7rem] border border-slate-100 bg-slate-50/60 p-4"
+            className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4"
           >
             <div className="grid gap-4 xl:grid-cols-[180px_220px_1fr_auto] xl:items-end">
               <FormSmall label={t("crm.common.date")}>
@@ -1095,7 +1093,7 @@ function SettingsPanel({
 
   return (
     <section className="space-y-5">
-      <div className="rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-violet-50/50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
+      <div className="rounded-2xl border border-sky-100 bg-gradient-to-br from-white via-sky-50/70 to-violet-50/50 p-5 shadow-[0_18px_50px_rgba(14,165,233,0.08)]">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-3">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
@@ -1122,7 +1120,7 @@ function SettingsPanel({
               type="button"
               onClick={onSave}
               disabled={saving}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
               {saving ? t("crm.common.saving") : actionLabel}
@@ -1132,7 +1130,7 @@ function SettingsPanel({
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+        <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
           <div className="border-b border-slate-100 p-5">
             <h3 className="text-2xl font-black text-slate-800">{title}</h3>
 
@@ -1165,7 +1163,7 @@ function SettingsAside({ settings }: { settings: CRMSettingsState }) {
 
   return (
     <aside className="space-y-5">
-      <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
             <Settings className="h-5 w-5" />
@@ -1215,7 +1213,7 @@ function BrandPreview({ settings }: { settings: CRMSettingsState }) {
   const { t } = useTranslation();
 
   return (
-    <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+    <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <h3 className="text-base font-black text-slate-800">
         {t("crm.settings.branding.previewTitle")}
       </h3>
@@ -1266,7 +1264,7 @@ function SettingsTipCard({
   const { t } = useTranslation();
 
   return (
-    <aside className="h-fit rounded-[2rem] border border-sky-100 bg-sky-50/50 p-5 shadow-[0_12px_36px_rgba(14,165,233,0.06)]">
+    <aside className="h-fit rounded-2xl border border-sky-100 bg-sky-50/50 p-5 shadow-[0_12px_36px_rgba(14,165,233,0.06)]">
       <div className="flex items-center gap-3">
         <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-sky-800 shadow-sm ring-1 ring-sky-100">
           <Icon className="h-5 w-5" />
@@ -1494,7 +1492,7 @@ function SaveButton({
       type="button"
       onClick={onClick}
       disabled={saving}
-      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-sky-950 disabled:cursor-not-allowed disabled:opacity-60"
+      className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
     >
       <Save className="h-5 w-5" />
       {saving ? t("crm.common.saving") : label}
@@ -1512,7 +1510,7 @@ function SecurityCard({
   text: string;
 }) {
   return (
-    <article className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+    <article className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
       <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-50 text-sky-900">
         <Icon className="h-5 w-5" />
       </div>

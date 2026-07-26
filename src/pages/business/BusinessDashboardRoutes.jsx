@@ -400,7 +400,7 @@ const BusinessDashboardRoutes = () => {
               element={<WorkHoursTab businessId={businessId} />}
             />
 
-            {/* Mini SaaS / Client Portal */}
+            {/* Mini SaaS / Client Portal — kept mounted; CRMMain hides nav entry via SHOW_BUSINESS_MINI_SAAS */}
             <Route path="mini-saas" element={<MiniSaaSManager />} />
 
             {/* fallback פנימי בתוך CRM */}

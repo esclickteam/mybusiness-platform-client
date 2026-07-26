@@ -222,7 +222,7 @@ export default function CRMCustomerFile({
 
   if (isNew) {
     return (
-      <section className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+      <section className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
         <div className="mb-6 border-b border-slate-100 pb-5">
           <p className="text-xs font-black uppercase tracking-[0.18em] text-violet-600">
             New customer file
@@ -318,7 +318,7 @@ export default function CRMCustomerFile({
 
   return (
     <section className="space-y-6">
-      <div className="overflow-hidden rounded-[2rem] border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-[0_16px_48px_rgba(99,102,241,0.08)]">
+      <div className="overflow-hidden rounded-2xl border border-violet-100/80 bg-gradient-to-br from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] p-6 text-slate-800 shadow-[0_16px_48px_rgba(99,102,241,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="flex min-w-0 gap-4">
             <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-[1.5rem] border border-violet-100/80 bg-white/80 text-2xl font-black text-violet-700 shadow-sm">
@@ -372,7 +372,7 @@ export default function CRMCustomerFile({
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-3 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
+      <div className="rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_18px_60px_rgba(15,23,42,0.06)]">
         <div className="flex gap-2 overflow-x-auto">
           <TabButton
             active={activeTab === "appointments"}
@@ -390,7 +390,7 @@ export default function CRMCustomerFile({
         </div>
       </div>
 
-      <div className="rounded-[2rem] border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
+      <div className="rounded-2xl border border-slate-100 bg-white p-5 shadow-[0_18px_60px_rgba(15,23,42,0.06)] sm:p-6">
         {loading ? (
           <LoadingState />
         ) : error ? (
@@ -603,8 +603,8 @@ function TabButton({
       className={[
         "inline-flex shrink-0 items-center gap-2 rounded-2xl px-5 py-3 text-sm font-black transition",
         active
-          ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-lg shadow-violet-200"
-          : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-violet-700",
+          ? "bg-[#6D28D9] text-white shadow-[0_10px_24px_rgba(109,40,217,0.22)]"
+          : "bg-slate-50 text-slate-600 hover:bg-violet-50 hover:text-[#6D28D9]",
       ].join(" ")}
     >
       <Icon className="h-4 w-4" />
@@ -668,7 +668,7 @@ function LoadingState() {
 
 function ErrorState({ text }: { text: string }) {
   return (
-    <div className="rounded-[2rem] border border-red-100 bg-red-50 p-10 text-center">
+    <div className="rounded-2xl border border-red-100 bg-red-50 p-10 text-center">
       <p className="text-lg font-black text-red-700">{text}</p>
       <p className="mt-2 text-sm text-red-500">
         Please refresh the page and try again.
