@@ -15,7 +15,10 @@ import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { workHoursQueryKey } from "../../../../hooks/useBusinessWorkHours";
-import { SHOW_BUSINESS_MINI_SAAS } from "./crmFeatureFlags";
+import {
+  SHOW_BUSINESS_MINI_SAAS,
+  SHOW_CRM_PAYMENTS,
+} from "./crmFeatureFlags";
 
 type CrmTab = {
   path: string;
@@ -63,6 +66,8 @@ const crmTabs: CrmTab[] = [
     labelKey: "crm.nav.payments",
     descriptionKey: "crm.nav.paymentsDesc",
     icon: CreditCard,
+    // Keep Payments in the catalog; hide from business UI for now.
+    hidden: !SHOW_CRM_PAYMENTS,
   },
   {
     path: "mini-saas",
