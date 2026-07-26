@@ -6,6 +6,7 @@ import { getTextDirection } from "./i18n/localeUtils";
 
 import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
+import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -1135,6 +1136,14 @@ export default function App() {
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
+        )}
+
+      {/* Platform accessibility only — never dashboards, never customer public sites */}
+      {!isDashboardRoute &&
+        !isBusinessChatRoute &&
+        !isEarlyAccessLanding &&
+        !isMiniSiteHost && (
+          <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}
     </NotificationsProvider>
   );
