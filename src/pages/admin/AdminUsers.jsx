@@ -1,14 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  Ban,
-  Check,
-  Search,
-  Store,
-  Trash2,
-  UserRoundSearch,
-  Users,
-} from "lucide-react";
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
@@ -31,12 +22,34 @@ const STATUS_LABELS = {
   blocked: "חסום",
 };
 
+const ROLE_FILTERS = [
+  ["all", "הכל"],
+  ["customer", "לקוחות"],
+  ["business", "עסקים"],
+  ["affiliate", "שותפים"],
+  ["worker", "עובדים"],
+  ["manager", "מנהלים"],
+  ["admin", "מנהלי מערכת"],
+];
+
 function roleLabel(role) {
   return ROLE_LABELS[role] || role || "—";
 }
 
 function statusLabel(status) {
   return STATUS_LABELS[status] || status || "פעיל";
+}
+
+function actionButtonClass(extra = "") {
+  return [
+    "rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100",
+    "border border-violet-200/80 px-3.5 py-2.5 text-xs font-black text-black",
+    "shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5",
+    "disabled:cursor-wait disabled:opacity-60",
+    extra,
+  ]
+    .filter(Boolean)
+    .join(" ");
 }
 
 function AdminUsers() {
@@ -175,84 +188,60 @@ function AdminUsers() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-[#F8F9FA]"
-      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
-    >
+    <>
       <AdminHeader />
 
-      <main dir="rtl" className="px-4 py-7 text-right text-slate-800 md:px-8">
+      <main
+        dir="rtl"
+        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
+      >
         <section className="mx-auto max-w-[1480px]">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <button
-                type="button"
-                onClick={() => navigate("/admin/dashboard")}
-                className="mb-4 inline-flex items-center gap-2 rounded-2xl bg-[#7C4DFF]/10 px-4 py-2.5 text-sm font-black text-[#7C4DFF] transition hover:bg-[#7C4DFF]/15"
-              >
-                חזרה לדשבורד
-              </button>
-
-              <h1 className="flex items-center justify-start gap-3 text-3xl font-black text-slate-900 md:text-4xl">
-                <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25">
-                  <Users className="h-5 w-5" />
-                </span>
-                ניהול משתמשים
+              <h1 className="text-3xl font-black text-purple-950 md:text-4xl">
+                משתמשים במערכת
               </h1>
-
-              <p className="mt-2 text-sm font-semibold text-slate-500">
+              <p className="mt-2 text-sm font-bold text-purple-950/55">
                 חיפוש, סינון, חסימה וכניסה למשתמשים במערכת.
               </p>
             </div>
 
-            <span className="rounded-2xl bg-violet-100 px-4 py-3 text-center text-sm font-black text-[#7C4DFF]">
-              {filtered.length} משתמשים
-            </span>
-          </div>
-
-          <div className="mb-5 space-y-3 rounded-[24px] border border-slate-100 bg-white p-4 shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
-            <div className="relative min-w-0">
-              <Search className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
               <input
                 type="search"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                placeholder="חיפוש לפי טלפון / שם / שם משתמש / אימייל"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-11 pl-4 text-sm font-bold text-slate-900 outline-none ring-[#7C4DFF]/30 placeholder:text-slate-400 focus:bg-white focus:ring-2"
+                placeholder="חיפוש לפי שם, אימייל, טלפון..."
+                className="w-full rounded-2xl border border-purple-200 bg-white px-4 py-3 text-sm font-bold text-slate-900 outline-none ring-purple-300 placeholder:text-slate-400 focus:ring-2 sm:w-80"
               />
+              <span className="rounded-2xl bg-purple-100 px-4 py-3 text-center text-sm font-black text-purple-900">
+                {filtered.length} משתמשים
+              </span>
             </div>
+          </div>
 
-            <div>
-              <p className="mb-2 text-xs font-black text-slate-500">
-                סינון לפי סוג משתמש (role)
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  ["all", "הכל"],
-                  ["customer", "לקוחות"],
-                  ["business", "עסקים"],
-                  ["affiliate", "שותפים"],
-                  ["worker", "עובדים"],
-                  ["manager", "מנהלים"],
-                  ["admin", "מנהלי מערכת"],
-                ].map(([value, label]) => {
-                  const active = filter === value;
-                  return (
-                    <button
-                      key={value}
-                      type="button"
-                      onClick={() => setFilter(value)}
-                      className={`rounded-full px-3.5 py-2 text-xs font-black transition ${
-                        active
-                          ? "bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25"
-                          : "border border-slate-200 bg-slate-50 text-slate-600 hover:border-violet-200 hover:bg-violet-50 hover:text-[#7C4DFF]"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+          <div className="mb-5 rounded-[28px] border border-purple-200 bg-white p-4 shadow-xl shadow-purple-950/8">
+            <p className="mb-2 text-xs font-black text-purple-900/60">
+              סינון לפי סוג משתמש
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {ROLE_FILTERS.map(([value, label]) => {
+                const active = filter === value;
+                return (
+                  <button
+                    key={value}
+                    type="button"
+                    onClick={() => setFilter(value)}
+                    className={`rounded-2xl px-3.5 py-2 text-xs font-black transition ${
+                      active
+                        ? "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-black shadow-lg shadow-purple-700/20"
+                        : "border border-purple-100 bg-purple-50/60 text-purple-900/70 hover:bg-purple-50"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -262,7 +251,7 @@ function AdminUsers() {
             </div>
           ) : null}
 
-          <div className="overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_8px_28px_rgba(15,23,42,0.05)]">
+          <div className="overflow-hidden rounded-[28px] border border-purple-200 bg-white shadow-xl shadow-purple-950/8">
             {loading ? (
               <div className="flex min-h-[240px] items-center justify-center">
                 <BizuplyLoader size="xl" />
@@ -274,11 +263,10 @@ function AdminUsers() {
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full text-right">
-                  <thead className="bg-violet-50 text-xs font-black text-[#5B21B6]">
+                  <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
                     <tr>
-                      <th className="px-4 py-4">שם</th>
+                      <th className="px-4 py-4">משתמש</th>
                       <th className="px-4 py-4">שם משתמש</th>
-                      <th className="px-4 py-4">אימייל</th>
                       <th className="px-4 py-4">טלפון</th>
                       <th className="px-4 py-4">תפקיד</th>
                       <th className="px-4 py-4">סטטוס</th>
@@ -289,24 +277,39 @@ function AdminUsers() {
                     {filtered.map((rowUser) => {
                       const status = rowUser.status || "active";
                       const isBusy = busyId === rowUser._id;
+                      const initials = String(rowUser.name || "מ")
+                        .trim()
+                        .charAt(0)
+                        .toUpperCase();
 
                       return (
                         <tr
                           key={rowUser._id}
-                          className="border-t border-slate-100 text-sm font-bold text-slate-800"
+                          className="border-t border-purple-100 text-sm font-bold text-slate-800"
                         >
-                          <td className="px-4 py-4 font-black text-slate-900">
-                            {rowUser.name || "—"}
+                          <td className="px-4 py-4">
+                            <div className="flex items-center justify-start gap-3">
+                              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-100 text-sm font-black text-purple-900">
+                                {initials}
+                              </div>
+                              <div>
+                                <div className="font-black text-purple-950">
+                                  {rowUser.name || "ללא שם"}
+                                </div>
+                                <div className="text-xs text-slate-400" dir="ltr">
+                                  {rowUser.email || "—"}
+                                </div>
+                              </div>
+                            </div>
                           </td>
-                          <td className="px-4 py-4">{rowUser.username || "—"}</td>
-                          <td className="px-4 py-4" dir="ltr">
-                            {rowUser.email || "—"}
+                          <td className="px-4 py-4">
+                            {rowUser.username || "—"}
                           </td>
                           <td className="px-4 py-4" dir="ltr">
                             {rowUser.phone || "—"}
                           </td>
                           <td className="px-4 py-4">
-                            <span className="inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-[#7C4DFF]">
+                            <span className="inline-flex rounded-full bg-purple-50 px-3 py-1 text-xs font-black text-purple-900">
                               {roleLabel(rowUser.role)}
                             </span>
                           </td>
@@ -322,46 +325,37 @@ function AdminUsers() {
                             </span>
                           </td>
                           <td className="px-4 py-4">
-                            <div className="flex flex-row items-center justify-start gap-2">
+                            <div className="flex flex-wrap items-center justify-start gap-2">
                               <button
                                 type="button"
                                 disabled={isBusy}
-                                title={
-                                  status === "active"
-                                    ? "חסימת משתמש"
-                                    : "הפעלת משתמש"
-                                }
                                 onClick={() =>
                                   handleStatusToggle(rowUser._id, status)
                                 }
-                                className="grid h-10 w-10 place-items-center rounded-xl border border-violet-200 bg-violet-50 text-[#7C4DFF] transition hover:bg-violet-100 disabled:opacity-50"
+                                className={actionButtonClass()}
                               >
-                                {status === "active" ? (
-                                  <Ban className="h-4 w-4" />
-                                ) : (
-                                  <Check className="h-4 w-4" />
-                                )}
+                                {status === "active" ? "חסימה" : "הפעלה"}
                               </button>
 
                               <button
                                 type="button"
                                 disabled={isBusy}
-                                title="מחיקת משתמש"
                                 onClick={() => handleDelete(rowUser._id)}
-                                className="grid h-10 w-10 place-items-center rounded-xl border border-rose-200 bg-rose-50 text-rose-600 transition hover:bg-rose-100 disabled:opacity-50"
+                                className={actionButtonClass(
+                                  "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
+                                )}
                               >
-                                <Trash2 className="h-4 w-4" />
+                                מחיקה
                               </button>
 
                               {rowUser.role !== "admin" ? (
                                 <button
                                   type="button"
                                   disabled={isBusy}
-                                  title="כניסה כמשתמש"
                                   onClick={() => handleImpersonate(rowUser)}
-                                  className="grid h-10 w-10 place-items-center rounded-xl border border-violet-200 bg-violet-100 text-[#5B21B6] transition hover:bg-violet-200 disabled:opacity-50"
+                                  className={actionButtonClass()}
                                 >
-                                  <UserRoundSearch className="h-4 w-4" />
+                                  כניסה כמשתמש
                                 </button>
                               ) : null}
 
@@ -370,11 +364,10 @@ function AdminUsers() {
                                 <button
                                   type="button"
                                   disabled={isBusy}
-                                  title="כניסה לעסק כאדמין"
                                   onClick={() => handleEnterAsAdmin(rowUser)}
-                                  className="grid h-10 w-10 place-items-center rounded-xl bg-slate-900 text-white transition hover:bg-slate-800 disabled:opacity-50"
+                                  className={actionButtonClass()}
                                 >
-                                  <Store className="h-4 w-4" />
+                                  כניסה לעסק
                                 </button>
                               ) : null}
                             </div>
@@ -389,7 +382,7 @@ function AdminUsers() {
           </div>
         </section>
       </main>
-    </div>
+    </>
   );
 }
 
