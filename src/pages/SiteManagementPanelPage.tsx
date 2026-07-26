@@ -44,6 +44,7 @@ export default function SiteManagementPanelPage() {
   const [siteName, setSiteName] = useState("האתר שלי");
   const [sitePublished, setSitePublished] = useState(false);
   const [publicUrl, setPublicUrl] = useState("");
+  const [templateKey, setTemplateKey] = useState("");
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
@@ -52,6 +53,7 @@ export default function SiteManagementPanelPage() {
 
   const basePath = `/business/${businessId}/dashboard`;
   const editorHref = `${basePath}/website/sites/${siteId}/edit`;
+  const isTemplateSite = Boolean(String(templateKey || "").trim());
 
   const loadPanel = useCallback(async () => {
     if (!siteId) return;
@@ -73,6 +75,11 @@ export default function SiteManagementPanelPage() {
       setSiteName(String(site.name || "האתר שלי"));
       setSitePublished(Boolean(site.published || site.status === "published"));
       setPublicUrl(String(site.publicUrl || ""));
+      setTemplateKey(
+        String(site.templateKey || site.templateId || site.templateName || "")
+          .trim()
+          .toLowerCase()
+      );
       setCatalog(plugins.catalog);
       setEnabledPlugins(plugins.enabledPlugins);
       setDetectedFromSite(plugins.detectedFromSite || []);
@@ -156,13 +163,22 @@ export default function SiteManagementPanelPage() {
       const hints = result.editorHints || [];
       const storeHint = hints.find((h) => h.action === "add-products-page");
       if (storeHint && enabled) {
-        const go = window.confirm(
-          `${storeHint.message || "להוסיף עמוד מוצרים?"}\n\nלחצו אישור לפתיחת העורך עם עמוד חנות שיסתנכרן עם המוצרים.`
-        );
-        if (go) {
-          navigate(
-            `${editorHref}?addPlugin=store&addPage=${encodeURIComponent(storeHint.pageTemplateId || "page-products-01")}`
+        // Never dump merchants into the blank Grapes page-builder for store setup.
+        // Product CRUD lives in the store management panel; template shops sync alone.
+        if (pluginKey === "store" || isTemplateSite) {
+          setActiveSection("store");
+          window.alert(
+            "תוסף החנות פעיל.\n\nעריכת מוצרים, מלאי והזמנות נמצאת כאן בפאנל ניהול החנות — לא בעורך העיצוב.\nעמוד החנות בתבנית מסתנכרן אוטומטית עם המוצרים."
           );
+        } else {
+          const go = window.confirm(
+            `${storeHint.message || "להוסיף עמוד מוצרים?"}\n\nלחצו אישור לפתיחת עורך האתר עם עמוד חנות.`
+          );
+          if (go) {
+            navigate(
+              `${editorHref}?addPlugin=store&addPage=${encodeURIComponent(storeHint.pageTemplateId || "page-products-01")}`
+            );
+          }
         }
       }
     } catch (err: any) {
