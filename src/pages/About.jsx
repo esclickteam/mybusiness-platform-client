@@ -14,22 +14,26 @@ import {
 import "../styles/About.css";
 
 const offerMeta = [
-  { key: "offer1", icon: UsersRound, to: "/features" },
-  { key: "offer2", icon: LayoutDashboard, to: "/features" },
-  { key: "offer3", icon: MessageSquareHeart, to: "/features" },
-  { key: "offer4", icon: Sparkles, to: "/features" },
-  { key: "offer5", icon: Bot, to: "/features" },
-  { key: "offer6", icon: CalendarDays, to: "/features" },
+  { key: "offer1", icon: UsersRound },
+  { key: "offer2", icon: LayoutDashboard },
+  { key: "offer3", icon: MessageSquareHeart },
+  { key: "offer4", icon: Sparkles },
+  { key: "offer5", icon: Bot },
+  { key: "offer6", icon: CalendarDays },
 ];
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 28 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 14 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+  },
 };
 
 const stagger = {
   hidden: {},
-  show: { transition: { staggerChildren: 0.1 } },
+  show: { transition: { staggerChildren: 0.07 } },
 };
 
 function About() {
@@ -49,7 +53,6 @@ function About() {
     ...meta,
     title: t(`about.${meta.key}Title`),
     text: t(`about.${meta.key}Text`),
-    link: t("about.offerLearnMore"),
   }));
   const values = [1, 2, 3].map((n) => ({
     title: t(`about.value${n}Title`),
@@ -88,84 +91,102 @@ function About() {
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* HERO */}
-      <section className="about-hero about-anim-hero">
-        <div className="about-hero-bg" aria-hidden="true" />
-        <div className="about-hero-grid" aria-hidden="true" />
-        <div className="about-hero-overlay" aria-hidden="true" />
-        <div className="about-hero-fade" aria-hidden="true" />
+      <div className="about-ambient" aria-hidden="true">
+        <span className="a1" />
+        <span className="a2" />
+        <span className="a3" />
+      </div>
 
-        <div className="about-hero-content">
-          <p className="about-anim-up-1 text-sm font-extrabold tracking-[0.28em] text-sky-200">
-            BIZUPLY
-          </p>
-          <h1 className="about-anim-up-2 mt-5 text-[clamp(2rem,6.5vw,3.75rem)] font-black leading-[1.12]">
-            {t("about.heroTitleTop")}{" "}
-            <span className="text-sky-200">{t("about.heroTitleHighlight")}</span>
-          </h1>
-          <p className="about-anim-up-3 mx-auto mt-5 max-w-[48ch] text-[clamp(1rem,3vw,1.25rem)] leading-8 text-white/90">
-            {t("about.heroSubtitle")}
-          </p>
-          <div className="about-anim-up-4 mt-8 flex flex-wrap items-center justify-center gap-3">
-            <Link to="/register" className="about-btn-primary">
-              {t("about.ctaPrimary")}
-            </Link>
-            <Link to="/features" className="about-btn-secondary">
-              {t("about.ctaExplore")}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <div className="about-shell mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+        {/* Hero — CRM glass panel */}
+        <section className="about-enter overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-[0_22px_70px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
+          <div className="h-1 bg-gradient-to-l from-sky-300 via-violet-300 to-emerald-300" />
 
-      {/* MARQUEE */}
-      <section className="relative z-[1] -mt-8 px-4 pb-6">
-        <div className="about-marquee rounded-2xl border border-violet-100/80 bg-white/80 py-4 shadow-[0_14px_40px_rgba(37,99,235,0.1)] backdrop-blur-xl">
-          <div className="about-marquee-track">
-            {[...safeMarquee, ...safeMarquee].map((item, i) => (
-              <div
-                key={`${item}-${i}`}
-                className="flex items-center gap-3 rounded-xl border border-violet-100 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-5 py-2.5 text-sm font-extrabold text-slate-800"
-              >
-                <span className="h-2 w-2 rounded-full bg-gradient-to-r from-[#6D28D9] to-[#2563EB]" />
-                {item}
+          <div className="grid gap-10 px-6 py-10 sm:px-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:px-10 lg:py-14">
+            <div className="text-start">
+              <p className="about-enter about-enter-delay-1 text-xs font-black uppercase tracking-[0.22em] text-sky-600">
+                {t("about.badge")}
+              </p>
+
+              <h1 className="about-enter about-enter-delay-1 mt-3 text-4xl font-black tracking-tight text-slate-800 sm:text-5xl lg:text-[3.4rem] lg:leading-[1.08]">
+                {t("about.heroTitleTop")}{" "}
+                <span className="bg-gradient-to-l from-[#6D28D9] to-[#2563EB] bg-clip-text text-transparent">
+                  {t("about.heroTitleHighlight")}
+                </span>
+              </h1>
+
+              <p className="about-enter about-enter-delay-2 mt-5 max-w-xl text-base font-semibold leading-8 text-slate-500 sm:text-lg">
+                {t("about.heroSubtitle")}
+              </p>
+
+              <div className="about-enter about-enter-delay-3 mt-8 flex flex-wrap gap-3">
+                <Link
+                  to="/register"
+                  className="inline-flex h-11 items-center justify-center rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+                >
+                  {t("about.ctaPrimary")}
+                </Link>
+                <Link
+                  to="/features"
+                  className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 bg-white px-5 text-sm font-black text-slate-800 transition hover:border-violet-200 hover:bg-violet-50/50"
+                >
+                  {t("about.ctaExplore")}
+                </Link>
               </div>
-            ))}
+            </div>
+
+            <div className="about-enter about-enter-delay-2">
+              <HeroPreview stats={stats} />
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <main className="relative mx-auto max-w-7xl px-5 pb-8 sm:px-8 lg:px-10">
-        {/* ABOUT / STORY */}
-        <RevealSection className="py-20 text-center lg:py-24">
-          <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
-            {t("about.badge")}
-          </p>
-          <h2 className="about-shine mx-auto mt-4 max-w-3xl text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight">
-            {t("about.storyTitle")}
-          </h2>
-          <span className="about-title-underline" />
-          <p className="mx-auto mt-6 max-w-3xl text-lg font-semibold leading-8 text-slate-600">
-            {t("about.introQuestion")}
-          </p>
-          <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600">
-            {t("about.storyText")}
-          </p>
-        </RevealSection>
+        {/* Marquee */}
+        <section className="mt-6 overflow-hidden rounded-2xl border border-slate-200/80 bg-white/80 px-3 py-3 shadow-[0_10px_28px_rgba(15,23,42,0.04)]">
+          <div className="about-marquee">
+            <div className="about-marquee-track">
+              {[...safeMarquee, ...safeMarquee].map((item, i) => (
+                <div
+                  key={`${item}-${i}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-[#F7F8FC] px-4 py-2 text-sm font-bold text-slate-700"
+                >
+                  <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+                  {item}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-        {/* OFFERS / SERVICES */}
-        <RevealSection className="pb-20 lg:pb-24">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+        {/* Story */}
+        <Reveal className="mt-16 grid gap-10 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
+              {t("about.badge")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
+              {t("about.storyTitle")}
+            </h2>
+            <p className="mt-4 text-base font-semibold leading-8 text-slate-500">
+              {t("about.introQuestion")}
+            </p>
+          </div>
+          <p className="text-base leading-8 text-slate-600">{t("about.storyText")}</p>
+        </Reveal>
+
+        {/* Offers */}
+        <Reveal className="mt-20">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               {t("about.offersBadge")}
             </p>
-            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("about.offersTitleTop")}{" "}
               <span className="bg-gradient-to-l from-[#6D28D9] to-[#2563EB] bg-clip-text text-transparent">
                 {t("about.offersTitleHighlight")}
               </span>
             </h2>
-            <span className="about-title-underline" />
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-slate-600">
+            <p className="mt-4 text-base leading-7 text-slate-500">
               {t("about.offersSubtitle")}
             </p>
           </div>
@@ -175,7 +196,7 @@ function About() {
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.15 }}
-            className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3"
+            className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
           >
             {offers.map((item) => {
               const Icon = item.icon;
@@ -183,120 +204,105 @@ function About() {
                 <motion.article
                   key={item.key}
                   variants={fadeUp}
-                  className="about-service-card p-8 text-start"
+                  className="about-card rounded-2xl p-6 text-start"
                 >
-                  <div className="about-service-icon relative z-[1] mb-5 grid h-14 w-14 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]">
-                    <Icon size={24} />
+                  <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-violet-100 text-[#6D28D9]">
+                    <Icon size={22} />
                   </div>
-                  <h3 className="about-service-title relative z-[1] text-xl font-black text-slate-900">
-                    {item.title}
-                  </h3>
-                  <p className="about-service-text relative z-[1] mt-3 text-sm font-medium leading-7 text-slate-600">
+                  <h3 className="text-lg font-black text-slate-800">{item.title}</h3>
+                  <p className="mt-2 text-sm font-medium leading-7 text-slate-500">
                     {item.text}
                   </p>
                   <Link
-                    to={item.to}
-                    className="about-service-link relative z-[1] mt-5 inline-flex text-sm font-extrabold text-[#6D28D9]"
+                    to="/features"
+                    className="mt-4 inline-flex text-sm font-black text-[#6D28D9] transition hover:text-[#5B21B6]"
                   >
-                    {item.link}
+                    {t("about.offerLearnMore")}
                   </Link>
                 </motion.article>
               );
             })}
           </motion.div>
-        </RevealSection>
-      </main>
+        </Reveal>
 
-      {/* PROCESS */}
-      <section className="about-process px-5 py-20 sm:px-8 lg:px-10 lg:py-24">
-        <div className="about-process-pulse" aria-hidden="true" />
-        <div className="relative z-[1] mx-auto max-w-7xl text-center">
-          <h2 className="about-shine text-[clamp(1.9rem,4vw,2.8rem)] font-black">
-            {t("about.processTitle")}
-          </h2>
-          <span className="about-title-underline" />
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-white/85">
-            {t("about.processSubtitle")}
-          </p>
+        {/* Process */}
+        <Reveal className="mt-20 overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_22px_70px_rgba(15,23,42,0.06)] backdrop-blur-2xl sm:p-8">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
+              {t("about.processTitle")}
+            </p>
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
+              {t("about.processSubtitle")}
+            </h2>
+          </div>
 
-          <motion.div
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.2 }}
-            className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          >
+          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {processSteps.map((step, index) => (
-              <motion.div
+              <div
                 key={step.title}
-                variants={fadeUp}
-                className="about-process-step rounded-2xl p-6 text-start"
+                className="rounded-2xl border border-slate-200 bg-[#F7F8FC] p-5"
               >
-                <p className="text-sm font-extrabold tracking-[0.2em] text-sky-200">
+                <p className="text-xs font-black tracking-[0.18em] text-[#6D28D9]">
                   0{index + 1}
                 </p>
-                <h3 className="mt-3 text-xl font-black">{step.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-white/80">{step.text}</p>
-              </motion.div>
+                <h3 className="mt-3 text-lg font-black text-slate-800">
+                  {step.title}
+                </h3>
+                <p className="mt-2 text-sm leading-7 text-slate-500">{step.text}</p>
+              </div>
             ))}
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </Reveal>
 
-      <main className="relative mx-auto max-w-7xl px-5 sm:px-8 lg:px-10">
-        {/* WHY + STATS */}
-        <RevealSection className="py-20 lg:py-24">
-          <div className="mx-auto max-w-3xl text-center">
-            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+        {/* Why + stats */}
+        <Reveal className="mt-20">
+          <div className="max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               {t("about.valuesBadge")}
             </p>
-            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black leading-tight text-slate-900">
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800 sm:text-4xl">
               {t("about.whyTitle")}
             </h2>
-            <span className="about-title-underline" />
-            <p className="mx-auto mt-5 max-w-3xl text-base leading-8 text-slate-600">
+            <p className="mt-4 text-base leading-8 text-slate-500">
               {t("about.valuesText")}
             </p>
           </div>
 
-          <div className="mt-10 grid gap-5 sm:grid-cols-3">
+          <div className="mt-8 grid gap-4 sm:grid-cols-3">
             {values.map((value) => (
               <div
                 key={value.title}
-                className="rounded-2xl border border-violet-100/80 bg-white/90 p-6 shadow-[0_10px_28px_rgba(37,99,235,0.08)]"
+                className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_28px_rgba(15,23,42,0.04)]"
               >
-                <h3 className="text-lg font-black text-slate-900">{value.title}</h3>
-                <p className="mt-2 text-sm leading-7 text-slate-600">{value.text}</p>
+                <h3 className="text-lg font-black text-slate-800">{value.title}</h3>
+                <p className="mt-2 text-sm leading-7 text-slate-500">{value.text}</p>
               </div>
             ))}
           </div>
 
           <StatsRow stats={stats} />
-        </RevealSection>
+        </Reveal>
 
         {/* FAQ */}
-        <RevealSection className="pb-20 lg:pb-24">
-          <div className="mx-auto mb-10 max-w-3xl text-center">
-            <p className="text-sm font-extrabold tracking-[0.22em] text-[#6D28D9]">
+        <Reveal className="mt-20 mb-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               {t("about.faqBadge")}
             </p>
-            <h2 className="mt-4 text-[clamp(1.9rem,4vw,3rem)] font-black text-slate-900">
+            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
               {t("about.faqTitle")}
             </h2>
-            <span className="about-title-underline" />
-            <p className="mx-auto mt-5 max-w-2xl text-base text-slate-600">
-              {t("about.faqSubtitle")}
-            </p>
+            <p className="mt-3 text-base text-slate-500">{t("about.faqSubtitle")}</p>
           </div>
 
-          <div className="mx-auto max-w-3xl space-y-3">
+          <div className="mx-auto mt-8 max-w-3xl space-y-3">
             {faqs.map((item, index) => {
               const open = openFaq === index;
               return (
                 <div
                   key={item.q}
-                  className="about-faq-item rounded-2xl"
                   data-open={open}
+                  className="about-faq-item rounded-2xl border border-slate-200 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.04)]"
                 >
                   <button
                     type="button"
@@ -304,11 +310,11 @@ function About() {
                     onClick={() => setOpenFaq(open ? -1 : index)}
                     aria-expanded={open}
                   >
-                    <span className="text-base font-extrabold text-slate-900">
+                    <span className="text-sm font-black text-slate-800 sm:text-base">
                       {item.q}
                     </span>
                     <span
-                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-gradient-to-l from-violet-100 to-sky-100 text-lg font-black text-[#6D28D9] transition ${
+                      className={`grid h-8 w-8 shrink-0 place-items-center rounded-full bg-violet-100 text-base font-black text-[#6D28D9] transition ${
                         open ? "rotate-45" : ""
                       }`}
                     >
@@ -317,7 +323,7 @@ function About() {
                   </button>
                   <div className="about-faq-answer">
                     <div>
-                      <p className="px-5 pb-5 text-sm leading-7 text-slate-600">
+                      <p className="px-5 pb-5 text-sm leading-7 text-slate-500">
                         {item.a}
                       </p>
                     </div>
@@ -326,48 +332,99 @@ function About() {
               );
             })}
           </div>
-        </RevealSection>
-      </main>
+        </Reveal>
 
-      {/* FINAL CTA — not a contact form */}
-      <section className="relative overflow-hidden px-5 pb-20 sm:px-8 lg:px-10 lg:pb-24">
-        <div className="relative mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] px-6 py-14 text-center text-white shadow-[0_22px_60px_rgba(37,99,235,0.28)] sm:px-10">
-          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.2),transparent_45%)]" />
-          <div className="relative">
-            <h2 className="text-[clamp(1.8rem,4vw,2.8rem)] font-black leading-tight">
-              {t("about.ctaTitleTop")}
-              <br />
-              {t("about.ctaTitleBottom")}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85">
-              {t("about.ctaText")}
-            </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Link to="/register" className="about-btn-primary">
+        {/* CTA */}
+        <section className="mb-6 overflow-hidden rounded-[2rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] p-8 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)] sm:p-10">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+            <div className="max-w-2xl text-start">
+              <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
+                {t("about.ctaTitleTop")}
+                <br />
+                {t("about.ctaTitleBottom")}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-white/85 sm:text-base">
+                {t("about.ctaText")}
+              </p>
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Link
+                to="/register"
+                className="inline-flex h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-black text-[#6D28D9] transition hover:bg-violet-50"
+              >
                 {t("about.ctaPrimary")}
               </Link>
               <Link
                 to="/how-it-works"
-                className="about-btn-secondary"
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-white/35 bg-white/10 px-5 text-sm font-black text-white transition hover:bg-white/15"
               >
                 {t("about.ctaHowItWorks")}
               </Link>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </div>
     </div>
   );
 }
 
-function RevealSection({ children, className = "" }) {
+function HeroPreview({ stats }) {
+  return (
+    <div className="rounded-[1.6rem] border border-slate-200 bg-[#F7F8FC] p-4 shadow-[0_14px_40px_rgba(15,23,42,0.06)] sm:p-5">
+      <div className="rounded-2xl bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-5 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
+        <p className="text-xs font-black uppercase tracking-[0.18em] text-white/75">
+          BizUply CRM
+        </p>
+        <p className="mt-2 text-2xl font-black tracking-tight">
+          {stats[0]?.label}
+        </p>
+        <p className="mt-1 text-sm font-semibold text-white/80">
+          CRM · Leads · AI
+        </p>
+      </div>
+
+      <div className="mt-4 grid grid-cols-3 gap-3">
+        {stats.map((stat) => (
+          <div
+            key={stat.label}
+            className="rounded-xl border border-slate-200 bg-white px-3 py-3 text-center"
+          >
+            <p className="text-lg font-black text-slate-800">
+              {stat.value}
+              {stat.suffix}
+            </p>
+            <p className="mt-1 text-[11px] font-bold text-slate-500">{stat.label}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-4 space-y-2">
+        {["CRM", "Leads", "Appointments"].map((row, i) => (
+          <div
+            key={row}
+            className={`flex items-center justify-between rounded-xl border px-3 py-2.5 text-sm font-bold ${
+              i === 0
+                ? "border-violet-200 bg-gradient-to-l from-violet-50 via-white to-sky-50 text-slate-800"
+                : "border-slate-200 bg-white text-slate-600"
+            }`}
+          >
+            <span>{row}</span>
+            <span className="h-2 w-2 rounded-full bg-[#6D28D9]" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function Reveal({ children, className = "" }) {
   return (
     <motion.section
       className={className}
       variants={fadeUp}
       initial="hidden"
       whileInView="show"
-      viewport={{ once: true, amount: 0.2 }}
+      viewport={{ once: true, amount: 0.18 }}
     >
       {children}
     </motion.section>
@@ -381,25 +438,23 @@ function StatsRow({ stats }) {
   return (
     <div
       ref={ref}
-      className="mt-12 overflow-hidden rounded-[1.5rem] bg-gradient-to-l from-[#4c1d95] via-[#6D28D9] to-[#2563EB] p-6 text-white shadow-[0_18px_50px_rgba(37,99,235,0.25)] sm:p-8"
+      className="mt-8 grid gap-4 sm:grid-cols-3"
     >
-      <div className="grid gap-4 sm:grid-cols-3">
-        {stats.map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded-2xl border border-white/15 bg-white/10 px-5 py-6 text-center backdrop-blur-sm"
-          >
-            <p className="text-4xl font-black tracking-tight sm:text-5xl">
-              <AnimatedNumber
-                value={stat.value}
-                suffix={stat.suffix}
-                active={inView}
-              />
-            </p>
-            <p className="mt-2 text-sm font-bold text-white/85">{stat.label}</p>
-          </div>
-        ))}
-      </div>
+      {stats.map((stat) => (
+        <div
+          key={stat.label}
+          className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-[0_10px_28px_rgba(15,23,42,0.04)]"
+        >
+          <p className="text-4xl font-black tracking-tight text-slate-800">
+            <AnimatedNumber
+              value={stat.value}
+              suffix={stat.suffix}
+              active={inView}
+            />
+          </p>
+          <p className="mt-2 text-sm font-bold text-slate-500">{stat.label}</p>
+        </div>
+      ))}
     </div>
   );
 }
@@ -410,14 +465,14 @@ function AnimatedNumber({ value, suffix = "", active }) {
   useEffect(() => {
     if (!active) return undefined;
     let frame = 0;
-    const frames = 36;
+    const frames = 28;
     const id = window.setInterval(() => {
       frame += 1;
       const progress = Math.min(1, frame / frames);
       const eased = 1 - (1 - progress) ** 3;
       setN(Math.round(value * eased));
       if (progress >= 1) window.clearInterval(id);
-    }, 24);
+    }, 20);
     return () => window.clearInterval(id);
   }, [active, value]);
 
