@@ -17,8 +17,6 @@ import {
   UsersRound,
   Zap,
 } from "lucide-react";
-import AboutDashboardShowcase from "../components/about/AboutDashboardShowcase";
-import AboutWidgetsShowcase from "../components/about/AboutWidgetsShowcase";
 import "../styles/About.css";
 
 const valueIcons = [UsersRound, Zap, BadgeCheck, Settings2];
@@ -95,67 +93,6 @@ function About() {
     ...item,
     title: t(`about.${item.key}Title`),
   }));
-
-  const dashLabels = {
-    nav: {
-      dashboard: t("about.dash.navDashboard"),
-      leads: t("about.dash.navLeads"),
-      clients: t("about.dash.navClients"),
-      tasks: t("about.dash.navTasks"),
-      calendar: t("about.dash.navCalendar"),
-      reports: t("about.dash.navReports"),
-      tips: t("about.dash.navTips"),
-      settings: t("about.dash.navSettings"),
-    },
-    help: t("about.dash.help"),
-    logout: t("about.dash.logout"),
-    avatar: t("about.dash.avatar"),
-    owner: t("about.dash.owner"),
-    role: t("about.dash.role"),
-    kpi: {
-      views: t("about.dash.kpiViews"),
-      leads: t("about.dash.kpiLeads"),
-      reviews: t("about.dash.kpiReviews"),
-      collabs: t("about.dash.kpiCollabs"),
-    },
-    kpiFooters: {
-      views: t("about.dash.kpiFootViews"),
-      leads: t("about.dash.kpiFootLeads"),
-      reviews: t("about.dash.kpiFootReviews"),
-      collabs: t("about.dash.kpiFootCollabs"),
-    },
-    recsTitle: t("about.dash.recsTitle"),
-    recsSubtitle: t("about.dash.recsSubtitle"),
-    urgent: t("about.dash.urgent"),
-    recommended: t("about.dash.recommended"),
-    viewLeads: t("about.dash.viewLeads"),
-    sendFollowUp: t("about.dash.sendFollowUp"),
-    recTitles: {
-      urgent: t("about.dash.recUrgentTitle"),
-      recommended: t("about.dash.recRecommendedTitle"),
-    },
-    recText: {
-      urgent: t("about.dash.recUrgent"),
-      recommended: t("about.dash.recRecommended"),
-    },
-    toastTitle: t("about.heroFloatTitle"),
-    toastText: t("about.heroFloatText"),
-  };
-
-  const widgetLabels = {
-    pagesTitle: t("about.widgets.pagesTitle"),
-    collabTitle: t("about.widgets.collabTitle"),
-    showAll: t("about.widgets.showAll"),
-    activeCollabs: t("about.widgets.activeCollabs"),
-    inboundRefs: t("about.widgets.inboundRefs"),
-    pages: {
-      home: t("about.widgets.pageHome"),
-      services: t("about.widgets.pageServices"),
-      gallery: t("about.widgets.pageGallery"),
-      expertise: t("about.widgets.pageExpertise"),
-      products: t("about.widgets.pageProducts"),
-    },
-  };
 
   return (
     <div className="about-page">
@@ -235,9 +172,29 @@ function About() {
             </Link>
           </motion.div>
 
-          <div className="about-hero-dash mt-10">
-            <AboutDashboardShowcase labels={dashLabels} />
-          </div>
+          <motion.div
+            className="about-hero-dash mt-10"
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+          >
+            <div className="about-product-frame">
+              <img
+                src="/abaut12345.PNG"
+                alt=""
+                className="about-shot-rail"
+                decoding="async"
+                fetchPriority="high"
+              />
+              <img
+                src="/abaut1234.PNG"
+                alt={t("about.heroImageAlt")}
+                className="about-shot-main"
+                decoding="async"
+                fetchPriority="high"
+              />
+            </div>
+          </motion.div>
 
           <motion.div
             ref={statsRef}
@@ -269,7 +226,7 @@ function About() {
           </motion.div>
 
           <motion.div
-            className="mt-10 text-center"
+            className="mt-12 text-center"
             initial={{ opacity: 0, y: 18 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.25 }}
@@ -280,8 +237,14 @@ function About() {
             <p className="mx-auto mt-3 max-w-2xl text-base font-medium leading-7 text-slate-600">
               {t("about.widgetsText")}
             </p>
-            <div className="mt-7">
-              <AboutWidgetsShowcase labels={widgetLabels} />
+            <div className="about-widgets-shot-wrap mt-7">
+              <img
+                src="/abaut123.PNG"
+                alt={t("about.widgetsImageAlt")}
+                className="about-widgets-shot"
+                decoding="async"
+                loading="lazy"
+              />
             </div>
           </motion.div>
         </section>
