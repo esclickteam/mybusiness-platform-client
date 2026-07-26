@@ -1,6 +1,16 @@
 import React, { lazy, Suspense, useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import {
+  Bot,
+  CalendarDays,
+  Eye,
+  EyeOff,
+  Globe2,
+  Lock,
+  Mail,
+  Megaphone,
+  Users,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useAuth } from "../context/AuthContext";
@@ -13,6 +23,8 @@ const ForgotPassword = lazy(() => import("./ForgotPassword"));
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
 );
+
+const LOGO_SRC = "/bizuply%20logo.png";
 
 type LoginForm = {
   email: string;
@@ -33,8 +45,54 @@ type ApiError = {
   message?: string;
 };
 
+const FEATURE_CARDS = [
+  {
+    title: "CRM",
+    subtitle: "לידים וניהול",
+    icon: Users,
+  },
+  {
+    title: "תורים",
+    subtitle: "וזמינות",
+    icon: CalendarDays,
+  },
+  {
+    title: "אוטומציות",
+    subtitle: "חכמות",
+    icon: Bot,
+  },
+  {
+    title: "בניית אתר",
+    subtitle: "מקצועי",
+    icon: Globe2,
+  },
+  {
+    title: "לידים ממטא",
+    subtitle: "פייסבוק ואינסטגרם",
+    icon: Megaphone,
+  },
+] as const;
+
 export function LoginSkeleton() {
   return <BizuplyLoader fullScreen label="Loading..." />;
+}
+
+function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
+  const box = size === "sm" ? "h-10 w-10" : "h-12 w-12";
+  const text = size === "sm" ? "text-xl" : "text-2xl";
+
+  return (
+    <div className="inline-flex items-center gap-3">
+      <img
+        src={LOGO_SRC}
+        alt="Bizuply"
+        className={`${box} rounded-2xl object-contain shadow-sm`}
+      />
+      <span className={`${text} font-black tracking-tight text-slate-900`}>
+        Bizuply
+      </span>
+    </div>
+  );
 }
 
 export default function Login() {
@@ -55,6 +113,7 @@ export default function Login() {
   const [loginError, setLoginError] = useState<string>("");
   const [showForgot, setShowForgot] = useState<boolean>(false);
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [rememberMe, setRememberMe] = useState<boolean>(true);
 
   useEffect(() => {
     DashboardPage.preload().finally(() => {
@@ -85,6 +144,12 @@ export default function Login() {
     try {
       const cleanEmail = form.email.trim().toLowerCase();
 
+      if (rememberMe) {
+        localStorage.setItem("bizuply_remember_email", cleanEmail);
+      } else {
+        localStorage.removeItem("bizuply_remember_email");
+      }
+
       const loginResult = (await login(
         cleanEmail,
         form.password
@@ -97,7 +162,6 @@ export default function Login() {
       const urlRedirect = new URLSearchParams(location.search).get("redirect");
       const finalRedirect = urlRedirect || redirectUrl;
 
-      // Admin must always land on the admin panel — never client/business routes
       if (role === "admin") {
         navigate("/admin/dashboard", { replace: true });
       } else if (
@@ -134,113 +198,59 @@ export default function Login() {
     }
   };
 
+  useEffect(() => {
+    const remembered = localStorage.getItem("bizuply_remember_email");
+    if (remembered) {
+      setForm((prev) => ({ ...prev, email: remembered }));
+      setRememberMe(true);
+    }
+  }, []);
+
   if (!dashPreloadDone || loading) {
     return <LoginSkeleton />;
   }
 
-  const featureItems = [
-    [t("login.featureCrmTitle"), t("login.featureCrmText")],
-    [t("login.featureAppointmentsTitle"), t("login.featureAppointmentsText")],
-    [t("login.featureAiTitle"), t("login.featureAiText")],
-  ];
-
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
-      {/* Background effects */}
+    <div
+      dir="rtl"
+      className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-800"
+      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+    >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-        <div className="absolute -right-40 top-40 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute -left-40 bottom-0 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] opacity-20 [background-size:16px_16px] lg:block" />
+        <div className="absolute -left-24 top-16 h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="absolute left-10 top-10 hidden h-40 w-40 bg-[radial-gradient(circle,#94a3b8_1.2px,transparent_1.2px)] opacity-30 [background-size:14px_14px] lg:block" />
+        <div className="absolute bottom-0 left-1/3 h-64 w-64 rounded-full bg-sky-200/25 blur-3xl" />
       </div>
 
-      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-12 px-5 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-20">
-        {/* Left content */}
-        <section className="hidden lg:block">
-          <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("login.welcomeBadge")}
-          </div>
-
-          <h1 className="mt-8 max-w-2xl text-6xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 xl:text-7xl">
-            {t("login.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("login.heroTitleHighlight")}
-            </span>
-          </h1>
-
-          <p className="mt-7 max-w-xl text-xl leading-8 text-slate-600">
-            {t("login.heroSubtitle")}
-          </p>
-
-          <div className="mt-10 grid max-w-xl gap-4">
-            {featureItems.map(([title, text], index) => (
-              <div
-                key={title}
-                className="flex items-center gap-4 rounded-3xl border border-white/80 bg-white/80 p-5 shadow-sm backdrop-blur transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
-              >
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
-                  {index + 1}
-                </div>
-
-                <div className="text-start">
-                  <h3 className="text-lg font-black text-slate-800">
-                    {title}
-                  </h3>
-
-                  <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                    {text}
-                  </p>
-                </div>
+      <main className="relative mx-auto grid min-h-screen max-w-7xl items-center gap-10 px-5 py-12 sm:px-8 lg:grid-cols-2 lg:gap-16 lg:py-16">
+        {/* Login card — first in RTL so it sits on the right */}
+        <section className="mx-auto w-full max-w-[440px] lg:mx-0 lg:justify-self-start">
+          <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">
+            <div className="flex flex-col items-center text-center">
+              <BrandMark size="sm" />
+              <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900">
+                התחברות
+              </h1>
+              <p className="mt-2 text-sm font-semibold text-slate-500">
+                התחברו כדי לנהל את העסק שלכם ב-Bizuply
+              </p>
+              <div className="mt-5 flex w-full items-center gap-3">
+                <span className="h-px flex-1 bg-slate-200" />
+                <span className="h-2 w-2 rounded-full border border-slate-300" />
+                <span className="h-px flex-1 bg-slate-200" />
               </div>
-            ))}
-          </div>
-        </section>
+            </div>
 
-        {/* Login card */}
-        <section className="mx-auto w-full max-w-md">
-          <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
-            <div
-              className="overflow-hidden rounded-[1.6rem] border border-slate-100 bg-white sm:rounded-[2rem]"
-              aria-live="polite"
-              aria-busy={loading}
-            >
-              <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-                <div className="pointer-events-none absolute inset-0">
-                  <div className="absolute -right-20 -top-20 h-56 w-56 rounded-full bg-indigo-500/35 blur-3xl" />
-                  <div className="absolute -bottom-24 left-10 h-56 w-56 rounded-full bg-cyan-400/25 blur-3xl" />
-                </div>
-
-                <div className="relative text-start">
-                  <div className="mb-6 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-xl font-black shadow-xl shadow-indigo-950/30">
-                    B
-                  </div>
-
-                  <h2 className="text-3xl font-black tracking-[-0.04em]">
-                    {t("login.cardTitle")}
-                  </h2>
-
-                  <p className="mt-2 text-sm font-semibold leading-6 text-slate-300">
-                    {t("login.cardSubtitle")}
-                  </p>
-                </div>
-              </div>
-
-              <form
-                onSubmit={handleSubmit}
-                noValidate
-                className="bg-gradient-to-br from-white to-indigo-50/60 px-7 py-7"
-              >
-                <div className="text-start">
-                  <label
-                    htmlFor="email"
-                    className="mb-2 block text-sm font-black text-slate-700"
-                  >
-                    {t("login.emailLabel")}{" "}
-                    <span className="text-rose-500">*</span>
-                  </label>
-
+            <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
+              <div className="text-right">
+                <label
+                  htmlFor="email"
+                  className="mb-2 block text-sm font-bold text-slate-700"
+                >
+                  אימייל
+                </label>
+                <div className="relative">
+                  <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                   <input
                     type="email"
                     id="email"
@@ -250,86 +260,128 @@ export default function Login() {
                     disabled={loading}
                     required
                     autoComplete="email"
-                    placeholder={t("login.emailPlaceholder")}
-                    className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
+                    placeholder="name@company.com"
+                    dir="ltr"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
                   />
                 </div>
+              </div>
 
-                <div className="mt-5 text-start">
-                  <label
-                    htmlFor="password"
-                    className="mb-2 block text-sm font-black text-slate-700"
-                  >
-                    {t("login.passwordLabel")}{" "}
-                    <span className="text-rose-500">*</span>
-                  </label>
-
-                  <div className="relative">
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      id="password"
-                      name="password"
-                      value={form.password}
-                      onChange={handleChange}
-                      disabled={loading}
-                      required
-                      autoComplete="current-password"
-                      placeholder={t("login.passwordPlaceholder")}
-                      className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-4 pe-14 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-100 disabled:cursor-not-allowed disabled:opacity-70"
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      aria-label={
-                        showPassword
-                          ? t("login.hidePassword")
-                          : t("login.showPassword")
-                      }
-                      className={`absolute end-3 top-1/2 grid h-10 w-10 -translate-y-1/2 place-items-center rounded-full border transition ${
-                        showPassword
-                          ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                          : "border-slate-200 bg-white text-slate-500 hover:text-indigo-700"
-                      }`}
-                    >
-                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                    </button>
-                  </div>
-                </div>
-
-                {loginError && (
-                  <p
-                    className="mt-5 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-600 text-start"
-                    role="alert"
-                  >
-                    {loginError}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={loading}
-                  aria-live="polite"
-                  className="group mt-7 inline-flex w-full items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-8 py-4 text-base font-black text-black shadow-[0_18px_40px_rgba(99,102,241,0.28)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+              <div className="text-right">
+                <label
+                  htmlFor="password"
+                  className="mb-2 block text-sm font-bold text-slate-700"
                 >
-                  {loading ? t("login.loggingIn") : t("login.signIn")}
+                  סיסמה
+                </label>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={form.password}
+                    onChange={handleChange}
+                    disabled={loading}
+                    required
+                    autoComplete="current-password"
+                    placeholder="••••••••"
+                    dir="ltr"
+                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-12 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={
+                      showPassword
+                        ? t("login.hidePassword")
+                        : t("login.showPassword")
+                    }
+                    className="absolute left-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
+                  >
+                    {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+                  </button>
+                </div>
+              </div>
 
-                  {!loading && (
-                    <span className="ms-2 transition group-hover:translate-x-1">
-                      →
-                    </span>
-                  )}
-                </button>
-
+              <div className="flex items-center justify-between gap-3 pt-1 text-sm font-semibold">
                 <button
                   type="button"
                   onClick={() => setShowForgot(true)}
-                  className="mt-4 w-full rounded-full px-5 py-3 text-sm font-black text-slate-500 transition hover:bg-indigo-50 hover:text-indigo-700"
+                  className="text-slate-500 transition hover:text-violet-700"
                 >
-                  {t("login.forgotPassword")}
+                  שכחתם סיסמה?
                 </button>
-              </form>
-            </div>
+
+                <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
+                  />
+                  זכור אותי
+                </label>
+              </div>
+
+              {loginError ? (
+                <p
+                  className="rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold leading-6 text-rose-600"
+                  role="alert"
+                >
+                  {loginError}
+                </p>
+              ) : null}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {loading ? "מתחבר..." : "התחברות"}
+                {!loading ? <span aria-hidden>←</span> : null}
+              </button>
+            </form>
+          </div>
+        </section>
+
+        {/* Marketing panel — visually on the left, content centered */}
+        <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
+          <BrandMark />
+
+          <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900 xl:text-5xl">
+            להתחבר אל{" "}
+            <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
+              מערכת ההפעלה
+            </span>
+            <br />
+            <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
+              העסקית
+            </span>
+          </h2>
+
+          <div className="mt-6 flex w-48 items-center gap-2">
+            <span className="h-px flex-1 bg-gradient-to-l from-transparent via-sky-400 to-violet-500" />
+            <span className="h-2 w-2 rounded-full bg-violet-500" />
+          </div>
+
+          <div className="mt-8 flex max-w-xl flex-wrap items-stretch justify-center gap-3">
+            {FEATURE_CARDS.map(({ title, subtitle, icon: Icon }) => (
+              <div
+                key={title}
+                className="flex w-[148px] flex-col items-center rounded-[22px] border border-white bg-white px-4 py-4 text-center shadow-[0_10px_28px_rgba(15,23,42,0.06)]"
+              >
+                <span className="grid h-10 w-10 place-items-center rounded-2xl bg-violet-50 text-violet-600">
+                  <Icon size={18} />
+                </span>
+                <strong className="mt-3 text-sm font-black text-slate-900">
+                  {title}
+                </strong>
+                <span className="mt-1 text-xs font-semibold text-slate-500">
+                  {subtitle}
+                </span>
+              </div>
+            ))}
           </div>
         </section>
       </main>

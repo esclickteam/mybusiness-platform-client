@@ -608,6 +608,9 @@ export default function App() {
 
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  const isAdminRoute = location.pathname.startsWith("/admin");
+  const isLoginRoute =
+    location.pathname === "/login" || location.pathname === "/staff-login";
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -615,7 +618,7 @@ export default function App() {
 
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
-    location.pathname.startsWith("/admin") ||
+    isAdminRoute ||
     location.pathname.startsWith("/staff") ||
     location.pathname.startsWith("/client") ||
     location.pathname.includes("/messages");
@@ -656,7 +659,10 @@ export default function App() {
   return (
     <NotificationsProvider>
       <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "en"}>
-        {!isBusinessChatRoute && !isEarlyAccessLanding && <Header />}
+        {!isBusinessChatRoute &&
+          !isEarlyAccessLanding &&
+          !isAdminRoute &&
+          !isLoginRoute && <Header />}
 
         <ScrollToTop />
 
