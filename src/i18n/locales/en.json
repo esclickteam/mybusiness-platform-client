@@ -772,7 +772,9 @@
     "value3Text": "The platform grows with your business — one step at a time.",
     "ctaTitleTop": "Ready to run your business",
     "ctaTitleBottom": "from one workspace?",
-    "ctaText": "Start with BizUply — and stay organized, connected, and ready to grow."
+    "ctaText": "Start with BizUply — and stay organized, connected, and ready to grow.",
+    "ctaPrimary": "Get started",
+    "ctaSecondary": "Contact us"
   },
   "contact": {
     "seoTitle": "Contact Us - Bizuply | We're Here to Help",

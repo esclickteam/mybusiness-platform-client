@@ -1,13 +1,15 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import "../styles/About.css";
 
 const offerMeta = [
-  { key: "offer1", icon: "CRM" },
-  { key: "offer2", icon: "WEB" },
-  { key: "offer3", icon: "★" },
-  { key: "offer4", icon: "∞" },
-  { key: "offer5", icon: "AI" },
+  { key: "offer1", index: "01" },
+  { key: "offer2", index: "02" },
+  { key: "offer3", index: "03" },
+  { key: "offer4", index: "04" },
+  { key: "offer5", index: "05" },
 ];
 
 function About() {
@@ -38,7 +40,7 @@ function About() {
   }));
 
   return (
-    <div className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <div className="about-page relative overflow-hidden">
       <Helmet>
         <title>{t("about.seoTitle")}</title>
         <meta name="description" content={t("about.seoDescription")} />
@@ -62,244 +64,291 @@ function About() {
         <meta name="twitter:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      {/* Background effects */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-        <div className="absolute -right-40 top-80 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute -left-40 top-[900px] h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
-        <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
-      </div>
+      {/* Hero — full-bleed brand plane */}
+      <section className="relative isolate overflow-hidden bg-[var(--about-ink)] text-white">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_0%,rgba(31,167,160,0.28),transparent_55%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_90%_80%,rgba(255,255,255,0.06),transparent_45%)]" />
+          <div className="absolute inset-0 opacity-[0.14] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:72px_72px]" />
+        </div>
 
-      <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
-        {/* Hero */}
-        <section className="mx-auto max-w-4xl text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
-            {t("about.badge")}
+        <div className="relative mx-auto grid min-h-[88vh] max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[1.05fr_0.95fr] lg:px-8 lg:py-24">
+          <div className="max-w-2xl text-start">
+            <p className="about-rise text-sm font-extrabold tracking-[0.22em] text-[var(--about-accent)]">
+              BIZUPLY
+            </p>
+
+            <div className="about-accent-line mt-5 h-[3px] w-20 bg-[var(--about-accent)]" />
+
+            <h1 className="about-rise about-rise-delay-1 mt-7 text-5xl font-black leading-[1.02] tracking-[-0.04em] sm:text-6xl lg:text-7xl">
+              {t("about.heroTitleTop")}{" "}
+              <span className="text-[var(--about-accent)]">
+                {t("about.heroTitleHighlight")}
+              </span>
+            </h1>
+
+            <p className="about-rise about-rise-delay-2 mt-6 max-w-xl text-lg leading-8 text-white/75 sm:text-xl">
+              {t("about.heroSubtitle")}
+            </p>
+
+            <div className="about-rise about-rise-delay-3 mt-9 flex flex-wrap items-center gap-3">
+              <Link
+                to="/register"
+                className="inline-flex items-center justify-center rounded-xl bg-[var(--about-accent)] px-6 py-3.5 text-sm font-extrabold text-[var(--about-ink)] transition hover:bg-[#27c4bc]"
+              >
+                {t("about.ctaPrimary")}
+              </Link>
+              <Link
+                to="/contact"
+                className="inline-flex items-center justify-center rounded-xl border border-white/25 bg-white/5 px-6 py-3.5 text-sm font-extrabold text-white transition hover:border-white/45 hover:bg-white/10"
+              >
+                {t("about.ctaSecondary")}
+              </Link>
+            </div>
           </div>
 
-          <h1 className="mt-8 text-5xl font-black leading-[0.98] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            {t("about.heroTitleTop")}
-            <br />
-            <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("about.heroTitleHighlight")}
-            </span>
-          </h1>
+          <div className="about-rise about-rise-delay-4 about-visual-float relative">
+            <WorkspaceVisual
+              badge={t("about.storyBadge")}
+              stats={storyStats}
+            />
+          </div>
+        </div>
+      </section>
 
-          <p className="mx-auto mt-7 max-w-3xl text-lg leading-8 text-slate-600 sm:text-xl">
-            {t("about.heroSubtitle")}
-          </p>
-        </section>
+      <main className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:py-28">
+        {/* Story */}
+        <section className="grid gap-14 lg:grid-cols-[0.95fr_1.05fr] lg:items-start">
+          <div>
+            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+              {t("about.storyBadge")}
+            </p>
+            <h2 className="mt-4 max-w-xl text-4xl font-black leading-[1.08] tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
+              {t("about.storyTitle")}
+            </h2>
+            <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--about-muted)]">
+              {t("about.storyText")}
+            </p>
+          </div>
 
-        {/* Main story */}
-        <section className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
-          <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:p-10">
-              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-              <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
-
-              <div className="relative">
-                <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
-                  {t("about.storyBadge")}
-                </div>
-
-                <h2 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
-                  {t("about.storyTitle")}
-                </h2>
-
-                <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
-                  {t("about.storyText")}
-                </p>
-
-                <div className="mt-9 grid gap-4 sm:grid-cols-3">
-                  {storyStats.map(([value, label]) => (
-                    <div
-                      key={label}
-                      className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
-                    >
-                      <p className="text-3xl font-black">{value}</p>
-                      <p className="mt-1 text-sm font-bold text-slate-300">
-                        {label}
-                      </p>
-                    </div>
-                  ))}
+          <div className="border-t border-[var(--about-line)]">
+            {storyItems.map(([title, text], index) => (
+              <div
+                key={title}
+                className="grid grid-cols-[auto_1fr] gap-5 border-b border-[var(--about-line)] py-6"
+              >
+                <span className="pt-1 text-sm font-extrabold tracking-[0.16em] text-[var(--about-accent-deep)]">
+                  0{index + 1}
+                </span>
+                <div>
+                  <h3 className="text-xl font-extrabold text-[var(--about-ink)]">
+                    {title}
+                  </h3>
+                  <p className="mt-2 text-base leading-7 text-[var(--about-muted)]">
+                    {text}
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-white to-indigo-50/70 p-6 sm:p-8">
-              <div className="grid gap-4">
-                {storyItems.map(([title, text], index) => (
-                  <div
-                    key={title}
-                    className="group flex items-start gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
-                  >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
-                      {index + 1}
-                    </div>
-
-                    <div className="text-start">
-                      <h3 className="text-lg font-black text-slate-800">
-                        {title}
-                      </h3>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                        {text}
-                      </p>
-                    </div>
-
-                    <div className="ms-auto hidden h-9 w-9 shrink-0 place-items-center rounded-full bg-indigo-50 text-indigo-600 transition group-hover:bg-indigo-600 group-hover:text-white sm:grid">
-                      →
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </section>
 
         {/* Vision / Journey */}
-        <section className="mt-20 grid gap-7 lg:grid-cols-2">
-          <InfoCard
-            label={t("about.visionLabel")}
-            title={t("about.visionTitle")}
-            text={t("about.visionText")}
-          />
+        <section className="mt-24 grid gap-0 border border-[var(--about-line)] bg-white/70 lg:grid-cols-2">
+          <article className="border-b border-[var(--about-line)] p-8 sm:p-10 lg:border-b-0 lg:border-e">
+            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+              {t("about.visionLabel")}
+            </p>
+            <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--about-ink)] sm:text-4xl">
+              {t("about.visionTitle")}
+            </h2>
+            <p className="mt-5 text-base leading-8 text-[var(--about-muted)]">
+              {t("about.visionText")}
+            </p>
+          </article>
 
-          <InfoCard
-            label={t("about.journeyLabel")}
-            title={t("about.journeyTitle")}
-            text={t("about.journeyText")}
-          />
+          <article className="p-8 sm:p-10">
+            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+              {t("about.journeyLabel")}
+            </p>
+            <h2 className="mt-4 text-3xl font-black leading-tight tracking-[-0.03em] text-[var(--about-ink)] sm:text-4xl">
+              {t("about.journeyTitle")}
+            </h2>
+            <p className="mt-5 text-base leading-8 text-[var(--about-muted)]">
+              {t("about.journeyText")}
+            </p>
+          </article>
         </section>
 
         {/* Offers */}
-        <section className="mt-20">
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
-              <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_16px_rgba(79,70,229,0.8)]" />
+        <section className="mt-24">
+          <div className="max-w-3xl">
+            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
               {t("about.offersBadge")}
-            </div>
-
-            <h2 className="mt-7 text-4xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-5xl">
-              {t("about.offersTitleTop")}
-              <br />
-              <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
+            </p>
+            <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
+              {t("about.offersTitleTop")}{" "}
+              <span className="text-[var(--about-accent-deep)]">
                 {t("about.offersTitleHighlight")}
               </span>
             </h2>
           </div>
 
-          <div className="grid gap-6 lg:grid-cols-3">
-            {offers.map((item, index) => (
+          <div className="mt-12 grid gap-x-10 gap-y-0 sm:grid-cols-2 lg:grid-cols-3">
+            {offers.map((item) => (
               <article
                 key={item.key}
-                className={`group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-7 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)] ${
-                  index === 4 ? "lg:col-span-2" : ""
-                }`}
+                className="group border-t border-[var(--about-line)] py-8 transition"
               >
-                <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
-
-                <div className="relative">
-                  <div className="mb-6 grid h-16 w-16 place-items-center rounded-3xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-lg font-black text-black shadow-xl shadow-indigo-100">
-                    {item.icon}
-                  </div>
-
-                  <h3 className="text-2xl font-black leading-tight tracking-[-0.03em] text-slate-800">
-                    {item.title}
-                  </h3>
-
-                  <p className="mt-4 text-base font-medium leading-7 text-slate-600">
-                    {item.text}
-                  </p>
-                </div>
+                <p className="text-sm font-extrabold tracking-[0.18em] text-[var(--about-accent-deep)] transition group-hover:tracking-[0.24em]">
+                  {item.index}
+                </p>
+                <h3 className="mt-4 text-2xl font-extrabold tracking-[-0.02em] text-[var(--about-ink)]">
+                  {item.title}
+                </h3>
+                <p className="mt-3 max-w-sm text-base leading-7 text-[var(--about-muted)]">
+                  {item.text}
+                </p>
               </article>
             ))}
           </div>
         </section>
 
         {/* Values */}
-        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_30px_100px_rgba(79,70,229,0.16)] backdrop-blur-xl">
-          <div className="rounded-[2rem] border border-slate-100 bg-white p-8 sm:p-10">
-            <div className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-              <div>
-                <div className="mb-6 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-                  {t("about.valuesBadge")}
-                </div>
+        <section className="mt-24">
+          <div className="max-w-2xl">
+            <p className="text-xs font-extrabold tracking-[0.2em] text-[var(--about-accent-deep)]">
+              {t("about.valuesBadge")}
+            </p>
+            <h2 className="mt-4 text-4xl font-black leading-tight tracking-[-0.035em] text-[var(--about-ink)] sm:text-5xl">
+              {t("about.valuesTitleTop")} {t("about.valuesTitleBottom")}
+            </h2>
+            <p className="mt-5 text-lg leading-8 text-[var(--about-muted)]">
+              {t("about.valuesText")}
+            </p>
+          </div>
 
-                <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-5xl">
-                  {t("about.valuesTitleTop")}
-                  <br />
-                  {t("about.valuesTitleBottom")}
-                </h2>
-
-                <p className="mt-5 text-lg leading-8 text-slate-600">
-                  {t("about.valuesText")}
+          <div className="mt-12 grid gap-10 sm:grid-cols-3">
+            {values.map((value, index) => (
+              <div key={value.title} className="text-start">
+                <p className="text-5xl font-black tracking-[-0.05em] text-[var(--about-accent)]">
+                  0{index + 1}
+                </p>
+                <h3 className="mt-4 text-xl font-extrabold text-[var(--about-ink)]">
+                  {value.title}
+                </h3>
+                <p className="mt-2 text-base leading-7 text-[var(--about-muted)]">
+                  {value.text}
                 </p>
               </div>
-
-              <div className="grid gap-4">
-                {values.map((value, index) => (
-                  <div
-                    key={value.title}
-                    className="flex items-start gap-4 rounded-3xl border border-slate-100 bg-gradient-to-br from-white to-indigo-50/70 p-5 shadow-sm"
-                  >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
-                      {index + 1}
-                    </div>
-
-                    <div>
-                      <h3 className="text-lg font-black text-slate-800">
-                        {value.title}
-                      </h3>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                        {value.text}
-                      </p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            ))}
           </div>
         </section>
+      </main>
 
-        {/* Final CTA without buttons */}
-        <section className="mt-20 overflow-hidden rounded-[2.5rem] border border-white/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-[1px] shadow-[0_24px_80px_rgba(79,70,229,0.24)]">
-          <div className="rounded-[2.5rem] bg-white/10 px-8 py-12 text-center backdrop-blur-xl sm:px-12">
-            <h2 className="text-4xl font-black leading-tight tracking-[-0.04em] text-white sm:text-5xl">
+      {/* CTA */}
+      <section className="relative overflow-hidden bg-[var(--about-ink)] text-white">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_70%_20%,rgba(31,167,160,0.22),transparent_50%)]" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-start gap-8 px-6 py-20 lg:flex-row lg:items-end lg:justify-between lg:px-8 lg:py-24">
+          <div className="max-w-2xl">
+            <h2 className="text-4xl font-black leading-tight tracking-[-0.035em] sm:text-5xl">
               {t("about.ctaTitleTop")}
               <br />
               {t("about.ctaTitleBottom")}
             </h2>
-
-            <p className="mx-auto mt-5 max-w-2xl text-base font-semibold leading-7 text-indigo-50">
+            <p className="mt-5 max-w-xl text-base leading-7 text-white/70">
               {t("about.ctaText")}
             </p>
           </div>
-        </section>
-      </main>
+
+          <div className="flex flex-wrap gap-3">
+            <Link
+              to="/register"
+              className="inline-flex items-center justify-center rounded-xl bg-[var(--about-accent)] px-6 py-3.5 text-sm font-extrabold text-[var(--about-ink)] transition hover:bg-[#27c4bc]"
+            >
+              {t("about.ctaPrimary")}
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center rounded-xl border border-white/25 px-6 py-3.5 text-sm font-extrabold text-white transition hover:border-white/45 hover:bg-white/10"
+            >
+              {t("about.ctaSecondary")}
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
 
-function InfoCard({ label, title, text }) {
+function WorkspaceVisual({ badge, stats }) {
   return (
-    <article className="group relative overflow-hidden rounded-[2rem] border border-white/80 bg-white/80 p-8 shadow-[0_18px_55px_rgba(15,23,42,0.07)] backdrop-blur-xl transition duration-300 hover:-translate-y-2 hover:shadow-[0_26px_80px_rgba(79,70,229,0.16)]">
-      <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-indigo-200/35 blur-3xl transition group-hover:scale-125" />
+    <div className="relative mx-auto w-full max-w-lg lg:max-w-none">
+      <div className="absolute -inset-6 rounded-[2rem] bg-[var(--about-accent)]/15 blur-2xl" />
 
-      <div className="relative">
-        <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-4 py-2 text-sm font-black text-indigo-700">
-          {label}
+      <div className="relative overflow-hidden rounded-[1.6rem] border border-white/10 bg-[var(--about-ink-soft)] shadow-[0_28px_80px_rgba(0,0,0,0.35)]">
+        <div className="flex items-center justify-between border-b border-white/10 px-5 py-3.5">
+          <div className="flex items-center gap-2">
+            <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
+            <span className="h-2.5 w-2.5 rounded-full bg-white/25" />
+            <span className="h-2.5 w-2.5 rounded-full bg-[var(--about-accent)]" />
+          </div>
+          <p className="text-[11px] font-bold tracking-[0.14em] text-white/55">
+            {badge}
+          </p>
         </div>
 
-        <h2 className="text-3xl font-black leading-tight tracking-[-0.04em] text-slate-800 sm:text-4xl">
-          {title}
-        </h2>
+        <div className="grid gap-4 p-5 sm:grid-cols-[0.85fr_1.15fr]">
+          <div className="space-y-3 rounded-2xl bg-black/20 p-4">
+            {["CRM", "Calendar", "Inbox", "Reviews"].map((item, i) => (
+              <div
+                key={item}
+                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold ${
+                  i === 0
+                    ? "bg-[var(--about-accent)] text-[var(--about-ink)]"
+                    : "bg-white/5 text-white/70"
+                }`}
+              >
+                <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />
+                {item}
+              </div>
+            ))}
+          </div>
 
-        <p className="mt-5 text-base font-medium leading-8 text-slate-600">
-          {text}
-        </p>
+          <div className="space-y-4">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <p className="text-sm font-extrabold text-white">Pipeline</p>
+                <span className="about-scan h-px w-16 bg-[var(--about-accent)]" />
+              </div>
+              <div className="grid grid-cols-4 items-end gap-2">
+                {[42, 68, 54, 88].map((h, i) => (
+                  <div
+                    key={i}
+                    className="rounded-t-md bg-gradient-to-t from-[var(--about-accent)]/30 to-[var(--about-accent)]"
+                    style={{ height: `${h}px` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-2">
+              {stats.map(([value, label]) => (
+                <div
+                  key={label}
+                  className="rounded-xl border border-white/10 bg-black/20 px-3 py-3"
+                >
+                  <p className="text-lg font-black text-white">{value}</p>
+                  <p className="mt-0.5 text-[11px] font-bold text-white/50">
+                    {label}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-    </article>
+    </div>
   );
 }
 
