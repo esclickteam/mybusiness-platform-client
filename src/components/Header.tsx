@@ -109,7 +109,7 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="hidden items-center gap-3 xl:gap-5 lg:flex">
+        <div className="hidden items-center gap-3 xl:gap-5 xl:flex">
           {navLinks.map((item) => {
             const isActive = location.pathname === item.to;
 
@@ -129,7 +129,7 @@ export default function Header() {
           })}
         </div>
 
-        <div className="hidden items-center gap-5 lg:flex">
+        <div className="hidden items-center gap-5 xl:flex">
           <div ref={languageRef} className="relative">
             <button
               type="button"
@@ -209,7 +209,7 @@ export default function Header() {
           )}
         </div>
 
-        <div className="ms-auto flex items-center gap-3 lg:hidden">
+        <div className="ms-auto flex items-center gap-3 xl:hidden">
           <button
             type="button"
             onClick={() =>
