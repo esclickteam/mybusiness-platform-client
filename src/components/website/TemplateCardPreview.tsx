@@ -7,7 +7,6 @@ import {
 import {
   prioritizeGalleryPreview,
   releaseGalleryPreview,
-  scheduleTemplatePreview,
 } from "../../utils/templatePreviewScheduler";
 
 type TemplateCardPreviewProps = {
@@ -15,8 +14,6 @@ type TemplateCardPreviewProps = {
   title?: string;
   /** Shown immediately on every card so the gallery is never blank. */
   coverImage?: string;
-  /** Auto-mount a live preview for the first few above-the-fold cards. */
-  eager?: boolean;
 };
 
 /** Desktop width of the template canvas inside the card. */
@@ -28,6 +25,11 @@ function normalizeKey(value: string | null | undefined) {
   return String(value || "")
     .trim()
     .toLowerCase();
+}
+
+function isCoverUrl(value: unknown) {
+  const src = String(value || "").trim();
+  return /^https?:\/\//i.test(src) || src.startsWith("/") ? src : "";
 }
 
 function pickCoverFromData(data: Record<string, any> | null | undefined) {
@@ -42,12 +44,14 @@ function pickCoverFromData(data: Record<string, any> | null | undefined) {
     data.hero?.image,
     data.hero?.backgroundImage,
     data.home?.hero?.image,
+    data.images?.hero,
+    Array.isArray(data.images?.hero) ? data.images.hero[0] : "",
     Array.isArray(data.products) ? data.products[0]?.image : "",
     Array.isArray(data.gallery) ? data.gallery[0] : "",
   ];
   for (const value of candidates) {
-    const src = String(value || "").trim();
-    if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
+    const src = isCoverUrl(value);
+    if (src) return src;
   }
   return "";
 }
@@ -126,7 +130,6 @@ export default function TemplateCardPreview({
   templateKey,
   title,
   coverImage,
-  eager = false,
 }: TemplateCardPreviewProps) {
   const key = normalizeKey(templateKey);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -134,7 +137,6 @@ export default function TemplateCardPreview({
   const [frameWidth, setFrameWidth] = useState(320);
   const [frameHeight, setFrameHeight] = useState(400);
   const [contentHeight, setContentHeight] = useState(DESIGN_HEIGHT);
-  const [inView, setInView] = useState(eager);
   const [active, setActive] = useState(false);
   const [liveReady, setLiveReady] = useState(false);
   const [mountFailed, setMountFailed] = useState(false);
@@ -172,54 +174,23 @@ export default function TemplateCardPreview({
     return () => observer.disconnect();
   }, []);
 
-  useEffect(() => {
-    const frame = frameRef.current;
-    if (!frame || typeof IntersectionObserver === "undefined") {
-      setInView(true);
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        setInView(entry.isIntersecting || entry.intersectionRatio > 0);
-      },
-      { rootMargin: "400px 0px", threshold: 0.01 },
-    );
-
-    observer.observe(frame);
-    return () => observer.disconnect();
-  }, []);
-
-  // Live mount strategy:
-  // - eager cards: warm a few above-the-fold live previews
-  // - hover/pin: always mount the card the user focuses
-  // - otherwise keep the cover (so every card is visible immediately)
+  // Live preview only on hover/pin — cover image stays visible for every card.
   useEffect(() => {
     if (!key || !canLive) return;
 
-    const wantsLive = hovering || pinned || (eager && inView);
-
-    if (!wantsLive) {
+    if (!(hovering || pinned)) {
       releaseGalleryPreview(key);
       setActive(false);
       setLiveReady(false);
       return;
     }
 
-    if (hovering || pinned || eager) {
-      prioritizeGalleryPreview(key);
-      setActive(true);
-      return () => {
-        releaseGalleryPreview(key);
-      };
-    }
-
-    const subscribe = scheduleTemplatePreview(key, { priority: false });
-    return subscribe((isActive) => {
-      setActive(isActive);
-      if (!isActive) setLiveReady(false);
-    });
-  }, [canLive, eager, hovering, inView, key, pinned]);
+    prioritizeGalleryPreview(key);
+    setActive(true);
+    return () => {
+      releaseGalleryPreview(key);
+    };
+  }, [canLive, hovering, key, pinned]);
 
   useEffect(() => {
     if (!active) return;
@@ -278,7 +249,7 @@ export default function TemplateCardPreview({
     <CardCover
       src={resolvedCover}
       title={title}
-      loading={canLive && !liveReady && (hovering || eager)}
+      loading={canLive && !liveReady && (hovering || pinned)}
     />
   );
 

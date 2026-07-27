@@ -273,28 +273,47 @@ function mapDefinitionToGalleryTemplate(
     getStudioTemplateSeedById(definition?.id || definition?.key) ||
     {}) as any;
 
+  // Some templates store content as seed.defaultData; others (chanel/cyclora)
+  // set seed = defaultData itself.
   const defaultData =
     (definition?.defaultData as Record<string, any> | undefined) ||
     (seed?.defaultData as Record<string, any> | undefined) ||
     (seed?.data as Record<string, any> | undefined) ||
+    (seed?.hero || seed?.heroImage || seed?.brand || seed?.images
+      ? (seed as Record<string, any>)
+      : {}) ||
     {};
 
-  const image =
-    seed.image ||
-    definition?.previewImage ||
-    definition?.image ||
-    defaultData.previewImage ||
-    defaultData.previewImageUrl ||
-    defaultData.thumbnailUrl ||
-    defaultData.heroImage ||
-    defaultData.image ||
-    defaultData.coverImage ||
-    defaultData.hero?.image ||
-    defaultData.hero?.backgroundImage ||
-    defaultData.home?.hero?.image ||
-    (Array.isArray(defaultData.products) ? defaultData.products[0]?.image : "") ||
-    (Array.isArray(defaultData.gallery) ? defaultData.gallery[0] : "") ||
-    "";
+  const pickUrl = (...candidates: unknown[]) => {
+    for (const value of candidates) {
+      const src = String(value || "").trim();
+      if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
+    }
+    return "";
+  };
+
+  const image = pickUrl(
+    definition?.previewImage,
+    definition?.image,
+    definition?.thumbnailUrl,
+    seed?.previewImage,
+    seed?.image,
+    defaultData.previewImage,
+    defaultData.previewImageUrl,
+    defaultData.thumbnailUrl,
+    defaultData.heroImage,
+    defaultData.image,
+    defaultData.coverImage,
+    defaultData.hero?.image,
+    defaultData.hero?.backgroundImage,
+    defaultData.home?.hero?.image,
+    defaultData.images?.hero,
+    Array.isArray(defaultData.images?.hero)
+      ? defaultData.images.hero[0]
+      : "",
+    Array.isArray(defaultData.products) ? defaultData.products[0]?.image : "",
+    Array.isArray(defaultData.gallery) ? defaultData.gallery[0] : "",
+  );
 
   const badge =
     definition?.badge ||
@@ -1117,7 +1136,6 @@ export default function WebsiteTemplatesPage() {
                                       templateKey={template.key}
                                       title={template.name}
                                       coverImage={coverImage || undefined}
-                                      eager={index < 8}
                                     />
                                   ) : coverImage ? (
                                     <img
