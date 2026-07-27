@@ -222,49 +222,52 @@ function About() {
         </motion.section>
 
         {/* VALUES */}
-        <motion.section
-          className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          variants={stagger}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          {values.map((value) => {
-            const Icon = value.icon;
-            return (
-              <motion.article
-                key={value.key}
-                variants={fade}
-                className={`about-card rounded-2xl border p-6 text-center shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${
-                  value.featured
-                    ? "about-meta-card border-violet-200 bg-gradient-to-b from-violet-50 to-white"
-                    : "border-violet-100 bg-white/85"
-                }`}
-              >
-                <div
-                  className={`mx-auto mb-3 grid h-12 w-12 place-items-center rounded-xl ${
-                    value.featured
-                      ? "bg-gradient-to-br from-[#6D28D9] to-[#2563EB] text-white shadow-[0_10px_22px_rgba(109,40,217,0.35)]"
-                      : "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]"
+        <div className="about-values-track mt-10">
+          <motion.section
+            className="about-values-grid"
+            variants={stagger}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            {values.map((value, index) => {
+              const Icon = value.icon;
+              return (
+                <motion.article
+                  key={value.key}
+                  variants={fade}
+                  className={`about-card about-value-card p-6 text-center ${
+                    value.featured ? "about-meta-card is-featured" : ""
                   }`}
+                  style={{ "--gold-i": index }}
                 >
-                  <Icon size={20} />
-                </div>
-                {value.featured && (
-                  <span className="about-meta-pill about-bidi mb-2 inline-flex">
-                    {t("about.metaBadge")}
-                  </span>
-                )}
-                <h3 className="about-bidi text-base font-black text-slate-900">
-                  {value.title}
-                </h3>
-                <p className="about-bidi mt-2 text-sm font-medium leading-6 text-slate-500">
-                  {value.text}
-                </p>
-              </motion.article>
-            );
-          })}
-        </motion.section>
+                  <div className="about-value-card-inner">
+                    <div
+                      className={`mx-auto mb-3 grid h-12 w-12 place-items-center rounded-xl ${
+                        value.featured
+                          ? "bg-gradient-to-br from-[#6D28D9] to-[#2563EB] text-white shadow-[0_10px_22px_rgba(109,40,217,0.35)]"
+                          : "bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-[#6D28D9]"
+                      }`}
+                    >
+                      <Icon size={20} />
+                    </div>
+                    {value.featured && (
+                      <span className="about-meta-pill about-bidi mb-2 inline-flex">
+                        {t("about.metaBadge")}
+                      </span>
+                    )}
+                    <h3 className="about-bidi text-base font-black text-slate-900">
+                      {value.title}
+                    </h3>
+                    <p className="about-bidi mt-2 text-sm font-medium leading-6 text-slate-500">
+                      {value.text}
+                    </p>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </motion.section>
+        </div>
 
         {/* WHO — centered RTL copy beside image */}
         <motion.section
@@ -316,30 +319,36 @@ function About() {
           </p>
           <div className="about-services-rule mx-auto mt-4" />
 
-          <motion.div
-            className="about-services-grid mt-9"
-            variants={stagger}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, amount: 0.15 }}
-          >
-            {services.map((service) => {
-              const Icon = service.icon;
-              return (
-                <motion.div key={service.key} variants={fade}>
-                  <Link
-                    to={service.to}
-                    className={`about-service-card about-service-card--${service.tone}`}
+          <div className="about-services-track mt-9">
+            <motion.div
+              className="about-services-grid"
+              variants={stagger}
+              initial="hidden"
+              whileInView="show"
+              viewport={{ once: true, amount: 0.15 }}
+            >
+              {services.map((service, index) => {
+                const Icon = service.icon;
+                return (
+                  <motion.div
+                    key={service.key}
+                    variants={fade}
+                    style={{ "--gold-i": index }}
                   >
-                    <span className="about-service-icon" aria-hidden="true">
-                      <Icon size={22} strokeWidth={1.85} />
-                    </span>
-                    <h3 className="about-bidi">{service.title}</h3>
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </motion.div>
+                    <Link
+                      to={service.to}
+                      className={`about-service-card about-service-card--${service.tone}`}
+                    >
+                      <span className="about-service-icon" aria-hidden="true">
+                        <Icon size={22} strokeWidth={1.85} />
+                      </span>
+                      <h3 className="about-bidi">{service.title}</h3>
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
         </motion.section>
 
         {/* CTA */}
