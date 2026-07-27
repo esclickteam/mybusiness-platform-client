@@ -7,14 +7,14 @@ const releaseTimers = new Map<string, number>();
 let pumping = false;
 
 /**
- * Warm enough live previews for a smooth gallery without freezing the tab.
- * Cards are prefetched ahead of the viewport; release is delayed so scrolling
- * does not constantly remount.
+ * Fast gallery warm-up: enough concurrent live mounts for ~2–3 rows,
+ * short batch delay so cards fill almost together while scrolling stays smooth.
+ * Cover images fill every other card so nothing looks blank.
  */
-const BATCH_SIZE = 4;
-const BATCH_DELAY_MS = 28;
-const MAX_ACTIVE = 12;
-const RELEASE_DELAY_MS = 2000;
+const BATCH_SIZE = 8;
+const BATCH_DELAY_MS = 12;
+const MAX_ACTIVE = 24;
+const RELEASE_DELAY_MS = 1200;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "")
@@ -46,7 +46,7 @@ function pump() {
     }
 
     if (activated.size >= MAX_ACTIVE) {
-      window.setTimeout(step, 120);
+      window.setTimeout(step, 80);
       return;
     }
 
@@ -139,12 +139,12 @@ export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
     return;
   }
 
-  if (activated.size >= MAX_ACTIVE) {
+  // Evict farthest/oldest non-priority mounts so hover feels instant.
+  while (activated.size >= MAX_ACTIVE) {
     const oldest = activated.values().next().value as string | undefined;
-    if (oldest && oldest !== key) {
-      activated.delete(oldest);
-      notify(oldest, false);
-    }
+    if (!oldest || oldest === key) break;
+    activated.delete(oldest);
+    notify(oldest, false);
   }
 
   const idx = queue.indexOf(key);
@@ -181,7 +181,7 @@ export function prefetchGalleryPreviewKeys(
   const limit = Math.max(1, Number(options?.limit) || MAX_ACTIVE * 2);
   keys.slice(0, limit).forEach((key, index) => {
     scheduleGalleryPreview(key, {
-      priority: Boolean(options?.priority) && index < 4,
+      priority: Boolean(options?.priority) && index < 8,
     });
   });
 }

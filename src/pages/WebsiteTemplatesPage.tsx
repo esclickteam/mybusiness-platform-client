@@ -27,6 +27,7 @@ import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview, {
   canRenderTemplatePreview,
 } from "../components/website/TemplateCardPreview";
+import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -122,9 +123,14 @@ const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 /** First paint: enough cards for ~2–3 screens without waiting for scroll. */
 const GALLERY_INITIAL_SIZE = 48;
 /** Extra cards appended while idle / near the bottom. */
-const GALLERY_PAGE_SIZE = 24;
-/** Cap idle pre-expansion so we don't mount all 213 shells at once. */
-const GALLERY_IDLE_CAP = 96;
+const GALLERY_PAGE_SIZE = 36;
+/**
+ * Idle pre-expansion toward the full list. Covers are cheap; live mounts are
+ * capped separately by the preview scheduler so this can go to all 213.
+ */
+const GALLERY_IDLE_CAP = 213;
+/** Live previews warmed immediately for the first viewport rows. */
+const GALLERY_PRELOAD_LIVE = 24;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -655,6 +661,15 @@ export default function WebsiteTemplatesPage() {
 
   const hasMoreTemplates = visibleCount < filteredTemplates.length;
 
+  // Warm live previews for the first viewport rows as soon as the list is ready.
+  useEffect(() => {
+    if (!visibleTemplates.length) return;
+    prefetchGalleryPreviewKeys(
+      visibleTemplates.slice(0, GALLERY_PRELOAD_LIVE).map((item) => item.key),
+      { limit: GALLERY_PRELOAD_LIVE, priority: true },
+    );
+  }, [visibleTemplates]);
+
   // Prefetch the next chunk of card shells in idle time (before user scrolls).
   useEffect(() => {
     if (visibleCount >= Math.min(GALLERY_IDLE_CAP, filteredTemplates.length)) {
@@ -1136,6 +1151,7 @@ export default function WebsiteTemplatesPage() {
                                       templateKey={template.key}
                                       title={template.name}
                                       coverImage={coverImage || undefined}
+                                      eager={index < GALLERY_PRELOAD_LIVE}
                                     />
                                   ) : coverImage ? (
                                     <img

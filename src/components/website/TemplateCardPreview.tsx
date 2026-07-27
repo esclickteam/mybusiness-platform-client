@@ -7,13 +7,16 @@ import {
 import {
   prioritizeGalleryPreview,
   releaseGalleryPreview,
+  scheduleGalleryPreview,
 } from "../../utils/templatePreviewScheduler";
 
 type TemplateCardPreviewProps = {
   templateKey: string;
   title?: string;
-  /** Shown immediately on every card so the gallery is never blank. */
+  /** Shown immediately so the card is never blank while live mounts. */
   coverImage?: string;
+  /** Priority queue for above-the-fold cards. */
+  eager?: boolean;
 };
 
 /** Desktop width of the template canvas inside the card. */
@@ -123,13 +126,15 @@ function CardCover({
 
 /**
  * Gallery card:
- * - cover image always visible immediately (every card readable at a glance)
- * - live React preview upgrades on hover / for a few eager cards
+ * - cover image immediately (every card filled, never blank)
+ * - live React preview mounts for in-viewport cards (scheduled)
+ * - hover prioritizes + auto-scrolls the live canvas
  */
 export default function TemplateCardPreview({
   templateKey,
   title,
   coverImage,
+  eager = false,
 }: TemplateCardPreviewProps) {
   const key = normalizeKey(templateKey);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -137,6 +142,7 @@ export default function TemplateCardPreview({
   const [frameWidth, setFrameWidth] = useState(320);
   const [frameHeight, setFrameHeight] = useState(400);
   const [contentHeight, setContentHeight] = useState(DESIGN_HEIGHT);
+  const [inView, setInView] = useState(eager);
   const [active, setActive] = useState(false);
   const [liveReady, setLiveReady] = useState(false);
   const [mountFailed, setMountFailed] = useState(false);
@@ -174,23 +180,52 @@ export default function TemplateCardPreview({
     return () => observer.disconnect();
   }, []);
 
-  // Live preview only on hover/pin — cover image stays visible for every card.
   useEffect(() => {
-    if (!key || !canLive) return;
+    const frame = frameRef.current;
+    if (!frame || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
 
-    if (!(hovering || pinned)) {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setInView(entry.isIntersecting || entry.intersectionRatio > 0);
+      },
+      // Warm a couple of rows ahead so scrolling never shows blank live slots.
+      { rootMargin: "900px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(frame);
+    return () => observer.disconnect();
+  }, []);
+
+  // Live mount for viewport cards; hover/pin always wins the queue.
+  useEffect(() => {
+    if (!key || !canLive || mountFailed) return;
+
+    const wantsLive = inView || hovering || pinned;
+
+    if (!wantsLive) {
       releaseGalleryPreview(key);
       setActive(false);
       setLiveReady(false);
       return;
     }
 
-    prioritizeGalleryPreview(key);
-    setActive(true);
-    return () => {
-      releaseGalleryPreview(key);
-    };
-  }, [canLive, hovering, key, pinned]);
+    if (hovering || pinned || eager) {
+      prioritizeGalleryPreview(key);
+      setActive(true);
+      return () => {
+        releaseGalleryPreview(key);
+      };
+    }
+
+    const subscribe = scheduleGalleryPreview(key, { priority: false });
+    return subscribe((isActive) => {
+      setActive(isActive);
+      if (!isActive) setLiveReady(false);
+    });
+  }, [canLive, eager, hovering, inView, key, mountFailed, pinned]);
 
   useEffect(() => {
     if (!active) return;
@@ -208,7 +243,7 @@ export default function TemplateCardPreview({
     };
 
     const raf = window.requestAnimationFrame(measure);
-    const timer = window.setTimeout(measure, 80);
+    const timer = window.setTimeout(measure, 60);
 
     if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(measure);
@@ -249,7 +284,7 @@ export default function TemplateCardPreview({
     <CardCover
       src={resolvedCover}
       title={title}
-      loading={canLive && !liveReady && (hovering || pinned)}
+      loading={canLive && inView && !liveReady}
     />
   );
 
@@ -287,8 +322,9 @@ export default function TemplateCardPreview({
         setScrolling(true);
       }}
     >
+      {/* Cover always present — never leave a blank card. */}
       <div
-        className={`absolute inset-0 transition-opacity duration-200 ${
+        className={`absolute inset-0 transition-opacity duration-150 ${
           shouldMount && liveReady ? "opacity-0" : "opacity-100"
         }`}
       >
@@ -327,7 +363,7 @@ export default function TemplateCardPreview({
             `}</style>
 
             <div
-              className={`pointer-events-none absolute left-1/2 top-0 will-change-transform transition-opacity duration-200 ${
+              className={`pointer-events-none absolute left-1/2 top-0 will-change-transform transition-opacity duration-150 ${
                 liveReady ? "opacity-100" : "opacity-0"
               }`}
               style={{
@@ -337,7 +373,7 @@ export default function TemplateCardPreview({
                   isScrolling ? -maxScroll : 0
                 }px) scale(${scale})`,
                 transformOrigin: "top center",
-                transition: `transform ${scrollDuration}s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.2s ease`,
+                transition: `transform ${scrollDuration}s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.15s ease`,
               }}
             >
               <div
