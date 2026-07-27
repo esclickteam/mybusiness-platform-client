@@ -38,6 +38,7 @@ import {
 
 import { applySavedFormBuildersToDom } from "./visualForms";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
+import { isStoreBoundVisualContentKey } from "../../data/templates/shared/storeCatalogSync";
 import { shouldApplyLibraryBlankMode } from "../../../runtime/visualLibraryPage";
 import {
   ensurePluginWidgetsLayering,
@@ -1409,6 +1410,9 @@ export function applyVisualContentToDom(
   const content = readVisualContent(data);
 
   Object.entries(content).forEach(([elementId, item]) => {
+    // Product/category media is owned by the live store catalog.
+    if (isStoreBoundVisualContentKey(elementId)) return;
+
     let nodes = findVisualNodes(root, elementId, {
       allowFallback: false,
     });

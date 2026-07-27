@@ -331,9 +331,7 @@ export function useStorePluginCatalog(options: {
       })
       .catch(() => {
         if (cancelled) return;
-        // Keep empty connected state — do not swap in uneditable fake demos.
-        setProducts([]);
-        setCategories([]);
+        // Keep the last good catalog on transient network errors — never flash empty.
         setFromPlugin(true);
       })
       .finally(() => {

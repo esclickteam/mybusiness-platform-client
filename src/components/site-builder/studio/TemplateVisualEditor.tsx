@@ -8,6 +8,7 @@ import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLi
 import type { VisualSitePageItem } from "./visual-editor/VisualSitePagesPanel";
 
 import type { VisualCustomCode } from "./visual-editor/utils/visualData";
+import { stripStoreBoundVisualImageOverrides } from "./data/templates/shared/storeCatalogSync";
 
 type VisualSavePayload = {
   templateKey: string;
@@ -267,7 +268,8 @@ export default function TemplateVisualEditor({
 
     const merged = mergeVisualData(defaultData, savedVisualData);
 
-    return merged;
+    // Drop stale store-bound image overrides so live catalog matches public.
+    return stripStoreBoundVisualImageOverrides(merged) || merged;
   }, [renderer.defaultData, renderer.key, initialData, businessId]);
 
   const activePageId = React.useMemo(() => {

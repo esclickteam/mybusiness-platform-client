@@ -429,41 +429,88 @@ function MediaElement({
   );
 }
 
-function useRevealRuntime(rootRef: React.RefObject<HTMLElement | null>) {
+function useRevealRuntime(
+  rootRef: React.RefObject<HTMLElement | null>,
+  deps: React.DependencyList = [],
+) {
   React.useEffect(() => {
     const root = rootRef.current;
     if (!root || typeof window === "undefined") return;
 
-    const elements = Array.from(
-      root.querySelectorAll<HTMLElement>(".chanel-reveal"),
-    );
+    let observer: IntersectionObserver | null = null;
+    const observed = new WeakSet<Element>();
 
-    if (!("IntersectionObserver" in window)) {
+    const revealNow = (element: HTMLElement) => {
+      element.dataset.revealed = "true";
+      element.style.opacity = "1";
+      element.style.visibility = "visible";
+      element.style.transform = "none";
+    };
+
+    const bind = () => {
+      const elements = Array.from(
+        root.querySelectorAll<HTMLElement>(".chanel-reveal"),
+      );
+
+      if (!("IntersectionObserver" in window)) {
+        elements.forEach(revealNow);
+        return;
+      }
+
+      if (!observer) {
+        observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const element = entry.target as HTMLElement;
+              revealNow(element);
+              observer?.unobserve(element);
+            });
+          },
+          // Generous margin so editor scroll-containers and product swaps reveal.
+          { threshold: 0.01, rootMargin: "25% 0px 25% 0px" },
+        );
+      }
+
       elements.forEach((element) => {
-        element.dataset.revealed = "true";
+        if (element.dataset.revealed === "true") return;
+        if (observed.has(element)) return;
+        observed.add(element);
+        element.dataset.revealed = "false";
+        observer?.observe(element);
+
+        // Already on screen after catalog swap / page change — reveal immediately.
+        const rect = element.getBoundingClientRect();
+        const inView =
+          rect.top < window.innerHeight * 1.15 &&
+          rect.bottom > -80 &&
+          rect.width > 0 &&
+          rect.height > 0;
+        if (inView) {
+          revealNow(element);
+          observer?.unobserve(element);
+        }
       });
-      return;
-    }
+    };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          const element = entry.target as HTMLElement;
-          element.dataset.revealed = "true";
-          observer.unobserve(element);
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -5% 0px" },
-    );
+    bind();
 
-    elements.forEach((element) => {
-      if (!element.dataset.revealed) element.dataset.revealed = "false";
-      observer.observe(element);
-    });
+    const mutationObserver =
+      typeof MutationObserver !== "undefined"
+        ? new MutationObserver(() => bind())
+        : null;
+    mutationObserver?.observe(root, { childList: true, subtree: true });
 
-    return () => observer.disconnect();
-  }, [rootRef]);
+    // Editor frames sometimes miss the first IO pass.
+    const retry = window.setTimeout(bind, 120);
+
+    return () => {
+      window.clearTimeout(retry);
+      observer?.disconnect();
+      mutationObserver?.disconnect();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- explicit dependency list for catalog/page swaps
+  }, [rootRef, ...deps]);
 }
 
 function useSmoothLinks(
@@ -614,7 +661,7 @@ function ProductsCatalogPage({
             return (
               <article
                 key={`catalog-product-${productId || index}`}
-                data-revealed="false"
+                data-revealed="true"
                 className={`${REVEAL_CLASS} group overflow-hidden border border-[#1a1a1a]/8 bg-white`}
                 style={{ transitionDelay: `${index * 70}ms` }}
                 {...visualProps(
@@ -1073,8 +1120,8 @@ export default function ChanelPages({
   const rootRef = React.useRef<HTMLElement | null>(null);
   const {
     products: storeProducts,
-    categories: storeCategories,
     fromPlugin,
+    loading: storeLoading,
     currency,
   } = useStorePluginCatalog({
     businessId,
@@ -1250,26 +1297,25 @@ export default function ChanelPages({
 
   const templateData = React.useMemo(() => {
     const merged = mergeData(data);
-    // Preview-only keeps curated defaults. Connected store is authoritative (even if empty).
-    if (!fromPlugin) return merged;
-
     const curatedCategories = safeArray(merged.categories);
-    const liveCategories =
-      storeCategories.length > 0
-        ? storeCategories.map((category, index) => {
-            const fallback =
-              curatedCategories[index] ||
-              chanelDefaultData.categories[
-                index % Math.max(1, chanelDefaultData.categories.length)
-              ];
-            return {
-              name: category.name || fallback?.name || "קטגוריה",
-              description: fallback?.description || "קטגוריה מהחנות",
-              image: category.image || fallback?.image || "",
-              href: "/products",
-            };
-          })
-        : curatedCategories;
+
+    // Preview / loading: keep curated defaults so grids never flash empty.
+    if (!fromPlugin || (storeLoading && storeProducts.length === 0)) {
+      return merged;
+    }
+
+    // Keep Chanel category art/names from the template; only product cards come from the store.
+    // Index-merging store categories used to rename "תכשיטים" and wipe images.
+    const categories = curatedCategories.map((category) => ({
+      ...category,
+      href: category.href || "/products",
+      image:
+        category.image ||
+        chanelDefaultData.categories.find(
+          (entry) => entry.name === category.name,
+        )?.image ||
+        "",
+    }));
 
     return {
       ...merged,
@@ -1283,20 +1329,15 @@ export default function ChanelPages({
         description: product.shortDescription,
         sku: product.sku,
       })),
-      categories:
-        curatedCategories.length >= liveCategories.length
-          ? curatedCategories.map((category, index) => {
-              const live = liveCategories[index];
-              if (!live) return category;
-              return {
-                ...category,
-                name: live.name || category.name,
-                image: live.image || category.image || "",
-              };
-            })
-          : liveCategories,
+      categories,
     };
-  }, [currency, data, fromPlugin, storeCategories, storeProducts]);
+  }, [
+    currency,
+    data,
+    fromPlugin,
+    storeLoading,
+    storeProducts,
+  ]);
 
   const pageId = String(currentPage || "home");
   const stackPageId = ["products", "product", "cart"].includes(pageId)
@@ -1304,7 +1345,13 @@ export default function ChanelPages({
     : "home";
   const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
-  useRevealRuntime(rootRef);
+  useRevealRuntime(rootRef, [
+    stackPageId,
+    fromPlugin,
+    storeLoading,
+    safeArray(templateData.products).length,
+    safeArray(templateData.categories).length,
+  ]);
   useSmoothLinks(rootRef, mode);
 
   return (
@@ -1776,7 +1823,7 @@ function ProductsSection({
             return (
               <article
                 key={`product-${productId || index}-${item.image || item.name}`}
-                data-revealed="false"
+                data-revealed="true"
                 className={`${REVEAL_CLASS} group`}
                 style={{ transitionDelay: `${index * 70}ms` }}
                 {...visualProps(

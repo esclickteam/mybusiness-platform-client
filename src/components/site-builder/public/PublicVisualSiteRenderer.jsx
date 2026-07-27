@@ -34,6 +34,10 @@ import {
   applyMediaFitStyles,
   preserveVisualMediaBoxSize,
 } from "../studio/visual-editor/utils/visualMediaUtils";
+import {
+  isStoreBoundVisualContentKey,
+  stripStoreBoundVisualImageOverrides,
+} from "../studio/data/templates/shared/storeCatalogSync";
 
 import {
   readSiteAnalyticsContext,
@@ -1233,6 +1237,9 @@ function materializePublicMedia(root, visualData) {
   const content = asPlainObject(data.__content);
 
   Object.entries(content).forEach(([elementId, item]) => {
+    // Live store catalog owns product/category images — never clear/override them.
+    if (isStoreBoundVisualContentKey(elementId)) return;
+
     const record = asPlainObject(item);
     const source = getPermanentMediaSource(item);
     const hasMediaFields =
@@ -1721,7 +1728,9 @@ function syncPublicNavActiveState(root, pathname) {
 function applyPublicVisualData(root, visualData, pathname, site) {
   if (!root) return;
 
-  const data = asPlainObject(visualData);
+  const rawData = asPlainObject(visualData);
+  const data =
+    stripStoreBoundVisualImageOverrides(rawData) || rawData;
 
   root.setAttribute("data-bizuply-public-render-root", "true");
 
@@ -2268,6 +2277,10 @@ export default function PublicVisualSiteRenderer({
             }
 
             if (!childrenChanged) return;
+
+            // Product grids remount after store fetch — force reveal without
+            // waiting for a full visual re-apply (that can leave opacity-0 cards).
+            revealRuntimeAnimatedElements(root);
 
             if (applying) {
               reapplyQueued = true;
