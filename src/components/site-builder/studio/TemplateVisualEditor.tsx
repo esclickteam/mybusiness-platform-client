@@ -267,22 +267,6 @@ export default function TemplateVisualEditor({
 
     const merged = mergeVisualData(defaultData, savedVisualData);
 
-    console.log("[TemplateVisualEditor baseData]", {
-      templateKey: renderer.key,
-      businessId,
-      defaultKeys: Object.keys(defaultData || {}),
-      initialKeys: Object.keys(initialData || {}),
-      finalKeys: Object.keys(merged || {}),
-      hasContent: isPlainObject(merged.__content),
-      contentKeysCount: countContentKeys(merged),
-      contentKeys: Object.keys(
-        isPlainObject(merged.__content) ? merged.__content : {},
-      ),
-      hasTemplateData: isPlainObject(initialData?.templateData),
-      hasVisualEditorPayload: isPlainObject(initialData?.visualEditorPayload),
-      hasProjectData: isPlainObject(initialData?.projectData),
-    });
-
     return merged;
   }, [renderer.defaultData, renderer.key, initialData, businessId]);
 

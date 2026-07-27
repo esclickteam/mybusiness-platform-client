@@ -189,7 +189,7 @@ type CreateTemplatePagesOptions = {
 };
 
 function studioGroup(label: string, payload?: unknown) {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
+  if (!isStudioTemplateDebugEnabled()) return;
 
   try {
     console.groupCollapsed(`[BizUply Studio] ${label}`);
@@ -200,7 +200,7 @@ function studioGroup(label: string, payload?: unknown) {
 }
 
 function studioGroupEnd() {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
+  if (!isStudioTemplateDebugEnabled()) return;
 
   try {
     console.groupEnd();
