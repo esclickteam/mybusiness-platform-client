@@ -7,10 +7,12 @@ import {
   Boxes,
   CheckCircle2,
   ChevronDown,
+  ClipboardList,
   CreditCard,
   Grid3X3,
   ImagePlus,
   Loader2,
+  MoreVertical,
   PackagePlus,
   Plus,
   RefreshCcw,
@@ -30,6 +32,7 @@ import { emitStoreCatalogChanged } from "../site-builder/studio/data/templates/s
 
 type StoreView =
   | "products"
+  | "inventory"
   | "add-product"
   | "categories"
   | "settings"
@@ -687,7 +690,8 @@ export default function StoreProductsManager({
         product.name?.toLowerCase().includes(cleanSearch) ||
         product.description?.toLowerCase().includes(cleanSearch) ||
         product.shortDescription?.toLowerCase().includes(cleanSearch) ||
-        product.categoryName?.toLowerCase().includes(cleanSearch);
+        product.categoryName?.toLowerCase().includes(cleanSearch) ||
+        product.sku?.toLowerCase().includes(cleanSearch);
 
       return byCategory && bySearch;
     });
@@ -790,6 +794,60 @@ export default function StoreProductsManager({
     resetProductForm();
     setView("add-product");
   };
+
+  const updateProductInventory = useCallback(
+    async (
+      product: StoreProduct,
+      patch: { sku?: string; stock?: number; status?: string }
+    ) => {
+      if (!businessId) return;
+
+      try {
+        const formData = new FormData();
+        if (patch.sku !== undefined) {
+          formData.set("sku", String(patch.sku || "").trim());
+        }
+        if (patch.stock !== undefined) {
+          formData.set("stock", String(Math.max(0, Number(patch.stock) || 0)));
+        }
+        if (patch.status !== undefined) {
+          formData.set("status", String(patch.status || "active"));
+        }
+
+        const { data } = await API.put(
+          `/store/${businessId}/products/${product._id}`,
+          formData
+        );
+
+        const updated = data?.product as StoreProduct | undefined;
+        setProducts((current) =>
+          current.map((item) =>
+            item._id === product._id
+              ? {
+                  ...item,
+                  ...(updated || {}),
+                  sku: patch.sku !== undefined ? patch.sku : item.sku,
+                  stock:
+                    patch.stock !== undefined
+                      ? Math.max(0, Number(patch.stock) || 0)
+                      : item.stock,
+                  status:
+                    (patch.status as StoreProduct["status"]) ||
+                    updated?.status ||
+                    item.status,
+                }
+              : item
+          )
+        );
+        emitStoreCatalogChanged(businessId);
+      } catch (err) {
+        console.error("Update inventory error:", err);
+        showMessage("error", "לא הצלחנו לעדכן את המלאי");
+        await loadStoreData();
+      }
+    },
+    [businessId, loadStoreData, showMessage]
+  );
 
   const saveSettings = async () => {
     if (!businessId) return;
@@ -1286,6 +1344,11 @@ export default function StoreProductsManager({
 
   const nav = [
     { id: "products" as StoreView, label: "מוצרים", icon: <Grid3X3 size={17} /> },
+    {
+      id: "inventory" as StoreView,
+      label: "מלאי",
+      icon: <ClipboardList size={17} />,
+    },
     { id: "add-product" as StoreView, label: "הוספה", icon: <Plus size={17} /> },
     { id: "categories" as StoreView, label: "קטגוריות", icon: <Tags size={17} /> },
     { id: "settings" as StoreView, label: "הגדרות", icon: <Settings size={17} /> },
@@ -1432,8 +1495,21 @@ export default function StoreProductsManager({
               void seedDemoProducts();
             }}
             onAddProduct={openAddProduct}
+            onOpenInventory={() => setView("inventory")}
             onEditProduct={editProduct}
             onDeleteProduct={deleteProduct}
+          />
+        )}
+
+        {!loading && view === "inventory" && (
+          <InventoryView
+            products={filteredProducts}
+            search={search}
+            setSearch={setSearch}
+            onBackToProducts={() => setView("products")}
+            onEditProduct={editProduct}
+            onDeleteProduct={deleteProduct}
+            onUpdateInventory={updateProductInventory}
           />
         )}
 
@@ -1525,6 +1601,325 @@ function StatCard({ title, value }: { title: string; value: React.ReactNode }) {
   );
 }
 
+function InventoryView({
+  products,
+  search,
+  setSearch,
+  onBackToProducts,
+  onEditProduct,
+  onDeleteProduct,
+  onUpdateInventory,
+}: {
+  products: StoreProduct[];
+  search: string;
+  setSearch: (value: string) => void;
+  onBackToProducts: () => void;
+  onEditProduct: (product: StoreProduct) => void;
+  onDeleteProduct: (productId: string) => void;
+  onUpdateInventory: (
+    product: StoreProduct,
+    patch: { sku?: string; stock?: number; status?: string }
+  ) => Promise<void>;
+}) {
+  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+  const [savingId, setSavingId] = useState<string | null>(null);
+  const [draftSku, setDraftSku] = useState<Record<string, string>>({});
+  const [draftStock, setDraftStock] = useState<Record<string, string>>({});
+
+  useEffect(() => {
+    const nextSku: Record<string, string> = {};
+    const nextStock: Record<string, string> = {};
+    products.forEach((product) => {
+      nextSku[product._id] = product.sku || "";
+      nextStock[product._id] = String(productStockTotal(product));
+    });
+    setDraftSku(nextSku);
+    setDraftStock(nextStock);
+  }, [products]);
+
+  async function commitPatch(
+    product: StoreProduct,
+    patch: { sku?: string; stock?: number; status?: string }
+  ) {
+    setSavingId(product._id);
+    try {
+      await onUpdateInventory(product, patch);
+    } finally {
+      setSavingId(null);
+      setOpenMenuId(null);
+    }
+  }
+
+  return (
+    <div>
+      <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div>
+          <nav className="flex items-center gap-2 text-sm font-black text-slate-800">
+            <button
+              type="button"
+              onClick={onBackToProducts}
+              className="text-slate-500 transition hover:text-slate-800"
+            >
+              מוצרים
+            </button>
+            <span className="text-slate-300">»</span>
+            <span>מלאי</span>
+          </nav>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            רשימת מלאי ומק״ט לכל מוצר — עדכון מהיר בלי לפתוח את כרטיס המוצר.
+          </p>
+        </div>
+
+        <div className="relative w-full max-w-sm">
+          <Search
+            size={16}
+            className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400"
+          />
+          <TextInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="חיפוש..."
+            className="pr-10"
+          />
+        </div>
+      </div>
+
+      {products.length === 0 ? (
+        <EmptyBox
+          title="אין מוצרים במלאי"
+          text="הוסיפו מוצרים בחנות כדי לנהל כאן מק״ט וכמויות."
+          action={
+            <PrimaryButton type="button" onClick={onBackToProducts}>
+              חזרה למוצרים
+            </PrimaryButton>
+          }
+        />
+      ) : (
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="min-w-full border-collapse text-right">
+              <thead>
+                <tr className="bg-slate-700 text-white">
+                  <th className="px-4 py-3 text-xs font-black tracking-wide">
+                    מוצר
+                  </th>
+                  <th className="px-4 py-3 text-xs font-black tracking-wide">
+                    מק״ט / ברקוד
+                  </th>
+                  <th className="px-4 py-3 text-xs font-black tracking-wide">
+                    כמות
+                  </th>
+                  <th className="px-4 py-3 text-xs font-black tracking-wide">
+                    מלאי
+                  </th>
+                  <th className="w-14 px-3 py-3 text-xs font-black tracking-wide">
+                    פעולות
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {products.map((product) => {
+                  const image = product.mainImage || product.images?.[0] || "";
+                  const stock = productStockTotal(product);
+                  const busy = savingId === product._id;
+                  const hasVariants =
+                    Array.isArray(product.variants) &&
+                    product.variants.length > 0;
+
+                  return (
+                    <tr
+                      key={product._id}
+                      className="border-t border-slate-200 bg-white transition hover:bg-slate-50/80"
+                    >
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
+                          <div className="h-12 w-12 shrink-0 overflow-hidden rounded-lg bg-slate-100">
+                            {image ? (
+                              <img
+                                src={image}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="grid h-full place-items-center text-slate-300">
+                                <ImagePlus size={18} />
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-sm font-black text-slate-800">
+                              {product.name}
+                            </p>
+                            <p className="mt-0.5 truncate text-xs font-bold text-slate-400">
+                              {product.categoryName || "ללא קטגוריה"}
+                              {hasVariants
+                                ? ` · ${product.variants!.length} וריאציות`
+                                : ""}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          disabled={busy}
+                          value={draftSku[product._id] ?? product.sku ?? ""}
+                          onChange={(e) =>
+                            setDraftSku((prev) => ({
+                              ...prev,
+                              [product._id]: e.target.value,
+                            }))
+                          }
+                          onBlur={() => {
+                            const next = String(
+                              draftSku[product._id] ?? ""
+                            ).trim();
+                            if (next === String(product.sku || "").trim()) {
+                              return;
+                            }
+                            void commitPatch(product, { sku: next });
+                          }}
+                          placeholder="—"
+                          className="w-full min-w-[120px] rounded-lg border border-transparent bg-transparent px-2 py-1.5 font-mono text-sm font-bold text-slate-700 outline-none transition hover:border-slate-200 focus:border-violet-300 focus:bg-white"
+                        />
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <input
+                          type="number"
+                          min={0}
+                          disabled={busy || hasVariants}
+                          value={draftStock[product._id] ?? String(stock)}
+                          title={
+                            hasVariants
+                              ? "כשיש וריאציות — עדכנו מלאי בכל וריאציה בעריכת המוצר"
+                              : undefined
+                          }
+                          onChange={(e) =>
+                            setDraftStock((prev) => ({
+                              ...prev,
+                              [product._id]: e.target.value,
+                            }))
+                          }
+                          onBlur={() => {
+                            if (hasVariants) return;
+                            const next = Math.max(
+                              0,
+                              Number(draftStock[product._id] ?? stock) || 0
+                            );
+                            if (next === stock) return;
+                            void commitPatch(product, {
+                              stock: next,
+                              status:
+                                next <= 0
+                                  ? "out_of_stock"
+                                  : product.status === "out_of_stock"
+                                    ? "active"
+                                    : product.status,
+                            });
+                          }}
+                          className={`w-20 rounded-lg border border-transparent bg-transparent px-2 py-1.5 text-sm font-black outline-none transition hover:border-slate-200 focus:border-violet-300 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60 ${
+                            stock <= 0
+                              ? "text-rose-600"
+                              : stock <= 3
+                                ? "text-amber-600"
+                                : "text-slate-800"
+                          }`}
+                        />
+                      </td>
+
+                      <td className="px-4 py-3">
+                        <div className="relative inline-flex min-w-[128px]">
+                          <select
+                            disabled={busy}
+                            value={
+                              product.status === "out_of_stock" || stock <= 0
+                                ? "out_of_stock"
+                                : product.status || "active"
+                            }
+                            onChange={(e) => {
+                              const status = e.target.value;
+                              void commitPatch(product, {
+                                status,
+                                stock:
+                                  status === "out_of_stock"
+                                    ? 0
+                                    : stock > 0
+                                      ? stock
+                                      : 1,
+                              });
+                            }}
+                            className="w-full appearance-none rounded-lg border border-slate-200 bg-white py-2 pr-3 pl-8 text-sm font-black text-slate-700 outline-none transition hover:border-slate-300 focus:border-violet-300"
+                          >
+                            <option value="active">במלאי</option>
+                            <option value="out_of_stock">אזל מהמלאי</option>
+                            <option value="draft">טיוטה</option>
+                            <option value="hidden">מוסתר</option>
+                          </select>
+                          <ChevronDown
+                            size={14}
+                            className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400"
+                          />
+                        </div>
+                      </td>
+
+                      <td className="relative px-3 py-3">
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() =>
+                            setOpenMenuId((current) =>
+                              current === product._id ? null : product._id
+                            )
+                          }
+                          className="grid h-9 w-9 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                          aria-label="פעולות"
+                        >
+                          {busy ? (
+                            <Loader2 size={16} className="animate-spin" />
+                          ) : (
+                            <MoreVertical size={16} />
+                          )}
+                        </button>
+
+                        {openMenuId === product._id ? (
+                          <div className="absolute left-3 top-12 z-20 min-w-[140px] overflow-hidden rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                onEditProduct(product);
+                              }}
+                              className="block w-full px-3 py-2 text-right text-sm font-bold text-slate-700 hover:bg-slate-50"
+                            >
+                              עריכת מוצר
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                onDeleteProduct(product._id);
+                              }}
+                              className="block w-full px-3 py-2 text-right text-sm font-bold text-rose-600 hover:bg-rose-50"
+                            >
+                              מחיקה
+                            </button>
+                          </div>
+                        ) : null}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ProductsView({
   products,
   categories,
@@ -1536,6 +1931,7 @@ function ProductsView({
   seedingDemo,
   onSeedDemo,
   onAddProduct,
+  onOpenInventory,
   onEditProduct,
   onDeleteProduct,
 }: {
@@ -1549,6 +1945,7 @@ function ProductsView({
   seedingDemo: boolean;
   onSeedDemo: () => void;
   onAddProduct: () => void;
+  onOpenInventory: () => void;
   onEditProduct: (product: StoreProduct) => void;
   onDeleteProduct: (productId: string) => void;
 }) {
@@ -1562,10 +1959,16 @@ function ProductsView({
           </p>
         </div>
 
-        <PrimaryButton type="button" onClick={onAddProduct}>
-          <Plus size={17} />
-          הוספת מוצר
-        </PrimaryButton>
+        <div className="flex flex-wrap items-center gap-2">
+          <SecondaryButton type="button" onClick={onOpenInventory}>
+            <ClipboardList size={17} />
+            רשימת מלאי
+          </SecondaryButton>
+          <PrimaryButton type="button" onClick={onAddProduct}>
+            <Plus size={17} />
+            הוספת מוצר
+          </PrimaryButton>
+        </div>
       </div>
 
       <div className="mb-6 grid gap-3 rounded-[28px] border border-slate-200 bg-white p-3 md:grid-cols-[1fr_260px_auto]">
@@ -1577,7 +1980,7 @@ function ProductsView({
           <TextInput
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="חיפוש לפי שם, תיאור או קטגוריה"
+            placeholder="חיפוש לפי שם, מק״ט, תיאור או קטגוריה"
             className="pr-10"
           />
         </div>
