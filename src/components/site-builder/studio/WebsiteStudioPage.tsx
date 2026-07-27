@@ -4800,7 +4800,10 @@ export default function WebsiteStudioPage({
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
     if (selectedTemplateSeed) {
-      return createPagesFromTemplateSeed(selectedTemplateSeed).pages;
+      // Shells only — full SSR of every Velmora page here blocked first paint.
+      return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+        htmlMode: "none",
+      }).pages;
     }
 
     return createInitialPages();
@@ -4824,7 +4827,9 @@ export default function WebsiteStudioPage({
   });
   const [activePageId, setActivePageId] = useState(() => {
     if (selectedTemplateSeed) {
-      return createPagesFromTemplateSeed(selectedTemplateSeed).activePageId;
+      return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+        htmlMode: "none",
+      }).activePageId;
     }
 
     return "home";
@@ -7381,7 +7386,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         pages.length
           ? pages
           : selectedTemplateSeed
-            ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData).pages
+            ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData, {
+                htmlMode: "none",
+              }).pages
             : createInitialPages();
 
       studioDebug("handleVisualTemplateSave:sourcePages-ready", {
