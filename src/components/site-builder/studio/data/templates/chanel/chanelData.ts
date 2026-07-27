@@ -24,11 +24,14 @@ export type ChanelCategory = {
 };
 
 export type ChanelProduct = {
+  id?: string;
   name: string;
   price: string;
   tag?: string;
   image: ChanelMediaValue;
   href: string;
+  description?: string;
+  sku?: string;
 };
 
 export type ChanelValue = {

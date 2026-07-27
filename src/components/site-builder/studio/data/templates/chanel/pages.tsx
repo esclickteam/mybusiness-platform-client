@@ -4,7 +4,9 @@ import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   formatStorePrice,
   useStorePluginCatalog,
+  type StoreCatalogProduct,
 } from "../shared/useStorePluginCatalog";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import {
   chanelDefaultData,
   chanelPages as chanelPagesData,
@@ -15,13 +17,37 @@ import {
 
 export const chanelPages = [...chanelPagesData];
 
+const CHANEL_PAGE_IDS = ["home", "products", "product", "cart"] as const;
+const SELECTED_PRODUCT_KEY = "bizuply:chanel-selected-product";
+const CART_STORAGE_KEY = "bizuply:chanel-cart";
+
+type ChanelCartLine = {
+  id: string;
+  productId: string;
+  name: string;
+  price: number;
+  image: string;
+  qty: number;
+  variantId?: string;
+  variantLabel?: string;
+  sku?: string;
+};
+
 type ChanelPagesProps = {
   initialPage?: ChanelPageId | string;
   activePageId?: ChanelPageId | string;
+  currentPageId?: ChanelPageId | string;
+  pageId?: ChanelPageId | string;
+  page?: ChanelPageId | string;
+  initialPageId?: ChanelPageId | string;
   mode?: "preview" | "editor" | "edit" | "public" | string;
+  viewMode?: string;
+  runtimeMode?: string;
+  isPublic?: boolean;
   data?: Partial<ChanelData>;
   isStudioStatic?: boolean;
   businessId?: string;
+  onPageChange?: (pageId: string) => void;
 };
 
 type VisualElementType = "text" | "image" | "button" | "section" | "box";
@@ -30,6 +56,48 @@ type SharedProps = {
   data: ChanelData;
   mode: string;
 };
+
+function readSelectedProductId() {
+  if (typeof window === "undefined") return "";
+  try {
+    const fromQuery = new URLSearchParams(window.location.search).get("pid");
+    if (fromQuery) return String(fromQuery).trim();
+  } catch {
+    // ignore
+  }
+  try {
+    return String(sessionStorage.getItem(SELECTED_PRODUCT_KEY) || "").trim();
+  } catch {
+    return "";
+  }
+}
+
+function persistSelectedProductId(productId: string) {
+  if (typeof window === "undefined") return;
+  const id = String(productId || "").trim();
+  try {
+    if (id) sessionStorage.setItem(SELECTED_PRODUCT_KEY, id);
+    else sessionStorage.removeItem(SELECTED_PRODUCT_KEY);
+  } catch {
+    // ignore
+  }
+}
+
+function readStoredCart(): ChanelCartLine[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(CART_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function productHref(productId?: string) {
+  const id = String(productId || "").trim();
+  return id ? `/product?pid=${encodeURIComponent(id)}` : "/product";
+}
 
 const REVEAL_CLASS =
   "chanel-reveal opacity-0 translate-y-8 transition-all duration-700 ease-out data-[revealed=true]:translate-y-0 data-[revealed=true]:opacity-100";
@@ -478,7 +546,47 @@ function SectionHeading({
   );
 }
 
-function ProductsCatalogPage({ data, mode }: SharedProps) {
+function ProductCardLink({
+  href,
+  mode,
+  productId,
+  onOpenProduct,
+  className,
+  children,
+}: {
+  href: string;
+  mode: string;
+  productId?: string;
+  onOpenProduct?: (productId: string) => void;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <a
+      href={href}
+      className={className}
+      data-editable="link"
+      onClick={(event) => {
+        const id = String(productId || "").trim();
+        if (!id || !onOpenProduct) return;
+        // In editor/preview SPA, navigate inside the template stack.
+        if (isEditorMode(mode) || mode === "preview") {
+          event.preventDefault();
+          event.stopPropagation();
+          onOpenProduct(id);
+        }
+      }}
+    >
+      {children}
+    </a>
+  );
+}
+
+function ProductsCatalogPage({
+  data,
+  mode,
+  onOpenProduct,
+}: SharedProps & { onOpenProduct?: (productId: string) => void }) {
   return (
     <section
       className="py-20 sm:py-28"
@@ -500,61 +608,102 @@ function ProductsCatalogPage({ data, mode }: SharedProps) {
         </p>
 
         <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
-          {safeArray(data.products).map((item, index) => (
-            <article
-              key={`catalog-product-${index}`}
-              data-revealed="false"
-              className={`${REVEAL_CLASS} group overflow-hidden border border-[#1a1a1a]/8 bg-white`}
-              style={{ transitionDelay: `${index * 70}ms` }}
-              {...visualProps(
-                `products.${index}.card`,
-                "section",
-                `מוצר ${index + 1}`,
-              )}
-            >
-              <a href={item.href || "/product"} className="block" data-editable="link">
-                <div className="aspect-[4/5] overflow-hidden bg-[#f5f0e8]">
-                  <MediaElement
-                    value={item.image}
-                    fallback={chanelDefaultData.products[index]?.image}
-                    field={`products.${index}.image`}
-                    alt={item.name}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    decorative={!isEditorMode(mode)}
-                  />
-                </div>
-                <div className="space-y-2 p-5">
-                  {item.tag ? (
-                    <span className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">
-                      {item.tag}
-                    </span>
-                  ) : null}
-                  <h3
-                    className="text-lg font-light"
-                    data-editable="text"
-                    {...visualProps(`products.${index}.name`, "text", `שם מוצר ${index + 1}`)}
-                  >
-                    {item.name}
-                  </h3>
-                  <p
-                    className="text-sm tracking-[0.08em] text-[#1a1a1a]/70"
-                    data-editable="text"
-                    {...visualProps(`products.${index}.price`, "text", `מחיר ${index + 1}`)}
-                  >
-                    {item.price}
-                  </p>
-                </div>
-              </a>
-            </article>
-          ))}
+          {safeArray(data.products).map((item, index) => {
+            const productId = String(item.id || "").trim();
+            const href = item.href || productHref(productId);
+            return (
+              <article
+                key={`catalog-product-${productId || index}`}
+                data-revealed="false"
+                className={`${REVEAL_CLASS} group overflow-hidden border border-[#1a1a1a]/8 bg-white`}
+                style={{ transitionDelay: `${index * 70}ms` }}
+                {...visualProps(
+                  `products.${index}.card`,
+                  "section",
+                  `מוצר ${index + 1}`,
+                )}
+              >
+                <ProductCardLink
+                  href={href}
+                  mode={mode}
+                  productId={productId}
+                  onOpenProduct={onOpenProduct}
+                  className="block"
+                >
+                  <div className="aspect-[4/5] overflow-hidden bg-[#f5f0e8]">
+                    <MediaElement
+                      value={item.image}
+                      fallback={chanelDefaultData.products[index]?.image}
+                      field={`products.${index}.image`}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      decorative={!isEditorMode(mode)}
+                    />
+                  </div>
+                  <div className="space-y-2 p-5">
+                    {item.tag ? (
+                      <span className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                        {item.tag}
+                      </span>
+                    ) : null}
+                    <h3
+                      className="text-lg font-light"
+                      data-editable="text"
+                      {...visualProps(`products.${index}.name`, "text", `שם מוצר ${index + 1}`)}
+                    >
+                      {item.name}
+                    </h3>
+                    <p
+                      className="text-sm tracking-[0.08em] text-[#1a1a1a]/70"
+                      data-editable="text"
+                      {...visualProps(`products.${index}.price`, "text", `מחיר ${index + 1}`)}
+                    >
+                      {item.price}
+                    </p>
+                  </div>
+                </ProductCardLink>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
 
-function ProductDetailPage({ data, mode }: SharedProps) {
-  const product = data.productPage;
+function ProductDetailPage({
+  data,
+  mode,
+  selectedProduct,
+  currency,
+  qty,
+  setQty,
+  selectedVariantId,
+  setSelectedVariantId,
+  stockMessage,
+  onAddToCart,
+  onBuyNow,
+  onBackToShop,
+}: SharedProps & {
+  selectedProduct: StoreCatalogProduct | null;
+  currency: string;
+  qty: number;
+  setQty: React.Dispatch<React.SetStateAction<number>>;
+  selectedVariantId: string;
+  setSelectedVariantId: React.Dispatch<React.SetStateAction<string>>;
+  stockMessage: string;
+  onAddToCart: () => void;
+  onBuyNow: () => void;
+  onBackToShop: () => void;
+}) {
+  const fallback = data.productPage;
+  const live = selectedProduct;
+  const unitPrice =
+    live?.variants.find((variant) => variant.id === selectedVariantId)?.price ??
+    live?.price;
+  const priceLabel = live
+    ? formatStorePrice(Number(unitPrice ?? live.price), currency)
+    : fallback.price;
 
   return (
     <section
@@ -565,28 +714,30 @@ function ProductDetailPage({ data, mode }: SharedProps) {
         <div className="space-y-4">
           <div className="aspect-[4/5] overflow-hidden bg-[#f5f0e8]">
             <MediaElement
-              value={product.image}
+              value={live?.image || fallback.image}
               fallback={chanelDefaultData.productPage.image}
               field="productPage.image"
-              alt={product.name}
+              alt={live?.name || fallback.name}
               className="h-full w-full object-cover"
               decorative={!isEditorMode(mode)}
             />
           </div>
-          <div className="grid grid-cols-3 gap-3">
-            {safeArray(product.gallery).map((item, index) => (
-              <div key={`gallery-${index}`} className="aspect-square overflow-hidden bg-[#f5f0e8]">
-                <MediaElement
-                  value={item}
-                  fallback={chanelDefaultData.productPage.gallery[index]}
-                  field={`productPage.gallery.${index}`}
-                  alt={`תמונת מוצר ${index + 1}`}
-                  className="h-full w-full object-cover"
-                  decorative={!isEditorMode(mode)}
-                />
-              </div>
-            ))}
-          </div>
+          {!live ? (
+            <div className="grid grid-cols-3 gap-3">
+              {safeArray(fallback.gallery).map((item, index) => (
+                <div key={`gallery-${index}`} className="aspect-square overflow-hidden bg-[#f5f0e8]">
+                  <MediaElement
+                    value={item}
+                    fallback={chanelDefaultData.productPage.gallery[index]}
+                    field={`productPage.gallery.${index}`}
+                    alt={`תמונת מוצר ${index + 1}`}
+                    className="h-full w-full object-cover"
+                    decorative={!isEditorMode(mode)}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         <div className="flex flex-col justify-center">
@@ -595,14 +746,14 @@ function ProductDetailPage({ data, mode }: SharedProps) {
             data-editable="text"
             {...visualProps("productPage.tag", "text", "תגית מוצר")}
           >
-            {product.tag}
+            {live?.badge || live?.category || fallback.tag}
           </span>
           <h1
             className="text-balance text-[clamp(2rem,5vw,3.5rem)] font-light leading-tight"
             data-editable="text"
             {...visualProps("productPage.name", "text", "שם מוצר")}
           >
-            {product.name}
+            {live?.name || fallback.name}
           </h1>
           <div className="mt-5 flex items-baseline gap-4">
             <strong
@@ -610,51 +761,149 @@ function ProductDetailPage({ data, mode }: SharedProps) {
               data-editable="text"
               {...visualProps("productPage.price", "text", "מחיר מוצר")}
             >
-              {product.price}
+              {priceLabel}
             </strong>
-            <span
-              className="text-sm text-[#1a1a1a]/40 line-through"
-              data-editable="text"
-              {...visualProps("productPage.comparePrice", "text", "מחיר לפני הנחה")}
-            >
-              {product.comparePrice}
-            </span>
+            {live?.compareAtPrice ? (
+              <span className="text-sm text-[#1a1a1a]/40 line-through">
+                {formatStorePrice(live.compareAtPrice, currency)}
+              </span>
+            ) : (
+              <span
+                className="text-sm text-[#1a1a1a]/40 line-through"
+                data-editable="text"
+                {...visualProps("productPage.comparePrice", "text", "מחיר לפני הנחה")}
+              >
+                {fallback.comparePrice}
+              </span>
+            )}
           </div>
+          {live?.sku ? (
+            <p className="mt-3 text-xs tracking-[0.12em] text-[#1a1a1a]/45">
+              מק״ט: {live.sku}
+            </p>
+          ) : null}
           <p
             className="mt-6 text-sm leading-8 text-[#1a1a1a]/70 sm:text-base"
             data-editable="text"
             {...visualProps("productPage.description", "text", "תיאור מוצר")}
           >
-            {product.description}
+            {live?.shortDescription || fallback.description}
           </p>
-          <ul className="mt-6 space-y-2 text-sm text-[#1a1a1a]/65">
-            {safeArray(product.details).map((detail, index) => (
-              <li
-                key={`detail-${index}`}
-                data-editable="text"
-                {...visualProps(`productPage.details.${index}`, "text", `פירוט ${index + 1}`)}
-              >
-                • {detail}
-              </li>
-            ))}
-          </ul>
-          <div className="mt-8 flex flex-wrap gap-4">
-            <a
-              href="/cart"
-              className="bg-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-transform hover:-translate-y-0.5"
-              data-editable="link"
+
+          {live && live.variants.length > 0 ? (
+            <div className="mt-6">
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                בחירת וריאציה
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {live.variants.map((variant) => {
+                  const disabled =
+                    live.trackStock && !live.allowBackorder && variant.stock <= 0;
+                  return (
+                    <button
+                      key={variant.id || variant.label}
+                      type="button"
+                      disabled={disabled}
+                      onClick={() => setSelectedVariantId(variant.id)}
+                      className={[
+                        "border px-4 py-2 text-xs tracking-[0.12em] transition",
+                        selectedVariantId === variant.id
+                          ? "border-[#1a1a1a] bg-[#1a1a1a] text-[#f5f0e8]"
+                          : "border-[#1a1a1a]/20 hover:border-[#1a1a1a]",
+                        disabled ? "opacity-40" : "",
+                      ].join(" ")}
+                    >
+                      {variant.label || variant.optionValue}
+                      {live.trackStock ? ` · ${variant.stock}` : ""}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
+
+          {live && !live.inStock ? (
+            <p className="mt-4 text-sm font-medium text-rose-700">אזל מהמלאי</p>
+          ) : live && live.trackStock && live.stock <= 3 ? (
+            <p className="mt-4 text-sm font-medium text-amber-700">
+              נותרו {live.stock} במלאי
+            </p>
+          ) : null}
+
+          {stockMessage ? (
+            <p className="mt-3 text-sm font-medium text-rose-700">{stockMessage}</p>
+          ) : null}
+
+          {!live ? (
+            <ul className="mt-6 space-y-2 text-sm text-[#1a1a1a]/65">
+              {safeArray(fallback.details).map((detail, index) => (
+                <li
+                  key={`detail-${index}`}
+                  data-editable="text"
+                  {...visualProps(`productPage.details.${index}`, "text", `פירוט ${index + 1}`)}
+                >
+                  • {detail}
+                </li>
+              ))}
+            </ul>
+          ) : null}
+
+          <div className="mt-8 flex flex-wrap items-center gap-3">
+            {live ? (
+              <div className="flex items-center border border-[#1a1a1a]/20">
+                <button
+                  type="button"
+                  className="px-4 py-3 text-sm"
+                  onClick={() => setQty((value) => Math.max(1, value - 1))}
+                >
+                  -
+                </button>
+                <span className="min-w-10 text-center text-sm">{qty}</span>
+                <button
+                  type="button"
+                  className="px-4 py-3 text-sm"
+                  onClick={() => setQty((value) => value + 1)}
+                >
+                  +
+                </button>
+              </div>
+            ) : null}
+
+            <button
+              type="button"
+              disabled={Boolean(live && !live.inStock)}
+              onClick={onAddToCart}
+              className="bg-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
               {...visualProps("productPage.primaryButton", "button", "הוספה לעגלה")}
             >
-              <span data-editable="text">{product.primaryButton}</span>
-            </a>
-            <a
-              href="/products"
-              className="border border-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
-              data-editable="link"
+              <span data-editable="text">
+                {live && !live.inStock
+                  ? "אזל מהמלאי"
+                  : fallback.primaryButton || "הוספה לסל"}
+              </span>
+            </button>
+
+            {live ? (
+              <button
+                type="button"
+                disabled={!live.inStock}
+                onClick={onBuyNow}
+                className="border border-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                לתשלום
+              </button>
+            ) : null}
+
+            <button
+              type="button"
+              onClick={onBackToShop}
+              className="border border-[#1a1a1a]/20 px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] transition-colors hover:border-[#1a1a1a]"
               {...visualProps("productPage.secondaryButton", "button", "המשך קניות")}
             >
-              <span data-editable="text">{product.secondaryButton}</span>
-            </a>
+              <span data-editable="text">
+                {fallback.secondaryButton || "חזרה לחנות"}
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -662,9 +911,38 @@ function ProductDetailPage({ data, mode }: SharedProps) {
   );
 }
 
-function CartPage({ data }: SharedProps) {
+function CartPage({
+  data,
+  mode,
+  cartItems,
+  currency,
+  onCheckout,
+  onContinue,
+  onRemove,
+}: SharedProps & {
+  cartItems: ChanelCartLine[];
+  currency: string;
+  onCheckout: () => void;
+  onContinue: () => void;
+  onRemove: (lineId: string) => void;
+}) {
   const cart = data.cartPage;
-  const items = safeArray(cart.items);
+  const liveMode = cartItems.length > 0 || mode !== "edit";
+  const items = liveMode
+    ? cartItems
+    : safeArray(cart.items).map((item, index) => ({
+        id: `demo-${index}`,
+        productId: `demo-${index}`,
+        name: item.name,
+        price: Number(String(item.price).replace(/[^\d.]/g, "")) || 0,
+        image: String(
+          typeof item.image === "string"
+            ? item.image
+            : item.image?.url || item.image?.src || "",
+        ),
+        qty: Number(item.quantity) || 1,
+      }));
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   return (
     <section
@@ -684,7 +962,7 @@ function CartPage({ data }: SharedProps) {
             <div className="space-y-5">
               {items.map((item, index) => (
                 <article
-                  key={`cart-item-${index}`}
+                  key={item.id}
                   className="flex items-center gap-5 border border-[#1a1a1a]/10 bg-white p-4 sm:p-5"
                   {...visualProps(`cartPage.items.${index}.row`, "section", `פריט עגלה ${index + 1}`)}
                 >
@@ -698,28 +976,28 @@ function CartPage({ data }: SharedProps) {
                     />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <h3
-                      className="truncate text-base font-light"
-                      data-editable="text"
-                      {...visualProps(`cartPage.items.${index}.name`, "text", `שם פריט ${index + 1}`)}
-                    >
-                      {item.name}
-                    </h3>
-                    <p
-                      className="mt-1 text-sm text-[#1a1a1a]/60"
-                      data-editable="text"
-                      {...visualProps(`cartPage.items.${index}.price`, "text", `מחיר פריט ${index + 1}`)}
-                    >
-                      {item.price}
+                    <h3 className="truncate text-base font-light">{item.name}</h3>
+                    {item.variantLabel ? (
+                      <p className="mt-1 text-xs text-[#1a1a1a]/45">
+                        {item.variantLabel}
+                      </p>
+                    ) : null}
+                    <p className="mt-1 text-sm text-[#1a1a1a]/60">
+                      {formatStorePrice(item.price, currency)}
                     </p>
                   </div>
-                  <span
-                    className="text-sm tracking-[0.08em] text-[#1a1a1a]/70"
-                    data-editable="text"
-                    {...visualProps(`cartPage.items.${index}.quantity`, "text", `כמות ${index + 1}`)}
-                  >
-                    ×{item.quantity}
+                  <span className="text-sm tracking-[0.08em] text-[#1a1a1a]/70">
+                    ×{item.qty}
                   </span>
+                  {liveMode ? (
+                    <button
+                      type="button"
+                      className="text-xs text-rose-600"
+                      onClick={() => onRemove(item.id)}
+                    >
+                      הסר
+                    </button>
+                  ) : null}
                 </article>
               ))}
             </div>
@@ -727,56 +1005,49 @@ function CartPage({ data }: SharedProps) {
             <aside className="h-fit border border-[#1a1a1a]/10 bg-white p-6 sm:p-8">
               <div className="space-y-4 text-sm">
                 <div className="flex items-center justify-between">
-                  <span data-editable="text" {...visualProps("cartPage.subtotalLabel", "text", "תווית ביניים")}>
-                    {cart.subtotalLabel}
-                  </span>
-                  <strong data-editable="text" {...visualProps("cartPage.subtotal", "text", "סכום ביניים")}>
-                    {cart.subtotal}
-                  </strong>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span data-editable="text" {...visualProps("cartPage.shippingLabel", "text", "תווית משלוח")}>
-                    {cart.shippingLabel}
-                  </span>
-                  <span data-editable="text" {...visualProps("cartPage.shipping", "text", "משלוח")}>
-                    {cart.shipping}
-                  </span>
+                  <span>{cart.subtotalLabel}</span>
+                  <strong>{formatStorePrice(subtotal, currency)}</strong>
                 </div>
                 <div className="flex items-center justify-between border-t border-[#1a1a1a]/10 pt-4 text-base">
-                  <span data-editable="text" {...visualProps("cartPage.totalLabel", "text", "תווית סה״כ")}>
-                    {cart.totalLabel}
-                  </span>
-                  <strong data-editable="text" {...visualProps("cartPage.total", "text", "סה״כ")}>
-                    {cart.total}
-                  </strong>
+                  <span>{cart.totalLabel}</span>
+                  <strong>{formatStorePrice(subtotal, currency)}</strong>
                 </div>
               </div>
-              <a
-                href="/#newsletter"
-                className="mt-6 block bg-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-opacity hover:opacity-85"
-                data-editable="link"
+              <button
+                type="button"
+                onClick={onCheckout}
+                className="mt-6 block w-full bg-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] text-[#f5f0e8] transition-opacity hover:opacity-85"
                 {...visualProps("cartPage.checkoutButton", "button", "לתשלום")}
               >
-                <span data-editable="text">{cart.checkoutButton}</span>
-              </a>
-              <a
-                href="/products"
-                className="mt-3 block border border-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
-                data-editable="link"
+                <span data-editable="text">{cart.checkoutButton || "לתשלום"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={onContinue}
+                className="mt-3 block w-full border border-[#1a1a1a] py-3.5 text-center text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
                 {...visualProps("cartPage.continueButton", "button", "המשך קניות")}
               >
-                <span data-editable="text">{cart.continueButton}</span>
-              </a>
+                <span data-editable="text">{cart.continueButton || "המשך קניות"}</span>
+              </button>
             </aside>
           </div>
         ) : (
-          <p
-            className="mt-10 text-sm leading-7 text-[#1a1a1a]/60"
-            data-editable="text"
-            {...visualProps("cartPage.emptyText", "text", "עגלה ריקה")}
-          >
-            {cart.emptyText}
-          </p>
+          <div className="mt-10">
+            <p
+              className="text-sm leading-7 text-[#1a1a1a]/60"
+              data-editable="text"
+              {...visualProps("cartPage.emptyText", "text", "עגלה ריקה")}
+            >
+              {cart.emptyText || "העגלה ריקה כרגע."}
+            </p>
+            <button
+              type="button"
+              onClick={onContinue}
+              className="mt-6 border border-[#1a1a1a] px-6 py-3 text-[10px] uppercase tracking-[0.2em]"
+            >
+              לכל המוצרים
+            </button>
+          </div>
         )}
       </div>
     </section>
@@ -786,10 +1057,18 @@ function CartPage({ data }: SharedProps) {
 export default function ChanelPages({
   initialPage = "home",
   activePageId,
+  currentPageId,
+  pageId: pageIdProp,
+  page,
+  initialPageId,
   mode = "preview",
+  viewMode,
+  runtimeMode,
+  isPublic,
   data,
   businessId,
   isStudioStatic = false,
+  onPageChange,
 }: ChanelPagesProps = {}) {
   const rootRef = React.useRef<HTMLElement | null>(null);
   const {
@@ -801,16 +1080,178 @@ export default function ChanelPages({
     businessId,
     enabled: !isStudioStatic,
   });
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      initialPage,
+      activePageId,
+      currentPageId,
+      pageId: pageIdProp,
+      page,
+      initialPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages: [...CHANEL_PAGE_IDS], fallbackPage: "home" },
+  );
+
+  const [selectedProductId, setSelectedProductId] = React.useState(() =>
+    readSelectedProductId(),
+  );
+  const [cart, setCart] = React.useState<ChanelCartLine[]>(() =>
+    isStudioStatic ? [] : readStoredCart(),
+  );
+  const [qty, setQty] = React.useState(1);
+  const [selectedVariantId, setSelectedVariantId] = React.useState("");
+  const [stockMessage, setStockMessage] = React.useState("");
+
+  React.useEffect(() => {
+    if (isStudioStatic) return;
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
+    } catch {
+      // ignore
+    }
+  }, [cart, isStudioStatic]);
+
+  React.useEffect(() => {
+    const fromUrl = readSelectedProductId();
+    if (fromUrl && fromUrl !== selectedProductId) {
+      setSelectedProductId(fromUrl);
+    }
+  }, [currentPage, selectedProductId]);
+
+  const selectedProduct =
+    storeProducts.find((product) => product.id === selectedProductId) ||
+    storeProducts[0] ||
+    null;
+
+  React.useEffect(() => {
+    if (!selectedProduct) {
+      setSelectedVariantId("");
+      return;
+    }
+    const firstAvailable =
+      selectedProduct.variants.find(
+        (variant) =>
+          !selectedProduct.trackStock ||
+          selectedProduct.allowBackorder ||
+          variant.stock > 0,
+      )?.id ||
+      selectedProduct.variants[0]?.id ||
+      "";
+    setSelectedVariantId(firstAvailable);
+    setQty(1);
+    setStockMessage("");
+  }, [selectedProduct?.id]);
+
+  const openProduct = React.useCallback(
+    (productId: string) => {
+      const id = String(productId || "").trim();
+      if (!id) return;
+      persistSelectedProductId(id);
+      setSelectedProductId(id);
+      goTo("product");
+    },
+    [goTo],
+  );
+
+  const addToCart = React.useCallback(
+    (product: StoreCatalogProduct, amount = 1, variantId?: string) => {
+      if (product.variants.length > 0 && !variantId) {
+        setStockMessage("בחרו וריאציה לפני הוספה לסל");
+        openProduct(product.id);
+        return false;
+      }
+
+      const variant =
+        product.variants.find((entry) => entry.id === variantId) || null;
+      const available = variant ? variant.stock : product.stock;
+      const unitPrice =
+        variant?.price !== undefined ? variant.price : product.price;
+      const cartKey = variant
+        ? `${product.id}:${variant.id}`
+        : product.id;
+
+      if (
+        product.trackStock &&
+        !product.allowBackorder &&
+        (!product.inStock || available < amount)
+      ) {
+        setStockMessage(
+          available <= 0
+            ? `"${product.name}" אזל מהמלאי`
+            : `מלאי לא מספיק. זמין: ${available}`,
+        );
+        return false;
+      }
+
+      setStockMessage("");
+      setCart((prev) => {
+        const existing = prev.find((item) => item.id === cartKey);
+        if (existing) {
+          const nextQty = existing.qty + amount;
+          if (
+            product.trackStock &&
+            !product.allowBackorder &&
+            nextQty > available
+          ) {
+            setStockMessage(`מלאי לא מספיק. זמין: ${available}`);
+            return prev;
+          }
+          return prev.map((item) =>
+            item.id === cartKey ? { ...item, qty: nextQty } : item,
+          );
+        }
+        return [
+          ...prev,
+          {
+            id: cartKey,
+            productId: product.id,
+            name: product.name,
+            price: unitPrice,
+            image: product.image,
+            qty: amount,
+            variantId: variant?.id,
+            variantLabel: variant?.label,
+            sku: variant?.sku || product.sku,
+          },
+        ];
+      });
+      return true;
+    },
+    [openProduct],
+  );
+
+  const openCheckout = React.useCallback(
+    (items = cart) => {
+      if (typeof window === "undefined" || !items.length) return;
+      window.dispatchEvent(
+        new CustomEvent("bizuply:open-checkout", {
+          detail: {
+            items: items.map((item) => ({
+              productId: item.productId || item.id,
+              name: item.name,
+              price: item.price,
+              quantity: item.qty,
+              image: item.image,
+              variantId: item.variantId,
+              variantLabel: item.variantLabel,
+              sku: item.sku,
+              custom: !/^[a-f\d]{24}$/i.test(item.productId || item.id),
+            })),
+          },
+        }),
+      );
+    },
+    [cart],
+  );
+
   const templateData = React.useMemo(() => {
     const merged = mergeData(data);
     if (!fromPlugin || storeProducts.length === 0) return merged;
 
-    /*
-      Keep curated category tiles from saved/template data so editor and public
-      match. Only replace products from the live store catalog.
-      If the merchant has real store categories, enrich images/names without
-      collapsing the designed 4-up grid when store has fewer categories.
-    */
     const curatedCategories = safeArray(merged.categories);
     const liveCategories =
       storeCategories.length > 0
@@ -822,9 +1263,7 @@ export default function ChanelPages({
               ];
             return {
               name: category.name || fallback?.name || "קטגוריה",
-              description:
-                fallback?.description ||
-                "קטגוריה מהחנות",
+              description: fallback?.description || "קטגוריה מהחנות",
               image: category.image || fallback?.image || "",
               href: "/products",
             };
@@ -834,14 +1273,15 @@ export default function ChanelPages({
     return {
       ...merged,
       products: storeProducts.map((product) => ({
+        id: product.id,
         name: product.name,
         price: formatStorePrice(product.price, currency),
         tag: product.badge,
-        // Prefer live store image; never keep empty string that triggers demo fallback.
         image: product.image || "",
-        href: product.href || "/product",
+        href: productHref(product.id),
+        description: product.shortDescription,
+        sku: product.sku,
       })),
-      // Prefer curated design grid when it has more tiles than live store cats.
       categories:
         curatedCategories.length >= liveCategories.length
           ? curatedCategories.map((category, index) => {
@@ -850,17 +1290,18 @@ export default function ChanelPages({
               return {
                 ...category,
                 name: live.name || category.name,
-                // Prefer live store category image so admin uploads show in editor.
                 image: live.image || category.image || "",
               };
             })
           : liveCategories,
     };
   }, [currency, data, fromPlugin, storeCategories, storeProducts]);
-  const pageId = String(activePageId || initialPage || "home");
+
+  const pageId = String(currentPage || "home");
   const stackPageId = ["products", "product", "cart"].includes(pageId)
     ? pageId
     : "home";
+  const cartCount = cart.reduce((sum, item) => sum + item.qty, 0);
 
   useRevealRuntime(rootRef);
   useSmoothLinks(rootRef, mode);
@@ -878,7 +1319,13 @@ export default function ChanelPages({
       className="relative min-h-screen w-full overflow-x-clip bg-[#f5f0e8] text-[#1a1a1a] antialiased [font-family:'Cormorant_Garamond',Georgia,serif] selection:bg-[#1a1a1a] selection:text-[#f5f0e8]"
     >
       <PromoBar data={templateData} mode={mode} />
-      <Header data={templateData} mode={mode} pageId={pageId} />
+      <Header
+        data={templateData}
+        mode={mode}
+        pageId={pageId}
+        cartCount={cartCount}
+        onOpenCart={() => goTo("cart")}
+      />
 
       <VisualPageStack
         activePageId={stackPageId}
@@ -889,7 +1336,11 @@ export default function ChanelPages({
               <>
                 <HeroSection data={templateData} mode={mode} />
                 <CategoriesSection data={templateData} mode={mode} />
-                <ProductsSection data={templateData} mode={mode} />
+                <ProductsSection
+                  data={templateData}
+                  mode={mode}
+                  onOpenProduct={openProduct}
+                />
                 <ValuesSection data={templateData} mode={mode} />
                 <CommunitySection data={templateData} mode={mode} />
                 <TestimonialsSection data={templateData} mode={mode} />
@@ -902,16 +1353,89 @@ export default function ChanelPages({
           {
             id: "products",
             content: (
-              <ProductsCatalogPage data={templateData} mode={mode} />
+              <ProductsCatalogPage
+                data={templateData}
+                mode={mode}
+                onOpenProduct={openProduct}
+              />
             ),
           },
           {
             id: "product",
-            content: <ProductDetailPage data={templateData} mode={mode} />,
+            content: (
+              <ProductDetailPage
+                data={templateData}
+                mode={mode}
+                selectedProduct={selectedProduct}
+                currency={currency}
+                qty={qty}
+                setQty={setQty}
+                selectedVariantId={selectedVariantId}
+                setSelectedVariantId={setSelectedVariantId}
+                stockMessage={stockMessage}
+                onAddToCart={() => {
+                  if (!selectedProduct) {
+                    goTo("cart");
+                    return;
+                  }
+                  const ok = addToCart(
+                    selectedProduct,
+                    qty,
+                    selectedVariantId || undefined,
+                  );
+                  if (ok) goTo("cart");
+                }}
+                onBuyNow={() => {
+                  if (!selectedProduct) return;
+                  const ok = addToCart(
+                    selectedProduct,
+                    qty,
+                    selectedVariantId || undefined,
+                  );
+                  if (!ok) return;
+                  const variant =
+                    selectedProduct.variants.find(
+                      (entry) => entry.id === selectedVariantId,
+                    ) || null;
+                  const unitPrice =
+                    variant?.price !== undefined
+                      ? variant.price
+                      : selectedProduct.price;
+                  openCheckout([
+                    {
+                      id: variant
+                        ? `${selectedProduct.id}:${variant.id}`
+                        : selectedProduct.id,
+                      productId: selectedProduct.id,
+                      name: selectedProduct.name,
+                      price: unitPrice,
+                      image: selectedProduct.image,
+                      qty,
+                      variantId: variant?.id,
+                      variantLabel: variant?.label,
+                      sku: variant?.sku || selectedProduct.sku,
+                    },
+                  ]);
+                }}
+                onBackToShop={() => goTo("products")}
+              />
+            ),
           },
           {
             id: "cart",
-            content: <CartPage data={templateData} mode={mode} />,
+            content: (
+              <CartPage
+                data={templateData}
+                mode={mode}
+                cartItems={cart}
+                currency={currency}
+                onCheckout={() => openCheckout()}
+                onContinue={() => goTo("products")}
+                onRemove={(lineId) =>
+                  setCart((prev) => prev.filter((item) => item.id !== lineId))
+                }
+              />
+            ),
           },
         ]}
       />
@@ -948,8 +1472,15 @@ function PromoBar({ data }: SharedProps) {
 
 function Header({
   data,
+  mode,
   pageId,
-}: SharedProps & { pageId: string }) {
+  cartCount = 0,
+  onOpenCart,
+}: SharedProps & {
+  pageId: string;
+  cartCount?: number;
+  onOpenCart?: () => void;
+}) {
   const [menuOpen, setMenuOpen] = React.useState(false);
 
   return (
@@ -996,15 +1527,22 @@ function Header({
         <div className="flex items-center gap-3 sm:gap-4">
           <a
             href="/cart"
-            className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#1a1a1a]/15 text-[11px] uppercase tracking-[0.12em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
+            className="relative flex h-10 items-center justify-center rounded-full border border-[#1a1a1a]/15 px-3 text-[11px] uppercase tracking-[0.12em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
             data-editable="link"
             {...visualProps("home.header.cart", "button", "עגלת קניות")}
             aria-label="עגלת קניות"
+            onClick={(event) => {
+              if (!onOpenCart) return;
+              if (isEditorMode(mode) || mode === "preview") {
+                event.preventDefault();
+                onOpenCart();
+              }
+            }}
           >
             <span data-editable="text">עגלה</span>
-            {pageId === "cart" ? (
-              <span className="absolute -left-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#1a1a1a] text-[9px] text-[#f5f0e8]">
-                2
+            {cartCount > 0 ? (
+              <span className="absolute -left-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1a1a1a] px-1 text-[9px] text-[#f5f0e8]">
+                {cartCount}
               </span>
             ) : null}
           </a>
@@ -1197,7 +1735,11 @@ function CategoriesSection({ data }: SharedProps) {
   );
 }
 
-function ProductsSection({ data }: SharedProps) {
+function ProductsSection({
+  data,
+  mode,
+  onOpenProduct,
+}: SharedProps & { onOpenProduct?: (productId: string) => void }) {
   return (
     <section
       id="products"
@@ -1228,68 +1770,77 @@ function ProductsSection({ data }: SharedProps) {
         </div>
 
         <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
-          {safeArray(data.products).map((item, index) => (
-            <article
-              key={`product-${index}-${item.image || item.name}`}
-              data-revealed="false"
-              className={`${REVEAL_CLASS} group`}
-              style={{ transitionDelay: `${index * 70}ms` }}
-              {...visualProps(
-                `products.${index}.card`,
-                "section",
-                `מוצר ${index + 1}`,
-              )}
-            >
-              <a href={item.href} className="block" data-editable="link">
-                <div className="relative aspect-square overflow-hidden bg-[#2a2a2a]">
-                  <MediaElement
-                    value={item.image}
-                    fallback={chanelDefaultData.products[index]?.image}
-                    field={`products.${index}.image`}
-                    alt={item.name}
-                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                  />
-                  {item.tag ? (
-                    <span
-                      className="absolute right-3 top-3 bg-[#f5f0e8] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-[#1a1a1a]"
+          {safeArray(data.products).map((item, index) => {
+            const productId = String(item.id || "").trim();
+            return (
+              <article
+                key={`product-${productId || index}-${item.image || item.name}`}
+                data-revealed="false"
+                className={`${REVEAL_CLASS} group`}
+                style={{ transitionDelay: `${index * 70}ms` }}
+                {...visualProps(
+                  `products.${index}.card`,
+                  "section",
+                  `מוצר ${index + 1}`,
+                )}
+              >
+                <ProductCardLink
+                  href={item.href || productHref(productId)}
+                  mode={mode}
+                  productId={productId}
+                  onOpenProduct={onOpenProduct}
+                  className="block"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-[#2a2a2a]">
+                    <MediaElement
+                      value={item.image}
+                      fallback={chanelDefaultData.products[index]?.image}
+                      field={`products.${index}.image`}
+                      alt={item.name}
+                      className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    {item.tag ? (
+                      <span
+                        className="absolute right-3 top-3 bg-[#f5f0e8] px-2.5 py-1 text-[9px] uppercase tracking-[0.15em] text-[#1a1a1a]"
+                        data-editable="text"
+                        {...visualProps(
+                          `products.${index}.tag`,
+                          "text",
+                          `תגית מוצר ${index + 1}`,
+                        )}
+                      >
+                        {item.tag}
+                      </span>
+                    ) : null}
+                  </div>
+                  <div className="mt-4">
+                    <h3
+                      className="text-sm font-light tracking-wide sm:text-base"
                       data-editable="text"
                       {...visualProps(
-                        `products.${index}.tag`,
+                        `products.${index}.name`,
                         "text",
-                        `תגית מוצר ${index + 1}`,
+                        `שם מוצר ${index + 1}`,
                       )}
                     >
-                      {item.tag}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="mt-4">
-                  <h3
-                    className="text-sm font-light tracking-wide sm:text-base"
-                    data-editable="text"
-                    {...visualProps(
-                      `products.${index}.name`,
-                      "text",
-                      `שם מוצר ${index + 1}`,
-                    )}
-                  >
-                    {item.name}
-                  </h3>
-                  <p
-                    className="mt-1 text-sm text-[#f5f0e8]/55"
-                    data-editable="text"
-                    {...visualProps(
-                      `products.${index}.price`,
-                      "text",
-                      `מחיר מוצר ${index + 1}`,
-                    )}
-                  >
-                    {item.price}
-                  </p>
-                </div>
-              </a>
-            </article>
-          ))}
+                      {item.name}
+                    </h3>
+                    <p
+                      className="mt-1 text-sm text-[#f5f0e8]/55"
+                      data-editable="text"
+                      {...visualProps(
+                        `products.${index}.price`,
+                        "text",
+                        `מחיר מוצר ${index + 1}`,
+                      )}
+                    >
+                      {item.price}
+                    </p>
+                  </div>
+                </ProductCardLink>
+              </article>
+            );
+          })}
         </div>
       </div>
     </section>
