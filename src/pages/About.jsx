@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
-  ArrowLeft,
   BadgeCheck,
   Bot,
   Handshake,
@@ -43,6 +42,16 @@ const stagger = {
   show: { transition: { staggerChildren: 0.1 } },
 };
 
+const heroWord = {
+  hidden: { opacity: 0, y: 28, filter: "blur(8px)" },
+  show: {
+    opacity: 1,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] },
+  },
+};
+
 function About() {
   const { t } = useTranslation();
 
@@ -76,74 +85,78 @@ function About() {
       <div className="about-orb about-orb-a" aria-hidden="true" />
       <div className="about-orb about-orb-b" aria-hidden="true" />
       <div className="about-orb about-orb-c" aria-hidden="true" />
+      <div className="about-orb about-orb-d" aria-hidden="true" />
+      <div className="about-spark-field" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
 
       <main className="relative mx-auto max-w-6xl px-5 py-10 sm:px-8 lg:px-10 lg:py-12">
         {/* HERO */}
-        <section className="text-center">
-          <motion.p
-            className="text-xs font-black uppercase tracking-[0.22em] text-[#6D28D9]"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            {t("about.badge")}
-          </motion.p>
-
+        <section className="about-hero text-center">
           <motion.h1
-            className="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-6xl"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            className="about-hero-title about-bidi"
+            variants={heroWord}
+            initial="hidden"
+            animate="show"
           >
             {t("about.heroTitle")}
           </motion.h1>
 
+          <motion.div
+            className="about-hero-underline"
+            initial={{ scaleX: 0, opacity: 0 }}
+            animate={{ scaleX: 1, opacity: 1 }}
+            transition={{ delay: 0.28, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+          />
+
           <motion.p
-            className="about-title-shine about-bidi mx-auto mt-4 max-w-3xl text-2xl font-black leading-snug sm:text-4xl"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.6 }}
+            className="about-title-shine about-bidi mx-auto mt-5 max-w-3xl text-2xl font-black leading-snug sm:text-4xl"
+            initial={{ opacity: 0, y: 22, filter: "blur(8px)" }}
+            animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+            transition={{ delay: 0.18, duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             {t("about.heroHighlight")}
           </motion.p>
 
           <motion.p
             className="about-bidi mx-auto mt-5 max-w-3xl text-base font-medium leading-8 text-slate-600 sm:text-lg"
-            initial={{ opacity: 0, y: 16 }}
+            initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.18, duration: 0.55 }}
+            transition={{ delay: 0.3, duration: 0.55 }}
           >
             {t("about.heroSubtitle")}
           </motion.p>
 
           <motion.div
-            className="mt-7 flex flex-wrap items-center justify-center gap-3"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.26 }}
+            className="mt-8 flex justify-center"
+            initial={{ opacity: 0, y: 16, scale: 0.96 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.55 }}
           >
-            <Link
-              to="/register"
-              className="inline-flex h-12 items-center gap-2 rounded-full bg-[#6D28D9] px-7 text-sm font-black text-white shadow-[0_14px_34px_rgba(109,40,217,0.35)] transition hover:-translate-y-1 hover:bg-[#5B21B6]"
-            >
-              {t("about.ctaPrimary")}
-              <ArrowLeft size={16} />
-            </Link>
-            <Link
-              to="/crm"
-              className="about-bidi inline-flex h-12 items-center rounded-full border border-violet-200 bg-white/80 px-7 text-sm font-black text-slate-800 transition hover:-translate-y-1"
-            >
+            <Link to="/crm" className="about-hero-crm about-bidi">
+              <span className="about-hero-crm-glow" aria-hidden="true" />
               {t("about.ctaSecondary")}
             </Link>
           </motion.div>
 
           <motion.div
             className="about-hero-dash"
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.65, ease: [0.16, 1, 0.3, 1] }}
+            initial={{ opacity: 0, y: 36, rotateX: 8 }}
+            animate={{ opacity: 1, y: 0, rotateX: 0 }}
+            transition={{ delay: 0.48, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformPerspective: 1200 }}
           >
-            <div className="about-product-frame">
+            <motion.div
+              className="about-product-frame"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 5.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <div className="about-frame-sheen" aria-hidden="true" />
               <img
                 src="/abaut12345.PNG"
                 alt=""
@@ -158,7 +171,7 @@ function About() {
                 decoding="async"
                 fetchPriority="high"
               />
-            </div>
+            </motion.div>
           </motion.div>
 
           <motion.div
