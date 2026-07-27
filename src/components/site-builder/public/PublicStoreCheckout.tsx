@@ -20,6 +20,10 @@ import {
   type PublicPaymentsInfo,
   type PublicStoreProduct,
 } from "../../../api/publicStoreApi";
+import {
+  normalizeCheckoutAppearance,
+  type CheckoutAppearance,
+} from "../../store/checkoutAppearance";
 
 type CartItem = {
   productId: string;
@@ -158,6 +162,9 @@ export default function PublicStoreCheckout({
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [hasTemplateCartUi, setHasTemplateCartUi] = useState(false);
+  const [appearance, setAppearance] = useState<CheckoutAppearance>(
+    normalizeCheckoutAppearance(null),
+  );
   const [message, setMessage] = useState<{
     type: "success" | "error" | "info";
     text: string;
@@ -182,6 +189,11 @@ export default function PublicStoreCheckout({
     button: "המשך לתשלום",
     accent: "#0f172a",
   };
+
+  const checkoutTitle = appearance.title || providerUi.title;
+  const checkoutButtonLabel = appearance.buttonLabel || providerUi.button;
+  const checkoutAccent = appearance.accentColor || providerUi.accent;
+  const checkoutPrimary = appearance.primaryColor || providerUi.accent;
 
   const cartCount = useMemo(
     () => cart.reduce((sum, item) => sum + item.quantity, 0),
@@ -315,6 +327,9 @@ export default function PublicStoreCheckout({
         if (cancelled) return;
 
         setPayments(paymentsInfo);
+        setAppearance(
+          normalizeCheckoutAppearance(paymentsInfo.checkoutAppearance),
+        );
         setCurrency(
           paymentsInfo.currency || shop.settings?.currency || "ILS"
         );
@@ -639,13 +654,24 @@ export default function PublicStoreCheckout({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 left-5 z-[70] inline-flex h-14 items-center gap-2 rounded-full bg-slate-900 px-5 text-sm font-bold text-white shadow-xl hover:bg-slate-800"
+          className="fixed bottom-5 left-5 z-[70] inline-flex h-14 items-center gap-2 px-5 text-sm font-bold shadow-xl transition hover:opacity-95"
+          style={{
+            backgroundColor: checkoutPrimary,
+            color: appearance.buttonTextColor,
+            borderRadius: 999,
+          }}
           aria-label="פתח סל קניות"
         >
           <ShoppingBag size={18} />
           סל
           {cartCount > 0 ? (
-            <span className="grid h-6 min-w-6 place-items-center rounded-full bg-emerald-400 px-1.5 text-xs font-black text-slate-900">
+            <span
+              className="grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-xs font-black"
+              style={{
+                backgroundColor: appearance.buttonTextColor,
+                color: checkoutPrimary,
+              }}
+            >
               {cartCount}
             </span>
           ) : null}
@@ -653,19 +679,45 @@ export default function PublicStoreCheckout({
       ) : null}
 
       {open ? (
-        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-900/40 p-3 sm:items-center">
-          <div className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
+        <div
+          className="fixed inset-0 z-[80] flex items-end justify-center p-3 sm:items-center"
+          style={{ backgroundColor: appearance.overlayColor }}
+        >
+          <div
+            className="flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden shadow-2xl"
+            style={{
+              backgroundColor: appearance.panelBackground,
+              borderRadius: appearance.panelRadius,
+              color: appearance.textColor,
+              border: `1px solid ${appearance.borderColor}`,
+            }}
+          >
+            <div
+              className="flex items-center justify-between px-4 py-3"
+              style={{ borderBottom: `1px solid ${appearance.borderColor}` }}
+            >
               <div>
-                <h2 className="text-base font-bold text-slate-900">
-                  {providerUi.title}
+                <h2
+                  className="text-base font-bold"
+                  style={{ color: appearance.textColor }}
+                >
+                  {checkoutTitle}
                 </h2>
-                <p className="text-xs text-slate-500">{providerUi.subtitle}</p>
+                <p
+                  className="text-xs"
+                  style={{ color: appearance.mutedTextColor }}
+                >
+                  {providerUi.subtitle}
+                </p>
               </div>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="grid h-9 w-9 place-items-center rounded-full hover:bg-slate-100"
+                className="grid h-9 w-9 place-items-center rounded-full transition hover:opacity-80"
+                style={{
+                  backgroundColor: `${appearance.borderColor}66`,
+                  color: appearance.textColor,
+                }}
                 aria-label="סגור"
               >
                 <X size={18} />
@@ -696,27 +748,48 @@ export default function PublicStoreCheckout({
 
               {products.length ? (
                 <div>
-                  <h3 className="mb-2 text-sm font-bold text-slate-800">
+                  <h3
+                    className="mb-2 text-sm font-bold"
+                    style={{ color: appearance.textColor }}
+                  >
                     מוצרים בחנות
                   </h3>
                   <div className="max-h-40 space-y-2 overflow-y-auto">
                     {products.slice(0, 12).map((product) => (
                       <div
                         key={product._id}
-                        className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2"
+                        className="flex items-center justify-between gap-2 px-3 py-2"
+                        style={{
+                          borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                          border: `1px solid ${appearance.borderColor}`,
+                        }}
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold text-slate-800">
+                          <p
+                            className="truncate text-sm font-semibold"
+                            style={{ color: appearance.textColor }}
+                          >
                             {product.name}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p
+                            className="text-xs"
+                            style={{ color: appearance.mutedTextColor }}
+                          >
                             {formatMoney(Number(product.price) || 0, currency)}
                           </p>
                         </div>
                         <button
                           type="button"
                           onClick={() => addProduct(product)}
-                          className="rounded-lg bg-slate-900 px-3 py-1.5 text-xs font-bold text-white"
+                          className="px-3 py-1.5 text-xs font-bold"
+                          style={{
+                            backgroundColor: checkoutAccent,
+                            color: appearance.buttonTextColor,
+                            borderRadius: Math.max(
+                              6,
+                              appearance.buttonRadius - 4,
+                            ),
+                          }}
                         >
                           הוסף
                         </button>
@@ -727,26 +800,46 @@ export default function PublicStoreCheckout({
               ) : null}
 
               <div>
-                <h3 className="mb-2 text-sm font-bold text-slate-800">הסל שלי</h3>
+                <h3
+                  className="mb-2 text-sm font-bold"
+                  style={{ color: appearance.textColor }}
+                >
+                  הסל שלי
+                </h3>
                 {cart.length ? (
                   <div className="space-y-2">
                     {cart.map((item) => (
                       <div
                         key={item.productId}
-                        className="flex items-center justify-between gap-2 rounded-xl border border-slate-200 px-3 py-2"
+                        className="flex items-center justify-between gap-2 px-3 py-2"
+                        style={{
+                          borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                          border: `1px solid ${appearance.borderColor}`,
+                        }}
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-semibold">
+                          <p
+                            className="truncate text-sm font-semibold"
+                            style={{ color: appearance.textColor }}
+                          >
                             {item.name}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p
+                            className="text-xs"
+                            style={{ color: appearance.mutedTextColor }}
+                          >
                             {formatMoney(item.price * item.quantity, currency)}
                           </p>
                         </div>
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
-                            className="grid h-7 w-7 place-items-center rounded-md border"
+                            className="grid h-7 w-7 place-items-center"
+                            style={{
+                              borderRadius: 8,
+                              border: `1px solid ${appearance.borderColor}`,
+                              color: appearance.textColor,
+                            }}
                             onClick={() =>
                               syncCart((prev) =>
                                 prev
@@ -764,12 +857,20 @@ export default function PublicStoreCheckout({
                           >
                             <Minus size={12} />
                           </button>
-                          <span className="w-6 text-center text-sm font-bold">
+                          <span
+                            className="w-6 text-center text-sm font-bold"
+                            style={{ color: appearance.textColor }}
+                          >
                             {item.quantity}
                           </span>
                           <button
                             type="button"
-                            className="grid h-7 w-7 place-items-center rounded-md border"
+                            className="grid h-7 w-7 place-items-center"
+                            style={{
+                              borderRadius: 8,
+                              border: `1px solid ${appearance.borderColor}`,
+                              color: appearance.textColor,
+                            }}
                             onClick={() =>
                               syncCart((prev) =>
                                 prev.map((row) =>
@@ -785,34 +886,63 @@ export default function PublicStoreCheckout({
                         </div>
                       </div>
                     ))}
-                    <p className="text-sm font-bold text-slate-900">
+                    <p
+                      className="text-sm font-bold"
+                      style={{ color: appearance.textColor }}
+                    >
                       סה״כ: {formatMoney(cartTotal, currency)}
                     </p>
                   </div>
                 ) : (
-                  <p className="text-sm text-slate-500">
+                  <p
+                    className="text-sm"
+                    style={{ color: appearance.mutedTextColor }}
+                  >
                     הסל ריק. הוסיפו מוצרים מהחנות ולחצו שוב על מעבר לתשלום.
                   </p>
                 )}
               </div>
 
               <div className="space-y-2">
-                <h3 className="text-sm font-bold text-slate-800">פרטי לקוח</h3>
+                <h3
+                  className="text-sm font-bold"
+                  style={{ color: appearance.textColor }}
+                >
+                  פרטי לקוח
+                </h3>
                 <input
-                  className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"
+                  className="h-11 w-full px-3 text-sm outline-none"
+                  style={{
+                    borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                    border: `1px solid ${appearance.borderColor}`,
+                    color: appearance.textColor,
+                    backgroundColor: appearance.panelBackground,
+                  }}
                   placeholder="שם מלא *"
                   value={customerName}
                   onChange={(e) => setCustomerName(e.target.value)}
                 />
                 <input
-                  className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"
+                  className="h-11 w-full px-3 text-sm outline-none"
+                  style={{
+                    borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                    border: `1px solid ${appearance.borderColor}`,
+                    color: appearance.textColor,
+                    backgroundColor: appearance.panelBackground,
+                  }}
                   placeholder="אימייל"
                   type="email"
                   value={customerEmail}
                   onChange={(e) => setCustomerEmail(e.target.value)}
                 />
                 <input
-                  className="h-11 w-full rounded-xl border border-slate-200 px-3 text-sm"
+                  className="h-11 w-full px-3 text-sm outline-none"
+                  style={{
+                    borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                    border: `1px solid ${appearance.borderColor}`,
+                    color: appearance.textColor,
+                    backgroundColor: appearance.panelBackground,
+                  }}
                   placeholder="טלפון"
                   value={customerPhone}
                   onChange={(e) => setCustomerPhone(e.target.value)}
@@ -820,16 +950,23 @@ export default function PublicStoreCheckout({
               </div>
             </div>
 
-            <div className="border-t border-slate-100 p-4">
+            <div
+              className="p-4"
+              style={{ borderTop: `1px solid ${appearance.borderColor}` }}
+            >
               <button
                 type="button"
                 disabled={paying || !cart.length || !checkoutReady}
                 onClick={handlePay}
-                className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold text-white disabled:opacity-60"
-                style={{ backgroundColor: providerUi.accent }}
+                className="inline-flex h-12 w-full items-center justify-center gap-2 text-sm font-bold disabled:opacity-60"
+                style={{
+                  backgroundColor: checkoutPrimary,
+                  color: appearance.buttonTextColor,
+                  borderRadius: appearance.buttonRadius,
+                }}
               >
                 {paying ? <Loader2 size={16} className="animate-spin" /> : null}
-                {providerUi.button}
+                {checkoutButtonLabel}
               </button>
             </div>
           </div>

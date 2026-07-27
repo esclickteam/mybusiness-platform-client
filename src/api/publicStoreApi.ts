@@ -51,6 +51,21 @@ export type PublicPaymentProvider = {
   installmentsEnabled?: boolean;
 };
 
+export type PublicCheckoutAppearance = {
+  primaryColor?: string;
+  buttonTextColor?: string;
+  accentColor?: string;
+  panelBackground?: string;
+  textColor?: string;
+  mutedTextColor?: string;
+  borderColor?: string;
+  buttonRadius?: number;
+  panelRadius?: number;
+  overlayColor?: string;
+  title?: string;
+  buttonLabel?: string;
+};
+
 export type PublicPaymentsInfo = {
   providers: PublicPaymentProvider[];
   primaryProvider?: string;
@@ -60,6 +75,7 @@ export type PublicPaymentsInfo = {
   currency: string;
   storeName: string;
   isStoreActive: boolean;
+  checkoutAppearance?: PublicCheckoutAppearance;
 };
 
 export type PublicStoreOrder = {

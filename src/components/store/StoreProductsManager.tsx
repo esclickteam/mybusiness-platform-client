@@ -29,6 +29,12 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { emitStoreCatalogChanged } from "../site-builder/studio/data/templates/shared/storeCatalogSync";
+import {
+  CHECKOUT_APPEARANCE_PRESETS,
+  DEFAULT_CHECKOUT_APPEARANCE,
+  normalizeCheckoutAppearance,
+  type CheckoutAppearance,
+} from "./checkoutAppearance";
 
 type StoreView =
   | "products"
@@ -100,6 +106,7 @@ type StoreSettingsData = {
   shippingPolicy?: string;
   returnPolicy?: string;
   checkoutNote?: string;
+  checkoutAppearance?: Partial<CheckoutAppearance>;
   seoTitle?: string;
   seoDescription?: string;
   paymentMethods?: string[];
@@ -233,6 +240,7 @@ const emptySettings: StoreSettingsData = {
   shippingPolicy: "",
   returnPolicy: "",
   checkoutNote: "",
+  checkoutAppearance: { ...DEFAULT_CHECKOUT_APPEARANCE },
   seoTitle: "",
   seoDescription: "",
   paymentMethods: ["manual"],
@@ -2970,6 +2978,19 @@ function SettingsView({
   const selectedProviderOption = paymentProviderOptions.find(
     (option) => option.value === paymentProviderForm.provider
   );
+  const checkoutLook = normalizeCheckoutAppearance(settings.checkoutAppearance);
+
+  const updateCheckoutAppearance = (
+    patch: Partial<CheckoutAppearance>,
+  ) => {
+    setSettings((prev) => ({
+      ...prev,
+      checkoutAppearance: normalizeCheckoutAppearance({
+        ...prev.checkoutAppearance,
+        ...patch,
+      }),
+    }));
+  };
 
   const updateCredentials = (
     key: keyof NonNullable<PaymentProvider["credentials"]>,
@@ -3155,6 +3176,215 @@ function SettingsView({
             </PrimaryButton>
           </div>
         </div>
+        ) : null}
+
+        {focus !== "shipping" && focus !== "payments" ? (
+          <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+            <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
+              <div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-black text-white">
+                  <ShoppingBag size={15} />
+                  עיצוב סל ותשלום
+                </div>
+                <h2 className="mt-3 text-2xl font-black text-slate-800">
+                  צבעים וכפתורים של הסל
+                </h2>
+                <p className="mt-1 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+                  כמו ב־Wix — בחרו ערכת צבעים או התאימו ידנית. השינויים חלים על
+                  מודל הסל והתשלום באתר הציבורי.
+                </p>
+              </div>
+            </div>
+
+            <div className="mb-5 flex flex-wrap gap-2">
+              {CHECKOUT_APPEARANCE_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => updateCheckoutAppearance(preset.values)}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                >
+                  <span
+                    className="h-3.5 w-3.5 rounded-full ring-1 ring-black/10"
+                    style={{
+                      backgroundColor:
+                        preset.values.primaryColor ||
+                        DEFAULT_CHECKOUT_APPEARANCE.primaryColor,
+                    }}
+                  />
+                  {preset.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
+              <div className="grid gap-4 sm:grid-cols-2">
+                {(
+                  [
+                    ["primaryColor", "צבע כפתור ראשי"],
+                    ["buttonTextColor", "צבע טקסט בכפתור"],
+                    ["accentColor", "צבע הדגשה / הוספה"],
+                    ["panelBackground", "רקע החלון"],
+                    ["textColor", "צבע כותרות"],
+                    ["mutedTextColor", "צבע טקסט משני"],
+                    ["borderColor", "צבע מסגרות"],
+                  ] as Array<[keyof CheckoutAppearance, string]>
+                ).map(([key, label]) => (
+                  <label key={key} className="grid gap-2">
+                    <span className="text-xs font-black text-slate-500">
+                      {label}
+                    </span>
+                    <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2">
+                      <input
+                        type="color"
+                        value={
+                          /^#([0-9a-f]{6})$/i.test(String(checkoutLook[key] || ""))
+                            ? String(checkoutLook[key])
+                            : "#0f172a"
+                        }
+                        onChange={(e) =>
+                          updateCheckoutAppearance({ [key]: e.target.value })
+                        }
+                        className="h-10 w-12 cursor-pointer rounded-lg border-0 bg-transparent"
+                      />
+                      <input
+                        type="text"
+                        dir="ltr"
+                        value={String(checkoutLook[key] || "")}
+                        onChange={(e) =>
+                          updateCheckoutAppearance({ [key]: e.target.value })
+                        }
+                        className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 outline-none focus:border-violet-300"
+                      />
+                    </div>
+                  </label>
+                ))}
+
+                <div>
+                  <FieldLabel>כותרת הסל (אופציונלי)</FieldLabel>
+                  <TextInput
+                    value={checkoutLook.title}
+                    onChange={(e) =>
+                      updateCheckoutAppearance({ title: e.target.value })
+                    }
+                    placeholder="סל ותשלום"
+                  />
+                </div>
+
+                <div>
+                  <FieldLabel>טקסט כפתור תשלום (אופציונלי)</FieldLabel>
+                  <TextInput
+                    value={checkoutLook.buttonLabel}
+                    onChange={(e) =>
+                      updateCheckoutAppearance({ buttonLabel: e.target.value })
+                    }
+                    placeholder="המשך לתשלום"
+                  />
+                </div>
+
+                <div>
+                  <FieldLabel>עיגול כפתורים</FieldLabel>
+                  <TextInput
+                    type="number"
+                    min={4}
+                    max={28}
+                    value={String(checkoutLook.buttonRadius)}
+                    onChange={(e) =>
+                      updateCheckoutAppearance({
+                        buttonRadius: Number(e.target.value || 12),
+                      })
+                    }
+                  />
+                </div>
+
+                <div>
+                  <FieldLabel>עיגול חלון</FieldLabel>
+                  <TextInput
+                    type="number"
+                    min={8}
+                    max={36}
+                    value={String(checkoutLook.panelRadius)}
+                    onChange={(e) =>
+                      updateCheckoutAppearance({
+                        panelRadius: Number(e.target.value || 16),
+                      })
+                    }
+                  />
+                </div>
+              </div>
+
+              <div
+                className="overflow-hidden border shadow-sm"
+                style={{
+                  borderRadius: checkoutLook.panelRadius,
+                  borderColor: checkoutLook.borderColor,
+                  backgroundColor: checkoutLook.panelBackground,
+                  color: checkoutLook.textColor,
+                }}
+              >
+                <div
+                  className="border-b px-4 py-3"
+                  style={{ borderColor: checkoutLook.borderColor }}
+                >
+                  <p className="text-sm font-black">
+                    {checkoutLook.title || "סל ותשלום"}
+                  </p>
+                  <p
+                    className="text-xs font-bold"
+                    style={{ color: checkoutLook.mutedTextColor }}
+                  >
+                    תצוגה מקדימה חיה
+                  </p>
+                </div>
+                <div className="space-y-3 p-4">
+                  <div
+                    className="flex items-center justify-between border px-3 py-2 text-xs font-bold"
+                    style={{
+                      borderRadius: Math.max(8, checkoutLook.buttonRadius - 2),
+                      borderColor: checkoutLook.borderColor,
+                    }}
+                  >
+                    <span>מוצר לדוגמה</span>
+                    <button
+                      type="button"
+                      className="px-3 py-1.5 text-[11px] font-black text-white"
+                      style={{
+                        backgroundColor: checkoutLook.accentColor,
+                        borderRadius: Math.max(6, checkoutLook.buttonRadius - 4),
+                        color: checkoutLook.buttonTextColor,
+                      }}
+                    >
+                      הוסף
+                    </button>
+                  </div>
+                  <p
+                    className="text-xs font-bold"
+                    style={{ color: checkoutLook.mutedTextColor }}
+                  >
+                    סה״כ: ₪250
+                  </p>
+                  <button
+                    type="button"
+                    className="inline-flex h-11 w-full items-center justify-center text-sm font-black"
+                    style={{
+                      backgroundColor: checkoutLook.primaryColor,
+                      color: checkoutLook.buttonTextColor,
+                      borderRadius: checkoutLook.buttonRadius,
+                    }}
+                  >
+                    {checkoutLook.buttonLabel || "המשך לתשלום"}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <PrimaryButton type="button" onClick={onSave} loading={saving}>
+                <Save size={17} />
+                שמירת עיצוב הסל
+              </PrimaryButton>
+            </div>
+          </div>
         ) : null}
 
         {focus !== "shipping" ? (
