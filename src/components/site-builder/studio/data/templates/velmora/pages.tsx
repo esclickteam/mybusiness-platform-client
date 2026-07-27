@@ -1007,7 +1007,9 @@ export default function VelmoraPages({
     isStudioStatic ? [] : readStoredCartItems(),
   );
 
-  const pageToRender = activePage;
+  // Static SSR builds one HTML document per page. Mounting all 14 keep-alive
+  // panels on every pass (14×14) freezes the studio when opening Velmora.
+  const pageToRender = isStudioStatic ? safeInitialPage : activePage;
 
   const cartCount = React.useMemo(
     () => cartItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -1127,12 +1129,107 @@ export default function VelmoraPages({
     setCartItems([]);
   }
 
+  function renderPageContent(id: VelmoraPageId): React.ReactNode {
+    switch (id) {
+      case "home":
+        return (
+          <VelmoraHome
+            onPageChange={handlePageChange}
+            templateData={mergedTemplateData}
+            data={mergedTemplateData}
+            studioData={mergedTemplateData}
+            isVisualEditor={isVisualEditor}
+            isStudioStatic={isStudioStatic}
+          />
+        );
+      case "about":
+        return <VelmoraAbout onPageChange={handlePageChange} />;
+      case "shop":
+        return (
+          <VelmoraShop
+            onPageChange={handlePageChange}
+            onAddToCart={handleAddToCart}
+          />
+        );
+      case "projects":
+        return <VelmoraProjects onPageChange={handlePageChange} />;
+      case "custom":
+        return <VelmoraCustom onPageChange={handlePageChange} />;
+      case "contact":
+        return <VelmoraContact onPageChange={handlePageChange} />;
+      case "product":
+        return (
+          <VelmoraProduct
+            cartCount={cartCount}
+            onAddToCart={handleAddToCart}
+            onPageChange={handlePageChange}
+          />
+        );
+      case "cart":
+        return (
+          <VelmoraCartPage
+            cartItems={cartItems}
+            onPageChange={handlePageChange}
+            onIncrease={handleIncreaseCartItem}
+            onDecrease={handleDecreaseCartItem}
+            onRemove={handleRemoveCartItem}
+            onClearCart={handleClearCart}
+          />
+        );
+      case "terms":
+        return <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />;
+      case "privacy":
+        return (
+          <VelmoraInfoPage type="privacy" onPageChange={handlePageChange} />
+        );
+      case "accessibility":
+        return (
+          <VelmoraInfoPage
+            type="accessibility"
+            onPageChange={handlePageChange}
+          />
+        );
+      case "faq":
+        return <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />;
+      case "shipping":
+        return (
+          <VelmoraInfoPage type="shipping" onPageChange={handlePageChange} />
+        );
+      case "orders":
+        return (
+          <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
+        );
+      default:
+        return null;
+    }
+  }
+
+  const stackPageIds: VelmoraPageId[] = isStudioStatic
+    ? [pageToRender]
+    : [
+        "home",
+        "about",
+        "shop",
+        "projects",
+        "custom",
+        "contact",
+        "product",
+        "cart",
+        "terms",
+        "privacy",
+        "accessibility",
+        "faq",
+        "shipping",
+        "orders",
+      ];
+
   return (
     <div
       dir="rtl"
       data-template-id="velmora"
       data-bizuply-template-cart="true"
       data-visual-editor={isVisualEditor ? "true" : "false"}
+      data-studio-static={isStudioStatic ? "true" : "false"}
       className="velmora-template-root min-h-screen bg-[#f6f2ea] text-[#27231f]"
     >
       <VelmoraShell
@@ -1147,113 +1244,11 @@ export default function VelmoraPages({
         <div ref={siteRootRef}>
           <VisualPageStack
             activePageId={pageToRender}
-            pages={[
-              {
-                id: "home",
-                content: (
-                  <VelmoraHome
-                    onPageChange={handlePageChange}
-                    templateData={mergedTemplateData}
-                    data={mergedTemplateData}
-                    studioData={mergedTemplateData}
-                    isVisualEditor={isVisualEditor}
-                  />
-                ),
-              },
-              {
-                id: "about",
-                content: <VelmoraAbout onPageChange={handlePageChange} />,
-              },
-              {
-                id: "shop",
-                content: (
-                  <VelmoraShop
-                    onPageChange={handlePageChange}
-                    onAddToCart={handleAddToCart}
-                  />
-                ),
-              },
-              {
-                id: "projects",
-                content: <VelmoraProjects onPageChange={handlePageChange} />,
-              },
-              {
-                id: "custom",
-                content: <VelmoraCustom onPageChange={handlePageChange} />,
-              },
-              {
-                id: "contact",
-                content: <VelmoraContact onPageChange={handlePageChange} />,
-              },
-              {
-                id: "product",
-                content: (
-                  <VelmoraProduct
-                    cartCount={cartCount}
-                    onAddToCart={handleAddToCart}
-                    onPageChange={handlePageChange}
-                  />
-                ),
-              },
-              {
-                id: "cart",
-                content: (
-                  <VelmoraCartPage
-                    cartItems={cartItems}
-                    onPageChange={handlePageChange}
-                    onIncrease={handleIncreaseCartItem}
-                    onDecrease={handleDecreaseCartItem}
-                    onRemove={handleRemoveCartItem}
-                    onClearCart={handleClearCart}
-                  />
-                ),
-              },
-              {
-                id: "terms",
-                content: (
-                  <VelmoraInfoPage type="terms" onPageChange={handlePageChange} />
-                ),
-              },
-              {
-                id: "privacy",
-                content: (
-                  <VelmoraInfoPage
-                    type="privacy"
-                    onPageChange={handlePageChange}
-                  />
-                ),
-              },
-              {
-                id: "accessibility",
-                content: (
-                  <VelmoraInfoPage
-                    type="accessibility"
-                    onPageChange={handlePageChange}
-                  />
-                ),
-              },
-              {
-                id: "faq",
-                content: (
-                  <VelmoraInfoPage type="faq" onPageChange={handlePageChange} />
-                ),
-              },
-              {
-                id: "shipping",
-                content: (
-                  <VelmoraInfoPage
-                    type="shipping"
-                    onPageChange={handlePageChange}
-                  />
-                ),
-              },
-              {
-                id: "orders",
-                content: (
-                  <VelmoraInfoPage type="orders" onPageChange={handlePageChange} />
-                ),
-              },
-            ]}
+            keepAlive={!isStudioStatic}
+            pages={stackPageIds.map((id) => ({
+              id,
+              content: renderPageContent(id),
+            }))}
           />
         </div>
       </VelmoraShell>

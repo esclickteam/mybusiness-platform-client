@@ -23,6 +23,12 @@ type VisualPageStackProps = {
   includeInsertHost?: boolean;
   className?: string;
   /**
+   * When false, only the active page panel is mounted.
+   * Use for static SSR / thumbnails so heavy templates (e.g. Velmora) do not
+   * render every page N times. Defaults to true for editor keep-alive.
+   */
+  keepAlive?: boolean;
+  /**
    * Optional visual data — when provided (or via VisualLibraryPageProvider),
    * custom/library Site Pages force `__library__` so template bodies stay hidden.
    */
@@ -42,6 +48,7 @@ export function VisualPageStack({
   pages,
   includeInsertHost = true,
   className,
+  keepAlive = true,
   data,
 }: VisualPageStackProps) {
   const libraryContext = useVisualLibraryPage();
@@ -57,14 +64,19 @@ export function VisualPageStack({
     effectiveActivePageId === VISUAL_LIBRARY_STACK_ID ||
     libraryContext?.isLibraryPage === true;
 
+  const mountedPages = keepAlive
+    ? pages
+    : pages.filter((page) => page.id === effectiveActivePageId);
+
   return (
     <>
       <div
         data-visual-page-stack="true"
         data-visual-library-stack={forceLibrary ? "true" : undefined}
+        data-visual-keep-alive={keepAlive ? "true" : "false"}
         className={className}
       >
-        {pages.map((page) => {
+        {mountedPages.map((page) => {
           const visible =
             typeof page.visible === "boolean"
               ? page.visible
