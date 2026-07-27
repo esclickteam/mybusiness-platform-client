@@ -1110,12 +1110,6 @@ export default function WebsiteTemplatesPage() {
                           (template.isNew ? "NEW" : "") ||
                           (template.isFeatured ? t("websiteTemplates.featuredBadge") : "");
 
-                        const coverImage =
-                          template.thumbnailUrl ||
-                          template.previewImageUrl ||
-                          template.image ||
-                          "";
-
                         return (
                           <article key={template.key} className="group">
                             <div
