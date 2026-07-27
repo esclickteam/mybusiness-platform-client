@@ -130,7 +130,7 @@ const GALLERY_PAGE_SIZE = 36;
  */
 const GALLERY_IDLE_CAP = 213;
 /** Live previews warmed immediately for the first viewport rows. */
-const GALLERY_PRELOAD_LIVE = 32;
+const GALLERY_PRELOAD_LIVE = 16;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },

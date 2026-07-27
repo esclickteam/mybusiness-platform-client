@@ -7,13 +7,13 @@ const releaseTimers = new Map<string, number>();
 let pumping = false;
 
 /**
- * Live-only gallery: keep enough concurrent mounts for several rows so cards
- * show the real template (not stock covers) as you scroll.
+ * Concurrent live mounts for ~2–3 visible rows. Off-screen cards release
+ * quickly so scrolling never leaves the current viewport blank.
  */
-const BATCH_SIZE = 10;
-const BATCH_DELAY_MS = 8;
-const MAX_ACTIVE = 32;
-const RELEASE_DELAY_MS = 1800;
+const BATCH_SIZE = 8;
+const BATCH_DELAY_MS = 10;
+const MAX_ACTIVE = 20;
+const RELEASE_DELAY_MS = 350;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "")
@@ -34,6 +34,31 @@ function cancelRelease(key: string) {
   releaseTimers.delete(key);
 }
 
+function addListener(key: string, listener: Listener) {
+  let set = listeners.get(key);
+  if (!set) {
+    set = new Set();
+    listeners.set(key, set);
+  }
+  set.add(listener);
+  return () => {
+    set?.delete(listener);
+    if (set && set.size === 0) {
+      listeners.delete(key);
+    }
+  };
+}
+
+/** Drop activated keys that nobody is listening to (e.g. prefetch orphans). */
+function evictOrphans() {
+  for (const key of [...activated]) {
+    const set = listeners.get(key);
+    if (!set || set.size === 0) {
+      activated.delete(key);
+    }
+  }
+}
+
 function pump() {
   if (pumping) return;
   pumping = true;
@@ -44,8 +69,11 @@ function pump() {
       return;
     }
 
+    evictOrphans();
+
     if (activated.size >= MAX_ACTIVE) {
-      window.setTimeout(step, 80);
+      // Viewport cards steal slots via prioritizeGalleryPreview; just wait.
+      window.setTimeout(step, 60);
       return;
     }
 
@@ -85,48 +113,35 @@ export function scheduleGalleryPreview(
 
   cancelRelease(key);
 
-  if (activated.has(key)) {
-    return (listener: Listener) => {
-      listener(true);
-      return () => undefined;
-    };
-  }
-
-  if (!queue.includes(key)) {
-    if (options?.priority) queue.unshift(key);
-    else queue.push(key);
-    pump();
-  } else if (options?.priority) {
-    const idx = queue.indexOf(key);
-    if (idx > 0) {
-      queue.splice(idx, 1);
-      queue.unshift(key);
+  if (!activated.has(key)) {
+    if (!queue.includes(key)) {
+      if (options?.priority) queue.unshift(key);
+      else queue.push(key);
       pump();
+    } else if (options?.priority) {
+      const idx = queue.indexOf(key);
+      if (idx > 0) {
+        queue.splice(idx, 1);
+        queue.unshift(key);
+        pump();
+      }
     }
   }
 
   return (listener: Listener) => {
-    let set = listeners.get(key);
-    if (!set) {
-      set = new Set();
-      listeners.set(key, set);
-    }
-    set.add(listener);
+    const remove = addListener(key, listener);
 
     if (activated.has(key)) {
       listener(true);
     }
 
     return () => {
-      set?.delete(listener);
-      if (set && set.size === 0) {
-        listeners.delete(key);
-      }
+      remove();
     };
   };
 }
 
-/** Force-activate a card immediately (e.g. on hover). */
+/** Force-activate a card immediately (hover / visible viewport). */
 export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
   if (!key) return;
@@ -138,7 +153,6 @@ export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
     return;
   }
 
-  // Evict farthest/oldest non-priority mounts so hover feels instant.
   while (activated.size >= MAX_ACTIVE) {
     const oldest = activated.values().next().value as string | undefined;
     if (!oldest || oldest === key) break;
@@ -153,7 +167,7 @@ export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
   pump();
 }
 
-/** Release a card after a delay so fast scrolling stays warm. */
+/** Release a card after a short delay so tiny scroll jitter stays warm. */
 export function releaseGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
   if (!key || !activated.has(key)) return;
@@ -170,14 +184,13 @@ export function releaseGalleryPreview(keyValue: string | null | undefined) {
 }
 
 /**
- * Queue keys for warm-up ahead of scroll. Longer lists are OK — the pump
- * respects MAX_ACTIVE and drains gradually.
+ * Queue keys for warm-up ahead of scroll.
  */
 export function prefetchGalleryPreviewKeys(
   keys: Array<string | null | undefined>,
   options?: { limit?: number; priority?: boolean },
 ) {
-  const limit = Math.max(1, Number(options?.limit) || MAX_ACTIVE * 2);
+  const limit = Math.max(1, Number(options?.limit) || MAX_ACTIVE);
   keys.slice(0, limit).forEach((key, index) => {
     scheduleGalleryPreview(key, {
       priority: Boolean(options?.priority) && index < 8,

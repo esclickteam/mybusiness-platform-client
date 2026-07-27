@@ -127,7 +127,8 @@ export default function TemplateCardPreview({
       ([entry]) => {
         setInView(entry.isIntersecting || entry.intersectionRatio > 0);
       },
-      { rootMargin: "1200px 0px", threshold: 0.01 },
+      // One row ahead — enough to feel instant, not so wide that slots jam.
+      { rootMargin: "480px 0px", threshold: 0.01 },
     );
 
     observer.observe(frame);
@@ -137,7 +138,8 @@ export default function TemplateCardPreview({
   useEffect(() => {
     if (!key || !canLive || mountFailed) return;
 
-    const wantsLive = inView || hovering || pinned || eager;
+    // eager only boosts first-paint priority — never hold a slot after scroll-away.
+    const wantsLive = inView || hovering || pinned;
 
     if (!wantsLive) {
       releaseGalleryPreview(key);
@@ -146,19 +148,24 @@ export default function TemplateCardPreview({
       return;
     }
 
-    if (hovering || pinned || eager) {
+    // Visible / hovered cards always take a slot (evict oldest off-screen mounts).
+    if (hovering || pinned || inView) {
       prioritizeGalleryPreview(key);
-      setActive(true);
-      return () => {
-        releaseGalleryPreview(key);
-      };
     }
 
-    const subscribe = scheduleGalleryPreview(key, { priority: inView });
-    return subscribe((isActive) => {
+    const subscribe = scheduleGalleryPreview(key, {
+      priority: Boolean(eager || inView || hovering || pinned),
+    });
+
+    const unsubscribe = subscribe((isActive) => {
       setActive(isActive);
       if (!isActive) setLiveReady(false);
     });
+
+    return () => {
+      unsubscribe();
+      releaseGalleryPreview(key);
+    };
   }, [canLive, eager, hovering, inView, key, mountFailed, pinned]);
 
   useEffect(() => {
