@@ -1852,7 +1852,8 @@ export function NovastraPages({
   });
   const mergedData = useMemo(() => {
     const base = mergeTemplateData(data);
-    if (!fromPlugin || storeProducts.length === 0) return base;
+    // Preview-only keeps curated defaults. Connected store is authoritative (even if empty).
+    if (!fromPlugin) return base;
     return {
       ...base,
       products: storeProducts.map((product) => ({

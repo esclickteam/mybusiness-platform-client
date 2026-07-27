@@ -225,9 +225,9 @@ export default function VelmoraProduct({
     };
   }, [product]);
 
-  const recommended = relatedProducts?.length
-    ? relatedProducts
-    : recommendedProducts;
+  // When parent passes relatedProducts (live store), never swap in hardcoded VLM demos.
+  const recommended =
+    relatedProducts !== undefined ? relatedProducts : recommendedProducts;
 
   const [selectedImage, setSelectedImage] = React.useState(
     selectedProduct.mainImage,

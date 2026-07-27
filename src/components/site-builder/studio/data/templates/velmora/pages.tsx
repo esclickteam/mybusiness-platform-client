@@ -1002,21 +1002,35 @@ export default function VelmoraPages({
     products: storeProducts,
     categories: storeCategories,
     fromPlugin,
+    loading: storeCatalogLoading,
   } = useStorePluginCatalog({
     businessId,
     demoProducts: velmoraDemoProductSeeds,
     enabled: !isStudioStatic,
   });
 
-  const shopCatalog = React.useMemo(
-    () =>
-      buildVelmoraShopCatalog({
-        fromPlugin,
-        storeProducts,
-        storeCategories,
-      }),
-    [fromPlugin, storeCategories, storeProducts],
-  );
+  const shopCatalog = React.useMemo(() => {
+    // Avoid flashing preview demos while the live store catalog is loading.
+    if (storeCatalogLoading && businessId && !isStudioStatic) {
+      return {
+        products: [] as ReturnType<typeof buildVelmoraShopCatalog>["products"],
+        categories: ["הכל"],
+        isLive: true as const,
+      };
+    }
+    return buildVelmoraShopCatalog({
+      fromPlugin,
+      storeProducts,
+      storeCategories,
+    });
+  }, [
+    businessId,
+    fromPlugin,
+    isStudioStatic,
+    storeCatalogLoading,
+    storeCategories,
+    storeProducts,
+  ]);
 
   const [selectedProductId, setSelectedProductId] = React.useState(() => {
     if (typeof window === "undefined") return "";
@@ -1212,6 +1226,9 @@ export default function VelmoraPages({
                 content: (
                   <VelmoraHome
                     onPageChange={handlePageChange}
+                    onOpenProduct={handleOpenProduct}
+                    catalogProducts={shopCatalog.products}
+                    isLiveCatalog={shopCatalog.isLive}
                     templateData={mergedTemplateData}
                     data={mergedTemplateData}
                     studioData={mergedTemplateData}
@@ -1242,7 +1259,14 @@ export default function VelmoraPages({
               },
               {
                 id: "custom",
-                content: <VelmoraCustom onPageChange={handlePageChange} />,
+                content: (
+                  <VelmoraCustom
+                    onPageChange={handlePageChange}
+                    onOpenProduct={handleOpenProduct}
+                    catalogProducts={shopCatalog.products}
+                    isLiveCatalog={shopCatalog.isLive}
+                  />
+                ),
               },
               {
                 id: "contact",

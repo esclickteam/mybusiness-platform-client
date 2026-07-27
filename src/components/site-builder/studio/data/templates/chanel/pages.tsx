@@ -1250,7 +1250,8 @@ export default function ChanelPages({
 
   const templateData = React.useMemo(() => {
     const merged = mergeData(data);
-    if (!fromPlugin || storeProducts.length === 0) return merged;
+    // Preview-only keeps curated defaults. Connected store is authoritative (even if empty).
+    if (!fromPlugin) return merged;
 
     const curatedCategories = safeArray(merged.categories);
     const liveCategories =

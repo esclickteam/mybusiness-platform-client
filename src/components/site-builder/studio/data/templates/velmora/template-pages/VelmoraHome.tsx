@@ -15,17 +15,41 @@ import {
   velmoraProducts,
   velmoraProjects,
 } from "../velmoraData";
+import type { VelmoraShopProduct } from "../velmoraStoreCatalog";
 
 type VelmoraHomeTemplateData = Record<string, any>;
 
+type HomeProductCard = {
+  id: string;
+  ref: string;
+  title: string;
+  subtitle: string;
+  price: string;
+  image: string;
+};
+
 type Props = {
   onPageChange: (page: VelmoraPageId) => void;
+  onOpenProduct?: (productId: string) => void;
+  catalogProducts?: VelmoraShopProduct[];
+  isLiveCatalog?: boolean;
   templateData?: VelmoraHomeTemplateData;
   data?: VelmoraHomeTemplateData;
   studioData?: VelmoraHomeTemplateData;
   isVisualEditor?: boolean;
   isStudioStatic?: boolean;
 };
+
+function mapCatalogToHomeCard(product: VelmoraShopProduct): HomeProductCard {
+  return {
+    id: product.id,
+    ref: product.ref,
+    title: product.name,
+    subtitle: product.description || product.category || "",
+    price: `₪${Number(product.price || 0).toLocaleString("he-IL")}`,
+    image: product.image,
+  };
+}
 
 type RevealProps = {
   children: React.ReactNode;
@@ -286,7 +310,7 @@ function ProductFanCard({
   index,
   onClick,
 }: {
-  product: (typeof velmoraProducts)[number];
+  product: HomeProductCard;
   index: number;
   onClick: () => void;
 }) {
@@ -408,6 +432,9 @@ function MovingGallery({
 
 export default function VelmoraHome({
   onPageChange,
+  onOpenProduct,
+  catalogProducts,
+  isLiveCatalog = false,
   templateData,
   data,
   studioData,
@@ -425,7 +452,31 @@ export default function VelmoraHome({
   const productsStrip = getDataSection(visualData, "productsStrip");
   const contact = getDataSection(visualData, "contact");
 
-  const heroProducts = velmoraProducts.slice(0, 7);
+  // Live store = catalog only. Preview/gallery keeps template VLM demos.
+  const displayProducts: HomeProductCard[] =
+    catalogProducts !== undefined
+      ? catalogProducts.map(mapCatalogToHomeCard)
+      : isLiveCatalog
+        ? []
+        : velmoraProducts.map((product) => ({
+            id: product.id,
+            ref: product.ref,
+            title: product.title,
+            subtitle: product.subtitle,
+            price: product.price,
+            image: product.image,
+          }));
+
+  const heroProducts = displayProducts.slice(0, 7);
+  const stripProducts = displayProducts.slice(0, 3);
+
+  function openProduct(productId: string) {
+    if (onOpenProduct) {
+      onOpenProduct(productId);
+      return;
+    }
+    onPageChange("product");
+  }
   const galleryImages =
     Array.isArray(velmoraGallery) && velmoraGallery.length
       ? velmoraGallery.map((image, index) => safeImageSrc(image, index))
@@ -604,7 +655,7 @@ export default function VelmoraHome({
                 key={product.id}
                 product={product}
                 index={index}
-                onClick={() => onPageChange("product")}
+                onClick={() => openProduct(product.id)}
               />
             ))}
           </div>
@@ -956,11 +1007,11 @@ export default function VelmoraHome({
           </Reveal>
 
           <div className="grid gap-5 md:grid-cols-3">
-            {velmoraProducts.slice(0, 3).map((product, index) => (
+            {stripProducts.map((product, index) => (
               <Reveal key={product.id} delay={index * 130}>
                 <button
                   type="button"
-                  onClick={() => onPageChange("product")}
+                  onClick={() => openProduct(product.id)}
                   data-visual-container-button="true"
                   data-visual-edit-type="box"
                   data-visual-edit-label={product.title}

@@ -15,9 +15,13 @@ import {
 
 import type { VelmoraPageId } from "../pages";
 import { velmoraGallery, velmoraProducts } from "../velmoraData";
+import type { VelmoraShopProduct } from "../velmoraStoreCatalog";
 
 type Props = {
   onPageChange: (page: VelmoraPageId) => void;
+  onOpenProduct?: (productId: string) => void;
+  catalogProducts?: VelmoraShopProduct[];
+  isLiveCatalog?: boolean;
 };
 
 function Reveal({
@@ -180,8 +184,25 @@ const packages = [
   },
 ];
 
-export default function VelmoraCustom({ onPageChange }: Props) {
-  const featuredProducts = velmoraProducts.slice(0, 4);
+export default function VelmoraCustom({
+  onPageChange,
+  onOpenProduct,
+  catalogProducts,
+  isLiveCatalog = false,
+}: Props) {
+  const featuredProducts =
+    catalogProducts !== undefined
+      ? catalogProducts.slice(0, 4).map((product) => ({
+          id: product.id,
+          ref: product.ref,
+          title: product.name,
+          price: `₪${Number(product.price || 0).toLocaleString("he-IL")}`,
+          image: product.image,
+          subtitle: product.description || product.category || "",
+        }))
+      : isLiveCatalog
+        ? []
+        : velmoraProducts.slice(0, 4);
 
   return (
     <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
@@ -514,7 +535,11 @@ export default function VelmoraCustom({ onPageChange }: Props) {
               <Reveal key={product.id} delay={index * 120}>
                 <button
                   type="button"
-                  onClick={() => onPageChange("product")}
+                  onClick={() =>
+                    onOpenProduct
+                      ? onOpenProduct(product.id)
+                      : onPageChange("product")
+                  }
                   className="group overflow-hidden bg-[#f6f2ea] text-right shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-2xl"
                 >
                   <img data-visual-edit-id={`custom.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`custom.products.${index}.image`} data-image-field={`custom.products.${index}.image`} data-visual-image-field={`custom.products.${index}.image`}
