@@ -5,13 +5,18 @@ const activated = new Set<string>();
 const queue: string[] = [];
 let pumping = false;
 
-/** Keep gallery light, but mount visible cards quickly. */
-const BATCH_SIZE = 6;
-const BATCH_DELAY_MS = 24;
-const MAX_ACTIVE = 16;
+/**
+ * Keep the templates gallery light:
+ * mounting full React sites is expensive — only a few cards at a time.
+ */
+const BATCH_SIZE = 2;
+const BATCH_DELAY_MS = 90;
+const MAX_ACTIVE = 4;
 
 function normalizeKey(value: string | null | undefined) {
-  return String(value || "").trim().toLowerCase();
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
 function notify(key: string, active: boolean) {
@@ -32,7 +37,7 @@ function pump() {
 
     if (activated.size >= MAX_ACTIVE) {
       // Wait for a slot — do NOT drop queued cards.
-      window.setTimeout(step, 120);
+      window.setTimeout(step, 160);
       return;
     }
 

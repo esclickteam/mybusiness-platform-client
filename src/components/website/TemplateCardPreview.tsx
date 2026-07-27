@@ -14,9 +14,8 @@ type TemplateCardPreviewProps = {
   templateKey: string;
   title?: string;
   /**
-   * Optional static fallback only when live render is unavailable.
-   * Live-renderable templates never show this stock cover — users should
-   * see the real template homepage, not an unrelated Unsplash still.
+   * Shown until the live template mounts (and as fallback).
+   * Prefer a real thumbnail so the gallery stays smooth with 200+ cards.
    */
   coverImage?: string;
   /** Prefer mounting sooner for the first visible cards */
@@ -25,11 +24,13 @@ type TemplateCardPreviewProps = {
 
 /** Desktop width of the template canvas inside the card. */
 const DESIGN_WIDTH = 1440;
-/** Tall homepage canvas so hover can scroll through beautiful sections. */
-const DESIGN_HEIGHT = 4600;
+/** Shorter canvas for gallery cards — enough for hero + first sections. */
+const DESIGN_HEIGHT = 2200;
 
 function normalizeKey(value: string | null | undefined) {
-  return String(value || "").trim().toLowerCase();
+  return String(value || "")
+    .trim()
+    .toLowerCase();
 }
 
 export function canRenderTemplatePreview(
@@ -84,10 +85,10 @@ function NeutralPlaceholder({
 }
 
 /**
- * Webflow-style card preview:
- * - mounts the live template as soon as the card is near the viewport
- * - shows a neutral skeleton until the live site is ready (never a stock cover)
- * - on hover/tap smoothly scrolls down the long page
+ * Gallery card preview:
+ * - thumbnail / skeleton first (cheap)
+ * - live React site only when scheduled / hovered
+ * - capped concurrent mounts via templatePreviewScheduler
  */
 export default function TemplateCardPreview({
   templateKey,
@@ -107,6 +108,7 @@ export default function TemplateCardPreview({
   const [mountFailed, setMountFailed] = useState(false);
   const [scrolling, setScrolling] = useState(false);
   const [pinned, setPinned] = useState(false);
+  const [hoverIntent, setHoverIntent] = useState(false);
 
   const renderer = useMemo(
     () => (key ? getStudioTemplateRenderer(key) : null),
@@ -142,7 +144,8 @@ export default function TemplateCardPreview({
       ([entry]) => {
         setInView(entry.isIntersecting || entry.intersectionRatio > 0);
       },
-      { rootMargin: "420px 0px", threshold: 0.01 },
+      // Small margin — avoid warming dozens of offscreen cards.
+      { rootMargin: "120px 0px", threshold: 0.01 },
     );
 
     observer.observe(frame);
@@ -152,11 +155,20 @@ export default function TemplateCardPreview({
   useEffect(() => {
     if (!key || !canLive) return;
 
-    if (!inView) {
+    if (!inView && !hoverIntent) {
       releaseGalleryPreview(key);
       setActive(false);
       setLiveReady(false);
       return;
+    }
+
+    // Hover always wins — mount immediately for the card the user cares about.
+    if (hoverIntent) {
+      prioritizeGalleryPreview(key);
+      setActive(true);
+      return () => {
+        // Keep mounted briefly if still in view; scheduler releases on leave.
+      };
     }
 
     if (eager) {
@@ -172,7 +184,7 @@ export default function TemplateCardPreview({
       setActive(isActive);
       if (!isActive) setLiveReady(false);
     });
-  }, [canLive, eager, inView, key]);
+  }, [canLive, eager, hoverIntent, inView, key]);
 
   useEffect(() => {
     if (!active) return;
@@ -183,15 +195,14 @@ export default function TemplateCardPreview({
       const height = Math.max(
         node.scrollHeight,
         node.offsetHeight,
-        DESIGN_HEIGHT * 0.65,
+        DESIGN_HEIGHT * 0.55,
       );
       if (height > 0) setContentHeight(height);
       setLiveReady(true);
     };
 
     const raf = window.requestAnimationFrame(measure);
-    const timer = window.setTimeout(measure, 80);
-    const timer2 = window.setTimeout(measure, 400);
+    const timer = window.setTimeout(measure, 100);
 
     if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(measure);
@@ -199,7 +210,6 @@ export default function TemplateCardPreview({
       return () => {
         window.cancelAnimationFrame(raf);
         window.clearTimeout(timer);
-        window.clearTimeout(timer2);
         observer.disconnect();
       };
     }
@@ -207,15 +217,14 @@ export default function TemplateCardPreview({
     return () => {
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
-      window.clearTimeout(timer2);
     };
   }, [active, key]);
 
   const scale = Math.max(frameWidth / DESIGN_WIDTH, 0.04);
-  const pageHeight = Math.max(contentHeight, DESIGN_HEIGHT * 0.7);
+  const pageHeight = Math.max(contentHeight, DESIGN_HEIGHT * 0.55);
   const scaledPageHeight = pageHeight * scale;
   const maxScroll = Math.max(0, scaledPageHeight - frameHeight);
-  const shouldMount = Boolean(canLive && active && inView && !mountFailed);
+  const shouldMount = Boolean(canLive && active && (inView || hoverIntent) && !mountFailed);
   const isScrolling = scrolling || pinned;
 
   const homePage = renderer?.pages?.[0];
@@ -227,28 +236,31 @@ export default function TemplateCardPreview({
     | undefined;
 
   const scrollDuration = isScrolling
-    ? Math.min(7.5, Math.max(3.2, maxScroll / 180))
-    : 1.15;
+    ? Math.min(6.5, Math.max(2.8, maxScroll / 200))
+    : 1.05;
 
-  const placeholder = (
-    <NeutralPlaceholder title={title} loading={!liveReady} />
+  const cover = coverImage ? (
+    <img
+      src={coverImage}
+      alt={title || ""}
+      loading={eager ? "eager" : "lazy"}
+      decoding="async"
+      className="absolute inset-0 h-full w-full object-cover object-top"
+    />
+  ) : (
+    <NeutralPlaceholder title={title} loading={canLive && !liveReady} />
   );
 
-  // Only use a static cover when we truly cannot mount a live template.
-  const staticCover =
-    !canLive && coverImage ? (
-      <img
-        src={coverImage}
-        alt={title || ""}
-        className="absolute inset-0 h-full w-full object-cover object-top"
-      />
-    ) : (
-      placeholder
-    );
-
   const beginScroll = () => {
+    setHoverIntent(true);
     if (key) prioritizeGalleryPreview(key);
     setScrolling(true);
+  };
+
+  const endScroll = () => {
+    setScrolling(false);
+    setPinned(false);
+    setHoverIntent(false);
   };
 
   return (
@@ -257,15 +269,9 @@ export default function TemplateCardPreview({
       className="group/preview relative h-full w-full overflow-hidden bg-[#eef1f4]"
       aria-label={title || key || "תצוגה מקדימה"}
       onMouseEnter={beginScroll}
-      onMouseLeave={() => {
-        setScrolling(false);
-        setPinned(false);
-      }}
+      onMouseLeave={endScroll}
       onFocus={beginScroll}
-      onBlur={() => {
-        setScrolling(false);
-        setPinned(false);
-      }}
+      onBlur={endScroll}
       onClick={(event) => {
         if ((event.target as HTMLElement).closest("button,a")) return;
         if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
@@ -274,6 +280,7 @@ export default function TemplateCardPreview({
         event.preventDefault();
         event.stopPropagation();
         prioritizeGalleryPreview(key);
+        setHoverIntent(true);
         setPinned((value) => !value);
         setScrolling(true);
       }}
@@ -283,12 +290,12 @@ export default function TemplateCardPreview({
           shouldMount && liveReady ? "opacity-0" : "opacity-100"
         }`}
       >
-        {staticCover}
+        {cover}
       </div>
 
       {shouldMount && Component ? (
         <PreviewErrorBoundary
-          fallback={<div className="absolute inset-0">{staticCover}</div>}
+          fallback={<div className="absolute inset-0">{cover}</div>}
           onError={() => setMountFailed(true)}
         >
           <>

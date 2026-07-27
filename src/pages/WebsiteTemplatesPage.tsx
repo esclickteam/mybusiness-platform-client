@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -118,6 +118,9 @@ const RAW_API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
 
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
+
+/** How many template cards to mount initially / per scroll chunk. */
+const GALLERY_PAGE_SIZE = 24;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -500,6 +503,9 @@ export default function WebsiteTemplatesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [syncingTemplates, setSyncingTemplates] = useState(false);
+  /** Windowed render — avoid mounting 200+ heavy preview cards at once. */
+  const [visibleCount, setVisibleCount] = useState(24);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -606,6 +612,36 @@ export default function WebsiteTemplatesPage() {
       return String(b._id || b.key).localeCompare(String(a._id || a.key));
     });
   }, [activeCategory, search, sortValue, templates, i18n.language]);
+
+  useEffect(() => {
+    setVisibleCount(GALLERY_PAGE_SIZE);
+  }, [activeCategory, search, sortValue]);
+
+  const visibleTemplates = useMemo(
+    () => filteredTemplates.slice(0, visibleCount),
+    [filteredTemplates, visibleCount],
+  );
+
+  const hasMoreTemplates = visibleCount < filteredTemplates.length;
+
+  useEffect(() => {
+    if (!hasMoreTemplates) return;
+    const node = loadMoreRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setVisibleCount((current) =>
+          Math.min(current + GALLERY_PAGE_SIZE, filteredTemplates.length),
+        );
+      },
+      { rootMargin: "600px 0px", threshold: 0.01 },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [filteredTemplates.length, hasMoreTemplates, visibleCount]);
 
   const activeCategoryLabel =
     activeCategory === "all"
@@ -952,8 +988,9 @@ export default function WebsiteTemplatesPage() {
                   </p>
 
                   {filteredTemplates.length > 0 ? (
+                    <>
                     <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                      {filteredTemplates.map((template, index) => {
+                      {visibleTemplates.map((template, index) => {
                         const displayCategory =
                           template.categoryLabel ||
                           template.category ||
@@ -964,8 +1001,21 @@ export default function WebsiteTemplatesPage() {
                           (template.isNew ? "NEW" : "") ||
                           (template.isFeatured ? t("websiteTemplates.featuredBadge") : "");
 
+                        const coverImage =
+                          template.thumbnailUrl ||
+                          template.previewImageUrl ||
+                          template.image ||
+                          "";
+
                         return (
-                          <article key={template.key} className="group">
+                          <article
+                            key={template.key}
+                            className="group"
+                            style={{
+                              contentVisibility: "auto",
+                              containIntrinsicSize: "360px 480px",
+                            }}
+                          >
                             <div
                               className="
                                 relative block w-full overflow-hidden rounded-xl
@@ -998,19 +1048,14 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      eager={index < 8}
+                                      coverImage={coverImage || undefined}
+                                      eager={index < 4}
                                     />
-                                  ) : template.image ||
-                                    template.thumbnailUrl ||
-                                    template.previewImageUrl ? (
+                                  ) : coverImage ? (
                                     <img
-                                      src={
-                                        template.image ||
-                                        template.thumbnailUrl ||
-                                        template.previewImageUrl
-                                      }
+                                      src={coverImage}
                                       alt={template.name}
-                                      loading={index < 8 ? "eager" : "lazy"}
+                                      loading={index < 4 ? "eager" : "lazy"}
                                       decoding="async"
                                       className="h-full w-full object-cover object-top transition duration-[3.5s] ease-out group-hover:object-bottom"
                                     />
@@ -1120,6 +1165,34 @@ export default function WebsiteTemplatesPage() {
                         );
                       })}
                     </div>
+
+                    {hasMoreTemplates ? (
+                      <div
+                        ref={loadMoreRef}
+                        className="mt-10 flex flex-col items-center gap-3 py-6"
+                      >
+                        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+                        <p className="text-xs font-bold text-slate-400">
+                          טוען עוד תבניות…
+                        </p>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setVisibleCount((current) =>
+                              Math.min(
+                                current + GALLERY_PAGE_SIZE,
+                                filteredTemplates.length,
+                              ),
+                            )
+                          }
+                          className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                        >
+                          הצג עוד (
+                          {filteredTemplates.length - visibleCount})
+                        </button>
+                      </div>
+                    ) : null}
+                    </>
                   ) : (
                     <div className="rounded-3xl border border-[#e5e7eb] bg-[#f9fafb] p-12 text-center">
                       <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-[#6b7280] shadow-sm">
