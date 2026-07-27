@@ -99,10 +99,16 @@ export function buildVelmoraShopCatalog(options: {
   storeProducts: StoreCatalogProduct[];
   storeCategories: StoreCatalogCategory[];
 }) {
-  if (options.fromPlugin && options.storeProducts.length > 0) {
+  // Live store connection wins — including an empty catalog after seed/clear.
+  if (options.fromPlugin) {
     const products = options.storeProducts.map(mapStoreProductToVelmora);
     const categoryNames = Array.from(
-      new Set(products.map((product) => product.category).filter(Boolean)),
+      new Set(
+        [
+          ...options.storeCategories.map((c) => c.name),
+          ...products.map((product) => product.category),
+        ].filter(Boolean),
+      ),
     );
     return {
       products,

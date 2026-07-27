@@ -218,7 +218,8 @@ const EMPTY_DEMO_PRODUCTS: DemoStoreProductSeed[] = [];
 
 /**
  * Loads products + categories from the Bizuply store plugin (`/store/:id/shop`).
- * Falls back to niche demo seeds in preview / when the store is empty.
+ * Fake niche demos are only for gallery/preview (no businessId).
+ * With a businessId the live store catalog is authoritative — including empty.
  */
 function readBusinessIdFromLocation() {
   if (typeof window === "undefined") return "";
@@ -306,37 +307,34 @@ export function useStorePluginCatalog(options: {
           ? shop.categories.map(mapApiCategory)
           : [];
 
-        if (apiProducts.length > 0) {
-          setProducts(apiProducts);
-          setCategories(
-            apiCategories.length > 0
-              ? apiCategories
-              : buildDemoCatalog(
+        // With a real businessId the store catalog is authoritative — even when empty.
+        // Fake frontend demos stay for gallery/preview only (no businessId).
+        setProducts(apiProducts);
+        setCategories(
+          apiCategories.length > 0
+            ? apiCategories
+            : apiProducts.length > 0
+              ? buildDemoCatalog(
                   apiProducts.map((p) => ({
                     name: p.name,
                     price: p.price,
                     image: p.image,
                     category: p.category,
                   })),
-                ).categories,
-          );
-          setFromPlugin(true);
-        } else {
-          setProducts(demo.products);
-          setCategories(
-            apiCategories.length > 0 ? apiCategories : demo.categories,
-          );
-          setFromPlugin(false);
-        }
+                ).categories
+              : [],
+        );
+        setFromPlugin(true);
 
         setStoreName(String(shop.settings?.storeName || ""));
         setCurrency(String(shop.settings?.currency || "ILS"));
       })
       .catch(() => {
         if (cancelled) return;
-        setProducts(demo.products);
-        setCategories(demo.categories);
-        setFromPlugin(false);
+        // Keep empty connected state — do not swap in uneditable fake demos.
+        setProducts([]);
+        setCategories([]);
+        setFromPlugin(true);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

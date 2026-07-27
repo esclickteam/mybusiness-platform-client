@@ -668,6 +668,7 @@ export default function StoreProductsManager({
 
   const [search, setSearch] = useState("");
   const [filterCategoryId, setFilterCategoryId] = useState("all");
+  const [seedingDemo, setSeedingDemo] = useState(false);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -752,6 +753,32 @@ export default function StoreProductsManager({
   useEffect(() => {
     loadStoreData();
   }, [loadStoreData]);
+
+  const seedDemoProducts = useCallback(async () => {
+    if (!businessId || seedingDemo) return;
+
+    setSeedingDemo(true);
+
+    try {
+      const { data } = await API.post(`/store/${businessId}/seed-demo`);
+      await loadStoreData();
+      emitStoreCatalogChanged(businessId);
+
+      if (data?.seeded) {
+        showMessage(
+          "success",
+          `נוספו ${data.productCount || 0} מוצרי דמו — ניתן לערוך ולמחוק אותם כמו כל מוצר בחנות`,
+        );
+      } else if (data?.reason === "already_has_products") {
+        showMessage("success", "בחנות כבר יש מוצרים — לא הוספנו דמו מעל הנתונים שלך");
+      }
+    } catch (err) {
+      console.error("Seed store demo error:", err);
+      showMessage("error", "לא הצלחנו להוסיף מוצרי דמו");
+    } finally {
+      setSeedingDemo(false);
+    }
+  }, [businessId, loadStoreData, seedingDemo, showMessage]);
 
   const resetProductForm = () => {
     setProductForm(emptyProductForm);
@@ -1400,6 +1427,10 @@ export default function StoreProductsManager({
             filterCategoryId={filterCategoryId}
             setFilterCategoryId={setFilterCategoryId}
             settings={settings}
+            seedingDemo={seedingDemo}
+            onSeedDemo={() => {
+              void seedDemoProducts();
+            }}
             onAddProduct={openAddProduct}
             onEditProduct={editProduct}
             onDeleteProduct={deleteProduct}
@@ -1502,6 +1533,8 @@ function ProductsView({
   filterCategoryId,
   setFilterCategoryId,
   settings,
+  seedingDemo,
+  onSeedDemo,
   onAddProduct,
   onEditProduct,
   onDeleteProduct,
@@ -1513,6 +1546,8 @@ function ProductsView({
   filterCategoryId: string;
   setFilterCategoryId: (value: string) => void;
   settings: StoreSettingsData;
+  seedingDemo: boolean;
+  onSeedDemo: () => void;
   onAddProduct: () => void;
   onEditProduct: (product: StoreProduct) => void;
   onDeleteProduct: (productId: string) => void;
@@ -1567,12 +1602,27 @@ function ProductsView({
       {products.length === 0 ? (
         <EmptyBox
           title="אין עדיין מוצרים"
-          text="הוסיפי מוצר ראשון, שייכי אותו לקטגוריה, והוא יופיע אוטומטית בגריד החנות."
+          text="הוסיפו מוצר ראשון — או טענו מוצרי דמו אמיתיים שניתן לערוך, למחוק ולהחליף תמונות מניהול החנות."
           action={
-            <PrimaryButton type="button" onClick={onAddProduct}>
-              <Plus size={17} />
-              הוספת מוצר ראשון
-            </PrimaryButton>
+            <div className="flex flex-wrap items-center justify-center gap-3">
+              <PrimaryButton type="button" onClick={onAddProduct}>
+                <Plus size={17} />
+                הוספת מוצר ראשון
+              </PrimaryButton>
+              <button
+                type="button"
+                disabled={seedingDemo}
+                onClick={onSeedDemo}
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:bg-slate-50 disabled:opacity-60"
+              >
+                {seedingDemo ? (
+                  <Loader2 size={17} className="animate-spin" />
+                ) : (
+                  <PackagePlus size={17} />
+                )}
+                {seedingDemo ? "טוען מוצרי דמו..." : "טעינת מוצרי דמו לעריכה"}
+              </button>
+            </div>
           }
         />
       ) : (
