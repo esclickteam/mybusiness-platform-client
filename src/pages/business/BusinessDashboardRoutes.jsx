@@ -27,9 +27,6 @@ const MySitesPage = lazy(() => import("../MySitesPage"));
 const SiteManagementPanelPage = lazyWithPreload(() =>
   import("../SiteManagementPanelPage")
 );
-const CreateWebsiteMethodPage = lazy(() =>
-  import("../CreateWebsiteMethodPage")
-);
 const AiSiteWizardPage = lazy(() => import("../AiSiteWizardPage"));
 
 /* Website Templates */
@@ -297,9 +294,15 @@ const BusinessDashboardRoutes = () => {
 
           {/* My Sites hub + create flows */}
           <Route path="website" element={<MySitesPage />} />
+          {/* Legacy create chooser → templates gallery */}
           <Route
             path="website/create"
-            element={<CreateWebsiteMethodPage />}
+            element={
+              <Navigate
+                to={`/business/${businessId}/dashboard/website/templates`}
+                replace
+              />
+            }
           />
           <Route path="website/create/ai" element={<AiSiteWizardPage />} />
           <Route

@@ -191,7 +191,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
         navigate(`${basePath}/crm/leads`);
         return;
       case "no_published_website":
-        navigate(`${basePath}/website/create`);
+        navigate(`${basePath}/website/templates`);
         return;
       case "missing_seo": {
         const siteId = insight?.meta?.siteId;

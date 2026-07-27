@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Eye,
@@ -10,6 +11,7 @@ import {
   Monitor,
   Plus,
   Redo2,
+  Settings2,
   ShoppingBag,
   Smartphone,
   Tablet,
@@ -144,6 +146,7 @@ export default function VisualEditorShell({
   onSelectSitePage,
   onSitePageAction,
 }: VisualEditorShellProps) {
+  const navigate = useNavigate();
   const [actionError, setActionError] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
     "add" | "layers" | "code" | "pages" | "store" | null
@@ -570,6 +573,22 @@ export default function VisualEditorShell({
                 </span>
               </button>
             </>
+          ) : null}
+
+          {siteId && businessId ? (
+            <button
+              type="button"
+              onClick={() =>
+                navigate(
+                  `/business/${businessId}/dashboard/website/sites/${siteId}/manage`,
+                )
+              }
+              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
+              title="פאנל ניהול"
+            >
+              <Settings2 className="h-4 w-4" />
+              <span className="hidden xl:inline">פאנל ניהול</span>
+            </button>
           ) : null}
 
           <button

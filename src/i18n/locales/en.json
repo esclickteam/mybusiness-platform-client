@@ -2209,9 +2209,14 @@
     "rightClickDelete": "Right-click to delete",
     "loadError": "Unable to load sites right now",
     "emptyTitle": "No sites here yet",
-    "emptyText": "Create your first site from a professional template or with AI, and manage everything from here.",
+    "emptyText": "Pick a template from the gallery, edit it in the studio, and manage domain, plugins, and publishing from here.",
     "createFirstSite": "Create first site",
     "openInEditor": "Open in editor",
+    "card": {
+      "edit": "Edit",
+      "manage": "Manage",
+      "view": "View"
+    },
     "defaultSiteName": "My site",
     "siteFallback": "site",
     "updated": "Updated {{date}}",

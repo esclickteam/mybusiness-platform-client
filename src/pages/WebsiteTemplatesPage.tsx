@@ -887,31 +887,8 @@ export default function WebsiteTemplatesPage() {
   return (
     <main
       dir={dir}
-      className="min-h-screen bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_28%)] text-start text-[#111827]"
+      className="min-h-screen bg-white text-start text-[#111827]"
     >
-      <section className="border-b border-slate-200/80 bg-white/95 px-5 py-6 backdrop-blur lg:px-10">
-        <div className="mx-auto max-w-[1500px]">
-          <div className="relative overflow-hidden rounded-[30px] border border-slate-200 bg-white px-6 py-7 shadow-[0_22px_70px_rgba(15,23,42,0.08)] lg:px-9">
-            <div className="pointer-events-none absolute inset-x-0 top-0 h-36 bg-[radial-gradient(circle_at_top_right,rgba(124,58,237,0.13),transparent_56%),radial-gradient(circle_at_top_left,rgba(37,99,235,0.10),transparent_52%)]" />
-
-            <div className="relative max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
-                <Sparkles className="h-4 w-4" />
-                {t("websiteTemplates.badge")}
-              </div>
-
-              <h1 className="mt-4 text-3xl font-black tracking-[-0.04em] text-slate-800 md:text-4xl">
-                {t("websiteTemplates.title")}
-              </h1>
-
-              <p className="mt-3 text-sm font-semibold leading-7 text-slate-500 md:text-base">
-                {t("websiteTemplates.subtitle")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <div className="flex min-h-[calc(100vh-64px)]">
         <aside className="hidden w-[310px] shrink-0 border-e border-[#e5e7eb] bg-white lg:block">
           <div className="sticky top-16 h-[calc(100vh-64px)] overflow-y-auto px-7 py-8">

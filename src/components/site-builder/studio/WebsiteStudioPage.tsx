@@ -8200,6 +8200,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   customDomain={customDomain}
   isSaving={saving}
   onBack={() => {
+    if (businessId) {
+      navigate(`/business/${businessId}/dashboard/website`);
+      return;
+    }
     if (typeof window !== "undefined") {
       window.history.back();
     }
