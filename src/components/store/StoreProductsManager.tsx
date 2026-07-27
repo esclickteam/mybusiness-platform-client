@@ -8,14 +8,12 @@ import {
   CheckCircle2,
   ChevronDown,
   ClipboardList,
-  CreditCard,
   Grid3X3,
   ImagePlus,
   Loader2,
   MoreVertical,
   PackagePlus,
   Plus,
-  RefreshCcw,
   Save,
   Search,
   Settings,
@@ -222,7 +220,7 @@ type StoreProductsManagerProps = {
   embedded?: boolean;
   initialView?: StoreView;
   allowedViews?: StoreView[];
-  settingsFocus?: "all" | "payments" | "shipping";
+  settingsFocus?: "all" | "shipping";
 };
 
 const emptySettings: StoreSettingsData = {
@@ -328,147 +326,6 @@ const emptyCouponForm = {
   usageLimit: "",
   isActive: true,
 };
-
-const paymentProviderOptions: Array<{
-  value: PaymentProviderType;
-  label: string;
-  description: string;
-}> = [
-  {
-    value: "manual",
-    label: "Manual payment",
-    description: "The business handles the payment outside the system.",
-  },
-  {
-    value: "whatsapp",
-    label: "WhatsApp order",
-    description: "The customer sends the order and the business completes payment manually.",
-  },
-  {
-    value: "bank_transfer",
-    label: "Bank transfer",
-    description: "Manual bank transfer details for the business.",
-  },
-  {
-    value: "stripe",
-    label: "Stripe",
-    description: "Connect the business Stripe account details.",
-  },
-  {
-    value: "paypal",
-    label: "PayPal",
-    description: "Connect the business PayPal account.",
-  },
-  {
-    value: "square",
-    label: "Square",
-    description: "Connect Square payment details for the business.",
-  },
-  {
-    value: "adyen",
-    label: "Adyen",
-    description: "Connect Adyen merchant/payment details.",
-  },
-  {
-    value: "checkout_com",
-    label: "Checkout.com",
-    description: "Connect Checkout.com merchant/API details.",
-  },
-  {
-    value: "braintree",
-    label: "Braintree",
-    description: "Connect Braintree merchant/API details.",
-  },
-  {
-    value: "mollie",
-    label: "Mollie",
-    description: "Connect Mollie payment details.",
-  },
-  {
-    value: "worldpay",
-    label: "Worldpay",
-    description: "Connect Worldpay merchant details.",
-  },
-  {
-    value: "verifone",
-    label: "Verifone / 2Checkout",
-    description: "Connect Verifone / 2Checkout payment details.",
-  },
-  {
-    value: "grow",
-    label: "Grow by Meshulam",
-    description: "Connect the business Grow payment details.",
-  },
-  {
-    value: "hyp",
-    label: "Max by Hyp",
-    description: "Connect Max by Hyp terminal/API details.",
-  },
-  {
-    value: "tranzila",
-    label: "Tranzila",
-    description: "Connect the business Tranzila terminal details.",
-  },
-  {
-    value: "payme",
-    label: "bit (PayMe)",
-    description: "Connect bit / PayMe API details.",
-  },
-  {
-    value: "payplus",
-    label: "PayPlus",
-    description: "Connect PayPlus API and payment page UID.",
-  },
-  {
-    value: "cal",
-    label: "Cal",
-    description: "Connect Cal API details.",
-  },
-  {
-    value: "custom",
-    label: "Other provider",
-    description: "External checkout URL or another international payment provider.",
-  },
-];
-
-const emptyPaymentProviderForm: PaymentProvider = {
-  provider: "manual",
-  label: "Manual payment",
-  isEnabled: true,
-  isPrimary: false,
-  mode: "live",
-  credentials: {
-    terminalNumber: "",
-    username: "",
-    apiKey: "",
-    apiSecret: "",
-    pageCode: "",
-    supplierId: "",
-    merchantId: "",
-    accountId: "",
-    publicKey: "",
-    privateKey: "",
-    webhookSecret: "",
-    customCheckoutUrl: "",
-  },
-  connectionStatus: "not_connected",
-  notes: "",
-};
-
-function getPaymentProviderLabel(provider?: string) {
-  return (
-    paymentProviderOptions.find((option) => option.value === provider)?.label ||
-    provider ||
-    "ספק סליקה"
-  );
-}
-
-function getPaymentStatusLabel(status?: PaymentProvider["connectionStatus"]) {
-  if (status === "connected") return "מחובר";
-  if (status === "failed") return "נכשל";
-  if (status === "pending") return "בהמתנה";
-  return "לא מחובר";
-}
 
 function formatMoney(value?: number | string | null, currency = "USD") {
   const amount = Number(value || 0);
@@ -672,10 +529,6 @@ export default function StoreProductsManager({
   const [couponForm, setCouponForm] =
     useState<Record<string, any>>(emptyCouponForm);
   const [editingCouponId, setEditingCouponId] = useState<string | null>(null);
-
-  const [paymentProviderForm, setPaymentProviderForm] =
-    useState<PaymentProvider>(emptyPaymentProviderForm);
-  const [paymentActionLoading, setPaymentActionLoading] = useState(false);
 
   const [search, setSearch] = useState("");
   const [filterCategoryId, setFilterCategoryId] = useState("all");
@@ -1257,99 +1110,6 @@ export default function StoreProductsManager({
   };
 
 
-  const resetPaymentProviderForm = () => {
-    setPaymentProviderForm(emptyPaymentProviderForm);
-  };
-
-  const editPaymentProvider = (provider: PaymentProvider) => {
-    setPaymentProviderForm({
-      ...emptyPaymentProviderForm,
-      ...provider,
-      credentials: {
-        ...emptyPaymentProviderForm.credentials,
-        ...(provider.credentials || {}),
-      },
-    });
-    setView("settings");
-  };
-
-  const savePaymentProvider = async () => {
-    if (!businessId) return;
-
-    setPaymentActionLoading(true);
-
-    try {
-      const { data } = await API.put(
-        `/store/${businessId}/payments/provider`,
-        paymentProviderForm
-      );
-
-      setSettings({ ...emptySettings, ...(data?.settings || {}) });
-      showMessage("success", "הגדרות הסליקה נשמרו בהצלחה");
-    } catch (err) {
-      console.error("Save payment provider error:", err);
-      showMessage("error", "שגיאה בשמירת ספק הסליקה");
-    } finally {
-      setPaymentActionLoading(false);
-    }
-  };
-
-  const testPaymentProviderConnection = async (provider: PaymentProviderType) => {
-    if (!businessId) return;
-
-    setPaymentActionLoading(true);
-
-    try {
-      const { data } = await API.post(
-        `/store/${businessId}/payments/test-connection`,
-        { provider }
-      );
-
-      if (data?.provider) {
-        setSettings((prev) => ({
-          ...prev,
-          paymentProviders: (prev.paymentProviders || []).map((item) =>
-            item.provider === provider ? data.provider : item
-          ),
-        }));
-      }
-
-      showMessage(
-        data?.success ? "success" : "error",
-        data?.success
-          ? "בדיקת החיבור עברה בהצלחה"
-          : "חסרים פרטי חיבור לספק הסליקה"
-      );
-    } catch (err) {
-      console.error("Test payment provider error:", err);
-      showMessage("error", "שגיאה בבדיקת חיבור הסליקה");
-    } finally {
-      setPaymentActionLoading(false);
-    }
-  };
-
-  const deletePaymentProvider = async (provider: PaymentProviderType) => {
-    if (!businessId) return;
-
-    if (!window.confirm("למחוק את ספק הסליקה מהחנות?")) return;
-
-    setPaymentActionLoading(true);
-
-    try {
-      const { data } = await API.delete(
-        `/store/${businessId}/payments/provider/${provider}`
-      );
-
-      setSettings({ ...emptySettings, ...(data?.settings || {}) });
-      showMessage("success", "ספק הסליקה נמחק");
-    } catch (err) {
-      console.error("Delete payment provider error:", err);
-      showMessage("error", "שגיאה במחיקת ספק סליקה");
-    } finally {
-      setPaymentActionLoading(false);
-    }
-  };
-
   const nav = [
     { id: "products" as StoreView, label: "מוצרים", icon: <Grid3X3 size={17} /> },
     {
@@ -1561,14 +1321,6 @@ export default function StoreProductsManager({
             setSettings={setSettings}
             saving={saving}
             onSave={saveSettings}
-            paymentProviderForm={paymentProviderForm}
-            setPaymentProviderForm={setPaymentProviderForm}
-            paymentActionLoading={paymentActionLoading}
-            onSavePaymentProvider={savePaymentProvider}
-            onTestPaymentProvider={testPaymentProviderConnection}
-            onEditPaymentProvider={editPaymentProvider}
-            onDeletePaymentProvider={deletePaymentProvider}
-            onResetPaymentProvider={resetPaymentProviderForm}
             focus={settingsFocus}
           />
         )}
@@ -2950,34 +2702,14 @@ function SettingsView({
   setSettings,
   saving,
   onSave,
-  paymentProviderForm,
-  setPaymentProviderForm,
-  paymentActionLoading,
-  onSavePaymentProvider,
-  onTestPaymentProvider,
-  onEditPaymentProvider,
-  onDeletePaymentProvider,
-  onResetPaymentProvider,
   focus = "all",
 }: {
   settings: StoreSettingsData;
   setSettings: React.Dispatch<React.SetStateAction<StoreSettingsData>>;
   saving: boolean;
   onSave: () => void;
-  paymentProviderForm: PaymentProvider;
-  setPaymentProviderForm: React.Dispatch<React.SetStateAction<PaymentProvider>>;
-  paymentActionLoading: boolean;
-  onSavePaymentProvider: () => void;
-  onTestPaymentProvider: (provider: PaymentProviderType) => void;
-  onEditPaymentProvider: (provider: PaymentProvider) => void;
-  onDeletePaymentProvider: (provider: PaymentProviderType) => void;
-  onResetPaymentProvider: () => void;
-  focus?: "all" | "payments" | "shipping";
+  focus?: "all" | "shipping";
 }) {
-  const activePaymentProviders = settings.paymentProviders || [];
-  const selectedProviderOption = paymentProviderOptions.find(
-    (option) => option.value === paymentProviderForm.provider
-  );
   const checkoutLook = normalizeCheckoutAppearance(settings.checkoutAppearance);
 
   const updateCheckoutAppearance = (
@@ -2992,23 +2724,8 @@ function SettingsView({
     }));
   };
 
-  const updateCredentials = (
-    key: keyof NonNullable<PaymentProvider["credentials"]>,
-    value: string
-  ) => {
-    setPaymentProviderForm((prev) => ({
-      ...prev,
-      credentials: {
-        ...(prev.credentials || {}),
-        [key]: value,
-      },
-    }));
-  };
-
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_440px]">
-      <div className="space-y-6">
-        {focus !== "payments" ? (
+    <div className="space-y-6">
         <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
           <div className="mb-6">
             <h2 className="text-2xl font-black text-slate-800">
@@ -3176,9 +2893,8 @@ function SettingsView({
             </PrimaryButton>
           </div>
         </div>
-        ) : null}
 
-        {focus !== "shipping" && focus !== "payments" ? (
+        {focus !== "shipping" ? (
           <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
             <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
               <div>
@@ -3387,365 +3103,9 @@ function SettingsView({
           </div>
         ) : null}
 
-        {focus !== "shipping" ? (
-        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-          <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-                <CreditCard size={15} />
-                תשלומים וסליקה
-              </div>
-
-              <h2 className="mt-3 text-2xl font-black text-slate-800">
-                חיבור סליקה של העסק
-              </h2>
-
-              <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
-                כאן העסק מחבר את ספק הסליקה שלו. כל עסק שומר את פרטי החיבור שלו בלבד,
-                והחיוב בפועל יבוצע רק לאחר מימוש API ייעודי לספק שנבחר.
-              </p>
-            </div>
-
-            <SecondaryButton type="button" onClick={onResetPaymentProvider}>
-              <Plus size={16} />
-              ספק חדש
-            </SecondaryButton>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-2">
-            <div>
-              <FieldLabel>ספק סליקה</FieldLabel>
-              <SelectInput
-                value={paymentProviderForm.provider}
-                onChange={(e) => {
-                  const provider = e.target.value as PaymentProviderType;
-                  const option = paymentProviderOptions.find(
-                    (item) => item.value === provider
-                  );
-
-                  setPaymentProviderForm((prev) => ({
-                    ...prev,
-                    provider,
-                    label: option?.label || "",
-                    credentials: {
-                      ...emptyPaymentProviderForm.credentials,
-                      ...(prev.credentials || {}),
-                    },
-                  }));
-                }}
-              >
-                {paymentProviderOptions.map((option) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </SelectInput>
-
-              {selectedProviderOption?.description && (
-                <p className="mt-2 text-xs font-bold leading-5 text-slate-400">
-                  {selectedProviderOption.description}
-                </p>
-              )}
-            </div>
-
-            <div>
-              <FieldLabel>שם שיוצג ללקוח</FieldLabel>
-              <TextInput
-                value={paymentProviderForm.label || ""}
-                onChange={(e) =>
-                  setPaymentProviderForm((prev) => ({
-                    ...prev,
-                    label: e.target.value,
-                  }))
-                }
-                placeholder="לדוגמה: תשלום מאובטח באשראי"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>מצב עבודה</FieldLabel>
-              <SelectInput
-                value={paymentProviderForm.mode || "test"}
-                onChange={(e) =>
-                  setPaymentProviderForm((prev) => ({
-                    ...prev,
-                    mode: e.target.value as "test" | "live",
-                  }))
-                }
-              >
-                <option value="test">בדיקות</option>
-                <option value="live">חי</option>
-              </SelectInput>
-            </div>
-
-            <div className="grid gap-3 sm:grid-cols-2">
-              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={Boolean(paymentProviderForm.isEnabled)}
-                  onChange={(e) =>
-                    setPaymentProviderForm((prev) => ({
-                      ...prev,
-                      isEnabled: e.target.checked,
-                    }))
-                  }
-                />
-                פעיל בחנות
-              </label>
-
-              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={Boolean(paymentProviderForm.isPrimary)}
-                  onChange={(e) =>
-                    setPaymentProviderForm((prev) => ({
-                      ...prev,
-                      isPrimary: e.target.checked,
-                    }))
-                  }
-                />
-                ברירת מחדל
-              </label>
-            </div>
-
-            <div>
-              <FieldLabel>מספר מסוף / טרמינל</FieldLabel>
-              <TextInput
-                value={paymentProviderForm.credentials?.terminalNumber || ""}
-                onChange={(e) =>
-                  updateCredentials("terminalNumber", e.target.value)
-                }
-                placeholder="Terminal / Masof"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>Supplier ID / Page Code</FieldLabel>
-              <TextInput
-                value={
-                  paymentProviderForm.credentials?.supplierId ||
-                  paymentProviderForm.credentials?.pageCode ||
-                  ""
-                }
-                onChange={(e) => {
-                  updateCredentials("supplierId", e.target.value);
-                  updateCredentials("pageCode", e.target.value);
-                }}
-                placeholder="Depends on the selected provider"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>Merchant ID / Account ID</FieldLabel>
-              <TextInput
-                value={
-                  paymentProviderForm.credentials?.merchantId ||
-                  paymentProviderForm.credentials?.accountId ||
-                  ""
-                }
-                onChange={(e) => {
-                  updateCredentials("merchantId", e.target.value);
-                  updateCredentials("accountId", e.target.value);
-                }}
-                placeholder="Merchant / account identifier"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>שם משתמש</FieldLabel>
-              <TextInput
-                value={paymentProviderForm.credentials?.username || ""}
-                onChange={(e) => updateCredentials("username", e.target.value)}
-                placeholder="Username"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>API Key / Public Key</FieldLabel>
-              <TextInput
-                value={
-                  paymentProviderForm.credentials?.apiKey ||
-                  paymentProviderForm.credentials?.publicKey ||
-                  ""
-                }
-                onChange={(e) => {
-                  updateCredentials("apiKey", e.target.value);
-                  updateCredentials("publicKey", e.target.value);
-                }}
-                placeholder="מפתח ציבורי / API Key"
-              />
-            </div>
-
-            <div>
-              <FieldLabel>API Secret / Private Key</FieldLabel>
-              <TextInput
-                type="password"
-                value={
-                  paymentProviderForm.credentials?.apiSecret === "••••••••" ||
-                  paymentProviderForm.credentials?.privateKey === "••••••••"
-                    ? ""
-                    : paymentProviderForm.credentials?.apiSecret ||
-                      paymentProviderForm.credentials?.privateKey ||
-                      ""
-                }
-                onChange={(e) => {
-                  updateCredentials("apiSecret", e.target.value);
-                  updateCredentials("privateKey", e.target.value);
-                }}
-                placeholder="מפתח סודי אם הספק דורש"
-              />
-            </div>
-
-            <div className="lg:col-span-2">
-              <FieldLabel>קישור צ׳קאאוט חיצוני / ספק אחר</FieldLabel>
-              <TextInput
-                value={paymentProviderForm.credentials?.customCheckoutUrl || ""}
-                onChange={(e) =>
-                  updateCredentials("customCheckoutUrl", e.target.value)
-                }
-                placeholder="https://..."
-              />
-            </div>
-
-            <div className="lg:col-span-2">
-              <FieldLabel>הערות פנימיות</FieldLabel>
-              <TextArea
-                value={paymentProviderForm.notes || ""}
-                onChange={(e) =>
-                  setPaymentProviderForm((prev) => ({
-                    ...prev,
-                    notes: e.target.value,
-                  }))
-                }
-                placeholder="הערות חיבור, שם מסוף, פרטי ספק וכו׳"
-              />
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-            <PrimaryButton
-              type="button"
-              onClick={onSavePaymentProvider}
-              loading={paymentActionLoading}
-            >
-              <Save size={17} />
-              שמירת ספק סליקה
-            </PrimaryButton>
-
-            <SecondaryButton
-              type="button"
-              onClick={() =>
-                onTestPaymentProvider(paymentProviderForm.provider)
-              }
-              disabled={paymentActionLoading}
-            >
-              <RefreshCcw size={16} />
-              בדיקת חיבור
-            </SecondaryButton>
-          </div>
-        </div>
-        ) : null}
-      </div>
-
-      {focus !== "shipping" ? (
-      <aside className="space-y-5">
-        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
-          <h3 className="text-lg font-black text-slate-800">
-            ספקי סליקה פעילים
-          </h3>
-
-          <p className="mt-1 text-xs font-bold leading-6 text-slate-500">
-            אלו אמצעי התשלום שהעסק הגדיר לחנות שלו.
-          </p>
-
-          <div className="mt-5 grid gap-3">
-            {activePaymentProviders.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-black text-slate-500">
-                לא הוגדרו ספקי סליקה עדיין
-              </div>
-            ) : (
-              activePaymentProviders.map((provider) => (
-                <div
-                  key={provider.provider}
-                  className="rounded-2xl border border-slate-200 bg-slate-50 p-4"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-black text-slate-800">
-                        {provider.label || getPaymentProviderLabel(provider.provider)}
-                      </p>
-
-                      <p className="mt-1 text-xs font-bold text-slate-500">
-                        {getPaymentProviderLabel(provider.provider)} ·{" "}
-                        {provider.mode === "live" ? "חי" : "בדיקות"}
-                      </p>
-                    </div>
-
-                    <StatusBadge
-                      active={provider.connectionStatus === "connected"}
-                      label={getPaymentStatusLabel(provider.connectionStatus)}
-                    />
-                  </div>
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {provider.isEnabled && (
-                      <span className="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black text-emerald-700">
-                        פעיל
-                      </span>
-                    )}
-
-                    {provider.isPrimary && (
-                      <span className="rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700">
-                        ברירת מחדל
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="mt-4 grid grid-cols-[1fr_auto] gap-2">
-                    <SecondaryButton
-                      type="button"
-                      onClick={() => onEditPaymentProvider(provider)}
-                      className="w-full"
-                    >
-                      עריכה
-                    </SecondaryButton>
-
-                    {!["manual", "whatsapp"].includes(provider.provider) && (
-                      <button
-                        type="button"
-                        onClick={() =>
-                          onDeletePaymentProvider(provider.provider)
-                        }
-                        className="grid h-11 w-11 place-items-center rounded-2xl bg-rose-50 text-rose-600 transition hover:bg-rose-100"
-                        title="מחיקת ספק"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        <div className="rounded-[32px] border border-amber-200 bg-amber-50 p-5">
-          <h3 className="text-sm font-black text-amber-900">
-            חשוב לגבי סליקה
-          </h3>
-
-          <p className="mt-2 text-xs font-bold leading-6 text-amber-800">
-            השמירה כאן שומרת את פרטי הספק של העסק במערכת. כדי לגבות אשראי
-            בפועל צריך לממש יצירת תשלום לפי ה־API של כל ספק: Stripe, PayPal,
-            Square, Adyen, Checkout.com, Grow, Hyp, Tranzila וכו׳.
-          </p>
-        </div>
-      </aside>
-      ) : null}
     </div>
   );
 }
-
 function CouponsView({
   coupons,
   couponForm,

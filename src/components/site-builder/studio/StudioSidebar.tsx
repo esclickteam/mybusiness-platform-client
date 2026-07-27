@@ -630,7 +630,7 @@ export default function StudioSidebar({
 
                     <StoreNavButton
                       title="הגדרות חנות"
-                      text="מטבע, משלוחים, וואטסאפ, מדיניות החזרות ותשלומים."
+                      text="מטבע, משלוחים, וואטסאפ, מדיניות החזרות ועיצוב הסל."
                       onClick={openStoreManagementPage}
                     />
 
