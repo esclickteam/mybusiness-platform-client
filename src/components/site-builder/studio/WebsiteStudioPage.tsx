@@ -137,10 +137,20 @@ type StudioSitePageWithPortal = StudioSitePage & {
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
-const STUDIO_TEMPLATE_DEBUG = true;
+/** Opt-in only: localStorage.setItem("bizuply-studio-debug", "1") */
+function isStudioTemplateDebugEnabled() {
+  try {
+    return (
+      typeof window !== "undefined" &&
+      window.localStorage?.getItem("bizuply-studio-debug") === "1"
+    );
+  } catch {
+    return false;
+  }
+}
 
 function studioDebug(label: string, payload?: unknown) {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
+  if (!isStudioTemplateDebugEnabled()) return;
 
   try {
     console.log(`[BizUply Studio DEBUG] ${label}`, payload ?? "");
@@ -150,7 +160,7 @@ function studioDebug(label: string, payload?: unknown) {
 }
 
 function studioWarn(label: string, payload?: unknown) {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
+  if (!isStudioTemplateDebugEnabled()) return;
 
   try {
     console.warn(`[BizUply Studio WARN] ${label}`, payload ?? "");
@@ -160,14 +170,23 @@ function studioWarn(label: string, payload?: unknown) {
 }
 
 function studioError(label: string, payload?: unknown) {
-  if (!STUDIO_TEMPLATE_DEBUG) return;
-
+  // Keep real errors visible even without the debug flag.
   try {
     console.error(`[BizUply Studio ERROR] ${label}`, payload ?? "");
   } catch {
     /* noop */
   }
 }
+
+type TemplatePageHtmlMode = "all" | "none" | "home-only";
+
+type CreateTemplatePagesOptions = {
+  /**
+   * visual-react editors render live React — building static HTML for every
+   * page on open freezes the main thread (Velmora has 14+ pages).
+   */
+  htmlMode?: TemplatePageHtmlMode;
+};
 
 function studioGroup(label: string, payload?: unknown) {
   if (!STUDIO_TEMPLATE_DEBUG) return;
@@ -1732,9 +1751,11 @@ ${templateEditorCss}
 function createPagesFromRegisteredRenderer(
   seed: ReadyWebsiteTemplateSeed,
   data?: Record<string, any>,
+  options: CreateTemplatePagesOptions = {},
 ): BuiltTemplatePages | null {
   const renderer = getTemplateRendererBySeed(seed);
   const templateId = getTemplateIdFromSeed(seed);
+  const htmlMode: TemplatePageHtmlMode = options.htmlMode || "all";
 
   if (!renderer?.Component) {
     studioWarn("createPagesFromRegisteredRenderer:no-renderer", {
@@ -1746,7 +1767,8 @@ function createPagesFromRegisteredRenderer(
   }
 
   const now = new Date().toISOString();
-  const css = createRegisteredTemplateCss(seed);
+  // Skip heavy CSS string build when we are only listing page shells.
+  const css = htmlMode === "none" ? "" : createRegisteredTemplateCss(seed);
 
   const rendererPages =
     Array.isArray(renderer.pages) && renderer.pages.length
@@ -1764,6 +1786,7 @@ function createPagesFromRegisteredRenderer(
     templateId,
     rendererKey: renderer.key,
     rendererPagesCount: rendererPages.length,
+    htmlMode,
   });
 
   const pages = rendererPages.map((page: any, index: number) => {
@@ -1772,7 +1795,13 @@ function createPagesFromRegisteredRenderer(
     const cleanSlug = isHome
       ? ""
       : String(page.slug || pageId).replace(/^\//, "").replace(/\/$/, "");
-    const html = renderRegisteredTemplateToStaticHtml(seed, page, data);
+
+    const shouldRenderHtml =
+      htmlMode === "all" || (htmlMode === "home-only" && isHome);
+
+    const html = shouldRenderHtml
+      ? renderRegisteredTemplateToStaticHtml(seed, page, data)
+      : "";
 
     return {
       id: pageId,
@@ -1799,6 +1828,7 @@ function createPagesFromRegisteredRenderer(
     slug: built.slug,
     activePageId: built.activePageId,
     pagesCount: built.pages.length,
+    htmlMode,
     pages: built.pages.map((page) => ({
       id: page.id,
       title: page.title,
@@ -2040,6 +2070,7 @@ function hasUsefulTemplateHtml(pages: StudioSitePageWithPortal[]) {
 function createPagesFromTemplateSeed(
   seed: ReadyWebsiteTemplateSeed,
   data?: Record<string, any>,
+  options: CreateTemplatePagesOptions = {},
 ): BuiltTemplatePages {
   const templateId = getTemplateIdFromSeed(seed);
   const rendererKey = getSeedRendererKey(seed);
@@ -2051,12 +2082,17 @@ function createPagesFromTemplateSeed(
     rendererKey,
     renderMode,
     editorMode,
+    htmlMode: options.htmlMode || "all",
     seedName: seed.name,
     seedKey: (seed as any).key,
     blocksCount: Array.isArray(seed.blocks) ? seed.blocks.length : 0,
   });
 
-  const registeredTemplate = createPagesFromRegisteredRenderer(seed, data);
+  const registeredTemplate = createPagesFromRegisteredRenderer(
+    seed,
+    data,
+    options,
+  );
 
   if (registeredTemplate) {
     return registeredTemplate;
@@ -4879,13 +4915,14 @@ export default function WebsiteStudioPage({
   const editorStageClass =
     "relative min-h-0 flex-1 overflow-hidden bg-[#eef1f8]";
 
-  // Visual templates: always expose the full page list from the renderer
-  // (home/about/services/…), even before/without a rich server payload.
+  // Visual templates: expose the full page list as lightweight shells only.
+  // Do NOT SSR every page to static HTML here — that freezes editor open.
   useEffect(() => {
     if (!isVisualReactTemplate || !selectedTemplateSeed) return;
 
-    const templatePages =
-      createPagesFromTemplateSeed(selectedTemplateSeed).pages;
+    const templatePages = createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+      htmlMode: "none",
+    }).pages;
 
     if (!templatePages.length) return;
 
@@ -5014,8 +5051,11 @@ export default function WebsiteStudioPage({
 
         // Hydrate studio pages from saved payloads, but never drop template pages
         // (server often persists only the active page — e.g. home only).
+        // Shells only: visual-react renders live; full SSR of all pages blocks open.
         const templatePages = selectedTemplateSeed
-          ? createPagesFromTemplateSeed(selectedTemplateSeed).pages
+          ? createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
+              htmlMode: "none",
+            }).pages
           : [];
 
         if (Array.isArray(data.site.pages) && data.site.pages.length) {
