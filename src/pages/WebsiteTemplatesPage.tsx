@@ -27,7 +27,6 @@ import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview, {
   canRenderTemplatePreview,
 } from "../components/website/TemplateCardPreview";
-import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -126,8 +125,6 @@ const GALLERY_INITIAL_SIZE = 48;
 const GALLERY_PAGE_SIZE = 24;
 /** Cap idle pre-expansion so we don't mount all 213 shells at once. */
 const GALLERY_IDLE_CAP = 96;
-/** Live previews warmed immediately (not gated on intersection). */
-const GALLERY_PRELOAD_LIVE = 16;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -286,9 +283,17 @@ function mapDefinitionToGalleryTemplate(
     seed.image ||
     definition?.previewImage ||
     definition?.image ||
+    defaultData.previewImage ||
+    defaultData.previewImageUrl ||
+    defaultData.thumbnailUrl ||
     defaultData.heroImage ||
     defaultData.image ||
     defaultData.coverImage ||
+    defaultData.hero?.image ||
+    defaultData.hero?.backgroundImage ||
+    defaultData.home?.hero?.image ||
+    (Array.isArray(defaultData.products) ? defaultData.products[0]?.image : "") ||
+    (Array.isArray(defaultData.gallery) ? defaultData.gallery[0] : "") ||
     "";
 
   const badge =
@@ -630,15 +635,6 @@ export default function WebsiteTemplatesPage() {
   );
 
   const hasMoreTemplates = visibleCount < filteredTemplates.length;
-
-  // Warm live previews for the first cards as soon as the list is ready.
-  useEffect(() => {
-    if (!visibleTemplates.length) return;
-    prefetchGalleryPreviewKeys(
-      visibleTemplates.slice(0, GALLERY_PRELOAD_LIVE).map((item) => item.key),
-      { limit: GALLERY_PRELOAD_LIVE, priority: true },
-    );
-  }, [visibleTemplates]);
 
   // Prefetch the next chunk of card shells in idle time (before user scrolls).
   useEffect(() => {
@@ -1087,14 +1083,7 @@ export default function WebsiteTemplatesPage() {
                           "";
 
                         return (
-                          <article
-                            key={template.key}
-                            className="group"
-                            style={{
-                              contentVisibility: "auto",
-                              containIntrinsicSize: "360px 480px",
-                            }}
-                          >
+                          <article key={template.key} className="group">
                             <div
                               className="
                                 relative block w-full overflow-hidden rounded-xl
@@ -1127,8 +1116,8 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      eager={index < 12}
-                                      preloadOnMount={index < GALLERY_PRELOAD_LIVE}
+                                      coverImage={coverImage || undefined}
+                                      eager={index < 8}
                                     />
                                   ) : coverImage ? (
                                     <img
