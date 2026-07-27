@@ -1366,6 +1366,16 @@ export default function VisualEditorCanvas({
         return;
       }
 
+      /*
+        Template cards/links use real <a href="/products"> etc. Without blocking,
+        a double-click (or a click that fails selectNode) navigates the host SPA
+        out of the studio — often landing on My Sites via the app catch-all.
+      */
+      const anchor = target.closest("a[href]");
+      if (anchor && root.contains(anchor)) {
+        event.preventDefault();
+      }
+
       const editingNode = editingNodeRef.current;
 
       if (editingNode) {
@@ -1402,6 +1412,17 @@ export default function VisualEditorCanvas({
 
       if (!isHTMLElement(target)) return;
       if (target.closest(EDITOR_UI_SELECTOR)) return;
+
+      // Always stop host navigation before trying to enter inline edit.
+      const anchor = target.closest("a[href]");
+      if (
+        anchor &&
+        root.contains(anchor) &&
+        !target.closest('[data-bizuply-nav-submenu="true"]')
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
 
       const selected = editorAny.selectNode?.(target);
 

@@ -1711,7 +1711,7 @@ function HeroSection({ data, mode }: SharedProps) {
   );
 }
 
-function CategoriesSection({ data }: SharedProps) {
+function CategoriesSection({ data, mode }: SharedProps) {
   return (
     <section
       id="categories"
@@ -1730,11 +1730,18 @@ function CategoriesSection({ data }: SharedProps) {
           {safeArray(data.categories).map((item, index) => (
             <a
               key={`category-${index}`}
-              href={item.href}
+              href={item.href || "/products"}
               data-revealed="false"
               className={`${REVEAL_CLASS} group relative overflow-hidden`}
               style={{ transitionDelay: `${index * 80}ms` }}
               data-editable="link"
+              onClick={(event) => {
+                // Keep editing inside the studio; do not follow /products into the host app.
+                if (isEditorMode(mode) || mode === "preview") {
+                  event.preventDefault();
+                  event.stopPropagation();
+                }
+              }}
               {...visualProps(
                 `categories.${index}.card`,
                 "section",
