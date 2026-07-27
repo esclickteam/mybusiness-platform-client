@@ -1048,8 +1048,7 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      coverImage={coverImage || undefined}
-                                      eager={index < 4}
+                                      eager={index < 8}
                                     />
                                   ) : coverImage ? (
                                     <img

@@ -6,12 +6,12 @@ const queue: string[] = [];
 let pumping = false;
 
 /**
- * Keep the templates gallery light:
- * mounting full React sites is expensive — only a few cards at a time.
+ * Keep the gallery smooth while still showing live template content
+ * for a full viewport of cards (≈2 rows × 4 columns).
  */
-const BATCH_SIZE = 2;
-const BATCH_DELAY_MS = 90;
-const MAX_ACTIVE = 4;
+const BATCH_SIZE = 4;
+const BATCH_DELAY_MS = 40;
+const MAX_ACTIVE = 8;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "")
