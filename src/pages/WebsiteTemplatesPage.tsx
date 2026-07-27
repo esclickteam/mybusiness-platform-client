@@ -27,6 +27,7 @@ import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview, {
   canRenderTemplatePreview,
 } from "../components/website/TemplateCardPreview";
+import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -119,8 +120,14 @@ const RAW_API_BASE =
 
 const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 
-/** How many template cards to mount initially / per scroll chunk. */
+/** First paint: enough cards for ~2–3 screens without waiting for scroll. */
+const GALLERY_INITIAL_SIZE = 48;
+/** Extra cards appended while idle / near the bottom. */
 const GALLERY_PAGE_SIZE = 24;
+/** Cap idle pre-expansion so we don't mount all 213 shells at once. */
+const GALLERY_IDLE_CAP = 96;
+/** Live previews warmed immediately (not gated on intersection). */
+const GALLERY_PRELOAD_LIVE = 16;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -503,8 +510,8 @@ export default function WebsiteTemplatesPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [syncingTemplates, setSyncingTemplates] = useState(false);
-  /** Windowed render — avoid mounting 200+ heavy preview cards at once. */
-  const [visibleCount, setVisibleCount] = useState(24);
+  /** Windowed render — expand ahead of scroll for a smooth UX. */
+  const [visibleCount, setVisibleCount] = useState(GALLERY_INITIAL_SIZE);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
@@ -614,7 +621,7 @@ export default function WebsiteTemplatesPage() {
   }, [activeCategory, search, sortValue, templates, i18n.language]);
 
   useEffect(() => {
-    setVisibleCount(GALLERY_PAGE_SIZE);
+    setVisibleCount(GALLERY_INITIAL_SIZE);
   }, [activeCategory, search, sortValue]);
 
   const visibleTemplates = useMemo(
@@ -623,6 +630,78 @@ export default function WebsiteTemplatesPage() {
   );
 
   const hasMoreTemplates = visibleCount < filteredTemplates.length;
+
+  // Warm live previews for the first cards as soon as the list is ready.
+  useEffect(() => {
+    if (!visibleTemplates.length) return;
+    prefetchGalleryPreviewKeys(
+      visibleTemplates.slice(0, GALLERY_PRELOAD_LIVE).map((item) => item.key),
+      { limit: GALLERY_PRELOAD_LIVE, priority: true },
+    );
+  }, [visibleTemplates]);
+
+  // Prefetch the next chunk of card shells in idle time (before user scrolls).
+  useEffect(() => {
+    if (visibleCount >= Math.min(GALLERY_IDLE_CAP, filteredTemplates.length)) {
+      return;
+    }
+
+    let cancelled = false;
+    let idleId = 0;
+    let timeoutId = 0;
+
+    const expand = () => {
+      if (cancelled) return;
+      setVisibleCount((current) => {
+        const cap = Math.min(GALLERY_IDLE_CAP, filteredTemplates.length);
+        if (current >= cap) return current;
+        return Math.min(current + GALLERY_PAGE_SIZE, cap);
+      });
+    };
+
+    const schedule = () => {
+      if (cancelled) return;
+      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+        idleId = (
+          window as Window & {
+            requestIdleCallback: (
+              cb: IdleRequestCallback,
+              opts?: IdleRequestOptions,
+            ) => number;
+          }
+        ).requestIdleCallback(
+          () => {
+            expand();
+            if (!cancelled) timeoutId = window.setTimeout(schedule, 200);
+          },
+          { timeout: 800 },
+        );
+      } else {
+        timeoutId = window.setTimeout(() => {
+          expand();
+          schedule();
+        }, 240);
+      }
+    };
+
+    timeoutId = window.setTimeout(schedule, 100);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timeoutId);
+      if (
+        idleId &&
+        typeof window !== "undefined" &&
+        "cancelIdleCallback" in window
+      ) {
+        (
+          window as Window & {
+            cancelIdleCallback: (id: number) => void;
+          }
+        ).cancelIdleCallback(idleId);
+      }
+    };
+  }, [activeCategory, filteredTemplates.length, search, sortValue, visibleCount]);
 
   useEffect(() => {
     if (!hasMoreTemplates) return;
@@ -636,7 +715,7 @@ export default function WebsiteTemplatesPage() {
           Math.min(current + GALLERY_PAGE_SIZE, filteredTemplates.length),
         );
       },
-      { rootMargin: "600px 0px", threshold: 0.01 },
+      { rootMargin: "1400px 0px", threshold: 0.01 },
     );
 
     observer.observe(node);
@@ -1048,13 +1127,14 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      eager={index < 8}
+                                      eager={index < 12}
+                                      preloadOnMount={index < GALLERY_PRELOAD_LIVE}
                                     />
                                   ) : coverImage ? (
                                     <img
                                       src={coverImage}
                                       alt={template.name}
-                                      loading={index < 4 ? "eager" : "lazy"}
+                                      loading={index < 12 ? "eager" : "lazy"}
                                       decoding="async"
                                       className="h-full w-full object-cover object-top transition duration-[3.5s] ease-out group-hover:object-bottom"
                                     />

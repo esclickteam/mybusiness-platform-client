@@ -20,6 +20,10 @@ type TemplateCardPreviewProps = {
   coverImage?: string;
   /** Prefer mounting sooner for the first visible cards */
   eager?: boolean;
+  /**
+   * Warm this card as soon as it is in the React tree (not only when scrolled into view).
+   */
+  preloadOnMount?: boolean;
 };
 
 /** Desktop width of the template canvas inside the card. */
@@ -96,6 +100,7 @@ export default function TemplateCardPreview({
   title,
   coverImage,
   eager = false,
+  preloadOnMount = false,
 }: TemplateCardPreviewProps) {
   const key = normalizeKey(templateKey);
   const frameRef = useRef<HTMLDivElement>(null);
@@ -103,7 +108,7 @@ export default function TemplateCardPreview({
   const [frameWidth, setFrameWidth] = useState(320);
   const [frameHeight, setFrameHeight] = useState(400);
   const [contentHeight, setContentHeight] = useState(DESIGN_HEIGHT);
-  const [inView, setInView] = useState(eager);
+  const [inView, setInView] = useState(eager || preloadOnMount);
   const [active, setActive] = useState(false);
   const [liveReady, setLiveReady] = useState(false);
   const [mountFailed, setMountFailed] = useState(false);
@@ -134,6 +139,12 @@ export default function TemplateCardPreview({
   }, []);
 
   useEffect(() => {
+    if (eager || preloadOnMount) {
+      setInView(true);
+    }
+  }, [eager, preloadOnMount, key]);
+
+  useEffect(() => {
     const frame = frameRef.current;
     if (!frame || typeof IntersectionObserver === "undefined") {
       setInView(true);
@@ -142,14 +153,17 @@ export default function TemplateCardPreview({
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        setInView(entry.isIntersecting || entry.intersectionRatio > 0);
+        const visible = entry.isIntersecting || entry.intersectionRatio > 0;
+        if (visible) setInView(true);
+        else if (!eager && !preloadOnMount) setInView(false);
       },
-      { rootMargin: "280px 0px", threshold: 0.01 },
+      // Warm cards well below the fold before the user scrolls there.
+      { rootMargin: "1200px 0px", threshold: 0.01 },
     );
 
     observer.observe(frame);
     return () => observer.disconnect();
-  }, []);
+  }, [eager, preloadOnMount]);
 
   useEffect(() => {
     if (!key || !canLive) return;
@@ -161,7 +175,7 @@ export default function TemplateCardPreview({
       return;
     }
 
-    if (eager) {
+    if (eager || preloadOnMount) {
       prioritizeGalleryPreview(key);
       setActive(true);
       return () => {
@@ -174,7 +188,7 @@ export default function TemplateCardPreview({
       setActive(isActive);
       if (!isActive) setLiveReady(false);
     });
-  }, [canLive, eager, inView, key]);
+  }, [canLive, eager, inView, key, preloadOnMount]);
 
   useEffect(() => {
     if (!active) return;

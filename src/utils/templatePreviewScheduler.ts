@@ -3,15 +3,18 @@ type Listener = (active: boolean) => void;
 const listeners = new Map<string, Set<Listener>>();
 const activated = new Set<string>();
 const queue: string[] = [];
+const releaseTimers = new Map<string, number>();
 let pumping = false;
 
 /**
- * Keep the gallery smooth while still showing live template content
- * for a full viewport of cards (≈2 rows × 4 columns).
+ * Warm enough live previews for a smooth gallery without freezing the tab.
+ * Cards are prefetched ahead of the viewport; release is delayed so scrolling
+ * does not constantly remount.
  */
 const BATCH_SIZE = 4;
-const BATCH_DELAY_MS = 40;
-const MAX_ACTIVE = 8;
+const BATCH_DELAY_MS = 28;
+const MAX_ACTIVE = 12;
+const RELEASE_DELAY_MS = 2000;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "")
@@ -25,6 +28,13 @@ function notify(key: string, active: boolean) {
   set.forEach((listener) => listener(active));
 }
 
+function cancelRelease(key: string) {
+  const timer = releaseTimers.get(key);
+  if (timer == null) return;
+  window.clearTimeout(timer);
+  releaseTimers.delete(key);
+}
+
 function pump() {
   if (pumping) return;
   pumping = true;
@@ -36,8 +46,7 @@ function pump() {
     }
 
     if (activated.size >= MAX_ACTIVE) {
-      // Wait for a slot — do NOT drop queued cards.
-      window.setTimeout(step, 160);
+      window.setTimeout(step, 120);
       return;
     }
 
@@ -49,6 +58,7 @@ function pump() {
     ) {
       const key = queue.shift();
       if (!key || activated.has(key)) continue;
+      cancelRelease(key);
       activated.add(key);
       notify(key, true);
       activatedThisTick += 1;
@@ -65,7 +75,7 @@ function pump() {
 }
 
 /**
- * Schedule a gallery card preview mount (viewport-driven callers).
+ * Schedule a gallery card preview mount (viewport / preload callers).
  */
 export function scheduleGalleryPreview(
   keyValue: string | null | undefined,
@@ -73,6 +83,8 @@ export function scheduleGalleryPreview(
 ) {
   const key = normalizeKey(keyValue);
   if (!key) return () => undefined;
+
+  cancelRelease(key);
 
   if (activated.has(key)) {
     return (listener: Listener) => {
@@ -120,12 +132,13 @@ export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
   if (!key) return;
 
+  cancelRelease(key);
+
   if (activated.has(key)) {
     notify(key, true);
     return;
   }
 
-  // Free one slot if needed so hover always wins.
   if (activated.size >= MAX_ACTIVE) {
     const oldest = activated.values().next().value as string | undefined;
     if (oldest && oldest !== key) {
@@ -141,21 +154,35 @@ export function prioritizeGalleryPreview(keyValue: string | null | undefined) {
   pump();
 }
 
-/** Release a card when it leaves the viewport so other cards can mount. */
+/** Release a card after a delay so fast scrolling stays warm. */
 export function releaseGalleryPreview(keyValue: string | null | undefined) {
   const key = normalizeKey(keyValue);
   if (!key || !activated.has(key)) return;
-  activated.delete(key);
-  notify(key, false);
-  // Freeing a slot — continue the queue.
-  if (queue.length) pump();
+
+  cancelRelease(key);
+  const timer = window.setTimeout(() => {
+    releaseTimers.delete(key);
+    if (!activated.has(key)) return;
+    activated.delete(key);
+    notify(key, false);
+    if (queue.length) pump();
+  }, RELEASE_DELAY_MS);
+  releaseTimers.set(key, timer);
 }
 
+/**
+ * Queue keys for warm-up ahead of scroll. Longer lists are OK — the pump
+ * respects MAX_ACTIVE and drains gradually.
+ */
 export function prefetchGalleryPreviewKeys(
   keys: Array<string | null | undefined>,
+  options?: { limit?: number; priority?: boolean },
 ) {
-  keys.slice(0, MAX_ACTIVE).forEach((key) => {
-    scheduleGalleryPreview(key);
+  const limit = Math.max(1, Number(options?.limit) || MAX_ACTIVE * 2);
+  keys.slice(0, limit).forEach((key, index) => {
+    scheduleGalleryPreview(key, {
+      priority: Boolean(options?.priority) && index < 4,
+    });
   });
 }
 
@@ -167,3 +194,5 @@ export const prefetchTemplatePreviewKeys = prefetchGalleryPreviewKeys;
 export function isGalleryPreviewActivated(keyValue: string | null | undefined) {
   return activated.has(normalizeKey(keyValue));
 }
+
+export const GALLERY_PREVIEW_MAX_ACTIVE = MAX_ACTIVE;
