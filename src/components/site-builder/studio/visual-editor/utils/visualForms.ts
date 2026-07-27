@@ -580,7 +580,7 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
 
       return `
         <div
-          class="${wrapperClass}"
+          class="${wrapperClass} min-w-0"
           data-bizuply-form-field-wrapper="true"
           data-bizuply-form-field-id="${fieldId}"
           data-bizuply-form-field-width="${width}"
@@ -606,7 +606,7 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
   `;
 
   return `
-    <div class="mb-7" data-bizuply-form-header="true">
+    <div class="mb-2 w-full shrink-0" data-bizuply-form-header="true">
       <div
         class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700"
         data-visual-editable="true"
@@ -638,23 +638,28 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
       </p>
     </div>
 
-    <div class="grid gap-x-5 gap-y-5 md:grid-cols-2" data-bizuply-form-fields="true">
+    <div
+      class="grid w-full grid-cols-1 gap-5 sm:gap-6 md:grid-cols-2"
+      data-bizuply-form-fields="true"
+    >
       ${fields.length ? fieldHtml : emptyState}
     </div>
 
-    <button
-      type="submit"
-      data-visual-editable="true"
-      data-visual-edit-id="form.submit"
-      data-visual-edit-type="button"
-      data-visual-edit-label="${submitText}"
-      class="group mt-7 inline-flex h-16 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-center text-lg font-black text-slate-800 shadow-[0_20px_50px_rgba(79,70,229,0.28)] transition hover:-translate-y-0.5 hover:shadow-[0_26px_60px_rgba(79,70,229,0.34)] focus:outline-none focus:ring-4 focus:ring-violet-200"
-    >
-      <span data-visual-ignore-select="true">${submitText}</span>
-      <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-visual-ignore-select="true">
-        <path d="m9 18 6-6-6-6"/>
-      </svg>
-    </button>
+    <div class="mt-2 w-full shrink-0" data-bizuply-form-actions="true">
+      <button
+        type="submit"
+        data-visual-editable="true"
+        data-visual-edit-id="form.submit"
+        data-visual-edit-type="button"
+        data-visual-edit-label="${submitText}"
+        class="group inline-flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-center text-base font-black text-slate-800 shadow-[0_12px_32px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(79,70,229,0.24)] focus:outline-none focus:ring-4 focus:ring-violet-200 sm:h-16 sm:text-lg"
+      >
+        <span data-visual-ignore-select="true">${submitText}</span>
+        <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-visual-ignore-select="true">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
   `;
 }
 
@@ -688,6 +693,9 @@ export function applyFormBuilderConfigToFormNode(
       inside the form card while editing (overflow-hidden made drag look broken).
     */
     "overflow-visible",
+    "flex",
+    "flex-col",
+    "gap-6",
     "rounded-[32px]",
     "border",
     "border-white/80",
@@ -695,16 +703,51 @@ export function applyFormBuilderConfigToFormNode(
     "p-6",
     "shadow-[0_28px_90px_rgba(15,23,42,0.14)]",
     "backdrop-blur",
+    "md:gap-7",
     "md:p-8",
   ];
 
   formNode.classList.remove("overflow-hidden");
+  formNode.classList.remove("grid");
+  formNode.classList.remove("flex-row");
 
   requiredClasses.forEach((className) => {
     formNode.classList.add(className);
   });
 
+  formNode.style.display = "flex";
+  formNode.style.flexDirection = "column";
+  formNode.style.gap = "1.5rem";
+
   formNode.innerHTML = buildFormBuilderDomHtml(safeForm);
+
+  // Reset absolute drag offsets so fields never stack/crowd after edits.
+  formNode
+    .querySelectorAll<HTMLElement>(
+      "[data-bizuply-form-header], [data-bizuply-form-fields], [data-bizuply-form-field-wrapper], [data-bizuply-form-actions], button[type='submit']"
+    )
+    .forEach((node) => {
+      node.style.position = "relative";
+      node.style.left = "auto";
+      node.style.top = "auto";
+      node.style.right = "auto";
+      node.style.bottom = "auto";
+      node.style.transform = "none";
+      if (node.matches("[data-bizuply-form-fields], [data-bizuply-form-actions], [data-bizuply-form-header]")) {
+        node.style.width = "100%";
+      }
+    });
+
+  const fieldsGrid = formNode.querySelector<HTMLElement>(
+    "[data-bizuply-form-fields='true']"
+  );
+  if (fieldsGrid) {
+    fieldsGrid.style.display = "grid";
+    fieldsGrid.style.width = "100%";
+    fieldsGrid.style.gap = "1.25rem";
+    // Let Tailwind md:grid-cols-2 handle breakpoints; clear stale absolute widths.
+    fieldsGrid.style.gridTemplateColumns = "";
+  }
 }
 
 export function applySavedFormBuildersToDom(

@@ -339,6 +339,8 @@ function MediaElement({
     );
   }
 
+  const fallbackSrc = resolveMedia(fallback, "");
+
   return (
     <img
       {...common}
@@ -347,6 +349,14 @@ function MediaElement({
       aria-hidden={decorative || undefined}
       loading="lazy"
       decoding="async"
+      onError={(event) => {
+        const image = event.currentTarget;
+        if (fallbackSrc && image.src !== fallbackSrc) {
+          image.src = fallbackSrc;
+          return;
+        }
+        image.style.display = "none";
+      }}
     />
   );
 }
@@ -779,14 +789,48 @@ export default function ChanelPages({
   mode = "preview",
   data,
   businessId,
+  isStudioStatic = false,
 }: ChanelPagesProps = {}) {
   const rootRef = React.useRef<HTMLElement | null>(null);
-  const { products: storeProducts, fromPlugin, currency } = useStorePluginCatalog({
+  const {
+    products: storeProducts,
+    categories: storeCategories,
+    fromPlugin,
+    currency,
+  } = useStorePluginCatalog({
     businessId,
+    enabled: !isStudioStatic,
   });
   const templateData = React.useMemo(() => {
     const merged = mergeData(data);
     if (!fromPlugin || storeProducts.length === 0) return merged;
+
+    /*
+      Keep curated category tiles from saved/template data so editor and public
+      match. Only replace products from the live store catalog.
+      If the merchant has real store categories, enrich images/names without
+      collapsing the designed 4-up grid when store has fewer categories.
+    */
+    const curatedCategories = safeArray(merged.categories);
+    const liveCategories =
+      storeCategories.length > 0
+        ? storeCategories.map((category, index) => {
+            const fallback =
+              curatedCategories[index] ||
+              chanelDefaultData.categories[
+                index % Math.max(1, chanelDefaultData.categories.length)
+              ];
+            return {
+              name: category.name || fallback?.name || "קטגוריה",
+              description:
+                fallback?.description ||
+                "קטגוריה מהחנות",
+              image: category.image || fallback?.image || "",
+              href: "/products",
+            };
+          })
+        : curatedCategories;
+
     return {
       ...merged,
       products: storeProducts.map((product) => ({
@@ -796,24 +840,21 @@ export default function ChanelPages({
         image: product.image,
         href: "/product",
       })),
+      // Prefer curated design grid when it has more tiles than live store cats.
       categories:
-        storeProducts.length > 0
-          ? Array.from(
-              new Map(
-                storeProducts.map((product) => [
-                  product.categorySlug,
-                  {
-                    name: product.category,
-                    description: "קטגוריה מתוסף החנות",
-                    image: product.image,
-                    href: "/products",
-                  },
-                ]),
-              ).values(),
-            )
-          : merged.categories,
+        curatedCategories.length >= liveCategories.length
+          ? curatedCategories.map((category, index) => {
+              const live = liveCategories[index];
+              if (!live) return category;
+              return {
+                ...category,
+                // Keep edited copy; refresh image only when curated image is empty.
+                image: category.image || live.image || "",
+              };
+            })
+          : liveCategories,
     };
-  }, [currency, data, fromPlugin, storeProducts]);
+  }, [currency, data, fromPlugin, storeCategories, storeProducts]);
   const pageId = String(activePageId || initialPage || "home");
   const stackPageId = ["products", "product", "cart"].includes(pageId)
     ? pageId

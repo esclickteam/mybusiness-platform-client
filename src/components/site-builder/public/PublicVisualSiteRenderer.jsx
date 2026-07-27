@@ -2516,6 +2516,7 @@ export default function PublicVisualSiteRenderer({
               page={pageId}
               data={visualData}
               templateData={visualData}
+              businessId={String(site?.businessId || site?.business?._id || "")}
               isPublic
               isStudioStatic={false}
             />
