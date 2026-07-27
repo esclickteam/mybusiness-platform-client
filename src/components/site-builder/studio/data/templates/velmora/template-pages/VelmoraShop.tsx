@@ -10,140 +10,29 @@ import {
 } from "lucide-react";
 
 import type { VelmoraCartInput, VelmoraPageId } from "../pages";
+import {
+  mapDemoSeedToVelmora,
+  velmoraDemoProductSeeds,
+  type VelmoraShopProduct,
+} from "../velmoraStoreCatalog";
 
 type Props = {
   onPageChange: (page: VelmoraPageId) => void;
   onAddToCart?: (item: VelmoraCartInput) => void;
+  onOpenProduct?: (productId: string) => void;
+  products?: VelmoraShopProduct[];
+  categories?: string[];
+  isLiveCatalog?: boolean;
 };
-
-type ProductCategory =
-  | "הכל"
-  | "שמלות"
-  | "חולצות"
-  | "חליפות"
-  | "מעילים"
-  | "אקססוריז"
-  | "נעליים";
 
 type SortOption = "newest" | "price-low" | "price-high" | "popular";
 
-type Product = {
-  id: string;
-  ref: string;
-  name: string;
-  category: Exclude<ProductCategory, "הכל">;
-  price: number;
-  oldPrice?: number;
-  image: string;
-  badge?: string;
-  colors: string[];
-};
+type Product = VelmoraShopProduct;
 
-const productImages = [
-  "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1591561954557-26941169b49e?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=900&q=90",
-  "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90",
-];
-
-const productNames = [
-  ["שמלת LUNA", "שמלות"],
-  ["שמלת NOA", "שמלות"],
-  ["שמלת ערב רכה", "שמלות"],
-  ["שמלת פשתן נקייה", "שמלות"],
-  ["שמלת קיץ בהירה", "שמלות"],
-  ["חולצת אטלייה", "חולצות"],
-  ["חולצת כפתורים לבנה", "חולצות"],
-  ["חולצת משי רכה", "חולצות"],
-  ["חולצת בסיס איכותית", "חולצות"],
-  ["חולצת סטודיו", "חולצות"],
-  ["חליפת LINEN", "חליפות"],
-  ["סט שחור מחויט", "חליפות"],
-  ["חליפת ערב נקייה", "חליפות"],
-  ["סט שמנת מלא", "חליפות"],
-  ["חליפת CITY", "חליפות"],
-  ["מעיל NOVA", "מעילים"],
-  ["מעיל פשתן ארוך", "מעילים"],
-  ["ז׳קט מחויט", "מעילים"],
-  ["בלייזר NORA", "מעילים"],
-  ["מעיל מעבר קל", "מעילים"],
-  ["תיק MILA", "אקססוריז"],
-  ["תיק עור קלאסי", "אקססוריז"],
-  ["חגורת עור", "אקססוריז"],
-  ["צעיף כותנה", "אקססוריז"],
-  ["תיק ערב קטן", "אקססוריז"],
-  ["נעלי LOFT", "נעליים"],
-  ["סנדלי קיץ", "נעליים"],
-  ["נעלי ערב נקיות", "נעליים"],
-  ["מוקסין עור", "נעליים"],
-  ["נעלי סטודיו", "נעליים"],
-  ["שמלת MIDI", "שמלות"],
-  ["שמלת כתפיות", "שמלות"],
-  ["שמלת מעטפת", "שמלות"],
-  ["חולצת RIB", "חולצות"],
-  ["חולצת קרם", "חולצות"],
-  ["בלייזר OLIVE", "מעילים"],
-  ["ז׳קט קצר", "מעילים"],
-  ["חליפת SOFT", "חליפות"],
-  ["סט יום־יום", "חליפות"],
-  ["תיק קניות", "אקססוריז"],
-  ["שרשרת מינימלית", "אקססוריז"],
-  ["צעיף סאטן", "אקססוריז"],
-  ["נעלי עקב נמוך", "נעליים"],
-  ["סנדלי עור", "נעליים"],
-  ["שמלת SATIN", "שמלות"],
-  ["חולצת ערב", "חולצות"],
-  ["מעיל צמר", "מעילים"],
-  ["סט TRAVEL", "חליפות"],
-  ["תיק כתף", "אקססוריז"],
-  ["נעלי CITY", "נעליים"],
-] as const;
-
-const products: Product[] = productNames.map(([name, category], index) => {
-  const basePrice = 129 + ((index * 37) % 430);
-  const price = Math.round(basePrice / 10) * 10 + 9;
-
-  return {
-    id: `velmora-product-${index + 1}`,
-    ref: `REF. VLM-${String(24001 + index)}`,
-    name,
-    category,
-    price,
-    oldPrice: index % 7 === 0 ? price + 80 : undefined,
-    image: productImages[index % productImages.length],
-    badge:
-      index % 11 === 0
-        ? "חדש"
-        : index % 8 === 0
-        ? "רב־מכר"
-        : index % 9 === 0
-        ? "מוגבל"
-        : undefined,
-    colors:
-      index % 4 === 0
-        ? ["#E8DDCC", "#2A231C", "#9C8D78"]
-        : index % 4 === 1
-        ? ["#FFFFFF", "#D8C9B6", "#111111"]
-        : index % 4 === 2
-        ? ["#B8A58C", "#5D5A43", "#EFE7DB"]
-        : ["#111111", "#CDBEA8", "#F7F2EA"],
-  };
-});
-
-const categories: ProductCategory[] = [
+const FALLBACK_PRODUCTS = velmoraDemoProductSeeds.map(mapDemoSeedToVelmora);
+const FALLBACK_CATEGORIES = [
   "הכל",
-  "שמלות",
-  "חולצות",
-  "חליפות",
-  "מעילים",
-  "אקססוריז",
-  "נעליים",
+  ...Array.from(new Set(FALLBACK_PRODUCTS.map((product) => product.category))),
 ];
 
 function Reveal({
@@ -201,12 +90,22 @@ function ProductCard({
   index,
   onPageChange,
   onAddToCart,
+  onOpenProduct,
 }: {
   product: Product;
   index: number;
   onPageChange: (page: VelmoraPageId) => void;
   onAddToCart?: (item: VelmoraCartInput) => void;
+  onOpenProduct?: (productId: string) => void;
 }) {
+  function openProduct() {
+    if (onOpenProduct) {
+      onOpenProduct(product.id);
+      return;
+    }
+    onPageChange("product");
+  }
+
   function handleAddToCart(event: React.MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -225,7 +124,7 @@ function ProductCard({
       return;
     }
 
-    onPageChange("product");
+    openProduct();
   }
 
   return (
@@ -233,7 +132,7 @@ function ProductCard({
       <article className="group relative overflow-hidden rounded-[7px] border border-black/10 bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
         <button
           type="button"
-          onClick={() => onPageChange("product")}
+          onClick={openProduct}
           className="relative block w-full overflow-hidden bg-[#eee7da]"
         >
           <img data-visual-edit-id={`shop.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`shop.products.${index}.image`} data-image-field={`shop.products.${index}.image`} data-visual-image-field={`shop.products.${index}.image`}
@@ -319,11 +218,27 @@ function ProductCard({
   );
 }
 
-export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
-  const [activeCategory, setActiveCategory] =
-    React.useState<ProductCategory>("הכל");
+export default function VelmoraShop({
+  onPageChange,
+  onAddToCart,
+  onOpenProduct,
+  products: productsProp,
+  categories: categoriesProp,
+  isLiveCatalog = false,
+}: Props) {
+  const products = productsProp?.length ? productsProp : FALLBACK_PRODUCTS;
+  const categories = categoriesProp?.length
+    ? categoriesProp
+    : FALLBACK_CATEGORIES;
+  const [activeCategory, setActiveCategory] = React.useState("הכל");
   const [query, setQuery] = React.useState("");
   const [sort, setSort] = React.useState<SortOption>("newest");
+
+  React.useEffect(() => {
+    if (!categories.includes(activeCategory)) {
+      setActiveCategory("הכל");
+    }
+  }, [activeCategory, categories]);
 
   const filteredProducts = React.useMemo(() => {
     let nextProducts = products.filter((product) => {
@@ -336,7 +251,10 @@ export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
         searchValue.length === 0 ||
         product.name.toLowerCase().includes(searchValue) ||
         product.category.toLowerCase().includes(searchValue) ||
-        product.ref.toLowerCase().includes(searchValue);
+        product.ref.toLowerCase().includes(searchValue) ||
+        String(product.sku || "")
+          .toLowerCase()
+          .includes(searchValue);
 
       return matchesCategory && matchesSearch;
     });
@@ -358,7 +276,12 @@ export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
     }
 
     return nextProducts;
-  }, [activeCategory, query, sort]);
+  }, [activeCategory, products, query, sort]);
+
+  const minPrice = products.reduce(
+    (min, product) => Math.min(min, product.price),
+    products[0]?.price || 0,
+  );
 
   return (
     <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">
@@ -377,8 +300,9 @@ export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
                 </h1>
 
                 <p className="mt-6 max-w-xl text-base leading-8 text-black/55 md:text-lg">
-                  50 פריטים לדוגמה לתצוגת חנות מלאה: שמלות, חולצות, חליפות,
-                  מעילים, אקססוריז ונעליים — עם תמונות, מחירים וכרטיסי מוצר.
+                  {isLiveCatalog
+                    ? "המוצרים כאן מגיעים מניהול החנות שלך — לחצו על פריט לצפייה, הוספה לסל ותשלום."
+                    : "תצוגת דמו זמנית. הוסיפו מוצרים בתוסף החנות (פאנל חנות בעורך) והם יופיעו כאן במקום הדמו."}
                 </p>
               </div>
 
@@ -441,10 +365,16 @@ export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
           <Reveal delay={180}>
             <div className="mt-12 grid gap-4 rounded-[8px] border border-black/10 bg-white/70 p-4 shadow-sm md:grid-cols-4">
               {[
-                ["50", "מוצרים לדוגמה"],
-                ["6", "קטגוריות"],
-                ["₪129+", "טווח מחירים"],
-                ["RTL", "מותאם עברית"],
+                [
+                  String(products.length),
+                  isLiveCatalog ? "מוצרים בחנות" : "מוצרים לדוגמה",
+                ],
+                [String(Math.max(0, categories.length - 1)), "קטגוריות"],
+                [
+                  products.length ? `₪${minPrice.toLocaleString("he-IL")}+` : "—",
+                  "טווח מחירים",
+                ],
+                [isLiveCatalog ? "LIVE" : "DEMO", isLiveCatalog ? "מחובר לחנות" : "מצב הדגמה"],
               ].map(([value, label]) => (
                 <div
                   key={label}
@@ -524,6 +454,7 @@ export default function VelmoraShop({ onPageChange, onAddToCart }: Props) {
                   index={index}
                   onPageChange={onPageChange}
                   onAddToCart={onAddToCart}
+                  onOpenProduct={onOpenProduct}
                 />
               ))}
             </div>

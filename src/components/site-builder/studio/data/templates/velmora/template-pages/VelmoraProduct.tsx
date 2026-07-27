@@ -16,11 +16,14 @@ import {
 
 import type { VelmoraCartInput, VelmoraPageId } from "../pages";
 import { velmoraGallery, velmoraProducts } from "../velmoraData";
+import type { VelmoraShopProduct } from "../velmoraStoreCatalog";
 
 type Props = {
   cartCount?: number;
   onPageChange: (page: VelmoraPageId) => void;
   onAddToCart?: (item: VelmoraCartInput) => void;
+  product?: VelmoraShopProduct | null;
+  relatedProducts?: VelmoraShopProduct[];
 };
 
 type ProductColor = {
@@ -28,7 +31,7 @@ type ProductColor = {
   value: string;
 };
 
-const selectedProduct = {
+const fallbackProduct = {
   id: "soft-column-dress",
   ref: "REF. VLM-24002",
   title: "שמלת NOA",
@@ -193,16 +196,54 @@ export default function VelmoraProduct({
   cartCount = 0,
   onPageChange,
   onAddToCart,
+  product,
+  relatedProducts,
 }: Props) {
+  const selectedProduct = React.useMemo(() => {
+    if (!product) return fallbackProduct;
+    const colors =
+      product.colors?.length > 0
+        ? product.colors.map((value, index) => ({
+            name: `גוון ${index + 1}`,
+            value,
+          }))
+        : fallbackProduct.colors;
+    return {
+      id: product.id,
+      ref: product.ref,
+      title: product.name,
+      category: product.category,
+      price: product.price,
+      oldPrice: product.oldPrice,
+      description:
+        product.description ||
+        "תיאור המוצר מהחנות שלך. ערכו את המוצר בפאנל החנות כדי לעדכן טקסט זה.",
+      mainImage: product.image || fallbackProduct.mainImage,
+      images: [product.image || fallbackProduct.mainImage],
+      colors,
+      sizes: fallbackProduct.sizes,
+    };
+  }, [product]);
+
+  const recommended = relatedProducts?.length
+    ? relatedProducts
+    : recommendedProducts;
+
   const [selectedImage, setSelectedImage] = React.useState(
-    selectedProduct.mainImage
+    selectedProduct.mainImage,
   );
   const [selectedSize, setSelectedSize] = React.useState("M");
   const [selectedColor, setSelectedColor] = React.useState<ProductColor>(
-    selectedProduct.colors[0]
+    selectedProduct.colors[0],
   );
   const [quantity, setQuantity] = React.useState(1);
   const [openDetail, setOpenDetail] = React.useState<string>("בד");
+
+  React.useEffect(() => {
+    setSelectedImage(selectedProduct.mainImage);
+    setSelectedColor(selectedProduct.colors[0]);
+    setQuantity(1);
+  }, [selectedProduct.id, selectedProduct.mainImage]);
 
   function increaseQuantity() {
     setQuantity((current) => current + 1);
@@ -322,13 +363,16 @@ export default function VelmoraProduct({
                   {formatPrice(selectedProduct.price)}
                 </p>
 
-                <p className="text-lg text-black/35 line-through">
-                  {formatPrice(selectedProduct.oldPrice)}
-                </p>
-
-                <span className="rounded-full bg-[#292318] px-3 py-1 text-xs font-bold text-white">
-                  מבצע
-                </span>
+                {selectedProduct.oldPrice ? (
+                  <>
+                    <p className="text-lg text-black/35 line-through">
+                      {formatPrice(selectedProduct.oldPrice)}
+                    </p>
+                    <span className="rounded-full bg-[#292318] px-3 py-1 text-xs font-bold text-white">
+                      מבצע
+                    </span>
+                  </>
+                ) : null}
               </div>
 
               <p className="mt-6 text-base leading-8 text-black/55">
@@ -627,7 +671,7 @@ export default function VelmoraProduct({
           </Reveal>
 
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
-            {recommendedProducts.map((product, index) => (
+            {recommended.slice(0, 4).map((product: any, index) => (
               <Reveal key={product.id} delay={index * 110}>
                 <button
                   type="button"
@@ -636,7 +680,7 @@ export default function VelmoraProduct({
                 >
                   <img data-visual-edit-id={`product.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`product.products.${index}.image`} data-image-field={`product.products.${index}.image`} data-visual-image-field={`product.products.${index}.image`}
                     src={product.image}
-                    alt={product.title}
+                    alt={product.title || product.name}
                     className="h-[350px] w-full object-cover transition duration-700 group-hover:scale-105"
                   />
 
@@ -645,13 +689,19 @@ export default function VelmoraProduct({
                       {product.ref}
                     </p>
 
-                    <h3 className="mt-2 text-xl font-bold">{product.title}</h3>
+                    <h3 className="mt-2 text-xl font-bold">
+                      {product.title || product.name}
+                    </h3>
 
                     <p className="mt-1 text-sm text-black/45">
-                      {product.subtitle}
+                      {product.subtitle || product.category || ""}
                     </p>
 
-                    <p className="mt-3 font-black">{product.price}</p>
+                    <p className="mt-3 font-black">
+                      {typeof product.price === "number"
+                        ? formatPrice(product.price)
+                        : product.price}
+                    </p>
                   </div>
                 </button>
               </Reveal>

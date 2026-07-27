@@ -23,6 +23,11 @@ import VelmoraContact from "./template-pages/VelmoraContact";
 import VelmoraProduct from "./template-pages/VelmoraProduct";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import VelmoraShell from "./components/VelmoraShell";
+import { useStorePluginCatalog } from "../shared/useStorePluginCatalog";
+import {
+  buildVelmoraShopCatalog,
+  velmoraDemoProductSeeds,
+} from "./velmoraStoreCatalog";
 
 export type VelmoraPageId =
   | "home"
@@ -928,10 +933,13 @@ type VelmoraPagesProps = {
 
   isStudioStatic?: boolean;
   isVisualEditor?: boolean;
+  businessId?: string;
   templateData?: VelmoraTemplateData;
   data?: VelmoraTemplateData;
   studioData?: VelmoraTemplateData;
 };
+
+const SELECTED_PRODUCT_KEY = "bizuply:velmora-selected-product";
 
 const VELMORA_CART_STORAGE_KEY = "bizuply:velmora-cart";
 
@@ -975,6 +983,7 @@ export default function VelmoraPages({
   onPageChange,
   isStudioStatic = false,
   isVisualEditor = false,
+  businessId,
   templateData,
   data,
   studioData,
@@ -988,6 +997,44 @@ export default function VelmoraPages({
   }, [templateData, data, studioData]);
 
   const siteRootRef = React.useRef<HTMLDivElement | null>(null);
+
+  const {
+    products: storeProducts,
+    categories: storeCategories,
+    fromPlugin,
+  } = useStorePluginCatalog({
+    businessId,
+    demoProducts: velmoraDemoProductSeeds,
+    enabled: !isStudioStatic,
+  });
+
+  const shopCatalog = React.useMemo(
+    () =>
+      buildVelmoraShopCatalog({
+        fromPlugin,
+        storeProducts,
+        storeCategories,
+      }),
+    [fromPlugin, storeCategories, storeProducts],
+  );
+
+  const [selectedProductId, setSelectedProductId] = React.useState(() => {
+    if (typeof window === "undefined") return "";
+    try {
+      return String(sessionStorage.getItem(SELECTED_PRODUCT_KEY) || "").trim();
+    } catch {
+      return "";
+    }
+  });
+
+  const selectedShopProduct =
+    shopCatalog.products.find((product) => product.id === selectedProductId) ||
+    shopCatalog.products[0] ||
+    null;
+
+  const relatedShopProducts = shopCatalog.products
+    .filter((product) => product.id !== selectedShopProduct?.id)
+    .slice(0, 4);
 
   const requestedPage = activePageId ?? pageId ?? initialPage;
 
@@ -1046,6 +1093,18 @@ export default function VelmoraPages({
     onPageChange?.(nextPage);
     setActivePage(nextPage);
     scrollTemplateToTop();
+  }
+
+  function handleOpenProduct(productId: string) {
+    const id = String(productId || "").trim();
+    if (!id) return;
+    setSelectedProductId(id);
+    try {
+      sessionStorage.setItem(SELECTED_PRODUCT_KEY, id);
+    } catch {
+      // ignore
+    }
+    handlePageChange("product");
   }
 
   function handleAddToCart(item: VelmoraCartInput) {
@@ -1170,6 +1229,10 @@ export default function VelmoraPages({
                   <VelmoraShop
                     onPageChange={handlePageChange}
                     onAddToCart={handleAddToCart}
+                    onOpenProduct={handleOpenProduct}
+                    products={shopCatalog.products}
+                    categories={shopCatalog.categories}
+                    isLiveCatalog={shopCatalog.isLive}
                   />
                 ),
               },
@@ -1192,6 +1255,8 @@ export default function VelmoraPages({
                     cartCount={cartCount}
                     onAddToCart={handleAddToCart}
                     onPageChange={handlePageChange}
+                    product={selectedShopProduct}
+                    relatedProducts={relatedShopProducts}
                   />
                 ),
               },

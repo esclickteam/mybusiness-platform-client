@@ -29,10 +29,14 @@ type StorePage = { id: string; label: string; slug: string };
 
 export type StoreCartItem = {
   id: string;
+  productId: string;
   name: string;
   price: number;
   image: string;
   qty: number;
+  variantId?: string;
+  variantLabel?: string;
+  sku?: string;
 };
 
 export type StoreSiteRuntimeProps = {
@@ -417,13 +421,36 @@ export default function StoreSiteRuntime({
         ...prev,
         {
           id: product.id,
+          productId: product.id,
           name: product.name,
           price: product.price,
           image: product.image,
           qty: amount,
+          sku: product.sku,
         },
       ];
     });
+  };
+
+  const openCheckout = () => {
+    if (typeof window === "undefined" || !cart.length) return;
+    window.dispatchEvent(
+      new CustomEvent("bizuply:open-checkout", {
+        detail: {
+          items: cart.map((item) => ({
+            productId: item.productId || item.id,
+            name: item.name,
+            price: item.price,
+            quantity: item.qty,
+            image: item.image,
+            variantId: item.variantId,
+            variantLabel: item.variantLabel,
+            sku: item.sku,
+            custom: !/^[a-f\d]{24}$/i.test(item.productId || item.id),
+          })),
+        },
+      }),
+    );
   };
 
   const pickProduct = (index: number) => {
@@ -508,7 +535,9 @@ export default function StoreSiteRuntime({
           <p className="store-display text-3xl font-black">{g("brandName")}</p>
           <p className="mt-4 max-w-md text-sm leading-7 text-white/70">{g("footerText")}</p>
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
-            {fromPlugin ? "מחובר לתוסף החנות" : "תצוגת דמו — חברו מוצרים בתוסף החנות"}
+            {fromPlugin
+              ? "מציג את המוצרים מניהול החנות שלך"
+              : "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות"}
           </p>
         </div>
         <div className="text-right">
@@ -1183,7 +1212,9 @@ export default function StoreSiteRuntime({
         <div className="mx-auto max-w-7xl">
           <p className="mb-8 text-sm text-[var(--muted)]">
             {filteredProducts.length} מוצרים
-            {fromPlugin ? " · נטענו מתוסף החנות" : " · תצוגת דמו עד שיוגדרו מוצרים בתוסף"}
+            {fromPlugin
+              ? " · המוצרים מהחנות שלך"
+              : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
           </p>
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredProducts.map((product, index) => (
@@ -1372,8 +1403,12 @@ export default function StoreSiteRuntime({
           {cart.length > 0 ? (
             <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6">
               <p className="text-xl font-black">סה"כ: {formatStorePrice(cartTotal, currency)}</p>
-              <button type="button" onClick={() => goToPage("contact")} className="bg-[var(--dark)] px-7 py-3.5 text-sm font-black text-white">
-                המשך לתשלום / יצירת קשר
+              <button
+                type="button"
+                onClick={openCheckout}
+                className="bg-[var(--dark)] px-7 py-3.5 text-sm font-black text-white"
+              >
+                המשך לתשלום
               </button>
             </div>
           ) : null}

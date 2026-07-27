@@ -260,11 +260,16 @@ export function useStorePluginCatalog(options: {
     [demoSeeds],
   );
 
-  const [products, setProducts] = useState<StoreCatalogProduct[]>(demo.products);
-  const [categories, setCategories] = useState<StoreCatalogCategory[]>(
-    demo.categories,
+  const shouldFetch =
+    options.enabled !== false && Boolean(businessId);
+
+  const [products, setProducts] = useState<StoreCatalogProduct[]>(
+    shouldFetch ? [] : demo.products,
   );
-  const [loading, setLoading] = useState(false);
+  const [categories, setCategories] = useState<StoreCatalogCategory[]>(
+    shouldFetch ? [] : demo.categories,
+  );
+  const [loading, setLoading] = useState(shouldFetch);
   const [fromPlugin, setFromPlugin] = useState(false);
   const [storeName, setStoreName] = useState("");
   const [currency, setCurrency] = useState("ILS");

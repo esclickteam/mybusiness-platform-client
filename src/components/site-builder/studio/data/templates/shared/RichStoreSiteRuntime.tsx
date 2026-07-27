@@ -1212,8 +1212,8 @@ export default function RichStoreSiteRuntime({
           </p>
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
             {fromPlugin
-              ? "מחובר לתוסף החנות"
-              : "תצוגת דמו — חברו מוצרים בתוסף החנות"}
+              ? "מציג את המוצרים מניהול החנות שלך"
+              : "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות"}
           </p>
         </div>
         <div className="text-right">
@@ -2139,8 +2139,8 @@ export default function RichStoreSiteRuntime({
             <p className="mt-2 text-sm text-[var(--muted)]">
               {filteredProducts.length} מוצרים
               {fromPlugin
-                ? " · נטענו מתוסף החנות"
-                : " · תצוגת דמו עד שיוגדרו מוצרים בתוסף"}
+                ? " · המוצרים מהחנות שלך"
+                : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
             </p>
           </div>
           <button
