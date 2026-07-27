@@ -91,6 +91,7 @@ type NovastraPagesProps = {
   onNavigate?: (pageId: string) => void;
   onPageChange?: (pageId: string) => void;
   businessId?: string;
+  isStudioStatic?: boolean;
 };
 
 const localNovastraCss = `
@@ -1843,9 +1844,11 @@ export function NovastraPages({
   onNavigate,
   onPageChange,
   businessId,
+  isStudioStatic = false,
 }: NovastraPagesProps) {
   const { products: storeProducts, fromPlugin, currency } = useStorePluginCatalog({
     businessId,
+    enabled: !isStudioStatic,
   });
   const mergedData = useMemo(() => {
     const base = mergeTemplateData(data);

@@ -225,13 +225,33 @@ function readBusinessIdFromLocation() {
   return match?.[1] ? String(match[1]).trim() : "";
 }
 
+function readBusinessIdFromDom() {
+  if (typeof document === "undefined") return "";
+  const fromAttr =
+    document
+      .querySelector("[data-business-id]")
+      ?.getAttribute("data-business-id") ||
+    document
+      .querySelector("[data-bizuply-business-id]")
+      ?.getAttribute("data-bizuply-business-id") ||
+    "";
+  if (String(fromAttr).trim()) return String(fromAttr).trim();
+
+  const fromWindow = String(
+    (window as any)?.__BIZUPLY_BUSINESS_ID__ || ""
+  ).trim();
+  return fromWindow;
+}
+
 export function useStorePluginCatalog(options: {
   businessId?: string | null;
   demoProducts?: DemoStoreProductSeed[];
   enabled?: boolean;
 }) {
   const businessId =
-    resolveBusinessId(options.businessId) || readBusinessIdFromLocation();
+    resolveBusinessId(options.businessId) ||
+    readBusinessIdFromLocation() ||
+    readBusinessIdFromDom();
 
   const demoSeeds = options.demoProducts;
   const demo = useMemo(

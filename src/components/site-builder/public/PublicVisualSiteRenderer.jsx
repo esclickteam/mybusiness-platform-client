@@ -2101,10 +2101,20 @@ export default function PublicVisualSiteRenderer({
   const hasSavedHtml = htmlResult.html.length > 20;
   const TemplateComponent = renderer?.Component || null;
   const pageId = getFallbackPageId(activePage, pathname);
+  const publicBusinessId = String(
+    site?.businessId || site?.business?._id || "",
+  ).trim();
   const publicRevision = useMemo(
     () => readPublicRevision(site, activePage),
     [site, activePage],
   );
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (publicBusinessId) {
+      window.__BIZUPLY_BUSINESS_ID__ = publicBusinessId;
+    }
+  }, [publicBusinessId]);
 
   const resolvedSeo = useMemo(() => {
     const clientResolved = resolvePageSeoMeta({
@@ -2418,6 +2428,8 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-source={htmlResult.source}
         data-bizuply-template-key={templateKey || undefined}
         data-bizuply-public-revision={publicRevision}
+        data-business-id={publicBusinessId || undefined}
+        data-bizuply-business-id={publicBusinessId || undefined}
         dir="rtl"
       >
         <PublicSeoHead
@@ -2476,6 +2488,8 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-source="template-fallback-with-saved-data"
         data-bizuply-template-key={templateKey || undefined}
         data-bizuply-public-revision={publicRevision}
+        data-business-id={publicBusinessId || undefined}
+        data-bizuply-business-id={publicBusinessId || undefined}
         dir="rtl"
       >
         <PublicSeoHead
@@ -2516,7 +2530,7 @@ export default function PublicVisualSiteRenderer({
               page={pageId}
               data={visualData}
               templateData={visualData}
-              businessId={String(site?.businessId || site?.business?._id || "")}
+              businessId={publicBusinessId}
               isPublic
               isStudioStatic={false}
             />
