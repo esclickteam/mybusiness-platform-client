@@ -5,6 +5,7 @@ import {
   type PublicStoreCategory,
   type PublicStoreProduct,
 } from "../../../../../../api/publicStoreApi";
+import { subscribeStoreCatalogChanged } from "./storeCatalogSync";
 
 export type StoreCatalogVariant = {
   id: string;
@@ -267,6 +268,15 @@ export function useStorePluginCatalog(options: {
   const [fromPlugin, setFromPlugin] = useState(false);
   const [storeName, setStoreName] = useState("");
   const [currency, setCurrency] = useState("ILS");
+  const [refreshToken, setRefreshToken] = useState(0);
+
+  useEffect(() => {
+    return subscribeStoreCatalogChanged((detail) => {
+      const changedId = String(detail.businessId || "").trim();
+      if (changedId && businessId && changedId !== businessId) return;
+      setRefreshToken((value) => value + 1);
+    });
+  }, [businessId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -330,7 +340,13 @@ export function useStorePluginCatalog(options: {
     return () => {
       cancelled = true;
     };
-  }, [businessId, demo.categories, demo.products, options.enabled]);
+  }, [
+    businessId,
+    demo.categories,
+    demo.products,
+    options.enabled,
+    refreshToken,
+  ]);
 
   return {
     businessId,

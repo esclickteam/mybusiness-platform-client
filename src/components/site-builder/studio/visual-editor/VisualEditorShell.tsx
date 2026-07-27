@@ -33,6 +33,11 @@ import VisualAiToolsPanel from "./VisualAiToolsPanel";
 import ConnectDomainModal from "../../../website/ConnectDomainModal";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import {
+  emitStoreCatalogChanged,
+  stripStoreBoundVisualImageOverrides,
+  subscribeStoreCatalogChanged,
+} from "../data/templates/shared/storeCatalogSync";
+import {
   writeVisualContentItem,
   writeVisualStyleItem,
 } from "./utils/visualData";
@@ -190,6 +195,23 @@ export default function VisualEditorShell({
       cancelled = true;
     };
   }, [siteId, overlayRefreshKey]);
+
+  useEffect(() => {
+    return subscribeStoreCatalogChanged((detail) => {
+      const changedId = String(detail.businessId || "").trim();
+      if (changedId && businessId && changedId !== businessId) return;
+
+      const current = ((editor as any)?.data || {}) as Record<string, any>;
+      const next = stripStoreBoundVisualImageOverrides(current);
+      if (next === current) return;
+
+      if (typeof (editor as any)?.replaceData === "function") {
+        (editor as any).replaceData(next);
+      } else {
+        (editor as any)?.setData?.(next);
+      }
+    });
+  }, [businessId, editor]);
 
   const siteUrlLabel = useMemo(() => {
     if (linkedCustomDomain) return `https://${linkedCustomDomain}`;
@@ -723,7 +745,11 @@ export default function VisualEditorShell({
           <VisualStorePanel
             open={sidePanelMode === "store"}
             businessId={businessId}
-            onClose={() => setSidePanelMode(null)}
+            onClose={() => {
+              setSidePanelMode(null);
+              // Refresh canvas catalog when leaving the store panel.
+              emitStoreCatalogChanged(businessId);
+            }}
           />
         ) : null}
 

@@ -848,8 +848,9 @@ export default function ChanelPages({
               if (!live) return category;
               return {
                 ...category,
-                // Keep edited copy; refresh image only when curated image is empty.
-                image: category.image || live.image || "",
+                name: live.name || category.name,
+                // Prefer live store category image so admin uploads show in editor.
+                image: live.image || category.image || "",
               };
             })
           : liveCategories,
@@ -1228,7 +1229,7 @@ function ProductsSection({ data }: SharedProps) {
         <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
           {safeArray(data.products).map((item, index) => (
             <article
-              key={`product-${index}`}
+              key={`product-${index}-${item.image || item.name}`}
               data-revealed="false"
               className={`${REVEAL_CLASS} group`}
               style={{ transitionDelay: `${index * 70}ms` }}

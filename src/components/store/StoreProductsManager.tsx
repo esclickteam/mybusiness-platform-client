@@ -26,6 +26,7 @@ import {
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import { emitStoreCatalogChanged } from "../site-builder/studio/data/templates/shared/storeCatalogSync";
 
 type StoreView =
   | "products"
@@ -870,6 +871,7 @@ export default function StoreProductsManager({
 
       resetProductForm();
       await loadStoreData();
+      emitStoreCatalogChanged(businessId);
       setView("products");
 
       showMessage(
@@ -943,6 +945,7 @@ export default function StoreProductsManager({
     try {
       await API.delete(`/store/${businessId}/products/${productId}`);
       await loadStoreData();
+      emitStoreCatalogChanged(businessId);
       showMessage("success", "המוצר נמחק");
     } catch (err) {
       console.error("Delete product error:", err);
@@ -992,6 +995,7 @@ export default function StoreProductsManager({
 
       resetCategoryForm();
       await loadStoreData();
+      emitStoreCatalogChanged(businessId);
 
       showMessage(
         "success",
@@ -1029,6 +1033,7 @@ export default function StoreProductsManager({
     try {
       await API.delete(`/store/${businessId}/categories/${categoryId}`);
       await loadStoreData();
+      emitStoreCatalogChanged(businessId);
       showMessage("success", "הקטגוריה נמחקה");
     } catch (err) {
       console.error("Delete category error:", err);
