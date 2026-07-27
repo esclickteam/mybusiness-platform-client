@@ -25,6 +25,7 @@ import {
 import PublicSitePluginOverlays from "./PublicSitePluginOverlays";
 import { mergeCountdownSettings } from "./countdownPublicUtils";
 import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
+import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import {
   applyAllVisualDataToDom,
   prepareAllVideosInDom,
@@ -1761,6 +1762,14 @@ function applyPublicVisualData(root, visualData, pathname, site) {
       mergeCountdownSettings(site?.pluginSettings?.countdown),
     );
   }
+
+  mountPublicLeadForms(root, {
+    slug: safeString(site?.slug),
+    businessId: safeString(site?.businessId || site?.business?._id),
+    host:
+      typeof window !== "undefined" ? safeString(window.location.host) : "",
+    pagePath: normalizePublicPath(pathname || getCurrentPathname()),
+  });
 }
 
 function getFallbackPageId(activePage, pathname) {

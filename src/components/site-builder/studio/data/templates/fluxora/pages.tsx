@@ -682,10 +682,9 @@ function AboutSection({ data }: { data: Record<string, any> }) {
 
 function ContactSection({
   data,
-  openBooking,
 }: {
   data: Record<string, any>;
-  openBooking: () => void;
+  openBooking?: () => void;
 }) {
   const info = [
     ["טלפון", getValue(data, "phone")],
@@ -712,27 +711,43 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] border border-white/8 bg-[#070b10]/70 p-6 lg:m-6 lg:p-8">
+        <form
+          className="m-4 rounded-[30px] border border-white/8 bg-[#070b10]/70 p-6 lg:m-6 lg:p-8"
+          data-bizuply-block="lead-form"
+          data-bizuply-form-id="fluxora-contact"
+          data-bizuply-crm-lead="true"
+          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
+        >
           <div className="grid gap-4">
             <input
+              name="name"
+              autoComplete="name"
+              data-bizuply-form-field-id="name"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="שם מלא"
             />
             <input
+              name="email"
+              type="email"
+              autoComplete="email"
+              data-bizuply-form-field-id="email"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="אימייל עבודה"
             />
             <input
+              name="company"
+              data-bizuply-form-field-id="company"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="שם החברה"
             />
             <textarea
+              name="message"
+              data-bizuply-form-field-id="message"
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="ספרו לנו על הצוות שלכם"
             />
             <button
-              type="button"
-              onClick={openBooking}
+              type="submit"
               className="rounded-full bg-[#3dffa8] px-7 py-4 text-base font-bold text-[#07110c]"
             >
               {getValue(data, "contactButton")}

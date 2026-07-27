@@ -1310,6 +1310,7 @@
         "allSources": "All sources",
         "metaOnly": "Meta",
         "googleOnly": "Google Ads",
+        "websiteOnly": "Website lead",
         "otherSources": "Other"
       },
       "stats": {
@@ -1347,9 +1348,11 @@
       "sources": {
         "metaLeadAds": "Meta Lead Ads",
         "googleAds": "Google Ads leads",
+        "website": "Website lead",
         "manual": "Manual",
         "metaForm": "Meta Lead Ads form",
         "googleForm": "Google Ads lead form",
+        "websiteForm": "Website form",
         "manualLead": "Manual lead"
       },
       "adNetworks": {

@@ -1309,6 +1309,7 @@
         "allSources": "כל המקורות",
         "metaOnly": "Meta",
         "googleOnly": "Google Ads",
+        "websiteOnly": "ליד מהאתר",
         "otherSources": "אחר"
       },
       "stats": {
@@ -1347,9 +1348,11 @@
       "sources": {
         "metaLeadAds": "מודעות לידים של Meta",
         "googleAds": "מודעות לידים של Google",
+        "website": "ליד מהאתר",
         "manual": "ידני",
         "metaForm": "טופס מודעות לידים של Meta",
         "googleForm": "טופס לידים של Google Ads",
+        "websiteForm": "טופס מהאתר",
         "manualLead": "ליד ידני"
       },
       "adNetworks": {

@@ -1164,31 +1164,31 @@ function leadFormFieldSlot(
 
 export function leadForm(buttonText = "שליחת פרטים") {
   return `
-<form class="relative grid gap-4 overflow-visible" data-bizuply-block="lead-form" data-bizuply-form-id="lead-form">
+<form class="relative grid gap-4 overflow-visible" data-bizuply-block="lead-form" data-bizuply-form-id="lead-form" data-bizuply-crm-lead="true">
   ${leadFormFieldSlot(
     "name",
     "שדה שם מלא",
-    `<input class="${inputClass("rounded")}" placeholder="שם מלא" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass("rounded")}" name="name" autocomplete="name" placeholder="שם מלא" data-bizuply-form-field-id="name" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "phone",
     "שדה טלפון",
-    `<input class="${inputClass("rounded")}" placeholder="טלפון" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass("rounded")}" name="phone" type="tel" autocomplete="tel" placeholder="טלפון" data-bizuply-form-field-id="phone" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "email",
     "שדה אימייל",
-    `<input class="${inputClass("rounded")}" placeholder="אימייל" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass("rounded")}" name="email" type="email" autocomplete="email" placeholder="אימייל" data-bizuply-form-field-id="email" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "message",
     "שדה הודעה",
-    `<textarea class="${textareaClass("rounded")}" placeholder="במה אפשר לעזור?" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input"></textarea>`,
+    `<textarea class="${textareaClass("rounded")}" name="message" placeholder="במה אפשר לעזור?" data-bizuply-form-field-id="message" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input"></textarea>`,
   )}
   ${leadFormFieldSlot(
     "submit",
     "כפתור שליחה",
-    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
+    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center [border-radius:var(--biz-button-radius,18px)] bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="submit" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
   )}
 </form>
 `;
@@ -1199,31 +1199,31 @@ export function shapedLeadForm(
   shape: VariantShape = "rect"
 ) {
   return `
-<form class="relative grid gap-4 overflow-visible" data-bizuply-block="lead-form" data-bizuply-form-id="lead-form" data-bizuply-shape="${shape}">
+<form class="relative grid gap-4 overflow-visible" data-bizuply-block="lead-form" data-bizuply-form-id="lead-form" data-bizuply-crm-lead="true" data-bizuply-shape="${shape}">
   ${leadFormFieldSlot(
     "name",
     "שדה שם מלא",
-    `<input class="${inputClass(shape)}" placeholder="שם מלא" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass(shape)}" name="name" autocomplete="name" placeholder="שם מלא" data-bizuply-form-field-id="name" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "phone",
     "שדה טלפון",
-    `<input class="${inputClass(shape)}" placeholder="טלפון" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass(shape)}" name="phone" type="tel" autocomplete="tel" placeholder="טלפון" data-bizuply-form-field-id="phone" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "email",
     "שדה אימייל",
-    `<input class="${inputClass(shape)}" placeholder="אימייל" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
+    `<input class="${inputClass(shape)}" name="email" type="email" autocomplete="email" placeholder="אימייל" data-bizuply-form-field-id="email" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input" />`,
   )}
   ${leadFormFieldSlot(
     "message",
     "שדה הודעה",
-    `<textarea class="${textareaClass(shape)}" placeholder="במה אפשר לעזור?" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input"></textarea>`,
+    `<textarea class="${textareaClass(shape)}" name="message" placeholder="במה אפשר לעזור?" data-bizuply-form-field-id="message" data-editable-input="true" data-visual-editable="true" data-visual-edit-type="input"></textarea>`,
   )}
   ${leadFormFieldSlot(
     "submit",
     "כפתור שליחה",
-    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="button" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
+    `<button class="${buttonSafeClass} inline-flex min-h-[56px] w-full items-center justify-center ${token(shape, "button")} bg-gradient-to-l from-[var(--biz-primary,#7C3AED)] to-[var(--biz-accent,#EC4899)] px-8 text-sm font-black text-black shadow-xl" type="submit" data-editable="button" data-visual-editable="true" data-visual-edit-type="button">${buttonText}</button>`,
   )}
 </form>
 `;

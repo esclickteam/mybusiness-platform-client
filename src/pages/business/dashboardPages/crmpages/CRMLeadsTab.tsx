@@ -473,9 +473,15 @@ function isMetaLead(lead: Lead) {
   );
 }
 
+function isWebsiteLead(lead: Lead) {
+  const source = String(lead.source || lead.provider || "").toLowerCase();
+  return source === "website" || source.includes("website") || source.includes("site");
+}
+
 function getLeadSourceLabel(lead: Lead, t: TFunction) {
   if (isGoogleLead(lead)) return t("crm.leads.sources.googleAds");
   if (isMetaLead(lead)) return t("crm.leads.sources.metaLeadAds");
+  if (isWebsiteLead(lead)) return t("crm.leads.sources.website");
 
   return lead.source || lead.provider || t("crm.leads.sources.manual");
 }
@@ -491,7 +497,9 @@ function getLeadFormName(lead: Lead, t: TFunction) {
       ? t("crm.leads.sources.googleForm")
       : isMetaLead(lead)
         ? t("crm.leads.sources.metaForm")
-        : lead.source) ||
+        : isWebsiteLead(lead)
+          ? t("crm.leads.sources.websiteForm")
+          : lead.source) ||
     t("crm.leads.sources.manualLead")
   );
 }
@@ -729,6 +737,7 @@ function SourceBadge({ lead }: { lead: Lead }) {
   const sourceLabel = getLeadSourceLabel(lead, t);
   const google = isGoogleLead(lead);
   const meta = isMetaLead(lead);
+  const website = isWebsiteLead(lead);
 
   return (
     <div className="flex min-w-0 flex-col items-start gap-1">
@@ -737,6 +746,8 @@ function SourceBadge({ lead }: { lead: Lead }) {
           <Globe2 className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
         ) : meta ? (
           <Webhook className="h-3.5 w-3.5 shrink-0 text-sky-700" />
+        ) : website ? (
+          <Globe2 className="h-3.5 w-3.5 shrink-0 text-violet-600" />
         ) : (
           <Globe2 className="h-3.5 w-3.5 shrink-0 text-slate-500" />
         )}
@@ -785,7 +796,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | LeadStatus>("all");
   const [sourceFilter, setSourceFilter] = useState<
-    "all" | "meta" | "google" | "other"
+    "all" | "meta" | "google" | "website" | "other"
   >("all");
   const [viewMode, setViewMode] = useState<"list" | "board">("list");
   const [currentPage, setCurrentPage] = useState(1);
@@ -1148,11 +1159,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
         const meta = isMetaLead(lead);
         const google = isGoogleLead(lead);
+        const website = isWebsiteLead(lead);
         const matchesSource =
           sourceFilter === "all" ||
           (sourceFilter === "meta" && meta) ||
           (sourceFilter === "google" && google) ||
-          (sourceFilter === "other" && !meta && !google);
+          (sourceFilter === "website" && website) ||
+          (sourceFilter === "other" && !meta && !google && !website);
 
         return matchesSearch && matchesStatus && matchesSource;
       })
@@ -1591,7 +1604,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     value={sourceFilter}
                     onChange={(event) =>
                       setSourceFilter(
-                        event.target.value as "all" | "meta" | "google" | "other"
+                        event.target.value as
+                          | "all"
+                          | "meta"
+                          | "google"
+                          | "website"
+                          | "other"
                       )
                     }
                     className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-700 outline-none"
@@ -1599,6 +1617,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <option value="all">{t("crm.leads.filters.allSources")}</option>
                     <option value="meta">{t("crm.leads.filters.metaOnly")}</option>
                     <option value="google">{t("crm.leads.filters.googleOnly")}</option>
+                    <option value="website">{t("crm.leads.filters.websiteOnly")}</option>
                     <option value="other">{t("crm.leads.filters.otherSources")}</option>
                   </select>
 
@@ -1686,7 +1705,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     value={sourceFilter}
                     onChange={(event) =>
                       setSourceFilter(
-                        event.target.value as "all" | "meta" | "google" | "other"
+                        event.target.value as
+                          | "all"
+                          | "meta"
+                          | "google"
+                          | "website"
+                          | "other"
                       )
                     }
                     className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 outline-none"
@@ -1694,6 +1718,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <option value="all">{t("crm.leads.filters.allSources")}</option>
                     <option value="meta">{t("crm.leads.filters.metaOnly")}</option>
                     <option value="google">{t("crm.leads.filters.googleOnly")}</option>
+                    <option value="website">{t("crm.leads.filters.websiteOnly")}</option>
                     <option value="other">{t("crm.leads.filters.otherSources")}</option>
                   </select>
 
