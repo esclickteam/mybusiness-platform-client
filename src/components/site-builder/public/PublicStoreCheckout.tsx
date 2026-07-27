@@ -349,7 +349,7 @@ export default function PublicStoreCheckout({
       if (!checkoutReady) {
         setMessage({
           type: "error",
-          text: "אין ספק תשלום מחובר. חברו PayPal או Stripe בלשונית תשלומים בניהול האתר.",
+          text: "אין ספק תשלום מחובר. חברו ספק תשלום בלשונית תשלומים בניהול האתר.",
         });
       } else {
         setMessage(null);
@@ -541,7 +541,7 @@ export default function PublicStoreCheckout({
     if (!checkoutReady || !checkoutProvider) {
       setMessage({
         type: "error",
-        text: "אין ספק תשלום מחובר. חברו ספק בלשונית תשלומים.",
+        text: "אין ספק תשלום מחובר. חברו ספק תשלום בלשונית תשלומים בניהול האתר.",
       });
       return;
     }

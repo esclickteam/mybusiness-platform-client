@@ -7175,7 +7175,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return {
         ok: false,
         slug: clean,
-        message: "כתובת האתר חייבת להיות באנגלית, מספרים ומקף בלבד. לדוגמה: beneshet",
+        message: "כתובת האתר חייבת להיות באנגלית, מספרים ומקף בלבד",
       };
     }
 
@@ -8064,7 +8064,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       }
                     }}
                     dir="ltr"
-                    placeholder="beneshet"
+                    placeholder=""
                     className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-800 outline-none"
                     autoFocus
                   />
@@ -8082,9 +8082,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     </span>
                   ) : publishSlugError ? (
                     <span className="text-rose-600">{publishSlugError}</span>
-                  ) : (
-                    <span className="text-slate-400">לדוגמה: beneshet, hadar-beauty, servora-electric</span>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="mt-5 rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-4">
