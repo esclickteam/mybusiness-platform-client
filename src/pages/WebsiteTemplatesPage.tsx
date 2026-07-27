@@ -130,7 +130,7 @@ const GALLERY_PAGE_SIZE = 36;
  */
 const GALLERY_IDLE_CAP = 213;
 /** Live previews warmed immediately for the first viewport rows. */
-const GALLERY_PRELOAD_LIVE = 24;
+const GALLERY_PRELOAD_LIVE = 32;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -1150,19 +1150,10 @@ export default function WebsiteTemplatesPage() {
                                     <TemplateCardPreview
                                       templateKey={template.key}
                                       title={template.name}
-                                      coverImage={coverImage || undefined}
                                       eager={index < GALLERY_PRELOAD_LIVE}
                                     />
-                                  ) : coverImage ? (
-                                    <img
-                                      src={coverImage}
-                                      alt={template.name}
-                                      loading={index < 12 ? "eager" : "lazy"}
-                                      decoding="async"
-                                      className="h-full w-full object-cover object-top transition duration-[3.5s] ease-out group-hover:object-bottom"
-                                    />
                                   ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-[#f9fafb]">
+                                    <div className="flex h-full w-full items-center justify-center bg-[#eef1f4]">
                                       <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
                                     </div>
                                   )}

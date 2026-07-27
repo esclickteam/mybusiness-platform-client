@@ -7,14 +7,13 @@ const releaseTimers = new Map<string, number>();
 let pumping = false;
 
 /**
- * Fast gallery warm-up: enough concurrent live mounts for ~2–3 rows,
- * short batch delay so cards fill almost together while scrolling stays smooth.
- * Cover images fill every other card so nothing looks blank.
+ * Live-only gallery: keep enough concurrent mounts for several rows so cards
+ * show the real template (not stock covers) as you scroll.
  */
-const BATCH_SIZE = 8;
-const BATCH_DELAY_MS = 12;
-const MAX_ACTIVE = 24;
-const RELEASE_DELAY_MS = 1200;
+const BATCH_SIZE = 10;
+const BATCH_DELAY_MS = 8;
+const MAX_ACTIVE = 32;
+const RELEASE_DELAY_MS = 1800;
 
 function normalizeKey(value: string | null | undefined) {
   return String(value || "")

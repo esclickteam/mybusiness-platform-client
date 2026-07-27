@@ -13,7 +13,7 @@ import {
 type TemplateCardPreviewProps = {
   templateKey: string;
   title?: string;
-  /** Shown immediately so the card is never blank while live mounts. */
+  /** @deprecated Covers removed — live template only. Kept for call-site compat. */
   coverImage?: string;
   /** Priority queue for above-the-fold cards. */
   eager?: boolean;
@@ -28,35 +28,6 @@ function normalizeKey(value: string | null | undefined) {
   return String(value || "")
     .trim()
     .toLowerCase();
-}
-
-function isCoverUrl(value: unknown) {
-  const src = String(value || "").trim();
-  return /^https?:\/\//i.test(src) || src.startsWith("/") ? src : "";
-}
-
-function pickCoverFromData(data: Record<string, any> | null | undefined) {
-  if (!data || typeof data !== "object") return "";
-  const candidates = [
-    data.previewImage,
-    data.previewImageUrl,
-    data.thumbnailUrl,
-    data.image,
-    data.heroImage,
-    data.coverImage,
-    data.hero?.image,
-    data.hero?.backgroundImage,
-    data.home?.hero?.image,
-    data.images?.hero,
-    Array.isArray(data.images?.hero) ? data.images.hero[0] : "",
-    Array.isArray(data.products) ? data.products[0]?.image : "",
-    Array.isArray(data.gallery) ? data.gallery[0] : "",
-  ];
-  for (const value of candidates) {
-    const src = isCoverUrl(value);
-    if (src) return src;
-  }
-  return "";
 }
 
 export function canRenderTemplatePreview(
@@ -90,50 +61,22 @@ class PreviewErrorBoundary extends Component<
   }
 }
 
-function CardCover({
-  src,
-  title,
-  loading = false,
-}: {
-  src?: string;
-  title?: string;
-  loading?: boolean;
-}) {
-  if (src) {
-    return (
-      <img
-        src={src}
-        alt={title || ""}
-        loading="eager"
-        decoding="async"
-        className="absolute inset-0 h-full w-full object-cover object-top"
-      />
-    );
-  }
-
+function LivePlaceholder({ title }: { title?: string }) {
   return (
-    <div
-      className={`absolute inset-0 flex items-end justify-start bg-gradient-to-br from-slate-200 via-slate-100 to-slate-300 p-4 ${
-        loading ? "animate-pulse" : ""
-      }`}
-    >
-      <div className="rounded-md bg-white/80 px-3 py-2 text-xs font-black text-slate-700 shadow-sm">
-        {title || "תבנית"}
-      </div>
+    <div className="absolute inset-0 flex items-end justify-start bg-[#e8ecf1] p-4">
+      <div className="h-2 w-24 animate-pulse rounded bg-slate-300/80" />
+      <span className="sr-only">{title || "טוען תצוגה"}</span>
     </div>
   );
 }
 
 /**
- * Gallery card:
- * - cover image immediately (every card filled, never blank)
- * - live React preview mounts for in-viewport cards (scheduled)
- * - hover prioritizes + auto-scrolls the live canvas
+ * Gallery card — live template canvas only (no stock cover photos).
+ * Mounts when in viewport / eager / hover via the shared scheduler.
  */
 export default function TemplateCardPreview({
   templateKey,
   title,
-  coverImage,
   eager = false,
 }: TemplateCardPreviewProps) {
   const key = normalizeKey(templateKey);
@@ -155,13 +98,6 @@ export default function TemplateCardPreview({
     [key],
   );
   const canLive = Boolean(renderer?.Component);
-  const resolvedCover = useMemo(() => {
-    const fromProp = String(coverImage || "").trim();
-    if (fromProp) return fromProp;
-    return pickCoverFromData(
-      (renderer?.defaultData || {}) as Record<string, any>,
-    );
-  }, [coverImage, renderer?.defaultData]);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -191,19 +127,17 @@ export default function TemplateCardPreview({
       ([entry]) => {
         setInView(entry.isIntersecting || entry.intersectionRatio > 0);
       },
-      // Warm a couple of rows ahead so scrolling never shows blank live slots.
-      { rootMargin: "900px 0px", threshold: 0.01 },
+      { rootMargin: "1200px 0px", threshold: 0.01 },
     );
 
     observer.observe(frame);
     return () => observer.disconnect();
   }, []);
 
-  // Live mount for viewport cards; hover/pin always wins the queue.
   useEffect(() => {
     if (!key || !canLive || mountFailed) return;
 
-    const wantsLive = inView || hovering || pinned;
+    const wantsLive = inView || hovering || pinned || eager;
 
     if (!wantsLive) {
       releaseGalleryPreview(key);
@@ -220,7 +154,7 @@ export default function TemplateCardPreview({
       };
     }
 
-    const subscribe = scheduleGalleryPreview(key, { priority: false });
+    const subscribe = scheduleGalleryPreview(key, { priority: inView });
     return subscribe((isActive) => {
       setActive(isActive);
       if (!isActive) setLiveReady(false);
@@ -243,7 +177,7 @@ export default function TemplateCardPreview({
     };
 
     const raf = window.requestAnimationFrame(measure);
-    const timer = window.setTimeout(measure, 60);
+    const timer = window.setTimeout(measure, 40);
 
     if (typeof ResizeObserver !== "undefined") {
       const observer = new ResizeObserver(measure);
@@ -280,14 +214,6 @@ export default function TemplateCardPreview({
     ? Math.min(7.5, Math.max(3.2, maxScroll / 180))
     : 1.15;
 
-  const cover = (
-    <CardCover
-      src={resolvedCover}
-      title={title}
-      loading={canLive && inView && !liveReady}
-    />
-  );
-
   const beginHover = () => {
     setHovering(true);
     if (key) prioritizeGalleryPreview(key);
@@ -322,18 +248,11 @@ export default function TemplateCardPreview({
         setScrolling(true);
       }}
     >
-      {/* Cover always present — never leave a blank card. */}
-      <div
-        className={`absolute inset-0 transition-opacity duration-150 ${
-          shouldMount && liveReady ? "opacity-0" : "opacity-100"
-        }`}
-      >
-        {cover}
-      </div>
+      {!shouldMount || !liveReady ? <LivePlaceholder title={title} /> : null}
 
       {shouldMount && Component ? (
         <PreviewErrorBoundary
-          fallback={<div className="absolute inset-0">{cover}</div>}
+          fallback={<LivePlaceholder title={title} />}
           onError={() => setMountFailed(true)}
         >
           <>
@@ -363,7 +282,7 @@ export default function TemplateCardPreview({
             `}</style>
 
             <div
-              className={`pointer-events-none absolute left-1/2 top-0 will-change-transform transition-opacity duration-150 ${
+              className={`pointer-events-none absolute left-1/2 top-0 will-change-transform ${
                 liveReady ? "opacity-100" : "opacity-0"
               }`}
               style={{
@@ -373,7 +292,7 @@ export default function TemplateCardPreview({
                   isScrolling ? -maxScroll : 0
                 }px) scale(${scale})`,
                 transformOrigin: "top center",
-                transition: `transform ${scrollDuration}s cubic-bezier(0.22, 0.61, 0.36, 1), opacity 0.15s ease`,
+                transition: `transform ${scrollDuration}s cubic-bezier(0.22, 0.61, 0.36, 1)`,
               }}
             >
               <div
