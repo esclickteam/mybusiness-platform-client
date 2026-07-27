@@ -32,6 +32,7 @@ import {
   didOnlyDomAppliedVisualKeysChange,
   didOnlyVisualSectionOrderChange,
 } from "./utils/visualSectionOrder";
+import { subscribeStoreCatalogChanged } from "../data/templates/shared/storeCatalogSync";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -995,6 +996,17 @@ export default function VisualEditorCanvas({
     setTemplateEpoch((value) => value + 1);
     setDomPatchEpoch((value) => value + 1);
   }, [sitePagesTitleSignature]);
+
+  useEffect(() => {
+    return subscribeStoreCatalogChanged((detail) => {
+      const changedId = String(detail.businessId || "").trim();
+      const currentId = String(editorAny.businessId || "").trim();
+      if (changedId && currentId && changedId !== currentId) return;
+      // Force a full template remount so product images rebind from the live shop.
+      setTemplateEpoch((value) => value + 1);
+      setDomPatchEpoch((value) => value + 1);
+    });
+  }, [editorAny.businessId]);
 
   const templateElement = useMemo(() => {
     if (!TemplateComponent) return null;

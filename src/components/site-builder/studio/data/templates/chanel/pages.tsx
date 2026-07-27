@@ -837,8 +837,9 @@ export default function ChanelPages({
         name: product.name,
         price: formatStorePrice(product.price, currency),
         tag: product.badge,
-        image: product.image,
-        href: "/product",
+        // Prefer live store image; never keep empty string that triggers demo fallback.
+        image: product.image || "",
+        href: product.href || "/product",
       })),
       // Prefer curated design grid when it has more tiles than live store cats.
       categories:

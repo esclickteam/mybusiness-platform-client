@@ -35,27 +35,37 @@ export function subscribeStoreCatalogChanged(
 
 /** Visual content keys that mirror live store fields and must not block refresh. */
 export function isStoreBoundVisualContentKey(key: string) {
-  return /^(products|categories)\.\d+\.image$/.test(String(key || "").trim());
+  const normalized = String(key || "").trim();
+  return (
+    /^products\.\d+\.(image|name|price|tag|card)$/.test(normalized) ||
+    /^categories\.\d+\.image$/.test(normalized)
+  );
 }
 
 export function stripStoreBoundVisualImageOverrides(
   data: Record<string, any> | null | undefined,
 ) {
   if (!data || typeof data !== "object") return data;
-  const content = data.__content;
-  if (!content || typeof content !== "object") return data;
 
   let changed = false;
-  const nextContent: Record<string, any> = { ...content };
-  Object.keys(nextContent).forEach((key) => {
-    if (!isStoreBoundVisualContentKey(key)) return;
-    delete nextContent[key];
-    changed = true;
-  });
+  const next: Record<string, any> = { ...data };
 
-  if (!changed) return data;
-  return {
-    ...data,
-    __content: nextContent,
-  };
+  const content = data.__content;
+  if (content && typeof content === "object") {
+    const nextContent: Record<string, any> = { ...content };
+    Object.keys(nextContent).forEach((key) => {
+      if (!isStoreBoundVisualContentKey(key)) return;
+      delete nextContent[key];
+      changed = true;
+    });
+    if (changed) next.__content = nextContent;
+  }
+
+  // Drop baked-in product arrays so the live store catalog wins on refresh.
+  if (Array.isArray(next.products)) {
+    delete next.products;
+    changed = true;
+  }
+
+  return changed ? next : data;
 }
