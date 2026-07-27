@@ -818,12 +818,47 @@ export default function StoreProductsManager({
           );
           return;
         }
+        if (key === "categoryId") {
+          // Empty string breaks Mongo ObjectId casting on the server.
+          formData.append("categoryId", String(value || "").trim());
+          return;
+        }
         if (typeof value === "boolean") {
           formData.append(key, value ? "true" : "false");
           return;
         }
         formData.append(key, String(value));
       });
+
+      // Always send inventory fields explicitly so they never get dropped.
+      formData.set("sku", String(productForm.sku ?? "").trim());
+      formData.set(
+        "stock",
+        String(
+          Math.max(
+            0,
+            Number(
+              Array.isArray(productForm.variants) &&
+                productForm.variants.length > 0
+                ? productForm.variants.reduce(
+                    (sum: number, variant: any) =>
+                      sum + Math.max(0, Number(variant?.stock || 0)),
+                    0
+                  )
+                : productForm.stock || 0
+            ) || 0
+          )
+        )
+      );
+      formData.set("status", String(productForm.status || "active"));
+      formData.set(
+        "trackStock",
+        productForm.trackStock === false ? "false" : "true"
+      );
+      formData.set(
+        "allowBackorder",
+        productForm.allowBackorder ? "true" : "false"
+      );
 
       let existingImages: string[] = [];
       try {
@@ -857,15 +892,13 @@ export default function StoreProductsManager({
         formData.append("imageFiles", file);
       });
 
+      // Do not force Content-Type — axios must set the multipart boundary.
       const request = editingProductId
         ? API.put(
             `/store/${businessId}/products/${editingProductId}`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
+            formData
           )
-        : API.post(`/store/${businessId}/products`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+        : API.post(`/store/${businessId}/products`, formData);
 
       await request;
 
@@ -984,12 +1017,9 @@ export default function StoreProductsManager({
       const request = editingCategoryId
         ? API.put(
             `/store/${businessId}/categories/${editingCategoryId}`,
-            formData,
-            { headers: { "Content-Type": "multipart/form-data" } }
+            formData
           )
-        : API.post(`/store/${businessId}/categories`, formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          });
+        : API.post(`/store/${businessId}/categories`, formData);
 
       await request;
 
