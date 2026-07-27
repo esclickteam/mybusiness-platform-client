@@ -800,6 +800,16 @@ export default function StoreProductsManager({
 
       Object.entries(productForm).forEach(([key, value]) => {
         if (value === undefined || value === null) return;
+        // Keep URL lists and file uploads on separate fields to avoid multer collisions.
+        if (
+          key === "images" ||
+          key === "imageIds" ||
+          key === "mainImage" ||
+          key === "existingImages" ||
+          key === "existingImageIds"
+        ) {
+          return;
+        }
         if (key === "variants") {
           formData.append(
             "variants",
@@ -814,8 +824,36 @@ export default function StoreProductsManager({
         formData.append(key, String(value));
       });
 
+      let existingImages: string[] = [];
+      try {
+        const parsed = JSON.parse(String(productForm.images || "[]"));
+        existingImages = Array.isArray(parsed)
+          ? parsed.filter(
+              (url) => typeof url === "string" && /^https?:\/\//i.test(url)
+            )
+          : [];
+      } catch {
+        existingImages = [];
+      }
+
+      let existingImageIds: string[] = [];
+      try {
+        const parsed = JSON.parse(String(productForm.imageIds || "[]"));
+        existingImageIds = Array.isArray(parsed)
+          ? parsed.filter((id) => typeof id === "string" && id.trim())
+          : [];
+      } catch {
+        existingImageIds = [];
+      }
+
+      formData.append("existingImages", JSON.stringify(existingImages));
+      formData.append("existingImageIds", JSON.stringify(existingImageIds));
+      if (existingImages[0]) {
+        formData.append("mainImage", existingImages[0]);
+      }
+
       productImages.forEach((file) => {
-        formData.append("images", file);
+        formData.append("imageFiles", file);
       });
 
       const request = editingProductId
@@ -2095,7 +2133,7 @@ function ProductFormView({
             התמונה הראשונה תהיה התמונה הראשית בגריד החנות.
           </p>
 
-          <label className="mt-5 flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-[28px] border border-dashed border-violet-200 bg-violet-50/40 p-6 text-center transition hover:bg-violet-50">
+          <label className="mt-5 flex min-h-[180px] cursor-pointer flex-col items-center justify-center rounded-[28px] border border-dashed border-violet-200 bg-violet-50/40 p-6 text-center transition hover:bg-violet-50">
             <ImagePlus size={36} className="text-violet-600" />
             <span className="mt-3 text-sm font-black text-slate-800">
               העלאת תמונות
@@ -2114,20 +2152,79 @@ function ProductFormView({
             />
           </label>
 
-          {productImages.length > 0 && (
-            <div className="mt-4 grid grid-cols-3 gap-2">
-              {productImages.map((file, index) => (
-                <div
-                  key={`${file.name}-${index}`}
-                  className="relative aspect-square overflow-hidden rounded-2xl bg-slate-100"
-                >
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt=""
-                    className="h-full w-full object-cover"
-                  />
+          {(() => {
+            let existing: string[] = [];
+            try {
+              const parsed = JSON.parse(String(productForm.images || "[]"));
+              existing = Array.isArray(parsed)
+                ? parsed.filter(
+                    (url) =>
+                      typeof url === "string" && /^https?:\/\//i.test(url)
+                  )
+                : [];
+            } catch {
+              existing = [];
+            }
+            if (productForm.mainImage && !existing.includes(productForm.mainImage)) {
+              existing = [String(productForm.mainImage), ...existing];
+            }
+
+            return existing.length > 0 ? (
+              <div className="mt-4">
+                <p className="mb-2 text-xs font-black text-slate-500">
+                  תמונות שמורות
+                </p>
+                <div className="grid grid-cols-3 gap-2">
+                  {existing.map((url, index) => (
+                    <div
+                      key={`${url}-${index}`}
+                      className="relative aspect-square overflow-hidden rounded-2xl bg-slate-100"
+                    >
+                      <img
+                        src={url}
+                        alt=""
+                        className="h-full w-full object-cover"
+                      />
+                      <button
+                        type="button"
+                        className="absolute left-1 top-1 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-black text-rose-600 shadow"
+                        onClick={() => {
+                          const next = existing.filter((_, i) => i !== index);
+                          setProductForm((prev) => ({
+                            ...prev,
+                            images: JSON.stringify(next),
+                            mainImage: next[0] || "",
+                          }));
+                        }}
+                      >
+                        הסר
+                      </button>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            ) : null;
+          })()}
+
+          {productImages.length > 0 && (
+            <div className="mt-4">
+              <p className="mb-2 text-xs font-black text-slate-500">
+                תמונות חדשות להעלאה
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {productImages.map((file, index) => (
+                  <div
+                    key={`${file.name}-${index}`}
+                    className="relative aspect-square overflow-hidden rounded-2xl bg-slate-100"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt=""
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 

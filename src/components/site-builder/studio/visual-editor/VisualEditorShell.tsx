@@ -10,6 +10,7 @@ import {
   Monitor,
   Plus,
   Redo2,
+  ShoppingBag,
   Smartphone,
   Tablet,
   Undo2,
@@ -24,11 +25,13 @@ import EditorPluginOverlays from "./EditorPluginOverlays";
 import VisualSitePagesPanel, {
   type VisualSitePageItem,
 } from "./VisualSitePagesPanel";
+import VisualStorePanel from "./VisualStorePanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
 import VisualAiToolsPanel from "./VisualAiToolsPanel";
 import ConnectDomainModal from "../../../website/ConnectDomainModal";
+import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import {
   writeVisualContentItem,
   writeVisualStyleItem,
@@ -77,6 +80,7 @@ type VisualEditorShellProps = {
   onBack?: () => void;
   className?: string;
   siteId?: string;
+  businessId?: string;
   siteSlug?: string;
   customDomain?: string;
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
@@ -126,6 +130,7 @@ export default function VisualEditorShell({
   onBack,
   className = "",
   siteId,
+  businessId: businessIdProp,
   siteSlug = "",
   customDomain = "",
   onAddLibraryPage,
@@ -136,20 +141,55 @@ export default function VisualEditorShell({
 }: VisualEditorShellProps) {
   const [actionError, setActionError] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
-    "add" | "layers" | "code" | "pages" | null
+    "add" | "layers" | "code" | "pages" | "store" | null
   >(null);
   const [preferredAddTab, setPreferredAddTab] = useState<
     "sections" | "pages" | "plugins"
   >("sections");
   const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
+  const [storePluginEnabled, setStorePluginEnabled] = useState(false);
   const [connectDomainOpen, setConnectDomainOpen] = useState(false);
   const [linkedCustomDomain, setLinkedCustomDomain] = useState(
     String(customDomain || "").trim().toLowerCase(),
   );
 
+  const businessId = String(
+    businessIdProp || (editor as any)?.businessId || "",
+  ).trim();
+
   useEffect(() => {
     setLinkedCustomDomain(String(customDomain || "").trim().toLowerCase());
   }, [customDomain]);
+
+  useEffect(() => {
+    let cancelled = false;
+    const id = String(siteId || "").trim();
+    if (!id) {
+      setStorePluginEnabled(false);
+      return;
+    }
+
+    getSitePlugins(id)
+      .then((plugins) => {
+        if (cancelled) return;
+        const enabled = Array.isArray(plugins.enabledPlugins)
+          ? plugins.enabledPlugins
+          : [];
+        const detected = Array.isArray(plugins.detectedFromSite)
+          ? plugins.detectedFromSite
+          : [];
+        setStorePluginEnabled(
+          enabled.includes("store") || detected.includes("store"),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setStorePluginEnabled(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [siteId, overlayRefreshKey]);
 
   const siteUrlLabel = useMemo(() => {
     if (linkedCustomDomain) return `https://${linkedCustomDomain}`;
@@ -427,6 +467,26 @@ export default function VisualEditorShell({
                 ) : null}
               </button>
 
+              {storePluginEnabled ? (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setSidePanelMode((current) =>
+                      current === "store" ? null : "store",
+                    )
+                  }
+                  className={[
+                    "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
+                    sidePanelMode === "store"
+                      ? "border-violet-300 bg-violet-50 text-violet-700"
+                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
+                  ].join(" ")}
+                >
+                  <ShoppingBag className="h-4 w-4" />
+                  <span className="hidden xl:inline">חנות</span>
+                </button>
+              ) : null}
+
               <button
                 type="button"
                 onClick={() => {
@@ -656,6 +716,14 @@ export default function VisualEditorShell({
               setSidePanelMode("add");
             }}
             onPageAction={onSitePageAction}
+          />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <VisualStorePanel
+            open={sidePanelMode === "store"}
+            businessId={businessId}
+            onClose={() => setSidePanelMode(null)}
           />
         ) : null}
 
