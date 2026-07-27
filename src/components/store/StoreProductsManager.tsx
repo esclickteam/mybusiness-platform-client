@@ -1235,8 +1235,9 @@ export default function StoreProductsManager({
 
       <div
         className={cx(
+          "min-w-0",
           embedded
-            ? "rounded-xl border border-slate-200 bg-white p-4 md:p-5"
+            ? "overflow-x-hidden rounded-xl border border-slate-200 bg-white p-3 sm:p-4"
             : "min-h-[520px] rounded-[34px] border border-slate-200 bg-[#F8FAFC] p-4 shadow-[0_22px_80px_rgba(15,23,42,0.06)] md:p-6"
         )}
       >
@@ -1322,6 +1323,7 @@ export default function StoreProductsManager({
             saving={saving}
             onSave={saveSettings}
             focus={settingsFocus}
+            embedded={embedded}
           />
         )}
 
@@ -2703,12 +2705,14 @@ function SettingsView({
   saving,
   onSave,
   focus = "all",
+  embedded = false,
 }: {
   settings: StoreSettingsData;
   setSettings: React.Dispatch<React.SetStateAction<StoreSettingsData>>;
   saving: boolean;
   onSave: () => void;
   focus?: "all" | "shipping";
+  embedded?: boolean;
 }) {
   const checkoutLook = normalizeCheckoutAppearance(settings.checkoutAppearance);
 
@@ -2724,9 +2728,79 @@ function SettingsView({
     }));
   };
 
+  const cardClass = embedded
+    ? "rounded-2xl border border-slate-200 bg-white p-4"
+    : "rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6";
+
+  const checkoutPreview = (
+    <div
+      className="min-w-0 overflow-hidden border shadow-sm"
+      style={{
+        borderRadius: checkoutLook.panelRadius,
+        borderColor: checkoutLook.borderColor,
+        backgroundColor: checkoutLook.panelBackground,
+        color: checkoutLook.textColor,
+      }}
+    >
+      <div
+        className="border-b px-4 py-3"
+        style={{ borderColor: checkoutLook.borderColor }}
+      >
+        <p className="text-sm font-black">
+          {checkoutLook.title || "סל ותשלום"}
+        </p>
+        <p
+          className="text-xs font-bold"
+          style={{ color: checkoutLook.mutedTextColor }}
+        >
+          תצוגה מקדימה חיה
+        </p>
+      </div>
+      <div className="space-y-3 p-4">
+        <div
+          className="flex items-center justify-between gap-3 border px-3 py-2 text-xs font-bold"
+          style={{
+            borderRadius: Math.max(8, checkoutLook.buttonRadius - 2),
+            borderColor: checkoutLook.borderColor,
+          }}
+        >
+          <span className="min-w-0 truncate">מוצר לדוגמה</span>
+          <button
+            type="button"
+            className="shrink-0 px-3 py-1.5 text-[11px] font-black text-white"
+            style={{
+              backgroundColor: checkoutLook.accentColor,
+              borderRadius: Math.max(6, checkoutLook.buttonRadius - 4),
+              color: checkoutLook.buttonTextColor,
+            }}
+          >
+            הוסף
+          </button>
+        </div>
+        <p
+          className="text-xs font-bold"
+          style={{ color: checkoutLook.mutedTextColor }}
+        >
+          סה״כ: ₪250
+        </p>
+        <button
+          type="button"
+          className="inline-flex h-11 w-full items-center justify-center text-sm font-black"
+          style={{
+            backgroundColor: checkoutLook.primaryColor,
+            color: checkoutLook.buttonTextColor,
+            borderRadius: checkoutLook.buttonRadius,
+          }}
+        >
+          {checkoutLook.buttonLabel || "המשך לתשלום"}
+        </button>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="space-y-6">
-        <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+    <div className="min-w-0 space-y-6">
+        <div className={cardClass}>
           <div className="mb-6">
             <h2 className="text-2xl font-black text-slate-800">
               {focus === "shipping" ? "הגדרות משלוח" : "הגדרות חנות"}
@@ -2738,7 +2812,7 @@ function SettingsView({
             </p>
           </div>
 
-          <div className="grid gap-5 lg:grid-cols-2">
+          <div className={cx("grid gap-5", embedded ? "sm:grid-cols-2" : "lg:grid-cols-2")}>
             <div>
               <FieldLabel>שם החנות</FieldLabel>
               <TextInput
@@ -2860,7 +2934,7 @@ function SettingsView({
             </div>
           </div>
 
-          <div className="mt-6 grid gap-3 md:grid-cols-4">
+          <div className={cx("mt-6 grid gap-3", embedded ? "sm:grid-cols-2" : "md:grid-cols-4")}>
             {[
               ["isStoreActive", "חנות פעילה"],
               ["showPrices", "הצגת מחירים"],
@@ -2895,21 +2969,19 @@ function SettingsView({
         </div>
 
         {focus !== "shipping" ? (
-          <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm md:p-6">
-            <div className="mb-6 flex flex-col justify-between gap-4 lg:flex-row lg:items-start">
-              <div>
-                <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-black text-white">
-                  <ShoppingBag size={15} />
-                  עיצוב סל ותשלום
-                </div>
-                <h2 className="mt-3 text-2xl font-black text-slate-800">
-                  צבעים וכפתורים של הסל
-                </h2>
-                <p className="mt-1 max-w-2xl text-sm font-bold leading-7 text-slate-500">
-                  כמו ב־Wix — בחרו ערכת צבעים או התאימו ידנית. השינויים חלים על
-                  מודל הסל והתשלום באתר הציבורי.
-                </p>
+          <div className={cx(cardClass, "min-w-0")}>
+            <div className="mb-6">
+              <div className="inline-flex items-center gap-2 rounded-full bg-slate-900 px-4 py-2 text-xs font-black text-white">
+                <ShoppingBag size={15} />
+                עיצוב סל ותשלום
               </div>
+              <h2 className="mt-3 text-2xl font-black text-slate-800">
+                צבעים וכפתורים של הסל
+              </h2>
+              <p className="mt-1 max-w-2xl text-sm font-bold leading-7 text-slate-500">
+                בחרו ערכת צבעים או התאימו ידנית. השינויים חלים על מודל הסל
+                והתשלום באתר הציבורי.
+              </p>
             </div>
 
             <div className="mb-5 flex flex-wrap gap-2">
@@ -2933,8 +3005,17 @@ function SettingsView({
               ))}
             </div>
 
-            <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_280px]">
-              <div className="grid gap-4 sm:grid-cols-2">
+            {embedded ? (
+              <div className="mb-6 max-w-md">{checkoutPreview}</div>
+            ) : null}
+
+            <div
+              className={cx(
+                "grid min-w-0 gap-6",
+                !embedded && "xl:grid-cols-[minmax(0,1fr)_280px]",
+              )}
+            >
+              <div className={cx("grid min-w-0 gap-4", embedded ? "grid-cols-1 sm:grid-cols-2" : "sm:grid-cols-2")}>
                 {(
                   [
                     ["primaryColor", "צבע כפתור ראשי"],
@@ -2946,11 +3027,11 @@ function SettingsView({
                     ["borderColor", "צבע מסגרות"],
                   ] as Array<[keyof CheckoutAppearance, string]>
                 ).map(([key, label]) => (
-                  <label key={key} className="grid gap-2">
+                  <label key={key} className="grid min-w-0 gap-2">
                     <span className="text-xs font-black text-slate-500">
                       {label}
                     </span>
-                    <div className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2">
+                    <div className="flex min-w-0 items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-2">
                       <input
                         type="color"
                         value={
@@ -2961,7 +3042,7 @@ function SettingsView({
                         onChange={(e) =>
                           updateCheckoutAppearance({ [key]: e.target.value })
                         }
-                        className="h-10 w-12 cursor-pointer rounded-lg border-0 bg-transparent"
+                        className="h-10 w-12 shrink-0 cursor-pointer rounded-lg border-0 bg-transparent"
                       />
                       <input
                         type="text"
@@ -2976,7 +3057,7 @@ function SettingsView({
                   </label>
                 ))}
 
-                <div>
+                <div className="min-w-0">
                   <FieldLabel>כותרת הסל (אופציונלי)</FieldLabel>
                   <TextInput
                     value={checkoutLook.title}
@@ -2987,7 +3068,7 @@ function SettingsView({
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <FieldLabel>טקסט כפתור תשלום (אופציונלי)</FieldLabel>
                   <TextInput
                     value={checkoutLook.buttonLabel}
@@ -2998,7 +3079,7 @@ function SettingsView({
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <FieldLabel>עיגול כפתורים</FieldLabel>
                   <TextInput
                     type="number"
@@ -3013,7 +3094,7 @@ function SettingsView({
                   />
                 </div>
 
-                <div>
+                <div className="min-w-0">
                   <FieldLabel>עיגול חלון</FieldLabel>
                   <TextInput
                     type="number"
@@ -3029,69 +3110,7 @@ function SettingsView({
                 </div>
               </div>
 
-              <div
-                className="overflow-hidden border shadow-sm"
-                style={{
-                  borderRadius: checkoutLook.panelRadius,
-                  borderColor: checkoutLook.borderColor,
-                  backgroundColor: checkoutLook.panelBackground,
-                  color: checkoutLook.textColor,
-                }}
-              >
-                <div
-                  className="border-b px-4 py-3"
-                  style={{ borderColor: checkoutLook.borderColor }}
-                >
-                  <p className="text-sm font-black">
-                    {checkoutLook.title || "סל ותשלום"}
-                  </p>
-                  <p
-                    className="text-xs font-bold"
-                    style={{ color: checkoutLook.mutedTextColor }}
-                  >
-                    תצוגה מקדימה חיה
-                  </p>
-                </div>
-                <div className="space-y-3 p-4">
-                  <div
-                    className="flex items-center justify-between border px-3 py-2 text-xs font-bold"
-                    style={{
-                      borderRadius: Math.max(8, checkoutLook.buttonRadius - 2),
-                      borderColor: checkoutLook.borderColor,
-                    }}
-                  >
-                    <span>מוצר לדוגמה</span>
-                    <button
-                      type="button"
-                      className="px-3 py-1.5 text-[11px] font-black text-white"
-                      style={{
-                        backgroundColor: checkoutLook.accentColor,
-                        borderRadius: Math.max(6, checkoutLook.buttonRadius - 4),
-                        color: checkoutLook.buttonTextColor,
-                      }}
-                    >
-                      הוסף
-                    </button>
-                  </div>
-                  <p
-                    className="text-xs font-bold"
-                    style={{ color: checkoutLook.mutedTextColor }}
-                  >
-                    סה״כ: ₪250
-                  </p>
-                  <button
-                    type="button"
-                    className="inline-flex h-11 w-full items-center justify-center text-sm font-black"
-                    style={{
-                      backgroundColor: checkoutLook.primaryColor,
-                      color: checkoutLook.buttonTextColor,
-                      borderRadius: checkoutLook.buttonRadius,
-                    }}
-                  >
-                    {checkoutLook.buttonLabel || "המשך לתשלום"}
-                  </button>
-                </div>
-              </div>
+              {!embedded ? checkoutPreview : null}
             </div>
 
             <div className="mt-6">
