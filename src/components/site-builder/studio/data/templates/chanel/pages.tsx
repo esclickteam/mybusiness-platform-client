@@ -1299,8 +1299,8 @@ export default function ChanelPages({
     const merged = mergeData(data);
     const curatedCategories = safeArray(merged.categories);
 
-    // Preview / loading: keep curated defaults so grids never flash empty.
-    if (!fromPlugin || (storeLoading && storeProducts.length === 0)) {
+    // Preview / empty store / loading: keep curated demos until real products exist.
+    if (!fromPlugin || storeLoading || storeProducts.length === 0) {
       return merged;
     }
 

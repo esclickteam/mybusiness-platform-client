@@ -223,8 +223,10 @@ const EMPTY_DEMO_PRODUCTS: DemoStoreProductSeed[] = [];
  * (site editor / published site). Never infer from `/business/:id/...` URL or DOM —
  * that leaked live shop products into shared template gallery/preview.
  *
- * Without an explicit businessId → demo seeds only (template preview).
- * With a businessId → live store catalog is authoritative, including empty.
+ * Behavior:
+ * - No businessId / studio static → template demo seeds (preview)
+ * - businessId + live products → live catalog replaces demos
+ * - businessId + empty store → keep demos (edit looks like preview until products exist)
  */
 export function useStorePluginCatalog(options: {
   businessId?: string | null;
@@ -242,11 +244,10 @@ export function useStorePluginCatalog(options: {
   const shouldFetch =
     options.enabled !== false && Boolean(businessId);
 
-  const [products, setProducts] = useState<StoreCatalogProduct[]>(
-    shouldFetch ? [] : demo.products,
-  );
+  // Always start from demos so editor/preview never flash empty while fetching.
+  const [products, setProducts] = useState<StoreCatalogProduct[]>(demo.products);
   const [categories, setCategories] = useState<StoreCatalogCategory[]>(
-    shouldFetch ? [] : demo.categories,
+    demo.categories,
   );
   const [loading, setLoading] = useState(shouldFetch);
   const [fromPlugin, setFromPlugin] = useState(false);
@@ -287,32 +288,38 @@ export function useStorePluginCatalog(options: {
           ? shop.categories.map(mapApiCategory)
           : [];
 
-        // With a real businessId the store catalog is authoritative — even when empty.
-        // Fake frontend demos stay for gallery/preview only (no businessId).
+        setStoreName(String(shop.settings?.storeName || ""));
+        setCurrency(String(shop.settings?.currency || "ILS"));
+
+        // Empty store → keep template demos (editor matches preview) until products exist.
+        if (apiProducts.length === 0) {
+          setProducts(demo.products);
+          setCategories(demo.categories);
+          setFromPlugin(false);
+          return;
+        }
+
         setProducts(apiProducts);
         setCategories(
           apiCategories.length > 0
             ? apiCategories
-            : apiProducts.length > 0
-              ? buildDemoCatalog(
-                  apiProducts.map((p) => ({
-                    name: p.name,
-                    price: p.price,
-                    image: p.image,
-                    category: p.category,
-                  })),
-                ).categories
-              : [],
+            : buildDemoCatalog(
+                apiProducts.map((p) => ({
+                  name: p.name,
+                  price: p.price,
+                  image: p.image,
+                  category: p.category,
+                })),
+              ).categories,
         );
         setFromPlugin(true);
-
-        setStoreName(String(shop.settings?.storeName || ""));
-        setCurrency(String(shop.settings?.currency || "ILS"));
       })
       .catch(() => {
         if (cancelled) return;
-        // Keep the last good catalog on transient network errors — never flash empty.
-        setFromPlugin(true);
+        // Network error → keep demos visible, never wipe the canvas.
+        setProducts(demo.products);
+        setCategories(demo.categories);
+        setFromPlugin(false);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

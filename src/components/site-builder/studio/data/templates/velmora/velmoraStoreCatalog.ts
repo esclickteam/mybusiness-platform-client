@@ -99,8 +99,8 @@ export function buildVelmoraShopCatalog(options: {
   storeProducts: StoreCatalogProduct[];
   storeCategories: StoreCatalogCategory[];
 }) {
-  // Live store connection wins — including an empty catalog after seed/clear.
-  if (options.fromPlugin) {
+  // Live store wins only when it actually has products; empty → demos.
+  if (options.fromPlugin && options.storeProducts.length > 0) {
     const products = options.storeProducts.map(mapStoreProductToVelmora);
     const categoryNames = Array.from(
       new Set(

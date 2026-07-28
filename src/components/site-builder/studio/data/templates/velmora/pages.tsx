@@ -1010,23 +1010,14 @@ export default function VelmoraPages({
   });
 
   const shopCatalog = React.useMemo(() => {
-    // Avoid flashing preview demos while the live store catalog is loading.
-    if (storeCatalogLoading && businessId && !isStudioStatic) {
-      return {
-        products: [] as ReturnType<typeof buildVelmoraShopCatalog>["products"],
-        categories: ["הכל"],
-        isLive: true as const,
-      };
-    }
+    // Keep demos visible while loading / when store is still empty.
     return buildVelmoraShopCatalog({
-      fromPlugin,
+      fromPlugin: storeCatalogLoading ? false : fromPlugin,
       storeProducts,
       storeCategories,
     });
   }, [
-    businessId,
     fromPlugin,
-    isStudioStatic,
     storeCatalogLoading,
     storeCategories,
     storeProducts,
