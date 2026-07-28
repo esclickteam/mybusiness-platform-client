@@ -191,7 +191,7 @@ function Benefits({ data }: { data: Record<string, any> }) {
           {bands.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 110} variant={index % 2 ? "left" : "right"}>
               <article className="aura-floating-band border border-white/10 bg-[var(--surface)]/80 p-7 shadow-2xl shadow-black/20 backdrop-blur-md md:p-9" style={{ marginInlineStart: `${index * 7}%` }}>
-                <h3 className="t-display text-4xl font-semibold text-white">{title}</h3>
+                <h3 className="t-display text-2xl sm:text-4xl font-semibold text-white">{title}</h3>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--muted)]">{text}</p>
               </article>
             </Reveal>
@@ -222,7 +222,7 @@ function Schedule({ data }: { data: Record<string, any> }) {
             <Reveal key={`${day}-${time}`} delayMs={index * 80} variant="up">
               <div className="aura-schedule-row grid gap-4 border-b border-white/10 py-7 last:border-b-0 md:grid-cols-[0.8fr_0.8fr_1.4fr_1fr] md:items-center">
                 <p className="text-sm font-semibold uppercase tracking-[0.26em] text-[var(--p)]">{day}</p>
-                <p className="t-display text-4xl font-semibold text-white">{time}</p>
+                <p className="t-display text-2xl sm:text-4xl font-semibold text-white">{time}</p>
                 <p className="text-xl font-semibold text-white">{title}</p>
                 <p className="text-sm leading-6 text-[var(--muted)]">{teacher}</p>
               </div>
@@ -257,7 +257,7 @@ function Teachers({ data }: { data: Record<string, any> }) {
               <article className="aura-teacher-card border-2 border-[var(--p)]/55 bg-[var(--surface)] p-4">
                 <img src={image} alt="" className="aspect-square w-full object-cover" />
                 <div className="p-4">
-                  <h3 className="t-display text-4xl font-semibold text-white">{name}</h3>
+                  <h3 className="t-display text-2xl sm:text-4xl font-semibold text-white">{name}</h3>
                   <p className="mt-2 text-sm font-semibold uppercase tracking-[0.22em] text-[var(--p)]">{role}</p>
                 </div>
               </article>
@@ -309,7 +309,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name], index) => (
             <Reveal key={name} delayMs={index * 120} variant="up">
               <blockquote className="aura-review min-h-[320px] border border-white/10 bg-white/[0.04] p-8 backdrop-blur-sm">
-                <p className="t-display text-7xl font-semibold leading-none text-[var(--p)]">”</p>
+                <p className="t-display text-3xl md:text-7xl font-semibold leading-none text-[var(--p)]">”</p>
                 <p className="mt-8 text-2xl font-light leading-10 text-white">{text}</p>
                 <footer className="mt-10 text-sm font-semibold uppercase tracking-[0.24em] text-[var(--muted)]">{name}</footer>
               </blockquote>

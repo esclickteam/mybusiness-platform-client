@@ -99,11 +99,11 @@ function About({ data }: { data: Record<string, any> }) {
             </div>
             <div className="flex min-h-[260px] flex-col justify-between border border-black/10 bg-[var(--surface)] p-6 text-right md:col-span-2">
               <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "aboutEyebrow")}</p>
-              <p className="ag-display text-4xl font-extrabold text-[var(--p)]">{signals[0][0]}</p>
+              <p className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--p)]">{signals[0][0]}</p>
               <p className="text-sm font-bold text-[var(--muted)]">{signals[0][1]}</p>
             </div>
             <div className="flex min-h-[180px] flex-col justify-center border border-black/10 bg-[var(--p)] p-6 text-right text-white md:col-span-2">
-              <p className="ag-display text-4xl font-extrabold">{signals[1][0]}</p>
+              <p className="ag-display text-2xl sm:text-4xl font-extrabold">{signals[1][0]}</p>
               <p className="mt-2 text-sm font-bold text-white/80">{signals[1][1]}</p>
             </div>
           </div>
@@ -246,7 +246,7 @@ function Team({ data }: { data: Record<string, any> }) {
             <aside className="flex h-full flex-col justify-between border border-black/10 bg-[var(--p)] p-7 text-right text-white">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-white/70">Now sourcing</p>
-                <h3 className="ag-display mt-4 text-4xl font-extrabold">תפקידים פתוחים שמחכים לאדם הנכון.</h3>
+                <h3 className="ag-display mt-4 text-2xl sm:text-4xl font-extrabold">תפקידים פתוחים שמחכים לאדם הנכון.</h3>
               </div>
               <div className="mt-8 space-y-3">
                 {[getValue(data, "serviceOneTitle"), getValue(data, "serviceTwoTitle"), getValue(data, "serviceThreeTitle")].map((role) => (
@@ -431,7 +431,7 @@ function PageHero({ data, title }: { data: Record<string, any>; title: string })
           <h1 className="ag-display mt-4 max-w-4xl text-4xl font-extrabold md:text-6xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
         </div>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
           {images.map((src, i) => (
             <img key={src} src={src} alt="" className={`border border-black/10 object-cover ${i === 0 ? "col-span-2 aspect-[4/3]" : "aspect-square"}`} />
           ))}
@@ -461,11 +461,11 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
           </div>
         </Reveal>
         <Reveal className="lg:col-span-5" delayMs={100}>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <img src={getValue(data, "heroImage")} alt="" className="ag-float col-span-2 aspect-[16/10] object-cover border border-black/10" />
             <img src={getValue(data, "aboutImage")} alt="" className="aspect-square object-cover border border-black/10" />
             <div className="flex aspect-square flex-col justify-center border border-black/10 bg-[var(--p)] p-5 text-center text-white">
-              <p className="ag-display text-4xl font-extrabold">{stats[0][0]}</p>
+              <p className="ag-display text-2xl sm:text-4xl font-extrabold">{stats[0][0]}</p>
               <p className="mt-2 text-xs font-bold">{stats[0][1]}</p>
             </div>
           </div>

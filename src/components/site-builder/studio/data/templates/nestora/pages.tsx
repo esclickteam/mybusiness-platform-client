@@ -72,7 +72,7 @@ function QuoteFeatureHero({ data, goTo }: { data: Record<string, any>; goTo: (id
         </blockquote>
         <div className="mt-10 grid gap-10 lg:grid-cols-[0.45fr_1fr] lg:items-end">
           <div>
-            <h1 className="tpl-display text-4xl font-bold" style={{ color: "#1e2836" }}>{v(data, "heroTitle")}</h1>
+            <h1 className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#1e2836" }}>{v(data, "heroTitle")}</h1>
             <p className="mt-5 text-lg leading-8" style={{ color: "#6a7585" }}>{v(data, "heroSubtitle")}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#3d5a80", color: "#eef1f5" }}>{v(data, "heroPrimary")}</button>

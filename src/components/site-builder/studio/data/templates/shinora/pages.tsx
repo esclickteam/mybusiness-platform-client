@@ -522,7 +522,7 @@ function ServicesSection({
 
   return (
     <section
-      className="bg-[#fffdfb] py-24"
+      className="bg-[#fffdfb] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="services"
       data-section-kind="services"
@@ -667,7 +667,7 @@ function ServicesSection({
 function ConsultationSection({ data }: { data: any }) {
   return (
     <section
-      className="relative overflow-hidden bg-[#241612] py-24 text-white"
+      className="relative overflow-hidden bg-[#241612] py-12 md:py-24 text-white"
       dir="rtl"
       data-template-section-id="consultation"
       data-section-kind="consultation"
@@ -805,7 +805,7 @@ function WhySection({
 }) {
   return (
     <section
-      className="bg-[#fff8f2] py-24"
+      className="bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="why"
       data-section-kind="why"
@@ -932,7 +932,7 @@ function WhySection({
 function DirectorSection({ data }: { data: any }) {
   return (
     <section
-      className="bg-[#fffdfb] py-24"
+      className="bg-[#fffdfb] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="director"
       data-section-kind="director"
@@ -997,7 +997,7 @@ function DirectorSection({ data }: { data: any }) {
             “{data.directorQuote}”
           </blockquote>
 
-          <div className="mt-8 grid max-w-md grid-cols-2 gap-3">
+          <div className="mt-8 grid max-w-md grid-cols-1 sm:grid-cols-2 gap-3">
             {data.stats.slice(0, 2).map((stat: any, index: number) => (
               <div
                 key={stat.label}
@@ -1007,7 +1007,7 @@ function DirectorSection({ data }: { data: any }) {
                 data-visual-edit-type="box"
                 data-visual-edit-label={`סטטיסטיקה מנהלת ${index + 1}`}
               >
-                <div className="text-4xl font-black">{stat.value}</div>
+                <div className="text-2xl sm:text-4xl font-black">{stat.value}</div>
                 <div className="mt-2 text-sm font-bold text-white/65">
                   {stat.label}
                 </div>
@@ -1023,7 +1023,7 @@ function DirectorSection({ data }: { data: any }) {
 function TestimonialsSection({ data }: { data: any }) {
   return (
     <section
-      className="overflow-hidden bg-[#fff8f2] py-24"
+      className="overflow-hidden bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="testimonials"
       data-section-kind="testimonials"
@@ -1185,7 +1185,7 @@ function BlogSection({
 }) {
   return (
     <section
-      className="bg-[#fffdfb] py-24"
+      className="bg-[#fffdfb] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="blog"
       data-section-kind="blog"
@@ -1301,7 +1301,7 @@ function BlogSection({
 function GallerySection({ data }: { data: any }) {
   return (
     <section
-      className="bg-[#fff8f2] py-24"
+      className="bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="gallery"
       data-section-kind="gallery"
@@ -1369,7 +1369,7 @@ function GallerySection({ data }: { data: any }) {
 function PricingSection({ data }: { data: any }) {
   return (
     <section
-      className="bg-[#fffdfb] py-24"
+      className="bg-[#fffdfb] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="pricing"
       data-section-kind="pricing"
@@ -1424,7 +1424,7 @@ function PricingSection({ data }: { data: any }) {
                 </div>
 
                 <div
-                  className="mt-5 text-5xl font-black tracking-[-0.05em]"
+                  className="mt-5 text-2xl md:text-5xl font-black tracking-[-0.05em]"
                   data-visual-editable="true"
                   data-visual-edit-id={`pricing.${index}.price`}
                   data-visual-edit-type="text"
@@ -1478,7 +1478,7 @@ function PricingSection({ data }: { data: any }) {
 function ProductsSection({ data }: { data: any }) {
   return (
     <section
-      className="bg-[#fff8f2] py-24"
+      className="bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="shop"
       data-section-kind="shop"
@@ -1567,7 +1567,7 @@ function ProductsSection({ data }: { data: any }) {
 function TeamSection({ data }: { data: any }) {
   return (
     <section
-      className="bg-[#fff8f2] py-24"
+      className="bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="team"
       data-section-kind="team"
@@ -1855,7 +1855,7 @@ function PageHero({
 }) {
   return (
     <section
-      className="relative overflow-hidden bg-[#fff8f2] py-24"
+      className="relative overflow-hidden bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="page-hero"
       data-section-kind="page-hero"

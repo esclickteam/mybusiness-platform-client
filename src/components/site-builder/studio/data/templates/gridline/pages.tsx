@@ -538,7 +538,7 @@ function Hero({
                       className="mt-3 text-lg font-semibold uppercase tracking-[0.16em] text-black"
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-0">
                     <div className="border-l border-black p-5">
                       <div className="text-2xl font-semibold text-black">
                         {getValue(data, "statFour")}
@@ -1211,7 +1211,7 @@ function PageHero({
   return (
     <section className="border-b border-black bg-black px-4 py-20 lg:px-8">
       <Reveal className="mx-auto grid max-w-7xl gap-0 border border-white/15 lg:grid-cols-[0.24fr_1fr]">
-        <div className="border-b border-white/15 p-6 font-mono text-6xl font-semibold text-white/20 lg:border-b-0 lg:border-l lg:p-10">
+        <div className="border-b border-white/15 p-6 font-mono text-3xl md:text-6xl font-semibold text-white/20 lg:border-b-0 lg:border-l lg:p-10">
           {indexMap[type]}
         </div>
         <div className="p-6 lg:p-10">

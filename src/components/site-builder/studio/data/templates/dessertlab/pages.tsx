@@ -31,7 +31,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#1a1220f5", borderColor: "rgba(248,238,248,0.12)" }}>
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-5 py-5">
-        <button type="button" onClick={() => goTo("home")} className="tpl-display text-4xl font-bold">{v(data, "brandName")}</button>
+        <button type="button" onClick={() => goTo("home")} className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "brandName")}</button>
         <nav className="flex flex-wrap items-center justify-center gap-5">
           {nav.map(([id, label]) => (
             <button key={id} type="button" onClick={() => goTo(id)} className="text-xs font-medium tracking-[0.2em] uppercase"
@@ -48,7 +48,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
       <section className="relative isolate min-h-[92vh] overflow-hidden">
         <img src={v(data, "heroImage")} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-50" />
         <div className="absolute inset-0" style={{ background: "#1a1220cc" }} />
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-5xl flex-col items-center justify-center px-5 py-28 text-center">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-5xl flex-col items-center justify-center px-5 py-14 md:py-28 text-center">
           
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#e879f9" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -117,8 +117,8 @@ function SugarHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(248,238,248,0.12)", background: "#241832" }}>
       <div className="mx-auto max-w-5xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-3">
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="up">
               <img src={src} alt="" className="aspect-[4/3] w-full object-cover" style={{ borderRadius: i % 2 ? "2rem 0.5rem" : "0.5rem 2rem" }} />
@@ -135,7 +135,7 @@ function SugarHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(248,238,248,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#e879f9", background: "#241832" }}>
@@ -157,7 +157,7 @@ function SugarHomeStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 60} variant="scale">
             <div className="text-center">
-              <div className="tpl-display text-4xl font-bold" style={{ color: "#e879f9" }}>{n}</div>
+              <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#e879f9" }}>{n}</div>
               <p className="mt-1 text-xs tracking-wider" style={{ color: "#b89bb8" }}>{l}</p>
             </div>
           </Reveal>
@@ -377,7 +377,7 @@ function SugarChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#e879f9" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#b89bb8" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#e879f9" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

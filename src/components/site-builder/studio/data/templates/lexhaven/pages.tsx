@@ -94,7 +94,7 @@ function PracticeAreas({ data }: { data: Record<string, any> }) {
           {areas.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 90} variant="up">
               <article className="lexhaven-practice-row grid gap-5 py-8 md:grid-cols-[120px_0.8fr_1.2fr] md:items-center">
-                <span className="t-display text-5xl font-bold text-[var(--p)]">{String(index + 1).padStart(2, "0")}</span>
+                <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">{String(index + 1).padStart(2, "0")}</span>
                 <h3 className="text-2xl font-bold text-[var(--text)]">{title}</h3>
                 <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
               </article>
@@ -120,7 +120,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
         </Reveal>
         <Reveal variant="left" delayMs={120}>
           <blockquote className="border-r-[10px] border-[var(--p)] bg-[var(--surface)] p-8 shadow-[24px_24px_0_rgba(122,31,43,0.08)] lg:p-12">
-            <span className="t-display block text-7xl leading-none text-[var(--p)]">"</span>
+            <span className="t-display block text-3xl md:text-7xl leading-none text-[var(--p)]">"</span>
             <p className="t-display mt-4 text-3xl font-bold leading-snug text-[var(--text)]">{getValue(data, "pullQuote")}</p>
             <footer className="mt-8 text-sm font-bold uppercase tracking-[0.18em] text-[var(--p)]">{getValue(data, "pullQuoteBy")}</footer>
           </blockquote>

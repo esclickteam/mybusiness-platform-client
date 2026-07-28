@@ -153,7 +153,7 @@ function LedgerHeader({
           </div>
         </button>
 
-        <nav className="hidden grid-cols-5 border border-[#102018]/10 lg:grid">
+        <nav className="hidden grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 border border-[#102018]/10 lg:grid">
           {nav.map(([id, label]) => (
             <button
               key={id}
@@ -297,7 +297,7 @@ function KPIBoard({ data }: { data: Record<string, any> }) {
             <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#0d5c45]">
               Metric 0{index + 1}
             </TemplateText>
-            <TemplateText as="div" className="mt-5 text-5xl font-semibold tracking-[-0.05em] text-[#102018]">
+            <TemplateText as="div" className="mt-5 text-2xl md:text-5xl font-semibold tracking-[-0.05em] text-[#102018]">
               {value}
             </TemplateText>
             <TemplateText as="div" className="mt-3 text-sm leading-7 text-[#5a6b62]">

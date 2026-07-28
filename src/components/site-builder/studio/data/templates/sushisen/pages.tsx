@@ -98,11 +98,11 @@ function WasabiStats({ data }: { data: Record<string, any> }) {
   const stats = [["12", "מושבים"], ["6:00", "דג טרי"], ["18", "מנות יום"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(242,240,234,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-6 text-center">
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 80} variant="scale">
             <div className="tpl-wasabi mx-auto inline-block border px-6 py-5" style={{ borderColor: "#d4af37", animationDelay: `${i * 0.25}s` }}>
-              <div className="tpl-display text-4xl font-bold" style={{ color: "#d4af37" }}>{n}</div>
+              <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#d4af37" }}>{n}</div>
               <p className="mt-2 text-xs tracking-wider" style={{ color: "#9a958c" }}>{l}</p>
             </div>
           </Reveal>
@@ -129,7 +129,7 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
           <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#9a958c" }}>{v(data, "pageHeroText")}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
             <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(242,240,234,0.12)", animationDelay: `${i * 0.25}s` }}>
               <img src={src} alt="" className="h-full w-full object-cover" />
@@ -152,7 +152,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           {reasons.map((reason, i) => (
             <Reveal key={reason.title} delayMs={i * 90} variant="up">
               <article className="tpl-sweep h-full border p-6 rounded-none" style={{ borderColor: "rgba(242,240,234,0.12)", background: i % 2 ? "#0b0b0b" : "#050505" }}>
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#d4af37" }}>0{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#d4af37" }}>0{i + 1}</span>
                 <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#9a958c" }}>{reason.text}</p>
               </article>
@@ -256,7 +256,7 @@ function KitchenMethod({ data }: { data: Record<string, any> }) {
           {steps.map((step, i) => (
             <Reveal key={step.title} delayMs={i * 80} variant="right">
               <article className="relative min-h-48 border p-5 rounded-none" style={{ borderColor: "rgba(242,240,234,0.12)", background: "#161616" }}>
-                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#d4af37" }}>{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold opacity-30" style={{ color: "#d4af37" }}>{i + 1}</span>
                 <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#9a958c" }}>{step.text}</p>
               </article>
@@ -365,7 +365,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
           <img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" />
         </div>
         <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#d4af37" }}>אודות</p>
-        <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "aboutTitle")}</h2>
+        <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "aboutTitle")}</h2>
         <p className="mt-5 text-lg leading-8" style={{ color: "#9a958c" }}>{v(data, "aboutText")}</p>
       </div>
     </section>

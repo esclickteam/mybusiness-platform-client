@@ -325,7 +325,7 @@ function SignatureStats({ data }: { data: Record<string, any> }) {
             <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#8f6d4b]">
               {eyebrow}
             </TemplateText>
-            <TemplateText as="div" className="mt-6 text-5xl font-semibold tracking-[-0.05em] text-[#1c1c1c]">
+            <TemplateText as="div" className="mt-6 text-2xl md:text-5xl font-semibold tracking-[-0.05em] text-[#1c1c1c]">
               {value}
             </TemplateText>
             <TemplateText as="p" className="mt-3 text-sm leading-7 text-[#6b645c]">
@@ -458,7 +458,7 @@ function ProcessAxis({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-0 md:grid-cols-4">
           {steps.map(([title, text], index) => (
             <div key={`${title}-${index}`} className="border border-[#1c1c1c]/10 p-7">
-              <TemplateText as="div" className="text-4xl font-semibold tracking-[-0.04em] text-[#b8956b]">
+              <TemplateText as="div" className="text-2xl sm:text-4xl font-semibold tracking-[-0.04em] text-[#b8956b]">
                 0{index + 1}
               </TemplateText>
               <TemplateText as="h3" className="mt-5 text-2xl font-semibold text-[#1c1c1c]">
@@ -540,7 +540,7 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
             <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">
               דסק ייעוץ
             </TemplateText>
-            <TemplateText as="h3" className="mt-5 text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">
+            <TemplateText as="h3" className="mt-5 text-2xl sm:text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">
               תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.
             </TemplateText>
             <div className="mt-10 grid gap-5 border-t border-[#b8956b]/20 pt-6">

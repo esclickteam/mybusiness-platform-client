@@ -246,7 +246,7 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
           </div>
           <span className="h-px flex-1 bg-black/10" />
         </Reveal>
-        <div className="grid grid-cols-4 gap-3 border-y border-black/10 py-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 border-y border-black/10 py-3">
           {images.map((src, i) => (
             <Reveal key={src} delayMs={i * 70} variant="scale">
               <div className="overflow-hidden border border-black/10">
@@ -277,7 +277,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
               <article className="ag-card grid gap-5 border-b border-black/10 bg-[var(--surface)] p-6 text-right last:border-b-0 md:grid-cols-[120px_1fr_auto] md:items-center">
-                <p className="ag-display text-5xl font-extrabold text-[var(--p)]">0{i + 1}</p>
+                <p className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{i + 1}</p>
                 <div>
                   <h3 className="text-2xl font-bold">{title}</h3>
                   <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
@@ -311,7 +311,7 @@ function Process({ data }: { data: Record<string, any> }) {
             {steps.map(([title, text], i) => (
               <Reveal key={title} delayMs={i * 80}>
                 <article className="ag-card grid gap-4 border border-black/10 bg-[var(--bg)] p-6 text-right md:grid-cols-[90px_1fr] md:items-start">
-                  <p className="ag-display text-4xl font-extrabold text-[var(--p)]">0{i + 1}</p>
+                  <p className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--p)]">0{i + 1}</p>
                   <div>
                     <h3 className="text-2xl font-bold">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
@@ -432,7 +432,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
         <div className="space-y-4">
           {stats.map(([v,l],i)=>(
             <Reveal key={l} delayMs={i*90} className="ag-card flex items-center gap-6 border border-black/10 bg-[var(--surface)] p-6">
-              <span className="ag-display text-5xl font-extrabold text-[var(--p)]">0{i+1}</span>
+              <span className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{i+1}</span>
               <div className="text-right">
                 <p className="ag-display text-3xl font-extrabold">{v}</p>
                 <p className="mt-1 text-sm font-bold text-[var(--muted)]">{l}</p>

@@ -44,7 +44,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
           <span className="grid h-10 w-10 place-items-center border border-[var(--p)] bg-white/45 text-sm font-bold text-[var(--p)]">
             {getValue(data, "logoText")}
           </span>
-          <span className="t-script text-4xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</span>
+          <span className="t-script text-2xl sm:text-4xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</span>
         </div>
         <nav className="hidden items-center gap-8 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--dark)]/62 lg:flex">
           {navItems.map((item) => (
@@ -243,7 +243,7 @@ function LoveStories({ data }: { data: Record<string, any> }) {
           {stories.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 130} variant={index === 0 ? "right" : "left"}>
               <blockquote className="h-full bg-white p-8 shadow-[0_22px_60px_rgba(91,124,153,0.12)] ring-1 ring-[var(--p)]/12 lg:p-12">
-                <span className="t-script text-7xl leading-none text-[var(--p)]" style={{ opacity: 0.4 }}>love</span>
+                <span className="t-script text-3xl md:text-7xl leading-none text-[var(--p)]" style={{ opacity: 0.4 }}>love</span>
                 <p className="mt-4 text-xl leading-9 text-[var(--dark)]">"{text}"</p>
                 <footer className="mt-10 border-t border-[var(--p)]/20 pt-5">
                   <p className="font-bold text-[var(--p)]">{name}</p>
@@ -346,7 +346,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
     <div className="fixed inset-0 z-[80] grid place-items-center bg-[#1A2430]/55 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md bg-[#F8F4F0] p-8 shadow-[0_24px_80px_rgba(26,36,48,0.24)]">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--muted)]">×</button>
-        <h3 className="t-script text-6xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</h3>
+        <h3 className="t-script text-3xl md:text-6xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</h3>
         <p className="mt-3 text-lg font-semibold text-[var(--dark)]">{getValue(data, "contactTitle")}</p>
         <form className="mt-6 grid gap-3">
           <input className="border border-[var(--p)]/20 bg-white px-5 py-4 text-right outline-none" placeholder="שם מלא" />

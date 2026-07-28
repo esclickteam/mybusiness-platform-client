@@ -307,7 +307,7 @@ function Hero({
           />
         </div>
 
-        <div className="mt-10 grid grid-cols-3 gap-4 border-t border-white/8 pt-8">
+        <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-white/8 pt-8">
           {stats.map(([num, label]) => (
             <div key={label}>
               <div className="text-4xl font-black text-white md:text-5xl">{num}</div>
@@ -451,7 +451,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
               key={title}
               className="group rounded-[28px] border border-white/8 bg-white/5 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c3ff00]/40"
             >
-              <span className="text-6xl font-black text-white/15 transition duration-500 group-hover:text-[#c3ff00]">
+              <span className="text-3xl md:text-6xl font-black text-white/15 transition duration-500 group-hover:text-[#c3ff00]">
                 0{index + 1}
               </span>
               <h3 className="mt-5 text-2xl font-black uppercase text-white">{title}</h3>
@@ -477,7 +477,7 @@ function StatsSection({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-7xl gap-px overflow-hidden rounded-[28px] border border-white/8 bg-white/8 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map(([num, label]) => (
           <div key={label} className="bg-[#0a0a0a] p-8 text-center">
-            <div className="text-5xl font-black text-[#c3ff00]">{num}</div>
+            <div className="text-2xl md:text-5xl font-black text-[#c3ff00]">{num}</div>
             <div className="mt-2 text-xs font-bold uppercase tracking-widest text-white/45">{label}</div>
           </div>
         ))}

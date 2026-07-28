@@ -455,7 +455,7 @@ function VelmoraCartPage({
           <div className="rounded-[10px] border border-black/10 bg-white p-12 text-center shadow-[0_24px_90px_rgba(0,0,0,0.08)]">
             <ShoppingBag className="mx-auto h-12 w-12 text-[#292318]" />
 
-            <h2 className="mt-6 [font-family:Georgia,serif] text-5xl">
+            <h2 className="mt-6 [font-family:Georgia,serif] text-2xl md:text-5xl">
               הסל ריק
             </h2>
 
@@ -551,7 +551,7 @@ function VelmoraCartPage({
             </div>
 
             <aside className="h-fit rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.08)]">
-              <h2 className="[font-family:Georgia,serif] text-4xl">
+              <h2 className="[font-family:Georgia,serif] text-2xl sm:text-4xl">
                 סיכום הזמנה
               </h2>
 
@@ -777,7 +777,7 @@ function VelmoraInfoPage({
                 {pageData.eyebrow}
               </p>
 
-              <h2 className="mt-3 [font-family:Georgia,Times_New_Roman,serif] text-4xl font-normal text-[#2b2722]">
+              <h2 className="mt-3 [font-family:Georgia,Times_New_Roman,serif] text-2xl sm:text-4xl font-normal text-[#2b2722]">
                 {pageData.title}
               </h2>
 
@@ -863,7 +863,7 @@ function VelmoraInfoPage({
                       </span>
 
                       <div>
-                        <h2 className="[font-family:Georgia,Times_New_Roman,serif] text-4xl font-normal text-[#2b2722]">
+                        <h2 className="[font-family:Georgia,Times_New_Roman,serif] text-2xl sm:text-4xl font-normal text-[#2b2722]">
                           {section.title}
                         </h2>
 

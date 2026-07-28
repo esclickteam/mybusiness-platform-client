@@ -429,7 +429,7 @@ function ProgramsSection({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <section className="bg-[#0D0D0D] px-5 py-28 text-white">
+    <section className="bg-[#0D0D0D] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -466,7 +466,7 @@ function ProgramsSection({
                   <Icon className="h-7 w-7" />
                 </div>
 
-                <h3 className="mt-24 text-4xl font-black tracking-[-0.06em]">
+                <h3 className="mt-24 text-2xl sm:text-4xl font-black tracking-[-0.06em]">
                   {program.title}
                 </h3>
 
@@ -493,7 +493,7 @@ function ProgramsSection({
 
 function TrainersSection() {
   return (
-    <section className="bg-[#D7FF36] px-5 py-28 text-black">
+    <section className="bg-[#D7FF36] px-5 py-14 md:py-28 text-black">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 text-center">
           <p className="text-sm font-black tracking-[0.32em] text-black/45">
@@ -548,7 +548,7 @@ function PricingSection({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <section className="bg-[#080808] px-5 py-28 text-white">
+    <section className="bg-[#080808] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-14 text-center">
           <p className="text-sm font-black tracking-[0.32em] text-[#FF4D1D]">
@@ -573,7 +573,7 @@ function PricingSection({
             >
               <p className="text-sm font-black opacity-55">{plan.name}</p>
 
-              <h3 className="mt-7 text-6xl font-black tracking-[-0.08em]">
+              <h3 className="mt-7 text-3xl md:text-6xl font-black tracking-[-0.08em]">
                 {plan.price}
               </h3>
 
@@ -619,7 +619,7 @@ function ScheduleSection({
   onPageChange: (page: PulsecorePageId) => void;
 }) {
   return (
-    <section className="bg-[#111] px-5 py-28 text-white">
+    <section className="bg-[#111] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[1320px]">
         <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -663,7 +663,7 @@ function ScheduleSection({
 
 function TestimonialsSection() {
   return (
-    <section className="bg-[#FF4D1D] px-5 py-28 text-white">
+    <section className="bg-[#FF4D1D] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[1320px] rounded-[40px] bg-black p-8 lg:p-14">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr]">
           <div>
@@ -718,14 +718,14 @@ function FaqSection() {
   ];
 
   return (
-    <section className="bg-[#080808] px-5 py-28 text-white">
+    <section className="bg-[#080808] px-5 py-14 md:py-28 text-white">
       <div className="mx-auto max-w-[980px]">
         <div className="text-center">
           <p className="text-sm font-black tracking-[0.32em] text-[#D7FF36]">
             שאלות נפוצות
           </p>
 
-          <h2 className="mt-5 text-6xl font-black leading-[0.9] tracking-[-0.08em]">
+          <h2 className="mt-5 text-3xl md:text-6xl font-black leading-[0.9] tracking-[-0.08em]">
             לפני שמתחילים
           </h2>
         </div>
@@ -748,7 +748,7 @@ function FaqSection() {
 
 function ContactSection() {
   return (
-    <section className="bg-[#D7FF36] px-5 py-28 text-black">
+    <section className="bg-[#D7FF36] px-5 py-14 md:py-28 text-black">
       <div className="mx-auto grid max-w-[1320px] gap-8 lg:grid-cols-[0.8fr_1.2fr]">
         <div className="rounded-[40px] bg-black p-8 text-white lg:p-12">
           <ShieldCheck className="h-14 w-14 text-[#D7FF36]" />

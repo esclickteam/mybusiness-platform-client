@@ -405,7 +405,7 @@ function Hero({
             </button>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+          <div className="mt-10 grid max-w-xl grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([num, label]) => (
               <div
                 key={label}
@@ -453,7 +453,7 @@ function Hero({
               {getValue(data, "heroCardText")}
             </p>
 
-            <div className="mt-4 grid grid-cols-3 gap-2">
+            <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((item) => (
                 <div
                   key={item}
@@ -557,7 +557,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           </div>
 
           <div className="absolute -bottom-8 right-6 max-w-[275px] rounded-[32px] border border-white/80 bg-white/82 p-5 shadow-2xl shadow-[#244236]/15 backdrop-blur-xl">
-            <div className="text-4xl font-semibold tracking-[-0.07em] text-[#20342a]">01</div>
+            <div className="text-2xl sm:text-4xl font-semibold tracking-[-0.07em] text-[#20342a]">01</div>
             <p className="mt-2 text-sm leading-6 text-[#5f6c62]">
               היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.
             </p>
@@ -784,7 +784,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
               מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.
             </h3>
 
-            <div className="mt-6 grid grid-cols-3 gap-2">
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((step) => (
                 <div key={step} className="rounded-2xl bg-white/10 px-3 py-3 text-center text-sm font-semibold">
                   {step}
@@ -804,7 +804,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
             >
               <div className="absolute right-5 top-9 hidden h-5 w-5 rounded-full border-4 border-[#f7efe3] bg-[#244236] shadow-lg lg:block" />
 
-              <div className="mb-7 text-7xl font-semibold tracking-[-0.08em] text-[#b8cfae] transition duration-500 group-hover:text-[#b99067]">
+              <div className="mb-7 text-3xl md:text-7xl font-semibold tracking-[-0.08em] text-[#b8cfae] transition duration-500 group-hover:text-[#b99067]">
                 0{index + 1}
               </div>
 
@@ -883,7 +883,7 @@ function PricingSection({
                 )}
               </div>
 
-              <div className="mt-8 text-5xl font-semibold tracking-[-0.07em]">
+              <div className="mt-8 text-2xl md:text-5xl font-semibold tracking-[-0.07em]">
                 {price}
               </div>
 

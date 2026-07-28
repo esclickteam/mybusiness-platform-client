@@ -123,7 +123,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*90} className="min-w-[280px] shrink-0">
               <article className="ag-card flex aspect-square flex-col justify-between border border-white/15 bg-[var(--surface)] p-7 text-right">
-                <span className="ag-display text-5xl font-extrabold text-[var(--p)]">0{i+1}</span>
+                <span className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{i+1}</span>
                 <div><h3 className="text-2xl font-bold">{title}</h3><p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p></div>
               </article>
             </Reveal>
@@ -154,7 +154,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 right-0 left-0 p-6">
-                  <p className="ag-display text-6xl font-extrabold text-white/20">0{i + 1}</p>
+                  <p className="ag-display text-3xl md:text-6xl font-extrabold text-white/20">0{i + 1}</p>
                   <h3 className="-mt-4 text-3xl font-black text-white">{title}</h3>
                   <p className="mt-3 text-sm leading-7 text-white/75">{text}</p>
                 </div>
@@ -246,7 +246,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
               <article className={`ag-card min-h-[280px] border border-white/15 bg-[var(--surface)] p-7 text-right ${i === 0 ? "md:col-span-4" : i === 1 ? "md:col-span-2" : "md:col-span-6"}`}>
-                <p className="ag-display text-7xl font-extrabold leading-none text-[var(--p)]/80">0{i + 1}</p>
+                <p className="ag-display text-3xl md:text-7xl font-extrabold leading-none text-[var(--p)]/80">0{i + 1}</p>
                 <h3 className="mt-8 text-2xl font-black">{title}</h3>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>
                 <button type="button" onClick={() => goTo("contact")} className="mt-6 border border-[var(--accent)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-[var(--accent)]">Brief it</button>
@@ -277,7 +277,7 @@ function Process({ data }: { data: Record<string, any> }) {
           {steps.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 80} variant={i % 2 === 0 ? "right" : "left"}>
               <article className={`grid gap-5 px-5 py-7 text-right md:grid-cols-[140px_1fr] md:items-center ${i % 2 === 0 ? "bg-[var(--bg)]" : "bg-[var(--surface)]"}`}>
-                <p className="ag-display text-6xl font-extrabold text-[var(--p)]">0{i + 1}</p>
+                <p className="ag-display text-3xl md:text-6xl font-extrabold text-[var(--p)]">0{i + 1}</p>
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[var(--accent)]">{i === 0 ? "Spark" : i === 1 ? "Script" : i === 2 ? "Launch" : "Learn"}</p>
                   <h3 className="mt-2 text-2xl font-black">{title}</h3>
@@ -384,7 +384,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
         <Reveal variant="scale" delayMs={120}>
           <div className="relative overflow-hidden border border-white/15">
             <img src={getValue(data, "heroImage")} alt="" className="ag-ken aspect-[16/11] w-full object-cover" />
-            <div className="absolute bottom-4 right-4 grid grid-cols-2 gap-2">
+            <div className="absolute bottom-4 right-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
               {stats.slice(0,2).map(([v,l])=>(
                 <div key={l} className="border border-white/20 bg-black/55 px-4 py-3 backdrop-blur text-center">
                   <p className="ag-display text-2xl font-extrabold text-[var(--accent)]">{v}</p>

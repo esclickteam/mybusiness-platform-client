@@ -57,7 +57,7 @@ function Header({ data }: { data: Record<string, any> }) {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
         <a href="#top" className="flex items-end gap-3">
           <span className="grid h-10 w-10 place-items-center border border-[var(--p)] bg-white text-sm font-black text-[var(--p)]">{getValue(data, "logoText")}</span>
-          <span className="florique-script text-5xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</span>
+          <span className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</span>
         </a>
         <nav className="hidden items-center gap-8 text-xs font-bold uppercase tracking-[0.24em] text-[#7e355b] lg:flex">
           <a href="#occasions" className="transition hover:text-[var(--p)]">{getValue(data, "navOccasions")}</a>
@@ -81,7 +81,7 @@ function BloomCounter({ target, label, suffix = "", delayMs = 0 }: { target: num
     <div ref={ref}>
       <Reveal delayMs={delayMs} variant="scale">
         <div className="aspect-square border border-[var(--line)] bg-white/75 p-5 text-center shadow-[0_22px_55px_rgba(225,29,140,0.10)]">
-          <p className="florique-script text-6xl leading-none text-[var(--p)]">{value}{suffix}</p>
+          <p className="florique-script text-3xl md:text-6xl leading-none text-[var(--p)]">{value}{suffix}</p>
           <p className="mt-3 text-sm font-bold leading-6 text-[var(--muted)]">{label}</p>
         </div>
       </Reveal>
@@ -122,13 +122,13 @@ function Hero({ data }: { data: Record<string, any> }) {
           <div className="florique-soft-float relative mx-auto max-w-md border border-white/70 bg-white/46 p-4 shadow-[0_30px_90px_rgba(225,29,140,0.18)] backdrop-blur">
             <img src={getValue(data, "heroSmallImage")} alt="" className="aspect-[4/5] w-full object-cover" />
             <div className="absolute -bottom-8 -right-8 bg-white px-8 py-6 shadow-[0_20px_60px_rgba(225,29,140,0.18)]">
-              <p className="florique-script text-5xl leading-none text-[var(--p)]">fresh today</p>
+              <p className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">fresh today</p>
               <p className="mt-1 text-xs font-black uppercase tracking-[0.22em] text-[var(--muted)]">seasonal stems</p>
             </div>
           </div>
         </Reveal>
       </div>
-      <div className="relative z-20 mx-auto -mt-28 grid max-w-md grid-cols-2 gap-3 px-5 pb-10 md:max-w-xl">
+      <div className="relative z-20 mx-auto -mt-28 grid max-w-md grid-cols-1 sm:grid-cols-2 gap-3 px-5 pb-10 md:max-w-xl">
         <BloomCounter target={metricOne} label={getValue(data, "heroMetricOneLabel")} />
         <BloomCounter target={metricTwo} label={getValue(data, "heroMetricTwoLabel")} suffix="h" delayMs={90} />
       </div>
@@ -159,7 +159,7 @@ function Occasions({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#3b1028]/78 via-[#3b1028]/15 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-7 text-white">
-                  <p className="florique-script text-5xl leading-none">{title}</p>
+                  <p className="florique-script text-2xl md:text-5xl leading-none">{title}</p>
                   <p className="mt-3 text-sm font-semibold leading-7 text-white/82">{text}</p>
                 </div>
               </article>
@@ -188,7 +188,7 @@ function BouquetMosaic({ data }: { data: Record<string, any> }) {
               <p className="text-xs font-black uppercase tracking-[0.34em] text-[var(--p)]">{getValue(data, "bouquetsEyebrow")}</p>
               <h2 className="mt-4 max-w-3xl text-5xl font-semibold leading-tight md:text-7xl">{getValue(data, "bouquetsTitle")}</h2>
             </div>
-            <p className="florique-script text-6xl leading-none text-[var(--p)]">signature</p>
+            <p className="florique-script text-3xl md:text-6xl leading-none text-[var(--p)]">signature</p>
           </div>
         </Reveal>
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -199,7 +199,7 @@ function BouquetMosaic({ data }: { data: Record<string, any> }) {
                 <div className="absolute inset-0 bg-gradient-to-t from-white via-white/48 to-transparent" />
                 <div className="relative z-10 p-7 text-right">
                   <div className="mb-4 inline-flex bg-[var(--p)] px-4 py-2 text-sm font-black text-white">{price}</div>
-                  <h3 className="florique-script text-5xl leading-none text-[var(--p)]">{name}</h3>
+                  <h3 className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</h3>
                   <p className="mt-3 text-sm font-bold leading-7 text-[var(--muted)]">{text}</p>
                 </div>
               </article>
@@ -337,7 +337,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
               <blockquote className="flex aspect-square flex-col justify-between border border-[var(--line)] bg-white p-7 shadow-[0_24px_60px_rgba(225,29,140,0.10)]">
                 <p className="text-xl font-semibold leading-9 text-[var(--text)]">"{text}"</p>
                 <footer>
-                  <p className="florique-script text-5xl leading-none text-[var(--p)]">{name}</p>
+                  <p className="florique-script text-2xl md:text-5xl leading-none text-[var(--p)]">{name}</p>
                   <p className="mt-2 text-xs font-black uppercase tracking-[0.2em] text-[var(--muted)]">{role}</p>
                 </footer>
               </blockquote>
@@ -389,7 +389,7 @@ function Footer({ data }: { data: Record<string, any> }) {
       <div className="absolute bottom-0 right-0 h-80 w-80 rounded-full bg-rose-200/20 blur-3xl" />
       <div className="relative mx-auto max-w-7xl">
         <Reveal>
-          <p className="florique-script text-8xl leading-none text-pink-200">{getValue(data, "brandName")}</p>
+          <p className="florique-script text-3xl md:text-8xl leading-none text-pink-200">{getValue(data, "brandName")}</p>
           <h2 className="mt-6 max-w-5xl text-5xl font-semibold leading-tight md:text-8xl">{getValue(data, "ctaTitle")}</h2>
           <p className="mt-6 max-w-2xl text-lg font-semibold leading-8 text-white/72">{getValue(data, "ctaText")}</p>
           <a href="#order" className="mt-10 inline-flex bg-[var(--p)] px-9 py-5 text-sm font-black uppercase tracking-[0.2em] text-white shadow-[0_20px_70px_rgba(225,29,140,0.32)]">

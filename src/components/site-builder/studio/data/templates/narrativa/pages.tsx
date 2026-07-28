@@ -98,7 +98,7 @@ function About({ data }: { data: Record<string, any> }) {
           <Reveal variant="right" className="text-right">
             <h2 className="ag-display text-4xl font-bold leading-tight md:text-6xl">{getValue(data, "aboutTitle")}</h2>
             <p className="mt-8 text-lg leading-9 text-[var(--muted)]">
-              <span className="ag-display ml-3 inline-block align-top text-7xl font-bold leading-none text-[var(--p)]">{firstLetter}</span>
+              <span className="ag-display ml-3 inline-block align-top text-3xl md:text-7xl font-bold leading-none text-[var(--p)]">{firstLetter}</span>
               {restText}
             </p>
             <div className="mt-8 grid gap-4 border-y border-black/10 py-5 sm:grid-cols-2">
@@ -329,7 +329,7 @@ function Contact({ data }: { data: Record<string, any> }) {
     <section className="px-5 py-20 lg:px-8 lg:py-28">
       <Reveal className="mx-auto max-w-4xl border border-black/10 bg-[var(--surface)] p-6 text-right md:p-10">
         <div className="border-y border-black/10 py-5 text-center">
-          <p className="ag-display text-4xl font-bold">{getValue(data, "brandName")}</p>
+          <p className="ag-display text-2xl sm:text-4xl font-bold">{getValue(data, "brandName")}</p>
           <p className="mt-2 text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">{getValue(data, "contactEyebrow")}</p>
         </div>
         <div className="py-8">

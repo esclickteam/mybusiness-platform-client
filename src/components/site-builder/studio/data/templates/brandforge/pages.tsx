@@ -91,7 +91,7 @@ function About({ data }: { data: Record<string, any> }) {
         <Reveal variant="right" className="bg-[var(--dark)] p-8 text-right text-white md:p-12 lg:min-h-[520px]">
           <p className="text-xs font-black uppercase tracking-[0.34em] text-[var(--accent)]">{getValue(data, "aboutEyebrow")}</p>
           <h2 className="ag-display mt-8 max-w-3xl text-5xl font-extrabold leading-[0.92] md:text-7xl">{getValue(data, "aboutTitle")}</h2>
-          <div className="mt-10 grid grid-cols-3 gap-3">
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-3">
             <span className="h-24 bg-[var(--accent)]" />
             <span className="h-24 border border-white/20" />
             <span className="h-24 bg-white" />
@@ -164,7 +164,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 </div>
                 <div className="flex flex-col justify-between border-t border-black/10 p-7 md:border-r md:border-t-0 md:p-10">
                   <div>
-                    <p className="ag-display text-7xl font-extrabold leading-none text-[var(--dark)]/10">0{i + 1}</p>
+                    <p className="ag-display text-3xl md:text-7xl font-extrabold leading-none text-[var(--dark)]/10">0{i + 1}</p>
                     <h3 className="ag-display mt-4 text-3xl font-extrabold md:text-5xl">{title}</h3>
                   </div>
                   <p className="mt-8 max-w-xl text-base font-semibold leading-8 text-[var(--muted)]">{text}</p>
@@ -227,7 +227,7 @@ function GalleryStrip({ data }: { data: Record<string, any> }) {
             <p className="text-xs font-black uppercase tracking-[0.34em] text-[var(--p)]">{getValue(data, "galleryEyebrow")}</p>
             <h2 className="ag-display mt-3 text-4xl font-extrabold md:text-6xl">{getValue(data, "galleryTitle")}</h2>
           </div>
-          <p className="ag-display text-5xl font-extrabold text-[var(--accent)]">01-04</p>
+          <p className="ag-display text-2xl md:text-5xl font-extrabold text-[var(--accent)]">01-04</p>
         </Reveal>
         <div className="grid grid-cols-2 md:grid-cols-4">
           {images.map((src, i) => (
@@ -262,7 +262,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
               <article className="ag-card grid gap-5 border-b border-black/10 bg-[var(--surface)] p-7 text-right md:grid-cols-[120px_1fr_0.8fr] md:items-center md:p-10">
-                <p className="ag-display text-8xl font-extrabold leading-none text-[var(--accent)]">"</p>
+                <p className="ag-display text-3xl md:text-8xl font-extrabold leading-none text-[var(--accent)]">"</p>
                 <div>
                   <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--muted)]">PRINCIPLE 0{i + 1}</p>
                   <h3 className="ag-display mt-3 text-3xl font-extrabold md:text-5xl">{title}</h3>
@@ -302,7 +302,7 @@ function Process({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={i * 80} variant="up">
               <article className={`ag-card min-h-[280px] border-black/10 p-8 text-right md:p-10 ${i === 0 || i === 3 ? "bg-[var(--dark)] text-white" : "bg-[var(--bg)] text-[var(--dark)]"}`}>
                 <p className={`ag-display text-8xl font-extrabold leading-none ${i === 0 || i === 3 ? "text-white/20" : "text-[var(--accent)]"}`}>0{i + 1}</p>
-                <h3 className="ag-display mt-6 text-4xl font-extrabold">{title}</h3>
+                <h3 className="ag-display mt-6 text-2xl sm:text-4xl font-extrabold">{title}</h3>
                 <p className={`mt-4 text-sm font-semibold leading-7 ${i === 0 || i === 3 ? "text-white/70" : "text-[var(--muted)]"}`}>{text}</p>
               </article>
             </Reveal>
@@ -376,9 +376,9 @@ function PageHero({ data, title }: { data: Record<string, any>; title: string })
           <p className="text-xs font-black uppercase tracking-[0.34em] text-[var(--accent)]">{getValue(data, "brandName")} · {getValue(data, "nicheLabel")}</p>
           <h1 className="ag-display mt-8 max-w-4xl text-5xl font-extrabold leading-[0.9] md:text-8xl">{title}</h1>
         </div>
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2">
           <div className="bg-[var(--accent)] p-6 text-[var(--dark)]">
-            <p className="ag-display text-5xl font-extrabold">TYPE</p>
+            <p className="ag-display text-2xl md:text-5xl font-extrabold">TYPE</p>
             <p className="mt-4 text-sm font-bold leading-7">{getValue(data, "heroSubtitle")}</p>
           </div>
           <div className="grid">
@@ -411,7 +411,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
             </div>
             <div className="grid gap-3 md:col-span-5">
               <img src={getValue(data, "heroImage")} alt="" className="aspect-[4/3] w-full object-cover" />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {stats.slice(0,2).map(([v,l])=>(
                   <div key={l} className="bg-[var(--accent)] p-5 text-center text-[var(--dark)]">
                     <p className="ag-display text-3xl font-extrabold">{v}</p>

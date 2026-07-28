@@ -56,7 +56,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#ff2d95" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 tpl-neon mt-4 max-w-3xl text-5xl font-bold leading-[0.95] md:text-7xl">{v(data, "heroTitle")}</h1>
           <p className="tpl-rise-3 mt-6 max-w-xl text-lg leading-8" style={{ color: "#b89bc4" }}>{v(data, "heroSubtitle")}</p>
-          <div className="mt-12 grid grid-cols-3 gap-3 md:max-w-xl">
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-3 md:max-w-xl">
             {[v(data, "item1Image"), v(data, "item2Image"), v(data, "item3Image")].map((src, i) => (
               <div key={i} className="tpl-plate-rise aspect-square overflow-hidden rounded-full border-2" style={{ borderColor: "#ff2d95", animationDelay: `${i * 0.15}s` }}>
                 <img src={src} alt="" className="h-full w-full object-cover" />
@@ -146,7 +146,7 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
           <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#b89bc4" }}>{v(data, "pageHeroText")}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
             <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(248,238,248,0.14)", animationDelay: `${i * 0.25}s` }}>
               <img src={src} alt="" className="h-full w-full object-cover" />
@@ -169,7 +169,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           {reasons.map((reason, i) => (
             <Reveal key={reason.title} delayMs={i * 90} variant="up">
               <article className="tpl-sweep h-full border p-6 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: i % 2 ? "#12081a" : "#080410" }}>
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#ff2d95" }}>0{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#ff2d95" }}>0{i + 1}</span>
                 <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{reason.text}</p>
               </article>
@@ -273,7 +273,7 @@ function KitchenMethod({ data }: { data: Record<string, any> }) {
           {steps.map((step, i) => (
             <Reveal key={step.title} delayMs={i * 80} variant="right">
               <article className="relative min-h-48 border p-5 rounded-xl" style={{ borderColor: "rgba(248,238,248,0.14)", background: "#1e1028" }}>
-                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#ff2d95" }}>{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold opacity-30" style={{ color: "#ff2d95" }}>{i + 1}</span>
                 <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#b89bc4" }}>{step.text}</p>
               </article>

@@ -712,7 +712,7 @@ function ServicesSection({
           {services.map(([titleKey, textKey, code], index) => (
             <Reveal key={titleKey} delay={index * 70}>
               <article className="grid gap-0 border-b border-[#c8a96a]/25 last:border-b-0 lg:grid-cols-[180px_1px_1fr]">
-                <div className="p-6 text-5xl font-semibold text-[#c8a96a] lg:p-8">{code}</div>
+                <div className="p-6 text-2xl md:text-5xl font-semibold text-[#c8a96a] lg:p-8">{code}</div>
                 <div className="monolith-accent-bar hidden lg:block" />
                 <div className="p-6 lg:p-8">
                   <EditableText
@@ -847,7 +847,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
           {steps.map(([titleKey, textKey], index) => (
             <Reveal key={titleKey} delay={index * 70}>
               <div className="grid gap-0 border-b border-[#c8a96a]/25 last:border-b-0 lg:grid-cols-[160px_1px_1fr]">
-                <div className="p-6 text-4xl font-semibold text-[#c8a96a] lg:p-8">
+                <div className="p-6 text-2xl sm:text-4xl font-semibold text-[#c8a96a] lg:p-8">
                   0{index + 1}
                 </div>
                 <div className="monolith-accent-bar hidden lg:block" />
@@ -1221,7 +1221,7 @@ function PageHero({
   return (
     <section className="border-b border-[#c8a96a]/20 bg-[#102140] px-4 py-20 lg:px-8">
       <Reveal className="mx-auto grid max-w-7xl gap-0 border border-[#c8a96a]/25 lg:grid-cols-[180px_1px_1fr]">
-        <div className="border-b border-[#c8a96a]/25 p-6 text-center text-5xl font-semibold text-[#c8a96a] lg:border-b-0 lg:p-10">
+        <div className="border-b border-[#c8a96a]/25 p-6 text-center text-2xl md:text-5xl font-semibold text-[#c8a96a] lg:border-b-0 lg:p-10">
           {indexMap[type]}
         </div>
         <div className="monolith-accent-bar hidden lg:block" />

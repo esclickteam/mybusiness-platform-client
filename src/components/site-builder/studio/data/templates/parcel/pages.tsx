@@ -79,7 +79,7 @@ function SurveyHero({ data, goTo }: { data: Record<string, any>; goTo: (id: stri
         </div>
         <div className="tpl-float border bg-[#e4dcc8] p-3" style={{ borderColor: "rgba(107,90,46,0.28)" }}>
           <img src={v(data, "heroImage")} alt="" className="aspect-[5/4] w-full object-cover" />
-          <div className="grid grid-cols-2 border-t text-xs font-bold tracking-[0.18em]" style={{ borderColor: "rgba(107,90,46,0.24)", color: "#6e684f" }}>
+          <div className="grid grid-cols-1 sm:grid-cols-2 border-t text-xs font-bold tracking-[0.18em]" style={{ borderColor: "rgba(107,90,46,0.24)", color: "#6e684f" }}>
             <span className="border-l px-3 py-3" style={{ borderColor: "rgba(107,90,46,0.2)" }}>{v(data, "mapCode")}</span>
             <span className="px-3 py-3 text-left">{v(data, "mapScale")}</span>
           </div>
@@ -114,7 +114,7 @@ function PlotSpecs({ data }: { data: Record<string, any> }) {
           {plots.map((plot, index) => (
             <article key={plot.title} className="tpl-rise grid gap-6 border-b py-9 md:grid-cols-[0.45fr_0.75fr_1fr] md:items-start" style={{ borderColor: "rgba(107,90,46,0.24)", animationDelay: `${index * 0.08}s` }}>
               <div>
-                <p className="text-6xl font-black leading-none" style={{ color: "#6b5a2e" }}>{plot.size}</p>
+                <p className="text-3xl md:text-6xl font-black leading-none" style={{ color: "#6b5a2e" }}>{plot.size}</p>
                 <p className="mt-2 text-xs font-bold tracking-[0.22em]" style={{ color: "#6e684f" }}>מ״ר</p>
               </div>
               <div>

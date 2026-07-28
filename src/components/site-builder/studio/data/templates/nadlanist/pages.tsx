@@ -357,7 +357,7 @@ function Hero({
             </div>
 
             <div className="absolute -right-5 bottom-14 z-20 hidden rotate-[5deg] rounded-[1.6rem] border border-white/10 bg-[#06101f]/82 p-4 text-white backdrop-blur-xl sm:block">
-              <div className="text-4xl font-black tracking-[-0.08em]">
+              <div className="text-2xl sm:text-4xl font-black tracking-[-0.08em]">
                 {hero.statNumber}
               </div>
               <div className="mt-1 max-w-[130px] text-[10px] uppercase leading-4 tracking-[0.2em] text-white/62">
@@ -651,10 +651,10 @@ function Reviews({ data }: { data: NadlanistData }) {
               className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-7 text-right text-white transition duration-500 hover:-translate-y-2 hover:border-[#c9a85f]/60"
             >
               <div className="mb-8 flex items-center justify-between">
-                <span className="text-4xl font-black tracking-[-0.08em] text-[#c9a85f]">
+                <span className="text-2xl sm:text-4xl font-black tracking-[-0.08em] text-[#c9a85f]">
                   {item.rating}
                 </span>
-                <span className="text-5xl leading-none text-white/40">“</span>
+                <span className="text-2xl md:text-5xl leading-none text-white/40">“</span>
               </div>
               <p className="text-lg font-semibold leading-8 text-white/78">
                 {item.quote}
@@ -844,7 +844,7 @@ function AboutPage({ data }: { data: NadlanistData }) {
             key={label}
             className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-8 text-right shadow-xl shadow-black/20"
           >
-            <div className="text-6xl font-black tracking-[-0.1em] text-white">
+            <div className="text-3xl md:text-6xl font-black tracking-[-0.1em] text-white">
               {num}
             </div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.18em] text-white/45">
@@ -1032,7 +1032,7 @@ function Footer({
           <button
             type="button"
             onClick={() => setPage("home")}
-            className="text-4xl font-black uppercase leading-none tracking-[-0.08em] text-white transition hover:text-[#c9a85f]"
+            className="text-2xl sm:text-4xl font-black uppercase leading-none tracking-[-0.08em] text-white transition hover:text-[#c9a85f]"
           >
             {data.brand.name} ®
           </button>

@@ -254,7 +254,7 @@ function BookingModal({
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="טלפון"
               />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                   placeholder="תאריך"
@@ -340,7 +340,7 @@ function Hero({
             </button>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+          <div className="mt-10 grid max-w-xl grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([num, label]) => (
               <div
                 key={label}
@@ -502,7 +502,7 @@ function ExperienceSection({ data }: { data: Record<string, any> }) {
               key={num}
               className="group rounded-[32px] border border-[#c9a24b]/15 bg-[#14100d]/70 p-7 transition duration-500 hover:-translate-y-2 hover:border-[#c9a24b]/40"
             >
-              <span className="font-serif text-5xl font-semibold text-[#c9a24b]/70 transition duration-500 group-hover:text-[#c9a24b]">
+              <span className="font-serif text-2xl md:text-5xl font-semibold text-[#c9a24b]/70 transition duration-500 group-hover:text-[#c9a24b]">
                 {num}
               </span>
               <h3 className="mt-5 font-serif text-2xl font-semibold text-[#f5eee1]">{title}</h3>

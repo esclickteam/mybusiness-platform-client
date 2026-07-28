@@ -154,7 +154,7 @@ function Showcase({ data }: { data: Record<string, any> }) {
                   <img src={image} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" />
                 </div>
                 <div className="p-8 lg:p-12">
-                  <span className="t-display text-6xl text-[var(--p)]">0{index + 1}</span>
+                  <span className="t-display text-3xl md:text-6xl text-[var(--p)]">0{index + 1}</span>
                   <h3 className="mt-5 text-3xl font-semibold text-white lg:text-4xl">{title}</h3>
                   <p className="mt-5 max-w-md text-base leading-8 text-[var(--muted)]">{text}</p>
                   <div className="mt-8 h-px w-28 bg-[var(--p)]" />
@@ -339,7 +339,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/75 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md border border-[var(--p)]/40 bg-[#1E1C1A] p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
-        <h3 className="t-display text-4xl text-white">{getValue(data, "contactTitle")}</h3>
+        <h3 className="t-display text-2xl sm:text-4xl text-white">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{getValue(data, "contactText")}</p>
         <form className="mt-6 grid gap-3">
           <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />

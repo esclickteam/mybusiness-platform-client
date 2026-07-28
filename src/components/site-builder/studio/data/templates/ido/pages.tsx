@@ -341,7 +341,7 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
 
         <div
           className={[
-            "relative z-40 mt-10 grid w-full max-w-xl grid-cols-3 gap-3",
+            "relative z-40 mt-10 grid w-full max-w-xl grid-cols-1 md:grid-cols-3 gap-3",
             "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
             open
               ? "translate-y-0 opacity-100 blur-none"
@@ -461,7 +461,7 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
           }}
         >
           <div className="mx-auto mb-24 hidden h-14 w-14 items-center justify-center md:flex">
-            <div className="grid grid-cols-4 gap-[2px]">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2px]">
               {Array.from({ length: 16 }).map((_, index) => (
                 <span
                   key={index}
@@ -691,7 +691,7 @@ function Gallery() {
     <section
       id="gallery"
       ref={sectionRef}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-24 text-white md:px-8"
+      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-12 md:py-24 text-white md:px-8"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />

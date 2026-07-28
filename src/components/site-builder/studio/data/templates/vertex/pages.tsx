@@ -397,7 +397,7 @@ function HeroSection({
             />
             <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(0,255,136,0.18),transparent_36%,transparent_65%,rgba(0,0,0,0.5))]" />
           </div>
-          <div className="mt-4 grid grid-cols-3 gap-3">
+          <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([value, label]) => (
               <div key={label} className="border border-[#00ff8833] bg-[#0d0d0d] px-4 py-4 text-right">
                 <TemplateText as="div" className="text-3xl font-black text-[#00ff88]">
@@ -676,7 +676,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid gap-px border border-[#00ff8833] bg-[#00ff8833] lg:grid-cols-4">
           {steps.map(([title, text], index) => (
             <div key={title} className="bg-[#050505] p-6">
-              <TemplateText as="div" className="text-5xl font-black text-[#00ff88]">
+              <TemplateText as="div" className="text-2xl md:text-5xl font-black text-[#00ff88]">
                 0{index + 1}
               </TemplateText>
               <TemplateText as="h3" className="mt-5 text-2xl font-black uppercase text-[#f5f5f5]">

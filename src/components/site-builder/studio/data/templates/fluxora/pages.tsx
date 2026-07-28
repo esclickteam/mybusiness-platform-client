@@ -323,7 +323,7 @@ function Hero({
             </button>
           </div>
 
-          <div className="mt-10 grid max-w-lg grid-cols-3 gap-3">
+          <div className="mt-10 grid max-w-lg grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([num, label]) => (
               <div
                 key={label}
@@ -442,7 +442,7 @@ function WorkflowSection({ data }: { data: Record<string, any> }) {
               key={num}
               className="rounded-[28px] border border-white/8 bg-white/[0.03] p-8 transition duration-500 hover:-translate-y-2 hover:border-[#38bdf8]/30"
             >
-              <span className="text-5xl font-bold text-[#3dffa8]">{num}</span>
+              <span className="text-2xl md:text-5xl font-bold text-[#3dffa8]">{num}</span>
               <h3 className="mt-5 text-2xl font-bold text-white">{title}</h3>
               <p className="mt-3 text-sm leading-7 text-slate-400">{text}</p>
             </div>
@@ -536,7 +536,7 @@ function PricingSection({
               ) : null}
               <h3 className="text-xl font-bold text-white">{name}</h3>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-white">{price}</span>
+                <span className="text-2xl md:text-5xl font-bold text-white">{price}</span>
                 <span className="text-sm text-slate-400">{period}</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>

@@ -125,8 +125,8 @@ function BasketHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,245,242,0.12)", background: "#18201c" }}>
       <div className="mx-auto max-w-5xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-3">
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="up">
               <img src={src} alt="" className="aspect-[4/3] w-full object-cover" style={{ borderRadius: i % 2 ? "2rem 0.5rem" : "0.5rem 2rem" }} />
@@ -143,7 +143,7 @@ function BasketHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,245,242,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#86efac", background: "#18201c" }}>
@@ -165,7 +165,7 @@ function BasketHomeStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 60} variant="scale">
             <div className="text-center">
-              <div className="tpl-display text-4xl font-bold" style={{ color: "#86efac" }}>{n}</div>
+              <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#86efac" }}>{n}</div>
               <p className="mt-1 text-xs tracking-wider" style={{ color: "#8aa89a" }}>{l}</p>
             </div>
           </Reveal>
@@ -385,7 +385,7 @@ function BasketChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#86efac" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#8aa89a" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#86efac" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

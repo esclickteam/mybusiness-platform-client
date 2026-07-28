@@ -83,7 +83,7 @@ function UrbanixGiantHero({ data, goTo, onCta }: { data: Record<string, any>; go
         </div>
         <div className="grid border-t lg:border-t-0" style={{ borderColor: "rgba(242,242,240,0.12)", background: "#1e2022" }}>
           <div className="border-b p-8" style={{ borderColor: "rgba(242,242,240,0.12)" }}>
-            <div className="tpl-display text-8xl font-black leading-none" style={{ color: "#c8f542" }}>{v(data, "bigStat")}</div>
+            <div className="tpl-display text-3xl md:text-8xl font-black leading-none" style={{ color: "#c8f542" }}>{v(data, "bigStat")}</div>
             <p className="mt-2 text-sm font-black tracking-[0.2em]" style={{ color: "#9a9d98" }}>{v(data, "bigStatLabel")}</p>
           </div>
           <div className="p-8">
@@ -138,7 +138,7 @@ function UrbanixDistrictColumns({ data }: { data: Record<string, any> }) {
           <article key={district.name} className="min-h-[420px] border-b p-7 md:border-b-0 md:border-l last:border-l-0 lg:p-10" style={{ borderColor: "rgba(242,242,240,0.12)", background: index === 1 ? "#c8f542" : "#1e2022", color: index === 1 ? "#101210" : "#f2f2f0" }}>
             <p className="text-xs font-black tracking-[0.28em]" style={{ color: index === 1 ? "#101210" : "#c8f542" }}>DISTRICT 0{index + 1}</p>
             <h3 className="tpl-display mt-8 text-5xl font-black leading-none md:text-6xl">{district.name}</h3>
-            <div className="tpl-display mt-12 text-7xl font-black leading-none">{district.stat}</div>
+            <div className="tpl-display mt-12 text-3xl md:text-7xl font-black leading-none">{district.stat}</div>
             <p className="mt-6 text-lg leading-8" style={{ color: index === 1 ? "#263018" : "#9a9d98" }}>{district.text}</p>
           </article>
         ))}

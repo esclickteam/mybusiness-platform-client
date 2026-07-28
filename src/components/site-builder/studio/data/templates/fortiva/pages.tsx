@@ -311,10 +311,10 @@ function Hero({
             </button>
           </div>
 
-          <div className="mt-12 grid max-w-xl grid-cols-3 gap-6 border-t border-[#0f1e3d]/10 pt-8">
+          <div className="mt-12 grid max-w-xl grid-cols-1 md:grid-cols-3 gap-6 border-t border-[#0f1e3d]/10 pt-8">
             {stats.map(([num, label]) => (
               <div key={label}>
-                <div className="font-serif text-4xl font-semibold text-[#0f1e3d]">{num}</div>
+                <div className="font-serif text-2xl sm:text-4xl font-semibold text-[#0f1e3d]">{num}</div>
                 <div className="mt-1 text-xs font-semibold text-[#7a8395]">{label}</div>
               </div>
             ))}
@@ -432,7 +432,7 @@ function ServicesSection({
               className="group relative overflow-hidden rounded-2xl border border-white/8 bg-white/5 p-8 transition duration-500 hover:-translate-y-2 hover:border-[#c6a664]/40 hover:bg-white/8"
             >
               <div className="flex items-start justify-between gap-4">
-                <span className="font-serif text-5xl font-semibold text-[#c6a664]/50 transition duration-500 group-hover:text-[#c6a664]">
+                <span className="font-serif text-2xl md:text-5xl font-semibold text-[#c6a664]/50 transition duration-500 group-hover:text-[#c6a664]">
                   0{index + 1}
                 </span>
                 <span className="mt-2 grid h-10 w-10 place-items-center rounded-full border border-[#c6a664]/30 text-[#c6a664] transition duration-500 group-hover:bg-[#c6a664] group-hover:text-[#0f1e3d]">

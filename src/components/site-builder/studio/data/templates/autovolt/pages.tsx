@@ -147,14 +147,14 @@ function Services({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 90} variant="scale">
               <article className="av-chrome-card group flex aspect-square flex-col justify-between border border-white/14 p-6">
                 <div className="flex items-start justify-between">
-                  <span className="t-display text-6xl font-bold leading-none text-white/18">0{index + 1}</span>
+                  <span className="t-display text-3xl md:text-6xl font-bold leading-none text-white/18">0{index + 1}</span>
                   <span className="border border-[var(--blue)]/45 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-[var(--blue)]">chrome</span>
                 </div>
                 <div>
-                  <h3 className="t-display text-4xl font-bold uppercase leading-none text-white">{title}</h3>
+                  <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase leading-none text-white">{title}</h3>
                   <p className="mt-4 text-sm font-semibold leading-6 text-white/58">{text}</p>
                 </div>
-                <strong className="t-display text-right text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
+                <strong className="t-display text-right text-3xl md:text-6xl font-bold leading-none text-[var(--blue)]">{price}</strong>
               </article>
             </Reveal>
           ))}
@@ -183,7 +183,7 @@ function Process({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 100} variant="up">
               <article className="av-process-step relative min-h-[270px] border border-[var(--blue)]/28 bg-[var(--surface)] p-6">
                 <span className="grid h-14 w-14 place-items-center bg-[var(--blue)] text-xl font-black text-[#0A0F14]">0{index + 1}</span>
-                <h3 className="t-display mt-10 text-4xl font-bold uppercase leading-none text-white">{title}</h3>
+                <h3 className="t-display mt-10 text-2xl sm:text-4xl font-bold uppercase leading-none text-white">{title}</h3>
                 <p className="mt-5 text-sm font-semibold leading-7 text-white/58">{text}</p>
               </article>
             </Reveal>
@@ -245,7 +245,7 @@ function Packages({ data }: { data: Record<string, any> }) {
                 <h3 className="t-display mt-8 text-6xl font-bold uppercase leading-none text-white md:text-8xl">{title}</h3>
                 <p className="mt-6 max-w-md text-base font-semibold leading-8 text-white/62">{text}</p>
                 <div className="absolute bottom-8 left-8 right-8 flex items-end justify-between gap-5 border-t border-white/14 pt-6">
-                  <strong className="t-display text-7xl font-bold leading-none text-[var(--blue)]">{price}</strong>
+                  <strong className="t-display text-3xl md:text-7xl font-bold leading-none text-[var(--blue)]">{price}</strong>
                   <span className="max-w-[14rem] text-right text-sm font-black uppercase tracking-[0.2em] text-white/70">{feature}</span>
                 </div>
               </article>

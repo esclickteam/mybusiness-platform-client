@@ -271,7 +271,7 @@ function Events({ data, openModal }: { data: Record<string, any>; openModal: () 
         <div className="border-t border-[var(--s-line)]">
           {events.map(([number, title, text]) => (
             <article key={number} className="grid gap-5 border-b border-[var(--s-line)] py-9 md:grid-cols-[120px_1fr]">
-              <p className="s-display text-5xl font-bold text-[var(--s-primary)]">{number}</p>
+              <p className="s-display text-2xl md:text-5xl font-bold text-[var(--s-primary)]">{number}</p>
               <div>
                 <h3 className="text-2xl font-extrabold text-[var(--s-text)]">{title}</h3>
                 <p className="mt-3 max-w-2xl leading-8 text-[var(--s-muted)]">{text}</p>
@@ -323,7 +323,7 @@ function HoursLocation({ data }: { data: Record<string, any> }) {
           <div className="absolute inset-y-8 left-1/2 w-px bg-[var(--s-line)]" />
           <div className="absolute bottom-8 right-8 h-24 w-24 border border-[var(--s-primary)]" />
           <div className="relative flex h-full min-h-[356px] flex-col justify-between">
-            <p className="s-display s-latin text-5xl font-bold text-[var(--s-primary)]">{getValue(data, "brandName")}</p>
+            <p className="s-display s-latin text-2xl md:text-5xl font-bold text-[var(--s-primary)]">{getValue(data, "brandName")}</p>
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--s-muted)]">תל אביב</p>
               <p className="mt-3 max-w-xs text-2xl font-bold leading-9 text-[var(--s-text)]">{getValue(data, "address")}</p>

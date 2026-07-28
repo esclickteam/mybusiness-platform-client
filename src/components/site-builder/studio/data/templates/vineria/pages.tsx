@@ -124,7 +124,7 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
           <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#a8959a" }}>{v(data, "pageHeroText")}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
             <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(245,235,224,0.12)", animationDelay: `${i * 0.25}s` }}>
               <img src={src} alt="" className="h-full w-full object-cover" />
@@ -147,7 +147,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           {reasons.map((reason, i) => (
             <Reveal key={reason.title} delayMs={i * 90} variant="up">
               <article className="tpl-sweep h-full border p-6 rounded-none" style={{ borderColor: "rgba(245,235,224,0.12)", background: i % 2 ? "#1a1218" : "#0c080c" }}>
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#9b2335" }}>0{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#9b2335" }}>0{i + 1}</span>
                 <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#a8959a" }}>{reason.text}</p>
               </article>
@@ -251,7 +251,7 @@ function KitchenMethod({ data }: { data: Record<string, any> }) {
           {steps.map((step, i) => (
             <Reveal key={step.title} delayMs={i * 80} variant="right">
               <article className="relative min-h-48 border p-5 rounded-none" style={{ borderColor: "rgba(245,235,224,0.12)", background: "#241820" }}>
-                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#9b2335" }}>{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold opacity-30" style={{ color: "#9b2335" }}>{i + 1}</span>
                 <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#a8959a" }}>{step.text}</p>
               </article>
@@ -372,7 +372,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
       <div className="mx-auto grid max-w-4xl gap-10 lg:grid-cols-2">
         <div className="text-center lg:text-right">
           <p className="text-xs tracking-[0.34em]" style={{ color: "#9b2335" }}>RESERVATION</p>
-          <h2 className="tpl-display mt-4 text-4xl font-semibold">{v(data, "contactTitle")}</h2>
+          <h2 className="tpl-display mt-4 text-2xl sm:text-4xl font-semibold">{v(data, "contactTitle")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#a8959a" }}>{v(data, "contactText")}</p>
           <p className="mt-6 text-sm" style={{ color: "#a8959a" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>

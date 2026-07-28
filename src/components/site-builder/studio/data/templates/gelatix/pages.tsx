@@ -51,7 +51,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
         <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 50% 30%, #ffffff, #fff5f8)` }} />
         <div className="tpl-drip absolute left-[20%] top-0 h-32 w-10 rounded-b-full opacity-50" style={{ background: "#e85a8c" }} />
         <div className="tpl-drip absolute left-[55%] top-0 h-24 w-8 rounded-b-full opacity-40" style={{ background: "#e85a8c", animationDelay: ".6s" }} />
-        <div className="relative z-10 mx-auto grid min-h-[92vh] max-w-7xl items-center gap-10 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <div className="relative z-10 mx-auto grid min-h-[92vh] max-w-7xl items-center gap-10 px-5 py-12 md:py-24 lg:grid-cols-2 lg:px-8">
           <div>
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#e85a8c" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -125,8 +125,8 @@ function MeltHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(43,24,34,0.1)", background: "#ffffff" }}>
       <div className="mx-auto max-w-5xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-3">
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <div className="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="up">
               <img src={src} alt="" className="aspect-[4/3] w-full object-cover" style={{ borderRadius: i % 2 ? "2rem 0.5rem" : "0.5rem 2rem" }} />
@@ -143,7 +143,7 @@ function MeltHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(43,24,34,0.1)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-center text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-center text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 flex gap-4 overflow-x-auto pb-2">
           {revs.map(([text, name, role], i) => (
             <blockquote key={name} className="min-w-[260px] flex-shrink-0 border p-5" style={{ borderColor: "#e85a8c", background: "#ffffff" }}>
@@ -165,7 +165,7 @@ function MeltHomeStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 60} variant="scale">
             <div className="text-center">
-              <div className="tpl-display text-4xl font-bold" style={{ color: "#e85a8c" }}>{n}</div>
+              <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#e85a8c" }}>{n}</div>
               <p className="mt-1 text-xs tracking-wider" style={{ color: "#9a6b7c" }}>{l}</p>
             </div>
           </Reveal>
@@ -385,7 +385,7 @@ function MeltChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#e85a8c" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#9a6b7c" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#e85a8c" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

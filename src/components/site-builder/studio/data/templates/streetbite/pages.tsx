@@ -135,7 +135,7 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
           <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#8b949e" }}>{v(data, "pageHeroText")}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
             <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(230,237,243,0.12)", animationDelay: `${i * 0.25}s` }}>
               <img src={src} alt="" className="h-full w-full object-cover" />
@@ -158,7 +158,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           {reasons.map((reason, i) => (
             <Reveal key={reason.title} delayMs={i * 90} variant="up">
               <article className="tpl-sweep h-full border p-6 rotate-[-1deg]" style={{ borderColor: "rgba(230,237,243,0.12)", background: i % 2 ? "#0d1117" : "#010409" }}>
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#39d353" }}>0{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#39d353" }}>0{i + 1}</span>
                 <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#8b949e" }}>{reason.text}</p>
               </article>
@@ -262,7 +262,7 @@ function KitchenMethod({ data }: { data: Record<string, any> }) {
           {steps.map((step, i) => (
             <Reveal key={step.title} delayMs={i * 80} variant="right">
               <article className="relative min-h-48 border p-5 rotate-[-1deg]" style={{ borderColor: "rgba(230,237,243,0.12)", background: "#161b22" }}>
-                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#39d353" }}>{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold opacity-30" style={{ color: "#39d353" }}>{i + 1}</span>
                 <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#8b949e" }}>{step.text}</p>
               </article>

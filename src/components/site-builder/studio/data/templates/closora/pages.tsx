@@ -127,7 +127,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*80}>
               <article className="ag-card grid gap-4 border border-white/15 bg-[var(--surface)] p-5 md:grid-cols-[80px_1fr_auto] md:items-center">
-                <span className="ag-display text-4xl font-extrabold text-[var(--accent)]">0{i+1}</span>
+                <span className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--accent)]">0{i+1}</span>
                 <div className="text-right"><h3 className="text-2xl font-bold">{title}</h3><p className="mt-2 text-sm text-[var(--muted)]">{text}</p></div>
                 <button type="button" onClick={() => goTo("contact")} className="border border-[var(--p)] px-4 py-2 text-xs font-black text-[var(--p)]">GO</button>
               </article>
@@ -153,7 +153,7 @@ function Cases({ data }: { data: Record<string, any> }) {
             <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">WINS / {getValue(data, "casesEyebrow")}</p>
             <h2 className="ag-display mt-3 text-4xl font-extrabold uppercase md:text-6xl">{getValue(data, "casesTitle")}</h2>
           </div>
-          <span className="ag-display text-5xl font-extrabold text-white/15">CLOSED</span>
+          <span className="ag-display text-2xl md:text-5xl font-extrabold text-white/15">CLOSED</span>
         </Reveal>
         <div className="mt-8 space-y-4">
           {items.map(([title, text, image], i) => (
@@ -163,7 +163,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   <span className="ag-display text-xl font-extrabold uppercase tracking-[0.12em] text-white">Closed</span>
                 </div>
                 <div className="px-2 py-3">
-                  <p className="ag-display text-5xl font-extrabold text-white/10">0{i + 1}</p>
+                  <p className="ag-display text-2xl md:text-5xl font-extrabold text-white/10">0{i + 1}</p>
                   <h3 className="-mt-4 text-2xl font-black uppercase">{title}</h3>
                   <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>
                 </div>
@@ -203,7 +203,7 @@ function Team({ data }: { data: Record<string, any> }) {
                     <div className="h-full bg-[var(--p)]" style={{ width: `${92 - i * 13}%` }} />
                   </div>
                 </div>
-                <div className="ag-display text-center text-6xl font-extrabold text-white/15">
+                <div className="ag-display text-center text-3xl md:text-6xl font-extrabold text-white/15">
                   #{i + 1}
                 </div>
               </article>
@@ -266,7 +266,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
               <article className={`ag-card border border-white/15 bg-[var(--surface)] p-7 text-right ${i === 2 ? "md:col-span-2" : ""}`}>
                 <div className="flex items-start justify-between gap-4">
                   <span className="rounded-full border border-[var(--p)] px-3 py-1 text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">Battle card</span>
-                  <span className="ag-display text-5xl font-extrabold text-white/10">0{i + 1}</span>
+                  <span className="ag-display text-2xl md:text-5xl font-extrabold text-white/10">0{i + 1}</span>
                 </div>
                 <h3 className="mt-8 text-2xl font-black uppercase">{title}</h3>
                 <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>
@@ -295,7 +295,7 @@ function Process({ data }: { data: Record<string, any> }) {
           <h2 className="ag-display mt-4 text-4xl font-extrabold uppercase md:text-6xl">{getValue(data, "processTitle")}</h2>
         </Reveal>
         <div className="mt-12 overflow-x-auto pb-4">
-          <div className="grid min-w-[900px] grid-cols-4 border border-white/15 bg-[var(--bg)]">
+          <div className="grid min-w-[900px] grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 border border-white/15 bg-[var(--bg)]">
           {steps.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 80} variant="up">
               <article className="relative h-full border-l border-white/15 p-6 text-right last:border-l-0">

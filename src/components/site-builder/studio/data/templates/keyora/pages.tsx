@@ -81,7 +81,7 @@ function KeyoraSearchHero({ data, onCta }: { data: Record<string, any>; onCta: (
         <div className="mt-14 grid gap-0 border-y md:grid-cols-3" style={{ borderColor: "rgba(15,27,45,0.12)" }}>
           {counters.map(([value, label]) => (
             <div key={label} className="tpl-rise border-b py-6 md:border-b-0 md:border-l last:border-l-0" style={{ borderColor: "rgba(15,27,45,0.12)" }}>
-              <div className="tpl-display text-5xl font-black" style={{ color: "#0b5fff" }}>{value}</div>
+              <div className="tpl-display text-2xl md:text-5xl font-black" style={{ color: "#0b5fff" }}>{value}</div>
               <div className="mt-2 text-sm font-bold" style={{ color: "#5b6b7c" }}>{label}</div>
             </div>
           ))}
@@ -103,7 +103,7 @@ function KeyoraNumberedIndex({ data }: { data: Record<string, any> }) {
         <div className="mt-10 border-t" style={{ borderColor: "rgba(15,27,45,0.14)" }}>
           {items.map(([title, meta, text, price], index) => (
             <article key={title} className="group grid gap-4 border-b py-7 md:grid-cols-[0.18fr_1fr_1.1fr_0.7fr] md:items-baseline" style={{ borderColor: "rgba(15,27,45,0.14)" }}>
-              <span className="tpl-display text-4xl font-black" style={{ color: "#0b5fff" }}>{String(index + 1).padStart(2, "0")}</span>
+              <span className="tpl-display text-2xl sm:text-4xl font-black" style={{ color: "#0b5fff" }}>{String(index + 1).padStart(2, "0")}</span>
               <h3 className="tpl-display text-2xl font-black md:text-3xl">{title}</h3>
               <p className="text-sm leading-7" style={{ color: "#5b6b7c" }}><b style={{ color: "#0f1b2d" }}>{meta}</b> · {text}</p>
               <p className="text-left text-xl font-black md:text-right" style={{ color: "#0b5fff" }}>{price}</p>
@@ -124,7 +124,7 @@ function KeyoraProcessStrip({ data }: { data: Record<string, any> }) {
         <div className="mt-8 grid border md:grid-cols-3" style={{ borderColor: "rgba(15,27,45,0.14)", background: "#ffffff" }}>
           {steps.map(([title, text], index) => (
             <div key={title} className="border-b p-7 md:border-b-0 md:border-l last:border-l-0" style={{ borderColor: "rgba(15,27,45,0.14)" }}>
-              <span className="tpl-display text-6xl font-black" style={{ color: index === 1 ? "#0f1b2d" : "#0b5fff" }}>0{index + 1}</span>
+              <span className="tpl-display text-3xl md:text-6xl font-black" style={{ color: index === 1 ? "#0f1b2d" : "#0b5fff" }}>0{index + 1}</span>
               <h3 className="mt-8 text-xl font-black">{title}</h3>
               <p className="mt-3 text-base leading-7" style={{ color: "#5b6b7c" }}>{text}</p>
             </div>

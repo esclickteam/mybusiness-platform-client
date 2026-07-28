@@ -132,7 +132,7 @@ function TrustStats({ data }: { data: Record<string, any> }) {
           <h2 className="t-display mt-3 text-4xl font-bold tracking-[-0.05em] md:text-6xl">{getValue(data, "sectionThreeTitle")}</h2>
           <p className="mt-5 max-w-md text-sm leading-7 text-[var(--muted)]">{getValue(data, "sectionThreeText")}</p>
         </Reveal>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stats.map(([number, label], index) => (
             <Reveal key={label} delayMs={index * 90} variant="scale">
               <div className="nu-stat-tile aspect-square border border-[var(--p)] bg-[var(--p)] p-5 text-white md:p-7">

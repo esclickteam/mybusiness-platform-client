@@ -172,11 +172,11 @@ function Transformation({ data }: { data: Record<string, any> }) {
             <p className="mt-6 text-lg leading-9 text-[var(--l-muted)]">{getValue(data, "sectionThreeText")}</p>
             <div className="mt-10 grid gap-6 border-y border-[var(--l-line)] py-8 sm:grid-cols-2">
               <div>
-                <p className="l-display text-5xl font-bold text-[var(--l-sage)]">{getValue(data, "transformMetricOne")}</p>
+                <p className="l-display text-2xl md:text-5xl font-bold text-[var(--l-sage)]">{getValue(data, "transformMetricOne")}</p>
                 <p className="mt-3 text-sm leading-6 text-[var(--l-muted)]">{getValue(data, "transformMetricOneLabel")}</p>
               </div>
               <div>
-                <p className="l-display text-5xl font-bold text-[var(--l-sage)]">{getValue(data, "transformMetricTwo")}</p>
+                <p className="l-display text-2xl md:text-5xl font-bold text-[var(--l-sage)]">{getValue(data, "transformMetricTwo")}</p>
                 <p className="mt-3 text-sm leading-6 text-[var(--l-muted)]">{getValue(data, "transformMetricTwoLabel")}</p>
               </div>
             </div>
@@ -306,7 +306,7 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
               >
                 <p className="text-xs font-bold tracking-[0.22em] text-[var(--l-sage)]">0{index + 1}</p>
                 <h3 className="l-display mt-5 text-2xl font-bold leading-tight">{name}</h3>
-                <p className="mt-5 text-4xl font-bold text-[var(--l-ink)]">{price}</p>
+                <p className="mt-5 text-2xl sm:text-4xl font-bold text-[var(--l-ink)]">{price}</p>
                 <p className="mt-5 text-sm leading-7 text-[var(--l-muted)]">{text}</p>
                 <ul className="mt-7 space-y-3 border-t border-[var(--l-line)] pt-6 text-sm text-[var(--l-ink)]">
                   {(features as string[]).map((feature) => (

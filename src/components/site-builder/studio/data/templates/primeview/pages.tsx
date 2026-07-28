@@ -77,7 +77,7 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
 function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
   return (
       <section className="relative min-h-[88vh] overflow-hidden">
-        <div className="absolute inset-0 grid grid-cols-2">
+        <div className="absolute inset-0 grid grid-cols-1 sm:grid-cols-2">
           <img src={v(data, "item3Image")} alt="" className="h-full w-full object-cover" />
           <img src={v(data, "heroImage")} alt="" className="h-full w-full object-cover" />
         </div>
@@ -125,7 +125,7 @@ function SlideGalleryWall({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(15,23,42,0.1)" }}>
       <div className="mx-auto grid max-w-7xl md:grid-cols-2">
         <img src={v(data, "item1Image")} alt="" className="min-h-[320px] w-full object-cover" />
-        <div className="grid grid-cols-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2">
           {[2,3,4].map((i) => <img key={i} src={v(data, `item${i}Image`)} alt="" className="aspect-square w-full object-cover" />)}
         </div>
       </div>
@@ -161,10 +161,10 @@ function SlideTrustMetrics({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(15,23,42,0.1)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb border p-5 text-center" style={{ borderColor: "rgba(15,23,42,0.1)", animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#059669" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#059669" }}>{v(data,vk)}</div>
             <p className="mt-2 text-sm" style={{ color: "#64748b" }}>{v(data,lk)}</p>
           </div>
         ))}
@@ -176,7 +176,7 @@ function SlideMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(15,23,42,0.1)", background: "#ffffff" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Slide</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Slide</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(15,23,42,0.1)" }}>
@@ -282,10 +282,10 @@ function SlideStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(15,23,42,0.1)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#059669" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#059669" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#64748b" }}>{v(data,lk)}</p>
           </div>
         ))}

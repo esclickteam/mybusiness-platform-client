@@ -292,7 +292,7 @@ function Hero({
             </button>
           </div>
 
-          <div className="mt-10 grid max-w-xl grid-cols-3 gap-3">
+          <div className="mt-10 grid max-w-xl grid-cols-1 md:grid-cols-3 gap-3">
             {stats.map(([num, label]) => (
               <div
                 key={label}

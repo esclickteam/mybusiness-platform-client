@@ -326,7 +326,7 @@ function PrismHero({
           </div>
         </div>
 
-        <div className="grid min-h-[420px] grid-cols-3 lg:min-h-[620px]">
+        <div className="grid min-h-[420px] grid-cols-1 md:grid-cols-3 lg:min-h-[620px]">
           {[
             { color: PRISM_RED, label: getValue(data, "brandName"), textClass: "text-white" },
             { color: PRISM_BLUE, label: getValue(data, "tagline"), textClass: "text-white" },
@@ -608,7 +608,7 @@ function PrismProcessBand({ data }: { data: Record<string, any> }) {
               className={cx("px-6 py-8", index !== 0 && "border-t border-black md:border-r md:border-t-0")}
               style={{ background }}
             >
-              <div className="text-5xl font-black text-black">0{index + 1}</div>
+              <div className="text-2xl md:text-5xl font-black text-black">0{index + 1}</div>
               <TemplateText
                 as="h3"
                 editId={titleKey}

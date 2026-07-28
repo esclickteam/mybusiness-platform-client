@@ -109,7 +109,7 @@ function Services({ data }: { data: Record<string, any> }) {
           {services.map(([title, text], index) => (
             <Reveal key={title} delayMs={150 + index * 120} variant="left">
               <article className="m-service-row grid gap-5 border-b border-white/12 bg-[var(--bg)] px-2 py-8 last:border-b-0 md:grid-cols-[120px_1fr_0.85fr] md:items-center">
-                <span className="t-display text-5xl font-black text-[var(--p)]">0{index + 1}</span>
+                <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display text-3xl font-black tracking-[-0.03em] md:text-5xl">{title}</h3>
                 <p className="text-base leading-8 text-[var(--muted)]">{text}</p>
               </article>
@@ -156,7 +156,7 @@ function CampaignShowcase({ data }: { data: Record<string, any> }) {
           <h2 className="t-display mt-4 text-5xl font-black leading-[0.95] tracking-[-0.05em] md:text-7xl">{getValue(data, "sectionFourTitle")}</h2>
           <p className="mt-7 leading-8 text-[var(--muted)]">{getValue(data, "campaignText")}</p>
         </Reveal>
-        <div className="grid grid-cols-2 border border-white/10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 border border-white/10">
           {campaigns.map(([title, image], index) => (
             <Reveal key={title} delayMs={150 + index * 100} variant="scale">
               <article className="m-mosaic-tile group relative aspect-square overflow-hidden border border-white/10 bg-[var(--bg)]">
@@ -191,7 +191,7 @@ function Process({ data }: { data: Record<string, any> }) {
           {steps.map(([num, title, text], index) => (
             <Reveal key={num} delayMs={150 + index * 110} variant={index % 2 === 0 ? "right" : "left"}>
               <article className="m-step-block min-h-[270px] border border-[var(--p)]/50 bg-[var(--surface)] p-7">
-                <span className="t-display text-5xl font-black text-[var(--p)]">{num}</span>
+                <span className="t-display text-2xl md:text-5xl font-black text-[var(--p)]">{num}</span>
                 <h3 className="t-display mt-8 text-3xl font-black leading-none">{title}</h3>
                 <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{text}</p>
               </article>
@@ -325,7 +325,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           ×
         </button>
         <p className="text-sm font-black uppercase tracking-[0.35em] text-[var(--p)]">{getValue(data, "brandName")}</p>
-        <h3 className="t-display mt-3 text-4xl font-black leading-none">{getValue(data, "contactTitle")}</h3>
+        <h3 className="t-display mt-3 text-2xl sm:text-4xl font-black leading-none">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3">
           <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
           <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון" />

@@ -770,7 +770,7 @@ function ProductDetailPage({
             />
           </div>
           {!live ? (
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {safeArray(fallback.gallery).map((item, index) => (
                 <div key={`gallery-${index}`} className="aspect-square overflow-hidden bg-[#f5f0e8]">
                   <MediaElement
@@ -2433,7 +2433,7 @@ function Footer({ data }: SharedProps) {
           </div>
 
           <nav
-            className="grid grid-cols-2 gap-x-6 gap-y-3 text-sm"
+            className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm"
             aria-label="ניווט תחתון"
           >
             {safeArray(data.footer.links).map((item, index) => (

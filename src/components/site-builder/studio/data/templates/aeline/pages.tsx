@@ -456,7 +456,7 @@ function HeroCardRail() {
             />
 
             <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/92 p-2 text-[#160f2e] shadow-lg">
-              <div className="grid grid-cols-2 gap-2 text-center">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-center">
                 <div>
                   <p className="text-[9px] font-black text-[#160f2e]/35">
                     נסגר
@@ -857,7 +857,7 @@ function VisualMockup({ kind }: { kind: string }) {
             <p className="text-[10px] text-white/45">מדד שירות שבועי</p>
           </div>
 
-          <p className="mt-5 text-4xl font-light tracking-[-0.08em]">
+          <p className="mt-5 text-2xl sm:text-4xl font-light tracking-[-0.08em]">
             2.4{" "}
             <span className="rounded-full bg-[#7FFFD4] px-2 text-sm text-[#160f2e]">
               דקות
@@ -1400,7 +1400,7 @@ export default function AelinePages({
                     <div className="rounded-[34px] bg-[#160f2e] p-8 text-white">
                       <h2
                         data-gjs-type="text"
-                        className="text-4xl font-black tracking-[-0.06em]"
+                        className="text-2xl sm:text-4xl font-black tracking-[-0.06em]"
                       >
                         ספרו לנו איפה העסק נתקע
                       </h2>

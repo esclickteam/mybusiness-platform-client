@@ -80,7 +80,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
         <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #0c1222 45%, #151d32 45%)" }} />
         <div className="tpl-axis-line absolute inset-0 m-auto h-px w-[140%] -rotate-12" style={{ background: "#f43f5e" }} />
         <div className="tpl-axis-line absolute inset-0 m-auto h-px w-[140%] rotate-12" style={{ background: "rgba(226,232,240,0.12)", animationDelay: ".3s" }} />
-        <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-7xl items-center gap-10 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <div className="relative z-10 mx-auto grid min-h-[88vh] max-w-7xl items-center gap-10 px-5 py-12 md:py-24 lg:grid-cols-2 lg:px-8">
           <div>
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#f43f5e" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -165,10 +165,10 @@ function AxisTrustMetrics({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(226,232,240,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb border p-5 text-center" style={{ borderColor: "rgba(226,232,240,0.12)", animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#f43f5e" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#f43f5e" }}>{v(data,vk)}</div>
             <p className="mt-2 text-sm" style={{ color: "#94a3b8" }}>{v(data,lk)}</p>
           </div>
         ))}
@@ -180,7 +180,7 @@ function AxisMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(226,232,240,0.12)", background: "#151d32" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Axis</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Axis</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(226,232,240,0.12)" }}>
@@ -286,10 +286,10 @@ function AxisStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(226,232,240,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#f43f5e" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#f43f5e" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#94a3b8" }}>{v(data,lk)}</p>
           </div>
         ))}

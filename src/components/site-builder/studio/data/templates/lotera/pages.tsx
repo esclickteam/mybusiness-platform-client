@@ -119,7 +119,7 @@ function LoteraTideRail({ data }: { data: Record<string, any> }) {
                 <img src={item.image} alt="" className="tpl-ken h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
               </div>
               <div className="grid grid-cols-[auto_1fr] gap-5 p-6">
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#5eb4ff" }}>{index + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#5eb4ff" }}>{index + 1}</span>
                 <div>
                   <h3 className="tpl-display text-3xl font-bold">{item.title}</h3>
                   <p className="mt-2 text-sm font-semibold" style={{ color: "#5eb4ff" }}>{item.meta}</p>

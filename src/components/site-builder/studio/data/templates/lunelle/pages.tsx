@@ -363,7 +363,7 @@ function LunelleEmptyState() {
           Lunelle Studio
         </p>
 
-        <h1 className="mt-4 text-4xl font-black tracking-[-0.06em]">
+        <h1 className="mt-4 text-2xl sm:text-4xl font-black tracking-[-0.06em]">
           אין תוכן להצגה בעמוד הזה
         </h1>
 

@@ -762,7 +762,7 @@ function Services() {
                 </div>
               </div>
               <div className="p-6 sm:p-8">
-                <h3 className="text-4xl font-black uppercase tracking-[-0.07em]">
+                <h3 className="text-2xl sm:text-4xl font-black uppercase tracking-[-0.07em]">
                   {item.title}
                 </h3>
                 <p className="mt-4 leading-7 text-white/56">{item.text}</p>
@@ -849,7 +849,7 @@ function Cases({ setPage }: { setPage: (page: AdionPageId) => void }) {
                   </span>
                 </div>
                 <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between gap-4">
-                  <h3 className="text-5xl font-black uppercase tracking-[-0.08em]">
+                  <h3 className="text-2xl md:text-5xl font-black uppercase tracking-[-0.08em]">
                     {item.title}
                   </h3>
                   <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-[#f7c873] text-xl font-black text-[#10100e] transition duration-500 group-hover:rotate-[-35deg]">
@@ -912,10 +912,10 @@ function Reviews() {
               className="rounded-[2rem] border border-white/10 bg-[#f6efe3] p-7 text-[#10100e] transition duration-500 hover:-translate-y-2 hover:bg-[#f7c873]"
             >
               <div className="mb-10 flex items-center justify-between">
-                <span className="text-5xl font-black tracking-[-0.08em]">
+                <span className="text-2xl md:text-5xl font-black tracking-[-0.08em]">
                   {item.rating}
                 </span>
-                <span className="text-5xl leading-none">״</span>
+                <span className="text-2xl md:text-5xl leading-none">״</span>
               </div>
               <p className="text-xl font-semibold leading-9">{item.quote}</p>
               <div className="mt-10 border-t border-black/10 pt-5">
@@ -1006,7 +1006,7 @@ function Pricing({ setPage }: { setPage: (page: AdionPageId) => void }) {
                 </span>
               </div>
 
-              <h3 className="text-6xl font-black uppercase leading-none tracking-[-0.09em]">
+              <h3 className="text-3xl md:text-6xl font-black uppercase leading-none tracking-[-0.09em]">
                 {plan.name}
               </h3>
               <div className="mt-5 text-3xl font-black tracking-[-0.06em]">
@@ -1198,7 +1198,7 @@ function AboutPage() {
             key={label}
             className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-8"
           >
-            <div className="text-7xl font-black tracking-[-0.1em]">{num}</div>
+            <div className="text-3xl md:text-7xl font-black tracking-[-0.1em]">{num}</div>
             <div className="mt-3 text-xs font-black uppercase tracking-[0.25em] text-white/45">
               {label}
             </div>
@@ -1392,7 +1392,7 @@ function Footer({ setPage }: { setPage: (page: AdionPageId) => void }) {
           <button
             type="button"
             onClick={() => setPage("home")}
-            className="text-5xl font-black uppercase leading-none tracking-[-0.09em] transition hover:text-[#f7c873]"
+            className="text-2xl md:text-5xl font-black uppercase leading-none tracking-[-0.09em] transition hover:text-[#f7c873]"
           >
             Adion ®
           </button>

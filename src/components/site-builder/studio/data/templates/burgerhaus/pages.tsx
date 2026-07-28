@@ -119,7 +119,7 @@ function SmashHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(245,245,245,0.12)", background: "#1a1a1a" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
         <div className="mt-10 grid grid-cols-2 gap-2 md:grid-cols-4">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="scale">
@@ -137,7 +137,7 @@ function SmashHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(245,245,245,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
@@ -158,7 +158,7 @@ function SmashHomeStats({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(245,245,245,0.12)", background: "#1a1a1a" }}>
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           {stats.map(([n, l], i) => (
             <Reveal key={l} delayMs={i * 70} variant="scale">
               <div className="border px-4 py-3" style={{ borderColor: "#f59e0b" }}>
@@ -388,7 +388,7 @@ function SmashChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#f59e0b" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#a3a3a3" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#f59e0b" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

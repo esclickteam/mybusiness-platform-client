@@ -51,7 +51,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
         <img src={v(data, "heroImage")} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, #04151c55, #04151cf2)" }} />
         <svg className="tpl-wave pointer-events-none absolute bottom-0 left-0 w-[200%] opacity-40" viewBox="0 0 1200 120" preserveAspectRatio="none" style={{ color: "#38bdf8" }}><path fill="currentColor" d="M0,60 C150,120 350,0 600,60 C850,120 1050,0 1200,60 L1200,120 L0,120 Z" /></svg>
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-5 py-28 lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-5 py-14 md:py-28 lg:px-8">
           
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#38bdf8" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -119,7 +119,7 @@ function FoamHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,244,248,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
         <div className="mt-10 flex gap-3 overflow-x-auto pb-2">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 60} variant="left">
@@ -137,7 +137,7 @@ function FoamHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(230,244,248,0.12)", background: "#0a2430" }}>
       <div className="mx-auto max-w-3xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 space-y-6">
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
@@ -161,7 +161,7 @@ function FoamHomeStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 70} variant="up">
             <div className="text-center md:text-right">
-              <div className="tpl-display text-5xl font-bold" style={{ color: "#38bdf8" }}>{n}</div>
+              <div className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#38bdf8" }}>{n}</div>
               <p className="mt-2 text-sm" style={{ color: "#7aa8b8" }}>{l}</p>
             </div>
           </Reveal>
@@ -394,7 +394,7 @@ function FoamChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#38bdf8" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#7aa8b8" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#38bdf8" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

@@ -76,7 +76,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
       <img src={getValue(data, "heroImage")} alt="" className="pulsefit-hero-image absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-l from-black/88 via-black/58 to-black/18" />
       <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[var(--bg)] to-transparent" />
-      <div className="relative z-10 mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-center px-5 py-24 lg:px-8">
+      <div className="relative z-10 mx-auto flex min-h-[92svh] max-w-7xl flex-col justify-center px-5 py-12 md:py-24 lg:px-8">
         <Reveal variant="right">
           <p className="text-xs font-black uppercase tracking-[0.42em] text-[var(--p)]">{getValue(data, "heroEyebrow")}</p>
           <div className="mt-5 flex items-start gap-5">
@@ -117,7 +117,7 @@ function Programs({ data }: { data: Record<string, any> }) {
               <article className="pulsefit-program-row border-2 border-[var(--p)] p-6 md:p-8">
                 <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-6">
-                    <span className="t-display text-5xl font-bold text-[var(--p)]">0{index + 1}</span>
+                    <span className="t-display text-2xl md:text-5xl font-bold text-[var(--p)]">0{index + 1}</span>
                     <div>
                       <h3 className="t-display text-3xl font-bold uppercase text-white md:text-5xl">{title}</h3>
                       <p className="mt-2 max-w-2xl text-sm leading-7 text-[var(--muted)]">{text}</p>
@@ -186,7 +186,7 @@ function Method({ data }: { data: Record<string, any> }) {
           {panels.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 100} variant="up" className="flex-1">
               <article className="pulsefit-method-panel h-full border border-white/15 bg-[var(--surface)] p-8 lg:min-h-[300px]" style={{ clipPath: "polygon(0 0, 92% 0, 100% 100%, 8% 100%)" }}>
-                <span className="t-display text-6xl font-bold text-[var(--p)]">0{index + 1}</span>
+                <span className="t-display text-3xl md:text-6xl font-bold text-[var(--p)]">0{index + 1}</span>
                 <h3 className="t-display mt-8 text-3xl font-bold uppercase text-white">{title}</h3>
                 <p className="mt-4 text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
               </article>
@@ -217,8 +217,8 @@ function Pricing({ data, openModal }: { data: Record<string, any>; openModal: ()
           {tiers.map(([name, price, text, features], index) => (
             <Reveal key={name} delayMs={index * 120} variant={index === 0 ? "right" : "left"}>
               <article className={`min-h-[420px] border-2 p-8 md:p-10 ${index === 0 ? "border-white/20 bg-[var(--bg)]" : "border-[var(--p)] bg-[var(--p)] text-black"}`}>
-                <p className="t-display text-4xl font-bold uppercase">{name}</p>
-                <p className="t-display mt-8 text-7xl font-bold uppercase">{price}</p>
+                <p className="t-display text-2xl sm:text-4xl font-bold uppercase">{name}</p>
+                <p className="t-display mt-8 text-3xl md:text-7xl font-bold uppercase">{price}</p>
                 <p className={`mt-5 max-w-xl text-base font-semibold leading-8 ${index === 0 ? "text-[var(--muted)]" : "text-black/70"}`}>{text}</p>
                 <div className={`mt-8 space-y-3 border-t pt-6 text-sm font-bold ${index === 0 ? "border-white/15 text-white" : "border-black/20 text-black"}`}>
                   {String(features).split("|").map((feature) => (
@@ -278,7 +278,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up" className="flex-1">
               <blockquote className="flex aspect-square flex-col justify-between border-2 border-[var(--p)] p-7">
-                <p className="t-display text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{text}"</p>
+                <p className="t-display text-2xl sm:text-4xl font-bold uppercase leading-tight text-[var(--p)]">"{text}"</p>
                 <footer className="text-sm font-black uppercase tracking-[0.2em] text-white">{name}</footer>
               </blockquote>
             </Reveal>
@@ -345,7 +345,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/80 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md border-2 border-[var(--p)] bg-black p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
-        <h3 className="t-display text-4xl font-bold uppercase">{getValue(data, "contactTitle")}</h3>
+        <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3">
           <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא" />
           <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון" />

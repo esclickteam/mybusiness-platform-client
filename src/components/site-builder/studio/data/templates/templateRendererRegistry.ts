@@ -1,5 +1,7 @@
 import type { ComponentType } from "react";
 
+import { withTemplateResponsiveCss } from "./shared/templateResponsiveCss";
+
 import VelmoraPages, { velmoraPages } from "./velmora/pages";
 import { velmoraEditorCss } from "./velmora/editorCss";
 import { velmoraSchema } from "./velmora/schema";
@@ -1147,7 +1149,8 @@ function createRenderer({
     editorMode,
     schema,
     defaultData,
-    editorCss,
+    // Every template gets the shared mobile/tablet/desktop safety-net CSS.
+    editorCss: withTemplateResponsiveCss(editorCss),
   };
 }
 

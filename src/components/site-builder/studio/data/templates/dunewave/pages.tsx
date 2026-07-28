@@ -126,7 +126,7 @@ function DuneStats({ data }: { data: Record<string, any> }) {
   const stats = [["12", "וילות"], ["180°", "נוף לים"], ["24/7", "קונסierge"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(61,47,31,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-6 text-center">
         {stats.map(([n, l]) => (
           <div key={l} className="tpl-climb">
             <div className="tpl-display text-4xl font-bold md:text-5xl" style={{ color: "#c9956a" }}>{n}</div>

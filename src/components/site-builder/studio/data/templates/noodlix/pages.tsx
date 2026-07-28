@@ -103,7 +103,7 @@ function ChopstickSteps({ data }: { data: Record<string, any> }) {
         {steps.map(([n, label], i) => (
           <Reveal key={n} delayMs={i * 90} variant="up">
             <div className="relative border-r pr-4" style={{ borderColor: "#3dd6c6" }}>
-              <div className="tpl-display text-4xl font-bold" style={{ color: "#3dd6c6" }}>{n}</div>
+              <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#3dd6c6" }}>{n}</div>
               <p className="mt-2 text-sm font-semibold">{label}</p>
               <div className="absolute -left-1 top-2 h-16 w-0.5 rotate-12" style={{ background: "#8aa89a" }} />
             </div>
@@ -131,7 +131,7 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
           <h1 className="tpl-display mt-4 text-5xl font-bold leading-tight md:text-7xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-lg leading-8" style={{ color: "#8aa89a" }}>{v(data, "pageHeroText")}</p>
         </div>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
             <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(238,246,241,0.12)", animationDelay: `${i * 0.25}s` }}>
               <img src={src} alt="" className="h-full w-full object-cover" />
@@ -154,7 +154,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
           {reasons.map((reason, i) => (
             <Reveal key={reason.title} delayMs={i * 90} variant="up">
               <article className="tpl-sweep h-full border p-6 rounded-[2rem]" style={{ borderColor: "rgba(238,246,241,0.12)", background: i % 2 ? "#0f1412" : "#070a09" }}>
-                <span className="tpl-display text-5xl font-bold" style={{ color: "#3dd6c6" }}>0{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#3dd6c6" }}>0{i + 1}</span>
                 <h3 className="mt-5 text-xl font-bold">{reason.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#8aa89a" }}>{reason.text}</p>
               </article>
@@ -258,7 +258,7 @@ function KitchenMethod({ data }: { data: Record<string, any> }) {
           {steps.map((step, i) => (
             <Reveal key={step.title} delayMs={i * 80} variant="right">
               <article className="relative min-h-48 border p-5 rounded-[2rem]" style={{ borderColor: "rgba(238,246,241,0.12)", background: "#18201c" }}>
-                <span className="tpl-display text-5xl font-bold opacity-30" style={{ color: "#3dd6c6" }}>{i + 1}</span>
+                <span className="tpl-display text-2xl md:text-5xl font-bold opacity-30" style={{ color: "#3dd6c6" }}>{i + 1}</span>
                 <h3 className="mt-6 text-lg font-bold">{step.title}</h3>
                 <p className="mt-3 text-sm leading-7" style={{ color: "#8aa89a" }}>{step.text}</p>
               </article>
@@ -388,7 +388,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(238,246,241,0.12)" }}>
       <div className="mx-auto flex max-w-xl flex-col items-center text-center">
-        <h2 className="tpl-display text-4xl font-bold">{v(data, "contactTitle")}</h2>
+        <h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 text-lg" style={{ color: "#8aa89a" }}>{v(data, "contactText")}</p>
         <form className="tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8" style={{ borderColor: "#3dd6c6" }} onSubmit={(e) => e.preventDefault()}>
           <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="שם" />

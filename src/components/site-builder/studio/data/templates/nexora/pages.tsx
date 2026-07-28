@@ -311,7 +311,7 @@ function Hero({
           />
         </div>
 
-        <div className="mt-8 grid grid-cols-3 gap-4">
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
           {stats.map(([num, label]) => (
             <div
               key={label}
@@ -405,7 +405,7 @@ function WorkflowSection({ data }: { data: Record<string, any> }) {
               key={num}
               className="group rounded-[28px] border border-white/8 bg-white/5 p-8 backdrop-blur transition duration-500 hover:-translate-y-2 hover:border-violet-400/30"
             >
-              <span className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-5xl font-bold text-transparent">
+              <span className="bg-gradient-to-r from-indigo-300 to-violet-300 bg-clip-text text-2xl md:text-5xl font-bold text-transparent">
                 {num}
               </span>
               <h3 className="mt-5 text-2xl font-bold text-white">{title}</h3>
@@ -471,7 +471,7 @@ function PricingSection({
               ) : null}
               <h3 className="text-xl font-bold text-white">{name}</h3>
               <div className="mt-6 flex items-baseline gap-1">
-                <span className="text-5xl font-bold text-white">{price}</span>
+                <span className="text-2xl md:text-5xl font-bold text-white">{price}</span>
                 <span className="text-sm text-slate-400">{period}</span>
               </div>
               <p className="mt-3 text-sm leading-6 text-slate-400">{text}</p>

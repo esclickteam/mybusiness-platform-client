@@ -139,7 +139,7 @@ function AnimatedStats({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-6 text-center">
         {stats.map(([vk, lk], i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i * 0.1}s` }}>
             <div className="tpl-display text-4xl font-bold md:text-5xl" style={{ color: "#c9a962" }}>{v(data, vk)}</div>
@@ -156,7 +156,7 @@ function TickerGalleryWall({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t overflow-hidden" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <h2 className="tpl-display text-4xl font-bold">גלריית נכסים קולנועית</h2>
+        <h2 className="tpl-display text-2xl sm:text-4xl font-bold">גלריית נכסים קולנועית</h2>
         <div className="mt-10 flex gap-4 overflow-x-auto pb-4">
           {items.map((c) => (
             <article key={c.t} className="tpl-zoom-card min-w-[280px] shrink-0 overflow-hidden border" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
@@ -176,7 +176,7 @@ function TickerAgentRoster({ data }: { data: Record<string, any> }) {
   const agents = [1,2,3,4].map((i) => ({ n: v(data, `agent${i}Name`), r: v(data, `agent${i}Role`), d: v(data, `agent${i}Deals`), img: v(data, `agent${i}Image`) }));
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#050810" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">צוות הפרימיום</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">צוות הפרימיום</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {agents.map((a,i) => (
           <article key={a.n} className="tpl-climb border text-center" style={{ borderColor: "#c9a96255", animationDelay: `${i*0.08}s` }}>
@@ -204,7 +204,7 @@ function TickerTrustMetrics({ data }: { data: Record<string, any> }) {
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#050810" }}>
       <div className="mx-auto flex max-w-7xl flex-wrap justify-between gap-8">
         {stats.map(([vk,lk]) => (
-          <div key={lk} className="text-center"><div className="tpl-display text-5xl font-bold" style={{ color: "#c9a962" }}>{v(data,vk)}</div><p className="mt-2 text-xs tracking-widest" style={{ color: "#8b9cb5" }}>{v(data,lk)}</p></div>
+          <div key={lk} className="text-center"><div className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#c9a962" }}>{v(data,vk)}</div><p className="mt-2 text-xs tracking-widest" style={{ color: "#8b9cb5" }}>{v(data,lk)}</p></div>
         ))}
       </div>
     </section>
@@ -214,7 +214,7 @@ function TickerMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#141c2a" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Ticker</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Ticker</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
@@ -320,10 +320,10 @@ function TickerStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#c9a962" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#c9a962" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#8b9cb5" }}>{v(data,lk)}</p>
           </div>
         ))}

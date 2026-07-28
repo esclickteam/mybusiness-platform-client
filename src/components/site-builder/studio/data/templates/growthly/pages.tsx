@@ -124,7 +124,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {services.map(([title,text],i)=>(
             <Reveal key={title} delayMs={i*90} variant="up">
               <article className="ag-card group relative min-h-[220px] overflow-hidden border border-white/15 bg-[var(--surface)] p-7 text-right">
-                <span className="ag-display absolute -left-2 -top-4 text-8xl font-black text-[var(--p)]/15">0{i+1}</span>
+                <span className="ag-display absolute -left-2 -top-4 text-3xl md:text-8xl font-black text-[var(--p)]/15">0{i+1}</span>
                 <h3 className="relative text-2xl font-bold">{title}</h3>
                 <p className="relative mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
               </article>
@@ -170,7 +170,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                     <div className="absolute inset-0 bg-[var(--p)]/20" />
                   </div>
                   <div className="flex flex-col justify-between p-6">
-                    <p className="ag-display text-5xl font-black text-[var(--accent)]">0{i + 2}</p>
+                    <p className="ag-display text-2xl md:text-5xl font-black text-[var(--accent)]">0{i + 2}</p>
                     <div>
                       <h3 className="text-2xl font-bold">{title}</h3>
                       <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
@@ -206,7 +206,7 @@ function Team({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-l from-[var(--dark)]/95 via-[var(--dark)]/45 to-transparent" />
                 <div className="relative z-10 flex h-full flex-col justify-end p-7">
-                  <p className="ag-display text-6xl font-black text-white/15">0{i + 1}</p>
+                  <p className="ag-display text-3xl md:text-6xl font-black text-white/15">0{i + 1}</p>
                   <h3 className="mt-3 text-3xl font-bold">{name}</h3>
                   <p className="mt-2 text-sm font-semibold text-[var(--muted)]">{role}</p>
                 </div>
@@ -279,7 +279,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {items.map(([title, text], i) => (
             <Reveal key={title} delayMs={i * 90} variant="up">
               <article className="grid gap-5 border-b border-white/15 py-8 text-right md:grid-cols-[160px_1fr_auto] md:items-center">
-                <p className="ag-display text-6xl font-black text-[var(--p)]/40">0{i + 1}</p>
+                <p className="ag-display text-3xl md:text-6xl font-black text-[var(--p)]/40">0{i + 1}</p>
                 <div>
                   <h3 className="text-2xl font-bold md:text-3xl">{title}</h3>
                   <p className="mt-3 max-w-3xl text-sm leading-7 text-[var(--muted)]">{text}</p>

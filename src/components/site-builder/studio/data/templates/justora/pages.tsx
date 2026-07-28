@@ -1240,7 +1240,7 @@ function CasesSection({
                       <span className="rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
                         {item.tag}
                       </span>
-                      <div className="mt-10 text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
+                      <div className="mt-10 text-3xl md:text-6xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                         {item.amount}
                       </div>
                     </div>
@@ -1343,7 +1343,7 @@ function CaseDetailPage({
                     סכום / ערך תיק
                   </span>
 
-                  <div className="mt-10 text-7xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
+                  <div className="mt-10 text-3xl md:text-7xl font-semibold tracking-[-0.08em] text-[#d8b88f]">
                     {item.amount}
                   </div>
 

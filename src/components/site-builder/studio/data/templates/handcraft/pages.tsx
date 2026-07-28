@@ -216,7 +216,7 @@ function Services({ data }: { data: Record<string, any> }) {
                 key={titleKey}
                 className="group min-h-[310px] border-b border-r border-[var(--h-line)] bg-[var(--h-surface)] p-7 transition duration-300 hover:bg-[var(--h-secondary)] hover:text-[var(--h-background)]"
               >
-                <div className="h-display text-6xl leading-none text-[var(--h-primary)] transition group-hover:text-[var(--h-accent)]">
+                <div className="h-display text-3xl md:text-6xl leading-none text-[var(--h-primary)] transition group-hover:text-[var(--h-accent)]">
                   {getValue(data, numberKey)}
                 </div>
                 <h3 className="mt-10 text-3xl font-extrabold leading-none">{getValue(data, titleKey)}</h3>
@@ -293,7 +293,7 @@ function WhyUs({ data }: { data: Record<string, any> }) {
         <div className="border-t border-[var(--h-text)]">
           {statements.map(([titleKey, textKey], index) => (
             <article key={titleKey} className="grid gap-5 border-b border-[var(--h-line)] py-8 md:grid-cols-[110px_1fr]">
-              <span className="h-display text-5xl leading-none text-[var(--h-primary)]">{String(index + 1).padStart(2, "0")}</span>
+              <span className="h-display text-2xl md:text-5xl leading-none text-[var(--h-primary)]">{String(index + 1).padStart(2, "0")}</span>
               <div>
                 <h3 className="text-2xl font-extrabold">{getValue(data, titleKey)}</h3>
                 <p className="mt-3 max-w-2xl text-sm leading-7 text-[var(--h-muted)]">{getValue(data, textKey)}</p>
@@ -328,7 +328,7 @@ function Pricing({ data }: { data: Record<string, any> }) {
                 <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--h-primary)]">
                   {getValue(data, nameKey)}
                 </p>
-                <div className="mt-8 min-h-[92px] border-y border-[var(--h-line)] py-6 text-4xl font-extrabold leading-tight">
+                <div className="mt-8 min-h-[92px] border-y border-[var(--h-line)] py-6 text-2xl sm:text-4xl font-extrabold leading-tight">
                   {getValue(data, priceKey)}
                 </div>
                 <p className="mt-6 text-sm leading-7 text-[var(--h-muted)]">{getValue(data, textKey)}</p>
@@ -381,7 +381,7 @@ function ServiceAreas({ data }: { data: Record<string, any> }) {
                     <h3 className="text-2xl font-extrabold text-white">{getValue(data, titleKey)}</h3>
                     <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, textKey)}</p>
                   </div>
-                  <span className="h-display text-5xl leading-none text-[var(--h-primary)]">{index + 1}</span>
+                  <span className="h-display text-2xl md:text-5xl leading-none text-[var(--h-primary)]">{index + 1}</span>
                 </div>
               </article>
             ))}
@@ -410,7 +410,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-px bg-[var(--h-line)] lg:grid-cols-3">
           {reviews.map(([textKey, nameKey, roleKey]) => (
             <blockquote key={nameKey} className="bg-[var(--h-surface)] p-8 lg:p-10">
-              <div className="h-display text-7xl leading-none text-[var(--h-primary)]">"</div>
+              <div className="h-display text-3xl md:text-7xl leading-none text-[var(--h-primary)]">"</div>
               <p className="-mt-4 text-lg font-semibold leading-9 text-[var(--h-text)]">{getValue(data, textKey)}</p>
               <footer className="mt-8 border-t border-[var(--h-line)] pt-5">
                 <p className="font-extrabold">{getValue(data, nameKey)}</p>
@@ -489,7 +489,7 @@ function Footer({ data, openModal }: { data: Record<string, any>; openModal: () 
             <p>{getValue(data, "email")}</p>
             <p>{getValue(data, "address")}</p>
           </div>
-          <nav className="mt-9 grid grid-cols-2 gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white">
+          <nav className="mt-9 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white">
             {footerLinks.map(([label, href]) => (
               <a key={href} href={href} className="border-b border-white/20 pb-3 transition hover:text-[var(--h-accent)]">
                 {label}

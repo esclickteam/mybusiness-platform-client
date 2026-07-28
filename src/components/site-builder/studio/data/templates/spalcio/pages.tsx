@@ -437,7 +437,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
             </a>
           </div>
 
-          <div className="mt-12 grid max-w-xl grid-cols-3 gap-5 border-t border-slate-200 pt-8">
+          <div className="mt-12 grid max-w-xl grid-cols-1 md:grid-cols-3 gap-5 border-t border-slate-200 pt-8">
             {spalcioData.hero.stats.map((stat) => (
               <div key={stat.label}>
                 <p
@@ -497,7 +497,7 @@ function Services() {
       {...sectionProps("services", "שירותים")}
       data-section-id="services"
       data-section-title="שירותים"
-      className="bg-white px-6 py-24"
+      className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-end">
@@ -567,7 +567,7 @@ function Projects() {
       {...sectionProps("projects", "פרויקטים")}
       data-section-id="projects"
       data-section-title="פרויקטים"
-      className="bg-[#f6f3ee] px-6 py-24"
+      className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
         <div className="mb-12">
@@ -628,7 +628,7 @@ function About() {
       {...sectionProps("about", "אודות")}
       data-section-id="about"
       data-section-title="אודות"
-      className="bg-white px-6 py-24"
+      className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
         <div className="overflow-hidden rounded-[2.5rem]">
@@ -688,7 +688,7 @@ function Process() {
       {...sectionProps("process", "תהליך עבודה")}
       data-section-id="process"
       data-section-title="תהליך עבודה"
-      className="relative overflow-hidden bg-[#f6f3ee] px-6 py-24 text-slate-950"
+      className="relative overflow-hidden bg-[#f6f3ee] px-6 py-12 md:py-24 text-slate-950"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute right-[-140px] top-[-120px] h-[360px] w-[360px] rounded-full bg-blue-200/45 blur-3xl" />
@@ -727,7 +727,7 @@ function Process() {
               <div className="mb-8 flex items-center justify-between">
                 <p
                   data-editable="true"
-                  className="spalcio-editable text-4xl font-black tracking-[-0.06em] text-blue-600"
+                  className="spalcio-editable text-2xl sm:text-4xl font-black tracking-[-0.06em] text-blue-600"
                 >
                   {step.number}
                 </p>
@@ -765,7 +765,7 @@ function Testimonials() {
       {...sectionProps("testimonials", "המלצות")}
       data-section-id="testimonials"
       data-section-title="המלצות"
-      className="bg-white px-6 py-24"
+      className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-5xl text-center">
         <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-blue-50 text-blue-600">
@@ -797,7 +797,7 @@ function Contact() {
       {...sectionProps("contact", "יצירת קשר")}
       data-section-id="contact"
       data-section-title="יצירת קשר"
-      className="bg-[#f6f3ee] px-6 py-24"
+      className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
         <div>

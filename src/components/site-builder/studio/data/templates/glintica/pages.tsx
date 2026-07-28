@@ -103,12 +103,12 @@ function Services({ data }: { data: Record<string, any> }) {
               <article className="gl-price-row grid gap-4 border-b border-[var(--p)]/15 py-7 last:border-b-0 md:grid-cols-[1fr_minmax(120px,1.3fr)_auto] md:items-end">
                 <div>
                   <span className="text-xs tracking-[0.32em] text-[var(--p)]">0{index + 1}</span>
-                  <h3 className="t-display mt-1 text-4xl font-semibold">{title}</h3>
+                  <h3 className="t-display mt-1 text-2xl sm:text-4xl font-semibold">{title}</h3>
                 </div>
                 <div className="gl-dots hidden md:block" />
                 <div className="text-left md:text-right">
                   <p className="mb-2 text-sm leading-6 text-[var(--muted)]">{detail}</p>
-                  <p className="t-display text-4xl font-semibold text-[var(--p)]">{price}</p>
+                  <p className="t-display text-2xl sm:text-4xl font-semibold text-[var(--p)]">{price}</p>
                 </div>
               </article>
             </Reveal>
@@ -206,12 +206,12 @@ function Packages({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 120} variant="up">
               <article className="gl-tier t-card relative flex aspect-square flex-col justify-between overflow-hidden border border-[var(--p)]/25 bg-[#251F22] p-8">
                 <div className="gl-tier-bar absolute inset-x-0 top-0 h-2 bg-[var(--p)]" />
-                <span className="t-display text-7xl font-semibold text-white/10">0{index + 1}</span>
+                <span className="t-display text-3xl md:text-7xl font-semibold text-white/10">0{index + 1}</span>
                 <div>
-                  <h3 className="t-display text-5xl font-semibold">{title}</h3>
+                  <h3 className="t-display text-2xl md:text-5xl font-semibold">{title}</h3>
                   <p className="mt-4 min-h-[84px] text-sm leading-7 text-[var(--muted)]">{text}</p>
                 </div>
-                <p className="t-display text-5xl font-semibold text-[var(--p)]">{price}</p>
+                <p className="t-display text-2xl md:text-5xl font-semibold text-[var(--p)]">{price}</p>
               </article>
             </Reveal>
           ))}
@@ -356,7 +356,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
     <div className="fixed inset-0 z-[80] grid place-items-center bg-black/70 px-4 backdrop-blur-sm">
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">x</button>
-        <h3 className="t-display text-4xl font-semibold">{getValue(data, "contactTitle")}</h3>
+        <h3 className="t-display text-2xl sm:text-4xl font-semibold">{getValue(data, "contactTitle")}</h3>
         <form className="mt-6 grid gap-3">
           <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
           <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון" />

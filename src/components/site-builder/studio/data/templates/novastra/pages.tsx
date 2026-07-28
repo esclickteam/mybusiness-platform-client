@@ -795,7 +795,7 @@ function ProductGrid({
                   </div>
                 </button>
 
-                <div className="mt-4 grid grid-cols-2 gap-2">
+                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => onProductClick(product)}
@@ -1593,7 +1593,7 @@ function Footer({
     <footer className="bg-zinc-950 px-4 pb-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto grid max-w-[1480px] gap-8 border-t border-white/10 pt-10 lg:grid-cols-[1.3fr_0.7fr_0.7fr_0.7fr]">
         <div>
-          <h2 className="text-5xl font-black uppercase tracking-[-0.08em]">
+          <h2 className="text-2xl md:text-5xl font-black uppercase tracking-[-0.08em]">
             {data.brandName}
           </h2>
           <p className="mt-4 max-w-md text-sm leading-7 text-zinc-400">

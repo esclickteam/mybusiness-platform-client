@@ -53,7 +53,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
         <div className="tpl-burst absolute -right-24 -top-24 h-96 w-96 rounded-full opacity-40" style={{ background: `conic-gradient(from 0deg, #f59e0b, transparent, #f59e0b)` }} />
         <img src={v(data, "heroImage")} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-45" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #fffbebf5, #fffbeb88)" }} />
-        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-5 py-28 lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[92vh] max-w-7xl flex-col justify-center px-5 py-14 md:py-28 lg:px-8">
           
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#f59e0b" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -121,7 +121,7 @@ function CitrusHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(28,25,23,0.1)", background: "#ffffff" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
         <div className="mt-10 grid grid-cols-2 gap-2 md:grid-cols-4">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="scale">
@@ -139,7 +139,7 @@ function CitrusHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(28,25,23,0.1)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
@@ -160,7 +160,7 @@ function CitrusHomeStats({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(28,25,23,0.1)", background: "#ffffff" }}>
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           {stats.map(([n, l], i) => (
             <Reveal key={l} delayMs={i * 70} variant="scale">
               <div className="border px-4 py-3" style={{ borderColor: "#f59e0b" }}>
@@ -390,7 +390,7 @@ function CitrusChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#f59e0b" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#78716c" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#f59e0b" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

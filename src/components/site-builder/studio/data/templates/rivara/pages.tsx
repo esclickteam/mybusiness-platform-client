@@ -107,7 +107,7 @@ function WaveBandHero({ data, goTo }: { data: Record<string, any>; goTo: (id: st
             <div className="absolute inset-0" style={{ background: index === 1 ? "linear-gradient(90deg, #e8f3f288, transparent 55%)" : "linear-gradient(90deg, transparent, #e8f3f2aa)" }} />
             <div className="absolute bottom-6 right-6 flex items-center gap-4">
               <span className="tpl-pulse-line h-px w-20" style={{ background: "#1f7a78" }} />
-              <span className="tpl-display text-4xl font-bold" style={{ color: "#12343a" }}>{band.label}</span>
+              <span className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#12343a" }}>{band.label}</span>
             </div>
           </div>
         ))}

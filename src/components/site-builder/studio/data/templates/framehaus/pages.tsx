@@ -322,7 +322,7 @@ function HeroSection({
   return (
     <section className="relative overflow-hidden border-b-2 border-black px-5 py-12 lg:px-8 lg:py-16">
       <div className="framehaus-hero-grid pointer-events-none absolute inset-0 opacity-20" />
-      <div className="mx-auto grid max-w-7xl grid-cols-12 gap-5">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-5">
         <div className="col-span-12 border-b-2 border-black pb-6 lg:col-span-5 lg:border-b-0 lg:border-l-2 lg:pb-0 lg:pl-6">
           <TemplateText
             as="p"
@@ -429,7 +429,7 @@ function StatsSection({ data }: { data: Record<string, any> }) {
             <TemplateText as="div" className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#666666]">
               {label}
             </TemplateText>
-            <TemplateText as="div" className="mt-3 text-4xl font-black text-[#111111]">
+            <TemplateText as="div" className="mt-3 text-2xl sm:text-4xl font-black text-[#111111]">
               {value}
             </TemplateText>
           </div>
@@ -448,7 +448,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
 
   return (
     <section className="border-b-2 border-black px-5 py-16 lg:px-8 lg:py-24">
-      <div className="mx-auto grid max-w-7xl grid-cols-12 gap-6">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-2 xl:grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-5">
           <EditorialIntro
             eyebrow={getValue(data, "aboutEyebrow")}
@@ -513,7 +513,7 @@ function ServicesSection({
               key={title}
               className="grid gap-5 border-b-2 border-black py-6 last:border-b-0 md:grid-cols-[110px_1fr_auto]"
             >
-              <TemplateText as="div" className="text-4xl font-black text-[#ff3b30]">
+              <TemplateText as="div" className="text-2xl sm:text-4xl font-black text-[#ff3b30]">
                 0{index + 1}
               </TemplateText>
               <div>
@@ -623,7 +623,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
         <div className="mt-12 grid gap-px border-2 border-black bg-black md:grid-cols-2 xl:grid-cols-4">
           {steps.map(([title, text], index) => (
             <div key={title} className="bg-[#fafafa] p-6">
-              <TemplateText as="div" className="text-5xl font-black text-[#ff3b30]">
+              <TemplateText as="div" className="text-2xl md:text-5xl font-black text-[#ff3b30]">
                 0{index + 1}
               </TemplateText>
               <TemplateText as="h3" className="mt-5 text-2xl font-black uppercase text-[#111111]">

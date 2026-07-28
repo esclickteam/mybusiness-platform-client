@@ -296,7 +296,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
             <Reveal key={label} delayMs={i * 80} variant="left">
               <div className="ag-float flex items-center justify-between rounded-[2rem] border border-current/10 bg-[var(--surface)] p-5" style={{ animationDelay: String(i * 160) + "ms" }}>
                 <span className="text-sm font-bold text-[var(--muted)]">{label}</span>
-                <span className="ag-display text-4xl font-black text-[var(--p)]">{value}</span>
+                <span className="ag-display text-2xl sm:text-4xl font-black text-[var(--p)]">{value}</span>
               </div>
             </Reveal>
           ))}
@@ -358,7 +358,7 @@ function Services({ data, goTo }: { data: Record<string, any>; goTo: (id: string
             <Reveal key={title} delayMs={i * 90} variant="up">
               <article className="ag-card group min-h-[260px] rounded-[2rem] border border-current/10 bg-[var(--bg)]/60 p-6 text-right ">
                 <div className="flex items-start justify-between gap-4">
-                  <span className="ag-display text-5xl font-black text-[var(--p)]/40">0{i + 1}</span>
+                  <span className="ag-display text-2xl md:text-5xl font-black text-[var(--p)]/40">0{i + 1}</span>
                   <span className="h-12 w-12 rounded-full bg-[var(--a)]/20 transition group-hover:scale-125" />
                 </div>
                 <h3 className="mt-8 text-2xl font-black">{title}</h3>
@@ -429,7 +429,7 @@ function Team({ data }: { data: Record<string, any> }) {
                   <img src={image} alt="" className="h-full w-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/90 to-transparent" />
                   <div className="absolute bottom-0 right-0 p-6 text-white">
-                    <p className="ag-display text-5xl font-black text-[var(--a)]">0{i + 1}</p>
+                    <p className="ag-display text-2xl md:text-5xl font-black text-[var(--a)]">0{i + 1}</p>
                     <h3 className="mt-2 text-3xl font-black">{name}</h3>
                     <p className="mt-1 text-sm font-bold text-white/70">{role}</p>
                   </div>
@@ -538,7 +538,7 @@ function Stats({ data }: { data: Record<string, any> }) {
         {stats.map(([value, label], i) => (
           <Reveal key={label} delayMs={i * 80} variant="up">
             <div className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-right">
-              <p className="ag-display text-5xl font-black text-[var(--p)]">{value}</p>
+              <p className="ag-display text-2xl md:text-5xl font-black text-[var(--p)]">{value}</p>
               <p className="mt-3 text-sm font-bold text-[var(--muted)]">{label}</p>
             </div>
           </Reveal>
@@ -625,7 +625,7 @@ function Pricing({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={i * 90} variant="up">
               <article className="ag-card rounded-t-[4rem] rounded-b-2xl border border-current/10 bg-[var(--surface)] p-7 text-right">
                 <h3 className="text-2xl font-black">{title}</h3>
-                <p className="ag-display mt-6 text-4xl font-black text-[var(--p)]">{price}</p>
+                <p className="ag-display mt-6 text-2xl sm:text-4xl font-black text-[var(--p)]">{price}</p>
                 <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
               </article>
             </Reveal>
@@ -717,7 +717,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
     <footer data-template-section-type="footer" className="bg-[var(--dark)] px-5 py-16 text-white lg:px-8">
       <div className="mx-auto grid max-w-7xl gap-10 text-right lg:grid-cols-[1fr_1.2fr]">
         <Reveal>
-          <p className="ag-display text-5xl font-black">{getValue(data, "brandName")}</p>
+          <p className="ag-display text-2xl md:text-5xl font-black">{getValue(data, "brandName")}</p>
           <p className="mt-4 max-w-md text-sm leading-7 text-white/60">{getValue(data, "footerText")}</p>
         </Reveal>
         <div className="grid gap-4">

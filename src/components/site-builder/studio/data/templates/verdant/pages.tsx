@@ -252,7 +252,7 @@ function Process({ data }: { data: Record<string, any> }) {
         <div className="mt-14 grid gap-10 md:grid-cols-3">
           {steps.map(([num, title, text]) => (
             <div key={num}>
-              <div className="v-display text-5xl text-[var(--v-moss)]">{num}</div>
+              <div className="v-display text-2xl md:text-5xl text-[var(--v-moss)]">{num}</div>
               <h3 className="mt-4 text-xl font-semibold">{title}</h3>
               <p className="mt-2 text-sm leading-7 text-[var(--v-muted)]">{text}</p>
             </div>

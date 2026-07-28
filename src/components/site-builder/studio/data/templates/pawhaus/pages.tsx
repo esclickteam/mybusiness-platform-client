@@ -233,7 +233,7 @@ function Stats({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.32em] text-[var(--p)]">{getValue(data, "statsEyebrow")}</p>
           <h2 className="t-serif mt-4 text-5xl font-black leading-none tracking-[-0.05em] text-white md:text-7xl">{getValue(data, "sectionFourTitle")}</h2>
         </Reveal>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stats.map(([target, label, suffix], index) => (
             <CountStat key={label} target={target} label={label} suffix={suffix} delayMs={index * 90} />
           ))}
@@ -254,7 +254,7 @@ function Grooming({ data }: { data: Record<string, any> }) {
           <a href="#booking" className="mt-8 inline-block bg-[var(--p)] px-8 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</a>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <div className="pawhaus-before-after relative grid min-h-[500px] grid-cols-2 overflow-hidden border-[10px] border-[var(--bg)] shadow-[0_28px_80px_rgba(69,45,12,0.14)]">
+          <div className="pawhaus-before-after relative grid min-h-[500px] grid-cols-1 sm:grid-cols-2 overflow-hidden border-[10px] border-[var(--bg)] shadow-[0_28px_80px_rgba(69,45,12,0.14)]">
             <div className="relative">
               <img src={getValue(data, "beforeImage")} alt="" className="h-full w-full object-cover" />
               <span className="absolute right-4 top-4 bg-[var(--dark)] px-4 py-2 text-xs font-black text-white">{getValue(data, "beforeLabel")}</span>
@@ -323,7 +323,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
           {reviews.map(([text, name, role], index) => (
             <Reveal key={name} delayMs={index * 100} variant="up">
               <blockquote className="h-full bg-[var(--bg)] p-7 shadow-[0_16px_48px_rgba(69,45,12,0.06)]">
-                <p className="t-serif text-6xl font-black leading-none text-[var(--p)]">"</p>
+                <p className="t-serif text-3xl md:text-6xl font-black leading-none text-[var(--p)]">"</p>
                 <p className="mt-2 text-lg font-bold leading-8 text-[var(--dark)]">{text}</p>
                 <footer className="mt-8 border-t border-[var(--p)]/20 pt-5">
                   <p className="font-black text-[var(--p)]">{name}</p>
@@ -378,7 +378,7 @@ function Footer({ data }: { data: Record<string, any> }) {
     <footer data-template-section-type="footer" className="bg-[var(--p)] px-5 py-16 text-white lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between">
         <div>
-          <p className="t-serif text-5xl font-black tracking-[-0.05em]">{getValue(data, "brandName")}</p>
+          <p className="t-serif text-2xl md:text-5xl font-black tracking-[-0.05em]">{getValue(data, "brandName")}</p>
           <h2 className="mt-5 max-w-2xl text-3xl font-black leading-tight md:text-5xl">{getValue(data, "ctaTitle")}</h2>
           <p className="mt-4 max-w-xl text-base leading-8 text-white/82">{getValue(data, "ctaText")}</p>
         </div>

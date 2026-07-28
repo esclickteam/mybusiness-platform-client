@@ -127,7 +127,7 @@ function FeaturedGallery({ data }: { data: Record<string, any> }) {
           <Reveal variant="right" className="min-h-[420px] overflow-hidden border border-white/12 lg:min-h-[680px]">
             <img src={getValue(data, "galleryLargeImage")} alt="" className="h-full w-full object-cover transition duration-700 hover:scale-105" />
           </Reveal>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {images.map((image, index) => (
               <Reveal key={image} variant="scale" delayMs={index * 80}>
                 <div className="group aspect-square overflow-hidden border border-white/12">
@@ -197,7 +197,7 @@ function Process({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 80} className="min-w-[250px] flex-1">
               <article className="relative h-full px-5 py-8 md:px-7">
                 {index < steps.length - 1 ? <span className="absolute left-0 top-1/2 hidden h-16 w-px -translate-y-1/2 bg-[var(--p)] lg:block" /> : null}
-                <div className="text-5xl font-bold tracking-[-0.08em] text-[var(--p)]">0{index + 1}</div>
+                <div className="text-2xl md:text-5xl font-bold tracking-[-0.08em] text-[var(--p)]">0{index + 1}</div>
                 <h3 className="mt-4 text-xl font-bold">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-white/58">{text}</p>
               </article>

@@ -83,7 +83,7 @@ function MetricCard({ target, label, suffix = "", delayMs = 0 }: { target: numbe
     <div ref={ref}>
       <Reveal delayMs={delayMs} variant="scale">
         <div className="neuralis-card relative aspect-square overflow-hidden border border-cyan-300/18 bg-white/[0.045] p-5 backdrop-blur">
-          <p className="neuralis-display text-5xl font-bold text-cyan-200">{value}{suffix}</p>
+          <p className="neuralis-display text-2xl md:text-5xl font-bold text-cyan-200">{value}{suffix}</p>
           <p className="mt-3 text-sm font-semibold leading-6 text-cyan-50/60">{label}</p>
         </div>
       </Reveal>
@@ -153,7 +153,7 @@ function Hero({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
       </div>
-      <div className="mx-auto mt-10 grid max-w-4xl grid-cols-3 gap-3">
+      <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 md:grid-cols-3 gap-3">
         {metrics.map(([target, label, suffix], index) => (
           <MetricCard key={label} target={target} label={label} suffix={suffix} delayMs={index * 90} />
         ))}
@@ -251,9 +251,9 @@ function Workflow({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 120} variant="scale">
               <article className="group relative min-h-[360px] border border-cyan-300/22 bg-[#09182d] p-8 shadow-[0_0_0_rgba(34,211,238,0)] transition duration-500 hover:-translate-y-2 hover:border-cyan-300/70 hover:shadow-[0_0_70px_rgba(34,211,238,0.18)]">
                 <span className="grid h-20 w-20 place-items-center border border-cyan-300 bg-cyan-300 text-2xl font-black text-[#050816] shadow-[0_0_42px_rgba(34,211,238,0.45)]">0{index + 1}</span>
-                <h3 className="neuralis-display mt-10 text-4xl font-bold text-white">{title}</h3>
+                <h3 className="neuralis-display mt-10 text-2xl sm:text-4xl font-bold text-white">{title}</h3>
                 <p className="mt-5 text-base leading-8 text-[var(--muted)]">{text}</p>
-                <div className="mt-8 grid grid-cols-4 gap-2">
+                <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
                   {Array.from({ length: 8 }).map((_, dot) => (
                     <span key={dot} className={`h-2 bg-cyan-300/20 ${dot <= index + 3 ? "bg-cyan-300 shadow-[0_0_14px_rgba(34,211,238,0.72)]" : ""}`} />
                   ))}
@@ -291,8 +291,8 @@ function Pricing({ data }: { data: Record<string, any> }) {
             <Reveal key={name} delayMs={index * 110} variant="up">
               <article className={`flex aspect-square flex-col justify-between border p-7 ${index === 1 ? "border-cyan-300 bg-cyan-300 text-[#050816] shadow-[0_0_70px_rgba(34,211,238,0.30)]" : "border-cyan-300/20 bg-white/[0.04] text-white"}`}>
                 <div>
-                  <p className="neuralis-display text-4xl font-bold">{name}</p>
-                  <p className="neuralis-display mt-7 text-6xl font-bold">{price}</p>
+                  <p className="neuralis-display text-2xl sm:text-4xl font-bold">{name}</p>
+                  <p className="neuralis-display mt-7 text-3xl md:text-6xl font-bold">{price}</p>
                   <p className={`mt-5 text-sm font-semibold leading-7 ${index === 1 ? "text-[#073242]/75" : "text-[var(--muted)]"}`}>{text}</p>
                 </div>
                 <div className={`space-y-2 border-t pt-5 text-sm font-bold ${index === 1 ? "border-[#050816]/20" : "border-cyan-300/15"}`}>
@@ -320,11 +320,11 @@ function SecurityStrip({ data }: { data: Record<string, any> }) {
           <h2 className="neuralis-display mt-4 text-4xl font-bold leading-none text-white md:text-6xl">{getValue(data, "securityTitle")}</h2>
           <p className="mt-6 max-w-3xl text-base leading-8 text-[var(--muted)]">{getValue(data, "securityText")}</p>
         </Reveal>
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {badges.map((badge, index) => (
             <Reveal key={badge} delayMs={index * 80} variant="scale">
               <div className="aspect-square border border-cyan-300/22 bg-[#09182d] p-5">
-                <span className="neuralis-display text-5xl font-bold text-cyan-300/24">0{index + 1}</span>
+                <span className="neuralis-display text-2xl md:text-5xl font-bold text-cyan-300/24">0{index + 1}</span>
                 <p className="mt-8 text-lg font-black uppercase tracking-[0.16em] text-cyan-100">{badge}</p>
               </div>
             </Reveal>

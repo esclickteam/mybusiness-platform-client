@@ -79,7 +79,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
       <section className="grid min-h-[90vh] lg:grid-cols-[1fr_2fr]">
         <div className="flex flex-col items-center justify-center border-l px-8 py-16" style={{ borderColor: "rgba(232,237,245,0.14)", background: "#1a2332" }}>
           <p className="text-xs tracking-[0.3em]" style={{ color: "#38bdf8" }}>קומה</p>
-          <div className="tpl-elevator-digits tpl-display mt-4 overflow-hidden text-7xl font-bold" style={{ height: "1.2em", color: "#38bdf8" }}>
+          <div className="tpl-elevator-digits tpl-display mt-4 overflow-hidden text-3xl md:text-7xl font-bold" style={{ height: "1.2em", color: "#38bdf8" }}>
             <div>42</div><div>28</div><div>15</div><div>03</div>
           </div>
         </div>
@@ -116,10 +116,10 @@ function SkylineStats({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor:"rgba(232,237,245,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-6 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-6 text-center">
         {stats.map(([vk, lk], i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay:`${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color:"#38bdf8" }}>{v(data, vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color:"#38bdf8" }}>{v(data, vk)}</div>
             <p className="mt-2 text-sm" style={{ color:"#7a8fa8" }}>{v(data, lk)}</p>
           </div>
         ))}
@@ -171,10 +171,10 @@ function TowerTrustMetrics({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(232,237,245,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb border p-5 text-center" style={{ borderColor: "rgba(232,237,245,0.14)", animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#38bdf8" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#38bdf8" }}>{v(data,vk)}</div>
             <p className="mt-2 text-sm" style={{ color: "#7a8fa8" }}>{v(data,lk)}</p>
           </div>
         ))}
@@ -186,7 +186,7 @@ function TowerMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(232,237,245,0.14)", background: "#1a2332" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Tower</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Tower</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(232,237,245,0.14)" }}>
@@ -292,10 +292,10 @@ function TowerStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(232,237,245,0.14)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#38bdf8" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#38bdf8" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#7a8fa8" }}>{v(data,lk)}</p>
           </div>
         ))}

@@ -113,7 +113,7 @@ function ListingSpotlight({ data }: { data: Record<string, any> }) {
         <img src={v(data,"item1Image")} alt="" className="min-h-[320px] w-full object-cover" />
         <div className="flex flex-col justify-center p-8">
           <p className="text-xs font-bold tracking-[0.24em]" style={{ color:"#b8860b" }}>נכס השבוע</p>
-          <h3 className="tpl-display mt-3 text-4xl font-bold">{v(data,"item1Title")}</h3>
+          <h3 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data,"item1Title")}</h3>
           <p className="mt-4 text-lg" style={{ color:"#b8a898" }}>{v(data,"item1Text")}</p>
           <p className="mt-6 text-3xl font-bold" style={{ color:"#b8860b" }}>{v(data,"item1Price")}</p>
         </div>
@@ -168,10 +168,10 @@ function SignetTrustMetrics({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(245,240,230,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb border p-5 text-center" style={{ borderColor: "rgba(245,240,230,0.12)", animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#b8860b" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#b8860b" }}>{v(data,vk)}</div>
             <p className="mt-2 text-sm" style={{ color: "#b8a898" }}>{v(data,lk)}</p>
           </div>
         ))}
@@ -183,7 +183,7 @@ function SignetMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(245,240,230,0.12)", background: "#2a2620" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Signet</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Signet</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(245,240,230,0.12)" }}>
@@ -289,10 +289,10 @@ function SignetStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(245,240,230,0.12)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#b8860b" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#b8860b" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#b8a898" }}>{v(data,lk)}</p>
           </div>
         ))}

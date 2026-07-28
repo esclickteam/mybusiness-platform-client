@@ -64,7 +64,7 @@ function Header({ data }: { data: Record<string, any> }) {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
         <a href="#" className="flex items-center gap-3" aria-label={getValue(data, "brandName")}>
           <span className="grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-black text-black">{getValue(data, "logoText")}</span>
-          <span className="t-display text-4xl leading-none tracking-wide">{getValue(data, "brandName")}</span>
+          <span className="t-display text-2xl sm:text-4xl leading-none tracking-wide">{getValue(data, "brandName")}</span>
         </a>
         <nav className="hidden items-center gap-7 text-xs font-bold uppercase tracking-[0.22em] text-white/66 lg:flex" aria-label="ניווט ראשי">
           {links.map(([label, href]) => (
@@ -101,7 +101,7 @@ function Hero({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal delayMs={180} variant="left" className="hidden border border-[var(--p)]/60 bg-black/60 p-5 backdrop-blur md:block">
-          <p className="t-display text-7xl uppercase leading-none text-[var(--p)]">{getValue(data, "heroSideTitle")}</p>
+          <p className="t-display text-3xl md:text-7xl uppercase leading-none text-[var(--p)]">{getValue(data, "heroSideTitle")}</p>
           <p className="mt-4 text-sm font-bold uppercase tracking-[0.24em] text-white/70">{getValue(data, "heroSideText")}</p>
         </Reveal>
       </div>
@@ -132,7 +132,7 @@ function Programs({ data }: { data: Record<string, any> }) {
             <Reveal key={title} delayMs={index * 90} variant="up">
               <article className="sound-program-row border-2 border-[var(--p)] px-5 py-6 md:px-8 md:py-7">
                 <div className="grid gap-5 md:grid-cols-[0.22fr_1fr_0.45fr] md:items-center">
-                  <p className="t-display text-6xl leading-none text-[var(--p)]">0{index + 1}</p>
+                  <p className="t-display text-3xl md:text-6xl leading-none text-[var(--p)]">0{index + 1}</p>
                   <div>
                     <h3 className="t-display text-5xl uppercase leading-none text-white md:text-7xl">{title}</h3>
                     <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>
@@ -190,7 +190,7 @@ function Teachers({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/24 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-5">
-                  <h3 className="t-display text-5xl uppercase leading-none text-white">{name}</h3>
+                  <h3 className="t-display text-2xl md:text-5xl uppercase leading-none text-white">{name}</h3>
                   <p className="mt-2 text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">{role}</p>
                 </div>
               </article>
@@ -220,7 +220,7 @@ function Events({ data }: { data: Record<string, any> }) {
           {events.map(([date, title, text], index) => (
             <Reveal key={title} delayMs={index * 100} variant="up">
               <article className="sound-event-row grid gap-5 border-b border-white/14 py-8 md:grid-cols-[0.32fr_1fr] md:items-center">
-                <p className="t-display text-7xl uppercase leading-none text-[var(--p)]">{date}</p>
+                <p className="t-display text-3xl md:text-7xl uppercase leading-none text-[var(--p)]">{date}</p>
                 <div>
                   <h3 className="t-display text-5xl uppercase leading-none text-white md:text-6xl">{title}</h3>
                   <p className="mt-3 max-w-2xl text-sm font-semibold leading-7 text-[var(--muted)]">{text}</p>

@@ -259,7 +259,7 @@ function Services({ data }: { data: Record<string, any> }) {
           {services.map(([title, text], index) => (
             <Reveal key={title} delayMs={index * 100}>
               <article className="ar-service-panel flex min-h-[240px] flex-col justify-between border border-white/12 p-7 text-right md:min-h-[260px] md:p-8">
-                <span className="ar-latin text-5xl font-extrabold text-[var(--p)]">0{index + 1}</span>
+                <span className="ar-latin text-2xl md:text-5xl font-extrabold text-[var(--p)]">0{index + 1}</span>
                 <div>
                   <h3 className="text-2xl font-bold text-white md:text-3xl">{title}</h3>
                   <p className="mt-4 text-sm leading-7 text-white/72">{text}</p>
@@ -288,7 +288,7 @@ function Stats({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.34em]">{getValue(data, "statsEyebrow")}</p>
           <h2 className="ar-display mt-4 text-4xl font-extrabold leading-tight md:text-6xl">מספרים עם הד.</h2>
         </Reveal>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stats.map(([target, label, suffix], index) => (
             <CounterStat key={label} target={target} label={label} suffix={suffix} delayMs={index * 90} />
           ))}

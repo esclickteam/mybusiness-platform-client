@@ -53,7 +53,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
       <section className="relative isolate min-h-[90vh] overflow-hidden">
         <img src={v(data, "heroImage")} alt="" className="tpl-ken absolute inset-0 h-full w-full object-cover opacity-70" />
         <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, #14110ef2, #14110e66)" }} />
-        <div className="relative z-10 mx-auto flex min-h-[90vh] max-w-7xl flex-col justify-center px-5 py-28 lg:px-8">
+        <div className="relative z-10 mx-auto flex min-h-[90vh] max-w-7xl flex-col justify-center px-5 py-14 md:py-28 lg:px-8">
           
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#d97706" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -129,7 +129,7 @@ function SpitHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(245,235,224,0.12)", background: "#1e1914" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
         <div className="mt-10 grid grid-cols-2 gap-2 md:grid-cols-4">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 70} variant="scale">
@@ -147,7 +147,7 @@ function SpitHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(245,235,224,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 80} variant="up">
@@ -168,7 +168,7 @@ function SpitHomeStats({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(245,235,224,0.12)", background: "#1e1914" }}>
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 md:flex-row md:justify-between">
-        <div className="grid grid-cols-3 gap-4 text-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
           {stats.map(([n, l], i) => (
             <Reveal key={l} delayMs={i * 70} variant="scale">
               <div className="border px-4 py-3" style={{ borderColor: "#d97706" }}>
@@ -398,7 +398,7 @@ function SpitChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#d97706" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#b9a08a" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#d97706" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

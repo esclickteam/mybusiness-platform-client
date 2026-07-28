@@ -219,7 +219,7 @@ function BeforeAfter({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{getValue(data, "beforeAfterEyebrow")}</p>
           <h2 className="de-display mt-4 text-4xl font-semibold leading-tight tracking-[-0.05em] text-[var(--dark)] md:text-6xl">{getValue(data, "beforeAfterTitle")}</h2>
           <p className="mt-5 text-base leading-8 text-[var(--muted)]">{getValue(data, "beforeAfterText")}</p>
-          <div className="mt-8 grid grid-cols-2 border border-[var(--p)]/35 bg-[var(--bg)] p-1">
+          <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 border border-[var(--p)]/35 bg-[var(--bg)] p-1">
             {(["before", "after"] as const).map((mode) => (
               <button
                 key={mode}
@@ -340,7 +340,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
           {quotes.map(([text, name], index) => (
             <Reveal key={name} delayMs={index * 110} variant="scale">
               <article className="de-quote flex aspect-square flex-col justify-between border border-[var(--p)]/35 bg-white p-7">
-                <span className="de-display text-7xl leading-none text-[var(--p)]">“</span>
+                <span className="de-display text-3xl md:text-7xl leading-none text-[var(--p)]">“</span>
                 <p className="text-base font-semibold leading-8 text-[var(--dark)]">{text}</p>
                 <strong className="text-sm font-black text-[var(--p)]">{name}</strong>
               </article>

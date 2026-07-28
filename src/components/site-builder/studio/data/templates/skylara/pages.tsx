@@ -115,7 +115,7 @@ function FloorApartments({ data }: { data: Record<string, any> }) {
             <article key={apartment.title} className="tpl-climb grid gap-5 border-b py-8 pr-14 md:grid-cols-[0.35fr_0.65fr_1fr] md:items-center" style={{ borderColor: "rgba(57,208,255,0.18)", animationDelay: `${index * 0.12}s` }}>
               <div className="relative">
                 <span className="absolute -right-[3.65rem] top-1 h-3 w-3" style={{ background: "#39d0ff" }} />
-                <span className="tpl-display text-6xl font-bold leading-none" style={{ color: "#39d0ff" }}>{apartment.floor}</span>
+                <span className="tpl-display text-3xl md:text-6xl font-bold leading-none" style={{ color: "#39d0ff" }}>{apartment.floor}</span>
               </div>
               <div>
                 <h3 className="tpl-display text-3xl font-bold" style={{ color: "#e8f1ff" }}>{apartment.title}</h3>

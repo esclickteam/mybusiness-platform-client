@@ -341,7 +341,7 @@ function SteelHero({
             >
               {getValue(data, "tagline")}
             </TemplateText>
-            <div className="grid grid-cols-2 gap-0 border border-white/10 md:justify-self-end">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-0 border border-white/10 md:justify-self-end">
               {[
                 ["statOne", "statOneLabel"],
                 ["statTwo", "statTwoLabel"],
@@ -521,7 +521,7 @@ function SteelServicesBand({
                 index !== 0 && "border-t border-white/10",
               )}
             >
-              <div className="text-4xl font-black text-[#ff6b2c]">{number}</div>
+              <div className="text-2xl sm:text-4xl font-black text-[#ff6b2c]">{number}</div>
               <div>
                 <TemplateText
                   as="h3"
@@ -619,7 +619,7 @@ function SteelProcessBand({ data }: { data: Record<string, any> }) {
                 index !== 0 && "border-t border-white/10 md:border-r md:border-t-0",
               )}
             >
-              <div className="text-5xl font-black text-[#ff6b2c]">0{index + 1}</div>
+              <div className="text-2xl md:text-5xl font-black text-[#ff6b2c]">0{index + 1}</div>
               <TemplateText
                 as="h3"
                 editId={titleKey}

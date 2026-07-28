@@ -154,7 +154,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                 <img src={image} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
                 <div className="relative z-10 flex min-h-[420px] flex-col justify-between p-6">
-                  <p className="ag-display text-left text-5xl font-extrabold text-white/80">0{i + 1}.25</p>
+                  <p className="ag-display text-left text-2xl md:text-5xl font-extrabold text-white/80">0{i + 1}.25</p>
                   <div>
                     <h3 className="ag-display text-3xl font-bold text-white">{title}</h3>
                     <p className="mt-3 text-sm leading-7 text-white/75">{text}</p>
@@ -252,7 +252,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
           {items.map(([time, title, text], i) => (
             <Reveal key={title} delayMs={i * 90}>
               <article className="ag-card grid gap-5 border border-white/15 bg-[var(--surface)] p-5 text-right md:grid-cols-[130px_1fr_auto] md:items-center">
-                <p className="ag-display text-4xl font-extrabold text-[var(--accent)]">{time}</p>
+                <p className="ag-display text-2xl sm:text-4xl font-extrabold text-[var(--accent)]">{time}</p>
                 <div>
                   <h3 className="text-2xl font-bold">{title}</h3>
                   <p className="mt-2 text-sm leading-7 text-[var(--muted)]">{text}</p>

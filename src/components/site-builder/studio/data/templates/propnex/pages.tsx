@@ -185,10 +185,10 @@ function BentoTrustMetrics({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-12 lg:px-8" style={{ borderColor: "rgba(17,24,39,0.1)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb border p-5 text-center" style={{ borderColor: "rgba(17,24,39,0.1)", animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#2563eb" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#2563eb" }}>{v(data,vk)}</div>
             <p className="mt-2 text-sm" style={{ color: "#6b7280" }}>{v(data,lk)}</p>
           </div>
         ))}
@@ -200,7 +200,7 @@ function BentoMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(17,24,39,0.1)", background: "#ffffff" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-4xl font-bold">תובנות Bento</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Bento</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(17,24,39,0.1)" }}>
@@ -306,10 +306,10 @@ function BentoStatsRow({ data }: { data: Record<string, any> }) {
   const stats = [["stat1Value","stat1Label"],["stat2Value","stat2Label"],["stat3Value","stat3Label"]];
   return (
     <section className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(17,24,39,0.1)" }}>
-      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-4 text-center">
+      <div className="mx-auto grid max-w-7xl grid-cols-1 md:grid-cols-3 gap-4 text-center">
         {stats.map(([vk,lk],i) => (
           <div key={lk} className="tpl-climb" style={{ animationDelay: `${i*0.1}s` }}>
-            <div className="tpl-display text-4xl font-bold" style={{ color: "#2563eb" }}>{v(data,vk)}</div>
+            <div className="tpl-display text-2xl sm:text-4xl font-bold" style={{ color: "#2563eb" }}>{v(data,vk)}</div>
             <p className="text-sm" style={{ color: "#6b7280" }}>{v(data,lk)}</p>
           </div>
         ))}

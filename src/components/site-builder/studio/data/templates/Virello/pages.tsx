@@ -541,7 +541,7 @@ function ServicesMarquee() {
                 <VisualText
                   id={`services.${originalIndex}.icon`}
                   fallback={service.icon}
-                  className="grid h-20 w-20 place-items-center rounded-[1.6rem] bg-[#ffe3a8] text-4xl text-[#301b12] transition duration-300 group-hover:rotate-12 group-hover:scale-110"
+                  className="grid h-20 w-20 place-items-center rounded-[1.6rem] bg-[#ffe3a8] text-2xl sm:text-4xl text-[#301b12] transition duration-300 group-hover:rotate-12 group-hover:scale-110"
                 />
               </article>
             );
@@ -581,7 +581,7 @@ function AboutSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => voi
 
           <div className="absolute bottom-8 left-8 grid h-32 w-32 place-items-center rounded-full bg-[#fff8f0] text-center text-[#301b12] shadow-[0_20px_60px_rgba(48,27,18,.18)]">
             <div>
-              <VisualText id="about.experience.value" fallback={base.about.experience.value} as="p" className="text-6xl font-black tracking-[-.09em]" />
+              <VisualText id="about.experience.value" fallback={base.about.experience.value} as="p" className="text-3xl md:text-6xl font-black tracking-[-.09em]" />
               <VisualText id="about.experience.label" fallback={base.about.experience.label} as="p" className="text-xs font-black uppercase leading-tight" />
             </div>
           </div>
@@ -609,7 +609,7 @@ function AboutSection({ onNavigate }: { onNavigate: (page: VirelloPageId) => voi
           <div className="mt-12 grid gap-4 sm:grid-cols-2">
             {base.stats.slice(0, 2).map((stat, index) => (
               <div key={`${stat.value}-${index}`} className="rounded-[2rem] border border-white/10 bg-white/10 p-6">
-                <VisualText id={`stats.${index}.value`} fallback={stat.value} as="p" className="text-6xl font-black tracking-[-.08em]" />
+                <VisualText id={`stats.${index}.value`} fallback={stat.value} as="p" className="text-3xl md:text-6xl font-black tracking-[-.08em]" />
                 <VisualText id={`stats.${index}.label`} fallback={stat.label} as="p" className="mt-2 text-sm font-bold text-white/60" />
               </div>
             ))}
@@ -676,7 +676,7 @@ function WhyUs() {
                   {index === 1 ? (
                     <div className="absolute right-5 top-5 h-20 w-20 animate-[VirelloSpin_16s_linear_infinite] rounded-full border-[12px] border-[#301b12]/15" />
                   ) : null}
-                  <VisualText id={`stats.${realIndex}.value`} fallback={stat.value} as="p" className="text-7xl font-black tracking-[-.095em] text-[#301b12]" />
+                  <VisualText id={`stats.${realIndex}.value`} fallback={stat.value} as="p" className="text-3xl md:text-7xl font-black tracking-[-.095em] text-[#301b12]" />
                   <VisualText id={`stats.${realIndex}.label`} fallback={stat.label} as="p" className="mt-2 font-black text-[#301b12]/60" />
                 </div>
               );
@@ -766,7 +766,7 @@ function Testimonials() {
 
             return (
               <article key={`${item.name}-${index}`} className="w-[410px] shrink-0 rounded-[2.5rem] bg-white/80 p-7 shadow-[0_25px_75px_rgba(48,27,18,.10)]">
-                <VisualText id={`testimonials.${originalIndex}.title`} fallback={item.title} as="p" className="text-4xl font-black tracking-[-.07em] text-[#301b12]" />
+                <VisualText id={`testimonials.${originalIndex}.title`} fallback={item.title} as="p" className="text-2xl sm:text-4xl font-black tracking-[-.07em] text-[#301b12]" />
                 <VisualText id={`testimonials.${originalIndex}.text`} fallback={item.text} as="p" className="mt-6 min-h-[120px] text-xl font-black leading-8 text-[#301b12]/72" />
 
                 <div className="mt-8 flex items-center gap-3">
@@ -802,7 +802,7 @@ function LogoMarquee() {
               key={`${logo}-${index}`}
               id={`logos.${originalIndex}`}
               fallback={logo}
-              className="text-4xl font-black tracking-[-.08em] text-[#301b12]/40"
+              className="text-2xl sm:text-4xl font-black tracking-[-.08em] text-[#301b12]/40"
             />
           );
         })}
@@ -899,7 +899,7 @@ function PricingSection() {
                     : "bg-white text-[#301b12]",
               )}
             >
-              <VisualText id={`pricing.plans.${index}.price`} fallback={plan.price} as="p" className="text-7xl font-black tracking-[-.1em]" />
+              <VisualText id={`pricing.plans.${index}.price`} fallback={plan.price} as="p" className="text-3xl md:text-7xl font-black tracking-[-.1em]" />
               <VisualText id={`pricing.plans.${index}.saving`} fallback="חיסכון של כ־20% בתשלום שנתי" as="p" className="mt-2 text-sm font-black opacity-55" />
               <VisualText id={`pricing.plans.${index}.name`} fallback={plan.name} as="h3" className="mt-8 text-3xl font-black tracking-[-.06em]" />
               <VisualText id={`pricing.plans.${index}.description`} fallback={plan.description} as="p" className="mt-2 text-sm font-bold opacity-65" />
@@ -943,7 +943,7 @@ function ProcessSection() {
           {base.process.map((step, index) => (
             <article key={`${step.number}-${index}`} className="group relative min-h-[360px] overflow-hidden rounded-[2.8rem] border border-[#301b12]/10 bg-white/75 p-7 shadow-[0_25px_80px_rgba(48,27,18,.09)] transition duration-500 hover:-translate-y-3 hover:bg-[#301b12] hover:text-white">
               <VisualText id={`process.${index}.number`} fallback={step.number} as="p" className="absolute right-6 top-4 text-[7rem] font-black leading-none tracking-[-.12em] text-[#301b12]/10 transition group-hover:text-white/10" />
-              <VisualText id={`process.${index}.icon`} fallback={step.icon} className="relative z-10 mb-16 grid h-20 w-20 place-items-center rounded-[1.8rem] bg-[#ffe3a8] text-4xl text-[#301b12] transition group-hover:rotate-12" />
+              <VisualText id={`process.${index}.icon`} fallback={step.icon} className="relative z-10 mb-16 grid h-20 w-20 place-items-center rounded-[1.8rem] bg-[#ffe3a8] text-2xl sm:text-4xl text-[#301b12] transition group-hover:rotate-12" />
               <VisualText id={`process.${index}.label`} fallback={step.label} as="p" className="relative z-10 text-sm font-black opacity-55" />
               <VisualText id={`process.${index}.title`} fallback={step.title} as="h3" className="relative z-10 mt-4 text-3xl font-black leading-tight tracking-[-.06em]" />
               <VisualText id={`process.${index}.timeline`} fallback={step.timeline} as="p" className="relative z-10 mt-8 rounded-full bg-[#301b12]/8 px-4 py-3 text-sm font-black text-[#301b12]/70 group-hover:bg-white/10 group-hover:text-white/65" />
@@ -1083,7 +1083,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
           <VisualText id="brand.address" fallback={base.brand.address} as="p" className="mt-5 max-w-sm text-sm font-bold leading-7 text-[#301b12]/55" />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {base.nav.map((item, index) => (
             <button key={item.id} type="button" onClick={() => onNavigate(item.id as VirelloPageId)} className="w-fit text-sm font-black text-[#301b12]/55 hover:text-[#301b12]">
               <VisualText id={`nav.${index}.number`} fallback={`(${item.number})`} /> <VisualText id={`nav.${index}.label`} fallback={item.label} />

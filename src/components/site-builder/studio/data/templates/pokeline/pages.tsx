@@ -50,7 +50,7 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
       <section className="relative isolate min-h-[92vh] overflow-hidden">
         <div className="absolute inset-0" style={{ background: "#071a1f" }} />
         <div className="tpl-orbit absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed opacity-30" style={{ borderColor: "#2dd4bf" }} />
-        <div className="relative z-10 mx-auto grid min-h-[92vh] max-w-7xl items-center gap-10 px-5 py-24 lg:grid-cols-2 lg:px-8">
+        <div className="relative z-10 mx-auto grid min-h-[92vh] max-w-7xl items-center gap-10 px-5 py-12 md:py-24 lg:grid-cols-2 lg:px-8">
           <div>
           <p className="tpl-rise text-xs font-semibold tracking-[0.28em]" style={{ color: "#2dd4bf" }}>{v(data, "heroEyebrow")}</p>
           <h1 className="tpl-display tpl-rise-2 mt-4 max-w-4xl text-6xl font-bold leading-[0.92] md:text-8xl">{v(data, "heroTitle")}</h1>
@@ -118,7 +118,7 @@ function OrbitHomeGallery({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(232,247,246,0.12)" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "galleryTitle")}</h2></Reveal>
         <div className="mt-10 flex gap-3 overflow-x-auto pb-2">
           {imgs.map((src, i) => (
             <Reveal key={i} delayMs={i * 60} variant="left">
@@ -136,7 +136,7 @@ function OrbitHomeReviews({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(232,247,246,0.12)", background: "#0d262c" }}>
       <div className="mx-auto max-w-3xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "reviewsTitle")}</h2></Reveal>
         <div className="mt-10 space-y-6">
           {revs.map(([text, name, role], i) => (
             <Reveal key={name} delayMs={i * 70} variant="right">
@@ -160,7 +160,7 @@ function OrbitHomeStats({ data }: { data: Record<string, any> }) {
         {stats.map(([n, l], i) => (
           <Reveal key={l} delayMs={i * 70} variant="up">
             <div className="text-center md:text-right">
-              <div className="tpl-display text-5xl font-bold" style={{ color: "#2dd4bf" }}>{n}</div>
+              <div className="tpl-display text-2xl md:text-5xl font-bold" style={{ color: "#2dd4bf" }}>{n}</div>
               <p className="mt-2 text-sm" style={{ color: "#7eb8b4" }}>{l}</p>
             </div>
           </Reveal>
@@ -393,7 +393,7 @@ function OrbitChefPortrait({ data }: { data: Record<string, any> }) {
         <img src={v(data, "chefImage")} alt="" className="aspect-[4/5] w-full object-cover" />
         <div>
           <p className="text-xs tracking-[0.24em]" style={{ color: "#2dd4bf" }}>{v(data, "chefLabel")}</p>
-          <h2 className="tpl-display mt-3 text-4xl font-bold">{v(data, "chefName")}</h2>
+          <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "chefName")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#7eb8b4" }}>{v(data, "chefBio")}</p>
           <blockquote className="mt-8 border-r-4 pr-4 text-xl" style={{ borderColor: "#2dd4bf" }}>״{v(data, "chefQuote")}״</blockquote>
         </div>

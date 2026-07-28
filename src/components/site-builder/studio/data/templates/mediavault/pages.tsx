@@ -102,7 +102,7 @@ function About({ data }: { data: Record<string, any> }) {
         <div className="grid gap-0 lg:grid-cols-[0.82fr_1.18fr]">
           <Reveal variant="right" className="border-b border-white/15 p-6 text-right lg:border-b-0 lg:border-l md:p-8">
             <p className="text-base leading-8 text-[var(--muted)]">{getValue(data, "aboutText")}</p>
-            <div className="mt-8 grid grid-cols-3 gap-3">
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-3">
               {[
                 [getValue(data, "statOne"), getValue(data, "statOneLabel")],
                 [getValue(data, "statTwo"), getValue(data, "statTwoLabel")],
@@ -341,7 +341,7 @@ function Process({ data }: { data: Record<string, any> }) {
                 </div>
                 <h3 className="mt-8 text-xl font-bold">{title}</h3>
                 <p className="mt-3 text-sm leading-7 text-[var(--muted)]">{text}</p>
-                <div className="mt-6 grid grid-cols-6 gap-1">
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-1">
                   {Array.from({ length: 6 }).map((_, barIndex) => (
                     <span key={barIndex} className={`h-1.5 ${barIndex <= i + 1 ? "bg-[var(--accent)]" : "bg-white/10"}`} />
                   ))}
@@ -486,7 +486,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
             {stats.map(([v,l],i)=>(
               <Reveal key={l} delayMs={i*70} className="ag-card border border-white/15 bg-[var(--surface)] p-5 text-right">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--muted)]">{l}</p>
-                <p className="ag-display mt-2 text-4xl font-extrabold text-[var(--accent)]">{v}</p>
+                <p className="ag-display mt-2 text-2xl sm:text-4xl font-extrabold text-[var(--accent)]">{v}</p>
                 <div className="mt-3 h-1.5 w-full bg-white/10"><span className="block h-full bg-[var(--p)]" style={{width: `${70-i*8}%`}} /></div>
               </Reveal>
             ))}
