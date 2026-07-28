@@ -8,7 +8,8 @@ import React, {
 import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
 
 const DESIGN_WIDTH = 1440;
-const DESIGN_HEIGHT = 1100;
+/** Enough hero + header; avoids 100vh blow-up inside the mockup */
+const DESIGN_VIEW_HEIGHT = 900;
 
 type Props = {
   templateId: string;
@@ -16,7 +17,6 @@ type Props = {
   accent: string;
   accentSoft: string;
   isCenter?: boolean;
-  /** Mount heavy live DOM only when near the carousel focus */
   mountLive?: boolean;
 };
 
@@ -50,6 +50,7 @@ export default function LiveTemplateMockup({
 }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(640);
+  const [frameHeight, setFrameHeight] = useState(400);
 
   const renderer = useMemo(
     () => getStudioTemplateRenderer(templateId),
@@ -60,8 +61,9 @@ export default function LiveTemplateMockup({
     const el = frameRef.current;
     if (!el) return;
     const update = () => {
-      const w = el.getBoundingClientRect().width;
-      if (w) setFrameWidth(w);
+      const rect = el.getBoundingClientRect();
+      if (rect.width) setFrameWidth(rect.width);
+      if (rect.height) setFrameHeight(rect.height);
     };
     update();
     if (typeof ResizeObserver === "undefined") return;
@@ -70,7 +72,11 @@ export default function LiveTemplateMockup({
     return () => ro.disconnect();
   }, []);
 
-  const scale = Math.max(frameWidth / DESIGN_WIDTH, 0.05);
+  const scaleByWidth = frameWidth / DESIGN_WIDTH;
+  const scaleByHeight = frameHeight / DESIGN_VIEW_HEIGHT;
+  // Fit the full hero into the frame without mid-cropping the top
+  const scale = Math.max(Math.min(scaleByWidth, scaleByHeight), 0.05);
+
   const Component = renderer?.Component as
     | React.ComponentType<Record<string, unknown>>
     | undefined;
@@ -119,22 +125,53 @@ export default function LiveTemplateMockup({
                   }}
                 />
               ) : null}
-              {!isCenter ? (
-                <style>{`
-                  [data-wb-live="${templateId}"] *,
-                  [data-wb-live="${templateId}"] *::before,
-                  [data-wb-live="${templateId}"] *::after {
-                    animation-play-state: paused !important;
-                  }
-                `}</style>
-              ) : null}
+              <style>{`
+                [data-wb-live="${templateId}"] {
+                  width: ${DESIGN_WIDTH}px !important;
+                  max-width: ${DESIGN_WIDTH}px !important;
+                  overflow: hidden !important;
+                  background: #fff;
+                }
+                [data-wb-live="${templateId}"] .min-h-screen,
+                [data-wb-live="${templateId}"] [class*="min-h-screen"],
+                [data-wb-live="${templateId}"] [style*="min-height: 100vh"],
+                [data-wb-live="${templateId}"] [style*="min-height:100vh"] {
+                  min-height: ${DESIGN_VIEW_HEIGHT}px !important;
+                }
+                [data-wb-live="${templateId}"] header,
+                [data-wb-live="${templateId}"] [class*="sticky"],
+                [data-wb-live="${templateId}"] [class*="fixed"] {
+                  position: relative !important;
+                  top: auto !important;
+                  inset: auto !important;
+                }
+                [data-wb-live="${templateId}"] [data-reveal],
+                [data-wb-live="${templateId}"] [data-animate],
+                [data-wb-live="${templateId}"] [class*="opacity-0"] {
+                  opacity: 1 !important;
+                  visibility: visible !important;
+                  transform: none !important;
+                  filter: none !important;
+                }
+                ${
+                  !isCenter
+                    ? `
+                [data-wb-live="${templateId}"] *,
+                [data-wb-live="${templateId}"] *::before,
+                [data-wb-live="${templateId}"] *::after {
+                  animation-play-state: paused !important;
+                }`
+                    : ""
+                }
+              `}</style>
               <div
                 className="wb-mockup__live-scale"
                 style={{
                   width: DESIGN_WIDTH,
-                  height: DESIGN_HEIGHT,
-                  transform: `scale(${scale})`,
-                  transformOrigin: "top left",
+                  height: DESIGN_VIEW_HEIGHT,
+                  transform: `translateX(-50%) scale(${scale})`,
+                  transformOrigin: "top center",
+                  left: "50%",
                 }}
               >
                 <div
@@ -144,7 +181,8 @@ export default function LiveTemplateMockup({
                   dir="rtl"
                   style={{
                     width: DESIGN_WIDTH,
-                    minHeight: DESIGN_HEIGHT,
+                    height: DESIGN_VIEW_HEIGHT,
+                    overflow: "hidden",
                     pointerEvents: "none",
                   }}
                 >

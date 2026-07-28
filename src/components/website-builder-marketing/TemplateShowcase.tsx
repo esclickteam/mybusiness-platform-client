@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import LiveTemplateMockup from "./LiveTemplateMockup";
-import FloatingBusinessEvent from "./FloatingBusinessEvent";
 import {
   websiteHeroTemplates,
   type WebsiteHeroTemplate,
@@ -87,7 +86,7 @@ export default function TemplateShowcase({
     if (paused || reducedMotion || count < 2) return;
     const id = window.setInterval(() => {
       setActive((value) => wrapIndex(value + 1, count));
-    }, 3800);
+    }, 5000);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count]);
 
@@ -200,7 +199,6 @@ export default function TemplateShowcase({
           );
         })}
 
-        <FloatingBusinessEvent />
       </div>
 
       <div className="wb-hero__controls">
