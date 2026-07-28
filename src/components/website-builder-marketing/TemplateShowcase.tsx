@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import TemplateBrowserMockup from "./TemplateBrowserMockup";
+import LiveTemplateMockup from "./LiveTemplateMockup";
 import FloatingBusinessEvent from "./FloatingBusinessEvent";
 import {
   websiteHeroTemplates,
@@ -87,7 +87,7 @@ export default function TemplateShowcase({
     if (paused || reducedMotion || count < 2) return;
     const id = window.setInterval(() => {
       setActive((value) => wrapIndex(value + 1, count));
-    }, 3200);
+    }, 3800);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count]);
 
@@ -133,6 +133,13 @@ export default function TemplateShowcase({
 
   const activeTemplate = templates[active];
 
+  useEffect(() => {
+    const hero = stageRef.current?.closest(".wb-hero") as HTMLElement | null;
+    if (!hero || !activeTemplate) return;
+    hero.style.setProperty("--wb-stage-glow", activeTemplate.accent);
+    hero.style.setProperty("--wb-stage-glow-soft", activeTemplate.accentSoft);
+  }, [activeTemplate]);
+
   return (
     <div
       className="wb-hero__stage-wrap"
@@ -160,7 +167,6 @@ export default function TemplateShowcase({
           if (start == null || end == null) return;
           const delta = end - start;
           if (Math.abs(delta) < 40) return;
-          // RTL: swipe right → previous visual "next" in reading flow
           if (delta > 0) next();
           else prev();
         }}
@@ -171,6 +177,7 @@ export default function TemplateShowcase({
         {templates.map((template, index) => {
           const offset = shortestOffset(active, index, count);
           const slot = slotForOffset(offset);
+          const mountLive = Math.abs(offset) <= 1;
           return (
             <button
               key={template.id}
@@ -181,14 +188,13 @@ export default function TemplateShowcase({
               aria-current={slot === "center" ? "true" : undefined}
               onClick={() => goTo(index)}
             >
-              <TemplateBrowserMockup
-                key={slot === "center" ? `center-${active}` : "side"}
-                src={template.desktopImage}
+              <LiveTemplateMockup
+                templateId={template.id}
                 title={template.title}
                 accent={template.accent}
                 accentSoft={template.accentSoft}
-                priority={slot === "center" || Math.abs(offset) <= 1}
                 isCenter={slot === "center"}
+                mountLive={mountLive}
               />
             </button>
           );
