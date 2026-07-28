@@ -103,36 +103,44 @@ export const aelineEditorCss = `
 }
 
 /* ===============================
-   HERO 3D ROTATING CAROUSEL
+   HERO CENTERED 3D FAN
 ================================ */
 
 [data-template-id="aeline"] .aeline-hero-carousel {
-  perspective: 1200px;
+  perspective: 1400px;
+  perspective-origin: 50% 45%;
   transform-style: preserve-3d;
   overflow: visible;
+  direction: ltr;
 }
 
-[data-template-id="aeline"] .aeline-hero-ring {
+[data-template-id="aeline"] .aeline-hero-stage {
+  position: relative;
+  margin-inline: auto;
   transform-style: preserve-3d;
-  animation: aelineHeroRotate 26s linear infinite;
-  will-change: transform;
 }
 
-[data-template-id="aeline"] .aeline-hero-carousel:hover .aeline-hero-ring {
-  animation-play-state: paused;
-}
-
-[data-template-id="aeline"] .aeline-hero-ring-card {
+[data-template-id="aeline"] .aeline-hero-fan-card {
   transform-style: preserve-3d;
   backface-visibility: visible;
   will-change: transform;
   transform:
     translate(-50%, -50%)
-    rotateY(var(--aeline-angle))
-    translateZ(var(--aeline-z));
+    translate3d(var(--aeline-x, 0px), var(--aeline-y, 0px), var(--aeline-z, 0px))
+    rotateY(var(--aeline-rotate-y, 0deg))
+    scale(var(--aeline-scale, 1));
+  animation: aelineHeroFanFloat 5.8s ease-in-out infinite;
 }
 
-[data-template-id="aeline"] .aeline-hero-ring-card::after {
+[data-template-id="aeline"] .aeline-hero-fan-card:nth-child(2n) {
+  animation-delay: -1.2s;
+}
+
+[data-template-id="aeline"] .aeline-hero-fan-card:nth-child(3n) {
+  animation-delay: -2.4s;
+}
+
+[data-template-id="aeline"] .aeline-hero-fan-card::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -146,8 +154,8 @@ export const aelineEditorCss = `
   );
 }
 
-[data-template-id="aeline"] .aeline-hero-ring-card:hover {
-  z-index: 50;
+[data-template-id="aeline"] .aeline-hero-fan-card:hover {
+  z-index: 50 !important;
 }
 
 /* ===============================
@@ -244,11 +252,12 @@ export const aelineEditorCss = `
   }
 
   [data-template-id="aeline"] .aeline-hero-carousel {
-    perspective: 900px;
+    perspective: 1100px;
   }
 
-  [data-template-id="aeline"] .aeline-hero-ring-card {
-    --aeline-z: 340px !important;
+  [data-template-id="aeline"] .aeline-hero-stage {
+    transform: scale(0.88);
+    transform-origin: center center;
   }
 }
 
@@ -259,25 +268,24 @@ export const aelineEditorCss = `
     overflow: hidden;
   }
 
-  [data-template-id="aeline"] .aeline-hero-ring {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
+  [data-template-id="aeline"] .aeline-hero-stage {
     display: flex;
     width: max-content;
     height: auto;
-    transform: none !important;
-    animation: aelineMobileCardSlide 24s linear infinite;
+    min-height: 150px;
+    align-items: stretch;
     gap: 14px;
     padding-inline: 12px;
+    animation: aelineMobileCardSlide 24s linear infinite;
   }
 
-  [data-template-id="aeline"] .aeline-hero-ring-card {
+  [data-template-id="aeline"] .aeline-hero-fan-card {
     position: relative !important;
     left: auto !important;
     top: auto !important;
     flex: 0 0 168px;
     transform: none !important;
+    animation: none !important;
   }
 }
 
@@ -304,13 +312,21 @@ export const aelineEditorCss = `
    KEYFRAMES
 ================================ */
 
-@keyframes aelineHeroRotate {
-  from {
-    transform: translate(-50%, -50%) rotateY(0deg);
+@keyframes aelineHeroFanFloat {
+  0%, 100% {
+    transform:
+      translate(-50%, -50%)
+      translate3d(var(--aeline-x, 0px), var(--aeline-y, 0px), var(--aeline-z, 0px))
+      rotateY(var(--aeline-rotate-y, 0deg))
+      scale(var(--aeline-scale, 1));
   }
 
-  to {
-    transform: translate(-50%, -50%) rotateY(-360deg);
+  50% {
+    transform:
+      translate(-50%, calc(-50% - 10px))
+      translate3d(var(--aeline-x, 0px), var(--aeline-y, 0px), var(--aeline-z, 0px))
+      rotateY(var(--aeline-rotate-y, 0deg))
+      scale(var(--aeline-scale, 1));
   }
 }
 

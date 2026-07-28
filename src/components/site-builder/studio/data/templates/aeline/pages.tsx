@@ -403,27 +403,31 @@ function HeroCardRail() {
       small: "בשלבי טיפול",
       type: "dark",
     },
-    {
-      title: "אוטומציה",
-      value: "Flow פעיל",
-      small: "CRM + הודעות",
-      type: "glass",
-    },
   ];
 
-  return (
-    <div className="aeline-hero-carousel relative mx-auto h-[270px] w-full max-w-[980px]">
-      <div className="absolute left-1/2 top-1/2 h-28 w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7FFFD4]/25 blur-3xl" />
+  const mid = (cards.length - 1) / 2;
 
-      <div className="aeline-hero-ring absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2">
+  return (
+    <div
+      className="aeline-hero-carousel relative mx-auto flex h-[280px] w-full max-w-[900px] items-center justify-center"
+      dir="ltr"
+    >
+      <div className="pointer-events-none absolute left-1/2 top-1/2 h-28 w-[70%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7FFFD4]/25 blur-3xl" />
+
+      <div className="aeline-hero-stage relative mx-auto h-[220px] w-full max-w-[820px]">
         {cards.map((card, index) => {
-          const angle = `${(360 / cards.length) * index}deg`;
+          const offset = index - mid;
+          const x = offset * 108;
+          const rotateY = offset * -14;
+          const z = -Math.abs(offset) * 52;
+          const scale = 1 - Math.abs(offset) * 0.055;
+          const y = Math.abs(offset) * 6;
 
           return (
             <article
               key={`${card.title}-${index}`}
               className={[
-                "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]",
+                "aeline-hero-fan-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]",
                 "overflow-hidden rounded-[18px] border border-white/70 p-4 text-right",
                 "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
                 "transition duration-500 hover:scale-110",
@@ -437,8 +441,12 @@ function HeroCardRail() {
               ].join(" ")}
               style={
                 {
-                  "--aeline-angle": angle,
-                  "--aeline-z": "430px",
+                  "--aeline-x": `${x}px`,
+                  "--aeline-y": `${y}px`,
+                  "--aeline-z": `${z}px`,
+                  "--aeline-rotate-y": `${rotateY}deg`,
+                  "--aeline-scale": String(scale),
+                  zIndex: 30 - Math.round(Math.abs(offset) * 2),
                 } as React.CSSProperties
               }
             >
