@@ -245,7 +245,7 @@ function AelineButton({
       onClick={onClick}
       data-editable-link="true"
       className={[
-        "group inline-flex h-14 items-center justify-center gap-3 rounded-full px-7 text-sm font-black tracking-[0.08em] shadow-sm transition duration-300 active:scale-[0.98]",
+        "group inline-flex h-12 w-full items-center justify-center gap-3 rounded-full px-6 text-sm font-black tracking-[0.08em] shadow-sm transition duration-300 active:scale-[0.98] sm:h-14 sm:w-auto sm:px-7",
         variant === "lime"
           ? "bg-[#7FFFD4] text-[#160f2e] hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(127,255,212,0.42)]"
           : variant === "blue"
@@ -411,137 +411,153 @@ function HeroCardRail() {
     },
   ];
 
+  function renderCard(
+    card: (typeof cards)[number],
+    index: number,
+    mode: "ring" | "mobile",
+  ) {
+    const angle = `${(360 / cards.length) * index}deg`;
+
+    return (
+      <article
+        key={`${mode}-${card.title}-${index}`}
+        className={[
+          mode === "ring"
+            ? "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]"
+            : "aeline-hero-mobile-card group relative h-[138px] w-[156px] shrink-0",
+          "overflow-hidden rounded-[18px] border border-white/70 p-4 text-right",
+          "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
+          "transition duration-500 hover:scale-110",
+          card.type === "dark"
+            ? "bg-[#160f2e] text-white"
+            : card.type === "blue"
+              ? "bg-[#7FFFD4] text-[#160f2e]"
+              : card.type === "glass"
+                ? "bg-white/45 text-white"
+                : "bg-white text-[#160f2e]",
+        ].join(" ")}
+        style={
+          mode === "ring"
+            ? ({
+                "--aeline-angle": angle,
+                "--aeline-z": "430px",
+              } as React.CSSProperties)
+            : undefined
+        }
+      >
+        {card.type === "image" ? (
+          <>
+            <img
+              data-gjs-type="image"
+              src={aelineImages.meeting}
+              alt="עסקאות פעילות"
+              {...mediaProps("hero.carousel.image", "עסקאות פעילות")}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+
+            <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/92 p-2 text-[#160f2e] shadow-lg">
+              <div className="grid grid-cols-2 gap-2 text-center">
+                <div>
+                  <p className="text-[9px] font-black text-[#160f2e]/35">
+                    נסגר
+                  </p>
+                  <p className="text-sm font-black">₪31k</p>
+                </div>
+
+                <div>
+                  <p className="text-[9px] font-black text-[#160f2e]/35">
+                    פתוח
+                  </p>
+                  <p className="text-sm font-black">₪74k</p>
+                </div>
+              </div>
+            </div>
+          </>
+        ) : (
+          <>
+            <p className="text-[10px] font-black leading-4 tracking-[0.06em] opacity-55">
+              {card.title}
+            </p>
+
+            <p className="mt-3 text-2xl font-black leading-7 tracking-[-0.05em]">
+              {card.value}
+            </p>
+
+            <p className="mt-1 text-[10px] font-bold opacity-45">
+              {card.small}
+            </p>
+
+            {card.type === "chart" && (
+              <div className="mt-5 flex h-12 items-end justify-end gap-1">
+                {[20, 28, 36, 52, 66, 82].map((height, itemIndex) => (
+                  <span
+                    key={height}
+                    className={[
+                      "w-4 rounded-t",
+                      itemIndex === 5 ? "bg-[#FF8A5B]" : "bg-[#160f2e]/10",
+                    ].join(" ")}
+                    style={{ height }}
+                  />
+                ))}
+              </div>
+            )}
+
+            {card.type === "expense" && (
+              <div className="mt-4">
+                <div className="h-2 rounded-full bg-[#160f2e]/10">
+                  <div className="h-2 w-2/3 rounded-full bg-[#FF8A5B]" />
+                </div>
+
+                <div className="mt-3 grid gap-1">
+                  {["מודעות", "לידים", "רימרקטינג"].map((item, itemIndex) => (
+                    <div
+                      key={`${item}-${itemIndex}`}
+                      className="flex items-center justify-between rounded-md bg-[#160f2e]/5 px-2 py-1 text-[8px] font-bold"
+                    >
+                      <span>{item}</span>
+                      <span>₪720</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {card.type === "glass" && (
+              <div className="mt-5 grid gap-2">
+                <div className="mx-auto flex w-24 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">
+                  CRM
+                  <span className="h-2 w-2 rounded-full bg-[#7FFFD4]" />
+                </div>
+
+                <div className="mx-auto flex w-28 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">
+                  הודעות
+                  <span className="h-2 w-2 rounded-full bg-[#FF8A5B]" />
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </article>
+    );
+  }
+
   return (
     <div
-      className="aeline-hero-carousel relative mx-auto h-[270px] w-full max-w-[980px]"
+      className="aeline-hero-carousel relative mx-auto h-[220px] w-full max-w-[980px] sm:h-[250px] lg:h-[270px]"
       dir="ltr"
     >
       <div className="absolute left-1/2 top-1/2 h-28 w-[92%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7FFFD4]/25 blur-3xl" />
 
-      <div className="aeline-hero-ring absolute left-1/2 top-1/2 h-[190px] w-[190px]">
-        {cards.map((card, index) => {
-          const angle = `${(360 / cards.length) * index}deg`;
+      <div className="aeline-hero-ring absolute left-1/2 top-1/2 hidden h-[190px] w-[190px] md:block">
+        {cards.map((card, index) => renderCard(card, index, "ring"))}
+      </div>
 
-          return (
-            <article
-              key={`${card.title}-${index}`}
-              className={[
-                "aeline-hero-ring-card group absolute left-1/2 top-1/2 h-[138px] w-[168px]",
-                "overflow-hidden rounded-[18px] border border-white/70 p-4 text-right",
-                "shadow-[0_28px_70px_rgba(0,0,0,0.24)] backdrop-blur-xl",
-                "transition duration-500 hover:scale-110",
-                card.type === "dark"
-                  ? "bg-[#160f2e] text-white"
-                  : card.type === "blue"
-                    ? "bg-[#7FFFD4] text-[#160f2e]"
-                    : card.type === "glass"
-                      ? "bg-white/45 text-white"
-                      : "bg-white text-[#160f2e]",
-              ].join(" ")}
-              style={
-                {
-                  "--aeline-angle": angle,
-                  "--aeline-z": "430px",
-                } as React.CSSProperties
-              }
-            >
-              {card.type === "image" ? (
-                <>
-                  <img
-                    data-gjs-type="image"
-                    src={aelineImages.meeting}
-                    alt="עסקאות פעילות"
-                    {...mediaProps("hero.carousel.image", "עסקאות פעילות")}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-
-                  <div className="absolute inset-x-3 bottom-3 rounded-xl bg-white/92 p-2 text-[#160f2e] shadow-lg">
-                    <div className="grid grid-cols-2 gap-2 text-center">
-                      <div>
-                        <p className="text-[9px] font-black text-[#160f2e]/35">
-                          נסגר
-                        </p>
-                        <p className="text-sm font-black">₪31k</p>
-                      </div>
-
-                      <div>
-                        <p className="text-[9px] font-black text-[#160f2e]/35">
-                          פתוח
-                        </p>
-                        <p className="text-sm font-black">₪74k</p>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <p className="text-[10px] font-black leading-4 tracking-[0.06em] opacity-55">
-                    {card.title}
-                  </p>
-
-                  <p className="mt-3 text-2xl font-black leading-7 tracking-[-0.05em]">
-                    {card.value}
-                  </p>
-
-                  <p className="mt-1 text-[10px] font-bold opacity-45">
-                    {card.small}
-                  </p>
-
-                  {card.type === "chart" && (
-                    <div className="mt-5 flex h-12 items-end justify-end gap-1">
-                      {[20, 28, 36, 52, 66, 82].map((height, itemIndex) => (
-                        <span
-                          key={height}
-                          className={[
-                            "w-4 rounded-t",
-                            itemIndex === 5 ? "bg-[#FF8A5B]" : "bg-[#160f2e]/10",
-                          ].join(" ")}
-                          style={{ height }}
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  {card.type === "expense" && (
-                    <div className="mt-4">
-                      <div className="h-2 rounded-full bg-[#160f2e]/10">
-                        <div className="h-2 w-2/3 rounded-full bg-[#FF8A5B]" />
-                      </div>
-
-                      <div className="mt-3 grid gap-1">
-                        {["מודעות", "לידים", "רימרקטינג"].map(
-                          (item, itemIndex) => (
-                            <div
-                              key={`${item}-${itemIndex}`}
-                              className="flex items-center justify-between rounded-md bg-[#160f2e]/5 px-2 py-1 text-[8px] font-bold"
-                            >
-                              <span>{item}</span>
-                              <span>₪720</span>
-                            </div>
-                          ),
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {card.type === "glass" && (
-                    <div className="mt-5 grid gap-2">
-                      <div className="mx-auto flex w-24 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">
-                        CRM
-                        <span className="h-2 w-2 rounded-full bg-[#7FFFD4]" />
-                      </div>
-
-                      <div className="mx-auto flex w-28 items-center justify-between rounded-full bg-white/75 px-3 py-1 text-[9px] font-black text-[#160f2e]">
-                        הודעות
-                        <span className="h-2 w-2 rounded-full bg-[#FF8A5B]" />
-                      </div>
-                    </div>
-                  )}
-                </>
-              )}
-            </article>
-          );
-        })}
+      <div className="aeline-hero-mobile-rail absolute inset-0 flex items-center overflow-hidden md:hidden">
+        <div className="aeline-hero-mobile-track flex w-max gap-3 px-4">
+          {[...cards, ...cards].map((card, index) =>
+            renderCard(card, index, "mobile"),
+          )}
+        </div>
       </div>
     </div>
   );
@@ -556,7 +572,7 @@ function HeroSection({
     <section
       data-section-kind="hero"
       data-section-title="Hero"
-      className="relative min-h-[950px] overflow-hidden bg-[linear-gradient(180deg,#160f2e_0%,#3c1d6e_45%,#ff8a5b_115%)] px-6 pb-20 pt-36 text-white"
+      className="relative min-h-0 overflow-hidden bg-[linear-gradient(180deg,#160f2e_0%,#3c1d6e_45%,#ff8a5b_115%)] px-4 pb-14 pt-28 text-white sm:px-6 sm:pb-20 sm:pt-36 md:min-h-[950px]"
     >
       <div className="absolute inset-0 opacity-45 [background:radial-gradient(circle_at_22%_18%,rgba(127,255,212,0.55),transparent_24%),radial-gradient(circle_at_78%_20%,rgba(255,138,91,0.48),transparent_26%),radial-gradient(circle_at_50%_80%,rgba(255,255,255,0.18),transparent_30%)]" />
 
@@ -567,7 +583,7 @@ function HeroSection({
       <div className="relative z-10 mx-auto max-w-[1280px] text-center">
         <h1
           data-gjs-type="text"
-          className="mx-auto max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.08em] text-white md:text-7xl"
+          className="mx-auto max-w-5xl text-[2rem] font-black leading-[1.05] tracking-[-0.06em] text-white sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
         >
           הופכים פניות
           <span className="block text-[#7FFFD4]">ללקוחות משלמים</span>
@@ -575,13 +591,13 @@ function HeroSection({
 
         <p
           data-gjs-type="text"
-          className="mx-auto mt-7 max-w-2xl text-base font-semibold leading-8 text-white/86"
+          className="mx-auto mt-5 max-w-2xl px-1 text-sm font-semibold leading-7 text-white/86 sm:mt-7 sm:text-base sm:leading-8"
         >
           סטודיו דיגיטלי שמחבר בין עיצוב, אוטומציות, CRM ותהליכי מכירה כדי
           לעזור לעסקים לעבוד מהר יותר, מסודר יותר ורווחי יותר.
         </p>
 
-        <div className="relative z-30 mt-9 flex flex-wrap justify-center gap-3">
+        <div className="relative z-30 mx-auto mt-7 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
           <AelineButton onClick={() => onPageChange("contact")}>
             קבעו שיחת התאמה
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#160f2e] text-white">
@@ -594,12 +610,12 @@ function HeroSection({
           </AelineButton>
         </div>
 
-        <div className="relative z-10 mt-28 md:mt-32 lg:mt-40">
+        <div className="relative z-10 mt-12 sm:mt-20 md:mt-32 lg:mt-40">
           <HeroCardRail />
         </div>
 
-        <div className="mt-6">
-          <p className="text-sm font-bold text-white">
+        <div className="mt-6 px-2">
+          <p className="text-xs font-bold text-white sm:text-sm">
             יותר מ־1,200 תהליכים דיגיטליים נבנו לעסקים בצמיחה
           </p>
 
@@ -619,7 +635,7 @@ function AboutSection() {
     <section
       data-section-kind="about"
       data-section-title="About"
-      className="relative bg-[#fff8f2] px-6 py-24 text-[#160f2e]"
+      className="relative bg-[#fff8f2] px-4 py-16 text-[#160f2e] sm:px-6 sm:py-24"
     >
       <div className="mx-auto max-w-[1280px]">
         <div className="text-center">
@@ -629,30 +645,30 @@ function AboutSection() {
 
           <h2
             data-gjs-type="text"
-            className="mx-auto mt-7 max-w-4xl text-4xl font-medium leading-[1.08] tracking-[-0.06em] md:text-6xl"
+            className="mx-auto mt-5 max-w-4xl text-[1.75rem] font-medium leading-[1.15] tracking-[-0.04em] sm:mt-7 sm:text-4xl sm:leading-[1.08] sm:tracking-[-0.06em] md:text-6xl"
           >
             אנחנו לא בונים רק אתר
             <br />
             אנחנו בונים
-            <span className="mx-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#7FFFD4] align-middle text-[#160f2e]">
-              <BarChart3 className="h-7 w-7" />
+            <span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#7FFFD4] align-middle text-[#160f2e] sm:mx-3 sm:h-14 sm:w-14">
+              <BarChart3 className="h-5 w-5 sm:h-7 sm:w-7" />
             </span>
             מערכת שמוכרת
             <br />
             <span className="text-[#160f2e]/45">
               ומייצרת
-              <span className="mx-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8A5B] align-middle text-white">
-                <Sparkles className="h-7 w-7" />
+              <span className="mx-2 inline-flex h-10 w-10 items-center justify-center rounded-full bg-[#FF8A5B] align-middle text-white sm:mx-3 sm:h-14 sm:w-14">
+                <Sparkles className="h-5 w-5 sm:h-7 sm:w-7" />
               </span>
               סדר בעסק
             </span>
           </h2>
         </div>
 
-        <div className="mt-20 grid gap-5 lg:grid-cols-[1fr_1fr_1fr]">
+        <div className="mt-12 grid gap-4 sm:mt-20 sm:gap-5 lg:grid-cols-[1fr_1fr_1fr]">
           <article className="group overflow-hidden rounded-[24px] bg-[#3c1d6e] p-5 text-white shadow-[0_24px_70px_rgba(22,15,46,0.18)] transition duration-300 hover:-translate-y-2">
             <div className="flex items-center justify-between">
-              <p className="text-2xl font-black tracking-[-0.05em]">
+              <p className="text-xl font-black tracking-[-0.05em] sm:text-2xl">
                 תהליכי מכירה
               </p>
               <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[#160f2e]">
@@ -661,7 +677,7 @@ function AboutSection() {
             </div>
 
             <div className="mt-16 rounded-[18px] bg-white p-5 text-[#160f2e]">
-              <p className="text-7xl font-light tracking-[-0.08em]">84%</p>
+              <p className="text-5xl font-light tracking-[-0.08em] sm:text-7xl">84%</p>
               <p className="mt-5 text-base leading-6">
                 שיפור ממוצע בסדר, מעקב וזמן תגובה אחרי הטמעת תהליך מסודר.
               </p>
@@ -670,7 +686,7 @@ function AboutSection() {
 
           <article className="rounded-[24px] bg-white p-6 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(22,15,46,0.08)]">
             <p className="text-sm font-medium">פחות פעולות ידניות</p>
-            <p className="mt-5 text-5xl font-light tracking-[-0.06em]">42%</p>
+            <p className="mt-5 text-4xl font-light tracking-[-0.06em] sm:text-5xl">42%</p>
 
             <div className="mt-16 flex -space-x-3">
               {["#160f2e", "#7FFFD4", "#FF8A5B", "#f9d66b"].map((color) => (
@@ -694,7 +710,7 @@ function AboutSection() {
           <div className="grid gap-5">
             <article className="rounded-[24px] bg-[#7FFFD4] p-6 text-[#160f2e] transition duration-300 hover:-translate-y-2">
               <p className="text-sm font-medium">לידים שנוהלו</p>
-              <p className="mt-5 text-5xl font-light tracking-[-0.06em]">
+              <p className="mt-5 text-4xl font-light tracking-[-0.06em] sm:text-5xl">
                 96k+
               </p>
               <p
@@ -708,7 +724,7 @@ function AboutSection() {
 
             <article className="flex items-center justify-between rounded-[24px] bg-[#160f2e] p-6 text-white transition duration-300 hover:-translate-y-2">
               <p className="text-base font-medium">תחומים שונים</p>
-              <p className="text-5xl font-light tracking-[-0.06em]">18+</p>
+              <p className="text-4xl font-light tracking-[-0.06em] sm:text-5xl">18+</p>
             </article>
           </div>
         </div>
@@ -726,10 +742,10 @@ function ServicesSection({
     <section
       data-section-kind="services"
       data-section-title="Services"
-      className="bg-[#f4efff] px-6 py-28 text-[#160f2e]"
+      className="bg-[#f4efff] px-4 py-16 text-[#160f2e] sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-16 flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-10 flex flex-col gap-6 sm:mb-16 sm:gap-8 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-sm font-black tracking-[0.35em] text-[#160f2e]/35">
               פתרונות
@@ -737,7 +753,7 @@ function ServicesSection({
 
             <h2
               data-gjs-type="text"
-              className="mt-8 max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl"
+              className="mt-5 max-w-4xl text-[2.35rem] font-black leading-[1] tracking-[-0.06em] sm:mt-8 sm:text-6xl sm:leading-[0.9] sm:tracking-[-0.08em] md:text-8xl"
             >
               פחות עומס
               <br />
@@ -751,34 +767,34 @@ function ServicesSection({
           </AelineButton>
         </div>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-6 lg:grid-cols-3">
           {services.map((service) => (
             <article
               key={service.title}
               data-section-kind="service-card"
               data-section-title={service.title}
-              className="group min-h-[360px] rounded-[34px] border border-[#160f2e]/5 bg-white p-9 shadow-[0_20px_60px_rgba(22,15,46,0.04)] transition duration-300 hover:-translate-y-4 hover:bg-[#160f2e] hover:text-white hover:shadow-[0_30px_90px_rgba(22,15,46,0.18)]"
+              className="group min-h-0 rounded-[28px] border border-[#160f2e]/5 bg-white p-6 shadow-[0_20px_60px_rgba(22,15,46,0.04)] transition duration-300 hover:-translate-y-4 hover:bg-[#160f2e] hover:text-white hover:shadow-[0_30px_90px_rgba(22,15,46,0.18)] sm:min-h-[360px] sm:rounded-[34px] sm:p-9"
             >
               <div className="flex items-center justify-between">
                 <span className="text-xl font-black text-[#160f2e]/30 group-hover:text-white/30">
                   {service.number}
                 </span>
 
-                <span className="flex h-14 w-14 items-center justify-center rounded-full bg-[#FF8A5B] text-white transition duration-300 group-hover:rotate-12 group-hover:scale-110">
+                <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#FF8A5B] text-white transition duration-300 group-hover:rotate-12 group-hover:scale-110 sm:h-14 sm:w-14">
                   <Zap className="h-6 w-6" />
                 </span>
               </div>
 
               <h3
                 data-gjs-type="text"
-                className="mt-28 text-4xl font-black tracking-[-0.06em]"
+                className="mt-10 text-3xl font-black tracking-[-0.06em] sm:mt-28 sm:text-4xl"
               >
                 {service.title}
               </h3>
 
               <p
                 data-gjs-type="text"
-                className="mt-7 text-lg leading-8 text-[#160f2e]/55 group-hover:text-white/60"
+                className="mt-5 text-base leading-7 text-[#160f2e]/55 group-hover:text-white/60 sm:mt-7 sm:text-lg sm:leading-8"
               >
                 {service.text}
               </p>
@@ -794,7 +810,7 @@ function VisualMockup({ kind }: { kind: string }) {
   if (kind === "expense") {
     return (
       <div className="relative h-64">
-        <FloatingHeroCard className="left-12 top-4 w-52 rotate-[-8deg]">
+        <FloatingHeroCard className="left-1/2 top-4 w-[min(13rem,85%)] -translate-x-1/2 rotate-[-8deg] sm:left-12 sm:w-52 sm:translate-x-0">
           <p className="text-xs font-bold">תקציב קמפיין</p>
           <p className="mt-2 text-2xl font-semibold">
             ₪12,600 <span className="text-[#160f2e]/25">/ ₪20,000</span>
@@ -810,7 +826,7 @@ function VisualMockup({ kind }: { kind: string }) {
   if (kind === "chart") {
     return (
       <div className="relative h-64">
-        <FloatingHeroCard className="left-16 top-4 w-56 rotate-[7deg]">
+        <FloatingHeroCard className="left-1/2 top-4 w-[min(14rem,88%)] -translate-x-1/2 rotate-[7deg] sm:left-16 sm:w-56 sm:translate-x-0">
           <p className="text-xl font-medium leading-6">
             מגמת לידים חודשית
           </p>
@@ -835,7 +851,7 @@ function VisualMockup({ kind }: { kind: string }) {
   if (kind === "performance") {
     return (
       <div className="relative h-64">
-        <FloatingHeroCard className="left-16 top-10 w-56 rotate-[-3deg]">
+        <FloatingHeroCard className="left-1/2 top-10 w-[min(14rem,88%)] -translate-x-1/2 rotate-[-3deg] sm:left-16 sm:w-56 sm:translate-x-0">
           <div className="rounded-2xl bg-[#160f2e] p-4 text-white">
             <p className="text-sm font-bold">תגובה מהירה</p>
             <p className="text-[10px] text-white/45">מדד שירות שבועי</p>
@@ -870,17 +886,17 @@ function ExpertiseSection() {
     <section
       data-section-kind="expertise"
       data-section-title="Expertise"
-      className="bg-white px-3 py-24 text-[#160f2e]"
+      className="bg-white px-3 py-16 text-[#160f2e] sm:py-24"
     >
       <div className="mx-auto max-w-[1420px]">
-        <div className="mb-16 px-3 text-center">
+        <div className="mb-10 px-3 text-center sm:mb-16">
           <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
             יכולות
           </p>
 
           <h2
             data-gjs-type="text"
-            className="mx-auto mt-6 max-w-4xl text-5xl font-medium leading-[1] tracking-[-0.07em] md:text-7xl"
+            className="mx-auto mt-5 max-w-4xl text-[1.85rem] font-medium leading-[1.1] tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:leading-[1] sm:tracking-[-0.07em] md:text-7xl"
           >
             כשעיצוב טוב פוגש
             <span className="text-[#160f2e]/40"> תהליך עסקי מדויק</span>
@@ -891,7 +907,7 @@ function ExpertiseSection() {
           {expertiseCards.map((card) => (
             <article
               key={card.title}
-              className="group overflow-hidden rounded-[14px] bg-[#f7f4ff] p-10 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(22,15,46,0.08)]"
+              className="group overflow-hidden rounded-[14px] bg-[#f7f4ff] p-5 transition duration-300 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(22,15,46,0.08)] sm:p-10"
             >
               <VisualMockup kind={card.kind} />
 
@@ -925,28 +941,28 @@ function PricingSection({
     <section
       data-section-kind="pricing"
       data-section-title="Pricing"
-      className="bg-[#fff8f2] px-6 py-28 text-[#160f2e]"
+      className="bg-[#fff8f2] px-4 py-16 text-[#160f2e] sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-14 text-center">
+        <div className="mb-10 text-center sm:mb-14">
           <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
             חבילות
           </p>
 
           <h2
             data-gjs-type="text"
-            className="mx-auto mt-6 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl"
+            className="mx-auto mt-5 max-w-4xl text-[1.85rem] font-black leading-[1.1] tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
           >
             בוחרים את הקצב שמתאים לעסק
           </h2>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 lg:grid-cols-3">
           {plans.map((plan, index) => (
             <article
               key={plan.name}
               className={[
-                "rounded-[34px] border p-8 transition duration-300 hover:-translate-y-3",
+                "rounded-[28px] border p-6 transition duration-300 hover:-translate-y-3 sm:rounded-[34px] sm:p-8",
                 index === 1
                   ? "border-[#160f2e] bg-[#160f2e] text-white shadow-[0_30px_90px_rgba(22,15,46,0.18)]"
                   : "border-[#160f2e]/10 bg-white text-[#160f2e] shadow-[0_20px_60px_rgba(22,15,46,0.05)]",
@@ -958,7 +974,7 @@ function PricingSection({
 
               <h3
                 data-gjs-type="text"
-                className="mt-8 text-5xl font-black tracking-[-0.07em]"
+                className="mt-6 text-4xl font-black tracking-[-0.07em] sm:mt-8 sm:text-5xl"
               >
                 {plan.price}
               </h3>
@@ -1005,16 +1021,16 @@ function TestimonialsSection() {
     <section
       data-section-kind="testimonials"
       data-section-title="Testimonials"
-      className="bg-white px-6 py-24"
+      className="bg-white px-4 py-16 sm:px-6 sm:py-24"
     >
-      <div className="mx-auto max-w-[1280px] rounded-[36px] bg-[#160f2e] p-8 text-white lg:p-14">
-        <div className="grid gap-10 lg:grid-cols-[0.75fr_1.25fr]">
+      <div className="mx-auto max-w-[1280px] rounded-[28px] bg-[#160f2e] p-5 text-white sm:rounded-[36px] sm:p-8 lg:p-14">
+        <div className="grid gap-8 sm:gap-10 lg:grid-cols-[0.75fr_1.25fr]">
           <div>
-            <Quote className="h-12 w-12 text-[#7FFFD4]" />
+            <Quote className="h-10 w-10 text-[#7FFFD4] sm:h-12 sm:w-12" />
 
             <h2
               data-gjs-type="text"
-              className="mt-6 text-5xl font-black tracking-[-0.07em]"
+              className="mt-5 text-[1.85rem] font-black tracking-[-0.05em] sm:mt-6 sm:text-5xl sm:tracking-[-0.07em]"
             >
               מה השתנה אצל לקוחות
             </h2>
@@ -1056,10 +1072,10 @@ function BlogSection({
     <section
       data-section-kind="blog"
       data-section-title="Blog"
-      className="bg-[#f4efff] px-6 py-28 text-[#160f2e]"
+      className="bg-[#f4efff] px-4 py-16 text-[#160f2e] sm:px-6 sm:py-28"
     >
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-12 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+        <div className="mb-8 flex flex-col gap-6 sm:mb-12 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <p className="text-xs font-black tracking-[0.22em] text-[#160f2e]/40">
               מגזין
@@ -1067,7 +1083,7 @@ function BlogSection({
 
             <h2
               data-gjs-type="text"
-              className="mt-5 text-5xl font-black tracking-[-0.07em]"
+              className="mt-4 text-[1.85rem] font-black tracking-[-0.05em] sm:mt-5 sm:text-5xl sm:tracking-[-0.07em]"
             >
               רעיונות לעסק שעובד חכם
             </h2>
@@ -1128,14 +1144,14 @@ function CtaSection({
     <section
       data-section-kind="cta"
       data-section-title="CTA"
-      className="bg-white px-6 py-28"
+      className="bg-white px-4 py-16 sm:px-6 sm:py-28"
     >
-      <div className="mx-auto max-w-[1280px] overflow-hidden rounded-[40px] bg-[#3c1d6e] p-10 text-center text-white shadow-[0_28px_90px_rgba(60,29,110,0.25)] lg:p-16">
-        <Cloud className="mx-auto h-16 w-16 text-[#7FFFD4]" />
+      <div className="mx-auto max-w-[1280px] overflow-hidden rounded-[28px] bg-[#3c1d6e] p-6 text-center text-white shadow-[0_28px_90px_rgba(60,29,110,0.25)] sm:rounded-[40px] sm:p-10 lg:p-16">
+        <Cloud className="mx-auto h-12 w-12 text-[#7FFFD4] sm:h-16 sm:w-16" />
 
         <h2
           data-gjs-type="text"
-          className="mx-auto mt-8 max-w-4xl text-5xl font-black leading-[0.95] tracking-[-0.08em] md:text-7xl"
+          className="mx-auto mt-6 max-w-4xl text-[1.85rem] font-black leading-[1.05] tracking-[-0.06em] sm:mt-8 sm:text-5xl sm:leading-[0.95] sm:tracking-[-0.08em] md:text-7xl"
         >
           הגיע הזמן שהעסק יעבוד בשבילכם
         </h2>
@@ -1280,16 +1296,16 @@ function SimplePage({
   children: React.ReactNode;
 }) {
   return (
-    <main className="bg-white px-6 pb-24 pt-40 text-[#160f2e]">
+    <main className="bg-white px-4 pb-16 pt-28 text-[#160f2e] sm:px-6 sm:pb-24 sm:pt-40">
       <div className="mx-auto max-w-[1280px]">
-        <div className="mb-10 inline-flex items-center gap-2 rounded-full border border-[#160f2e]/10 bg-white px-4 py-2 text-xs font-black tracking-[0.08em] text-[#160f2e]/55">
+        <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#160f2e]/10 bg-white px-4 py-2 text-xs font-black tracking-[0.08em] text-[#160f2e]/55 sm:mb-10">
           {icon}
           {label}
         </div>
 
         <h1
           data-gjs-type="text"
-          className="max-w-4xl text-6xl font-black leading-[0.9] tracking-[-0.08em] md:text-8xl"
+          className="max-w-4xl text-[2.35rem] font-black leading-[1] tracking-[-0.06em] sm:text-6xl sm:leading-[0.9] sm:tracking-[-0.08em] md:text-8xl"
         >
           {title}
         </h1>

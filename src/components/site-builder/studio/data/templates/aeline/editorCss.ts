@@ -242,6 +242,36 @@ export const aelineEditorCss = `
    RESPONSIVE POLISH
 ================================ */
 
+[data-template-id="aeline"] {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+[data-template-id="aeline"] img,
+[data-template-id="aeline"] video,
+[data-template-id="aeline"] iframe {
+  max-width: 100%;
+}
+
+[data-template-id="aeline"] .aeline-hero-mobile-rail {
+  mask-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    #000 8%,
+    #000 92%,
+    transparent 100%
+  );
+}
+
+[data-template-id="aeline"] .aeline-hero-mobile-track {
+  animation: aelineMobileCardSlide 28s linear infinite;
+  will-change: transform;
+}
+
+[data-template-id="aeline"] .aeline-hero-carousel:hover .aeline-hero-mobile-track {
+  animation-play-state: paused;
+}
+
 @media (max-width: 1024px) {
   [data-template-id="aeline"] .aeline-cloud {
     opacity: 0.72;
@@ -252,42 +282,19 @@ export const aelineEditorCss = `
   }
 
   [data-template-id="aeline"] .aeline-hero-ring-card {
-    --aeline-z: 340px !important;
+    --aeline-z: 300px !important;
   }
 }
 
-@media (max-width: 900px) {
+@media (max-width: 767px) {
+  [data-template-id="aeline"] .aeline-cloud {
+    filter: blur(22px);
+    opacity: 0.45;
+  }
+
   [data-template-id="aeline"] .aeline-hero-carousel {
-    height: 190px;
     perspective: none;
     overflow: hidden;
-  }
-
-  [data-template-id="aeline"] .aeline-hero-ring {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    display: flex;
-    width: max-content;
-    height: auto;
-    transform: none !important;
-    animation: aelineMobileCardSlide 24s linear infinite;
-    gap: 14px;
-    padding-inline: 12px;
-  }
-
-  [data-template-id="aeline"] .aeline-hero-ring-card {
-    position: relative !important;
-    left: auto !important;
-    top: auto !important;
-    flex: 0 0 168px;
-    transform: none !important;
-  }
-}
-
-@media (max-width: 768px) {
-  [data-template-id="aeline"] {
-    overflow-x: hidden;
   }
 
   [data-template-id="aeline"] .aeline-card-orbit {
@@ -299,8 +306,17 @@ export const aelineEditorCss = `
     transform: none !important;
   }
 
-  [data-template-id="aeline"] .aeline-cloud {
-    filter: blur(22px);
+  [data-template-id="aeline"] section,
+  [data-template-id="aeline"] footer,
+  [data-template-id="aeline"] header {
+    max-width: 100%;
+  }
+
+  [data-template-id="aeline"] [data-section-kind="pricing"] .text-5xl,
+  [data-template-id="aeline"] [data-section-kind="blog"] .text-5xl,
+  [data-template-id="aeline"] [data-section-kind="testimonials"] .text-5xl {
+    font-size: 1.85rem !important;
+    line-height: 1.15 !important;
   }
 }
 
