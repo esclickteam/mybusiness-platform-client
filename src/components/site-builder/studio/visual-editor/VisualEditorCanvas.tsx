@@ -999,10 +999,12 @@ export default function VisualEditorCanvas({
   }, [sitePagesTitleSignature]);
 
   useEffect(() => {
+    const currentId = String(editorAny.businessId || "").trim();
+    // Only the site editor (explicit businessId) remounts on store catalog changes.
+    if (!currentId) return;
     return subscribeStoreCatalogChanged((detail) => {
       const changedId = String(detail.businessId || "").trim();
-      const currentId = String(editorAny.businessId || "").trim();
-      if (changedId && currentId && changedId !== currentId) return;
+      if (changedId && changedId !== currentId) return;
       // Force a full template remount so product images rebind from the live shop.
       setTemplateEpoch((value) => value + 1);
       setDomPatchEpoch((value) => value + 1);

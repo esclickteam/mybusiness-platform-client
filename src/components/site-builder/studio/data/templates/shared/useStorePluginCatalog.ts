@@ -218,42 +218,20 @@ const EMPTY_DEMO_PRODUCTS: DemoStoreProductSeed[] = [];
 
 /**
  * Loads products + categories from the Bizuply store plugin (`/store/:id/shop`).
- * Fake niche demos are only for gallery/preview (no businessId).
- * With a businessId the live store catalog is authoritative — including empty.
+ *
+ * Site-scoped only: fetch ONLY when an explicit `businessId` prop is passed
+ * (site editor / published site). Never infer from `/business/:id/...` URL or DOM —
+ * that leaked live shop products into shared template gallery/preview.
+ *
+ * Without an explicit businessId → demo seeds only (template preview).
+ * With a businessId → live store catalog is authoritative, including empty.
  */
-function readBusinessIdFromLocation() {
-  if (typeof window === "undefined") return "";
-  const match = window.location.pathname.match(/\/business\/([^/]+)/);
-  return match?.[1] ? String(match[1]).trim() : "";
-}
-
-function readBusinessIdFromDom() {
-  if (typeof document === "undefined") return "";
-  const fromAttr =
-    document
-      .querySelector("[data-business-id]")
-      ?.getAttribute("data-business-id") ||
-    document
-      .querySelector("[data-bizuply-business-id]")
-      ?.getAttribute("data-bizuply-business-id") ||
-    "";
-  if (String(fromAttr).trim()) return String(fromAttr).trim();
-
-  const fromWindow = String(
-    (window as any)?.__BIZUPLY_BUSINESS_ID__ || ""
-  ).trim();
-  return fromWindow;
-}
-
 export function useStorePluginCatalog(options: {
   businessId?: string | null;
   demoProducts?: DemoStoreProductSeed[];
   enabled?: boolean;
 }) {
-  const businessId =
-    resolveBusinessId(options.businessId) ||
-    readBusinessIdFromLocation() ||
-    readBusinessIdFromDom();
+  const businessId = resolveBusinessId(options.businessId);
 
   const demoSeeds = options.demoProducts;
   const demo = useMemo(
@@ -277,9 +255,11 @@ export function useStorePluginCatalog(options: {
   const [refreshToken, setRefreshToken] = useState(0);
 
   useEffect(() => {
+    // Demo/template previews have no businessId — ignore live store mutations.
+    if (!businessId) return;
     return subscribeStoreCatalogChanged((detail) => {
       const changedId = String(detail.businessId || "").trim();
-      if (changedId && businessId && changedId !== businessId) return;
+      if (changedId && changedId !== businessId) return;
       setRefreshToken((value) => value + 1);
     });
   }, [businessId]);

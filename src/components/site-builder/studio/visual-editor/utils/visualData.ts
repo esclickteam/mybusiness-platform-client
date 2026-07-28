@@ -1,5 +1,9 @@
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { BizuplyFormConfig } from "../../FormBuilderModal";
+import {
+  isStoreBoundVisualContentKey,
+  stripStoreBoundVisualImageOverrides,
+} from "../../data/templates/shared/storeCatalogSync";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -811,11 +815,16 @@ export function hasPendingVisualMedia(data: Record<string, any>) {
 export function sanitizeVisualDataForPersistence(
   data: Record<string, any>,
 ): Record<string, any> {
-  const nextData = cloneVisualData(data || {});
+  // Drop live store product/category mirrors before persistence — plugin-owned per site.
+  const nextData = cloneVisualData(
+    stripStoreBoundVisualImageOverrides(data || {}) || data || {},
+  );
   const content = readVisualContent(nextData);
   const nextContent: VisualContentMap = {};
 
   Object.entries(content).forEach(([elementId, item]) => {
+    if (isStoreBoundVisualContentKey(elementId)) return;
+
     const nextItem: VisualContentItem = { ...(item || {}) };
 
     delete nextItem.uploadId;

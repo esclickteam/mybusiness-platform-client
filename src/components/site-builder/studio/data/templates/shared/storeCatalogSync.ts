@@ -33,12 +33,21 @@ export function subscribeStoreCatalogChanged(
   };
 }
 
-/** Visual content keys that mirror live store fields and must not block refresh. */
+/** Visual content keys that mirror live store fields — never persist into site/template data. */
 export function isStoreBoundVisualContentKey(key: string) {
   const normalized = String(key || "").trim();
+  if (!normalized) return false;
   return (
-    /^products\.\d+\.(image|name|price|tag|card)$/.test(normalized) ||
-    /^categories\.\d+\.image$/.test(normalized)
+    /^products\.\d+\.(image|name|price|tag|card|title|text|description)$/.test(
+      normalized,
+    ) ||
+    /^categories\.\d+\.(image|name|title)$/.test(normalized) ||
+    /(?:^|\.)(?:shop\.)?products\.\d+\.(image|name|price|tag|card|title|text|description)$/.test(
+      normalized,
+    ) ||
+    /(?:^|\.)(?:hero\.)?products\.\d+\.(image|name|price|tag|card|title)$/.test(
+      normalized,
+    )
   );
 }
 

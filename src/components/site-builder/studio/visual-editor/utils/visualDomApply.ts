@@ -3525,6 +3525,12 @@ export function collectVisualContentFromDom(
 
     if (!elementId) return;
 
+    // Live store fields must stay site-plugin-scoped — never bake into saved visual data.
+    if (isStoreBoundVisualContentKey(elementId)) {
+      delete nextContent[elementId];
+      return;
+    }
+
     const elementType = getSafeVisualType(node);
     const currentValue = (nextContent[elementId] || {}) as Record<string, any>;
     const nextValue: Record<string, any> = { ...currentValue };

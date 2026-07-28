@@ -138,6 +138,8 @@ export default function WebsiteTemplatePreviewPage() {
             mode="preview"
             data={data}
             templateData={data}
+            /* Shared template preview — demo catalog only, never this business's store */
+            isStudioStatic
           />
         </div>
       </main>
