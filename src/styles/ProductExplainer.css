@@ -1,11 +1,11 @@
-/* Product explainer pages — light CRM marketing shell */
+﻿/* Product explainer pages — light CRM marketing shell */
 
 .product-page {
   --product-bg: #f7f8fc;
   --product-violet: #6d28d9;
   --product-violet-hover: #5b21b6;
   --product-blue: #2563eb;
-  --product-font: "Heebo", "Poppins", sans-serif;
+  --product-font: "Assistant", "Inter", system-ui, sans-serif;
 
   position: relative;
   min-height: 100%;

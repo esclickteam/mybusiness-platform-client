@@ -15,9 +15,8 @@ export default function WebsiteBuilderHero() {
       <div className="wb-hero__inner">
         <div className="wb-hero__copy">
           <h1 className="wb-hero__title">
-            בונים אתר שלא רק נראה טוב —
-            <br />
-            אלא <span className="wb-hero__title-accent">עובד בשביל העסק</span>
+            בונים אתר שלא רק נראה טוב — אלא{" "}
+            <span className="wb-hero__title-accent">עובד בשביל העסק</span>
           </h1>
 
           <p className="wb-hero__subtitle">

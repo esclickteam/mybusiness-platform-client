@@ -1,9 +1,9 @@
-/* About — centered composition + vivid motion */
+﻿/* About — centered composition + vivid motion */
 
 .about-page {
   --about-purple: #6d28d9;
   --about-blue: #2563eb;
-  --about-font: "Heebo", "Poppins", sans-serif;
+  --about-font: "Assistant", "Inter", system-ui, sans-serif;
 
   position: relative;
   overflow-x: hidden;
@@ -91,7 +91,7 @@
   margin: 0 auto;
   max-width: 18ch;
   font-size: clamp(2.6rem, 6.5vw, 4.4rem);
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.08;
   background: linear-gradient(115deg, #4c1d95 0%, #6d28d9 28%, #2563eb 62%, #38bdf8 100%);
@@ -263,7 +263,7 @@
   background: rgba(109, 40, 217, 0.1);
   color: #6d28d9;
   font-size: 0.68rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.02em;
 }
 
@@ -293,7 +293,7 @@
   margin: 0 0 0.55rem;
   color: #6d28d9;
   font-size: 0.78rem;
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
 }
@@ -302,7 +302,7 @@
   margin: 0;
   color: #0f172a;
   font-size: clamp(1.85rem, 3vw, 2.35rem);
-  font-weight: 900;
+  font-weight: 800;
   letter-spacing: -0.02em;
   text-align: center;
 }
@@ -373,7 +373,7 @@
   margin: 0 0 1rem;
   color: #0f172a;
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 800;
 }
 
 .about-widget-head {
@@ -416,7 +416,7 @@
 .about-page-meta strong {
   color: #0f172a;
   font-size: 0.86rem;
-  font-weight: 900;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
@@ -475,7 +475,7 @@
 .about-collab-stats strong {
   color: #0f172a;
   font-size: 1.05rem;
-  font-weight: 900;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
 
@@ -800,7 +800,7 @@
   margin: 0;
   max-width: 34rem;
   font-size: clamp(1.55rem, 3.2vw, 2.15rem);
-  font-weight: 900;
+  font-weight: 800;
   line-height: 1.25;
   letter-spacing: -0.02em;
 }

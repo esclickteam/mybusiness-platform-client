@@ -187,7 +187,7 @@ function FallingHeadline() {
   return (
     <h1
       aria-label={headline}
-      style={{ fontFamily: `"Assistant", "Heebo", "Rubik", Arial, sans-serif` }}
+      style={{ fontFamily: `"Assistant", "Inter", "Rubik", Arial, sans-serif` }}
       className="mx-auto w-full max-w-[1320px] px-1 text-center text-[clamp(2.15rem,10.5vw,7rem)] font-extrabold leading-[0.98] tracking-[-0.035em] text-[#fcf8ff] drop-shadow-[0_16px_45px_rgba(173,123,255,0.10)] sm:text-[clamp(3.2rem,6.1vw,7rem)]"
     >
       {words.map((word, wordIndex) => (
@@ -1843,7 +1843,7 @@ export default function BizuplyEarlyAccessLanding() {
         .biz-readable section:not(.biz-hero-bg),
         .biz-readable section:not(.biz-hero-bg) * {
           direction: ${dir};
-          font-family: "Heebo", "Assistant", "Rubik", Arial, sans-serif;
+          font-family: "Assistant", "Inter", "Rubik", Arial, sans-serif;
         }
 
         .biz-readable section:not(.biz-hero-bg) {
@@ -1860,7 +1860,7 @@ export default function BizuplyEarlyAccessLanding() {
         .biz-readable section:not(.biz-hero-bg) h4 {
           letter-spacing: -0.018em !important;
           line-height: 1.08 !important;
-          font-family: "Heebo", "Assistant", "Rubik", Arial, sans-serif !important;
+          font-family: "Assistant", "Inter", "Rubik", Arial, sans-serif !important;
         }
 
         .biz-readable section:not(.biz-hero-bg) p,
@@ -1870,7 +1870,7 @@ export default function BizuplyEarlyAccessLanding() {
         .biz-readable section:not(.biz-hero-bg) select,
         .biz-readable section:not(.biz-hero-bg) label {
           letter-spacing: 0 !important;
-          font-family: "Heebo", "Assistant", "Rubik", Arial, sans-serif !important;
+          font-family: "Assistant", "Inter", "Rubik", Arial, sans-serif !important;
         }
 
         .biz-hero-bg {

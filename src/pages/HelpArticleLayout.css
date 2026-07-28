@@ -1,4 +1,4 @@
-/* ── Shared page shell for all help guides & FAQ ── */
+﻿/* ── Shared page shell for all help guides & FAQ ── */
 
 .guide-article-page {
   min-height: 100%;
@@ -20,7 +20,7 @@
   max-width: 860px;
   margin: 0 auto;
   padding: 2rem 24px 3rem;
-  font-family: Poppins, Inter, system-ui, Arial, sans-serif;
+  font-family: Assistant, Inter, system-ui, Arial, sans-serif;
   color: #1f2937;
   line-height: 1.75;
   direction: inherit;

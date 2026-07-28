@@ -253,7 +253,7 @@ function AdminDashboard() {
   return (
     <div
       className="min-h-screen bg-[#F8F9FA]"
-      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+      style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <AdminHeader />
 

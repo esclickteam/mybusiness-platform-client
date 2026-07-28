@@ -1,7 +1,7 @@
-/* styles/App.css */
+﻿/* styles/App.css */
 
 @import "tailwindcss";
-@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap");
 
 /* ===========================
    GLOBAL VARIABLES
@@ -48,7 +48,7 @@ html {
 body {
   overflow-x: hidden;
   overflow-y: auto;
-  font-family: "Poppins", "Arial", sans-serif;
+  font-family: "Assistant", "Inter", system-ui, sans-serif;
   direction: ltr;
   text-align: left;
   background: linear-gradient(to bottom, var(--bg-start), var(--bg-end));
@@ -279,7 +279,7 @@ button:disabled {
   border-radius: 1rem !important;
   border-color: #e2e8f0 !important;
   background: #f8fafc !important;
-  font-family: "Poppins", "Arial", sans-serif !important;
+  font-family: "Assistant", "Inter", system-ui, sans-serif !important;
   font-size: 0.875rem !important;
   font-weight: 600 !important;
   color: #0f172a !important;

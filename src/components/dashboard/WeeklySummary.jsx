@@ -30,7 +30,7 @@ const WeeklySummary = ({ stats }) => {
   const appointmentsChange = getChange(currentAppointments, lastAppointments);
 
   return (
-    <div style={{ direction: "ltr", fontFamily: "Poppins, sans-serif" }}>
+    <div style={{ direction: "ltr", fontFamily: "Assistant, Inter, sans-serif" }}>
       <h4
         style={{
           textAlign: "center",

@@ -1,4 +1,4 @@
-/* =========================
+﻿/* =========================
    🎨 Root Variables
 ========================= */
 :root {
@@ -28,7 +28,7 @@ html,
 body {
   background: var(--bg);
   color: var(--text);
-  font-family: Poppins, Inter, sans-serif;
+  font-family: Assistant, Inter, system-ui, sans-serif;
   margin: 0;
 }
 

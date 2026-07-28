@@ -79,7 +79,7 @@ function AdminHeader() {
     <header
       dir="rtl"
       className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 px-4 py-3 text-right text-slate-800 shadow-[0_2px_16px_rgba(124,77,255,0.06)] backdrop-blur-xl md:px-8"
-      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+      style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <div className="mx-auto flex max-w-[1480px] flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
         <button

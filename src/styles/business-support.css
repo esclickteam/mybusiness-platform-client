@@ -1,8 +1,8 @@
-/* ===============================
+﻿/* ===============================
    עיצוב כללי לעמוד התמיכה
 =============================== */
 .support-page {
-  font-family: "Poppins", Arial, sans-serif;
+  font-family: "Assistant", "Inter", system-ui, sans-serif;
   background: linear-gradient(to bottom, #f7ecff, #ffffff);
   padding: 60px 20px;
   text-align: center;

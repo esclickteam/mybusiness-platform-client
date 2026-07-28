@@ -1,4 +1,4 @@
-.footer {
+﻿.footer {
   width: 100%;
   background: linear-gradient(
     180deg,
@@ -12,7 +12,7 @@
   color: #ffffff;
   padding: 64px 20px 28px;
   margin-top: 40px;
-  font-family: "Poppins", sans-serif;
+  font-family: "Assistant", "Inter", system-ui, sans-serif;
 }
 /* ─────────────────────────
    תוכן מרכזי

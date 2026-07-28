@@ -1,4 +1,4 @@
-/* ===========================
+﻿/* ===========================
    Pricing – Unified SaaS UX
 =========================== */
 
@@ -9,7 +9,7 @@
   margin: 0 auto;
   text-align: center;
   color: #0f172a;
-  font-family: "Poppins", sans-serif;
+  font-family: "Assistant", "Inter", system-ui, sans-serif;
   line-height: 1.8;
   background: transparent;
 }

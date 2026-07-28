@@ -1,11 +1,11 @@
-/* =========================
+﻿/* =========================
    🎨 Page Layout
 ========================= */
 .faq-page {
   min-height: 100vh;
   padding: 80px 20px;
   background: linear-gradient(180deg, #f6f7fb 0%, #ecebff 100%);
-  font-family: "Poppins", sans-serif;
+  font-family: "Assistant", "Inter", system-ui, sans-serif;
   color: #0f172a;
 }
 

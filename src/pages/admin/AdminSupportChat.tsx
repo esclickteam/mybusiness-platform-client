@@ -585,7 +585,7 @@ export default function AdminSupportChat() {
     <div
       dir="rtl"
       className="min-h-screen bg-[#F8F9FA] text-slate-900"
-      style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
+      style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <AdminHeader />
 
