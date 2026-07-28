@@ -5,7 +5,7 @@ import "./WebsiteBuilderHero.css";
 
 export default function WebsiteBuilderHero() {
   return (
-    <section className="wb-hero" aria-label="בניית אתרים עם Bizuply">
+    <section className="wb-hero" aria-label="בניית אתרים">
       <div className="wb-hero__glow" aria-hidden="true">
         <span className="g1" />
         <span className="g2" />
@@ -14,8 +14,6 @@ export default function WebsiteBuilderHero() {
 
       <div className="wb-hero__inner">
         <div className="wb-hero__copy">
-          <p className="wb-hero__eyebrow">בניית אתרים עם Bizuply</p>
-
           <h1 className="wb-hero__title">
             בונים אתר שלא רק נראה טוב —
             <br />
@@ -23,17 +21,11 @@ export default function WebsiteBuilderHero() {
           </h1>
 
           <p className="wb-hero__subtitle">
-            צרו אתר, חנות או מערכת תורים מקצועית שמחוברת ישירות ללידים, ל־CRM
+            אתר, חנות או מערכת תורים מקצועית שמחוברת ישירות ללידים, ל־CRM
             ולאוטומציות של Bizuply.
           </p>
 
           <HeroActions primaryTo="/register" />
-
-          <ul className="wb-hero__perks">
-            <li>ללא קוד</li>
-            <li>מותאם למובייל</li>
-            <li>מחובר ל־CRM</li>
-          </ul>
         </div>
 
         <div id="wb-templates">

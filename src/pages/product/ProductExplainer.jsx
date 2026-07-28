@@ -39,7 +39,7 @@ const stagger = {
   show: { transition: { staggerChildren: 0.07 } },
 };
 
-export default function ProductExplainer({ pageKey }) {
+export default function ProductExplainer({ pageKey, hideHero = false }) {
   const { t } = useTranslation();
   const meta = PAGE_META[pageKey] || PAGE_META.crm;
   const Icon = meta.icon;
@@ -63,16 +63,18 @@ export default function ProductExplainer({ pageKey }) {
 
   return (
     <div className="product-page">
-      <Helmet>
-        <title>{t(`${base}.seoTitle`)}</title>
-        <meta name="description" content={t(`${base}.seoDescription`)} />
-        <link rel="canonical" href={`https://bizuply.com/${pageKey === "website" ? "website-builder" : pageKey}`} />
-        <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={t(`${base}.seoTitle`)} />
-        <meta property="og:description" content={t(`${base}.seoDescription`)} />
-        <meta property="og:type" content="website" />
-        <meta property="og:site_name" content="BizUply" />
-      </Helmet>
+      {!hideHero ? (
+        <Helmet>
+          <title>{t(`${base}.seoTitle`)}</title>
+          <meta name="description" content={t(`${base}.seoDescription`)} />
+          <link rel="canonical" href={`https://bizuply.com/${pageKey === "website" ? "website-builder" : pageKey}`} />
+          <meta name="robots" content="index, follow" />
+          <meta property="og:title" content={t(`${base}.seoTitle`)} />
+          <meta property="og:description" content={t(`${base}.seoDescription`)} />
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content="BizUply" />
+        </Helmet>
+      ) : null}
 
       <div className="product-ambient" aria-hidden="true">
         <span className="a1" />
@@ -81,7 +83,7 @@ export default function ProductExplainer({ pageKey }) {
       </div>
 
       <div className="product-shell mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
-        {/* Hero */}
+        {!hideHero ? (
         <section className="product-enter overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-[0_22px_70px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
           <div className="h-1 bg-gradient-to-l from-sky-300 via-violet-300 to-emerald-300" />
 
@@ -169,6 +171,7 @@ export default function ProductExplainer({ pageKey }) {
             </div>
           </div>
         </section>
+        ) : null}
 
         {isCrm ? (
           <motion.section

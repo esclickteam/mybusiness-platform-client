@@ -87,7 +87,7 @@ export default function TemplateShowcase({
     if (paused || reducedMotion || count < 2) return;
     const id = window.setInterval(() => {
       setActive((value) => wrapIndex(value + 1, count));
-    }, 4500);
+    }, 4800);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count]);
 
@@ -172,6 +172,7 @@ export default function TemplateShowcase({
               onClick={() => goTo(index)}
             >
               <TemplateBrowserMockup
+                key={slot === "center" ? `center-${active}` : "side"}
                 src={template.desktopImage}
                 title={template.title}
                 priority={slot === "center" || Math.abs(offset) <= 1}

@@ -2,6 +2,7 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 import WebsiteBuilderHero from "../../components/website-builder-marketing/WebsiteBuilderHero";
+import ProductExplainer from "./ProductExplainer";
 
 export default function WebsiteProductPage() {
   const { t } = useTranslation();
@@ -34,6 +35,8 @@ export default function WebsiteProductPage() {
       </Helmet>
 
       <WebsiteBuilderHero />
+      {/* Benefits / steps / CTA blocks under the custom hero */}
+      <ProductExplainer pageKey="website" hideHero />
     </div>
   );
 }
