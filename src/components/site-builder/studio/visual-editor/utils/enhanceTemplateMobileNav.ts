@@ -35,7 +35,7 @@ const MOBILE_NAV_CSS = `
 }
 
 header[${HEADER_ATTR}="on"] {
-  position: relative;
+  /* Do NOT force position:relative — that pulls fixed/absolute headers out of layout. */
   overflow: visible !important;
 }
 

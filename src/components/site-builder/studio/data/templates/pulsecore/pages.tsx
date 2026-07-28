@@ -209,16 +209,20 @@ function PulseButton({
   children,
   onClick,
   variant = "accent",
+  pageId,
 }: {
   children: React.ReactNode;
   onClick?: () => void;
   variant?: "accent" | "orange" | "dark" | "light";
+  pageId?: PulsecorePageId;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
       data-editable-link="true"
+      data-bizuply-spa-nav="true"
+      data-bizuply-page-id={pageId || undefined}
       className={[
         "inline-flex h-14 items-center justify-center gap-3 rounded-full px-7 text-sm font-black tracking-[0.08em] transition duration-300 active:scale-[0.98]",
         variant === "accent"
@@ -245,11 +249,13 @@ function Header({
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="absolute left-0 right-0 top-0 z-50 px-5 py-5 text-white">
+    <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 px-5 py-5 text-white">
       <div className="mx-auto flex max-w-[1320px] items-center justify-between rounded-full border border-white/10 bg-black/35 px-5 py-3 backdrop-blur-xl">
         <button
           type="button"
           onClick={() => onPageChange("home")}
+          data-bizuply-spa-nav="true"
+          data-bizuply-page-id="home"
           className="flex items-center gap-3"
         >
           <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7FF36] text-black">
@@ -267,6 +273,8 @@ function Header({
               key={item.id}
               type="button"
               onClick={() => onPageChange(item.id)}
+              data-bizuply-spa-nav="true"
+              data-bizuply-page-id={item.id}
               className={[
                 "text-sm font-black transition hover:text-[#D7FF36]",
                 activePage === item.id ? "text-[#D7FF36]" : "text-white/75",
@@ -278,7 +286,7 @@ function Header({
         </nav>
 
         <div className="hidden lg:block">
-          <PulseButton onClick={() => onPageChange("contact")}>
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
             אימון ניסיון
             <ArrowLeft className="h-4 w-4" />
           </PulseButton>
@@ -288,12 +296,13 @@ function Header({
           type="button"
           onClick={() => setMobileOpen((value) => !value)}
           className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-black lg:hidden"
+          aria-label="תפריט"
         >
           {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
-      {mobileOpen && (
+      {mobileOpen ? (
         <div className="mx-auto mt-4 grid max-w-[1320px] gap-2 rounded-[28px] bg-white p-3 text-black shadow-2xl lg:hidden">
           {navItems.map((item) => (
             <button
@@ -303,6 +312,8 @@ function Header({
                 onPageChange(item.id);
                 setMobileOpen(false);
               }}
+              data-bizuply-spa-nav="true"
+              data-bizuply-page-id={item.id}
               className="rounded-2xl px-4 py-3 text-right text-sm font-black hover:bg-black/5"
             >
               {item.label}
@@ -315,12 +326,14 @@ function Header({
               onPageChange("contact");
               setMobileOpen(false);
             }}
+            data-bizuply-spa-nav="true"
+            data-bizuply-page-id="contact"
             className="rounded-2xl bg-black px-4 py-3 text-right text-sm font-black text-white"
           >
             אימון ניסיון
           </button>
         </div>
-      )}
+      ) : null}
     </header>
   );
 }
@@ -395,12 +408,12 @@ function HeroSection({
         </p>
 
         <div className="mt-9 flex flex-wrap justify-center gap-3">
-          <PulseButton onClick={() => onPageChange("contact")}>
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
             לקביעת אימון ניסיון
             <ArrowLeft className="h-4 w-4" />
           </PulseButton>
 
-          <PulseButton variant="light" onClick={() => onPageChange("programs")}>
+          <PulseButton pageId="programs" variant="light" onClick={() => onPageChange("programs")}>
             לראות תוכניות
             <Play className="h-4 w-4" />
           </PulseButton>
@@ -444,7 +457,7 @@ function ProgramsSection({
             </h2>
           </div>
 
-          <PulseButton onClick={() => onPageChange("contact")}>
+          <PulseButton pageId="contact" onClick={() => onPageChange("contact")}>
             להצטרפות
             <ArrowLeft className="h-4 w-4" />
           </PulseButton>
@@ -632,7 +645,7 @@ function ScheduleSection({
             </h2>
           </div>
 
-          <PulseButton variant="orange" onClick={() => onPageChange("contact")}>
+          <PulseButton pageId="contact" variant="orange" onClick={() => onPageChange("contact")}>
             שמירת מקום
             <CalendarDays className="h-4 w-4" />
           </PulseButton>
@@ -763,36 +776,56 @@ function ContactSection() {
           </p>
         </div>
 
-        <form className="grid gap-4 rounded-[40px] bg-white p-8 lg:p-12">
-          <input
-            placeholder="שם מלא"
-            className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-          />
-
-          <input
-            placeholder="טלפון"
-            className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-          />
-
-          <input
-            placeholder="מטרה עיקרית"
-            className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-          />
-
-          <textarea
-            placeholder="מה חשוב לנו לדעת?"
-            className="min-h-36 rounded-2xl border border-black/10 p-5 text-sm font-bold outline-none"
-          />
-
-          <button
-            type="button"
-            className="h-14 rounded-full bg-black text-sm font-black text-white transition hover:-translate-y-1"
-          >
-            שליחה
-          </button>
-        </form>
+        <ContactLeadForm />
       </div>
     </section>
+  );
+}
+
+function ContactLeadForm() {
+  const [sent, setSent] = useState(false);
+
+  return (
+    <form
+      className="grid gap-4 rounded-[40px] bg-white p-8 lg:p-12"
+      onSubmit={(event) => {
+        event.preventDefault();
+        setSent(true);
+      }}
+    >
+      <input
+        name="name"
+        required
+        placeholder="שם מלא"
+        className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
+      />
+
+      <input
+        name="phone"
+        required
+        placeholder="טלפון"
+        className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
+      />
+
+      <input
+        name="goal"
+        placeholder="מטרה עיקרית"
+        className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
+      />
+
+      <textarea
+        name="notes"
+        placeholder="מה חשוב לנו לדעת?"
+        className="min-h-36 rounded-2xl border border-black/10 p-5 text-sm font-bold outline-none"
+      />
+
+      <button
+        type="submit"
+        className="h-14 rounded-full bg-black text-sm font-black text-white transition hover:-translate-y-1"
+      >
+        {sent ? "נשלח — נחזור אליכם בקרוב" : "שליחה"}
+      </button>
+    </form>
   );
 }
 
@@ -822,6 +855,8 @@ function Footer({
                 key={page.id}
                 type="button"
                 onClick={() => onPageChange(page.id)}
+                data-bizuply-spa-nav="true"
+                data-bizuply-page-id={page.id}
                 className="text-right text-sm font-bold text-white/55 transition hover:text-white"
               >
                 {page.name}
@@ -839,7 +874,14 @@ function Footer({
               className="min-w-0 flex-1 bg-transparent px-4 text-sm font-bold outline-none placeholder:text-white/30"
             />
 
-            <button className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7FF36] text-black">
+            <button
+              type="button"
+              onClick={() => onPageChange("contact")}
+              data-bizuply-spa-nav="true"
+              data-bizuply-page-id="contact"
+              aria-label="יצירת קשר"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-[#D7FF36] text-black"
+            >
               <Mail className="h-4 w-4" />
             </button>
           </div>
@@ -863,7 +905,7 @@ function PulsecoreShell({
       data-template-id="pulsecore"
       data-template-page-id={activePage}
       dir="rtl"
-      className="min-h-screen overflow-hidden bg-[#080808] text-white"
+      className="relative min-h-screen overflow-x-hidden overflow-y-visible bg-[#080808] text-white"
     >
       <style>{pulsecoreEditorCss}</style>
 

@@ -218,10 +218,42 @@ export const templateResponsiveCss = `
 ${rule(
   ROOTS.join(",\n"),
   `
+position: relative;
 width: 100%;
 max-width: 100%;
 overflow-x: clip;
 box-sizing: border-box;
+`,
+)}
+
+/* Keep fixed/absolute headers inside the site/canvas (not the browser viewport) */
+${rule(
+  [
+    '[data-visual-template-canvas="true"] header.fixed',
+    '[data-visual-template-canvas="true"] header[class~="fixed"]',
+    '[data-visual-template-canvas="true"] [data-template-section-type="header"].fixed',
+    '[data-visual-template-canvas="true"] [data-template-section-type="header"][class~="fixed"]',
+    '[data-visual-template-canvas="true"] [data-section-kind="header"].fixed',
+    '[data-visual-template-canvas="true"] [data-section-kind="header"][class~="fixed"]',
+  ].join(",\n"),
+  `
+position: sticky !important;
+top: 0 !important;
+left: auto !important;
+right: auto !important;
+inset-inline: 0 !important;
+width: 100% !important;
+max-width: 100% !important;
+`,
+)}
+
+${rule(
+  underRoots("header, [data-template-section-type='header'], [data-section-kind='header']"),
+  `
+max-width: 100%;
+left: auto;
+right: auto;
+inset-inline: 0;
 `,
 )}
 

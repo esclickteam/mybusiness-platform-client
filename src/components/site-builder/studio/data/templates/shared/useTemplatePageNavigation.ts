@@ -97,11 +97,21 @@ export function useTemplatePageNavigation(
 
       if (scrollOnNavigate && typeof window !== "undefined") {
         window.requestAnimationFrame(() => {
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          try {
+            const root = document.querySelector(
+              "[data-template-id], .bizuply-public-mini-site, [data-visual-template-canvas='true']",
+            );
+            if (root instanceof HTMLElement) {
+              root.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          } catch {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }
         });
       }
     },
-    [allowedPages, fallbackPage, props.onPageChange, scrollOnNavigate],
+    [fallbackPage, props.onPageChange, scrollOnNavigate],
   );
 
   return {

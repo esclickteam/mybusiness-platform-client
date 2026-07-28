@@ -46,9 +46,19 @@ export function VisualPageStack({
 }: VisualPageStackProps) {
   const libraryContext = useVisualLibraryPage();
   const knownPageIds = pages.map((page) => page.id);
+  const knownSet = new Set(knownPageIds.map((id) => String(id || "").trim()));
+  /*
+    Prefer the template SPA's active panel when it is a built-in page.
+    Provider rawPageId can lag behind (URL still on home) and must not blank
+    panels or pin the stack to the wrong page while nav clicks work locally.
+  */
+  const stackActiveId = String(activePageId || "").trim();
+  const rawPageId = knownSet.has(stackActiveId)
+    ? stackActiveId
+    : String(libraryContext?.rawPageId || activePageId || "").trim();
   const effectiveActivePageId = resolveVisualLibraryStackPageId({
     activePageId,
-    rawPageId: libraryContext?.rawPageId || activePageId,
+    rawPageId,
     data: data || libraryContext?.data || null,
     knownPageIds,
   });

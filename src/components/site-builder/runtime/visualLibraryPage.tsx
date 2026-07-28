@@ -29,6 +29,16 @@ const COMMON_TEMPLATE_PAGE_IDS = new Set([
   "cases",
   "work",
   "process",
+  "programs",
+  "trainers",
+  "schedule",
+  "booking",
+  "menu",
+  "classes",
+  "join",
+  "insights",
+  "press",
+  "juices",
 ]);
 
 export type VisualLibraryPageState = {

@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, LayoutTemplate, Wand2 } from "lucide-react";
 
@@ -24,6 +24,24 @@ export default function WebsiteTemplatePreviewPage() {
     () => (cleanTemplateId ? getStudioTemplateRenderer(cleanTemplateId) : null),
     [cleanTemplateId],
   );
+
+  const homePage = renderer?.pages?.[0];
+  const homePageId = homePage?.id || "home";
+  const [previewPageId, setPreviewPageId] = useState(homePageId);
+
+  // Reset to home when switching templates
+  React.useEffect(() => {
+    setPreviewPageId(homePageId);
+  }, [cleanTemplateId, homePageId]);
+
+  const previewPage = useMemo(() => {
+    const pages = renderer?.pages || [];
+    return (
+      pages.find((page) => String(page.id) === String(previewPageId)) ||
+      pages[0] ||
+      null
+    );
+  }, [renderer?.pages, previewPageId]);
 
   function handleBackToTemplates() {
     navigate(`${basePath}/dashboard/website/templates`);
@@ -100,9 +118,8 @@ export default function WebsiteTemplatePreviewPage() {
       Record<string, unknown>
     >;
     const data = (renderer.defaultData || {}) as Record<string, unknown>;
-    const homePage = renderer.pages?.[0];
-    const pageId = homePage?.id || "home";
-    const pageSlug = homePage?.slug || "/";
+    const pageId = String(previewPageId || homePageId);
+    const pageSlug = String(previewPage?.slug || homePage?.slug || "/");
     const key = String(renderer.key || cleanTemplateId).toLowerCase();
     const background =
       (data as any)?.backgroundColor ||
@@ -121,7 +138,7 @@ export default function WebsiteTemplatePreviewPage() {
           />
         ) : null}
         <div
-          className="min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible"
+          className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible"
           data-template-id={key}
           dir="rtl"
         >
@@ -140,6 +157,11 @@ export default function WebsiteTemplatePreviewPage() {
             templateData={data}
             /* Shared template preview — demo catalog only, never this business's store */
             isStudioStatic
+            onPageChange={(nextPageId: string) => {
+              const next = String(nextPageId || "").trim();
+              if (!next) return;
+              setPreviewPageId(next);
+            }}
           />
         </div>
       </main>
@@ -180,60 +202,21 @@ export default function WebsiteTemplatePreviewPage() {
   }
 
   return (
-    <main className="fixed inset-0 z-[9999] overflow-y-auto bg-[#f3f4f6] text-[#111827]">
-      <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white/95 px-5 py-4 shadow-sm backdrop-blur-xl">
-        <div className="mx-auto flex max-w-[1600px] items-center justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-3">
-            <button
-              type="button"
-              onClick={handleBackToTemplates}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-[#e5e7eb] bg-white text-[#374151] transition hover:bg-[#f9fafb]"
-              aria-label="חזרה לתבניות"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
-
-            <div className="min-w-0">
-              <p className="truncate text-xs font-black uppercase tracking-[0.22em] text-[#9ca3af]">
-                תצוגה מקדימה
-              </p>
-
-              <h1 className="truncate text-xl font-black tracking-[-0.03em] text-[#111827]">
-                {template?.name || cleanTemplateId}
-              </h1>
-            </div>
-          </div>
-
+    <main className="fixed inset-0 z-[9999] overflow-y-auto bg-white px-6 py-10 text-[#111827]">
+      <div className="mx-auto flex min-h-[70vh] max-w-3xl items-center justify-center">
+        <div className="w-full rounded-[2rem] border border-[#e5e7eb] bg-[#f9fafb] p-10 text-center shadow-sm">
+          <h1 className="text-2xl font-black tracking-[-0.03em]">
+            אין תצוגה מקדימה לתבנית
+          </h1>
           <button
             type="button"
-            onClick={handleUseTemplate}
-            className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 text-sm font-black text-black shadow-sm transition hover:bg-black"
+            onClick={handleBackToTemplates}
+            className="mt-7 rounded-md border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-3 text-sm font-bold text-black transition hover:bg-black"
           >
-            <Wand2 className="h-4 w-4" />
-            שימוש בתבנית
+            חזרה לתבניות
           </button>
         </div>
-      </header>
-
-      <section className="px-4 py-6">
-        <div className="mx-auto max-w-[1700px]">
-          <div className="flex min-h-[650px] items-center justify-center rounded-3xl border border-[#e5e7eb] bg-white p-10 text-center shadow-sm">
-            <div>
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-[#f9fafb] text-[#6b7280]">
-                <LayoutTemplate className="h-7 w-7" />
-              </div>
-
-              <h2 className="mt-6 text-2xl font-black tracking-[-0.03em]">
-                אין תצוגה מקדימה
-              </h2>
-
-              <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-[#6b7280]">
-                התבנית קיימת, אבל אין לה קומפוננטת Preview מחוברת.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      </div>
     </main>
   );
 }

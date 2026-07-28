@@ -1,4 +1,5 @@
 import React, {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -1788,6 +1789,46 @@ function getFallbackPageId(activePage, pathname) {
   );
 }
 
+/** Map a template/site page id to a public pathname for SPA nav buttons. */
+function resolvePublicPathForPageId(site, renderer, pageId) {
+  const nextId = safeString(pageId).trim();
+  if (!nextId || nextId === "home" || nextId === "index") return "/";
+
+  const sitePages = Array.isArray(asPlainObject(site).pages)
+    ? asPlainObject(site).pages
+    : [];
+  const rendererPages = Array.isArray(renderer?.pages) ? renderer.pages : [];
+
+  const siteMatch = sitePages.find((page) => {
+    const source = asPlainObject(page);
+    return (
+      safeString(source.id) === nextId ||
+      normalizePublicPath(source.slug) === normalizePublicPath(nextId) ||
+      normalizePublicPath(source.path) === normalizePublicPath(nextId)
+    );
+  });
+
+  if (siteMatch) {
+    const path = getPagePath(siteMatch);
+    return path ? `/${path}` : "/";
+  }
+
+  const templateMatch = rendererPages.find(
+    (page) => safeString(asPlainObject(page).id) === nextId,
+  );
+
+  if (templateMatch) {
+    const source = asPlainObject(templateMatch);
+    if (source.id === "home" || source.isHome) return "/";
+    const path = normalizePublicPath(
+      safeString(source.slug) || safeString(source.path) || safeString(source.id),
+    );
+    return path ? `/${path}` : "/";
+  }
+
+  return `/${normalizePublicPath(nextId)}`;
+}
+
 function readPublicRevision(site, activePage) {
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
@@ -2132,6 +2173,18 @@ export default function PublicVisualSiteRenderer({
     [site, activePage],
   );
 
+  const handleTemplatePageChange = useCallback(
+    (nextPageId) => {
+      if (typeof window === "undefined") return;
+      const nextPath = resolvePublicPathForPageId(site, renderer, nextPageId);
+      const currentPath = window.location.pathname || "/";
+      if (nextPath === currentPath) return;
+      window.history.pushState({}, "", nextPath);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    },
+    [site, renderer],
+  );
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (publicBusinessId) {
@@ -2361,6 +2414,30 @@ export default function PublicVisualSiteRenderer({
         return;
       }
 
+      /*
+        Published HTML snapshots: buttons stamped with data-bizuply-page-id
+        (no React onClick). Template-fallback React trees already navigate via
+        onPageChange — skip them to avoid double navigation.
+      */
+      const target = event.target;
+      if (
+        target instanceof Element &&
+        !root.querySelector("[data-bizuply-template-fallback='true']")
+      ) {
+        const spaNode = target.closest("[data-bizuply-page-id]");
+        if (spaNode instanceof Element && root.contains(spaNode)) {
+          const pageAttr = safeString(
+            spaNode.getAttribute("data-bizuply-page-id"),
+          ).trim();
+          if (pageAttr) {
+            event.preventDefault();
+            event.stopPropagation();
+            handleTemplatePageChange(pageAttr);
+            return;
+          }
+        }
+      }
+
       const link = resolvePublicLinkFromEventTarget(
         root,
         event.target,
@@ -2468,6 +2545,7 @@ export default function PublicVisualSiteRenderer({
     pageId,
     pathname,
     site,
+    handleTemplatePageChange,
   ]);
 
   if (hasSavedHtml && !preferTemplateRender) {
@@ -2589,6 +2667,7 @@ export default function PublicVisualSiteRenderer({
               businessId={publicBusinessId}
               isPublic
               isStudioStatic={false}
+              onPageChange={handleTemplatePageChange}
             />
           </VisualLibraryPageProvider>
         </div>
