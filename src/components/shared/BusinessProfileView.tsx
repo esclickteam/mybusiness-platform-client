@@ -17,7 +17,7 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { useSocket } from "../../context/socketContext";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
-import Icon from "@/components/UI/Icon";
+import Icon from "@/components/ui/Icon";
 import ReviewCard from "../../components/ReviewCard";
 import ProfileContactBlock from "@/components/shared/ProfileContactBlock";
 import { lockPageScroll } from "@/utils/pageScrollLock";

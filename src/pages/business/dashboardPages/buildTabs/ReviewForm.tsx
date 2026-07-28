@@ -3,7 +3,7 @@
 import React, { useMemo, useState } from "react";
 
 import API from "@/api";
-import Icon from "@/components/UI/Icon";
+import Icon from "@/components/ui/Icon";
 
 type RatingKey =
   | "experience"

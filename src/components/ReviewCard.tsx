@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import Icon from "@/components/UI/Icon";
+import Icon from "@/components/ui/Icon";
 import ReviewDetailModal from "@/components/ReviewDetailModal";
 import {
   getReviewAverage,

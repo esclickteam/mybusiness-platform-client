@@ -3,7 +3,7 @@
 import React, { useEffect, useMemo } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import Icon from "@/components/UI/Icon";
+import Icon from "@/components/ui/Icon";
 import { lockPageScroll } from "@/utils/pageScrollLock";
 import {
   getReviewAverage,
