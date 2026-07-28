@@ -32,6 +32,7 @@ import {
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
 import { applySitePageNavSubmenusToDom } from "../studio/visual-editor/utils/applySitePageNavSubmenusToDom";
+import { enhanceTemplateMobileNav } from "../studio/visual-editor/utils/enhanceTemplateMobileNav";
 import {
   applyMediaFitStyles,
   preserveVisualMediaBoxSize,
@@ -1755,6 +1756,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
   applySitePageNavSubmenusToDom(root, data);
   syncPublicNavActiveState(root, pathname);
   removeEditorArtifacts(root);
+  enhanceTemplateMobileNav(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
 

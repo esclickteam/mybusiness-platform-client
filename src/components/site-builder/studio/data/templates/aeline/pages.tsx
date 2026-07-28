@@ -600,9 +600,7 @@ function HeroSection({
         <div className="relative z-30 mx-auto mt-7 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:mt-9 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
           <AelineButton onClick={() => onPageChange("contact")}>
             קבעו שיחת התאמה
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#160f2e] text-white">
-              <ArrowRight className="h-4 w-4" />
-            </span>
+            <ArrowRight className="h-4 w-4" />
           </AelineButton>
 
           <AelineButton variant="blue" onClick={() => onPageChange("services")}>

@@ -38,6 +38,7 @@ import {
 
 import { applySavedFormBuildersToDom } from "./visualForms";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
+import { enhanceTemplateMobileNav } from "./enhanceTemplateMobileNav";
 import { isStoreBoundVisualContentKey } from "../../data/templates/shared/storeCatalogSync";
 import { shouldApplyLibraryBlankMode } from "../../../runtime/visualLibraryPage";
 import {
@@ -3493,6 +3494,7 @@ export function applyAllVisualDataToDom(
 
   applySavedFormBuildersToDom(root, data);
   applySitePageNavSubmenusToDom(root, data);
+  enhanceTemplateMobileNav(root);
 }
 
 export function collectVisualContentFromDom(

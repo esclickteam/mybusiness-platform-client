@@ -55,7 +55,7 @@ ${typeForce("mobile", {
   display: none !important;
 }
 
-/* Mobile chrome: flex md:hidden → stay visible */
+/* Mobile chrome: flex/grid md:hidden → stay visible (hamburgers, icon toggles) */
 [data-visual-device="mobile"] .flex.md\\:hidden,
 [data-visual-device="mobile"] .flex.lg\\:hidden,
 [data-visual-device="mobile"] .flex.xl\\:hidden,
