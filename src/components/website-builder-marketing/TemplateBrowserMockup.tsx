@@ -3,6 +3,8 @@ import React from "react";
 type Props = {
   src: string;
   title: string;
+  accent: string;
+  accentSoft: string;
   priority?: boolean;
   isCenter?: boolean;
 };
@@ -10,11 +12,21 @@ type Props = {
 export default function TemplateBrowserMockup({
   src,
   title,
+  accent,
+  accentSoft,
   priority = false,
   isCenter = false,
 }: Props) {
   return (
-    <div className={`wb-mockup-shell${isCenter ? " is-center" : ""}`}>
+    <div
+      className={`wb-mockup-shell${isCenter ? " is-center" : ""}`}
+      style={
+        {
+          "--wb-glow": accent,
+          "--wb-glow-soft": accentSoft,
+        } as React.CSSProperties
+      }
+    >
       <span className="wb-mockup-glow" aria-hidden="true" />
       <div className="wb-mockup">
         <div className="wb-mockup__chrome">

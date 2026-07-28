@@ -87,7 +87,7 @@ export default function TemplateShowcase({
     if (paused || reducedMotion || count < 2) return;
     const id = window.setInterval(() => {
       setActive((value) => wrapIndex(value + 1, count));
-    }, 4800);
+    }, 3200);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count]);
 
@@ -131,8 +131,18 @@ export default function TemplateShowcase({
     };
   }, [reducedMotion]);
 
+  const activeTemplate = templates[active];
+
   return (
-    <div className="wb-hero__stage-wrap">
+    <div
+      className="wb-hero__stage-wrap"
+      style={
+        {
+          "--wb-stage-glow": activeTemplate?.accent,
+          "--wb-stage-glow-soft": activeTemplate?.accentSoft,
+        } as React.CSSProperties
+      }
+    >
       <div
         ref={stageRef}
         className={`wb-hero__stage${paused ? " is-paused" : ""}`}
@@ -175,6 +185,8 @@ export default function TemplateShowcase({
                 key={slot === "center" ? `center-${active}` : "side"}
                 src={template.desktopImage}
                 title={template.title}
+                accent={template.accent}
+                accentSoft={template.accentSoft}
                 priority={slot === "center" || Math.abs(offset) <= 1}
                 isCenter={slot === "center"}
               />

@@ -181,6 +181,24 @@
   transition: transform 0.18s linear;
 }
 
+.wb-hero__stage-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 8% 18% 12%;
+  z-index: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--wb-stage-glow, #6d28d9) 55%, transparent) 0%,
+    color-mix(in srgb, var(--wb-stage-glow-soft, #38bdf8) 35%, transparent) 42%,
+    transparent 72%
+  );
+  filter: blur(36px);
+  opacity: 0.85;
+  pointer-events: none;
+  transition: background 0.55s var(--wb-ease);
+}
+
 .wb-hero__stage {
   position: relative;
   width: 100%;
@@ -232,7 +250,7 @@
   filter: blur(0);
   width: min(880px, 72vw);
   transform: translate(-50%, -50%) scale(1) rotate(0deg);
-  animation: wb-center-grow 4.6s var(--wb-ease) forwards;
+  animation: wb-center-grow 3s var(--wb-ease) forwards;
 }
 
 @keyframes wb-center-grow {
@@ -325,26 +343,32 @@
 
 .wb-mockup-glow {
   position: absolute;
-  inset: -12%;
+  inset: -14%;
   z-index: 0;
   border-radius: 1.75rem;
-  background: linear-gradient(
-    135deg,
-    rgba(109, 40, 217, 0.7),
-    rgba(37, 99, 235, 0.55),
-    rgba(14, 165, 233, 0.6),
-    rgba(167, 139, 250, 0.5)
-  );
-  filter: blur(26px);
-  opacity: 0.55;
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      color-mix(in srgb, var(--wb-glow-soft, var(--wb-glow)) 88%, white) 0%,
+      color-mix(in srgb, var(--wb-glow) 70%, transparent) 48%,
+      transparent 72%
+    ),
+    linear-gradient(
+      135deg,
+      var(--wb-glow),
+      var(--wb-glow-soft, var(--wb-glow))
+    );
+  filter: blur(28px);
+  opacity: 0.62;
   pointer-events: none;
+  transition: background 0.55s var(--wb-ease), opacity 0.45s ease;
 }
 
 .wb-mockup-shell.is-center .wb-mockup-glow {
-  inset: -16%;
-  opacity: 0.9;
-  filter: blur(32px);
-  animation: wb-glow-pulse 2.8s ease-in-out infinite alternate;
+  inset: -18%;
+  opacity: 0.95;
+  filter: blur(34px);
+  animation: wb-glow-pulse 2.2s ease-in-out infinite alternate;
 }
 
 @keyframes wb-glow-pulse {
@@ -437,7 +461,7 @@
 }
 
 .wb-template[data-slot="center"] .wb-mockup__img {
-  animation: wb-site-scroll 4.6s linear forwards;
+  animation: wb-site-scroll 3s linear forwards;
 }
 
 .wb-hero__stage.is-paused .wb-template[data-slot="center"] .wb-mockup__img {
