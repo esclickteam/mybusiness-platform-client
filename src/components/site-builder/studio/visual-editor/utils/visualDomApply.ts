@@ -2120,7 +2120,21 @@ export function applyVisualResponsiveToDom(
   if (!root) return;
 
   const responsive = readVisualResponsive(data);
-  const device = detectVisualDeviceMode(root);
+  /*
+    Prefer an explicit studio device toggle (mobile/tablet/desktop buttons)
+    stamped on the canvas. Width-based detection is only a fallback.
+  */
+  const explicitDevice = String(
+    root.getAttribute("data-visual-device") || "",
+  )
+    .trim()
+    .toLowerCase();
+  const device =
+    explicitDevice === "mobile" ||
+    explicitDevice === "tablet" ||
+    explicitDevice === "desktop"
+      ? (explicitDevice as VisualDeviceMode)
+      : detectVisualDeviceMode(root);
 
   root.setAttribute("data-visual-device", device);
 

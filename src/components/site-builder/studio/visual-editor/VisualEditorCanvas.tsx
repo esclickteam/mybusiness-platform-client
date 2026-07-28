@@ -33,6 +33,7 @@ import {
   didOnlyVisualSectionOrderChange,
 } from "./utils/visualSectionOrder";
 import { subscribeStoreCatalogChanged } from "../data/templates/shared/storeCatalogSync";
+import { templateEditorDevicePreviewCss } from "../data/templates/shared/templateEditorDevicePreviewCss";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -1212,6 +1213,37 @@ export default function VisualEditorCanvas({
     refreshSelectionBox,
   ]);
 
+  /*
+    Mobile/Tablet toggles only resize the frame — Tailwind @media still sees
+    the desktop window. Re-stamp data-visual-device + re-apply visual overrides
+    so shared device CSS and __responsive maps stay in sync with the toggle.
+  */
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const mode = String(editorAny.deviceMode || "desktop") as VisualDeviceMode;
+    root.setAttribute("data-visual-device", mode);
+
+    if (inlineEditingElementId || editorAny.isInlineEditing) return;
+
+    const syncedData = syncSitePageTitlesIntoVisualData(
+      editorAny.data || {},
+      Array.isArray(editorAny.sitePages) ? editorAny.sitePages : [],
+    );
+    applyAllVisualDataToDom(root, syncedData);
+    // Keep the explicit studio toggle — width detection must not override it.
+    root.setAttribute("data-visual-device", mode);
+    window.requestAnimationFrame(refreshSelectionBox);
+  }, [
+    editorAny.deviceMode,
+    editorAny.data,
+    editorAny.sitePages,
+    editorAny.isInlineEditing,
+    inlineEditingElementId,
+    refreshSelectionBox,
+  ]);
+
   useEffect(() => {
     const root = rootRef.current;
     if (!root || !siteId) return;
@@ -1987,6 +2019,9 @@ export default function VisualEditorCanvas({
       onContextMenu={editorAny.handleCanvasContextMenu}
     >
       <style>{runtimeCss}</style>
+      <style data-bizuply-device-preview="true">
+        {templateEditorDevicePreviewCss}
+      </style>
 
 
       {selectionBox ? (
