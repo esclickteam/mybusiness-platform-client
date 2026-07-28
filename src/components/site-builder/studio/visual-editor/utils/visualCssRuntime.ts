@@ -9,6 +9,7 @@ import type {
 } from "./visualData";
 
 import { selectorForVisualElement } from "./visualSelectors";
+import { templateResponsiveCss } from "../../data/templates/shared/templateResponsiveCss";
 
 const ANIMATION_PRESETS: Record<string, string> = {
   "fade-up":
@@ -152,6 +153,7 @@ export function buildVisualRuntimeCss(
   hoveredElementId?: string,
 ) {
   const chunks: string[] = [
+    templateResponsiveCss,
     `
 @keyframes bizuplyVisualFadeUp {
   from {

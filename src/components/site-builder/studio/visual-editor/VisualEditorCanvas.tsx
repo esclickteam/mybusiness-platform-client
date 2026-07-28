@@ -2277,6 +2277,7 @@ export default function VisualEditorCanvas({
           <div
             ref={rootRef}
             data-visual-template-canvas="true"
+            data-visual-device={deviceMode}
             data-visual-preview-mode={isPreviewMode ? "true" : "false"}
             data-visual-editor-mode={isEditMode ? "edit" : "preview"}
             className={[

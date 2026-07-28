@@ -28,6 +28,7 @@ import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdo
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import {
   applyAllVisualDataToDom,
+  applyVisualResponsiveToDom,
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
 import { applySitePageNavSubmenusToDom } from "../studio/visual-editor/utils/applySitePageNavSubmenusToDom";
@@ -39,6 +40,7 @@ import {
   isStoreBoundVisualContentKey,
   stripStoreBoundVisualImageOverrides,
 } from "../studio/data/templates/shared/storeCatalogSync";
+import { templateResponsiveCss } from "../studio/data/templates/shared/templateResponsiveCss";
 
 import {
   readSiteAnalyticsContext,
@@ -976,6 +978,7 @@ function getRendererRuntimeCss(renderer) {
   const source = asPlainObject(renderer);
 
   return joinCssParts(
+    templateResponsiveCss,
     PUBLIC_BASE_CSS,
     safeString(source.runtimeCss),
     safeString(source.editorCss),
@@ -2397,6 +2400,31 @@ export default function PublicVisualSiteRenderer({
     root.addEventListener("click", handleClick);
     root.addEventListener("keydown", handleKeyDown);
 
+    /*
+      Re-detect device mode + re-apply per-element responsive overrides when
+      the real viewport changes (rotate phone, resize, DevTools).
+    */
+    let resizeFrame = 0;
+    const handleViewportChange = () => {
+      window.cancelAnimationFrame(resizeFrame);
+      resizeFrame = window.requestAnimationFrame(() => {
+        const data =
+          stripStoreBoundVisualImageOverrides(
+            asPlainObject(visualData),
+          ) || asPlainObject(visualData);
+        applyVisualResponsiveToDom(root, data);
+      });
+    };
+
+    window.addEventListener("resize", handleViewportChange);
+    window.addEventListener("orientationchange", handleViewportChange);
+
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== "undefined") {
+      resizeObserver = new ResizeObserver(handleViewportChange);
+      resizeObserver.observe(root);
+    }
+
     console.log("[BizUply Public Renderer]", {
       templateKey,
       activePageId: activePage?.id || "",
@@ -2419,6 +2447,10 @@ export default function PublicVisualSiteRenderer({
 
     return () => {
       mutationObserver?.disconnect();
+      resizeObserver?.disconnect();
+      window.cancelAnimationFrame(resizeFrame);
+      window.removeEventListener("resize", handleViewportChange);
+      window.removeEventListener("orientationchange", handleViewportChange);
       root.removeEventListener("click", handleSubmenuNavigate, true);
       root.removeEventListener("click", handleClick);
       root.removeEventListener("keydown", handleKeyDown);
