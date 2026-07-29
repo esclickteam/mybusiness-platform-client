@@ -159,7 +159,8 @@
     <!-- ✅ Favicons -->
     <link rel="icon" href="/favicon-v2.png?v=2" type="image/png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon-v3.png?v=2" />
-    <link rel="manifest" href="/site.webmanifest" />
+    <!-- use-credentials: Vercel Deployment Protection / SSO blocks credential-less manifest fetches -->
+    <link rel="manifest" href="/site.webmanifest" crossorigin="use-credentials" />
     <meta name="theme-color" content="#6a11cb" />
     <meta name="apple-mobile-web-app-title" content="BizUply" />
     <meta name="application-name" content="BizUply" />
