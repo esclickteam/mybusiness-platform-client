@@ -1,0 +1,32 @@
+/* Page-level scaffolding for /website-builder */
+
+.wbp {
+  background: linear-gradient(
+    180deg,
+    #ffffff 0%,
+    #f7f8fc 22%,
+    #f4f6fa 60%,
+    #f7f8fc 100%
+  );
+}
+
+.wbp__studio-frame {
+  margin-top: 2.75rem;
+}
+
+.wbp .pm-grid {
+  margin-top: 3rem;
+}
+
+.wbp__capabilities-inner {
+  margin-top: 3rem;
+}
+
+.wbp__faq-inner {
+  max-width: 52rem;
+  margin-inline: auto;
+}
+
+.wbp__final {
+  margin-top: clamp(3rem, 6vw, 5rem);
+}
