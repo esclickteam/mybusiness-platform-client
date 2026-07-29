@@ -11,6 +11,7 @@ import {
   CreditCard,
   HelpCircle,
   LayoutTemplate,
+  MessageCircle,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 
@@ -159,6 +160,12 @@ export default function BusinessWorkspaceNav({
       fallback: "CRM System",
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
+    },
+    {
+      labelKey: "businessNav.whatsapp",
+      fallback: "WhatsApp Messages",
+      to: `${basePath}/dashboard/whatsapp`,
+      icon: MessageCircle,
     },
     {
       labelKey: "businessNav.collaborations",
