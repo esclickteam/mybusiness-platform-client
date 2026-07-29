@@ -1,5 +1,6 @@
 export { Reveal, Stagger, StaggerItem, WordReveal, revealEase } from "./Reveal";
 export { default as AuroraBackdrop } from "./AuroraBackdrop";
+export { default as CenteredProductHero } from "./CenteredProductHero";
 export { default as CountUp } from "./CountUp";
 export { default as FaqAccordion } from "./FaqAccordion";
 export { default as FinalCta } from "./FinalCta";
@@ -12,3 +13,4 @@ export { default as StatStrip } from "./StatStrip";
 
 export type { MarketingFaq } from "./FaqAccordion";
 export type { MarketingStat } from "./StatStrip";
+export type { HeroBadge } from "./CenteredProductHero";
