@@ -63,21 +63,31 @@ body {
   box-sizing: inherit;
 }
 
-a {
-  text-decoration: none;
-  color: inherit;
-}
+/*
+  Base link/button ink must live in @layer base. Unlayered `a { color: inherit }`
+  beats Tailwind utilities, so Links with text-white looked "swallowed" into the
+  purple / white backgrounds.
+*/
+@layer base {
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
 
-/* חשוב: לא להכריח רקע על כפתורים כדי לא לדרוס Tailwind */
-button {
-  font: inherit;
-}
+  button {
+    font: inherit;
+  }
 
-button:where(:not([class*="text-"])),
-[type="button"]:where(:not([class*="text-"])),
-[type="submit"]:where(:not([class*="text-"])),
-[type="reset"]:where(:not([class*="text-"])) {
-  color: #000;
+  button:not([class*="text-"]),
+  [type="button"]:not([class*="text-"]),
+  [type="submit"]:not([class*="text-"]),
+  [type="reset"]:not([class*="text-"]) {
+    color: #000;
+  }
+
+  button:disabled {
+    cursor: not-allowed;
+  }
 }
 
 .crm-primary-btn,
@@ -86,9 +96,13 @@ button:where(:not([class*="text-"])),
   color: #000;
 }
 
+/* Solid marketing CTAs — unlayered so text never inherits the parent ink */
+a.cta-solid {
+  color: #fff;
+}
 
-button:disabled {
-  cursor: not-allowed;
+a.cta-soft {
+  color: #4338ca;
 }
 
 /* ===========================

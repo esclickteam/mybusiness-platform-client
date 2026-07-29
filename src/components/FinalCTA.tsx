@@ -51,14 +51,14 @@ export default function FinalCTA() {
               <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
                 <Link
                   to="/register"
-                  className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
+                  className="cta-solid inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
                 >
                   {t("home.startTrial")}
                 </Link>
 
                 <Link
                   to="/pricing"
-                  className="inline-flex w-full items-center justify-center rounded-2xl border border-white/80 bg-white/85 px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur transition hover:-translate-y-0.5 sm:w-auto"
+                  className="cta-soft inline-flex w-full items-center justify-center rounded-2xl border-2 border-indigo-300 bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/80 transition hover:-translate-y-0.5 hover:border-indigo-400 sm:w-auto"
                 >
                   {t("home.viewPricing")}
                 </Link>
