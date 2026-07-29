@@ -1,171 +1,144 @@
-/* =========================================================
-   📱 Mobile Menu – Full Screen (HubSpot Style)
-========================================================= */
+/* Clean mobile drawer for the public SaaS header */
 
-.mobile-menu {
+.site-mobile {
   position: fixed;
   inset: 0;
-  background: #ffffff;
-  z-index: 3000;
-
+  z-index: 99999;
   display: flex;
-  flex-direction: column;
-
-  animation: slideIn 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  overscroll-behavior: contain;
+  justify-content: flex-start;
+  padding: 0.75rem;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(6px);
 }
 
-/* =========================================================
-   Header
-========================================================= */
-
-.mobile-menu-header {
-  height: 64px;
-  padding: 0 20px;
-
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  border-bottom: 1px solid #eee;
-}
-
-.mobile-menu-header img {
-  height: 40px;
-  width: auto;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 22px;
-  cursor: pointer;
-  color: #333;
-  padding: 6px;
-}
-
-.close-btn:active {
-  transform: scale(0.95);
-}
-
-/* =========================================================
-   Search
-========================================================= */
-
-.menu-search-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  margin: 16px;
-  padding: 12px 14px;
-
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-}
-
-.menu-search-wrapper input {
-  border: none;
-  outline: none;
-  font-size: 15px;
-  width: 100%;
+.site-mobile__backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
   background: transparent;
+  cursor: default;
 }
 
-/* =========================================================
-   Navigation
-========================================================= */
-
-.menu-nav {
+.site-mobile__panel {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
+  width: min(100%, 22rem);
+  max-height: calc(100vh - 1.5rem);
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.1rem;
+  background: #fff;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
 }
 
-.menu-nav a {
+.site-mobile__top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-
-  padding: 18px 20px;
-  font-size: 16px;
-  font-weight: 500;
-
-  color: #2b2b2b;
-  text-decoration: none;
-
-  border-bottom: 1px solid #f1f1f1;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
 }
 
-.menu-nav a:active {
-  background: #f2edff;
+.site-mobile__brand {
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
 }
 
-.menu-nav a.active {
-  color: #5e17eb;
-  font-weight: 600;
-  background: #f6f2ff;
+.site-mobile__brand img {
+  display: block;
+  height: 2.4rem;
+  width: auto;
+  max-width: 9rem;
+  object-fit: contain;
 }
 
-/* =========================================================
-   CTA Area
-========================================================= */
-
-.menu-ctas {
-  margin-top: auto;
-  padding: 20px;
-
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.cta-primary {
-  background: #5e17eb;
-  color: #ffffff;
-
-  padding: 14px;
-  border-radius: 12px;
-
-  text-align: center;
-  font-weight: 700;
-  font-size: 15px;
-  text-decoration: none;
-}
-
-.cta-primary:active {
-  background: #4a12c9;
-}
-
-.cta-secondary {
-  background: #f2edff;
-  color: #5e17eb;
-
-  padding: 14px;
-  border-radius: 12px;
-
-  text-align: center;
-  font-weight: 600;
-  font-size: 15px;
-
-  border: none;
+.site-mobile__close {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #0f172a;
   cursor: pointer;
 }
 
-.cta-secondary.logout {
-  color: #c62828;
-  background: #fff1f1;
+.site-mobile__nav {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.35rem;
 }
 
-/* =========================================================
-   Animation
-========================================================= */
+.site-mobile__link {
+  display: flex;
+  align-items: center;
+  min-height: 2.85rem;
+  padding: 0.75rem 0.95rem;
+  border-radius: 0.75rem;
+  border: 1px solid transparent;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #334155;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-  }
-  to {
-    transform: translateX(0);
+.site-mobile__link:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.site-mobile__link.is-active {
+  background: #f5f3ff;
+  border-color: #ddd6fe;
+  color: #5b21b6;
+}
+
+.site-mobile__footer {
+  display: grid;
+  gap: 0.55rem;
+  padding: 0.9rem;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.site-mobile__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.85rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #5b21b6;
+  background: #5b21b6;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.site-mobile__cta--ghost {
+  border-color: #e2e8f0;
+  background: #fff;
+  color: #0f172a;
+}
+
+.site-mobile__cta--danger {
+  border-color: #fecdd3;
+  background: #fff;
+  color: #e11d48;
+}
+
+@media (min-width: 1100px) {
+  .site-mobile {
+    display: none;
   }
 }
