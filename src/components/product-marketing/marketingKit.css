@@ -34,7 +34,6 @@
 
   font-family: "Assistant", "Heebo", system-ui, sans-serif;
   color: var(--pm-ink);
-  /* The global stylesheet forces text-align:left on body */
   text-align: center;
   overflow-x: clip;
 }

@@ -6,7 +6,11 @@ import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
-import { normalizeLanguage, setSessionLanguageOverride } from "../i18n/localeUtils";
+import {
+  getTextDirection,
+  normalizeLanguage,
+  setSessionLanguageOverride,
+} from "../i18n/localeUtils";
 import "../styles/SiteHeader.css";
 
 type NavLink = {
@@ -33,6 +37,7 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const currentLangCode = normalizeLanguage(i18n.language);
+  const headerDir = getTextDirection(currentLangCode);
 
   const isDashboard =
     location.pathname.includes("/dashboard") ||
@@ -59,8 +64,8 @@ export default function Header() {
 
   return (
     <>
-      <header className="site-header" dir="rtl">
-        <nav className="site-header__bar" aria-label="ניווט ראשי">
+      <header className="site-header" dir={headerDir}>
+        <nav className="site-header__bar" aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}>
           <Link to="/" className="site-header__logo" aria-label="BizUply">
             <img src={logo} alt="BizUply" />
           </Link>

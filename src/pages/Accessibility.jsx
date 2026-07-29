@@ -14,7 +14,7 @@ export default function Accessibility() {
     "mt-5 space-y-3 text-base font-medium leading-8 text-slate-600";
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800">
       <Helmet>
         <title>Accessibility Statement - Bizuply</title>
         <meta
@@ -89,7 +89,7 @@ export default function Accessibility() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
+          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
             <p className="text-sm font-black text-amber-300">
               Need assistance?
             </p>
@@ -192,7 +192,7 @@ export default function Accessibility() {
               .
             </p>
 
-            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
+            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
                 Accessibility Statement
               </p>

@@ -14,7 +14,7 @@ function Terms() {
   const pBase = "mb-4 text-base font-medium leading-8 text-slate-600";
 
   const ulBase =
-    "mb-5 ml-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
+    "mb-5 ms-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
 
   const sections = [
     "General",
@@ -35,7 +35,7 @@ function Terms() {
   ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800">
       <Helmet>
         <title>Terms of Service - BizUply</title>
         <meta
@@ -102,7 +102,7 @@ function Terms() {
             ))}
           </nav>
 
-          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
+          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
             <p className="text-sm font-black text-amber-300">Contact</p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
               support@bizuply.com
@@ -985,7 +985,7 @@ function Terms() {
               and effect.
             </p>
 
-            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
+            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
                 Last Updated
               </p>

@@ -3,11 +3,13 @@ import { Link, useLocation } from "react-router-dom";
 import { FaTimes } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
 import logo from "../images/logo_final.svg";
+import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 import "./MobileMenu.css";
 
 export default function MobileMenu({ open, onClose, user, onLogout }) {
   const location = useLocation();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const menuDir = getTextDirection(normalizeLanguage(i18n.language));
 
   const navLinks = [
     { to: "/about", label: t("nav.about") },
@@ -40,7 +42,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   if (!open) return null;
 
   return (
-    <div className="site-mobile" role="dialog" aria-modal="true" dir="rtl">
+    <div className="site-mobile" role="dialog" aria-modal="true" dir={menuDir}>
       <button
         type="button"
         aria-label={t("common.closeMenu")}

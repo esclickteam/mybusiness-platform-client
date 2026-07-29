@@ -2,6 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
+import logo from "../images/logo_final.svg";
+import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
+
 type FooterLink = {
   label: string;
   to: string;
@@ -17,7 +20,8 @@ type FooterColumnProps = {
 };
 
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const footerDir = getTextDirection(normalizeLanguage(i18n.language));
 
   const productLinks: FooterLink[] = [
     { label: t("footer.aboutUs"), to: "/about" },
@@ -49,26 +53,31 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <footer
+      className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800"
+      dir={footerDir}
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[360px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-24 h-[320px] w-[320px] rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="absolute -left-40 bottom-0 h-[320px] w-[320px] rounded-full bg-violet-200/35 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 pb-8 pt-16 sm:px-6 lg:px-8 lg:pt-20">
+      <div className="relative mx-auto max-w-7xl px-5 pb-8 pt-16 text-start sm:px-6 lg:px-8 lg:pt-20">
         <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_28px_90px_rgba(79,70,229,0.14)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
           <div className="rounded-[1.6rem] border border-slate-100 bg-white/90 px-5 py-8 sm:rounded-[2rem] sm:px-8 sm:py-10 lg:px-10">
             <div className="grid gap-10 lg:grid-cols-[1.4fr_0.9fr_0.9fr_0.9fr]">
               <div>
-                <Link to="/" className="inline-flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-black shadow-xl shadow-indigo-100">
-                    B
-                  </span>
-
-                  <span className="text-2xl font-black tracking-[-0.04em] text-slate-800">
-                    Bizuply
-                  </span>
+                <Link
+                  to="/"
+                  className="inline-flex items-center"
+                  aria-label="BizUply"
+                >
+                  <img
+                    src={logo}
+                    alt="BizUply"
+                    className="h-20 w-auto max-w-[min(22rem,75vw)] object-contain sm:h-[5.5rem] sm:max-w-[24rem]"
+                  />
                 </Link>
 
                 <p className="mt-5 max-w-sm text-base font-semibold leading-7 text-slate-600">
@@ -99,9 +108,12 @@ export default function Footer() {
             <div className="flex flex-col gap-5 text-sm font-semibold text-slate-500 lg:flex-row lg:items-center lg:justify-between">
               <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
 
-              <p className="max-w-2xl leading-6 lg:text-end">
+              <p
+                dir="ltr"
+                className="max-w-2xl leading-6 lg:text-end"
+              >
                 1007 N Orange Street, 4th Floor, Ste 1382, Wilmington, DE
-                19801, United States.
+                19801, United States
               </p>
             </div>
           </div>
@@ -113,20 +125,23 @@ export default function Footer() {
 
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
-    <div>
+    <div className="text-start">
       <h4 className="mb-5 text-sm font-black uppercase tracking-[0.18em] text-slate-400">
         {title}
       </h4>
 
       <ul className="space-y-3">
         {links.map((link) => (
-          <li key={link.to}>
+          <li key={`${link.to}-${link.label}`}>
             <Link
               to={link.to}
               className="group inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-indigo-700"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-200 transition group-hover:bg-indigo-600" />
-              {link.label}
+              <span
+                className="h-1.5 w-1.5 shrink-0 rounded-full bg-indigo-200 transition group-hover:bg-indigo-600"
+                aria-hidden="true"
+              />
+              <span>{link.label}</span>
             </Link>
           </li>
         ))}
