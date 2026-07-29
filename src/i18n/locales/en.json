@@ -1666,7 +1666,7 @@
       },
       "profile": {
         "title": "Client Profile",
-        "subtitle": "Basic CRM details only. Custom values are managed in the Client Data tab.",
+        "subtitle": "Basic contact details. Documentation, tasks, and files appear below.",
         "fullName": "Full Name",
         "phone": "Phone",
         "email": "Email",
@@ -1675,6 +1675,48 @@
         "created": "Created",
         "updated": "Updated",
         "totalSpent": "Total Spent"
+      },
+      "documentation": {
+        "title": "Documentation, tasks & files",
+        "subtitle": "Log what happened with the client, add tasks, meeting summaries, files, and agreements.",
+        "occurredAt": "Date & time",
+        "dueAt": "Due date",
+        "attachFiles": "Attach files / images",
+        "filesSelected": "{{count}} files selected",
+        "defaultNowHint": "Date & time default to now. You can change them before saving.",
+        "saveActivity": "Save documentation",
+        "saveTask": "Save task",
+        "uploading": "Uploading files...",
+        "emptyTitle": "No documentation yet",
+        "emptyDescription": "Calls, tasks, meeting summaries, and files for this client will appear here.",
+        "markDone": "Mark done",
+        "reopenTask": "Reopen",
+        "dueTimeLabel": "Due: {{time}}",
+        "attachedFile": "Attached file",
+        "types": {
+          "note": "Note",
+          "call": "Call",
+          "whatsapp": "WhatsApp",
+          "task": "Task",
+          "meeting": "Meeting summary",
+          "file": "File / image",
+          "agreement": "Agreement"
+        },
+        "placeholders": {
+          "note": "What should be documented about this client...",
+          "call": "Call summary...",
+          "whatsapp": "Conversation summary...",
+          "task": "What needs to be done and when...",
+          "meeting": "Meeting summary, decisions, and next steps...",
+          "file": "File description (optional)...",
+          "agreement": "Agreement description (optional)..."
+        },
+        "errors": {
+          "textOrFileRequired": "Enter text or attach a file",
+          "fileRequired": "Attach a file or image",
+          "saveFailed": "Failed to save documentation",
+          "taskUpdateFailed": "Failed to update task"
+        }
       },
       "appointmentsPanel": {
         "title": "Client Appointments",

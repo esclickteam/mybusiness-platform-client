@@ -33,6 +33,9 @@ import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { SHOW_BUSINESS_MINI_SAAS } from "./crmFeatureFlags";
+import ClientDocumentationPanel, {
+  type ClientActivity,
+} from "./ClientDocumentationPanel";
 
 type CustomFieldType =
   | "text"
@@ -94,6 +97,7 @@ type CRMClient = {
   appointments?: unknown[];
   totalSpent?: number;
   customTabs?: CustomClientTab[];
+  activities?: ClientActivity[];
   createdAt?: string;
   updatedAt?: string;
 };
@@ -853,10 +857,29 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     }
   };
 
+  const handleClientActivitiesChange = (activities: ClientActivity[]) => {
+    if (!selectedClient) return;
+
+    const nextClient: CRMClient = {
+      ...selectedClient,
+      activities,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSelectedClient(nextClient);
+    queryClient.setQueryData<CRMClient[]>(["clients", businessId], (old) => {
+      if (!old) return old;
+      return old.map((client) =>
+        client._id === selectedClient._id ? nextClient : client
+      );
+    });
+  };
+
   if (mode === "view" && selectedClient) {
     return (
       <ClientDetailsView
         client={selectedClient}
+        businessId={businessId}
         activeTab={activeClientTab}
         setActiveTab={setActiveClientTab}
         configuredFields={configuredClientFields}
@@ -870,6 +893,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         onSaveClientData={handleSaveClientData}
         onSavePortalAccess={handleSavePortalAccess}
         onSendPortalInvite={handleSendPortalInvite}
+        onActivitiesChange={handleClientActivitiesChange}
       />
     );
   }
@@ -1070,6 +1094,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
 function ClientDetailsView({
   client,
+  businessId,
   activeTab,
   setActiveTab,
   configuredFields,
@@ -1079,14 +1104,17 @@ function ClientDetailsView({
   onSaveClientData,
   onSavePortalAccess,
   onSendPortalInvite,
+  onActivitiesChange,
 }: {
   client: CRMClient;
+  businessId: string;
   activeTab: ClientDetailTab;
   setActiveTab: (tab: ClientDetailTab) => void;
   configuredFields: ConfiguredClientField[];
   onBack: () => void;
   onEdit: () => void;
   onDelete: (event?: React.MouseEvent<HTMLButtonElement>) => void;
+  onActivitiesChange: (activities: ClientActivity[]) => void;
   onSaveClientData: (values: ClientDataDraft) => Promise<void>;
   onSavePortalAccess: (settings: PortalAccessSettings) => Promise<void>;
   onSendPortalInvite: () => Promise<void>;
@@ -1219,7 +1247,17 @@ function ClientDetailsView({
         </div>
       </section>
 
-      {resolvedTab === "profile" && <ClientProfilePanel client={client} />}
+      {resolvedTab === "profile" && (
+        <div className="space-y-4">
+          <ClientProfilePanel client={client} />
+          <ClientDocumentationPanel
+            clientId={client._id}
+            businessId={businessId}
+            activities={client.activities || []}
+            onActivitiesChange={onActivitiesChange}
+          />
+        </div>
+      )}
 
       {resolvedTab === "appointments" && (
         <ClientAppointmentsPanel client={client} />
@@ -1349,9 +1387,22 @@ function ClientProfilePanel({ client }: { client: CRMClient }) {
 
 function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
   const { t } = useTranslation();
-  const appointments = Array.isArray(client.appointments)
-    ? client.appointments
-    : [];
+  const { data: fetchedAppointments = [], isLoading } = useQuery({
+    queryKey: ["client-appointments", client._id],
+    queryFn: async () => {
+      const { data } = await API.get<unknown[]>(
+        `/crm-clients/${client._id}/appointments`
+      );
+      return Array.isArray(data) ? data : [];
+    },
+  });
+
+  const appointments =
+    fetchedAppointments.length > 0
+      ? fetchedAppointments
+      : Array.isArray(client.appointments)
+        ? client.appointments
+        : [];
 
   return (
     <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
@@ -1371,7 +1422,11 @@ function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
         </div>
       </div>
 
-      {appointments.length === 0 ? (
+      {isLoading ? (
+        <div className="flex justify-center py-10">
+          <BizuplyLoader />
+        </div>
+      ) : appointments.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
           <h4 className="mt-3 text-xl font-black text-slate-800">
