@@ -14,6 +14,23 @@ export type WhatsAppConnection = {
   connectedAt: string | null;
 };
 
+export type WhatsAppHeaderType =
+  | "none"
+  | "text"
+  | "image"
+  | "video"
+  | "document"
+  | "location";
+
+export type WhatsAppTemplateButton = {
+  type: "url" | "phone_number" | "quick_reply";
+  text: string;
+  url?: string;
+  urlType?: "static" | "dynamic";
+  exampleUrl?: string;
+  phoneNumber?: string;
+};
+
 export type WhatsAppTemplate = {
   _id: string;
   name: string;
@@ -25,10 +42,18 @@ export type WhatsAppTemplate = {
     | "welcome"
     | "custom";
   language: string;
+  variableType?: "number" | "name";
+  headerType?: WhatsAppHeaderType;
+  headerText?: string;
+  headerMediaUrl?: string;
   body: string;
+  footer?: string;
   variables: string[];
   /** Ordered CRM field bindings for {{1}}, {{2}}, … */
   variableBindings?: string[];
+  /** Sample values for Meta review, keyed by placeholder number */
+  exampleValues?: Record<string, string>;
+  buttons?: WhatsAppTemplateButton[];
   metaTemplateName?: string;
   status: "draft" | "active" | "archived";
   isSystem?: boolean;
