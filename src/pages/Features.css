@@ -3,7 +3,7 @@
    (הרקע האחיד האמיתי)
 ========================= */
 .app-scroll-area {
-  min-height: 100vh;
+  /* Do not force 100vh here — header + 100vh creates a second page scrollbar. */
   background: linear-gradient(
     180deg,
     #f8fafc 0%,
