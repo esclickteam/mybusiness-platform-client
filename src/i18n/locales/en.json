@@ -4004,11 +4004,36 @@
       "heroTitle": "Manage leads and clients",
       "heroHighlight": "in one place.",
       "heroSubtitle": "Capture leads from Facebook and Instagram, track statuses, and communicate — with a Meta app that passed App Review.",
+      "heroImageAlt": "BizUply CRM preview — customer file, tasks, and appointments",
       "previewTitle": "A clear lead pipeline",
       "previewText": "From new lead to paying client",
       "audience1": "Businesses getting leads from ads",
       "audience2": "Service providers with daily follow-ups",
       "audience3": "Teams that need one real status",
+      "pipelineBadge": "Live lead pipeline",
+      "pipelineTitle": "See the whole pipeline — no guessing",
+      "pipelineSubtitle": "From new lead to paying client: clear statuses, accurate sources, and progress that moves in real time.",
+      "pipelinePreviewTitle": "Sales pipeline · BizUply CRM",
+      "pipelineLive": "Live",
+      "pipelineStage": {
+        "new": "New",
+        "contacted": "Contacted",
+        "interested": "Interested",
+        "converted": "Converted"
+      },
+      "pipelineLeads": {
+        "lead1": "Noa Cohen",
+        "lead2": "Yossi Levi",
+        "lead3": "Dana Avraham",
+        "lead4": "Itay Mizrahi",
+        "lead5": "Michal Shemesh"
+      },
+      "pipelineSources": {
+        "meta": "Facebook Lead Ads",
+        "form": "Website form",
+        "instagram": "Instagram",
+        "manual": "Manual entry"
+      },
       "benefitsTitle": "CRM that works like your business",
       "benefitsSubtitle": "Less chaos, more control — from first inquiry to close.",
       "benefit1Title": "Leads straight from Meta",

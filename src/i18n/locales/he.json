@@ -3993,11 +3993,36 @@
       "heroTitle": "נהלו לידים ולקוחות",
       "heroHighlight": "במקום אחד.",
       "heroSubtitle": "קליטת לידים מפייסבוק ואינסטגרם, מעקב סטטוסים ותקשורת — באפליקציית Meta שעברה App Review.",
+      "heroImageAlt": "תצוגת CRM של BizUply — ניהול לקוחות, משימות ותורים",
       "previewTitle": "צינור לידים ברור",
       "previewText": "מליד חדש ועד לקוח משלם",
       "audience1": "עסקים שמקבלים לידים מפרסום",
       "audience2": "נותני שירות עם מעקב שוטף",
       "audience3": "צוותים שצריכים סטטוס אחד אמיתי",
+      "pipelineBadge": "צינור לידים חי",
+      "pipelineTitle": "רואים את כל הצינור — בלי לנחש",
+      "pipelineSubtitle": "מליד חדש ועד לקוח משלם: סטטוסים ברורים, מקורות מדויקים והתקדמות שזזה בזמן אמת.",
+      "pipelinePreviewTitle": "צינור מכירות · BizUply CRM",
+      "pipelineLive": "חי",
+      "pipelineStage": {
+        "new": "חדש",
+        "contacted": "נוצר קשר",
+        "interested": "מעוניין",
+        "converted": "הומר"
+      },
+      "pipelineLeads": {
+        "lead1": "נועה כהן",
+        "lead2": "יוסי לוי",
+        "lead3": "דנה אברהם",
+        "lead4": "איתי מזרחי",
+        "lead5": "מיכל שמש"
+      },
+      "pipelineSources": {
+        "meta": "Facebook Lead Ads",
+        "form": "טופס באתר",
+        "instagram": "Instagram",
+        "manual": "הזנה ידנית"
+      },
       "benefitsTitle": "CRM שעובד כמו העסק שלכם",
       "benefitsSubtitle": "פחות בלגן, יותר שליטה — מהפנייה הראשונה ועד הסגירה.",
       "benefit1Title": "לידים ישירות מ־Meta",
