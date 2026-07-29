@@ -1,6 +1,5 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useLocation } from "react-router-dom";
 import {
   BellRing,
   CalendarClock,
@@ -18,7 +17,6 @@ import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
 import CrmScreenshotTour from "../../components/crm-marketing/CrmScreenshotTour";
 import CrmIntegrationRail from "../../components/crm-marketing/CrmIntegrationRail";
 import CrmMetaTrust from "../../components/crm-marketing/CrmMetaTrust";
-import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import {
   crmFaq,
   pipelineStages,
@@ -112,19 +110,6 @@ const LIST_CARDS = [
 ];
 
 export default function CrmProductPage() {
-  const location = useLocation();
-
-  useEffect(() => {
-    if (location.hash !== "#automations") return;
-    const timer = window.setTimeout(() => {
-      document.getElementById("automations")?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 120);
-    return () => window.clearTimeout(timer);
-  }, [location.hash]);
-
   return (
     <div className="pm crm-page crmp" dir="rtl">
       <Helmet>
@@ -275,11 +260,6 @@ export default function CrmProductPage() {
       </section>
 
       <CrmMetaTrust />
-
-      {/* Automations + fake notifications demo — under CRM */}
-      <div id="automations">
-        <AutomationsNotificationsDemo />
-      </div>
 
       {/* FAQ + closing */}
       <section className="pm-section pm-section--tight crx">

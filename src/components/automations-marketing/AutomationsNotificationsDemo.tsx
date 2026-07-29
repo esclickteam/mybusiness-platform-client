@@ -89,8 +89,8 @@ export default function AutomationsNotificationsDemo() {
           }
           title={
             <>
-              אוטומציות בתוך ה־CRM —{" "}
-              <span className="pm-grad">התראות עם נתונים אמיתיים</span>
+              האוטומציה לא רצה בשקט —{" "}
+              <span className="pm-grad">היא מודיעה בזמן</span>
             </>
           }
           lead="ליד חדש, משימה שעבר זמנה או תזכורת לפגישה — הכל עולה למרכז ההתראות. כך זה נראה במערכת, עם דוגמאות פקטיביות שמדמות את מה שתקבלו ביום־יום."
