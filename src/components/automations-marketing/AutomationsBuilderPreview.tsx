@@ -40,7 +40,7 @@ export default function AutomationsBuilderPreview() {
             crumb="אוטומציות · בונה תהליכים"
             rail={["לידים", "אוטומציות", "משימות", "התראות", "הגדרות"]}
             railActive={1}
-            caption="בונה התהליכים: טריגר מ־Lead Ads, תנאי זמן ופעולה כפולה — ולידה של כל ריצה נשמרת ביומן עם סטטוס."
+            caption="בונה התהליכים: טריגר מ־Lead Ads, תנאי זמן ופעולה כפולה — וכל ריצה נשמרת ביומן עם סטטוס."
           >
             <div className="pmk-kpis">
               <div className="pmk-kpi">
@@ -56,8 +56,8 @@ export default function AutomationsBuilderPreview() {
                 <strong>32</strong>
               </div>
               <div className="pmk-kpi">
-                <span>פניות שלא נשכחו</span>
-                <strong>100%</strong>
+                <span>ממתינות להמשך</span>
+                <strong>5</strong>
               </div>
             </div>
 

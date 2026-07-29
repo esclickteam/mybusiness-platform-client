@@ -73,7 +73,7 @@ export default function AgentsWorkspacePreview() {
             crumb="CRM · טיפול נציג"
             rail={["לידים", "לקוחות", "פגישות", "נציגים", "דוחות"]}
             railActive={3}
-            caption="תור הטיפול: כל פנייה עם המקור, הסטטוס והנציג המטפל — ומימין תיעוד הפעולות שבוצעו בשמכם."
+            caption="תור הטיפול: כל פנייה עם המקור, הסטטוס והנציג המטפל — ולידו תיעוד הפעולות שבוצעו בשמכם."
           >
             <div className="pmk-kpis">
               <div className="pmk-kpi">
