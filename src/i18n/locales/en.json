@@ -1582,6 +1582,11 @@
           "authUrl": "Failed to create Google auth URL",
           "connectForm": "Failed to connect the form",
           "webhookConfigureFailed": "Form saved, but Google webhook configuration failed",
+          "customerNotEnabled": "Can't access the selected Google Ads account. It may not be enabled yet, was deactivated, or is missing a billing profile. Choose another active account or finish setup in Google Ads.",
+          "permissionDenied": "No permission for the selected Google Ads account. Make sure the signed-in user is an admin, or choose another account.",
+          "webhookTooLong": "Google webhook setup failed because a value was too long. Try connecting again, or contact support if it continues.",
+          "developerToken": "Google Ads platform setup is not ready yet. Contact BizUply support.",
+          "googleAdsGeneric": "Couldn't access the Google Ads account. Check that the account is active and approved, then try again.",
           "syncFailed": "Failed to sync leads",
           "actionFailed": "Action failed",
           "copyFailed": "Copy failed"

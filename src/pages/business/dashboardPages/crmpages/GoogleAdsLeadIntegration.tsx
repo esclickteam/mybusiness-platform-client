@@ -58,6 +58,31 @@ type GoogleAdsLeadIntegrationProps = {
 
 const T = "crm.leads.googleIntegration";
 
+function getApiErrorMessage(err: unknown): string {
+  if (err instanceof Error && err.message) return err.message;
+  return "";
+}
+
+function mapGoogleAdsError(raw: string, t: (key: string) => string, fallbackKey: string): string {
+  const msg = String(raw || "");
+  if (/CUSTOMER_NOT_ENABLED/i.test(msg)) return t(`${T}.errors.customerNotEnabled`);
+  if (/USER_PERMISSION_DENIED|PERMISSION_DENIED|AUTHORIZATION_ERROR/i.test(msg)) {
+    return t(`${T}.errors.permissionDenied`);
+  }
+  if (/TOO_LONG/i.test(msg)) return t(`${T}.errors.webhookTooLong`);
+  if (/DEVELOPER_TOKEN/i.test(msg)) return t(`${T}.errors.developerToken`);
+  if (
+    /tried login-customer-id|Google Ads API|INVALID_ARGUMENT|REQUEST_ERROR/i.test(msg)
+  ) {
+    return t(`${T}.errors.googleAdsGeneric`);
+  }
+  // Keep short, human messages; hide raw Google dumps.
+  if (msg.length > 180 || /[A-Z_]{6,}:/.test(msg)) {
+    return t(fallbackKey);
+  }
+  return msg || t(fallbackKey);
+}
+
 export default function GoogleAdsLeadIntegration({
   businessId,
   onBack,
@@ -121,7 +146,7 @@ export default function GoogleAdsLeadIntegration({
       );
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t(`${T}.errors.loadStatus`)
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.loadStatus`)
       );
     } finally {
       setLoading(false);
@@ -143,7 +168,9 @@ export default function GoogleAdsLeadIntegration({
       setForms(Array.isArray(data.forms) ? data.forms : []);
     } catch (err) {
       setForms([]);
-      setError(err instanceof Error ? err.message : t(`${T}.errors.loadForms`));
+      setError(
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.loadForms`)
+      );
     } finally {
       setBusy(false);
     }
@@ -159,7 +186,15 @@ export default function GoogleAdsLeadIntegration({
     const googleError = searchParams.get("google_error");
     if (!connected && !googleError) return;
 
-    if (googleError) setError(googleError);
+    if (googleError) {
+      setError(
+        mapGoogleAdsError(
+          decodeURIComponent(googleError),
+          t,
+          `${T}.errors.actionFailed`
+        )
+      );
+    }
     if (connected) {
       setSuccess(t(`${T}.successOauth`));
       setForceSetup(true);
@@ -193,7 +228,9 @@ export default function GoogleAdsLeadIntegration({
       window.location.href = data.url;
     } catch (err) {
       setBusy(false);
-      setError(err instanceof Error ? err.message : t(`${T}.errors.authUrl`));
+      setError(
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.authUrl`)
+      );
     }
   };
 
@@ -226,7 +263,11 @@ export default function GoogleAdsLeadIntegration({
       setForceSetup(false);
       if (data.webhookConfigured === false) {
         setError(
-          data.warning || t(`${T}.errors.webhookConfigureFailed`)
+          mapGoogleAdsError(
+            data.warning || "",
+            t,
+            `${T}.errors.webhookConfigureFailed`
+          )
         );
         setSuccess(t(`${T}.successFormConnectedPartial`, { name: form.name }));
       } else {
@@ -234,24 +275,8 @@ export default function GoogleAdsLeadIntegration({
       }
       await loadStatus();
     } catch (err) {
-      const apiMessage =
-        err &&
-        typeof err === "object" &&
-        "response" in err &&
-        err.response &&
-        typeof err.response === "object" &&
-        "data" in err.response &&
-        err.response.data &&
-        typeof err.response.data === "object"
-          ? String(
-              (err.response.data as { error?: string; message?: string }).error ||
-                (err.response.data as { message?: string }).message ||
-                ""
-            )
-          : "";
       setError(
-        apiMessage ||
-          (err instanceof Error ? err.message : t(`${T}.errors.connectForm`))
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.connectForm`)
       );
     } finally {
       setBusy(false);
@@ -266,7 +291,9 @@ export default function GoogleAdsLeadIntegration({
       setSuccess(t(`${T}.successTestLead`));
       await loadStatus();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t(`${T}.errors.actionFailed`));
+      setError(
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.actionFailed`)
+      );
     } finally {
       setBusy(false);
     }
@@ -285,7 +312,9 @@ export default function GoogleAdsLeadIntegration({
       setForceSetup(false);
       setSuccess(t(`${T}.successDisconnected`));
     } catch (err) {
-      setError(err instanceof Error ? err.message : t(`${T}.errors.actionFailed`));
+      setError(
+        mapGoogleAdsError(getApiErrorMessage(err), t, `${T}.errors.actionFailed`)
+      );
     } finally {
       setBusy(false);
     }
