@@ -700,6 +700,8 @@
   border-top: 0;
   border-radius: 0 0 1.1rem 1.1rem;
   background: #ffffff;
+  /* Isolate heavy live templates so mount/transform work cannot shift page scroll. */
+  contain: layout paint size;
   box-shadow:
     0 24px 56px color-mix(in srgb, var(--wb-glow) 16%, transparent),
     0 10px 26px rgba(15, 23, 42, 0.08);
@@ -711,6 +713,7 @@
   left: 50%;
   pointer-events: none;
   will-change: transform;
+  backface-visibility: hidden;
 }
 
 .wb-type-preview__fallback {
