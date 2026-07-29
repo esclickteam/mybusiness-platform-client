@@ -69,7 +69,6 @@
       ]
     },
     {
-      "//": "Header rules match the requested path, not the rewrite target, so the rule above never reached '/' or any app route. Extension-less paths are exactly the ones rewritten to the shell.",
       "source": "/((?!api/|assets/)[^.]*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
