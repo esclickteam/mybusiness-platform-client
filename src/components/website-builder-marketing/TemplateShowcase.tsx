@@ -59,9 +59,9 @@ export default function TemplateShowcase({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const [warmed, setWarmed] = useState<Record<string, true>>(() => ({
-    [templates[0]?.id]: true,
-  }));
+  const [warmed, setWarmed] = useState<Record<string, true>>(() =>
+    templates[0]?.id ? { [templates[0].id]: true } : {},
+  );
   const touchStartX = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const parallaxRef = useRef({ x: 0, y: 0 });
