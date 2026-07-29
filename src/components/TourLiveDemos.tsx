@@ -24,13 +24,13 @@ function DemoShell({
   children: ReactNode;
 }) {
   return (
-    <div className="relative w-full" dir="rtl">
+    <div className="relative flex h-full w-full flex-col" dir="rtl">
       <div
-        className="pointer-events-none absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-400/20 via-violet-300/15 to-cyan-300/20 blur-3xl"
+        className="pointer-events-none absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-400/20 via-violet-300/15 to-cyan-300/20 blur-3xl"
         aria-hidden="true"
       />
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/90 bg-white shadow-[0_36px_100px_rgba(79,70,229,0.22)]">
-        <div className="flex items-center gap-3 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-4 py-3">
+      <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.75rem] border border-white/90 bg-white shadow-[0_36px_100px_rgba(79,70,229,0.22)]">
+        <div className="flex shrink-0 items-center gap-3 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-4 py-3">
           <span className="flex gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
@@ -46,7 +46,9 @@ function DemoShell({
             {liveLabel}
           </span>
         </div>
-        <div className="p-4 text-start sm:p-5">{children}</div>
+        <div className="min-h-0 flex-1 overflow-hidden p-4 text-center sm:p-5">
+          <div className="mx-auto max-w-xl text-center">{children}</div>
+        </div>
       </div>
     </div>
   );
@@ -135,7 +137,7 @@ export function TourLeadCardDemo() {
         ))}
       </div>
 
-      <div className="mt-4 space-y-2">
+      <div className="mt-4 min-h-[7.5rem] space-y-2">
         <AnimatePresence>
           {phase >= 2 ? (
             <motion.div
@@ -143,7 +145,7 @@ export function TourLeadCardDemo() {
               initial={reduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex gap-3 rounded-xl border border-indigo-100 bg-indigo-50/70 px-3.5 py-3"
+              className="flex gap-3 rounded-xl border border-indigo-100 bg-indigo-50/70 px-3.5 py-3 text-start"
             >
               <StickyNote size={16} className="mt-0.5 shrink-0 text-indigo-600" />
               <div>
@@ -162,7 +164,7 @@ export function TourLeadCardDemo() {
               initial={reduceMotion ? false : { opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/80 px-3.5 py-3"
+              className="flex items-center gap-3 rounded-xl border border-amber-100 bg-amber-50/80 px-3.5 py-3 text-start"
             >
               <Clock3 size={16} className="shrink-0 text-amber-700" />
               <div className="min-w-0 flex-1">
@@ -265,14 +267,14 @@ export function TourClientDemo() {
         ))}
       </div>
 
-      <ul className="mt-4 space-y-2">
+      <ul className="mt-4 min-h-[9.5rem] space-y-2">
         <AnimatePresence initial={false}>
           {rows.slice(0, visible).map((row) => (
             <motion.li
               key={row.title}
               initial={reduceMotion ? false : { opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-3 py-2.5"
+              className="flex items-center gap-3 rounded-xl border border-slate-100 bg-white px-3 py-2.5 text-start"
             >
               <CheckCircle2 size={16} className="shrink-0 text-indigo-600" />
               <span className="min-w-0 flex-1">

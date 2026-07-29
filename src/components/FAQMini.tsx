@@ -61,10 +61,31 @@ export default function FAQMini() {
       })),
       footer: t("faqMini.a4Footer"),
     },
+    {
+      q: t("faqMini.q5"),
+      lead: t("faqMini.a5Lead"),
+      bullets: [1, 2, 3].map((n) => ({
+        title: t(`faqMini.a5b${n}Title`),
+        text: t(`faqMini.a5b${n}Text`),
+      })),
+      footer: t("faqMini.a5Footer"),
+    },
+    {
+      q: t("faqMini.q6"),
+      lead: t("faqMini.a6Lead"),
+      bullets: [1, 2, 3].map((n) => ({
+        title: t(`faqMini.a6b${n}Title`),
+        text: t(`faqMini.a6b${n}Text`),
+      })),
+      footer: t("faqMini.a6Footer"),
+    },
   ];
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24">
+    <section
+      className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24"
+      dir="rtl"
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute -right-40 top-36 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -99,9 +120,9 @@ export default function FAQMini() {
             const isOpen = openIndex === i;
 
             return (
-              <Reveal key={item.q} from="up" distance={18} delay={i * 0.05}>
+              <Reveal key={item.q} from="up" distance={18} delay={i * 0.04}>
                 <div
-                  className={`overflow-hidden rounded-[1.5rem] border text-start transition-colors ${
+                  className={`overflow-hidden rounded-[1.5rem] border text-center transition-colors ${
                     isOpen
                       ? "border-indigo-200 bg-white shadow-[0_18px_50px_rgba(79,70,229,0.12)]"
                       : "border-slate-100 bg-white/85 hover:border-indigo-100"
@@ -111,7 +132,7 @@ export default function FAQMini() {
                     type="button"
                     onClick={() => setOpenIndex(isOpen ? null : i)}
                     aria-expanded={isOpen}
-                    className="flex w-full items-center gap-4 px-5 py-5 text-start sm:px-7"
+                    className="flex w-full items-center gap-4 px-5 py-5 text-center sm:px-7"
                   >
                     <span
                       className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black transition ${
@@ -153,8 +174,8 @@ export default function FAQMini() {
                         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                         className="overflow-hidden"
                       >
-                        <div className="px-5 pb-6 sm:px-7 sm:ps-[4.25rem]">
-                          <p className="text-base font-semibold leading-8 text-slate-600">
+                        <div className="px-5 pb-6 text-center sm:px-7">
+                          <p className="mx-auto max-w-2xl text-base font-semibold leading-8 text-slate-600">
                             {item.lead}
                           </p>
 
@@ -162,9 +183,9 @@ export default function FAQMini() {
                             {item.bullets.map((bullet) => (
                               <div
                                 key={bullet.title}
-                                className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4"
+                                className="rounded-2xl border border-slate-100 bg-slate-50/70 p-4 text-center"
                               >
-                                <div className="mb-2 flex items-center gap-2">
+                                <div className="mb-2 flex items-center justify-center gap-2">
                                   <span
                                     className="grid h-5 w-5 place-items-center rounded-full bg-indigo-600 text-[0.65rem] font-black text-white"
                                     aria-hidden="true"
@@ -184,7 +205,7 @@ export default function FAQMini() {
                           </div>
 
                           {item.footer ? (
-                            <p className="mt-5 rounded-2xl border border-indigo-100 bg-indigo-50/70 px-5 py-4 text-sm font-black leading-6 text-indigo-900">
+                            <p className="mx-auto mt-5 max-w-2xl rounded-2xl border border-indigo-100 bg-indigo-50/70 px-5 py-4 text-sm font-black leading-6 text-indigo-900">
                               {item.footer}
                             </p>
                           ) : null}
@@ -198,9 +219,8 @@ export default function FAQMini() {
           })}
         </div>
 
-        {/* Still stuck */}
         <Reveal from="up" distance={24} delay={0.1}>
-          <div className="mt-14 rounded-[2rem] border border-indigo-100 bg-white/85 px-6 py-10 shadow-[0_24px_70px_rgba(79,70,229,0.12)] backdrop-blur sm:px-12">
+          <div className="mt-14 rounded-[2rem] border border-indigo-100 bg-white/85 px-6 py-10 text-center shadow-[0_24px_70px_rgba(79,70,229,0.12)] backdrop-blur sm:px-12">
             <span
               className="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-2xl text-white shadow-lg shadow-indigo-200"
               aria-hidden="true"
@@ -218,17 +238,17 @@ export default function FAQMini() {
 
             <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Link
-                to="/contact"
+                to="/register"
                 className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
               >
-                {t("nav.contact")}
+                {t("home.startTrial")}
               </Link>
 
               <Link
-                to="/pricing"
+                to="/contact"
                 className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white px-7 py-3.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 sm:w-auto"
               >
-                {t("home.viewPricing")}
+                {t("nav.contact")}
               </Link>
             </div>
           </div>

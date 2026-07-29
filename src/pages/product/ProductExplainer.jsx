@@ -14,7 +14,9 @@ import {
   ShieldCheck,
   UsersRound,
 } from "lucide-react";
+import { TourAppointmentsDemo } from "../../components/TourLiveDemos";
 import "../../styles/ProductExplainer.css";
+import "../../styles/homeWow.css";
 
 const PAGE_META = {
   crm: { icon: UsersRound, accent: "from-[#6D28D9] to-[#2563EB]" },
@@ -61,8 +63,10 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
     ? [1, 2, 3].map((n) => t(`${base}.metaPoint${n}`))
     : [];
 
+  const isAppointments = pageKey === "appointments";
+
   return (
-    <div className="product-page">
+    <div className="product-page" dir="rtl">
       {!hideHero ? (
         <Helmet>
           <title>{t(`${base}.seoTitle`)}</title>
@@ -82,14 +86,14 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
         <span className="a3" />
       </div>
 
-      <div className="product-shell mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+      <div className="product-shell mx-auto max-w-7xl px-4 py-8 text-center sm:px-6 lg:px-8 lg:py-12">
         {!hideHero ? (
         <section className="product-enter overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 shadow-[0_22px_70px_rgba(15,23,42,0.07)] backdrop-blur-2xl">
           <div className="h-1 bg-gradient-to-l from-sky-300 via-violet-300 to-emerald-300" />
 
-          <div className="grid gap-10 px-6 py-10 sm:px-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:px-10 lg:py-14">
-            <div className="text-start">
-              <div className="product-enter product-enter-delay-1 flex flex-wrap items-center gap-2">
+          <div className="grid gap-10 px-6 py-10 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-10 lg:py-14">
+            <div className="text-center lg:text-center">
+              <div className="product-enter product-enter-delay-1 flex flex-wrap items-center justify-center gap-2">
                 <p className="text-xs font-black uppercase tracking-[0.22em] text-sky-600">
                   {t(`${base}.badge`)}
                 </p>
@@ -101,7 +105,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
                 ) : null}
               </div>
 
-              <h1 className="product-enter product-enter-delay-1 mt-3 text-4xl font-black tracking-tight text-slate-800 sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
+              <h1 className="product-enter product-enter-delay-1 mx-auto mt-3 max-w-xl text-4xl font-black tracking-tight text-slate-800 sm:text-5xl lg:text-[3.25rem] lg:leading-[1.08]">
                 {t(`${base}.heroTitle`)}{" "}
                 <span
                   className={`bg-gradient-to-l ${meta.accent} bg-clip-text text-transparent`}
@@ -110,12 +114,12 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
                 </span>
               </h1>
 
-              <p className="product-enter product-enter-delay-2 mt-5 max-w-xl text-base font-semibold leading-8 text-slate-500 sm:text-lg">
+              <p className="product-enter product-enter-delay-2 mx-auto mt-5 max-w-xl text-base font-semibold leading-8 text-slate-500 sm:text-lg">
                 {t(`${base}.heroSubtitle`)}
               </p>
 
               {isCrm ? (
-                <div className="product-enter product-enter-delay-2 mt-4 inline-flex max-w-xl items-start gap-2 rounded-2xl border border-[#1877F2]/20 bg-[#F0F6FF] px-4 py-3 text-start">
+                <div className="product-enter product-enter-delay-2 mx-auto mt-4 inline-flex max-w-xl items-start gap-2 rounded-2xl border border-[#1877F2]/20 bg-[#F0F6FF] px-4 py-3 text-center">
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#1877F2]" />
                   <p className="text-sm font-bold leading-6 text-slate-700">
                     {t(`${base}.metaTrustLine`)}
@@ -123,7 +127,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
                 </div>
               ) : null}
 
-              <div className="product-enter product-enter-delay-3 mt-8 flex flex-wrap gap-3">
+              <div className="product-enter product-enter-delay-3 mt-8 flex flex-wrap justify-center gap-3">
                 <Link
                   to="/register"
                   className="inline-flex h-11 items-center justify-center rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
@@ -139,36 +143,42 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
               </div>
             </div>
 
-            <div className="product-enter product-enter-delay-2 rounded-[1.6rem] border border-slate-200 bg-[#F7F8FC] p-5 shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-              <div
-                className={`rounded-2xl bg-gradient-to-br ${meta.accent} p-5 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]`}
-              >
-                <div className="mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
-                  <Icon size={24} />
-                </div>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/75">
-                  {t(`${base}.badge`)}
-                </p>
-                <p className="mt-2 text-2xl font-black tracking-tight">
-                  {t(`${base}.previewTitle`)}
-                </p>
-                <p className="mt-1 text-sm font-semibold text-white/80">
-                  {t(`${base}.previewText`)}
-                </p>
+            {isAppointments ? (
+              <div className="product-enter product-enter-delay-2 live-demo-fixed live-demo-fixed--tour">
+                <TourAppointmentsDemo />
               </div>
-
-              <div className="mt-4 space-y-2">
-                {audience.map((item) => (
-                  <div
-                    key={item}
-                    className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
-                    {item}
+            ) : (
+              <div className="product-enter product-enter-delay-2 rounded-[1.6rem] border border-slate-200 bg-[#F7F8FC] p-5 text-center shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
+                <div
+                  className={`rounded-2xl bg-gradient-to-br ${meta.accent} p-5 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]`}
+                >
+                  <div className="mx-auto mb-4 grid h-12 w-12 place-items-center rounded-2xl bg-white/15">
+                    <Icon size={24} />
                   </div>
-                ))}
+                  <p className="text-xs font-black uppercase tracking-[0.18em] text-white/75">
+                    {t(`${base}.badge`)}
+                  </p>
+                  <p className="mt-2 text-2xl font-black tracking-tight">
+                    {t(`${base}.previewTitle`)}
+                  </p>
+                  <p className="mt-1 text-sm font-semibold text-white/80">
+                    {t(`${base}.previewText`)}
+                  </p>
+                </div>
+
+                <div className="mt-4 space-y-2">
+                  {audience.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700"
+                    >
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#6D28D9]" />
+                      {item}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </section>
         ) : null}
@@ -220,7 +230,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
         >
-          <div className="max-w-2xl">
+          <div className="mx-auto max-w-2xl text-center">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               {t("productPages.benefitsBadge")}
             </p>
@@ -243,8 +253,10 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
               <motion.article
                 key={item.title}
                 variants={fadeUp}
-                className="product-card rounded-2xl p-6 text-start"
+                className="product-card home-wow-card rounded-2xl p-0 text-center"
+                style={{ "--gold-i": index }}
               >
+                <div className="home-wow-card__inner min-h-0 !items-center p-6">
                 <p className="text-xs font-black tracking-[0.18em] text-[#6D28D9]">
                   0{index + 1}
                 </p>
@@ -254,6 +266,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
                 <p className="mt-2 text-sm font-medium leading-7 text-slate-500">
                   {item.text}
                 </p>
+                </div>
               </motion.article>
             ))}
           </motion.div>
@@ -261,13 +274,13 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
 
         {/* How it works */}
         <motion.section
-          className="mt-20 overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 shadow-[0_22px_70px_rgba(15,23,42,0.06)] backdrop-blur-2xl sm:p-8"
+          className="mt-20 overflow-hidden rounded-[2rem] border border-white/80 bg-white/85 p-6 text-center shadow-[0_22px_70px_rgba(15,23,42,0.06)] backdrop-blur-2xl sm:p-8"
           variants={fadeUp}
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
         >
-          <div className="max-w-2xl">
+          <div className="mx-auto max-w-2xl">
             <p className="text-xs font-black uppercase tracking-[0.2em] text-sky-600">
               {t("productPages.stepsBadge")}
             </p>
@@ -283,7 +296,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
             {steps.map((step, index) => (
               <div
                 key={step.title}
-                className="rounded-2xl border border-slate-200 bg-[#F7F8FC] p-5 text-start"
+                className="rounded-2xl border border-slate-200 bg-[#F7F8FC] p-5 text-center"
               >
                 <p className="text-xs font-black tracking-[0.18em] text-[#6D28D9]">
                   0{index + 1}
@@ -298,17 +311,17 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
         </motion.section>
 
         {/* CTA */}
-        <section className="mb-6 mt-20 overflow-hidden rounded-[2rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] p-8 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)] sm:p-10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-            <div className="max-w-2xl text-start">
+        <section className="mb-6 mt-20 overflow-hidden rounded-[2rem] bg-gradient-to-l from-[#6D28D9] to-[#2563EB] p-8 text-center text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)] sm:p-10">
+          <div className="mx-auto flex max-w-3xl flex-col items-center gap-6">
+            <div>
               <h2 className="text-3xl font-black tracking-tight sm:text-4xl">
                 {t(`${base}.ctaTitle`)}
               </h2>
-              <p className="mt-3 text-sm leading-7 text-white/85 sm:text-base">
+              <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-white/85 sm:text-base">
                 {t(`${base}.ctaText`)}
               </p>
             </div>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap justify-center gap-3">
               <Link
                 to="/register"
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-black text-[#6D28D9] transition hover:bg-violet-50"

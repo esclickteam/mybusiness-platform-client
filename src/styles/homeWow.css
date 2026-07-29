@@ -1,0 +1,361 @@
+/* Shared “wow” card effects for homepage — gold ring focus like About page */
+
+.home-wow-card {
+  --gold-i: 0;
+  position: relative;
+  isolation: isolate;
+  display: block;
+  height: 100%;
+  border-radius: 1.5rem;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  transition:
+    transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.35s ease;
+}
+
+.home-wow-card::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    #8a6a12,
+    #f8e7a0,
+    #d4af37,
+    #fff8dc,
+    #b8860b,
+    #f5d76e,
+    #8a6a12
+  );
+  opacity: 0.22;
+  animation:
+    home-gold-spin 5s linear infinite,
+    home-gold-focus-6 12s ease-in-out infinite;
+  animation-delay: 0s, calc(var(--gold-i) * 2s);
+}
+
+.home-wow-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.home-wow-card:hover::before {
+  opacity: 0.9;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.55));
+}
+
+.home-wow-card__inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  height: 100%;
+  min-height: 17.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.35rem;
+  border-radius: calc(1.5rem - 2px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #fcfbff 100%);
+  box-shadow:
+    0 14px 40px rgba(15, 23, 42, 0.06),
+    0 2px 8px rgba(15, 23, 42, 0.04);
+  padding: 1.35rem 1.25rem 1.4rem;
+  text-align: center;
+  direction: rtl;
+}
+
+@media (min-width: 640px) {
+  .home-wow-card__inner {
+    min-height: 18.5rem;
+    padding: 1.65rem 1.5rem 1.6rem;
+    border-radius: calc(1.75rem - 2px);
+  }
+
+  .home-wow-card {
+    border-radius: 1.75rem;
+  }
+}
+
+/* Feature / “last cards” — stronger spotlight + shimmer */
+.home-wow-card--feature::before {
+  opacity: 0;
+  animation:
+    home-gold-spin 4.5s linear infinite,
+    home-gold-focus-3 9s ease-in-out infinite;
+  animation-delay: 0s, calc(var(--gold-i) * 3s);
+}
+
+.home-wow-card--feature:hover::before,
+.home-wow-card--feature.is-lit::before {
+  opacity: 0.95;
+}
+
+.home-wow-card--feature .home-wow-card__inner {
+  min-height: 19rem;
+  overflow: hidden;
+}
+
+.home-wow-card--feature .home-wow-card__inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    120deg,
+    transparent 35%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 65%
+  );
+  transform: translateX(120%);
+  opacity: 0;
+}
+
+.home-wow-card--feature:hover .home-wow-card__inner::after,
+.home-wow-card--feature.is-lit .home-wow-card__inner::after {
+  animation: home-sheen 1.1s ease;
+}
+
+.home-wow-card--feature .home-wow-card__inner > * {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes home-gold-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes home-gold-focus-6 {
+  0%,
+  12% {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.55));
+  }
+  16%,
+  100% {
+    opacity: 0.18;
+    filter: none;
+  }
+}
+
+@keyframes home-gold-focus-3 {
+  0%,
+  22% {
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.65));
+  }
+  28%,
+  100% {
+    opacity: 0;
+    filter: none;
+  }
+}
+
+@keyframes home-sheen {
+  0% {
+    transform: translateX(-120%);
+    opacity: 0;
+  }
+  30% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(120%);
+    opacity: 0;
+  }
+}
+
+/* Compact website-builder stage on homepage tour */
+.home-site-stage {
+  --wb-stage-glow: #7c3aed;
+  --wb-stage-glow-soft: #c4b5fd;
+  --wb-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative;
+  direction: rtl;
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
+  overflow: visible;
+}
+
+.home-site-stage .wb-hero__stage-wrap {
+  position: relative;
+  perspective: 1400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-height: 0;
+}
+
+.home-site-stage .wb-hero__stage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 220px;
+  min-height: 220px;
+  max-height: 220px;
+  overflow: visible;
+}
+
+.home-site-stage .wb-template {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(220px, 34vw);
+  aspect-ratio: 16 / 10;
+  transform-origin: center center;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  cursor: pointer;
+  transition:
+    transform 0.55s var(--wb-ease),
+    opacity 0.45s ease,
+    filter 0.45s ease,
+    width 0.55s var(--wb-ease),
+    left 0.55s var(--wb-ease);
+}
+
+.home-site-stage .wb-template[data-slot="center"] {
+  z-index: 40;
+  left: 50%;
+  opacity: 1;
+  filter: none;
+  width: min(420px, 72vw);
+  transform: translate(-50%, -50%) scale(1.04);
+}
+
+.home-site-stage .wb-template[data-slot="near-start"] {
+  z-index: 15;
+  left: 14%;
+  opacity: 0.72;
+  width: min(210px, 28vw);
+  transform: translate(-50%, -50%) scale(0.88) rotateY(10deg);
+}
+
+.home-site-stage .wb-template[data-slot="near-end"] {
+  z-index: 15;
+  left: 86%;
+  opacity: 0.72;
+  width: min(210px, 28vw);
+  transform: translate(-50%, -50%) scale(0.88) rotateY(-10deg);
+}
+
+.home-site-stage .wb-template[data-slot="far-start"],
+.home-site-stage .wb-template[data-slot="far-end"],
+.home-site-stage .wb-template[data-slot="hidden"] {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.home-site-stage .wb-hero__dots-nav {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+.home-site-stage .wb-hero__dot {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  border: 0;
+  background: #c7d2fe;
+  cursor: pointer;
+  transition: width 0.25s ease, background 0.25s ease;
+}
+
+.home-site-stage .wb-hero__dot.is-active {
+  width: 1.35rem;
+  background: linear-gradient(90deg, #4f46e5, #7c3aed);
+}
+
+.home-site-stage .wb-hero__stage-glow {
+  pointer-events: none;
+  position: absolute;
+  inset: 0 8% 8%;
+  z-index: 0;
+}
+
+.home-site-stage .wb-hero__stage-glow-core,
+.home-site-stage .wb-hero__stage-glow-ring,
+.home-site-stage .wb-hero__stage-glow-floor {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+
+.home-site-stage .wb-hero__stage-glow-core {
+  inset: 18% 22% 20%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--wb-stage-glow) 45%, transparent) 0%,
+    transparent 72%
+  );
+}
+
+.home-site-stage .wb-hero__stage-glow-ring,
+.home-site-stage .wb-hero__stage-glow-floor {
+  opacity: 0.55;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, var(--wb-stage-glow-soft) 28%, transparent) 0%,
+    transparent 70%
+  );
+}
+
+@media (min-width: 640px) {
+  .home-site-stage .wb-hero__stage {
+    height: 280px;
+    min-height: 280px;
+    max-height: 280px;
+  }
+
+  .home-site-stage .wb-template[data-slot="center"] {
+    width: min(480px, 52vw);
+  }
+}
+
+/* Fixed live-demo shells — animations stay inside, page never jumps */
+.live-demo-fixed {
+  height: 420px;
+  max-height: 420px;
+  overflow: hidden;
+}
+
+.live-demo-fixed--tour {
+  height: 340px;
+  max-height: 340px;
+}
+
+@media (min-width: 1024px) {
+  .live-demo-fixed {
+    height: 460px;
+    max-height: 460px;
+  }
+
+  .live-demo-fixed--tour {
+    height: 360px;
+    max-height: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-wow-card,
+  .home-wow-card::before,
+  .home-wow-card--feature .home-wow-card__inner::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .home-wow-card::before {
+    opacity: 0.45;
+  }
+}

@@ -9,13 +9,12 @@ import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
 import FAQMini from "../components/FAQMini";
-import FinalCTA from "../components/FinalCTA";
 
 export default function Home() {
   const { t } = useTranslation();
 
   return (
-    <main className="min-h-screen overflow-hidden bg-white text-slate-800">
+    <main className="min-h-screen overflow-hidden bg-white text-slate-800" dir="rtl">
       <Helmet>
         <title>{t("seo.homeTitle")}</title>
 
@@ -37,8 +36,6 @@ export default function Home() {
       <WhyBizuply />
 
       <FAQMini />
-
-      <FinalCTA />
     </main>
   );
 }

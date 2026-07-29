@@ -7,12 +7,20 @@ const FAQS = [
     a: "Bizuply is a smart platform that connects businesses and clients. It combines scheduling, messaging, AI-powered insights, and collaborations — all in one place.",
   },
   {
-    q: "Is there a free trial?",
-    a: "Yes. Bizuply offers a 14-day free trial with no credit card required.",
+    q: "How do I get started?",
+    a: "Click “Register now”, create your business account, and start managing clients, appointments, and collaborations from one dashboard.",
   },
   {
     q: "How do I join as a business?",
     a: "Click “Join as a Business”, complete your profile, and start managing clients, appointments, and collaborations from one dashboard.",
+  },
+  {
+    q: "How does website building work?",
+    a: "Choose a ready template, edit with the visual editor, publish — and every form submission becomes a lead in your CRM.",
+  },
+  {
+    q: "What do automations do?",
+    a: "Automations run reminders, follow-ups and smart alerts in the background so fewer leads fall through the cracks.",
   },
   {
     q: "How do clients use the platform?",
@@ -84,7 +92,7 @@ function FAQ() {
 
           <div className="mt-7 grid gap-3">
             {[
-              ["14-day", "Free trial"],
+              ["Register", "Start now"],
               ["AI", "Smart tools"],
               ["CRM", "Client management"],
             ].map(([title, text]) => (

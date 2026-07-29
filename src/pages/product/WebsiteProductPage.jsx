@@ -143,11 +143,11 @@ export default function WebsiteProductPage() {
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
-            {EDITOR_CARDS.map((card) => {
+            {EDITOR_CARDS.map((card, index) => {
               const Icon = card.icon;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -186,8 +186,8 @@ export default function WebsiteProductPage() {
               eyebrow="מוכנים לעלות לאוויר"
               title="האתר הבא שלכם מתחיל מתבנית — ונגמר בפניות"
               text="בוחרים תבנית, עורכים אותה בעורך הוויזואלי, מוסיפים תוספים ומפרסמים. הפניות מהאתר מחכות לכם בצינור הלידים ב־CRM."
-              primaryLabel="לצפייה בחבילות"
-              primaryTo="/pricing"
+              primaryLabel="הירשמו עכשיו"
+              primaryTo="/register"
             />
           </div>
         </div>

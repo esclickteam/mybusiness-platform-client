@@ -168,11 +168,11 @@ export default function CrmProductPage() {
           </Reveal>
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
-            {LIST_CARDS.map((card) => {
+            {LIST_CARDS.map((card, index) => {
               const Icon = card.icon;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -236,11 +236,11 @@ export default function CrmProductPage() {
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
-            {MODULE_CARDS.map((card) => {
+            {MODULE_CARDS.map((card, index) => {
               const Icon = card.icon;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -272,8 +272,8 @@ export default function CrmProductPage() {
               eyebrow="מתחילים לסדר את הצינור"
               title="סדרו את צינור הלידים — ואל תפספסו אף פנייה"
               text="מחברים את מקורות הלידים, עובדים בסטטוסים ובמשימות, וממשיכים לתיק לקוח וליומן תורים. הכל באפליקציית Meta שעברה App Review."
-              primaryLabel="לצפייה בחבילות"
-              primaryTo="/pricing"
+              primaryLabel="הירשמו עכשיו"
+              primaryTo="/register"
             />
           </div>
         </div>

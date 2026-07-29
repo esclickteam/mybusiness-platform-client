@@ -168,7 +168,7 @@ export default function CollaborationsProductPage() {
               const Icon = MODULE_ICONS[index] || MapPin;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -201,8 +201,8 @@ export default function CollaborationsProductPage() {
               eyebrow="מוכנים לפתוח ערוץ צמיחה"
               title="חברו שותפים רלוונטיים — ותנו לצמיחה לרוץ בשני כיוונים"
               text="בונים פרופיל שיתוף, מגלים עסקים משלימים, שולחים הצעה ומנהלים הכל בשוק ובצ׳אט. אפשר גם לחבר נציג אנושי שינהל את התהליך בשבילכם."
-              primaryLabel="לצפייה בחבילות"
-              primaryTo="/pricing"
+              primaryLabel="הירשמו עכשיו"
+              primaryTo="/register"
             />
           </div>
         </div>

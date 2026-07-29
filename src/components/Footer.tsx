@@ -19,7 +19,7 @@ type FooterColumnProps = {
 export default function Footer() {
   const { t } = useTranslation();
 
-  const productLinks: FooterLink[] = [
+  const pagesLinks: FooterLink[] = [
     { label: t("footer.aboutUs"), to: "/about" },
     { label: t("footer.website"), to: "/website-builder" },
     { label: t("footer.crm"), to: "/crm" },
@@ -49,61 +49,58 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
+    <footer
+      className="relative overflow-hidden bg-gradient-to-b from-[#f7f8ff] via-white to-[#eef3ff] text-slate-800"
+      dir="rtl"
+    >
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-1/2 top-0 h-[360px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-        <div className="absolute -right-40 top-24 h-[320px] w-[320px] rounded-full bg-cyan-200/35 blur-3xl" />
-        <div className="absolute -left-40 bottom-0 h-[320px] w-[320px] rounded-full bg-violet-200/35 blur-3xl" />
+        <div className="absolute left-1/2 top-0 h-[280px] w-[640px] -translate-x-1/2 rounded-full bg-indigo-200/30 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-5 pb-8 pt-16 sm:px-6 lg:px-8 lg:pt-20">
-        <div className="overflow-hidden rounded-[2rem] border border-white/80 bg-white/75 p-2 shadow-[0_28px_90px_rgba(79,70,229,0.14)] backdrop-blur-xl sm:rounded-[2.5rem] sm:p-3">
-          <div className="rounded-[1.6rem] border border-slate-100 bg-white/90 px-5 py-8 sm:rounded-[2rem] sm:px-8 sm:py-10 lg:px-10">
-            <div className="grid gap-10 lg:grid-cols-[1.4fr_0.9fr_0.9fr_0.9fr]">
-              <div>
-                <Link to="/" className="inline-flex items-center gap-3">
-                  <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-black shadow-xl shadow-indigo-100">
-                    B
-                  </span>
+      <div className="relative mx-auto max-w-3xl px-5 pb-10 pt-14 sm:px-6 lg:pt-16">
+        <div className="overflow-hidden rounded-[1.75rem] border border-indigo-100/80 bg-white/90 shadow-[0_20px_60px_rgba(79,70,229,0.12)] backdrop-blur-xl">
+          <div className="border-b border-slate-100 bg-gradient-to-l from-indigo-50/80 via-white to-cyan-50/60 px-6 py-8 text-center sm:px-8">
+            <Link to="/" className="inline-flex flex-col items-center gap-3">
+              <span className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 via-violet-600 to-cyan-500 text-lg font-black text-white shadow-xl shadow-indigo-200">
+                B
+              </span>
+              <span className="text-2xl font-black tracking-[-0.04em] text-slate-800">
+                Bizuply
+              </span>
+            </Link>
 
-                  <span className="text-2xl font-black tracking-[-0.04em] text-slate-800">
-                    Bizuply
-                  </span>
+            <p className="mx-auto mt-4 max-w-md text-sm font-semibold leading-7 text-slate-600">
+              {t("footer.tagline")}
+            </p>
+
+            <div className="mt-5 flex items-center justify-center gap-3">
+              {socialLinks.map((item) => (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  aria-label={item.label}
+                  className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
+                >
+                  {item.icon}
                 </Link>
-
-                <p className="mt-5 max-w-sm text-base font-semibold leading-7 text-slate-600">
-                  {t("footer.tagline")}
-                </p>
-
-                <div className="mt-6 flex items-center gap-3">
-                  {socialLinks.map((item) => (
-                    <Link
-                      key={item.label}
-                      to={item.to}
-                      aria-label={item.label}
-                      className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-sm font-black text-slate-700 shadow-sm transition hover:-translate-y-0.5 hover:border-indigo-200 hover:bg-indigo-50 hover:text-indigo-700"
-                    >
-                      {item.icon}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-
-              <FooterColumn title={t("footer.product")} links={productLinks} />
-              <FooterColumn title={t("footer.company")} links={companyLinks} />
-              <FooterColumn title={t("footer.support")} links={supportLinks} />
+              ))}
             </div>
+          </div>
 
-            <div className="my-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+          <div className="grid gap-8 px-6 py-8 text-center sm:grid-cols-3 sm:gap-6 sm:px-8">
+            <FooterColumn title={t("footer.pages")} links={pagesLinks} />
+            <FooterColumn title={t("footer.company")} links={companyLinks} />
+            <FooterColumn title={t("footer.support")} links={supportLinks} />
+          </div>
 
-            <div className="flex flex-col gap-5 text-sm font-semibold text-slate-500 lg:flex-row lg:items-center lg:justify-between">
-              <p>{t("footer.rights", { year: new Date().getFullYear() })}</p>
-
-              <p className="max-w-2xl leading-6 lg:text-end">
-                1007 N Orange Street, 4th Floor, Ste 1382, Wilmington, DE
-                19801, United States.
-              </p>
-            </div>
+          <div className="border-t border-slate-100 px-6 py-5 text-center sm:px-8">
+            <p className="text-sm font-semibold text-slate-500">
+              {t("footer.rights", { year: new Date().getFullYear() })}
+            </p>
+            <p className="mx-auto mt-2 max-w-md text-xs font-semibold leading-5 text-slate-400">
+              1007 N Orange Street, 4th Floor, Ste 1382, Wilmington, DE 19801,
+              United States.
+            </p>
           </div>
         </div>
       </div>
@@ -113,19 +110,18 @@ export default function Footer() {
 
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
-    <div>
-      <h4 className="mb-5 text-sm font-black uppercase tracking-[0.18em] text-slate-400">
+    <div className="text-center">
+      <h4 className="mb-4 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
         {title}
       </h4>
 
-      <ul className="space-y-3">
+      <ul className="space-y-2.5">
         {links.map((link) => (
-          <li key={link.to}>
+          <li key={`${title}-${link.to}-${link.label}`}>
             <Link
               to={link.to}
-              className="group inline-flex items-center gap-2 text-sm font-bold text-slate-600 transition hover:text-indigo-700"
+              className="inline-flex items-center justify-center gap-2 text-sm font-bold text-slate-600 transition hover:text-indigo-700"
             >
-              <span className="h-1.5 w-1.5 rounded-full bg-indigo-200 transition group-hover:bg-indigo-600" />
               {link.label}
             </Link>
           </li>

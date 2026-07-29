@@ -45,10 +45,10 @@
     "headlineTop": "Run your business",
     "headlineHighlight": "in one place",
     "subtitle": "One smart platform to manage clients, appointments, CRM, collaborations, proposals and AI — everything connected in one premium workspace.",
-    "startTrial": "Start a trial",
+    "startTrial": "Register now",
     "viewPricing": "View pricing",
     "trustNoCard": "No credit card required",
-    "trustTrial": "14-day free trial",
+    "trustTrial": "Quick registration",
     "trustCancel": "Cancel anytime"
   },
   "live": {
@@ -340,7 +340,25 @@
     "a4b2Text": "See what needs attention now — before it’s too late.",
     "a4b3Title": "Faster responses",
     "a4b3Text": "Draft better replies and follow-ups in less time.",
-    "a4Footer": "It’s like having a smart assistant inside your CRM — focused on results."
+    "a4Footer": "It’s like having a smart assistant inside your CRM — focused on results.",
+    "q5": "How does website & store building work?",
+    "a5Lead": "Pick a ready template, edit design and content, publish — and site forms land straight in your CRM lead pipeline.",
+    "a5b1Title": "Industry templates",
+    "a5b1Text": "200+ ready templates for businesses, stores and services.",
+    "a5b2Title": "Visual editor",
+    "a5b2Text": "Change text, images and colors with no code.",
+    "a5b3Title": "CRM connection",
+    "a5b3Text": "Every inquiry from the site becomes a lead in the system.",
+    "a5Footer": "A professional site that brings customers — inside the same system that manages them.",
+    "q6": "What do automations do in Bizuply?",
+    "a6Lead": "Automations run reminders, follow-ups and alerts in the background — so fewer leads fall through the cracks.",
+    "a6b1Title": "Reminders & tasks",
+    "a6b1Text": "The system reminds you to follow up at the right time.",
+    "a6b2Title": "Automatic follow-ups",
+    "a6b2Text": "Follow-up sequences that keep leads warm.",
+    "a6b3Title": "Smart alerts",
+    "a6b3Text": "Get notified when something needs attention now.",
+    "a6Footer": "Less manual work — more leads that reach a close."
   },
   "finalCta": {
     "eyebrow": "BizUply business OS",
@@ -356,7 +374,8 @@
   },
   "footer": {
     "tagline": "Everything your business needs. In one beautiful, connected workspace.",
-    "product": "Product",
+    "product": "Pages",
+    "pages": "Pages",
     "company": "Company",
     "support": "Support",
     "howItWorks": "How It Works",
@@ -372,7 +391,7 @@
     "accessibility": "Accessibility",
     "ctaTitle": "Build your business OS.",
     "ctaText": "Start managing your business page, CRM, collaborations and AI tools in one place.",
-    "ctaButton": "Get started free",
+    "ctaButton": "Register now",
     "rights": "© {{year}} Bizuply. All rights reserved.",
     "crm": "CRM & Leads",
     "collaborations": "Collaborations",
@@ -929,7 +948,7 @@
     "service5Title": "CRM and Lead Management",
     "ctaTitle": "Ready to take your business to the next level",
     "ctaText": "Join the platform that connects management, marketing, and service — and start working with order today",
-    "ctaPrimary": "Start free now",
+    "ctaPrimary": "Register now",
     "ctaSecondary": "View CRM",
     "dash": {
       "navDashboard": "Dashboard",
@@ -4180,7 +4199,7 @@
     }
   },
   "productPages": {
-    "ctaPrimary": "Get started",
+    "ctaPrimary": "Register now",
     "ctaPricing": "View pricing",
     "ctaContact": "Talk to us",
     "benefitsBadge": "Why it matters",
