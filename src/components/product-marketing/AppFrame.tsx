@@ -13,10 +13,7 @@ export type AppFrameProps = {
   children: React.ReactNode;
 };
 
-/**
- * Window chrome for the in-page product previews. The screens inside are
- * illustrative recreations of the dashboard, not live data.
- */
+/** Window chrome for the in-page product previews. */
 export default function AppFrame({
   crumb,
   caption,
@@ -33,9 +30,8 @@ export default function AppFrame({
           <i />
         </span>
         <span className="pmk-frame__crumb">{crumb}</span>
-        <span className="pmk-frame__live">
-          <i aria-hidden="true" />
-          תצוגה
+        <span className="pmk-frame__live" aria-hidden="true">
+          <i />
         </span>
       </div>
 
