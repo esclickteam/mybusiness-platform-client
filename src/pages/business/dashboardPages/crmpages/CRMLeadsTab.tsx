@@ -876,7 +876,6 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   const handleAdNetworkSelect = (network: AdNetworkId) => {
     setShowAdNetworkPicker(false);
     if (network === "meta") openMetaSetup();
-    if (network === "google") openGoogleSetup();
   };
 
   useEffect(() => {
