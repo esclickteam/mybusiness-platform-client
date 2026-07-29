@@ -25,13 +25,17 @@ export type MetaSelectedAdAccount = {
 export type MetaCampaignMetrics = {
   spend: number;
   leads: number;
+  results?: number;
   clicks: number;
   impressions: number;
   ctr: number;
   cpc: number;
   costPerLead: number;
+  costPerResult?: number;
   roas: number;
   reach?: number;
+  dateStart?: string | null;
+  dateStop?: string | null;
 };
 
 export type MetaCampaign = {
@@ -43,6 +47,7 @@ export type MetaCampaign = {
   dailyBudget: number;
   lifetimeBudget: number;
   budgetRemaining?: number;
+  budgetType?: string;
   specialAdCategories?: string[];
   buyingType?: string;
   bidStrategy?: string;
@@ -125,10 +130,13 @@ export type MetaCampaignsOverview = {
   kpis: {
     roas: number;
     costPerLead: number;
+    costPerResult?: number;
     leads: number;
+    results?: number;
     spend: number;
     clicks?: number;
     impressions?: number;
+    reach?: number;
     ctr?: number;
   };
   series: MetaCampaignSeriesPoint[];

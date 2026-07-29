@@ -4771,12 +4771,22 @@
       "platform": "Platform",
       "status": "Status",
       "budget": "Budget",
-      "spend": "Spend",
+      "spend": "Amount spent",
       "leads": "Leads",
       "cpl": "Cost per lead",
       "ctr": "CTR",
       "actions": "Actions",
-      "empty": "No campaigns to show. Create one or change the filter."
+      "empty": "No campaigns to show. Create one or change the filter.",
+      "results": "Results",
+      "resultsHint": "Leads (form)",
+      "costPerResult": "Cost per result",
+      "costPerResultHint": "Per lead (form)",
+      "impressions": "Impressions",
+      "reach": "Reach",
+      "end": "Ends",
+      "endOngoing": "Ongoing",
+      "budgetDaily": "Daily",
+      "budgetLifetime": "Lifetime"
     },
     "status": {
       "active": "Active",
@@ -4898,7 +4908,7 @@
       "connectedAs": "Connected as {{name}}",
       "currency": "Currency: {{currency}}",
       "manageConnection": "Manage connection",
-      "metricsTitle": "Performance",
+      "metricsTitle": "Performance (same as Meta)",
       "tipsTitle": "Creation tips",
       "tip1": "You can create and edit campaigns here via the Meta Marketing API.",
       "tip2": "Start paused and review the preview before activating.",
@@ -4959,7 +4969,8 @@
       "ctaCustomPlaceholder": "e.g. Get a free consult",
       "creativeRequired": "Primary text and headline are required",
       "previewAllHint": "Preview every feed and story — Facebook and Instagram.",
-      "settingsSubtitleNoBudget": "Connect Meta, pick an ad account and Page. Budget is set per campaign."
+      "settingsSubtitleNoBudget": "Connect Meta, pick an ad account and Page. Budget is set per campaign.",
+      "metricsMetaParity": "Synced from Meta Ads Manager for the same date range."
     },
     "cta": {
       "learnMore": "Learn more",

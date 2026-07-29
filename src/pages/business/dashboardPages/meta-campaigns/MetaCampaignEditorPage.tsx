@@ -58,6 +58,7 @@ import {
 } from "../../../../styles/bizuplyUi";
 import {
   formatCurrency,
+  formatNumber,
   OBJECTIVE_OPTIONS,
   resolveAdAccountId,
   statusTone,
@@ -1815,65 +1816,133 @@ export default function MetaCampaignEditorPage() {
       ) : null}
 
       {isEdit ? (
-        <div className={`${cardBase} space-y-4 p-5`}>
-          <label className="block">
-            <span className="mb-1.5 block text-xs font-black text-slate-500">
-              {t("metaCampaigns.form.name")}
-            </span>
-            <input
-              className={inputBase}
-              value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
-            />
-          </label>
-          <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+          <div className={`${cardBase} space-y-4 p-5`}>
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.startTime")}
+                {t("metaCampaigns.form.name")}
               </span>
               <input
-                type="datetime-local"
                 className={inputBase}
-                value={form.startTime}
-                onChange={(e) => updateField("startTime", e.target.value)}
+                value={form.name}
+                onChange={(e) => updateField("name", e.target.value)}
               />
             </label>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.stopTime")}
-              </span>
-              <input
-                type="datetime-local"
-                className={inputBase}
-                value={form.stopTime}
-                onChange={(e) => updateField("stopTime", e.target.value)}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.dailyBudget")}
-              </span>
-              <input
-                type="number"
-                className={inputBase}
-                value={form.dailyBudget}
-                onChange={(e) => updateField("dailyBudget", e.target.value)}
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.status")}
-              </span>
-              <select
-                className={inputBase}
-                value={form.status}
-                onChange={(e) => updateField("status", e.target.value)}
-              >
-                <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
-                <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
-              </select>
-            </label>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.startTime")}
+                </span>
+                <input
+                  type="datetime-local"
+                  className={inputBase}
+                  value={form.startTime}
+                  onChange={(e) => updateField("startTime", e.target.value)}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.stopTime")}
+                </span>
+                <input
+                  type="datetime-local"
+                  className={inputBase}
+                  value={form.stopTime}
+                  onChange={(e) => updateField("stopTime", e.target.value)}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.dailyBudget")}
+                </span>
+                <input
+                  type="number"
+                  className={inputBase}
+                  value={form.dailyBudget}
+                  onChange={(e) => updateField("dailyBudget", e.target.value)}
+                />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.status")}
+                </span>
+                <select
+                  className={inputBase}
+                  value={form.status}
+                  onChange={(e) => updateField("status", e.target.value)}
+                >
+                  <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
+                  <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
+                </select>
+              </label>
+            </div>
           </div>
+
+          <aside className={`${cardBase} p-4`}>
+            <p className="text-sm font-black text-slate-900">
+              {t("metaCampaigns.form.metricsTitle")}
+            </p>
+            <p className="mt-1 text-xs font-semibold text-slate-500">
+              {t("metaCampaigns.form.metricsMetaParity")}
+            </p>
+            <dl className="mt-3 space-y-2 text-sm">
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.table.results")}
+                </dt>
+                <dd className="font-black text-slate-900">
+                  {formatNumber(
+                    campaign?.metrics?.results ?? campaign?.metrics?.leads ?? 0
+                  )}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.table.costPerResult")}
+                </dt>
+                <dd className="font-black text-slate-900">
+                  {formatCurrency(
+                    campaign?.metrics?.costPerResult ??
+                      campaign?.metrics?.costPerLead ??
+                      0,
+                    currency
+                  )}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.table.spend")}
+                </dt>
+                <dd className="font-black text-slate-900">
+                  {formatCurrency(campaign?.metrics?.spend || 0, currency)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.table.impressions")}
+                </dt>
+                <dd className="font-black text-slate-900">
+                  {formatNumber(campaign?.metrics?.impressions || 0)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.table.reach")}
+                </dt>
+                <dd className="font-black text-slate-900">
+                  {formatNumber(campaign?.metrics?.reach || 0)}
+                </dd>
+              </div>
+              <div className="flex items-center justify-between gap-3">
+                <dt className="font-semibold text-slate-500">
+                  {t("metaCampaigns.form.accountCard")}
+                </dt>
+                <dd className="font-black tabular-nums text-slate-900">
+                  {accountIdLabel || "—"}
+                </dd>
+              </div>
+            </dl>
+          </aside>
         </div>
       ) : null}
     </div>

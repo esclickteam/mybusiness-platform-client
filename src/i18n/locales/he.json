@@ -4760,12 +4760,22 @@
       "platform": "פלטפורמה",
       "status": "סטטוס",
       "budget": "תקציב",
-      "spend": "הוצאה",
+      "spend": "הסכום ששולם",
       "leads": "לידים",
       "cpl": "עלות לליד",
       "ctr": "CTR",
       "actions": "פעולות",
-      "empty": "אין קמפיינים להצגה. צרו קמפיין חדש או שנו את הסינון."
+      "empty": "אין קמפיינים להצגה. צרו קמפיין חדש או שנו את הסינון.",
+      "results": "תוצאות",
+      "resultsHint": "לידים (טופס)",
+      "costPerResult": "עלות לתוצאה",
+      "costPerResultHint": "לכל ליד (טופס)",
+      "impressions": "חשיפות",
+      "reach": "תפוצה",
+      "end": "סיום",
+      "endOngoing": "מתמשך",
+      "budgetDaily": "יומי",
+      "budgetLifetime": "כולל"
     },
     "status": {
       "active": "פעיל",
@@ -4887,7 +4897,7 @@
       "connectedAs": "מחובר כ־{{name}}",
       "currency": "מטבע: {{currency}}",
       "manageConnection": "ניהול חיבור",
-      "metricsTitle": "ביצועים",
+      "metricsTitle": "ביצועים (כמו במטא)",
       "tipsTitle": "טיפים ליצירה",
       "tip1": "אפשר ליצור ולערוך קמפיינים ישירות מכאן דרך ה-API של מטא.",
       "tip2": "מומלץ להתחיל בסטטוס מושהה ולבדוק את התצוגה המקדימה לפני הפעלה.",
@@ -4948,7 +4958,8 @@
       "ctaCustomPlaceholder": "לדוגמה: קבלו ייעוץ חינם",
       "creativeRequired": "יש למלא טקסט ראשי וכותרת",
       "previewAllHint": "תצוגה מקדימה לכל הפידים והסטוריז – פייסבוק ואינסטגרם.",
-      "settingsSubtitleNoBudget": "חברו Meta, בחרו חשבון מודעות ועמוד. התקציב מוגדר לכל קמפיין בנפרד."
+      "settingsSubtitleNoBudget": "חברו Meta, בחרו חשבון מודעות ועמוד. התקציב מוגדר לכל קמפיין בנפרד.",
+      "metricsMetaParity": "הנתונים מסונכרנים מ-Meta Ads Manager לאותה תקופה."
     },
     "cta": {
       "learnMore": "מידע נוסף",
