@@ -3,15 +3,15 @@ export type WebsiteHeroTemplate = {
   title: string;
   category: string;
   desktopImage: string;
-  /** Primary brand glow behind the mockup */
+  /** Primary lit glow behind the active mockup */
   accent: string;
-  /** Softer companion tone for the glow gradient */
+  /** Soft companion tone for the glow gradient */
   accentSoft: string;
 };
 
 /**
- * Desktop template screenshots for the website-builder marketing hero.
- * Filenames are `{TemplateName}desk.png` — accents match each template's brand palette.
+ * Curated live templates for the website-builder marketing hero.
+ * Accents match each template's real brand palette so the stage glow swaps with the slide.
  */
 export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
   {
@@ -20,7 +20,7 @@ export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
     category: "ביוטי וקוסמטיקה",
     desktopImage: "/floriquedesk.png",
     accent: "#E11D8C",
-    accentSoft: "#F472B6",
+    accentSoft: "#F9A8D4",
   },
   {
     id: "velmora",
@@ -28,14 +28,14 @@ export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
     category: "חנות אונליין",
     desktopImage: "/velmoradesk.png",
     accent: "#9A6F3B",
-    accentSoft: "#D4B483",
+    accentSoft: "#E7C9A0",
   },
   {
     id: "lunelle",
     title: "Lunelle",
     category: "אתר שירותים",
     desktopImage: "/lunelledesk.png",
-    accent: "#C98B96",
+    accent: "#2A171C",
     accentSoft: "#E8B8C1",
   },
   {
@@ -43,8 +43,8 @@ export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
     title: "Adion",
     category: "אתר עסקי מודרני",
     desktopImage: "/Adiondesk.png",
-    accent: "#F7C873",
-    accentSoft: "#F6EFE3",
+    accent: "#D4A017",
+    accentSoft: "#F7E7C2",
   },
   {
     id: "pulsecore",
@@ -68,14 +68,14 @@ export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
     category: "נדל״ן",
     desktopImage: "/talentixdesk.png",
     accent: "#0891B2",
-    accentSoft: "#22D3EE",
+    accentSoft: "#67E8F9",
   },
   {
     id: "aurayoga",
     title: "AuraYoga",
     category: "מסעדה / לייפסטייל",
     desktopImage: "/AuraYogadesk.png",
-    accent: "#A78BFA",
+    accent: "#7C3AED",
     accentSoft: "#C4B5FD",
   },
 ];

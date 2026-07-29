@@ -8,8 +8,8 @@ import React, {
 import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
 
 const DESIGN_WIDTH = 1440;
-/** Enough hero + header; avoids 100vh blow-up inside the mockup */
-const DESIGN_VIEW_HEIGHT = 900;
+/** Tall enough to show header + full hero, not a mid-cut crop */
+const DESIGN_VIEW_HEIGHT = 980;
 
 type Props = {
   templateId: string;
@@ -50,7 +50,6 @@ export default function LiveTemplateMockup({
 }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(640);
-  const [frameHeight, setFrameHeight] = useState(400);
 
   const renderer = useMemo(
     () => getStudioTemplateRenderer(templateId),
@@ -63,7 +62,6 @@ export default function LiveTemplateMockup({
     const update = () => {
       const rect = el.getBoundingClientRect();
       if (rect.width) setFrameWidth(rect.width);
-      if (rect.height) setFrameHeight(rect.height);
     };
     update();
     if (typeof ResizeObserver === "undefined") return;
@@ -72,10 +70,8 @@ export default function LiveTemplateMockup({
     return () => ro.disconnect();
   }, []);
 
-  const scaleByWidth = frameWidth / DESIGN_WIDTH;
-  const scaleByHeight = frameHeight / DESIGN_VIEW_HEIGHT;
-  // Fit the full hero into the frame without mid-cropping the top
-  const scale = Math.max(Math.min(scaleByWidth, scaleByHeight), 0.05);
+  // Scale by width only so the live template fills the frame without mid-cropping the hero.
+  const scale = Math.max(frameWidth / DESIGN_WIDTH, 0.05);
 
   const Component = renderer?.Component as
     | React.ComponentType<Record<string, unknown>>
