@@ -102,10 +102,7 @@ function Contact() {
   };
 
   return (
-    <main
-      className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] text-slate-800"
-      dir="rtl"
-    >
+    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
         <title>{t("contact.seoTitle")}</title>
         <meta name="description" content={t("contact.seoDescription")} />
@@ -119,30 +116,32 @@ function Contact() {
         <meta property="og:image" content="https://bizuply.com/og-image.jpg" />
       </Helmet>
 
-      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute -right-40 top-36 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
-      <div className="pointer-events-none absolute -left-40 bottom-12 h-[360px] w-[360px] rounded-full bg-violet-200/35 blur-3xl" />
+      {/* Background */}
+      <div className="pointer-events-none absolute left-[-12%] top-[-12%] h-[460px] w-[460px] rounded-full bg-amber-200/55 blur-3xl" />
+      <div className="pointer-events-none absolute right-[-10%] top-[18%] h-[540px] w-[540px] rounded-full bg-emerald-100/75 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
 
-      <section className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 text-center sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24 lg:text-center">
+      <section className="relative mx-auto grid max-w-7xl gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.92fr_1.08fr] lg:px-10 lg:py-24">
+        {/* Left side */}
         <div className="flex flex-col justify-center">
-          <div className="mx-auto mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-2 text-sm font-black text-indigo-700 shadow-sm backdrop-blur">
+          <div className="mb-6 inline-flex w-fit items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
             {t("contact.badge")}
           </div>
 
-          <h1 className="mx-auto max-w-4xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl lg:text-6xl">
+          <h1 className="max-w-4xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
             {t("contact.heroTitle")}
           </h1>
 
-          <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
+          <p className="mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
             {t("contact.heroSubtitle")}
           </p>
 
-          <div className="mx-auto mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
+          <div className="mt-10 grid max-w-2xl gap-4 sm:grid-cols-3">
             {highlights.map(([title, text]) => (
               <div
                 key={title}
-                className="rounded-3xl border border-white/80 bg-white/75 p-5 text-center shadow-sm backdrop-blur"
+                className="rounded-3xl border border-white/80 bg-white/65 p-5 shadow-sm backdrop-blur"
               >
                 <p className="text-2xl font-black text-slate-800">{title}</p>
                 <p className="mt-1 text-sm font-bold text-slate-500">{text}</p>
@@ -150,11 +149,11 @@ function Contact() {
             ))}
           </div>
 
-          <div className="mx-auto mt-8 max-w-2xl rounded-[2rem] border border-white/80 bg-white/75 p-6 text-center shadow-lg shadow-slate-900/5 backdrop-blur">
-            <p className="text-sm font-black uppercase tracking-[0.18em] text-indigo-700">
+          <div className="mt-8 rounded-[2rem] border border-white/80 bg-white/65 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+            <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-700">
               {t("contact.directEmailLabel")}
             </p>
-            <p className="mt-3 text-lg font-black text-slate-800" dir="ltr">
+            <p className="mt-3 text-lg font-black text-slate-800">
               {t("contact.directEmail")}
             </p>
             <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
@@ -202,7 +201,7 @@ function Contact() {
                   {t("contact.phoneLabel")}
                 </label>
 
-                <div className="bizuply-phone-wrapper" dir="ltr">
+                <div className="bizuply-phone-wrapper">
                   <PhoneInput
                     key={phoneCountry}
                     country={phoneCountry}
@@ -218,7 +217,7 @@ function Contact() {
                       disabled: loading,
                     }}
                     containerClass="!w-full"
-                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-indigo-300 focus:!ring-4 focus:!ring-indigo-100/80"
+                    inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"
                     buttonClass="!rounded-s-2xl !border-slate-200 !bg-white"
                     dropdownClass="!rounded-2xl !border-slate-200 !shadow-xl"
                     searchClass="!rounded-xl !border-slate-200"

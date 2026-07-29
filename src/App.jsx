@@ -590,15 +590,33 @@ function PublicMiniSiteContent({ site, location }) {
 }
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, search, hash, key } = useLocation();
 
   useEffect(() => {
-    const scroller = document.querySelector(".app-scroll-area");
+    // Footer / nav links should always open at the top of the destination page.
+    if (hash) return;
 
-    if (scroller) {
-      scroller.scrollTop = 0;
-    }
-  }, [pathname]);
+    const scrollAllToTop = () => {
+      const scroller = document.querySelector(".app-scroll-area");
+      if (scroller) scroller.scrollTop = 0;
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    };
+
+    scrollAllToTop();
+    const raf = window.requestAnimationFrame(scrollAllToTop);
+    const t1 = window.setTimeout(scrollAllToTop, 0);
+    const t2 = window.setTimeout(scrollAllToTop, 50);
+    const t3 = window.setTimeout(scrollAllToTop, 200);
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
+      window.clearTimeout(t3);
+    };
+  }, [pathname, search, hash, key]);
 
   return null;
 }

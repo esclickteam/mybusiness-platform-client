@@ -80,6 +80,14 @@ export default function Footer() {
   );
 }
 
+function scrollPageToTop() {
+  const scroller = document.querySelector(".app-scroll-area");
+  if (scroller instanceof HTMLElement) scroller.scrollTop = 0;
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+}
+
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
     <div className="text-center">
@@ -91,6 +99,11 @@ function FooterColumn({ title, links }: FooterColumnProps) {
           <li key={`${title}-${link.to}-${link.label}`}>
             <Link
               to={link.to}
+              onClick={() => {
+                // Ensure destination opens at the top, not the previous scroll position.
+                window.setTimeout(scrollPageToTop, 0);
+                window.setTimeout(scrollPageToTop, 50);
+              }}
               className="text-sm font-semibold text-slate-600 transition hover:text-indigo-700"
             >
               {link.label}

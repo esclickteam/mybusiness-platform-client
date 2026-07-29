@@ -3,10 +3,6 @@ import API from "../../../../../../api";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
-import {
-  detectPhoneCountry,
-  detectPhoneCountrySync,
-} from "../../../../../../utils/detectPhoneCountry";
 
 type AnyObject = Record<string, any>;
 
@@ -71,17 +67,6 @@ export default function ClientCalendar({
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submittingBooking, setSubmittingBooking] = useState(false);
-  const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
-
-  useEffect(() => {
-    let active = true;
-    detectPhoneCountry().then((code) => {
-      if (active && code) setPhoneCountry(code);
-    });
-    return () => {
-      active = false;
-    };
-  }, []);
   const [error, setError] = useState<string | null>(null);
 
   const dayIdx = selectedDate.getDay();
@@ -293,32 +278,32 @@ export default function ClientCalendar({
 
   const validateBookingForm = () => {
     if (!clientName.trim()) {
-      alert("אנא הזינו שם מלא.");
+      alert("Please enter your full name.");
       return false;
     }
 
     if (!clientPhone.trim()) {
-      alert("אנא הזינו מספר טלפון.");
+      alert("Please enter your phone number.");
       return false;
     }
 
     if (!clientAddress.trim()) {
-      alert("אנא הזינו כתובת.");
+      alert("Please enter your address.");
       return false;
     }
 
     if (!selectedSlot) {
-      alert("לא נבחרה שעה.");
+      alert("No time slot selected.");
       return false;
     }
 
     if (!businessId) {
-      alert("חסר מזהה עסק. רעננו את העמוד ונסו שוב.");
+      alert("Missing business ID. Please refresh the page and try again.");
       return false;
     }
 
     if (!selectedService?._id) {
-      alert("חסר שירות. בחרו שירות מחדש.");
+      alert("Missing service. Please choose a service again.");
       return false;
     }
 
@@ -544,97 +529,93 @@ export default function ClientCalendar({
         <div className="mx-auto max-w-3xl space-y-5">
           {!bookingSuccess ? (
             <>
-              <div className="rounded-[1.75rem] border border-violet-200/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 p-5 text-slate-800 shadow-xl shadow-violet-100" dir="rtl">
-                <p className="text-sm font-bold text-indigo-700">
-                  סיכום הזמנה
+              <div className="rounded-[1.75rem] border border-violet-100 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 p-5 text-slate-800 shadow-xl shadow-violet-100">
+                <p className="text-sm font-bold text-violet-100">
+                  Booking Summary
                 </p>
 
                 <h4 className="mt-2 text-2xl font-black">
-                  אישור הפגישה
+                  Confirm your appointment
                 </h4>
 
                 <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  <SummaryItem label="שירות" value={selectedSlot.name} />
-                  <SummaryItem label="תאריך" value={selectedSlot.date} />
-                  <SummaryItem label="שעה" value={selectedSlot.time} />
+                  <SummaryItem label="Service" value={selectedSlot.name} />
+                  <SummaryItem label="Date" value={selectedSlot.date} />
+                  <SummaryItem label="Time" value={selectedSlot.time} />
                   <SummaryItem
-                    label="משך"
-                    value={`${Math.floor(selectedSlot.duration / 60)} שע׳ ${
+                    label="Duration"
+                    value={`${Math.floor(selectedSlot.duration / 60)}h ${
                       selectedSlot.duration % 60
-                    } דק׳`}
+                    }m`}
                   />
-                  <SummaryItem label="מחיר" value={`₪${selectedSlot.price}`} />
+                  <SummaryItem label="Price" value={`$${selectedSlot.price}`} />
                 </div>
               </div>
 
-              <div className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm" dir="rtl">
-                <div className="mb-5 text-center sm:text-start">
+              <div className="rounded-[1.75rem] border border-slate-100 bg-white p-5 shadow-sm">
+                <div className="mb-5">
                   <p className="text-xs font-bold uppercase tracking-[0.18em] text-violet-600">
-                    הפרטים שלכם
+                    Your details
                   </p>
 
                   <h4 className="mt-1 text-xl font-black text-slate-800">
-                    מלאו פרטי יצירת קשר
+                    Fill in your contact information
                   </h4>
 
                   <p className="mt-1 text-sm text-slate-500">
-                    אין צורך בחשבון כדי לקבוע את הפגישה.
+                    No account is required to book this appointment.
                   </p>
                 </div>
 
                 <div className="grid gap-4">
-                  <FormField label="שם מלא" required>
+                  <FormField label="Full Name" required>
                     <input
                       value={clientName}
                       onChange={(event) => setClientName(event.target.value)}
-                      placeholder="הזינו שם מלא"
+                      placeholder="Enter full name"
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
 
-                  <FormField label="טלפון" required>
-                    <div dir="ltr">
-                      <PhoneInput
-                        key={phoneCountry}
-                        country={phoneCountry}
-                        preferredCountries={["il", "us", "gb", "fr", "de"]}
-                        enableSearch
-                        value={clientPhone}
-                        onChange={(phone) => setClientPhone(phone)}
-                        inputProps={{
-                          required: true,
-                        }}
-                        containerClass="!w-full"
-                        inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
-                        buttonClass="!rounded-l-2xl !border-slate-200"
-                      />
-                    </div>
+                  <FormField label="Phone" required>
+                    <PhoneInput
+                      country="us"
+                      enableSearch
+                      value={clientPhone}
+                      onChange={(phone) => setClientPhone(phone)}
+                      inputProps={{
+                        required: true,
+                      }}
+                      containerClass="!w-full"
+                      inputClass="!w-full !h-[48px] !rounded-2xl !border !border-slate-200 !bg-slate-50 !pl-14 !text-sm !font-semibold !text-slate-900 !outline-none"
+                      buttonClass="!rounded-l-2xl !border-slate-200"
+                    />
                   </FormField>
 
-                  <FormField label="אימייל">
+                  <FormField label="Email">
                     <input
                       type="email"
                       value={clientEmail}
                       onChange={(event) => setClientEmail(event.target.value)}
-                      placeholder="אימייל לאישור (אופציונלי)"
+                      placeholder="Enter email for confirmation"
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
 
-                  <FormField label="כתובת" required>
+                  <FormField label="Address" required>
                     <input
                       value={clientAddress}
                       onChange={(event) => setClientAddress(event.target.value)}
-                      placeholder="הזינו כתובת"
+                      placeholder="Enter address"
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
 
-                  <FormField label="הערה">
+                  <FormField label="Note">
                     <textarea
                       value={clientNote}
                       onChange={(event) => setClientNote(event.target.value)}
-                      placeholder="הערה נוספת"
+                      placeholder="Additional note"
                       rows={4}
                       className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
@@ -642,14 +623,14 @@ export default function ClientCalendar({
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 sm:flex-row" dir="rtl">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
-                  className="flex-1 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
+                  className="flex-1 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-4 text-sm font-black text-black shadow-lg shadow-violet-200 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60"
                   onClick={handleSubmitBooking}
                   disabled={submittingBooking}
                 >
-                  {submittingBooking ? "שולח…" : "אישור הזמנה"}
+                  {submittingBooking ? "Submitting…" : "Confirm Booking"}
                 </button>
 
                 <button
@@ -658,24 +639,24 @@ export default function ClientCalendar({
                   onClick={() => setMode("slots")}
                   disabled={submittingBooking}
                 >
-                  חזרה לשעות
+                  Back to Time Slots
                 </button>
               </div>
             </>
           ) : (
-            <div className="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-8 text-center shadow-sm" dir="rtl">
+            <div className="rounded-[2rem] border border-emerald-100 bg-emerald-50 p-8 text-center shadow-sm">
               <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-3xl shadow-sm">
-                ✓
+                🎉
               </div>
 
               <h4 className="text-2xl font-black text-emerald-800">
-                ההזמנה נשלחה בהצלחה!
+                Booking Submitted Successfully!
               </h4>
 
               <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-emerald-700">
                 {clientEmail
-                  ? "נשלח אימייל אישור לכתובת שהזנתם."
-                  : "ההזמנה שלכם אושרה."}
+                  ? "A confirmation email has been sent to your email address."
+                  : "Your booking is confirmed."}
               </p>
 
               <button
