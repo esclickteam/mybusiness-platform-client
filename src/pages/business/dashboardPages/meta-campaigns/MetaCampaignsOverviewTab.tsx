@@ -51,7 +51,6 @@ import {
   DATE_RANGE_OPTIONS,
   formatCurrency,
   formatNumber,
-  formatPercent,
   formatRoas,
   SEGMENT_OPTIONS,
   statusTone,
@@ -489,19 +488,25 @@ export default function MetaCampaignsOverviewTab() {
                       {t("metaCampaigns.table.status")}
                     </th>
                     <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.results")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.costPerResult")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.budget")}
                     </th>
                     <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.spend")}
                     </th>
                     <th className="px-3 py-3 text-start">
-                      {t("metaCampaigns.table.leads")}
+                      {t("metaCampaigns.table.impressions")}
                     </th>
                     <th className="px-3 py-3 text-start">
-                      {t("metaCampaigns.table.cpl")}
+                      {t("metaCampaigns.table.reach")}
                     </th>
                     <th className="px-3 py-3 text-start">
-                      {t("metaCampaigns.table.ctr")}
+                      {t("metaCampaigns.table.end")}
                     </th>
                     <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.actions")}
@@ -587,29 +592,64 @@ export default function MetaCampaignsOverviewTab() {
                             </span>
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {campaign.dailyBudget
-                              ? formatCurrency(campaign.dailyBudget, currency)
-                              : campaign.lifetimeBudget
-                                ? formatCurrency(
-                                    campaign.lifetimeBudget,
-                                    currency
-                                  )
-                                : "—"}
+                            <div>
+                              {formatNumber(
+                                campaign.metrics?.results ??
+                                  campaign.metrics?.leads ??
+                                  0
+                              )}
+                            </div>
+                            <div className="text-[11px] font-semibold text-slate-400">
+                              {t("metaCampaigns.table.resultsHint")}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            <div>
+                              {formatCurrency(
+                                campaign.metrics?.costPerResult ??
+                                  campaign.metrics?.costPerLead ??
+                                  0,
+                                currency
+                              )}
+                            </div>
+                            <div className="text-[11px] font-semibold text-slate-400">
+                              {t("metaCampaigns.table.costPerResultHint")}
+                            </div>
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            <div>
+                              {campaign.dailyBudget
+                                ? formatCurrency(campaign.dailyBudget, currency)
+                                : campaign.lifetimeBudget
+                                  ? formatCurrency(
+                                      campaign.lifetimeBudget,
+                                      currency
+                                    )
+                                  : "—"}
+                            </div>
+                            <div className="text-[11px] font-semibold text-slate-400">
+                              {campaign.dailyBudget
+                                ? t("metaCampaigns.table.budgetDaily")
+                                : campaign.lifetimeBudget
+                                  ? t("metaCampaigns.table.budgetLifetime")
+                                  : ""}
+                            </div>
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
                             {formatCurrency(campaign.metrics?.spend || 0, currency)}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatNumber(campaign.metrics?.leads || 0)}
+                            {formatNumber(campaign.metrics?.impressions || 0)}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatCurrency(
-                              campaign.metrics?.costPerLead || 0,
-                              currency
-                            )}
+                            {formatNumber(campaign.metrics?.reach || 0)}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatPercent(campaign.metrics?.ctr || 0)}
+                            {campaign.stopTime
+                              ? new Date(campaign.stopTime).toLocaleDateString(
+                                  "he-IL"
+                                )
+                              : t("metaCampaigns.table.endOngoing")}
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-1">
