@@ -32,6 +32,7 @@ import {
   automationsRail,
   automationsSteps,
 } from "../../components/automations-marketing/automationsMarketingData";
+import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
@@ -140,6 +141,8 @@ export default function AutomationsProductPage() {
           </Reveal>
         </div>
       </section>
+
+      <AutomationsNotificationsDemo />
 
       {/* Recipes */}
       <section className="pm-section">

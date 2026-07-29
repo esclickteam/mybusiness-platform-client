@@ -7,6 +7,7 @@ import logo from "../images/logo_final.svg";
 import { useAuth } from "../context/AuthContext";
 import MobileMenu from "./MobileMenu";
 import { normalizeLanguage, setSessionLanguageOverride } from "../i18n/localeUtils";
+import "../styles/SiteHeader.css";
 
 type NavLink = {
   to: string;
@@ -18,15 +19,14 @@ type Language = {
   label: string;
 };
 
+/** RTL order: About on the right, then product pages, pricing on the left. */
 const navLinks: NavLink[] = [
   { to: "/about", labelKey: "nav.about" },
   { to: "/website-builder", labelKey: "nav.website" },
   { to: "/crm", labelKey: "nav.crm" },
-  { to: "/automations", labelKey: "nav.automations" },
   { to: "/agents", labelKey: "nav.agents" },
   { to: "/collaborations", labelKey: "nav.collaborations" },
   { to: "/pricing", labelKey: "nav.pricing" },
-  { to: "/contact", labelKey: "nav.contact" },
 ];
 
 const languages: Language[] = [
@@ -77,7 +77,6 @@ export default function Header() {
       return;
     }
 
-    // Apply for this browsing session; the next full page load re-detects from location.
     setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
     setLanguageOpen(false);
@@ -98,58 +97,47 @@ export default function Header() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 flex h-20 w-full items-center justify-between border-b border-slate-100 bg-white/95 px-5 shadow-sm backdrop-blur-xl sm:px-6 lg:px-14">
-        <div className="flex items-center">
-          <Link to="/" className="inline-flex items-center">
-            <img
-              src={logo}
-              alt="Bizuply Logo"
-              className="h-10 w-auto object-contain sm:h-11"
-            />
+      <header className="site-header">
+        <nav className="site-header__bar" aria-label="ניווט ראשי">
+          {/* RTL: first = right → big logo */}
+          <Link to="/" className="site-header__logo" aria-label="BizUply">
+            <img src={logo} alt="BizUply" />
           </Link>
-        </div>
 
-        <div className="hidden items-center gap-3 xl:gap-5 xl:flex">
-          {navLinks.map((item) => {
-            const isActive = location.pathname === item.to;
+          <div className="site-header__nav">
+            {navLinks.map((item) => {
+              const isActive = location.pathname === item.to;
 
-            return (
-              <Link
-                key={item.to}
-                to={item.to}
-                className={`whitespace-nowrap text-[13px] font-extrabold transition xl:text-[14px] ${
-                  isActive
-                    ? "text-[#6D28D9]"
-                    : "text-slate-800 hover:text-[#6D28D9]"
-                }`}
+              return (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className={`site-header__link${isActive ? " is-active" : ""}`}
+                >
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+          </div>
+
+          {/* RTL: last = left → language + login */}
+          <div className="site-header__actions">
+            <div ref={languageRef} className="site-header__lang">
+              <button
+                type="button"
+                onClick={() => setLanguageOpen((prev) => !prev)}
+                className="site-header__icon-btn site-header__icon-btn--lang"
+                aria-label={t("common.changeLanguage")}
+                aria-expanded={languageOpen}
               >
-                {t(item.labelKey)}
-              </Link>
-            );
-          })}
-        </div>
+                <FaGlobe size={18} />
+              </button>
 
-        <div className="hidden items-center gap-5 xl:flex">
-          <div ref={languageRef} className="relative">
-            <button
-              type="button"
-              onClick={() => setLanguageOpen((prev) => !prev)}
-              className="flex h-[58px] w-[58px] items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-[0_10px_28px_rgba(15,126,232,0.14)] transition hover:-translate-y-0.5 hover:bg-[#dff0ff]"
-              aria-label={t("common.changeLanguage")}
-              aria-expanded={languageOpen}
-            >
-              <FaGlobe className="text-[25px]" />
-            </button>
-
-            {languageOpen && (
-              <div className="absolute end-1/2 top-[72px] z-[9999] w-[220px] translate-x-1/2 rounded-[18px] border border-slate-200 bg-white p-2 shadow-[0_24px_70px_rgba(15,23,42,0.16)] rtl:-translate-x-1/2">
-                <div className="absolute -top-2.5 end-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white rtl:-translate-x-1/2" />
-
-                <div className="relative border-b border-slate-100 px-3 py-3 text-sm font-black text-slate-900">
-                  {t("common.changeLanguage")}
-                </div>
-
-                <div className="relative pt-2">
+              {languageOpen ? (
+                <div className="site-header__lang-menu" role="menu">
+                  <div className="site-header__lang-title">
+                    {t("common.changeLanguage")}
+                  </div>
                   {languages.map((lang) => {
                     const isActive = currentLanguage.code === lang.code;
 
@@ -157,83 +145,93 @@ export default function Header() {
                       <button
                         key={lang.code}
                         type="button"
+                        role="menuitem"
                         onClick={() => handleChangeLanguage(lang.code)}
-                        className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-start text-sm font-bold transition ${
-                          isActive
-                            ? "bg-[#eef6ff] text-[#0f7ee8]"
-                            : "text-slate-700 hover:bg-slate-50 hover:text-blue-600"
+                        className={`site-header__lang-option${
+                          isActive ? " is-active" : ""
                         }`}
                       >
                         <span>{lang.label}</span>
-
-                        {isActive && (
-                          <span className="text-xs font-black">✓</span>
-                        )}
+                        {isActive ? <span>✓</span> : null}
                       </button>
                     );
                   })}
                 </div>
+              ) : null}
+            </div>
+
+            {!user ? (
+              <Link
+                to="/login"
+                className="site-header__icon-btn site-header__icon-btn--login"
+                aria-label={t("common.login")}
+                title={t("common.login")}
+              >
+                <FaUser size={16} />
+              </Link>
+            ) : (
+              <div className="site-header__user">
+                <span className="site-header__user-name">
+                  {t("common.hello", { name: user.name })}
+                </span>
+                <Link
+                  to="/dashboard"
+                  className="site-header__icon-btn site-header__icon-btn--login"
+                  aria-label={t("common.myAccount")}
+                  title={t("common.myAccount")}
+                >
+                  <FaUser size={16} />
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="site-header__text-btn site-header__text-btn--danger"
+                >
+                  {t("common.logout")}
+                </button>
               </div>
             )}
           </div>
 
-          {!user ? (
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
+          <div className="site-header__mobile">
+            <button
+              type="button"
+              onClick={() =>
+                handleChangeLanguage(
+                  currentLanguage.code === "he" ? "en" : "he"
+                )
+              }
+              className="site-header__icon-btn site-header__icon-btn--lang"
+              aria-label={t("common.changeLanguage")}
             >
-              <FaUser className="text-[16px]" />
-              <span>{t("common.login")}</span>
-            </Link>
-          ) : (
-            <>
-              <span className="text-sm font-bold text-slate-700">
-                {t("common.hello", { name: user.name })}
-              </span>
+              <FaGlobe size={16} />
+            </button>
 
+            {!user ? (
               <Link
-                to="/dashboard"
-                className="text-[15px] font-black text-[#082f5f] transition hover:text-indigo-600"
+                to="/login"
+                className="site-header__icon-btn site-header__icon-btn--login"
+                aria-label={t("common.login")}
+                title={t("common.login")}
               >
-                {t("common.myAccount")}
+                <FaUser size={15} />
               </Link>
+            ) : null}
 
-              <button
-                type="button"
-                onClick={handleLogout}
-                className="text-[15px] font-black text-rose-600 transition hover:text-rose-700"
-              >
-                {t("common.logout")}
-              </button>
-            </>
-          )}
-        </div>
-
-        <div className="ms-auto flex items-center gap-3 xl:hidden">
-          <button
-            type="button"
-            onClick={() =>
-              handleChangeLanguage(currentLanguage.code === "he" ? "en" : "he")
-            }
-            className="flex h-11 w-11 items-center justify-center rounded-full bg-[#eaf4ff] text-[#0f7ee8] shadow-sm transition hover:bg-[#dff0ff]"
-            aria-label={t("common.changeLanguage")}
-          >
-            <FaGlobe className="text-lg" />
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setMenuOpen(true)}
-            className="flex h-11 w-11 flex-col items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white shadow-sm transition hover:bg-slate-50"
-            aria-label={t("common.openMenu")}
-            aria-expanded={menuOpen}
-          >
-            <span className="h-0.5 w-5 rounded-full bg-violet-400" />
-            <span className="h-0.5 w-5 rounded-full bg-sky-400" />
-            <span className="h-0.5 w-5 rounded-full bg-cyan-400" />
-          </button>
-        </div>
-      </nav>
+            <button
+              type="button"
+              onClick={() => setMenuOpen(true)}
+              className="site-header__burger"
+              aria-label={t("common.openMenu")}
+              aria-expanded={menuOpen}
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+          </div>
+        </nav>
+      </header>
 
       <MobileMenu
         open={menuOpen}
