@@ -13,8 +13,6 @@ export default function HeroSection() {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const trustItems = [t("home.trustNoCard"), t("home.trustCancel")];
-
   return (
     <section
       className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-800"
@@ -60,29 +58,13 @@ export default function HeroSection() {
           </p>
         </Reveal>
 
-        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-9 flex items-center justify-center">
           <Link
             to="/register"
             className="cta-solid inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-indigo-300 sm:w-auto"
           >
             {t("home.startTrial")}
           </Link>
-
-          <Link
-            to="/pricing"
-            className="cta-soft inline-flex w-full items-center justify-center rounded-2xl border-2 border-indigo-300 bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/80 transition hover:-translate-y-0.5 hover:border-indigo-400 sm:w-auto"
-          >
-            {t("home.viewPricing")}
-          </Link>
-        </div>
-
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-bold text-slate-500">
-          {trustItems.map((item) => (
-            <span key={item} className="inline-flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              {item}
-            </span>
-          ))}
         </div>
 
         <Reveal

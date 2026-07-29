@@ -4,37 +4,100 @@ import { useTranslation } from "react-i18next";
 
 const LOGO_SRC = "/bizuply logo.png";
 
-/** Slim site footer — sits on the page background, no card, no link columns. */
+type FooterLink = {
+  label: string;
+  to: string;
+};
+
+type FooterColumnProps = {
+  title: string;
+  links: FooterLink[];
+};
+
+/** Compact footer on the page background — no card shell. */
 export default function Footer() {
   const { t } = useTranslation();
   const year = new Date().getFullYear();
 
+  const pagesLinks: FooterLink[] = [
+    { label: t("footer.aboutUs"), to: "/about" },
+    { label: t("footer.website"), to: "/website-builder" },
+    { label: t("footer.crm"), to: "/crm" },
+    { label: t("footer.automations"), to: "/automations" },
+    { label: t("footer.agents"), to: "/agents" },
+    { label: t("footer.collaborations"), to: "/collaborations" },
+    { label: t("footer.pricing"), to: "/pricing" },
+  ];
+
+  const companyLinks: FooterLink[] = [
+    { label: t("footer.aboutUs"), to: "/about" },
+    { label: t("footer.joinBusiness"), to: "/business" },
+  ];
+
+  const supportLinks: FooterLink[] = [
+    { label: t("footer.faq"), to: "/faq" },
+    { label: t("footer.contact"), to: "/contact" },
+    { label: t("footer.terms"), to: "/terms" },
+    { label: t("footer.privacy"), to: "/privacy-policy" },
+    { label: t("footer.accessibility"), to: "/accessibility" },
+  ];
+
   return (
     <footer
-      className="relative border-t border-indigo-100/60 bg-gradient-to-b from-white via-[#f7f8ff] to-[#eef3ff] text-slate-700"
+      className="relative border-t border-slate-200/70 bg-transparent text-slate-700"
       dir="rtl"
     >
-      <div className="relative mx-auto max-w-3xl px-5 py-12 text-center sm:px-6 sm:py-14">
-        <Link to="/" className="inline-flex flex-col items-center gap-3">
+      <div className="relative mx-auto max-w-5xl px-5 py-10 text-center sm:px-6 sm:py-12">
+        <Link to="/" className="inline-flex items-center justify-center">
           <img
             src={LOGO_SRC}
             alt="Bizuply"
-            width={160}
-            height={48}
-            className="h-12 w-auto object-contain sm:h-14"
+            width={140}
+            height={40}
+            className="h-9 w-auto object-contain sm:h-10"
             loading="lazy"
             decoding="async"
           />
         </Link>
 
-        <p className="mx-auto mt-5 max-w-md text-sm font-semibold leading-7 text-slate-600 sm:text-base">
+        <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-6 text-slate-500">
           {t("footer.tagline")}
         </p>
 
-        <p className="mt-8 text-sm font-semibold text-slate-500">
+        <div className="mx-auto mt-8 grid max-w-3xl gap-6 sm:grid-cols-3 sm:gap-4">
+          <FooterColumn title={t("footer.pages")} links={pagesLinks} />
+          <FooterColumn title={t("footer.company")} links={companyLinks} />
+          <FooterColumn title={t("footer.support")} links={supportLinks} />
+        </div>
+
+        <div className="mx-auto mt-8 h-px max-w-xl bg-slate-200/80" />
+
+        <p className="mt-5 text-xs font-semibold text-slate-400 sm:text-sm">
           {t("footer.rights", { year })}
         </p>
       </div>
     </footer>
+  );
+}
+
+function FooterColumn({ title, links }: FooterColumnProps) {
+  return (
+    <div className="text-center">
+      <h4 className="mb-3 text-[0.7rem] font-black uppercase tracking-[0.16em] text-slate-400">
+        {title}
+      </h4>
+      <ul className="space-y-1.5">
+        {links.map((link) => (
+          <li key={`${title}-${link.to}-${link.label}`}>
+            <Link
+              to={link.to}
+              className="text-sm font-semibold text-slate-600 transition hover:text-indigo-700"
+            >
+              {link.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
