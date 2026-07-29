@@ -1,196 +1,153 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 const FAQS = [
   {
-    q: "What is Bizuply?",
-    a: "Bizuply is a smart platform that connects businesses and clients. It combines scheduling, messaging, AI-powered insights, and collaborations — all in one place.",
+    q: "מה זה Bizuply?",
+    a: "Bizuply היא פלטפורמה אחת לניהול העסק — CRM ולידים, פגישות, בניית אתר וחנות, אוטומציות, שיתופי פעולה וכלי AI — הכל בסביבת עבודה מחוברת.",
   },
   {
-    q: "Is there a free trial?",
-    a: "Yes. Bizuply offers a 14-day free trial with no credit card required.",
+    q: "איך מתחילים?",
+    a: "לוחצים על ״הירשמו עכשיו״, יוצרים חשבון עסקי, ומתחילים לנהל לקוחות, פגישות ושיתופי פעולה מתוך דשבורד אחד.",
   },
   {
-    q: "How do I join as a business?",
-    a: "Click “Join as a Business”, complete your profile, and start managing clients, appointments, and collaborations from one dashboard.",
+    q: "איך עובדת בניית אתר וחנות?",
+    a: "בוחרים תבנית מוכנה, עורכים בעיורך הוויזואלי, מפרסמים — וכל פנייה מהטפסים באתר נכנסת ישר לצינור הלידים ב־CRM.",
   },
   {
-    q: "How do clients use the platform?",
-    a: "Clients can sign up for free, search businesses, book appointments, and chat directly — from mobile or desktop.",
+    q: "מה עושות האוטומציות?",
+    a: "אוטומציות מריצות תזכורות, פולואפים והתראות חכמות ברקע — כדי שפחות לידים ייפלו בין הכיסאות.",
   },
   {
-    q: "Is my data secure?",
-    a: "Absolutely. Bizuply uses encryption and industry-standard security practices to keep your data protected at all times.",
+    q: "מה אפשר לנהל ב־CRM?",
+    a: "לידים ולקוחות, משימות ומעקבים, הערות והיסטוריה, שלבי צנרת, פגישות עם מחיר וסטטוס תשלום — הכל במקום אחד.",
   },
   {
-    q: "Where can I get support?",
-    a: "You can contact our support team anytime via the Contact Page for fast and friendly help.",
+    q: "איך Bizuply עוזרת להשיג יותר לקוחות?",
+    a: "עמוד העסק והאתר לוכדים פניות, ה־CRM שומר על מעקב מהיר, והאוטומציות מוודאות שחוזרים ללידים בזמן — מה שמגדיל המרות.",
+  },
+  {
+    q: "האם המידע שלי מאובטח?",
+    a: "כן. Bizuply משתמשת בהצפנה ובפרקטיקות אבטחה מקובלות בתעשייה כדי לשמור על הנתונים שלכם.",
+  },
+  {
+    q: "איפה מקבלים תמיכה?",
+    a: "אפשר לפנות אלינו בכל עת דרך עמוד צור קשר — והצוות חוזר במהירות עם מענה ברור.",
   },
 ];
 
 function FAQ() {
-  const [openIndex, setOpenIndex] = useState(null);
+  const [openIndex, setOpenIndex] = useState(0);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] text-slate-800"
+      dir="rtl"
+    >
       <Helmet>
-        <title>FAQ - Bizuply | Everything You Need to Know</title>
+        <title>שאלות נפוצות | Bizuply</title>
         <meta
           name="description"
-          content="Find answers to frequently asked questions about Bizuply – registration, pricing, security, and support."
+          content="תשובות לשאלות נפוצות על Bizuply — הרשמה, CRM, בניית אתר, אוטומציות, אבטחה ותמיכה."
         />
         <link rel="canonical" href="https://bizuply.com/faq" />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {/* Background */}
-      <div className="pointer-events-none absolute left-[-12%] top-[-12%] h-[460px] w-[460px] rounded-full bg-amber-200/55 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-10%] top-[18%] h-[540px] w-[540px] rounded-full bg-emerald-100/75 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
+      <div className="pointer-events-none absolute -right-40 top-36 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
 
-      {/* Hero */}
-      <section className="relative mx-auto max-w-7xl px-5 pb-12 pt-20 text-center sm:px-8 lg:px-10 lg:pt-24">
-        <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
+      <section className="relative mx-auto max-w-4xl px-5 pb-10 pt-20 text-center sm:px-8 lg:pt-24">
+        <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-2 text-sm font-black text-indigo-700 shadow-sm backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Bizuply Help Center
+          מרכז העזרה של Bizuply
         </div>
 
-        <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-          Frequently Asked Questions
+        <h1 className="mx-auto max-w-4xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl lg:text-6xl">
+          שאלות נפוצות
         </h1>
 
-        <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-          Everything you need to know about Bizuply — pricing, features,
-          security, registration and how to get started.
+        <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+          כל מה שחשוב לדעת לפני שמתחילים — הרשמה, CRM, אתר, אוטומציות ותמיכה.
         </p>
       </section>
 
-      {/* FAQ */}
-      <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-        {/* Left card */}
-        <aside className="h-fit rounded-[2.5rem] border border-white/80 bg-white/70 p-7 shadow-xl shadow-slate-900/5 backdrop-blur">
-          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20">
-            ✨
-          </div>
-
-          <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-800">
-            Need a quick answer?
-          </h2>
-
-          <p className="mt-4 text-base font-medium leading-7 text-slate-600">
-            Browse the most common questions about Bizuply. Open any question to
-            see a clear explanation.
-          </p>
-
-          <div className="mt-7 grid gap-3">
-            {[
-              ["14-day", "Free trial"],
-              ["AI", "Smart tools"],
-              ["CRM", "Client management"],
-            ].map(([title, text]) => (
-              <div
-                key={title}
-                className="flex items-center justify-between rounded-3xl border border-slate-100 bg-white/80 px-5 py-4"
+      <section className="relative mx-auto max-w-3xl space-y-3 px-5 pb-16 sm:px-8">
+        {FAQS.map((item, i) => {
+          const isOpen = openIndex === i;
+          return (
+            <article
+              key={item.q}
+              className={`overflow-hidden rounded-[1.5rem] border text-center transition ${
+                isOpen
+                  ? "border-indigo-200 bg-white shadow-[0_18px_50px_rgba(79,70,229,0.12)]"
+                  : "border-slate-100 bg-white/85 hover:border-indigo-100"
+              }`}
+            >
+              <button
+                type="button"
+                onClick={() => setOpenIndex(isOpen ? null : i)}
+                className="flex w-full items-center gap-4 px-5 py-5 text-center sm:px-7"
+                aria-expanded={isOpen}
               >
-                <div>
-                  <p className="text-xl font-black text-slate-800">{title}</p>
-                  <p className="text-sm font-bold text-slate-500">{text}</p>
-                </div>
-                <span className="flex h-9 w-9 items-center justify-center rounded-full bg-emerald-100 text-sm font-black text-emerald-700">
-                  ✓
-                </span>
-              </div>
-            ))}
-          </div>
-        </aside>
-
-        {/* FAQ list */}
-        <div className="space-y-4">
-          {FAQS.map((item, i) => {
-            const isOpen = openIndex === i;
-
-            return (
-              <article
-                key={item.q}
-                className={`overflow-hidden rounded-[1.75rem] border bg-white/75 shadow-lg shadow-slate-900/5 backdrop-blur transition-all duration-300 ${
-                  isOpen
-                    ? "border-slate-200 ring-1 ring-violet-100/40"
-                    : "border-white/80 hover:-translate-y-0.5 hover:bg-white"
-                }`}
-              >
-                <button
-                  type="button"
-                  onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-5 px-6 py-6 text-left sm:px-7"
-                  aria-expanded={isOpen}
-                >
-                  <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-xl">
-                    {item.q}
-                  </span>
-
-                  <span
-                    className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-2xl font-black transition ${
-                      isOpen
-                        ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
-                        : "bg-amber-100 text-amber-800"
-                    }`}
-                  >
-                    {isOpen ? "–" : "+"}
-                  </span>
-                </button>
-
-                <div
-                  className={`grid transition-all duration-300 ${
+                <span
+                  className={`grid h-9 w-9 shrink-0 place-items-center rounded-xl text-sm font-black ${
                     isOpen
-                      ? "grid-rows-[1fr] opacity-100"
-                      : "grid-rows-[0fr] opacity-0"
+                      ? "bg-indigo-600 text-white"
+                      : "bg-indigo-50 text-indigo-700"
                   }`}
                 >
-                  <div className="overflow-hidden">
-                    <div className="border-t border-slate-100 px-6 pb-6 pt-5 sm:px-7">
-                      <p className="text-base font-medium leading-8 text-slate-600">
-                        {item.a}
-                      </p>
-                    </div>
-                  </div>
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="flex-1 text-base font-black leading-7 text-slate-800 sm:text-lg">
+                  {item.q}
+                </span>
+                <span
+                  className={`grid h-8 w-8 shrink-0 place-items-center rounded-full text-xl font-black ${
+                    isOpen
+                      ? "bg-indigo-600 text-white"
+                      : "bg-slate-50 text-indigo-700"
+                  }`}
+                >
+                  {isOpen ? "–" : "+"}
+                </span>
+              </button>
+
+              {isOpen ? (
+                <div className="border-t border-slate-100 px-5 pb-6 pt-4 sm:px-7">
+                  <p className="mx-auto max-w-2xl text-base font-semibold leading-8 text-slate-600">
+                    {item.a}
+                  </p>
                 </div>
-              </article>
-            );
-          })}
-        </div>
+              ) : null}
+            </article>
+          );
+        })}
       </section>
 
-      {/* CTA */}
-      <section className="relative mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
-        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 px-6 py-12 text-center shadow-2xl shadow-slate-900/20 sm:px-10">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-300">
-            Still have questions?
-          </p>
-
-          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-            Start exploring Bizuply and see how it can help your business grow.
+      <section className="relative mx-auto max-w-3xl px-5 pb-24 text-center sm:px-8">
+        <div className="rounded-[2rem] border border-indigo-100 bg-white/85 px-6 py-10 shadow-[0_24px_70px_rgba(79,70,229,0.12)] backdrop-blur sm:px-10">
+          <p className="text-sm font-black text-indigo-700">עדיין יש שאלה?</p>
+          <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] text-slate-900 sm:text-4xl">
+            בואו נדבר על העסק שלכם
           </h2>
-
-          <p className="mx-auto mt-5 max-w-2xl text-lg font-medium leading-8 text-white/70">
-            Manage clients, appointments, collaborations and smart business
-            growth from one modern platform.
+          <p className="mx-auto mt-4 max-w-xl text-base font-semibold leading-7 text-slate-600">
+            נעבור יחד על מה שנכנס למערכת, מה רץ לבד, ומה כדאי להתחיל ממנו.
           </p>
-
-          <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <a
-              href="/join"
-              className="inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
+          <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link
+              to="/register"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
             >
-              Join as a Business
-              <span className="ml-2">→</span>
-            </a>
-
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-8 py-4 text-base font-black text-black backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+              הירשמו עכשיו
+            </Link>
+            <Link
+              to="/contact"
+              className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white px-7 py-3.5 text-sm font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 sm:w-auto"
             >
-              Contact Support
-            </a>
+              צור קשר
+            </Link>
           </div>
         </div>
       </section>

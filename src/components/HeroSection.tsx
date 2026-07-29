@@ -7,19 +7,19 @@ import { motion, useReducedMotion } from "framer-motion";
 import { Reveal, WordReveal } from "./product-marketing";
 import LiveStage from "./LiveStage";
 import SourcesMarquee from "./SourcesMarquee";
+import "../styles/homeWow.css";
 
 export default function HeroSection() {
   const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const trustItems = [
-    t("home.trustTrial"),
-    t("home.trustNoCard"),
-    t("home.trustCancel"),
-  ];
+  const trustItems = [t("home.trustNoCard"), t("home.trustCancel")];
 
   return (
-    <section className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-800">
+    <section
+      className="relative isolate overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_34%,#eef3ff_68%,#ffffff_100%)] text-slate-800"
+      dir="rtl"
+    >
       <div className="pointer-events-none absolute inset-0 -z-10">
         <div className="absolute left-1/2 top-[-260px] h-[620px] w-[980px] -translate-x-1/2 rounded-full bg-indigo-200/50 blur-3xl" />
         <div className="absolute right-[-180px] top-32 h-[460px] w-[460px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -92,7 +92,9 @@ export default function HeroSection() {
           duration={0.9}
           className="mx-auto mt-14 max-w-5xl lg:mt-16"
         >
-          <LiveStage />
+          <div className="live-demo-fixed">
+            <LiveStage />
+          </div>
         </Reveal>
 
         <div className="mx-auto mt-10 max-w-5xl">

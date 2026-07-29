@@ -1,5 +1,6 @@
 "use client";
 
+import type { CSSProperties } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 
 import { Reveal, Stagger, StaggerItem } from "./product-marketing";
+import "../styles/homeWow.css";
 
 const MODULES = [
   { id: "crm", to: "/crm", Icon: Users, tone: "from-indigo-600 to-violet-600" },
@@ -52,7 +54,10 @@ export default function ProductsGrid() {
   const { t } = useTranslation();
 
   return (
-    <section className="relative overflow-hidden bg-white py-16 text-slate-800 sm:py-24">
+    <section
+      className="relative overflow-hidden bg-white py-16 text-slate-800 sm:py-24"
+      dir="rtl"
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-100/60 blur-3xl" />
       </div>
@@ -86,33 +91,36 @@ export default function ProductsGrid() {
           className="mt-10 grid gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
           gap={0.07}
         >
-          {MODULES.map(({ id, to, Icon, tone }) => (
+          {MODULES.map(({ id, to, Icon, tone }, index) => (
             <StaggerItem key={id} className="h-full">
               <Link
                 to={to}
-                className="group relative flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white p-5 text-center shadow-[0_14px_40px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1.5 hover:border-indigo-100 hover:shadow-[0_24px_70px_rgba(79,70,229,0.16)] sm:rounded-[1.75rem] sm:p-7"
+                className="home-wow-card group"
+                style={{ "--gold-i": index } as CSSProperties}
               >
-                <span
-                  className={`mx-auto mb-4 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${tone} text-white shadow-lg shadow-indigo-100 transition duration-300 group-hover:scale-110 sm:mb-5 sm:h-12 sm:w-12`}
-                >
-                  <Icon size={21} aria-hidden="true" />
-                </span>
-
-                <h3 className="text-lg font-black tracking-[-0.02em] text-slate-900 sm:text-xl">
-                  {t(`modules.${id}Title`)}
-                </h3>
-
-                <p className="mt-2 flex-1 text-sm font-semibold leading-6 text-slate-600 sm:mt-3 sm:leading-7">
-                  {t(`modules.${id}Text`)}
-                </p>
-
-                <span className="mt-4 inline-flex items-center justify-center gap-2 text-sm font-black text-indigo-700 sm:mt-6">
-                  {t("modules.open")}
+                <span className="home-wow-card__inner">
                   <span
-                    aria-hidden="true"
-                    className="transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
+                    className={`mx-auto mb-3 grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br ${tone} text-white shadow-lg shadow-indigo-100 transition duration-300 group-hover:scale-110 sm:mb-4 sm:h-12 sm:w-12`}
                   >
-                    →
+                    <Icon size={21} aria-hidden="true" />
+                  </span>
+
+                  <h3 className="text-lg font-black tracking-[-0.02em] text-slate-900 sm:text-xl">
+                    {t(`modules.${id}Title`)}
+                  </h3>
+
+                  <p className="mt-2 flex-1 text-sm font-semibold leading-6 text-slate-600 sm:mt-3 sm:leading-7">
+                    {t(`modules.${id}Text`)}
+                  </p>
+
+                  <span className="mt-4 inline-flex items-center justify-center gap-2 text-sm font-black text-indigo-700 sm:mt-5">
+                    {t("modules.open")}
+                    <span
+                      aria-hidden="true"
+                      className="transition group-hover:-translate-x-1"
+                    >
+                      ←
+                    </span>
                   </span>
                 </span>
               </Link>

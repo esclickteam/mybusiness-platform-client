@@ -7,6 +7,10 @@ import "react-phone-input-2/lib/style.css";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
+import {
+  detectPhoneCountry,
+  detectPhoneCountrySync,
+} from "../utils/detectPhoneCountry";
 
 declare global {
   interface Window {
@@ -48,6 +52,17 @@ export default function Register() {
   });
 
   const [error, setError] = useState<string>("");
+  const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
+
+  useEffect(() => {
+    let active = true;
+    detectPhoneCountry().then((code) => {
+      if (active && code) setPhoneCountry(code);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -263,7 +278,9 @@ export default function Register() {
               <div className="flex items-center gap-2">
                 <Phone className="mr-2 h-4 w-4 shrink-0 text-slate-400" />
                 <PhoneInput
-                  country="il"
+                  key={phoneCountry}
+                  country={phoneCountry}
+                  preferredCountries={["il", "us", "gb", "fr", "de"]}
                   enableSearch
                   value={formData.phone.replace(/^\+/, "")}
                   onChange={(phone: string) =>

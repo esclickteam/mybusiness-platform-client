@@ -175,16 +175,16 @@ export default function LiveStage() {
   ];
 
   return (
-    <div className="relative w-full" dir="rtl">
-      {/* Atmosphere */}
+    <div className="relative flex h-full w-full flex-col" dir="rtl">
+      {/* Atmosphere — clipped so it never expands the page */}
       <div
-        className="pointer-events-none absolute -inset-8 rounded-[3rem] bg-gradient-to-br from-indigo-400/25 via-violet-300/20 to-cyan-300/25 blur-3xl"
+        className="pointer-events-none absolute inset-0 rounded-[3rem] bg-gradient-to-br from-indigo-400/25 via-violet-300/20 to-cyan-300/25 blur-3xl"
         aria-hidden="true"
       />
 
-      <div className="relative overflow-hidden rounded-[1.75rem] border border-white/90 bg-white shadow-[0_40px_120px_rgba(79,70,229,0.28)]">
+      <div className="relative flex h-full min-h-0 flex-col overflow-hidden rounded-[1.75rem] border border-white/90 bg-white shadow-[0_40px_120px_rgba(79,70,229,0.28)]">
         {/* Window bar */}
-        <div className="flex items-center gap-3 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-4 py-3">
+        <div className="flex shrink-0 items-center gap-3 border-b border-slate-100 bg-gradient-to-b from-slate-50 to-white px-4 py-3">
           <span className="flex gap-1.5" aria-hidden="true">
             <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
             <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
@@ -203,9 +203,9 @@ export default function LiveStage() {
           </span>
         </div>
 
-        <div className="grid gap-0 lg:grid-cols-[1.35fr_0.85fr]">
+        <div className="grid min-h-0 flex-1 gap-0 overflow-hidden lg:grid-cols-[1.35fr_0.85fr]">
           {/* Main board */}
-          <div className="relative p-4 text-start sm:p-5">
+          <div className="relative min-h-0 overflow-hidden p-4 text-center sm:p-5 lg:text-start">
             {/* Flying toasts */}
             <div className="pointer-events-none absolute inset-x-4 top-3 z-20 flex flex-col gap-2 sm:inset-x-6">
               <AnimatePresence>
@@ -225,7 +225,7 @@ export default function LiveStage() {
                     <span className="grid h-8 w-8 place-items-center rounded-xl bg-indigo-600 text-white">
                       <Bell size={15} />
                     </span>
-                    <span className="min-w-0 flex-1">
+                    <span className="min-w-0 flex-1 text-start">
                       <span className="block text-[0.68rem] font-black uppercase tracking-wide text-indigo-600">
                         {t("live.toastEyebrow")}
                       </span>
@@ -251,7 +251,7 @@ export default function LiveStage() {
               {stats.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5"
+                  className="rounded-xl border border-slate-100 bg-slate-50/80 px-3 py-2.5 text-center"
                 >
                   <p className="text-[0.65rem] font-bold text-slate-500">
                     {stat.label}
@@ -273,24 +273,24 @@ export default function LiveStage() {
             </div>
 
             <ul className="mt-4 space-y-2">
-              <AnimatePresence initial={false}>
+              <AnimatePresence initial={false} mode="popLayout">
                 {rows.map((row, index) => (
                   <motion.li
                     key={row.key}
-                    layout
+                    layout={false}
                     initial={
                       reduceMotion
                         ? false
-                        : { opacity: 0, y: -28, scale: 0.97 }
+                        : { opacity: 0, y: -16, scale: 0.97 }
                     }
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={
                       reduceMotion
                         ? undefined
-                        : { opacity: 0, height: 0, marginTop: 0 }
+                        : { opacity: 0, scale: 0.98 }
                     }
-                    transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-                    className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 ${
+                    transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                    className={`flex items-center gap-3 rounded-xl border px-3 py-2.5 text-start ${
                       row.status === "new"
                         ? "border-indigo-300 bg-indigo-50 shadow-[0_0_0_3px_rgba(99,102,241,0.12)]"
                         : "border-slate-100 bg-white"
@@ -337,7 +337,7 @@ export default function LiveStage() {
           </div>
 
           {/* Phone / notification tray */}
-          <aside className="border-t border-slate-100 bg-gradient-to-b from-slate-50 to-indigo-50/40 p-4 text-start sm:p-5 lg:border-t-0 lg:border-s">
+          <aside className="hidden min-h-0 overflow-hidden border-t border-slate-100 bg-gradient-to-b from-slate-50 to-indigo-50/40 p-4 text-center sm:p-5 lg:block lg:border-t-0 lg:border-s lg:text-start">
             <div className="mx-auto w-full max-w-[17.5rem]">
               <div className="overflow-hidden rounded-[1.6rem] border border-slate-200 bg-white shadow-[0_20px_50px_rgba(15,23,42,0.12)]">
                 <div className="flex items-center justify-between bg-slate-900 px-4 py-3 text-white">
@@ -349,7 +349,7 @@ export default function LiveStage() {
 
                 <ul className="divide-y divide-slate-100">
                   <AnimatePresence initial={false}>
-                    {feed.map((item) => (
+                    {feed.slice(0, 4).map((item) => (
                       <motion.li
                         key={item.id}
                         initial={
@@ -357,7 +357,7 @@ export default function LiveStage() {
                         }
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.35 }}
-                        className="flex items-start gap-3 px-3.5 py-3"
+                        className="flex items-start gap-3 px-3.5 py-3 text-start"
                       >
                         <span className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center rounded-full bg-indigo-100 text-indigo-700">
                           {item.source === "whatsapp" ? (

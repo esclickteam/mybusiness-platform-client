@@ -211,7 +211,7 @@ export default function AutomationsProductPage() {
               const Icon = MODULE_ICONS[index] || Zap;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -244,8 +244,8 @@ export default function AutomationsProductPage() {
               eyebrow="תנו לעסק לרוץ גם בליכם"
               title="הפעילו תהליכים ששומרים על כל פנייה בתנועה"
               text="תזכורות, פולואפים והתראות שמחוברים ל־CRM — כדי שתתמקדו בלקוחות, והמערכת תשמור שהמשך לא יישכח."
-              primaryLabel="לצפייה בחבילות"
-              primaryTo="/pricing"
+              primaryLabel="הירשמו עכשיו"
+              primaryTo="/register"
             />
           </div>
         </div>

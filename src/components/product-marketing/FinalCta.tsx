@@ -18,8 +18,8 @@ export default function FinalCta({
   eyebrow,
   title,
   text,
-  primaryLabel = "לצפייה בחבילות",
-  primaryTo = "/pricing",
+  primaryLabel = "הירשמו עכשיו",
+  primaryTo = "/register",
   secondaryLabel,
   secondaryTo = "/contact",
 }: Props) {

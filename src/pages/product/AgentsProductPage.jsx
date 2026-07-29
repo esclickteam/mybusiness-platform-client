@@ -216,7 +216,7 @@ export default function AgentsProductPage() {
               const Icon = MODULE_ICONS[index] || Headset;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent}>
+                  <SpotlightCard accent={card.accent} goldIndex={index}>
                     <span className="pm-spot__icon">
                       <Icon size={19} />
                     </span>
@@ -249,8 +249,8 @@ export default function AgentsProductPage() {
               eyebrow="צריכים שכבה אנושית"
               title="חברו נציגים שמביאים תוצאות — בלי לאבד שליטה"
               text="טיפול בלידים, תיאום פגישות וניהול שיתופים מתוך BizUply. כל פעילות מתועדת, כל סטטוס גלוי, והעומס יורד מהיום הראשון."
-              primaryLabel="לצפייה בחבילות"
-              primaryTo="/pricing"
+              primaryLabel="הירשמו עכשיו"
+              primaryTo="/register"
             />
           </div>
         </div>

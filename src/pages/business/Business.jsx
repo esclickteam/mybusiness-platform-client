@@ -4,68 +4,65 @@ import { Helmet } from "react-helmet-async";
 
 function BusinessJoin() {
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_40%,#eef3ff_76%,#ffffff_100%)] text-slate-800"
+      dir="rtl"
+    >
       <Helmet>
-        <title>
-          Join Businesses - Collaborations, Clients & Smart Management | Bizuply
-        </title>
+        <title>הצטרפות כעסק | Bizuply — לקוחות, שיתופי פעולה וניהול חכם</title>
         <meta
           name="description"
-          content="Join Bizuply and get real client inquiries, collaborations with other businesses, and smart CRM & scheduling. Everything your business needs to grow in one place."
+          content="הצטרפו ל־Bizuply וקבלו פניות מלקוחות, שיתופי פעולה עם עסקים, CRM ויומן תורים — הכל במקום אחד."
         />
-        <link rel="canonical" href="https://bizuply.com/join" />
+        <link rel="canonical" href="https://bizuply.com/business" />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {/* Background */}
-      <div className="pointer-events-none absolute left-[-10%] top-[-10%] h-[420px] w-[420px] rounded-full bg-amber-200/50 blur-3xl" />
-      <div className="pointer-events-none absolute right-[-8%] top-[20%] h-[520px] w-[520px] rounded-full bg-emerald-100/70 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-15%] left-[25%] h-[480px] w-[480px] rounded-full bg-white/80 blur-3xl" />
+      <div className="pointer-events-none absolute left-1/2 top-0 h-[420px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
+      <div className="pointer-events-none absolute -right-40 top-40 h-[360px] w-[360px] rounded-full bg-cyan-200/35 blur-3xl" />
 
-      {/* Hero */}
-      <section className="relative mx-auto grid max-w-7xl items-center gap-14 px-5 pb-20 pt-20 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:px-10 lg:pb-28 lg:pt-24">
+      <section className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-20 text-center sm:px-8 lg:grid-cols-2 lg:gap-14 lg:px-10 lg:pb-24 lg:pt-24 lg:text-center">
         <div>
-          <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-bold text-amber-800 shadow-sm backdrop-blur">
+          <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-2 text-sm font-bold text-indigo-700 shadow-sm backdrop-blur">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            New growth platform for modern businesses
+            פלטפורמת צמיחה לעסקים מודרניים
           </div>
 
-          <h1 className="max-w-4xl text-5xl font-black leading-[1.02] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-            Grow your business with clients, collaborations & smart management.
+          <h1 className="mx-auto max-w-3xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-800 sm:text-5xl lg:text-6xl">
+            הצמיחו את העסק עם לקוחות, שיתופי פעולה וניהול חכם
           </h1>
 
-          <p className="mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-            Bizuply helps businesses get discovered, receive client inquiries,
-            collaborate with other businesses, manage appointments, and organize
-            daily work from one beautiful dashboard.
+          <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+            Bizuply עוזרת לעסקים להתגלות, לקבל פניות, לשתף פעולה עם עסקים אחרים,
+            לנהל תורים ולארגן את העבודה היומית — מדשבורד אחד יפה ומחובר.
           </p>
 
-          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
+          <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Link
               to="/register"
-              className="group inline-flex items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
+              className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 sm:w-auto"
             >
-              Start Free Trial
-              <span className="ml-2 transition group-hover:translate-x-1">→</span>
+              הירשמו עכשיו
+              <span className="me-2">←</span>
             </Link>
 
             <Link
-              to="/businesses"
-              className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white/75 px-8 py-4 text-base font-black text-slate-900 shadow-sm backdrop-blur transition hover:-translate-y-0.5 hover:bg-white"
+              to="/pricing"
+              className="inline-flex w-full items-center justify-center rounded-2xl border-2 border-indigo-300 bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-sm transition hover:-translate-y-0.5 sm:w-auto"
             >
-              Explore Businesses
+              צפו במחירים
             </Link>
           </div>
 
-          <div className="mt-10 grid max-w-2xl grid-cols-3 gap-3">
+          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-3">
             {[
-              ["CRM", "Clients & leads"],
-              ["AI", "Smart assistant"],
-              ["Growth", "Collaborations"],
+              ["CRM", "לקוחות ולידים"],
+              ["AI", "עוזר חכם"],
+              ["צמיחה", "שיתופי פעולה"],
             ].map(([title, text]) => (
               <div
                 key={title}
-                className="rounded-3xl border border-white/80 bg-white/65 p-4 shadow-sm backdrop-blur"
+                className="rounded-3xl border border-white/80 bg-white/75 p-4 text-center shadow-sm backdrop-blur"
               >
                 <p className="text-xl font-black text-slate-800">{title}</p>
                 <p className="mt-1 text-xs font-bold text-slate-500 sm:text-sm">
@@ -76,64 +73,59 @@ function BusinessJoin() {
           </div>
         </div>
 
-        {/* Dashboard mockup */}
-        <div className="relative">
-          <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-amber-200/70 via-white to-emerald-100/80 blur-2xl" />
+        <div className="relative mx-auto w-full max-w-lg">
+          <div className="absolute -inset-6 rounded-[3rem] bg-gradient-to-br from-indigo-200/50 via-white to-cyan-100/70 blur-2xl" />
 
-          <div className="relative overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/80 p-5 shadow-2xl shadow-slate-900/12 backdrop-blur-xl">
-            <div className="rounded-[2rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-              <div className="mb-6 flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-bold text-amber-200">
-                    Bizuply Dashboard
+          <div className="relative overflow-hidden rounded-[2rem] border border-white/80 bg-white p-5 text-center shadow-2xl shadow-indigo-100/80">
+            <div className="rounded-[1.5rem] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-5 text-slate-800">
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <div className="text-start">
+                  <p className="text-sm font-bold text-indigo-700">
+                    דשבורד Bizuply
                   </p>
-                  <h3 className="mt-1 text-2xl font-black">Today’s Growth</h3>
+                  <h3 className="mt-1 text-2xl font-black">הצמיחה של היום</h3>
                 </div>
-
-                <div className="rounded-2xl bg-white/10 px-4 py-2 text-sm font-black">
-                  Live
+                <div className="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-black text-emerald-800">
+                  חי
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-3xl bg-white p-5 text-slate-800">
-                  <p className="text-sm font-bold text-slate-500">
-                    New inquiries
-                  </p>
-                  <p className="mt-3 text-4xl font-black">24</p>
-                  <p className="mt-2 text-sm font-bold text-emerald-600">
-                    +18% this week
+              <div className="grid grid-cols-2 gap-3">
+                <div className="rounded-2xl bg-white p-4 text-center">
+                  <p className="text-sm font-bold text-slate-500">פניות חדשות</p>
+                  <p className="mt-2 text-4xl font-black">24</p>
+                  <p className="mt-1 text-sm font-bold text-emerald-600">
+                    +18% השבוע
                   </p>
                 </div>
-
-                <div className="rounded-3xl bg-amber-100 p-5 text-slate-800">
-                  <p className="text-sm font-bold text-amber-800">
-                    Collaborations
+                <div className="rounded-2xl bg-indigo-50 p-4 text-center">
+                  <p className="text-sm font-bold text-indigo-800">
+                    שיתופי פעולה
                   </p>
-                  <p className="mt-3 text-4xl font-black">8</p>
-                  <p className="mt-2 text-sm font-bold text-amber-700">
-                    Active deals
+                  <p className="mt-2 text-4xl font-black">8</p>
+                  <p className="mt-1 text-sm font-bold text-indigo-700">
+                    עסקאות פעילות
                   </p>
                 </div>
               </div>
 
-              <div className="mt-4 space-y-3 rounded-3xl bg-white/10 p-4">
+              <div className="mt-4 space-y-2 rounded-2xl bg-white/50 p-3 text-start">
                 {[
-                  ["New client request", "Website design project"],
-                  ["Meeting booked", "Tomorrow at 11:30"],
-                  ["AI reminder", "Follow up with 3 leads"],
+                  ["פנייה חדשה מלקוח", "פרויקט בניית אתר"],
+                  ["פגישה נקבעה", "מחר ב־11:30"],
+                  ["תזכורת AI", "לחזור ל־3 לידים"],
                 ].map(([title, text]) => (
                   <div
                     key={title}
-                    className="flex items-center justify-between rounded-2xl bg-white/10 px-4 py-3"
+                    className="flex items-center justify-between rounded-xl bg-white px-4 py-3"
                   >
                     <div>
                       <p className="text-sm font-black">{title}</p>
-                      <p className="text-xs font-semibold text-black/60">
+                      <p className="text-xs font-semibold text-slate-500">
                         {text}
                       </p>
                     </div>
-                    <span className="h-3 w-3 rounded-full bg-emerald-400" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
                   </div>
                 ))}
               </div>
@@ -142,69 +134,58 @@ function BusinessJoin() {
         </div>
       </section>
 
-      {/* Cards */}
-      <section className="relative mx-auto max-w-7xl px-5 pb-20 sm:px-8 lg:px-10">
-        <div className="mb-10 text-center">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-700">
-            Why join Bizuply
-          </p>
-          <h2 className="mt-3 text-4xl font-black tracking-[-0.04em] text-slate-800 sm:text-5xl">
-            Everything your business needs to grow smarter
-          </h2>
-        </div>
+      <section className="relative mx-auto max-w-7xl px-5 pb-16 text-center sm:px-8 lg:px-10">
+        <p className="text-sm font-black uppercase tracking-[0.18em] text-indigo-700">
+          למה להצטרף ל־Bizuply
+        </p>
+        <h2 className="mx-auto mt-3 max-w-3xl text-3xl font-black tracking-[-0.03em] text-slate-800 sm:text-4xl">
+          כל מה שהעסק צריך כדי לגדול חכם יותר
+        </h2>
 
-        <div className="grid gap-6 lg:grid-cols-3">
+        <div className="mt-10 grid gap-5 lg:grid-cols-3">
           {[
             {
-              icon: "🚀",
-              title: "Benefits You’ll Get",
+              title: "מה מקבלים",
               items: [
-                "Professional business page",
-                "Calendar & appointment tools",
-                "CRM for clients and leads",
-                "Simple monthly price",
+                "עמוד עסקי מקצועי",
+                "יומן וכלי תיאום תורים",
+                "CRM ללקוחות ולידים",
+                "מחיר חודשי פשוט",
               ],
             },
             {
-              icon: "🤝",
-              title: "More Collaborations",
+              title: "יותר שיתופי פעולה",
               items: [
-                "Connect with complementary businesses",
-                "Receive direct referrals",
-                "Collaborate on projects and deals",
-                "Build a strong growth network",
+                "חיבור לעסקים משלימים",
+                "הפניות ישירות",
+                "עבודה משותפת על עסקאות",
+                "רשת צמיחה חזקה",
               ],
             },
             {
-              icon: "✨",
-              title: "3 Simple Steps",
+              title: "3 צעדים פשוטים",
               items: [
-                "Sign up and choose your plan",
-                "Create your business page",
-                "Start receiving inquiries",
-                "Let the system work for you",
+                "נרשמים ובוחרים מסלול",
+                "בונים את עמוד העסק",
+                "מתחילים לקבל פניות",
+                "נותנים למערכת לעבוד בשבילכם",
               ],
             },
           ].map((card) => (
             <article
               key={card.title}
-              className="group rounded-[2rem] border border-white/80 bg-white/75 p-7 shadow-xl shadow-slate-900/5 backdrop-blur transition hover:-translate-y-1 hover:shadow-2xl hover:shadow-slate-900/10"
+              className="rounded-[1.75rem] border border-white/80 bg-white/85 p-7 text-center shadow-[0_18px_50px_rgba(15,23,42,0.06)] backdrop-blur"
             >
-              <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20 transition group-hover:scale-105">
-                {card.icon}
-              </div>
-
               <h3 className="text-2xl font-black tracking-[-0.03em] text-slate-800">
                 {card.title}
               </h3>
-
-              <ul className="mt-6 space-y-4">
+              <ul className="mt-6 space-y-3">
                 {card.items.map((item) => (
                   <li
                     key={item}
-                    className="flex items-start gap-3 text-base font-bold leading-7 text-slate-600"
+                    className="flex items-center justify-center gap-2 text-base font-bold leading-7 text-slate-600"
                   >
-                    <span className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-xs font-black text-emerald-700">
+                    <span className="grid h-5 w-5 place-items-center rounded-full bg-emerald-100 text-[0.65rem] font-black text-emerald-700">
                       ✓
                     </span>
                     {item}
@@ -216,33 +197,22 @@ function BusinessJoin() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="relative mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
-        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 px-6 py-14 text-center shadow-2xl shadow-slate-900/20 sm:px-10 lg:py-16">
-          <div className="mx-auto max-w-3xl">
-            <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-300">
-              Start growing today
-            </p>
-
-            <h2 className="mt-4 text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-              Join Bizuply and turn your business into a growth machine.
-            </h2>
-
-            <p className="mt-5 text-lg font-medium leading-8 text-white/70">
-              Manage clients, collaborations, appointments, reminders and smart
-              business growth from one powerful platform.
-            </p>
-
-            <div className="mt-8">
-              <Link
-                to="/register"
-                className="inline-flex items-center justify-center rounded-2xl bg-white px-9 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
-              >
-                Start Free Trial
-                <span className="ml-2">→</span>
-              </Link>
-            </div>
-          </div>
+      <section className="relative mx-auto max-w-4xl px-5 pb-24 text-center sm:px-8">
+        <div className="rounded-[2rem] border border-indigo-100 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-12 sm:px-10">
+          <p className="text-sm font-black text-indigo-700">מתחילים היום</p>
+          <h2 className="mt-3 text-3xl font-black tracking-[-0.03em] text-slate-900 sm:text-4xl">
+            הצטרפו ל־Bizuply והפכו את העסק למכונת צמיחה
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-slate-600">
+            נהלו לקוחות, שיתופי פעולה, תורים, תזכורות וצמיחה חכמה מפלטפורמה אחת.
+          </p>
+          <Link
+            to="/register"
+            className="mt-8 inline-flex items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-9 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5"
+          >
+            הירשמו עכשיו
+            <span className="me-2">←</span>
+          </Link>
         </div>
       </section>
     </main>

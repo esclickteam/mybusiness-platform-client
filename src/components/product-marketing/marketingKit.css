@@ -341,27 +341,52 @@
 /* ---------------------------------------------------------- spotlight card */
 
 .pm-spot {
+  --gold-i: 0;
   position: relative;
   isolation: isolate;
-  overflow: hidden;
+  overflow: visible;
   height: 100%;
   border-radius: 1.35rem;
-  padding: 1.75rem 1.4rem;
+  padding: 0;
   text-align: center;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(226, 232, 240, 0.95);
-  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  background: transparent;
+  border: 0;
+  box-shadow: none;
   transition:
     transform 0.4s var(--pm-ease),
-    border-color 0.4s var(--pm-ease),
     box-shadow 0.4s var(--pm-ease);
+}
+
+.pm-spot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  z-index: 0;
+  border-radius: inherit;
+  background: conic-gradient(
+    from 0deg,
+    #8a6a12,
+    #f8e7a0,
+    #d4af37,
+    #fff8dc,
+    #b8860b,
+    #f5d76e,
+    #8a6a12
+  );
+  opacity: 0;
+  animation:
+    pm-gold-spin 5s linear infinite,
+    pm-gold-focus 12s ease-in-out infinite;
+  animation-delay: 0s, calc(var(--gold-i, 0) * 2s);
+  pointer-events: none;
 }
 
 .pm-spot::before {
   content: "";
   position: absolute;
-  inset: 0;
-  z-index: 0;
+  inset: 2px;
+  z-index: 1;
+  border-radius: calc(1.35rem - 2px);
   opacity: 0;
   background: radial-gradient(
     18rem circle at var(--pm-mx, 50%) var(--pm-my, 0%),
@@ -369,23 +394,58 @@
     transparent 68%
   );
   transition: opacity 0.35s var(--pm-ease);
+  pointer-events: none;
 }
 
-.pm-spot > * {
+.pm-spot__shell {
   position: relative;
-  z-index: 1;
+  z-index: 2;
+  height: 100%;
+  border-radius: calc(1.35rem - 2px);
+  padding: 1.75rem 1.4rem;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 14px 40px rgba(15, 23, 42, 0.06);
+  overflow: hidden;
 }
 
 .pm-spot:hover {
-  transform: translateY(-6px);
+  transform: translateY(-8px) scale(1.015);
+}
+
+.pm-spot:hover::before {
+  opacity: 1;
+}
+
+.pm-spot:hover::after {
+  opacity: 0.9;
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.55));
+}
+
+.pm-spot:hover .pm-spot__shell {
   border-color: color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 38%, transparent);
   box-shadow:
     0 26px 60px rgba(15, 23, 42, 0.1),
     0 0 0 1px color-mix(in srgb, var(--pm-spot-accent, #7c3aed) 16%, transparent);
 }
 
-.pm-spot:hover::before {
-  opacity: 1;
+@keyframes pm-gold-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pm-gold-focus {
+  0%,
+  14% {
+    opacity: 1;
+    filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.5));
+  }
+  20%,
+  100% {
+    opacity: 0;
+    filter: none;
+  }
 }
 
 .pm-spot__icon {
@@ -808,7 +868,13 @@
   }
 
   .pm-cta,
-  .pm-spot {
+  .pm-spot,
+  .pm-spot::after {
+    animation: none !important;
     transition: none !important;
+  }
+
+  .pm-spot::after {
+    opacity: 0.4;
   }
 }

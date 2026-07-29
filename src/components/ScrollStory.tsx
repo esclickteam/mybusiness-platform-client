@@ -3,29 +3,22 @@
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import AppShot from "./AppShot";
 import {
   TourAppointmentsDemo,
   TourClientDemo,
   TourLeadCardDemo,
 } from "./TourLiveDemos";
+import TemplateShowcase from "./website-builder-marketing/TemplateShowcase";
+import { websiteHeroTemplates } from "./website-builder-marketing/websiteHeroTemplates";
 import { Reveal, Stagger, StaggerItem } from "./product-marketing";
-
-type Shot = {
-  src: string;
-  width: number;
-  height: number;
-  crumbKey: string;
-  altKey: string;
-};
+import "../styles/homeWow.css";
+import "./website-builder-marketing/WebsiteBuilderHero.css";
 
 type Step = {
   id: string;
   to: string;
-  /** Interactive product surface — preferred over static CRM screenshots. */
   live?: "leads" | "clients" | "appointments";
-  main?: Shot;
-  extras?: Shot[];
+  siteShowcase?: boolean;
 };
 
 const STEPS: Step[] = [
@@ -47,29 +40,7 @@ const STEPS: Step[] = [
   {
     id: "site",
     to: "/website-builder",
-    main: {
-      src: "/home/site-velmora.webp",
-      width: 1400,
-      height: 562,
-      crumbKey: "tour.siteCrumb",
-      altKey: "tour.siteAlt",
-    },
-    extras: [
-      {
-        src: "/home/site-lunelle.webp",
-        width: 1400,
-        height: 632,
-        crumbKey: "tour.siteExtra1Crumb",
-        altKey: "tour.siteExtra1Alt",
-      },
-      {
-        src: "/home/site-talentix.webp",
-        width: 1400,
-        height: 866,
-        crumbKey: "tour.siteExtra2Crumb",
-        altKey: "tour.siteExtra2Alt",
-      },
-    ],
+    siteShowcase: true,
   },
 ];
 
@@ -88,7 +59,10 @@ export default function ScrollStory() {
   };
 
   return (
-    <section className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24">
+    <section
+      className="relative overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] py-16 text-center text-slate-800 sm:py-24"
+      dir="rtl"
+    >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-1/2 top-0 h-[520px] w-[900px] -translate-x-1/2 rounded-full bg-indigo-200/35 blur-3xl" />
         <div className="absolute right-[-180px] top-[620px] h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
@@ -162,38 +136,17 @@ export default function ScrollStory() {
                 className="mx-auto mt-10 max-w-3xl"
               >
                 {step.live ? (
-                  <LiveFor kind={step.live} />
-                ) : step.main ? (
-                  <AppShot
-                    src={step.main.src}
-                    alt={t(step.main.altKey)}
-                    width={step.main.width}
-                    height={step.main.height}
-                    crumb={t(step.main.crumbKey)}
-                  />
+                  <div className="live-demo-fixed live-demo-fixed--tour">
+                    <LiveFor kind={step.live} />
+                  </div>
+                ) : step.siteShowcase ? (
+                  <div className="home-site-stage">
+                    <TemplateShowcase
+                      templates={websiteHeroTemplates.slice(0, 5)}
+                    />
+                  </div>
                 ) : null}
               </Reveal>
-
-              {step.extras?.length ? (
-                <div className="mt-5 grid items-center gap-5 sm:grid-cols-2">
-                  {step.extras.map((extra, index) => (
-                    <Reveal
-                      key={extra.src}
-                      from="up"
-                      distance={26}
-                      delay={0.06 + index * 0.08}
-                    >
-                      <AppShot
-                        src={extra.src}
-                        alt={t(extra.altKey)}
-                        width={extra.width}
-                        height={extra.height}
-                        crumb={t(extra.crumbKey)}
-                      />
-                    </Reveal>
-                  ))}
-                </div>
-              ) : null}
 
               <Reveal from="up" distance={18} delay={0.1} className="mt-9">
                 <Link
@@ -201,11 +154,8 @@ export default function ScrollStory() {
                   className="cta-solid group inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800"
                 >
                   {t(`tour.${step.id}Cta`)}
-                  <span
-                    aria-hidden="true"
-                    className="transition group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
-                  >
-                    →
+                  <span aria-hidden="true" className="transition group-hover:-translate-x-1">
+                    ←
                   </span>
                 </Link>
               </Reveal>
