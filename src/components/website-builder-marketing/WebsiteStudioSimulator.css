@@ -293,7 +293,7 @@
 .wbs__canvas {
   position: relative;
   display: grid;
-  place-items: start center;
+  place-items: center;
   padding: 1rem;
   overflow: hidden;
   background:
@@ -476,7 +476,7 @@
 }
 
 .wbs__tile {
-  aspect-ratio: 4 / 3;
+  height: 2.3rem;
   border-radius: 0.3rem;
   background: linear-gradient(
     135deg,

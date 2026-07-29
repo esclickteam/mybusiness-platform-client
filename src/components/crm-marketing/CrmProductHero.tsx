@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { ArrowLeft, CalendarClock, Facebook, ShieldCheck } from "lucide-react";
 import { StatStrip, WordReveal } from "../product-marketing";
 import { crmHeroStats } from "./crmMarketingData";
@@ -10,16 +9,10 @@ import "./CrmProductHero.css";
 const ease = [0.16, 1, 0.3, 1] as const;
 
 export default function CrmProductHero() {
-  const { t, i18n } = useTranslation();
-  const dir = i18n.dir();
   const reduceMotion = useReducedMotion();
 
   return (
-    <section
-      className="crm-hero"
-      aria-label={t("productPages.crm.badge")}
-      dir={dir}
-    >
+    <section className="crm-hero" aria-label="CRM ולידים" dir="rtl">
       <div className="crm-hero__atmosphere" aria-hidden="true">
         <span className="crm-hero__orb crm-hero__orb--a" />
         <span className="crm-hero__orb crm-hero__orb--b" />
@@ -37,7 +30,7 @@ export default function CrmProductHero() {
         >
           <span className="pm-badge pm-badge--meta">
             <Facebook size={13} aria-hidden="true" />
-            {t("productPages.crm.metaBadge")}
+            Meta App Review Developers
           </span>
           <span className="pm-badge">
             <span className="pm-badge__dot" />
@@ -74,7 +67,10 @@ export default function CrmProductHero() {
           transition={{ delay: 0.68, duration: 0.65, ease }}
         >
           <ShieldCheck size={17} aria-hidden="true" />
-          <p>{t("productPages.crm.metaTrustLine")}</p>
+          <p>
+            אנחנו Meta App Review Developers — אפליקציית BizUply עברה את תהליך
+            ה־App Review של Meta לחיבור Lead Ads לעסקים
+          </p>
         </motion.div>
 
         <motion.div
@@ -84,11 +80,11 @@ export default function CrmProductHero() {
           transition={{ delay: 0.76, duration: 0.65, ease }}
         >
           <Link to="/register" className="pm-cta pm-cta--primary">
-            {t("productPages.ctaPrimary")}
+            מתחילים בחינם
             <ArrowLeft size={17} aria-hidden="true" />
           </Link>
           <Link to="/pricing" className="pm-cta pm-cta--ghost">
-            {t("productPages.ctaPricing")}
+            לצפייה במסלולים
           </Link>
         </motion.div>
 

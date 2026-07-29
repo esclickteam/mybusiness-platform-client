@@ -1,7 +1,8 @@
 export type CrmTopicSection = {
   id: "leads" | "clients" | "appointments";
-  titleKey: string;
-  textKey: string;
+  eyebrow: string;
+  title: string;
+  text: string;
   primary: string;
   gallery: Array<{
     src: string;
@@ -13,8 +14,9 @@ export type CrmTopicSection = {
 export const crmTopicSections: CrmTopicSection[] = [
   {
     id: "leads",
-    titleKey: "productPages.crm.sectionLeadsTitle",
-    textKey: "productPages.crm.sectionLeadsText",
+    eyebrow: "לידים",
+    title: "ניהול לידים מקצה לקצה",
+    text: "קליטה מ־Meta, מ־Google ומהאתר, סטטוסים, משימות, כרטיס ליד ומרכז התראות — כל צינור המכירות במקום אחד",
     primary: "/leads1.jpeg",
     gallery: [
       { src: "/leads2.jpeg", frame: "wide" },
@@ -24,16 +26,18 @@ export const crmTopicSections: CrmTopicSection[] = [
   },
   {
     id: "clients",
-    titleKey: "productPages.crm.sectionClientsTitle",
-    textKey: "productPages.crm.sectionClientsText",
+    eyebrow: "לקוחות",
+    title: "ניהול לקוחות פרימיום",
+    text: "מאגר לקוחות, תיק מלא, שדות מותאמים ותיעוד שוטף עם מסמכים שממשיך אחרי הסגירה",
     primary: "/leads4.jpeg",
     gallery: [{ src: "/leads5.jpeg", frame: "wide" }],
     accent: "#2563eb",
   },
   {
     id: "appointments",
-    titleKey: "productPages.crm.sectionAppointmentsTitle",
-    textKey: "productPages.crm.sectionAppointmentsText",
+    eyebrow: "פגישות",
+    title: "יומן פגישות מסונכרן",
+    text: "תורים, סטטוסי תשלום ויומן חי שמחוברים ללקוחות ולקטלוג השירותים של העסק",
     primary: "/leads7.jpeg",
     gallery: [{ src: "/leads6.jpeg", frame: "wide" }],
     accent: "#4f46e5",

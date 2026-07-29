@@ -296,7 +296,7 @@
 .crm-topic__stage {
   position: relative;
   isolation: isolate;
-  min-height: clamp(26rem, 62vw, 40rem);
+  min-height: clamp(16rem, 34vw, 26rem);
   border-radius: 2rem;
   padding: clamp(1.25rem, 3vw, 2.4rem);
   overflow: visible;

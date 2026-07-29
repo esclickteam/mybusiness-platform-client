@@ -78,17 +78,6 @@
   position: relative;
   display: grid;
   grid-template-columns: 7.5rem minmax(0, 1fr);
-  min-height: 23rem;
-}
-
-@media (max-width: 780px) {
-  .clc__body {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .clc__nav {
-    display: none;
-  }
 }
 
 .clc__nav {
@@ -178,12 +167,6 @@
   list-style: none;
 }
 
-@media (max-width: 640px) {
-  .clc__kpis {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-
 .clc__kpis li {
   --clc-accent: #7c3aed;
   padding: 0.45rem 0.5rem;
@@ -219,16 +202,6 @@
   align-items: start;
 }
 
-@media (max-width: 640px) {
-  .clc__board {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
-  .clc__column:nth-child(n + 4) {
-    display: none;
-  }
-}
-
 .clc__column {
   min-width: 0;
   padding: 0.45rem;
@@ -258,8 +231,9 @@
 
 .clc__column-body {
   display: grid;
+  align-content: start;
   gap: 0.35rem;
-  min-height: 3.4rem;
+  min-height: 9.5rem;
 }
 
 .clc__card {
@@ -504,4 +478,39 @@
 
 [dir="ltr"] .clc__steps-fill {
   transform-origin: left center;
+}
+
+/* ------------------------------------------------------------- responsive
+   Kept at the end of the file so these overrides win over the base rules. */
+
+@media (max-width: 780px) {
+  .clc__body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .clc__nav {
+    display: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .clc__kpis {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .clc__board {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .clc__column:nth-child(n + 4) {
+    display: none;
+  }
+
+  .clc__column-body {
+    min-height: 6rem;
+  }
+
+  .clc__drawer {
+    width: min(12rem, 70%);
+  }
 }

@@ -453,15 +453,28 @@
 
 .wbx-live {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 0.7rem;
   margin-top: 2rem;
   list-style: none;
   padding: 0;
 }
 
+@media (min-width: 640px) {
+  .wbx-live {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .wbx-live {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
 .wbx-live li {
   display: grid;
+  justify-items: start;
   gap: 0.35rem;
   padding: 0.95rem 1rem;
   border-radius: 1rem;

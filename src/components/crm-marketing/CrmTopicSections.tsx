@@ -6,7 +6,6 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
-import { useTranslation } from "react-i18next";
 import { crmTopicSections, type CrmTopicSection } from "./crmSectionsData";
 
 const ease = [0.22, 1, 0.36, 1] as const;
@@ -28,7 +27,6 @@ function TopicSection({
   section: CrmTopicSection;
   index: number;
 }) {
-  const { t } = useTranslation();
   const reduceMotion = useReducedMotion();
   const ref = useRef<HTMLElement>(null);
 
@@ -68,7 +66,7 @@ function TopicSection({
           viewport={{ once: true, amount: 0.55 }}
           transition={{ duration: 0.55, ease }}
         >
-          {t(`productPages.crm.section${capitalize(section.id)}Badge`)}
+          {section.eyebrow}
         </motion.p>
 
         <motion.h2
@@ -79,7 +77,7 @@ function TopicSection({
           viewport={{ once: true, amount: 0.55 }}
           transition={{ duration: 0.75, ease }}
         >
-          {t(section.titleKey)}
+          {section.title}
         </motion.h2>
 
         <motion.p
@@ -89,7 +87,7 @@ function TopicSection({
           viewport={{ once: true, amount: 0.55 }}
           transition={{ duration: 0.6, delay: 0.06, ease }}
         >
-          {t(section.textKey)}
+          {section.text}
         </motion.p>
       </div>
 
@@ -120,7 +118,7 @@ function TopicSection({
             <div className="crm-topic__shine" aria-hidden="true" />
             <img
               src={section.primary}
-              alt={t(section.titleKey)}
+              alt={section.title}
               loading={index === 0 ? "eager" : "lazy"}
               decoding="async"
               fetchPriority={index === 0 ? "high" : "auto"}
@@ -175,6 +173,3 @@ function TopicSection({
   );
 }
 
-function capitalize(value: string) {
-  return value.charAt(0).toUpperCase() + value.slice(1);
-}

@@ -1,6 +1,5 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useTranslation } from "react-i18next";
 import {
   BellRing,
   Filter,
@@ -79,20 +78,20 @@ const CONSOLE_CARDS = [
   },
 ];
 
-export default function CrmProductPage() {
-  const { t, i18n } = useTranslation();
-  const base = "productPages.crm";
-  const dir = i18n.dir();
+const SEO_TITLE = "CRM ולידים מ־Meta | BizUply — Meta App Review Developers";
+const SEO_DESCRIPTION =
+  "BizUply הם מפתחי Meta שעברו App Review. חברו Facebook Lead Ads ל־CRM ונהלו לידים, לקוחות ופגישות במקום אחד.";
 
+export default function CrmProductPage() {
   return (
-    <div className="pm crm-page crmp" dir={dir}>
+    <div className="pm crm-page crmp" dir="rtl">
       <Helmet>
-        <title>{t(`${base}.seoTitle`)}</title>
-        <meta name="description" content={t(`${base}.seoDescription`)} />
+        <title>{SEO_TITLE}</title>
+        <meta name="description" content={SEO_DESCRIPTION} />
         <link rel="canonical" href="https://bizuply.com/crm" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={t(`${base}.seoTitle`)} />
-        <meta property="og:description" content={t(`${base}.seoDescription`)} />
+        <meta property="og:title" content={SEO_TITLE} />
+        <meta property="og:description" content={SEO_DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <link rel="preload" as="image" href="/leads1.jpeg" />
@@ -223,10 +222,10 @@ export default function CrmProductPage() {
           <div className="crmp__final">
             <FinalCta
               eyebrow="מתחילים לסדר את הצינור"
-              title={t(`${base}.ctaTitle`)}
-              text={t(`${base}.ctaText`)}
-              primaryLabel={t("productPages.ctaPrimary")}
-              secondaryLabel={t("productPages.ctaContact")}
+              title="סדרו את צינור הלידים — ואל תפספסו אף פנייה"
+              text="מחברים את מקורות הלידים, עובדים בסטטוסים ובמשימות, וממשיכים לתיק לקוח וליומן תורים. הכל באפליקציית Meta שעברה App Review."
+              primaryLabel="מתחילים בחינם"
+              secondaryLabel="דברו איתנו"
               secondaryTo="/contact"
             />
           </div>

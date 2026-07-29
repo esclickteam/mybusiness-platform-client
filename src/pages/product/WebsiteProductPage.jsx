@@ -1,6 +1,5 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useTranslation } from "react-i18next";
 import {
   Code2,
   History,
@@ -77,31 +76,20 @@ const EDITOR_CARDS = [
   },
 ];
 
-export default function WebsiteProductPage() {
-  const { t } = useTranslation();
+const SEO_TITLE = "בניית אתרים מקצועיים | BizUply";
+const SEO_DESCRIPTION =
+  "בונים אתר, חנות או אתר עם זימון תורים מתוך 205 תבניות, עורכים בעורך ויזואלי ומפרסמים לדומיין שלכם — כשכל פנייה מהאתר נכנסת ל־CRM.";
 
+export default function WebsiteProductPage() {
   return (
     <div dir="rtl" className="pm wbp">
       <Helmet>
-        <title>
-          {t("productPages.website.seoTitle", {
-            defaultValue: "בניית אתרים מקצועיים | Bizuply",
-          })}
-        </title>
-        <meta
-          name="description"
-          content={t("productPages.website.seoDescription", {
-            defaultValue:
-              "צרו אתר, חנות או מערכת תורים מקצועית שמחוברת ללידים, ל־CRM ולאוטומציות של Bizuply.",
-          })}
-        />
+        <title>{SEO_TITLE}</title>
+        <meta name="description" content={SEO_DESCRIPTION} />
         <link rel="canonical" href="https://bizuply.com/website-builder" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content="בניית אתרים עם Bizuply" />
-        <meta
-          property="og:description"
-          content="בונים אתר שלא רק נראה טוב — אלא עובד בשביל העסק."
-        />
+        <meta property="og:title" content={SEO_TITLE} />
+        <meta property="og:description" content={SEO_DESCRIPTION} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <link rel="preload" as="image" href="/floriquedesk.png" />
@@ -219,12 +207,8 @@ export default function WebsiteProductPage() {
               eyebrow="מוכנים לעלות לאוויר"
               title="האתר הבא שלכם מתחיל מתבנית — ונגמר בפניות"
               text="בוחרים תבנית, עורכים אותה בעורך הוויזואלי, מוסיפים תוספים ומפרסמים. הפניות מהאתר מחכות לכם בצינור הלידים ב־CRM."
-              primaryLabel={t("productPages.ctaPrimary", {
-                defaultValue: "מתחילים בחינם",
-              })}
-              secondaryLabel={t("productPages.ctaPricing", {
-                defaultValue: "לצפייה במסלולים",
-              })}
+              primaryLabel="מתחילים בחינם"
+              secondaryLabel="לצפייה במסלולים"
               secondaryTo="/pricing"
             />
           </div>
