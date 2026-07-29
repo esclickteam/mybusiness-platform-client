@@ -70,7 +70,7 @@ export default function HeroSection() {
 
           <Link
             to="/pricing"
-            className="cta-soft inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white/85 px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur transition hover:-translate-y-0.5 hover:border-indigo-200 sm:w-auto"
+            className="cta-soft inline-flex w-full items-center justify-center rounded-2xl border-2 border-indigo-300 bg-white px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/80 transition hover:-translate-y-0.5 hover:border-indigo-400 sm:w-auto"
           >
             {t("home.viewPricing")}
           </Link>
