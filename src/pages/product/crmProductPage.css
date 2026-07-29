@@ -3,7 +3,3 @@
 .crmp__final {
   margin-top: clamp(3rem, 6vw, 4.5rem);
 }
-
-#automations {
-  scroll-margin-top: 6.5rem;
-}

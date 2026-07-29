@@ -38,7 +38,7 @@ const navLinks: NavLink[] = [
     labelKey: "nav.crm",
     children: [
       { to: "/crm", labelKey: "nav.crm" },
-      { to: "/crm#automations", labelKey: "nav.automations" },
+      { to: "/automations", labelKey: "nav.automations" },
     ],
   },
   { to: "/agents", labelKey: "nav.agents" },
@@ -156,13 +156,7 @@ export default function Header() {
                     {crmOpen ? (
                       <div className="site-header__menu" role="menu">
                         {item.children.map((child) => {
-                          const isHash = child.to.includes("#");
-                          const childActive =
-                            child.to === "/crm#automations"
-                              ? location.pathname === "/crm" &&
-                                location.hash === "#automations"
-                              : location.pathname === child.to &&
-                                !location.hash;
+                          const childActive = location.pathname === child.to;
 
                           return (
                             <Link
@@ -172,19 +166,7 @@ export default function Header() {
                               className={`site-header__menu-item${
                                 childActive ? " is-active" : ""
                               }`}
-                              onClick={() => {
-                                setCrmOpen(false);
-                                if (isHash && location.pathname === "/crm") {
-                                  requestAnimationFrame(() => {
-                                    document
-                                      .getElementById("automations")
-                                      ?.scrollIntoView({
-                                        behavior: "smooth",
-                                        block: "start",
-                                      });
-                                  });
-                                }
-                              }}
+                              onClick={() => setCrmOpen(false)}
                             >
                               {t(child.labelKey)}
                             </Link>

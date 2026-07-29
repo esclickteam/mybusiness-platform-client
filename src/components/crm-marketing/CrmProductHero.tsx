@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, CalendarClock, Facebook, ShieldCheck } from "lucide-react";
+import { ArrowLeft, CalendarClock, Facebook, ShieldCheck, Zap } from "lucide-react";
 import { StatStrip, WordReveal } from "../product-marketing";
 import { crmHeroStats } from "./crmMarketingData";
 import "./CrmProductHero.css";
@@ -79,8 +79,9 @@ export default function CrmProductHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.76, duration: 0.65, ease }}
         >
-          <Link to="/pricing" className="pm-cta pm-cta--primary">
-            לצפייה בחבילות
+          <Link to="/automations" className="pm-cta pm-cta--primary">
+            <Zap size={17} aria-hidden="true" />
+            אוטומציות
             <ArrowLeft size={17} aria-hidden="true" />
           </Link>
         </motion.div>
