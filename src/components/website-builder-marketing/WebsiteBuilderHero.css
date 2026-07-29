@@ -145,7 +145,7 @@
 
 .wb-hero__stage-wrap {
   position: relative;
-  margin-top: 0.35rem;
+  margin-top: 0.15rem;
   perspective: 1800px;
   overflow: visible;
   flex: 1 1 auto;
@@ -233,9 +233,9 @@
   z-index: 1;
   width: 100%;
   flex: 1 1 auto;
-  min-height: 260px;
-  max-height: min(46dvh, 460px);
-  height: min(46dvh, 460px);
+  min-height: 280px;
+  max-height: min(52dvh, 520px);
+  height: min(52dvh, 520px);
   overflow: visible;
   transform-style: preserve-3d;
   animation: wb-stage-float 5.8s ease-in-out infinite alternate;
