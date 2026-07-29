@@ -56,12 +56,18 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import LeadFormQuestionBuilder from "./LeadFormQuestionBuilder";
 import {
+  buildMetaLeadFormQuestionsPayload,
+  defaultSelectedLeadContactTypes,
   formatCurrency,
   formatNumber,
+  LEAD_FORM_CONTACT_FIELDS,
   OBJECTIVE_OPTIONS,
   resolveAdAccountId,
   statusTone,
+  validateLeadFormBuilder,
+  type LeadFormCustomQuestionDraft,
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
@@ -241,7 +247,12 @@ export default function MetaCampaignEditorPage() {
   const [previews, setPreviews] = useState<MetaAdPreview[]>([]);
   const [activePreview, setActivePreview] = useState(ALL_PREVIEW_FORMATS[0]);
   const [newFormName, setNewFormName] = useState("");
-  const [customQuestions, setCustomQuestions] = useState("שם מלא\nטלפון\nאימייל");
+  const [leadContactTypes, setLeadContactTypes] = useState<string[]>(() =>
+    defaultSelectedLeadContactTypes()
+  );
+  const [leadCustomQuestions, setLeadCustomQuestions] = useState<
+    LeadFormCustomQuestionDraft[]
+  >([]);
 
   const currency = connection?.selectedAdAccount?.currency || "ILS";
   const accountIdLabel = resolveAdAccountId(connection?.selectedAdAccount);
@@ -647,17 +658,20 @@ export default function MetaCampaignEditorPage() {
       toast.error(t("metaCampaigns.form.leadFormNameRequired"));
       return;
     }
+    const validationError = validateLeadFormBuilder({
+      contactTypes: leadContactTypes,
+      customQuestions: leadCustomQuestions,
+    });
+    if (validationError) {
+      toast.error(t(`metaCampaigns.form.${validationError}`));
+      return;
+    }
     try {
       setFormsBusy(true);
-      const questions = customQuestions
-        .split("\n")
-        .map((line) => line.trim())
-        .filter(Boolean)
-        .map((label, index) => ({
-          type: "CUSTOM",
-          key: `q_${index + 1}`,
-          label,
-        }));
+      const questions = buildMetaLeadFormQuestionsPayload({
+        contactTypes: leadContactTypes,
+        customQuestions: leadCustomQuestions,
+      });
       const result = await createMetaLeadForm(businessId, {
         pageId: form.pageId,
         name: newFormName.trim(),
@@ -669,6 +683,8 @@ export default function MetaCampaignEditorPage() {
         updateField("leadFormId", result.form.id);
       }
       setNewFormName("");
+      setLeadContactTypes(defaultSelectedLeadContactTypes());
+      setLeadCustomQuestions([]);
       toast.success(t("metaCampaigns.toasts.leadFormCreated"));
     } catch (error: any) {
       toast.error(
@@ -679,6 +695,17 @@ export default function MetaCampaignEditorPage() {
     } finally {
       setFormsBusy(false);
     }
+  };
+
+  const resolveQuestionLabel = (question: {
+    type?: string;
+    label?: string;
+    key?: string;
+  }) => {
+    const type = String(question.type || "").toUpperCase();
+    const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
+    if (contact) return isHe ? contact.labelHe : contact.labelEn;
+    return question.label || question.key || type || "—";
   };
 
   const save = async () => {
@@ -1412,36 +1439,60 @@ export default function MetaCampaignEditorPage() {
                 <p className="text-sm font-black text-slate-900">
                   {t("metaCampaigns.form.formQuestions")}
                 </p>
-                <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-600">
-                  {selectedForm.questions.map((q) => (
-                    <li key={q.key || q.id}>
-                      • {q.label || q.key}{" "}
-                      <span className="text-slate-400">({q.type})</span>
-                      {q.options?.length
-                        ? ` — ${q.options.map((o) => o.value).join(", ")}`
-                        : ""}
-                    </li>
-                  ))}
+                <ul className="mt-2 space-y-2 text-sm font-semibold text-slate-600">
+                  {selectedForm.questions.map((q) => {
+                    const optionValues = (q.options || [])
+                      .map((o) =>
+                        typeof o === "string" ? o : o?.value || o?.key || ""
+                      )
+                      .filter(Boolean);
+                    const isChoice = optionValues.length > 0;
+                    return (
+                      <li key={q.key || q.id || `${q.type}-${q.label}`}>
+                        <span className="text-slate-900">
+                          {resolveQuestionLabel(q)}
+                        </span>
+                        <span className="ms-2 text-xs font-bold text-slate-400">
+                          {isChoice
+                            ? t("metaCampaigns.form.answerTypeMultiple")
+                            : q.type === "CUSTOM"
+                              ? t("metaCampaigns.form.answerTypeShort")
+                              : t("metaCampaigns.form.answerTypeContact")}
+                        </span>
+                        {isChoice ? (
+                          <p className="mt-1 text-xs font-semibold text-slate-500">
+                            {optionValues.join(" · ")}
+                          </p>
+                        ) : null}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             ) : null}
             {navFooter}
           </div>
-          <div className={`${cardBase} space-y-3 p-5`}>
-            <p className="text-sm font-black text-slate-900">
-              {t("metaCampaigns.form.createLeadFormTitle")}
-            </p>
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <div>
+              <p className="text-sm font-black text-slate-900">
+                {t("metaCampaigns.form.createLeadFormTitle")}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                {t("metaCampaigns.form.createLeadFormHint")}
+              </p>
+            </div>
             <input
               className={inputBase}
               value={newFormName}
               onChange={(e) => setNewFormName(e.target.value)}
               placeholder={t("metaCampaigns.form.leadFormNamePlaceholder")}
             />
-            <textarea
-              className={`${inputBase} min-h-[120px]`}
-              value={customQuestions}
-              onChange={(e) => setCustomQuestions(e.target.value)}
-              placeholder={t("metaCampaigns.form.customQuestionsPlaceholder")}
+            <LeadFormQuestionBuilder
+              contactTypes={leadContactTypes}
+              customQuestions={leadCustomQuestions}
+              onContactTypesChange={setLeadContactTypes}
+              onCustomQuestionsChange={setLeadCustomQuestions}
+              disabled={formsBusy}
             />
             <button
               type="button"
@@ -1449,7 +1500,11 @@ export default function MetaCampaignEditorPage() {
               disabled={formsBusy}
               onClick={createLeadFormQuick}
             >
-              <Plus className="h-4 w-4" />
+              {formsBusy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Plus className="h-4 w-4" />
+              )}
               {t("metaCampaigns.form.createLeadForm")}
             </button>
           </div>

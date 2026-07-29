@@ -82,11 +82,21 @@ export type MetaLabeledOption = {
 
 export type MetaLeadFormQuestion = {
   id?: string;
-  key: string;
-  label: string;
+  key?: string;
+  label?: string;
   type: string;
   required?: boolean;
-  options?: Array<{ key: string; value: string }>;
+  answerType?: "short_answer" | "multiple_choice";
+  options?: Array<string | { key?: string; value: string }>;
+};
+
+export type MetaLeadFormQuestionType = {
+  type: string;
+  category: "contact" | "custom" | string;
+  labelHe: string;
+  labelEn: string;
+  defaultSelected?: boolean;
+  answerModes?: Array<"short_answer" | "multiple_choice">;
 };
 
 export type MetaLeadForm = {
@@ -121,6 +131,7 @@ export type MetaAdsConnectionStatus = {
   specialAdCategories?: MetaLabeledOption[];
   callToActions?: MetaLabeledOption[];
   previewFormats?: MetaLabeledOption[];
+  leadFormQuestionTypes?: MetaLeadFormQuestionType[];
 };
 
 export type MetaCampaignsOverview = {
@@ -438,6 +449,7 @@ export async function listMetaLeadForms(
     success: boolean;
     pageId: string;
     forms: MetaLeadForm[];
+    questionTypes?: MetaLeadFormQuestionType[];
   }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
   return data;
 }
