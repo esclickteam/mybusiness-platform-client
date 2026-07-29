@@ -27,19 +27,9 @@ export default function CrmProductHero() {
 
       <div className="crm-hero__inner">
         <div className="crm-hero__copy">
-          <motion.p
-            className="crm-hero__brand"
-            custom={0.05}
-            variants={fade}
-            initial="hidden"
-            animate="show"
-          >
-            BizUply <span>CRM</span>
-          </motion.p>
-
           <motion.h1
             className="crm-hero__title"
-            custom={0.14}
+            custom={0.08}
             variants={fade}
             initial="hidden"
             animate="show"
@@ -50,19 +40,9 @@ export default function CrmProductHero() {
             </span>
           </motion.h1>
 
-          <motion.p
-            className="crm-hero__subtitle"
-            custom={0.24}
-            variants={fade}
-            initial="hidden"
-            animate="show"
-          >
-            {t("productPages.crm.heroSubtitle")}
-          </motion.p>
-
           <motion.div
             className="crm-hero__actions"
-            custom={0.34}
+            custom={0.22}
             variants={fade}
             initial="hidden"
             animate="show"
@@ -76,23 +56,6 @@ export default function CrmProductHero() {
           </motion.div>
         </div>
       </div>
-
-      <motion.div
-        className="crm-hero__visual"
-        initial={{ opacity: 0, y: 28 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <motion.img
-          src="/images/crm-preview-v2.png"
-          alt={t("productPages.crm.heroImageAlt")}
-          className="crm-hero__shot"
-          decoding="async"
-          fetchPriority="high"
-          animate={{ y: [0, -6, 0] }}
-          transition={{ duration: 6.5, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </motion.div>
     </section>
   );
 }
