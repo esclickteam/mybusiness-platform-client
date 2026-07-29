@@ -15,7 +15,7 @@ export default function Accessibility() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800"
       dir="rtl"
     >
       <Helmet>
@@ -89,7 +89,7 @@ export default function Accessibility() {
             ))}
           </div>
 
-          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-4 text-slate-800">
+          <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
             <p className="text-sm font-black text-amber-800">צריכים סיוע?</p>
             <a
               href="mailto:support@bizuply.com"
@@ -188,7 +188,7 @@ export default function Accessibility() {
               .
             </p>
 
-            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-4 text-slate-800">
+            <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-800">
                 הצהרת נגישות
               </p>

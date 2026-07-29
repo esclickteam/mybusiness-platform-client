@@ -2,7 +2,8 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-const LOGO_SRC = "/bizuply logo.png";
+import logo from "../images/logo_final.svg";
+import { getTextDirection, normalizeLanguage } from "../i18n/localeUtils";
 
 type FooterLink = {
   label: string;
@@ -16,8 +17,9 @@ type FooterColumnProps = {
 
 /** Compact footer on the page background — no card shell. */
 export default function Footer() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const year = new Date().getFullYear();
+  const footerDir = getTextDirection(normalizeLanguage(i18n.language));
 
   const solutionsLinks: FooterLink[] = [
     { label: t("footer.crm"), to: "/crm" },
@@ -44,28 +46,28 @@ export default function Footer() {
   return (
     <footer
       className="relative border-t border-slate-200/70 bg-transparent text-slate-700"
-      dir="rtl"
+      dir={footerDir}
     >
-      <div className="relative mx-auto max-w-5xl px-4 py-5 text-center sm:px-6 sm:py-6">
-        <Link to="/" className="inline-flex items-center justify-center">
+      <div className="relative mx-auto max-w-5xl px-4 py-6 text-start sm:px-6 sm:py-8">
+        <Link to="/" className="inline-flex items-center" aria-label="BizUply">
           <img
-            src={LOGO_SRC}
-            alt="Bizuply"
-            width={220}
-            height={64}
-            className="h-14 w-auto object-contain sm:h-16"
+            src={logo}
+            alt="BizUply"
+            width={280}
+            height={88}
+            className="h-[4.75rem] w-auto max-w-[min(20rem,80vw)] object-contain sm:h-[5.5rem]"
             loading="lazy"
             decoding="async"
           />
         </Link>
 
-        <div className="mx-auto mt-4 grid max-w-3xl gap-4 sm:grid-cols-3 sm:gap-3">
+        <div className="mt-5 grid max-w-3xl gap-5 sm:grid-cols-3 sm:gap-4">
           <FooterColumn title={t("footer.solutions")} links={solutionsLinks} />
           <FooterColumn title={t("footer.company")} links={companyLinks} />
           <FooterColumn title={t("footer.support")} links={supportLinks} />
         </div>
 
-        <div className="mx-auto mt-4 h-px max-w-xl bg-slate-200/80" />
+        <div className="mt-5 h-px max-w-xl bg-slate-200/80" />
 
         <p className="mt-3 text-[11px] font-semibold text-slate-400 sm:text-xs">
           {t("footer.rights", { year })}
@@ -85,7 +87,7 @@ function scrollPageToTop() {
 
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
-    <div className="text-center">
+    <div className="text-start">
       <h4 className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-400">
         {title}
       </h4>
