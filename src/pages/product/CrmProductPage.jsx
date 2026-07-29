@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Facebook } from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
+import CrmTopicSections from "../../components/crm-marketing/CrmTopicSections";
 import "../../components/crm-marketing/CrmProductHero.css";
 
 const fadeUp = {
@@ -20,17 +21,6 @@ export default function CrmProductPage() {
   const { t, i18n } = useTranslation();
   const base = "productPages.crm";
   const dir = i18n.dir();
-
-  const benefits = [1, 2, 3, 4].map((n) => ({
-    title: t(`${base}.benefit${n}Title`),
-    text: t(`${base}.benefit${n}Text`),
-  }));
-
-  const steps = [1, 2, 3, 4].map((n) => ({
-    title: t(`${base}.step${n}Title`),
-    text: t(`${base}.step${n}Text`),
-  }));
-
   const metaPoints = [1, 2, 3].map((n) => t(`${base}.metaPoint${n}`));
 
   return (
@@ -44,9 +34,11 @@ export default function CrmProductPage() {
         <meta property="og:description" content={t(`${base}.seoDescription`)} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
+        <link rel="preload" as="image" href="/leads1.jpeg" />
       </Helmet>
 
       <CrmProductHero />
+      <CrmTopicSections />
 
       <div className="crm-page__shell">
         <motion.section
@@ -70,47 +62,6 @@ export default function CrmProductPage() {
                 <CheckCircle2 size={20} />
                 <p>{point}</p>
               </div>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="crm-page__section"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-        >
-          <p className="crm-page__eyebrow">{t("productPages.benefitsBadge")}</p>
-          <h2 className="crm-page__heading">{t(`${base}.benefitsTitle`)}</h2>
-          <p className="crm-page__lead">{t(`${base}.benefitsSubtitle`)}</p>
-          <div className="crm-page__features">
-            {benefits.map((item, index) => (
-              <article key={item.title} className="crm-page__feature">
-                <p className="crm-page__feature-index">0{index + 1}</p>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          className="crm-page__section"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.15 }}
-        >
-          <p className="crm-page__eyebrow">{t("productPages.stepsBadge")}</p>
-          <h2 className="crm-page__heading">{t(`${base}.stepsTitle`)}</h2>
-          <p className="crm-page__lead">{t(`${base}.stepsSubtitle`)}</p>
-          <div className="crm-page__steps">
-            {steps.map((step) => (
-              <article key={step.title} className="crm-page__step">
-                <h3>{step.title}</h3>
-                <p>{step.text}</p>
-              </article>
             ))}
           </div>
         </motion.section>
