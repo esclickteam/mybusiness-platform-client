@@ -22,12 +22,10 @@ export default function WebsiteTypesReveal() {
                 "--wb-type-accent-soft": block.accentSoft,
               } as React.CSSProperties
             }
-            initial={
-              reduceMotion ? false : { opacity: 0, y: 44, filter: "blur(10px)" }
-            }
-            whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-            viewport={{ once: true, amount: 0.25 }}
-            transition={{ duration: 0.95, ease }}
+            initial={reduceMotion ? false : { opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.7, ease }}
           >
             <div className="wb-type-block__copy">
               <span className="wb-type-block__index" aria-hidden="true">

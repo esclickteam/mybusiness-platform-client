@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createContext, useContext } from "react";
 
 import {
   resolveVisualLibraryStackPageId,
@@ -27,7 +27,30 @@ type VisualPageStackProps = {
    * custom/library Site Pages force `__library__` so template bodies stay hidden.
    */
   data?: Record<string, unknown> | null;
+  /**
+   * When false, only the active page is mounted (no keep-alive).
+   * Marketing previews use this to avoid mounting every template page at once.
+   * Defaults to true (editor / public runtime contract).
+   */
+  keepAlive?: boolean;
 };
+
+const VisualPageStackKeepAliveContext = createContext<boolean | null>(null);
+
+/** Lets marketing previews disable keep-alive without editing every template. */
+export function VisualPageStackKeepAliveProvider({
+  keepAlive,
+  children,
+}: {
+  keepAlive: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <VisualPageStackKeepAliveContext.Provider value={keepAlive}>
+      {children}
+    </VisualPageStackKeepAliveContext.Provider>
+  );
+}
 
 /**
  * Keep-alive page stack for visual-react templates.
@@ -43,7 +66,10 @@ export function VisualPageStack({
   includeInsertHost = true,
   className,
   data,
+  keepAlive: keepAliveProp,
 }: VisualPageStackProps) {
+  const keepAliveFromContext = useContext(VisualPageStackKeepAliveContext);
+  const keepAlive = keepAliveProp ?? keepAliveFromContext ?? true;
   const libraryContext = useVisualLibraryPage();
   const knownPageIds = pages.map((page) => page.id);
   const knownSet = new Set(knownPageIds.map((id) => String(id || "").trim()));
@@ -72,6 +98,7 @@ export function VisualPageStack({
       <div
         data-visual-page-stack="true"
         data-visual-library-stack={forceLibrary ? "true" : undefined}
+        data-visual-page-keepalive={keepAlive ? "true" : "false"}
         className={className}
       >
         {pages.map((page) => {
@@ -79,6 +106,10 @@ export function VisualPageStack({
             typeof page.visible === "boolean"
               ? page.visible
               : !forceLibrary && page.id === effectiveActivePageId;
+
+          // Marketing / static previews: skip mounting inactive pages entirely.
+          // Velmora alone registers 14+ pages — keep-alive freezes mobile scroll.
+          if (!keepAlive && !visible) return null;
 
           return (
             <div
