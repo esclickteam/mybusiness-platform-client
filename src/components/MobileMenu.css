@@ -50,9 +50,9 @@
 
 .site-mobile__brand img {
   display: block;
-  height: 3.75rem;
+  height: 2.75rem;
   width: auto;
-  max-width: 15rem;
+  max-width: 11rem;
   object-fit: contain;
 }
 

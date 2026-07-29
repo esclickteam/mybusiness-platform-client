@@ -15,7 +15,7 @@ type FooterColumnProps = {
   links: FooterLink[];
 };
 
-/** Compact footer on the page background — no card shell. */
+/** Compact, centered footer on the page background. */
 export default function Footer() {
   const { t, i18n } = useTranslation();
   const year = new Date().getFullYear();
@@ -48,26 +48,30 @@ export default function Footer() {
       className="relative border-t border-slate-200/70 bg-transparent text-slate-700"
       dir={footerDir}
     >
-      <div className="relative mx-auto max-w-5xl px-4 py-6 text-start sm:px-6 sm:py-8">
-        <Link to="/" className="inline-flex items-center" aria-label="BizUply">
+      <div className="relative mx-auto flex max-w-5xl flex-col items-center px-4 py-6 text-center sm:px-6 sm:py-8">
+        <Link
+          to="/"
+          className="inline-flex items-center justify-center"
+          aria-label="BizUply"
+        >
           <img
             src={logo}
             alt="BizUply"
-            width={280}
-            height={88}
-            className="h-[4.75rem] w-auto max-w-[min(20rem,80vw)] object-contain sm:h-[5.5rem]"
+            width={180}
+            height={56}
+            className="h-11 w-auto max-w-[11rem] object-contain sm:h-12 sm:max-w-[12.5rem]"
             loading="lazy"
             decoding="async"
           />
         </Link>
 
-        <div className="mt-5 grid max-w-3xl gap-5 sm:grid-cols-3 sm:gap-4">
+        <div className="mt-5 grid w-full max-w-3xl gap-5 sm:grid-cols-3 sm:gap-4">
           <FooterColumn title={t("footer.solutions")} links={solutionsLinks} />
           <FooterColumn title={t("footer.company")} links={companyLinks} />
           <FooterColumn title={t("footer.support")} links={supportLinks} />
         </div>
 
-        <div className="mt-5 h-px max-w-xl bg-slate-200/80" />
+        <div className="mx-auto mt-5 h-px w-full max-w-xl bg-slate-200/80" />
 
         <p className="mt-3 text-[11px] font-semibold text-slate-400 sm:text-xs">
           {t("footer.rights", { year })}
@@ -87,7 +91,7 @@ function scrollPageToTop() {
 
 function FooterColumn({ title, links }: FooterColumnProps) {
   return (
-    <div className="text-start">
+    <div className="text-center">
       <h4 className="mb-1.5 text-[0.65rem] font-black uppercase tracking-[0.14em] text-slate-400">
         {title}
       </h4>
