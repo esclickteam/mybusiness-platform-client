@@ -69,6 +69,12 @@ export type MetaCampaignInsight = {
   action?: string;
 };
 
+export type MetaLabeledOption = {
+  value: string;
+  labelHe: string;
+  labelEn: string;
+};
+
 export type MetaAdsConnectionStatus = {
   success?: boolean;
   connected: boolean;
@@ -87,12 +93,10 @@ export type MetaAdsConnectionStatus = {
   monthlyBudgetCap?: number;
   hasAccessToken?: boolean;
   tokenExpiresAt?: string | null;
-  objectives?: Array<{ value: string; labelHe: string; labelEn: string }>;
-  specialAdCategories?: Array<{
-    value: string;
-    labelHe: string;
-    labelEn: string;
-  }>;
+  objectives?: MetaLabeledOption[];
+  specialAdCategories?: MetaLabeledOption[];
+  callToActions?: MetaLabeledOption[];
+  previewFormats?: MetaLabeledOption[];
 };
 
 export type MetaCampaignsOverview = {
@@ -124,7 +128,45 @@ export type MetaCampaignPayload = {
   specialAdCategories?: string[];
   startTime?: string | null;
   stopTime?: string | null;
+  endTime?: string | null;
   bidStrategy?: string;
+  full?: boolean;
+  mode?: "full" | "campaign";
+  pageId?: string;
+  countries?: string[];
+  ageMin?: number | null;
+  ageMax?: number | null;
+  primaryText?: string;
+  message?: string;
+  headline?: string;
+  description?: string;
+  link?: string;
+  websiteUrl?: string;
+  imageUrl?: string;
+  picture?: string;
+  callToAction?: string;
+  cta?: string;
+  adFormat?: string;
+  adSetName?: string;
+  adName?: string;
+  creativeName?: string;
+};
+
+export type MetaAdPreview = {
+  adFormat: string;
+  body: string;
+  raw?: unknown;
+};
+
+export type MetaCreateCampaignResult = {
+  success: boolean;
+  mode?: "full" | "campaign";
+  campaign: MetaCampaign;
+  campaignId?: string;
+  adSetId?: string;
+  creativeId?: string;
+  adId?: string;
+  preview?: MetaAdPreview | null;
 };
 
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {
@@ -254,8 +296,29 @@ export async function createMetaCampaign(
   businessId: string | undefined,
   payload: MetaCampaignPayload
 ) {
-  const { data } = await API.post<{ success: boolean; campaign: MetaCampaign }>(
+  const { data } = await API.post<MetaCreateCampaignResult>(
     "/meta-campaigns/campaigns",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function previewMetaAd(
+  businessId: string | undefined,
+  payload: Partial<MetaCampaignPayload> & {
+    creativeId?: string;
+    adId?: string;
+    adFormat?: string;
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    preview: MetaAdPreview;
+    callToActions?: MetaLabeledOption[];
+    previewFormats?: MetaLabeledOption[];
+  }>(
+    "/meta-campaigns/ad-preview",
     { ...payload, businessId },
     withBusiness(businessId)
   );

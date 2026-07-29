@@ -88,19 +88,74 @@ export const SEGMENT_OPTIONS = [
 ] as const;
 
 export const OBJECTIVE_OPTIONS = [
-  { value: "OUTCOME_LEADS", labelKey: "metaCampaigns.objectives.leads" },
-  { value: "OUTCOME_SALES", labelKey: "metaCampaigns.objectives.sales" },
-  { value: "OUTCOME_TRAFFIC", labelKey: "metaCampaigns.objectives.traffic" },
   {
     value: "OUTCOME_AWARENESS",
     labelKey: "metaCampaigns.objectives.awareness",
+    descriptionKey: "metaCampaigns.objectives.awarenessDesc",
+  },
+  {
+    value: "OUTCOME_TRAFFIC",
+    labelKey: "metaCampaigns.objectives.traffic",
+    descriptionKey: "metaCampaigns.objectives.trafficDesc",
   },
   {
     value: "OUTCOME_ENGAGEMENT",
     labelKey: "metaCampaigns.objectives.engagement",
+    descriptionKey: "metaCampaigns.objectives.engagementDesc",
+  },
+  {
+    value: "OUTCOME_LEADS",
+    labelKey: "metaCampaigns.objectives.leads",
+    descriptionKey: "metaCampaigns.objectives.leadsDesc",
   },
   {
     value: "OUTCOME_APP_PROMOTION",
     labelKey: "metaCampaigns.objectives.app",
+    descriptionKey: "metaCampaigns.objectives.appDesc",
+  },
+  {
+    value: "OUTCOME_SALES",
+    labelKey: "metaCampaigns.objectives.sales",
+    descriptionKey: "metaCampaigns.objectives.salesDesc",
   },
 ] as const;
+
+/** Numeric Meta ad account id (without `act_` prefix), matching Ads Manager. */
+export function resolveAdAccountId(account?: {
+  accountId?: string | null;
+  id?: string | null;
+} | null) {
+  const raw = String(account?.accountId || "").trim();
+  if (raw) return raw.replace(/^act_/i, "");
+  const graphId = String(account?.id || "").trim();
+  if (!graphId) return "";
+  return graphId.replace(/^act_/i, "");
+}
+
+/** Meta-style label: `Name (USD) · 1234567890` */
+export function formatAdAccountLabel(
+  account?: {
+    name?: string | null;
+    currency?: string | null;
+    accountId?: string | null;
+    id?: string | null;
+  } | null,
+  options?: { fallbackName?: string; includeCurrency?: boolean }
+) {
+  const name =
+    String(account?.name || "").trim() ||
+    options?.fallbackName ||
+    "Ad Account";
+  const currency = String(account?.currency || "").trim();
+  const accountId = resolveAdAccountId(account);
+  const includeCurrency = options?.includeCurrency !== false;
+
+  const parts = [name];
+  if (includeCurrency && currency) {
+    parts[0] = `${name} (${currency})`;
+  }
+  if (accountId) {
+    parts.push(accountId);
+  }
+  return parts.join(" · ");
+}

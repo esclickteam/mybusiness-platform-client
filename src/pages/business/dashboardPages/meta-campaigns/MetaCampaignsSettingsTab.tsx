@@ -33,6 +33,10 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import {
+  formatAdAccountLabel,
+  resolveAdAccountId,
+} from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
 
@@ -337,7 +341,7 @@ export default function MetaCampaignsSettingsTab() {
                 </option>
                 {(status?.adAccounts || []).map((account) => (
                   <option key={account.id} value={account.id}>
-                    {account.name} ({account.currency || "ILS"})
+                    {formatAdAccountLabel(account)}
                   </option>
                 ))}
               </select>
@@ -352,11 +356,20 @@ export default function MetaCampaignsSettingsTab() {
               {t("metaCampaigns.settings.saveAccount")}
             </button>
             {hasAccount ? (
-              <p className="mt-3 text-xs font-bold text-emerald-700">
-                {t("metaCampaigns.settings.activeAccount", {
-                  name: status?.selectedAdAccount?.name,
-                })}
-              </p>
+              <div className="mt-3 space-y-1">
+                <p className="text-xs font-bold text-emerald-700">
+                  {t("metaCampaigns.settings.activeAccount", {
+                    name: status?.selectedAdAccount?.name,
+                  })}
+                </p>
+                {resolveAdAccountId(status?.selectedAdAccount) ? (
+                  <p className="text-xs font-semibold text-slate-500 tabular-nums">
+                    {t("metaCampaigns.settings.accountId", {
+                      id: resolveAdAccountId(status?.selectedAdAccount),
+                    })}
+                  </p>
+                ) : null}
+              </div>
             ) : null}
           </div>
 
