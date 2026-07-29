@@ -1553,6 +1553,7 @@
         },
         "successOauth": "חשבון Google חובר. עכשיו בחרו חשבון מודעות וטופס לידים.",
         "successFormConnected": "הטופס {{name}} חובר. רק לידים חדשים מכאן והלאה ייכנסו ל-CRM — בלי היסטוריה מהטופס.",
+        "successFormConnectedPartial": "הטופס {{name}} נשמר ב-BizUply, אבל הגדרת ה-webhook בגוגל נכשלה. אפשר להגדיר ידנית או לנסות שוב.",
         "successSynced": "סונכרנו {{synced}} לידים ({{created}} חדשים) ל-CRM.",
         "successTestLead": "ליד בדיקה נוצר ב-CRM.",
         "successDisconnected": "חיבור Google Ads נותק.",
@@ -1561,6 +1562,7 @@
           "loadForms": "טעינת טפסי לידים נכשלה",
           "authUrl": "יצירת קישור התחברות לגוגל נכשלה",
           "connectForm": "חיבור הטופס נכשל",
+          "webhookConfigureFailed": "שמירת הטופס הצליחה, אבל הגדרת ה-webhook בגוגל נכשלה",
           "syncFailed": "סנכרון הלידים נכשל",
           "actionFailed": "הפעולה נכשלה",
           "copyFailed": "ההעתקה נכשלה"

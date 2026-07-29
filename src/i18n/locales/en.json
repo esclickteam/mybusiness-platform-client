@@ -1553,6 +1553,7 @@
         },
         "successOauth": "Google account connected. Now choose an ads account and lead form.",
         "successFormConnected": "Form {{name}} connected. Only new leads from now on enter the CRM — form history is not imported.",
+        "successFormConnectedPartial": "Form {{name}} was saved in BizUply, but Google webhook setup failed. Configure it manually or retry.",
         "successSynced": "Synced {{synced}} leads ({{created}} new) into the CRM.",
         "successTestLead": "Test lead created in the CRM.",
         "successDisconnected": "Google Ads connection disconnected.",
@@ -1561,6 +1562,7 @@
           "loadForms": "Failed to load lead forms",
           "authUrl": "Failed to create Google auth URL",
           "connectForm": "Failed to connect the form",
+          "webhookConfigureFailed": "Form saved, but Google webhook configuration failed",
           "syncFailed": "Failed to sync leads",
           "actionFailed": "Action failed",
           "copyFailed": "Copy failed"

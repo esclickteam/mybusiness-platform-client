@@ -208,6 +208,8 @@ export default function GoogleAdsLeadIntegration({
       const { data } = await API.post<{
         success: boolean;
         connection: GoogleConnection;
+        webhookConfigured?: boolean;
+        warning?: string;
       }>(
         "/google-ads-leads/connect-form",
         {
@@ -222,11 +224,34 @@ export default function GoogleAdsLeadIntegration({
       );
       setConnection(data.connection);
       setForceSetup(false);
-      setSuccess(t(`${T}.successFormConnected`, { name: form.name }));
+      if (data.webhookConfigured === false) {
+        setError(
+          data.warning || t(`${T}.errors.webhookConfigureFailed`)
+        );
+        setSuccess(t(`${T}.successFormConnectedPartial`, { name: form.name }));
+      } else {
+        setSuccess(t(`${T}.successFormConnected`, { name: form.name }));
+      }
       await loadStatus();
     } catch (err) {
+      const apiMessage =
+        err &&
+        typeof err === "object" &&
+        "response" in err &&
+        err.response &&
+        typeof err.response === "object" &&
+        "data" in err.response &&
+        err.response.data &&
+        typeof err.response.data === "object"
+          ? String(
+              (err.response.data as { error?: string; message?: string }).error ||
+                (err.response.data as { message?: string }).message ||
+                ""
+            )
+          : "";
       setError(
-        err instanceof Error ? err.message : t(`${T}.errors.connectForm`)
+        apiMessage ||
+          (err instanceof Error ? err.message : t(`${T}.errors.connectForm`))
       );
     } finally {
       setBusy(false);
