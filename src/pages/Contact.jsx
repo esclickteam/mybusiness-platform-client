@@ -102,7 +102,10 @@ function Contact() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      dir="rtl"
+    >
       <Helmet>
         <title>{t("contact.seoTitle")}</title>
         <meta name="description" content={t("contact.seoDescription")} />
@@ -201,11 +204,12 @@ function Contact() {
                   {t("contact.phoneLabel")}
                 </label>
 
-                <div className="bizuply-phone-wrapper">
+                <div className="bizuply-phone-wrapper" dir="ltr">
                   <PhoneInput
                     key={phoneCountry}
                     country={phoneCountry}
                     preferredCountries={["il", "us", "gb", "fr", "de"]}
+                    priority={{ il: 0, us: 1, gb: 2, fr: 3, de: 4 }}
                     enableSearch
                     value={formData.phone}
                     onChange={(phone) =>
@@ -215,6 +219,7 @@ function Contact() {
                       name: "phone",
                       required: true,
                       disabled: loading,
+                      autoComplete: "tel",
                     }}
                     containerClass="!w-full"
                     inputClass="!h-14 !w-full !rounded-2xl !border !border-slate-200 !bg-white !ps-14 !pe-5 !text-base !font-semibold !text-slate-800 !shadow-none !outline-none transition focus:!border-slate-950 focus:!ring-4 focus:!ring-slate-950/10"

@@ -1,30 +1,35 @@
 import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 
 const FAQS = [
   {
-    q: "What is Bizuply?",
-    a: "Bizuply is a smart platform that connects businesses and clients. It combines scheduling, messaging, AI-powered insights, and collaborations — all in one place.",
+    q: "מה זה Bizuply?",
+    a: "Bizuply היא פלטפורמה אחת לניהול העסק: בניית אתר, CRM ולידים, תורים, שיתופי פעולה ואוטומציות — כדי לנהל פניות ולקוחות במקום אחד.",
   },
   {
-    q: "Is there a free trial?",
-    a: "Yes. Bizuply offers a 14-day free trial with no credit card required.",
+    q: "איך עובדים הלידים ב־Bizuply?",
+    a: "כל פנייה נכנסת לצינור הלידים ב־CRM: מקור הפנייה, פרטי הלקוח, סטטוס, הערות ומשימות. אפשר לעקוב אחרי כל ליד מהרגע שהגיע ועד לסגירה — בלי לאבד פניות בין כלים.",
   },
   {
-    q: "How do I join as a business?",
-    a: "Click “Join as a Business”, complete your profile, and start managing clients, appointments, and collaborations from one dashboard.",
+    q: "מה האישור מ־Meta ואיך מתחברים ל־Lead Ads?",
+    a: "אפליקציית Bizuply עברה App Review של Meta לחיבור Lead Ads לעסקים. העסק מחבר את דף הפייסבוק שלו ומאשר הרשאות בעצמו, והלידים החדשים מטפסי המודעות נכנסים אוטומטית ל־CRM עם מקור וסטטוס.",
   },
   {
-    q: "How do clients use the platform?",
-    a: "Clients can sign up for free, search businesses, book appointments, and chat directly — from mobile or desktop.",
+    q: "איך עובדת בניית אתרים ב־Bizuply?",
+    a: "בוחרים תבנית מוכנה לפי תחום, עורכים טקסטים ותמונות בעורך הוויזואלי, ומפרסמים. טפסים מהאתר נכנסים ישר לצינור הלידים ב־CRM — כך האתר מייצר פניות באותה מערכת שבה מנהלים אותן.",
   },
   {
-    q: "Is my data secure?",
-    a: "Absolutely. Bizuply uses encryption and industry-standard security practices to keep your data protected at all times.",
+    q: "איך מצטרפים כעסק?",
+    a: "לוחצים על ״הירשמו עכשיו״, משלימים את הפרופיל העסקי, ומתחילים לנהל לידים, תורים ואתר מדשבורד אחד.",
   },
   {
-    q: "Where can I get support?",
-    a: "You can contact our support team anytime via the Contact Page for fast and friendly help.",
+    q: "האם המידע שלי מאובטח?",
+    a: "כן. Bizuply משתמשת בהצפנה ובפרקטיקות אבטחה מקובלות כדי להגן על הנתונים שלכם.",
+  },
+  {
+    q: "איפה מקבלים תמיכה?",
+    a: "אפשר לפנות אלינו בכל עת דרך עמוד צור קשר — ונחזור אליכם בהקדם.",
   },
 ];
 
@@ -32,61 +37,59 @@ function FAQ() {
   const [openIndex, setOpenIndex] = useState(null);
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main
+      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800"
+      dir="rtl"
+    >
       <Helmet>
-        <title>FAQ - Bizuply | Everything You Need to Know</title>
+        <title>שאלות נפוצות - Bizuply | כל מה שצריך לדעת</title>
         <meta
           name="description"
-          content="Find answers to frequently asked questions about Bizuply – registration, pricing, security, and support."
+          content="תשובות לשאלות נפוצות על Bizuply — לידים, חיבור Meta, בניית אתרים, אבטחה ותמיכה."
         />
         <link rel="canonical" href="https://bizuply.com/faq" />
         <meta name="robots" content="index, follow" />
       </Helmet>
 
-      {/* Background */}
       <div className="pointer-events-none absolute left-[-12%] top-[-12%] h-[460px] w-[460px] rounded-full bg-amber-200/55 blur-3xl" />
       <div className="pointer-events-none absolute right-[-10%] top-[18%] h-[540px] w-[540px] rounded-full bg-emerald-100/75 blur-3xl" />
       <div className="pointer-events-none absolute bottom-[-18%] left-[28%] h-[520px] w-[520px] rounded-full bg-white/85 blur-3xl" />
 
-      {/* Hero */}
       <section className="relative mx-auto max-w-7xl px-5 pb-12 pt-20 text-center sm:px-8 lg:px-10 lg:pt-24">
         <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Bizuply Help Center
+          מרכז העזרה של Bizuply
         </div>
 
         <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-          Frequently Asked Questions
+          שאלות נפוצות
         </h1>
 
         <p className="mx-auto mt-7 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-          Everything you need to know about Bizuply — pricing, features,
-          security, registration and how to get started.
+          כל מה שחשוב לדעת על Bizuply — לידים, Meta, בניית אתרים, אבטחה ואיך
+          מתחילים.
         </p>
       </section>
 
-      {/* FAQ */}
       <section className="relative mx-auto grid max-w-7xl gap-8 px-5 pb-24 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10">
-        {/* Left card */}
         <aside className="h-fit rounded-[2.5rem] border border-white/80 bg-white/70 p-7 shadow-xl shadow-slate-900/5 backdrop-blur">
-          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 text-2xl shadow-lg shadow-slate-900/20">
-            ✨
+          <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-2xl text-slate-800 shadow-lg shadow-slate-900/20">
+            ✦
           </div>
 
           <h2 className="text-3xl font-black tracking-[-0.04em] text-slate-800">
-            Need a quick answer?
+            רוצים תשובה מהירה?
           </h2>
 
           <p className="mt-4 text-base font-medium leading-7 text-slate-600">
-            Browse the most common questions about Bizuply. Open any question to
-            see a clear explanation.
+            הנה הנושאים שחוזרים הכי הרבה. פתחו שאלה כדי לקרוא הסבר ברור.
           </p>
 
           <div className="mt-7 grid gap-3">
             {[
-              ["14-day", "Free trial"],
-              ["AI", "Smart tools"],
-              ["CRM", "Client management"],
+              ["לידים", "CRM מסודר"],
+              ["Meta", "App Review"],
+              ["אתר", "תבניות וטפסים"],
             ].map(([title, text]) => (
               <div
                 key={title}
@@ -104,7 +107,6 @@ function FAQ() {
           </div>
         </aside>
 
-        {/* FAQ list */}
         <div className="space-y-4">
           {FAQS.map((item, i) => {
             const isOpen = openIndex === i;
@@ -121,7 +123,7 @@ function FAQ() {
                 <button
                   type="button"
                   onClick={() => setOpenIndex(isOpen ? null : i)}
-                  className="flex w-full items-center justify-between gap-5 px-6 py-6 text-left sm:px-7"
+                  className="flex w-full items-center justify-between gap-5 px-6 py-6 text-right sm:px-7"
                   aria-expanded={isOpen}
                 >
                   <span className="text-lg font-black leading-7 tracking-[-0.02em] text-slate-800 sm:text-xl">
@@ -160,37 +162,35 @@ function FAQ() {
         </div>
       </section>
 
-      {/* CTA */}
       <section className="relative mx-auto max-w-7xl px-5 pb-24 sm:px-8 lg:px-10">
-        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 px-6 py-12 text-center shadow-2xl shadow-slate-900/20 sm:px-10">
-          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-300">
-            Still have questions?
+        <div className="overflow-hidden rounded-[2.5rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-6 py-12 text-center text-slate-800 shadow-2xl shadow-slate-900/20 sm:px-10">
+          <p className="text-sm font-black uppercase tracking-[0.22em] text-amber-800">
+            עדיין יש שאלות?
           </p>
 
-          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-black tracking-[-0.04em] text-white sm:text-5xl">
-            Start exploring Bizuply and see how it can help your business grow.
+          <h2 className="mx-auto mt-4 max-w-3xl text-4xl font-black tracking-[-0.04em] text-slate-800 sm:text-5xl">
+            בואו נדבר — ונראה איך Bizuply מתאימה לעסק שלכם.
           </h2>
 
-          <p className="mx-auto mt-5 max-w-2xl text-lg font-medium leading-8 text-white/70">
-            Manage clients, appointments, collaborations and smart business
-            growth from one modern platform.
+          <p className="mx-auto mt-5 max-w-2xl text-lg font-medium leading-8 text-slate-600">
+            ניהול לידים, אתר, תורים וצמיחה חכמה — במקום אחד.
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row">
-            <a
-              href="/join"
+            <Link
+              to="/register"
               className="inline-flex items-center justify-center rounded-2xl bg-white px-8 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
             >
-              Join as a Business
-              <span className="ml-2">→</span>
-            </a>
+              הירשמו עכשיו
+              <span className="me-2">←</span>
+            </Link>
 
-            <a
-              href="/contact"
-              className="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/10 px-8 py-4 text-base font-black text-black backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/15"
+            <Link
+              to="/contact"
+              className="inline-flex items-center justify-center rounded-2xl border border-slate-300/80 bg-white/40 px-8 py-4 text-base font-black text-slate-800 backdrop-blur transition hover:-translate-y-0.5 hover:bg-white/70"
             >
-              Contact Support
-            </a>
+              צור קשר
+            </Link>
           </div>
         </div>
       </section>
