@@ -3,7 +3,10 @@ export type CrmTopicSection = {
   titleKey: string;
   textKey: string;
   primary: string;
-  secondary: string[];
+  gallery: Array<{
+    src: string;
+    frame: "wide" | "phone";
+  }>;
   accent: string;
 };
 
@@ -13,7 +16,10 @@ export const crmTopicSections: CrmTopicSection[] = [
     titleKey: "productPages.crm.sectionLeadsTitle",
     textKey: "productPages.crm.sectionLeadsText",
     primary: "/leads1.jpeg",
-    secondary: ["/leads2.jpeg", "/leads3.jpeg"],
+    gallery: [
+      { src: "/leads2.jpeg", frame: "wide" },
+      { src: "/leads3.jpeg", frame: "phone" },
+    ],
     accent: "#6d28d9",
   },
   {
@@ -21,7 +27,7 @@ export const crmTopicSections: CrmTopicSection[] = [
     titleKey: "productPages.crm.sectionClientsTitle",
     textKey: "productPages.crm.sectionClientsText",
     primary: "/leads4.jpeg",
-    secondary: ["/leads5.jpeg"],
+    gallery: [{ src: "/leads5.jpeg", frame: "wide" }],
     accent: "#2563eb",
   },
   {
@@ -29,7 +35,7 @@ export const crmTopicSections: CrmTopicSection[] = [
     titleKey: "productPages.crm.sectionAppointmentsTitle",
     textKey: "productPages.crm.sectionAppointmentsText",
     primary: "/leads7.jpeg",
-    secondary: ["/leads6.jpeg"],
+    gallery: [{ src: "/leads6.jpeg", frame: "wide" }],
     accent: "#4f46e5",
   },
 ];
