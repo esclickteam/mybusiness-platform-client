@@ -5,15 +5,14 @@ import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Facebook } from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
-import CrmPipelinePreview from "../../components/crm-marketing/CrmPipelinePreview";
 import "../../components/crm-marketing/CrmProductHero.css";
 
 const fadeUp = {
-  hidden: { opacity: 0, y: 18 },
+  hidden: { opacity: 0, y: 22 },
   show: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
   },
 };
 
@@ -50,21 +49,6 @@ export default function CrmProductPage() {
       <CrmProductHero />
 
       <div className="crm-page__shell">
-        <motion.section
-          className="crm-page__section"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <p className="crm-page__eyebrow">{t(`${base}.pipelineBadge`)}</p>
-          <h2 className="crm-page__heading">{t(`${base}.pipelineTitle`)}</h2>
-          <p className="crm-page__lead">{t(`${base}.pipelineSubtitle`)}</p>
-          <div className="crm-page__pipeline-block">
-            <CrmPipelinePreview />
-          </div>
-        </motion.section>
-
         <motion.section
           className="crm-page__section crm-page__meta"
           variants={fadeUp}
