@@ -4,6 +4,11 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 import AppShot from "./AppShot";
+import {
+  TourAppointmentsDemo,
+  TourClientDemo,
+  TourLeadCardDemo,
+} from "./TourLiveDemos";
 import { Reveal, Stagger, StaggerItem } from "./product-marketing";
 
 type Shot = {
@@ -12,15 +17,14 @@ type Shot = {
   height: number;
   crumbKey: string;
   altKey: string;
-  /** Phone captures need a narrower cell so they do not tower over the row. */
-  portrait?: boolean;
 };
 
 type Step = {
   id: string;
   to: string;
-  main: Shot;
-  /** Supporting captures shown smaller under the main one. */
+  /** Interactive product surface — preferred over static CRM screenshots. */
+  live?: "leads" | "clients" | "appointments";
+  main?: Shot;
   extras?: Shot[];
 };
 
@@ -28,52 +32,17 @@ const STEPS: Step[] = [
   {
     id: "leads",
     to: "/crm",
-    main: {
-      src: "/home/crm-leads.webp",
-      width: 1400,
-      height: 726,
-      crumbKey: "tour.heroCrumb",
-      altKey: "tour.heroAlt",
-    },
-    extras: [
-      {
-        src: "/home/crm-lead-card.webp",
-        width: 1248,
-        height: 1158,
-        crumbKey: "tour.leadsCrumb",
-        altKey: "tour.leadsAlt",
-      },
-      {
-        src: "/home/crm-notifications.webp",
-        width: 784,
-        height: 1218,
-        crumbKey: "tour.mobileCrumb",
-        altKey: "tour.mobileAlt",
-        portrait: true,
-      },
-    ],
+    live: "leads",
   },
   {
     id: "clients",
     to: "/crm",
-    main: {
-      src: "/home/crm-client.webp",
-      width: 1400,
-      height: 838,
-      crumbKey: "tour.clientsCrumb",
-      altKey: "tour.clientsAlt",
-    },
+    live: "clients",
   },
   {
     id: "appointments",
     to: "/appointments",
-    main: {
-      src: "/home/crm-appointments.webp",
-      width: 1400,
-      height: 752,
-      crumbKey: "tour.appointmentsCrumb",
-      altKey: "tour.appointmentsAlt",
-    },
+    live: "appointments",
   },
   {
     id: "site",
@@ -103,6 +72,12 @@ const STEPS: Step[] = [
     ],
   },
 ];
+
+function LiveFor({ kind }: { kind: NonNullable<Step["live"]> }) {
+  if (kind === "leads") return <TourLeadCardDemo />;
+  if (kind === "clients") return <TourClientDemo />;
+  return <TourAppointmentsDemo />;
+}
 
 export default function ScrollStory() {
   const { t } = useTranslation();
@@ -179,14 +154,24 @@ export default function ScrollStory() {
                 ))}
               </Stagger>
 
-              <Reveal from="up" distance={30} duration={0.85} delay={0.08} className="mt-10">
-                <AppShot
-                  src={step.main.src}
-                  alt={t(step.main.altKey)}
-                  width={step.main.width}
-                  height={step.main.height}
-                  crumb={t(step.main.crumbKey)}
-                />
+              <Reveal
+                from="up"
+                distance={30}
+                duration={0.85}
+                delay={0.08}
+                className="mx-auto mt-10 max-w-3xl"
+              >
+                {step.live ? (
+                  <LiveFor kind={step.live} />
+                ) : step.main ? (
+                  <AppShot
+                    src={step.main.src}
+                    alt={t(step.main.altKey)}
+                    width={step.main.width}
+                    height={step.main.height}
+                    crumb={t(step.main.crumbKey)}
+                  />
+                ) : null}
               </Reveal>
 
               {step.extras?.length ? (
@@ -197,7 +182,6 @@ export default function ScrollStory() {
                       from="up"
                       distance={26}
                       delay={0.06 + index * 0.08}
-                      className={extra.portrait ? "mx-auto w-full max-w-[17rem]" : ""}
                     >
                       <AppShot
                         src={extra.src}
@@ -214,7 +198,7 @@ export default function ScrollStory() {
               <Reveal from="up" distance={18} delay={0.1} className="mt-9">
                 <Link
                   to={step.to}
-                  className="group inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800"
+                  className="cta-solid group inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-7 py-3.5 text-sm font-black text-white shadow-lg shadow-slate-900/15 transition hover:-translate-y-0.5 hover:bg-slate-800"
                 >
                   {t(`tour.${step.id}Cta`)}
                   <span
