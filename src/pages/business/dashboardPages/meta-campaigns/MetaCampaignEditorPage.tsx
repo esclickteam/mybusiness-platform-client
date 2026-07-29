@@ -56,6 +56,7 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import AdPlacementPreview from "./AdPlacementPreview";
 import LeadFormQuestionBuilder from "./LeadFormQuestionBuilder";
 import {
   buildMetaLeadFormQuestionsPayload,
@@ -318,17 +319,20 @@ export default function MetaCampaignEditorPage() {
   }, [connection?.callToActions, isHe, t]);
 
   const previewFormats = useMemo(() => {
-    const fromApi = connection?.previewFormats || [];
-    if (fromApi.length) {
-      return fromApi.map((item) => ({
-        value: item.value,
-        label: isHe ? item.labelHe : item.labelEn,
-      }));
-    }
-    return ALL_PREVIEW_FORMATS.map((value) => ({
-      value,
-      label: t(`metaCampaigns.preview.formats.${value}`, { defaultValue: value }),
-    }));
+    // Prefer the placements users actually care about (feed / story / reels).
+    return ALL_PREVIEW_FORMATS.map((value) => {
+      const fromApi = (connection?.previewFormats || []).find(
+        (item) => item.value === value
+      );
+      return {
+        value,
+        label: fromApi
+          ? isHe
+            ? fromApi.labelHe
+            : fromApi.labelEn
+          : t(`metaCampaigns.preview.formats.${value}`, { defaultValue: value }),
+      };
+    });
   }, [connection?.previewFormats, isHe, t]);
 
   const selectedForm = leadForms.find((item) => item.id === form.leadFormId);
@@ -434,10 +438,21 @@ export default function MetaCampaignEditorPage() {
     });
   };
 
-  const ctaValue = () =>
-    (form.ctaCustom.trim() || form.callToAction || "LEARN_MORE")
+  /** Meta CTA enum only — free-text Hebrew labels stay display-only. */
+  const ctaValue = () => {
+    const selected = String(form.callToAction || (isLeads ? "SIGN_UP" : "LEARN_MORE"))
       .replace(/\s+/g, "_")
+      .replace(/[^a-zA-Z0-9_]/g, "")
       .toUpperCase();
+    if (/^[A-Z][A-Z0-9_]{1,40}$/.test(selected)) return selected;
+    return isLeads ? "SIGN_UP" : "LEARN_MORE";
+  };
+
+  const ctaDisplayLabel =
+    form.ctaCustom.trim() ||
+    callToActions.find((item) => item.value === form.callToAction)?.label ||
+    form.callToAction ||
+    (isLeads ? "Sign up" : "Learn more");
 
   const buildFullPayload = () => {
     const dailyBudget = form.dailyBudget ? Number(form.dailyBudget) : null;
@@ -619,13 +634,20 @@ export default function MetaCampaignEditorPage() {
   };
 
   const loadPreviews = async () => {
-    if (!businessId || !validateStep(6)) return;
+    if (!businessId) return;
+    if (!form.pageId || !form.primaryText.trim() || !form.headline.trim()) {
+      return;
+    }
     try {
       setPreviewBusy(true);
       const payload = buildFullPayload();
       const result = await previewMetaAd(businessId, {
         ...payload,
-        adFormats: ALL_PREVIEW_FORMATS,
+        // Prefer formats that Meta returns reliably; story formats often blank.
+        adFormats: [
+          activePreview,
+          ...ALL_PREVIEW_FORMATS.filter((item) => item !== activePreview),
+        ],
       });
       const rows = result.previews?.length
         ? result.previews
@@ -634,12 +656,20 @@ export default function MetaCampaignEditorPage() {
           : [];
       setPreviews(rows);
       const firstOk = rows.find((row) => row.body)?.adFormat;
-      if (firstOk) setActivePreview(firstOk);
+      if (firstOk && !rows.find((row) => row.adFormat === activePreview)?.body) {
+        setActivePreview(firstOk);
+      }
+      const errors = rows
+        .filter((row) => !row.body && row.error)
+        .map((row) => row.error);
+      if (!rows.some((row) => row.body) && errors.length) {
+        toast.info(t("metaCampaigns.preview.metaUnavailable"));
+      }
     } catch (error: any) {
-      toast.error(
+      toast.info(
         error?.response?.data?.error ||
           error?.response?.data?.message ||
-          t("metaCampaigns.errors.preview")
+          t("metaCampaigns.preview.metaUnavailable")
       );
     } finally {
       setPreviewBusy(false);
@@ -647,7 +677,7 @@ export default function MetaCampaignEditorPage() {
   };
 
   useEffect(() => {
-    if (!isEdit && createStep === 7 && !previews.length && !previewBusy) {
+    if (!isEdit && createStep === 7) {
       loadPreviews();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -823,8 +853,29 @@ export default function MetaCampaignEditorPage() {
   const isActive =
     String(campaign?.effectiveStatus || form.status).toUpperCase() === "ACTIVE";
   const selectedObjective = objectives.find((item) => item.value === form.objective);
-  const activePreviewHtml =
-    previews.find((item) => item.adFormat === activePreview)?.body || "";
+  const activePreviewRow = previews.find(
+    (item) => item.adFormat === activePreview
+  );
+  const activePreviewHtml = activePreviewRow?.body || "";
+  const carouselPreviewImages = form.carouselCards
+    .map((card) => card.imageUrl)
+    .filter(Boolean);
+
+  const placementPreview = (
+    <AdPlacementPreview
+      adFormat={activePreview}
+      pageName={selectedPageName}
+      primaryText={form.primaryText}
+      headline={form.headline}
+      description={form.description}
+      ctaLabel={ctaDisplayLabel}
+      imageUrl={form.imagePreviewUrl}
+      displayLink={form.displayLink}
+      link={form.link}
+      creativeFormat={form.creativeFormat}
+      carouselImages={carouselPreviewImages}
+    />
+  );
 
   const stepTitle = (step: CreateStep) => {
     const map: Record<CreateStep, string> = {
@@ -839,61 +890,7 @@ export default function MetaCampaignEditorPage() {
     return map[step];
   };
 
-  const localPreview = (
-    <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-      <div className="flex items-center gap-3 border-b border-slate-100 px-3 py-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-xs font-black text-white">
-          {(selectedPageName || "P").slice(0, 1)}
-        </div>
-        <div className="min-w-0">
-          <p className="truncate text-sm font-black text-slate-900">
-            {selectedPageName}
-          </p>
-          <p className="text-[11px] font-semibold text-slate-400">
-            {t("metaCampaigns.preview.sponsored")}
-          </p>
-        </div>
-      </div>
-      <div className="px-3 py-3 text-sm font-semibold text-slate-800 whitespace-pre-wrap">
-        {form.primaryText || t("metaCampaigns.preview.primaryPlaceholder")}
-      </div>
-      {form.imagePreviewUrl || form.imageHash ? (
-        form.imagePreviewUrl ? (
-          <img
-            src={form.imagePreviewUrl}
-            alt=""
-            className="max-h-64 w-full object-cover"
-          />
-        ) : (
-          <div className="flex h-40 items-center justify-center bg-slate-100 text-xs font-bold text-slate-500">
-            Meta image hash ready
-          </div>
-        )
-      ) : (
-        <div className="flex h-40 items-center justify-center bg-slate-100 text-slate-400">
-          <ImagePlus className="h-8 w-8" />
-        </div>
-      )}
-      <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-3 py-2.5">
-        <div className="min-w-0">
-          <p className="truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">
-            {form.displayLink ||
-              form.link.replace(/^https?:\/\//, "").split("/")[0] ||
-              "example.com"}
-          </p>
-          <p className="truncate text-sm font-black text-slate-900">
-            {form.headline || t("metaCampaigns.preview.headlinePlaceholder")}
-          </p>
-        </div>
-        <span className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-black text-slate-700">
-          {form.ctaCustom ||
-            callToActions.find((item) => item.value === form.callToAction)
-              ?.label ||
-            form.callToAction}
-        </span>
-      </div>
-    </div>
-  );
+  const localPreview = placementPreview;
 
   const navFooter = (
     <div className="flex justify-between gap-2 pt-2">
@@ -1770,7 +1767,7 @@ export default function MetaCampaignEditorPage() {
 
       {/* STEP 7 preview */}
       {!isEdit && createStep === 7 ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_360px]">
           <div className={`${cardBase} space-y-4 p-5`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
@@ -1778,7 +1775,7 @@ export default function MetaCampaignEditorPage() {
                   {t("metaCampaigns.form.previewTitle")}
                 </p>
                 <p className="text-sm font-semibold text-slate-500">
-                  {t("metaCampaigns.form.previewAllHint")}
+                  {t("metaCampaigns.preview.postReadyHint")}
                 </p>
               </div>
               <button
@@ -1812,23 +1809,35 @@ export default function MetaCampaignEditorPage() {
                 </button>
               ))}
             </div>
-            <div className="min-h-[320px] rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-3">
-              {previewBusy ? (
-                <div className="flex h-full min-h-[280px] items-center justify-center text-sm font-semibold text-slate-500">
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {t("metaCampaigns.preview.loading")}
-                </div>
-              ) : activePreviewHtml ? (
+
+            <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 sm:p-6">
+              <p className="mb-4 text-center text-xs font-black uppercase tracking-wide text-slate-400">
+                {t("metaCampaigns.preview.yourPost")}
+              </p>
+              {placementPreview}
+            </div>
+
+            {activePreviewHtml ? (
+              <div className="space-y-2">
+                <p className="text-sm font-black text-slate-900">
+                  {t("metaCampaigns.preview.metaOfficial")}
+                </p>
                 <div
-                  className="overflow-auto"
+                  className="overflow-auto rounded-2xl border border-slate-200 bg-white p-2"
                   dangerouslySetInnerHTML={{ __html: activePreviewHtml }}
                 />
-              ) : (
-                <div className="flex min-h-[280px] items-center justify-center p-4 text-center text-sm font-semibold text-slate-500">
-                  {t("metaCampaigns.preview.fallbackHint")}
-                </div>
-              )}
-            </div>
+              </div>
+            ) : previewBusy ? (
+              <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm font-semibold text-slate-500">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                {t("metaCampaigns.preview.loading")}
+              </div>
+            ) : (
+              <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-center text-xs font-semibold text-slate-500">
+                {t("metaCampaigns.preview.localIsPrimary")}
+              </p>
+            )}
+
             <dl className="grid gap-2 rounded-xl border border-slate-100 p-3 text-xs sm:grid-cols-2">
               <div>
                 <dt className="text-slate-400">{t("metaCampaigns.form.name")}</dt>
@@ -1862,9 +1871,13 @@ export default function MetaCampaignEditorPage() {
           <aside className="space-y-4">
             <div className={`${cardBase} p-4`}>
               <p className="mb-3 text-sm font-black text-slate-900">
-                {t("metaCampaigns.preview.localTitle")}
+                {t("metaCampaigns.preview.selectedPlacement")}
               </p>
-              {localPreview}
+              <p className="mb-3 text-xs font-semibold text-slate-500">
+                {previewFormats.find((item) => item.value === activePreview)
+                  ?.label || activePreview}
+              </p>
+              {placementPreview}
             </div>
           </aside>
         </div>
