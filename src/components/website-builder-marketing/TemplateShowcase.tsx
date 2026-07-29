@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import TemplateBrowserMockup from "./TemplateBrowserMockup";
 import {
   websiteHeroTemplates,
@@ -57,7 +56,6 @@ export default function TemplateShowcase({
     );
   }, []);
 
-  // Preload all template images once — swaps stay instant.
   useEffect(() => {
     templates.forEach((template) => {
       const img = new Image();
@@ -86,15 +84,6 @@ export default function TemplateShowcase({
     }, 4500);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count]);
-
-  useEffect(() => {
-    const onKey = (event: KeyboardEvent) => {
-      if (event.key === "ArrowLeft") next();
-      if (event.key === "ArrowRight") prev();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [next, prev]);
 
   const activeTemplate = templates[active];
 
@@ -172,38 +161,18 @@ export default function TemplateShowcase({
         })}
       </div>
 
-      <div className="wb-hero__controls">
-        <button
-          type="button"
-          className="wb-hero__nav-btn"
-          aria-label="תבנית קודמת"
-          onClick={prev}
-        >
-          <ChevronRight size={18} />
-        </button>
-
-        <div className="wb-hero__dots-nav" role="tablist" aria-label="בחירת תבנית">
-          {templates.map((template, index) => (
-            <button
-              key={template.id}
-              type="button"
-              role="tab"
-              aria-selected={index === active}
-              aria-label={template.title}
-              className={`wb-hero__dot${index === active ? " is-active" : ""}`}
-              onClick={() => goTo(index)}
-            />
-          ))}
-        </div>
-
-        <button
-          type="button"
-          className="wb-hero__nav-btn"
-          aria-label="תבנית הבאה"
-          onClick={next}
-        >
-          <ChevronLeft size={18} />
-        </button>
+      <div className="wb-hero__dots-nav" role="tablist" aria-label="בחירת תבנית">
+        {templates.map((template, index) => (
+          <button
+            key={template.id}
+            type="button"
+            role="tab"
+            aria-selected={index === active}
+            aria-label={template.title}
+            className={`wb-hero__dot${index === active ? " is-active" : ""}`}
+            onClick={() => goTo(index)}
+          />
+        ))}
       </div>
     </div>
   );
