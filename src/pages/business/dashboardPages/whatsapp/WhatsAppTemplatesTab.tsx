@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
@@ -37,12 +37,24 @@ const emptyForm = {
 export default function WhatsAppTemplatesTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [showForm, setShowForm] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("create") === "1") {
+      setEditingId(null);
+      setForm(emptyForm);
+      setShowForm(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("create");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const load = async () => {
     if (!businessId) return;

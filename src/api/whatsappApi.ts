@@ -87,14 +87,25 @@ export type WhatsAppCampaign = {
   completedAt?: string;
 };
 
+export type WhatsAppAutomationTrigger =
+  | "appointment_reminder_1_day"
+  | "appointment_reminder_hours"
+  | "appointment_thanks"
+  | "appointment_review_request"
+  | "new_lead_welcome"
+  | "lead_no_response"
+  | "lead_followup_2"
+  | "new_client_welcome"
+  | "inactive_client";
+
 export type WhatsAppAutomation = {
   _id: string;
   name: string;
-  trigger:
-    | "appointment_reminder_1_day"
-    | "appointment_reminder_hours"
-    | "new_client_welcome";
+  trigger: WhatsAppAutomationTrigger;
   hoursBefore?: number;
+  delayMinutes?: number;
+  delayHours?: number;
+  delayDays?: number;
   templateId:
     | string
     | {
@@ -325,9 +336,12 @@ export async function createWhatsAppAutomation(
   businessId: string,
   payload: {
     name: string;
-    trigger: WhatsAppAutomation["trigger"];
+    trigger: WhatsAppAutomationTrigger;
     templateId: string;
     hoursBefore?: number;
+    delayMinutes?: number;
+    delayHours?: number;
+    delayDays?: number;
     enabled?: boolean;
   }
 ) {
@@ -346,6 +360,9 @@ export async function updateWhatsAppAutomation(
     enabled: boolean;
     templateId: string;
     hoursBefore: number;
+    delayMinutes: number;
+    delayHours: number;
+    delayDays: number;
   }>
 ) {
   const { data } = await API.patch(`/whatsapp/automations/${id}`, {

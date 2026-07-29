@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
   CheckCircle2,
   Loader2,
+  Plus,
   Search,
   Send,
   Users,
@@ -42,6 +43,7 @@ function renderPreview(body: string, name = "ישראל ישראלי") {
 
 export default function WhatsAppComposeTab() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
 
   const [loading, setLoading] = useState(true);
@@ -53,8 +55,6 @@ export default function WhatsAppComposeTab() {
   const [query, setQuery] = useState("");
 
   const [templateId, setTemplateId] = useState("");
-  const [customBody, setCustomBody] = useState("");
-  const [useCustomBody, setUseCustomBody] = useState(false);
   const [campaignName, setCampaignName] = useState("");
   const [audienceType, setAudienceType] = useState<AudienceType>("all_clients");
   const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
@@ -78,10 +78,7 @@ export default function WhatsAppComposeTab() {
         setTemplates(tpls);
         setLists(ls);
         setRecipients(people);
-        if (tpls[0]?._id) {
-          setTemplateId(tpls[0]._id);
-          setCustomBody(tpls[0].body);
-        }
+        if (tpls[0]?._id) setTemplateId(tpls[0]._id);
         if (ls[0]?._id) setMailingListId(ls[0]._id);
       } catch (error: any) {
         toast.error(
@@ -102,7 +99,7 @@ export default function WhatsAppComposeTab() {
     [templateId, templates]
   );
 
-  const body = useCustomBody ? customBody : selectedTemplate?.body || customBody;
+  const body = selectedTemplate?.body || "";
 
   const filteredRecipients = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -140,15 +137,9 @@ export default function WhatsAppComposeTab() {
     );
   };
 
-  const onTemplateChange = (id: string) => {
-    setTemplateId(id);
-    const tpl = templates.find((item) => item._id === id);
-    if (tpl && !useCustomBody) setCustomBody(tpl.body);
-  };
-
   const handleSend = async () => {
     if (!businessId) return;
-    if (!body.trim()) {
+    if (!templateId || !body.trim()) {
       toast.error(t("whatsapp.compose.emptyBody"));
       return;
     }
@@ -169,8 +160,7 @@ export default function WhatsAppComposeTab() {
       setSending(true);
       const campaign = await sendWhatsAppCampaign(businessId, {
         name: campaignName.trim() || undefined,
-        templateId: useCustomBody ? undefined : templateId || undefined,
-        body: useCustomBody ? customBody : undefined,
+        templateId,
         audienceType,
         clientIds:
           audienceType === "selected_clients" ? selectedClientIds : undefined,
@@ -240,36 +230,21 @@ export default function WhatsAppComposeTab() {
               />
             </label>
 
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className={!useCustomBody ? btnPrimary : btnSecondary}
-                onClick={() => {
-                  setUseCustomBody(false);
-                  if (selectedTemplate) setCustomBody(selectedTemplate.body);
-                }}
-              >
-                {t("whatsapp.compose.fromTemplate")}
-              </button>
-              <button
-                type="button"
-                className={useCustomBody ? btnPrimary : btnSecondary}
-                onClick={() => setUseCustomBody(true)}
-              >
-                {t("whatsapp.compose.customMessage")}
-              </button>
-            </div>
-
-            {!useCustomBody && (
-              <label className="grid gap-1.5">
+            <div className="flex flex-wrap items-end gap-2">
+              <label className="grid min-w-[220px] flex-1 gap-1.5">
                 <span className="text-xs font-black text-slate-600">
                   {t("whatsapp.compose.selectTemplate")}
                 </span>
                 <select
                   className={inputBase}
                   value={templateId}
-                  onChange={(e) => onTemplateChange(e.target.value)}
+                  onChange={(e) => setTemplateId(e.target.value)}
                 >
+                  {templates.length === 0 && (
+                    <option value="">
+                      {t("whatsapp.compose.noTemplatesYet")}
+                    </option>
+                  )}
                   {templates.map((tpl) => (
                     <option key={tpl._id} value={tpl._id}>
                       {tpl.name}
@@ -277,28 +252,32 @@ export default function WhatsAppComposeTab() {
                   ))}
                 </select>
               </label>
-            )}
+              <button
+                type="button"
+                className={btnSecondary}
+                onClick={() => navigate("../templates?create=1")}
+              >
+                <Plus className="h-4 w-4" />
+                {t("whatsapp.compose.createTemplate")}
+              </button>
+            </div>
 
-            <label className="grid gap-1.5">
+            <div className="grid gap-1.5">
               <span className="text-xs font-black text-slate-600">
                 {t("whatsapp.compose.body")}
               </span>
-              <textarea
-                className={`${inputBase} min-h-[160px] py-3`}
-                value={body}
-                onChange={(e) => {
-                  setUseCustomBody(true);
-                  setCustomBody(e.target.value);
-                }}
-                placeholder={t("whatsapp.compose.bodyPlaceholder")}
-              />
+              <div
+                className={`${inputBase} min-h-[160px] whitespace-pre-wrap py-3 text-slate-700`}
+              >
+                {body || t("whatsapp.compose.previewEmpty")}
+              </div>
               <span className="text-xs font-medium text-slate-400">
                 {t("whatsapp.compose.variablesHint")}{" "}
                 <span dir="ltr" className="font-bold text-slate-500">
                   {"{{name}} {{date}} {{time}} {{service}}"}
                 </span>
               </span>
-            </label>
+            </div>
           </div>
         </section>
 
@@ -444,7 +423,7 @@ export default function WhatsAppComposeTab() {
 
           <button
             type="button"
-            disabled={sending || estimatedCount === 0}
+            disabled={sending || estimatedCount === 0 || !templateId}
             onClick={handleSend}
             className={`${btnPrimary} mt-4 w-full`}
           >
