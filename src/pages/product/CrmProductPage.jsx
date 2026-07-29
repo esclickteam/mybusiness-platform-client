@@ -57,16 +57,29 @@ export default function CrmProductPage() {
             <p className="crm-page__lead">{t(`${base}.metaSectionText`)}</p>
           </div>
           <div className="crm-page__meta-points">
-            {metaPoints.map((point) => (
-              <div key={point} className="crm-page__meta-point">
+            {metaPoints.map((point, i) => (
+              <motion.div
+                key={point}
+                className="crm-page__meta-point"
+                initial={{ opacity: 0, x: 18 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                transition={{ duration: 0.45, delay: 0.08 * i, ease: [0.22, 1, 0.36, 1] }}
+              >
                 <CheckCircle2 size={20} />
                 <p>{point}</p>
-              </div>
+              </motion.div>
             ))}
           </div>
         </motion.section>
 
-        <section className="crm-page__cta">
+        <motion.section
+          className="crm-page__cta"
+          initial={{ opacity: 0, y: 28, scale: 0.98 }}
+          whileInView={{ opacity: 1, y: 0, scale: 1 }}
+          viewport={{ once: true, amount: 0.35 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+        >
           <div>
             <h2>{t(`${base}.ctaTitle`)}</h2>
             <p>{t(`${base}.ctaText`)}</p>
@@ -79,7 +92,7 @@ export default function CrmProductPage() {
               {t("productPages.ctaContact")}
             </Link>
           </div>
-        </section>
+        </motion.section>
       </div>
     </div>
   );
