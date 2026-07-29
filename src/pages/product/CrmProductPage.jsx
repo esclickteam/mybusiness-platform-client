@@ -45,7 +45,6 @@ export default function CrmProductPage() {
         <meta property="og:description" content={t(`${base}.seoDescription`)} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
-        <link rel="preload" as="image" href="/images/crm-preview-v2.png" />
       </Helmet>
 
       <CrmProductHero />
