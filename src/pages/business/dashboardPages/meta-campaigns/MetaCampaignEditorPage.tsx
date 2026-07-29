@@ -11,30 +11,42 @@ import {
   AppWindow,
   ArrowRight,
   CalendarRange,
+  Clapperboard,
   Eye,
+  Facebook,
   HeartHandshake,
-  ImageIcon,
+  ImagePlus,
+  Instagram,
+  Layers3,
   Loader2,
   Megaphone,
   MousePointerClick,
   Pause,
   Play,
+  Plus,
   Save,
   ShoppingBag,
-  Smartphone,
+  Sparkles,
+  Target,
   Trash2,
+  Upload,
   Users,
 } from "lucide-react";
 import {
   createMetaCampaign,
+  createMetaLeadForm,
   deleteMetaCampaign,
   getMetaCampaign,
   getMetaCampaignsStatus,
+  listMetaLeadForms,
   previewMetaAd,
   setMetaCampaignStatus,
   updateMetaCampaign,
+  uploadMetaMedia,
+  type MetaAdPreview,
   type MetaAdsConnectionStatus,
   type MetaCampaign,
+  type MetaLeadForm,
 } from "../../../../api/metaCampaignsApi";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
@@ -52,7 +64,15 @@ import {
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
-type CreateStep = 1 | 2 | 3 | 4 | 5;
+type CreateStep = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+type CarouselCard = {
+  headline: string;
+  description: string;
+  link: string;
+  imageHash: string;
+  imageUrl: string;
+};
 
 type FormState = {
   name: string;
@@ -63,18 +83,31 @@ type FormState = {
   specialAdCategories: string[];
   startTime: string;
   stopTime: string;
-  bidStrategy: string;
   pageId: string;
   countries: string;
   ageMin: string;
   ageMax: string;
+  gender: "all" | "1" | "2";
+  advantageAudience: boolean;
+  placementMode: "advantage" | "facebook" | "instagram" | "both";
+  facebookFeed: boolean;
+  facebookStory: boolean;
+  instagramFeed: boolean;
+  instagramStory: boolean;
+  instagramReels: boolean;
+  leadFormId: string;
   primaryText: string;
   headline: string;
   description: string;
   link: string;
-  imageUrl: string;
+  displayLink: string;
+  imageHash: string;
+  imagePreviewUrl: string;
+  videoId: string;
+  creativeFormat: "single" | "video" | "carousel";
   callToAction: string;
-  adFormat: string;
+  ctaCustom: string;
+  carouselCards: CarouselCard[];
 };
 
 function defaultStartLocal() {
@@ -90,6 +123,14 @@ function defaultStopLocal() {
   return d.toISOString().slice(0, 16);
 }
 
+const EMPTY_CARD: CarouselCard = {
+  headline: "",
+  description: "",
+  link: "",
+  imageHash: "",
+  imageUrl: "",
+};
+
 const EMPTY_FORM: FormState = {
   name: "",
   objective: "OUTCOME_LEADS",
@@ -99,18 +140,34 @@ const EMPTY_FORM: FormState = {
   specialAdCategories: [],
   startTime: defaultStartLocal(),
   stopTime: defaultStopLocal(),
-  bidStrategy: "",
   pageId: "",
   countries: "IL",
   ageMin: "18",
   ageMax: "65",
+  gender: "all",
+  advantageAudience: true,
+  placementMode: "both",
+  facebookFeed: true,
+  facebookStory: true,
+  instagramFeed: true,
+  instagramStory: true,
+  instagramReels: true,
+  leadFormId: "",
   primaryText: "",
   headline: "",
   description: "",
   link: "",
-  imageUrl: "",
-  callToAction: "LEARN_MORE",
-  adFormat: "MOBILE_FEED_STANDARD",
+  displayLink: "",
+  imageHash: "",
+  imagePreviewUrl: "",
+  videoId: "",
+  creativeFormat: "single",
+  callToAction: "SIGN_UP",
+  ctaCustom: "",
+  carouselCards: [
+    { ...EMPTY_CARD },
+    { ...EMPTY_CARD },
+  ],
 };
 
 const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
@@ -122,7 +179,14 @@ const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
   OUTCOME_SALES: ShoppingBag,
 };
 
-const CREATE_STEPS: CreateStep[] = [1, 2, 3, 4, 5];
+const ALL_PREVIEW_FORMATS = [
+  "MOBILE_FEED_STANDARD",
+  "DESKTOP_FEED_STANDARD",
+  "FACEBOOK_STORY_MOBILE",
+  "INSTAGRAM_STANDARD",
+  "INSTAGRAM_STORY",
+  "INSTAGRAM_REELS",
+];
 
 function toInputDate(value?: string | null) {
   if (!value) return "";
@@ -144,13 +208,8 @@ function campaignToForm(campaign: MetaCampaign, pageId = ""): FormState {
     specialAdCategories: campaign.specialAdCategories || [],
     startTime: toInputDate(campaign.startTime) || defaultStartLocal(),
     stopTime: toInputDate(campaign.stopTime) || "",
-    bidStrategy: campaign.bidStrategy || "",
     pageId,
   };
-}
-
-function MegaphoneFallback(props: { className?: string }) {
-  return <Megaphone {...props} />;
 }
 
 export default function MetaCampaignEditorPage() {
@@ -165,20 +224,27 @@ export default function MetaCampaignEditorPage() {
   const basePath = `/business/${urlBusinessId || businessId}/dashboard/meta-campaigns`;
   const isHe = i18n.language?.startsWith("he");
 
-  const [loading, setLoading] = useState(isEdit);
+  const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusBusy, setStatusBusy] = useState(false);
   const [previewBusy, setPreviewBusy] = useState(false);
+  const [uploadBusy, setUploadBusy] = useState(false);
+  const [formsBusy, setFormsBusy] = useState(false);
   const [createStep, setCreateStep] = useState<CreateStep>(1);
   const [connection, setConnection] = useState<MetaAdsConnectionStatus | null>(
     null
   );
   const [campaign, setCampaign] = useState<MetaCampaign | null>(null);
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
-  const [previewHtml, setPreviewHtml] = useState("");
+  const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
+  const [previews, setPreviews] = useState<MetaAdPreview[]>([]);
+  const [activePreview, setActivePreview] = useState(ALL_PREVIEW_FORMATS[0]);
+  const [newFormName, setNewFormName] = useState("");
+  const [customQuestions, setCustomQuestions] = useState("שם מלא\nטלפון\nאימייל");
 
   const currency = connection?.selectedAdAccount?.currency || "ILS";
   const accountIdLabel = resolveAdAccountId(connection?.selectedAdAccount);
+  const isLeads = form.objective.includes("LEAD");
 
   const objectives = useMemo(() => {
     const fromApi = connection?.objectives?.length
@@ -190,12 +256,10 @@ export default function MetaCampaignEditorPage() {
           value: item.value,
           label: t(item.labelKey),
         }));
-
     const order = OBJECTIVE_OPTIONS.map((item) => item.value);
     const descriptionByValue = Object.fromEntries(
       OBJECTIVE_OPTIONS.map((item) => [item.value, t(item.descriptionKey)])
     );
-
     return [...fromApi]
       .sort((a, b) => order.indexOf(a.value) - order.indexOf(b.value))
       .map((item) => ({
@@ -233,8 +297,8 @@ export default function MetaCampaignEditorPage() {
       }));
     }
     return [
-      { value: "LEARN_MORE", label: t("metaCampaigns.cta.learnMore") },
       { value: "SIGN_UP", label: t("metaCampaigns.cta.signUp") },
+      { value: "LEARN_MORE", label: t("metaCampaigns.cta.learnMore") },
       { value: "CONTACT_US", label: t("metaCampaigns.cta.contactUs") },
       { value: "SHOP_NOW", label: t("metaCampaigns.cta.shopNow") },
       { value: "WHATSAPP_MESSAGE", label: t("metaCampaigns.cta.whatsapp") },
@@ -242,59 +306,63 @@ export default function MetaCampaignEditorPage() {
   }, [connection?.callToActions, isHe, t]);
 
   const previewFormats = useMemo(() => {
-    if (connection?.previewFormats?.length) {
-      return connection.previewFormats.map((item) => ({
+    const fromApi = connection?.previewFormats || [];
+    if (fromApi.length) {
+      return fromApi.map((item) => ({
         value: item.value,
         label: isHe ? item.labelHe : item.labelEn,
       }));
     }
-    return [
-      {
-        value: "MOBILE_FEED_STANDARD",
-        label: t("metaCampaigns.preview.mobileFeed"),
-      },
-      {
-        value: "DESKTOP_FEED_STANDARD",
-        label: t("metaCampaigns.preview.desktopFeed"),
-      },
-      {
-        value: "INSTAGRAM_STANDARD",
-        label: t("metaCampaigns.preview.instagram"),
-      },
-    ];
+    return ALL_PREVIEW_FORMATS.map((value) => ({
+      value,
+      label: t(`metaCampaigns.preview.formats.${value}`, { defaultValue: value }),
+    }));
   }, [connection?.previewFormats, isHe, t]);
+
+  const selectedForm = leadForms.find((item) => item.id === form.leadFormId);
+  const selectedPageName =
+    connection?.pages?.find((page) => page.id === form.pageId)?.name ||
+    connection?.selectedPage?.pageName ||
+    "—";
+
+  const visibleSteps = useMemo(() => {
+    const steps: CreateStep[] = [1, 2, 3, 4];
+    if (isLeads) steps.push(5);
+    steps.push(6, 7);
+    return steps;
+  }, [isLeads]);
 
   useEffect(() => {
     const boot = async () => {
       if (!businessId) return;
       try {
-        if (!isEdit) setLoading(true);
+        setLoading(true);
         const status = await getMetaCampaignsStatus(businessId);
         setConnection(status);
-
         if (!status.connected && !status.isConnected) {
           toast.info(t("metaCampaigns.empty.notConnectedBody"));
           navigate(`${basePath}/settings`, { replace: true });
           return;
         }
-
         if (!isEdit) {
           setForm((prev) => ({
             ...prev,
             pageId: status.selectedPage?.pageId || status.pages?.[0]?.id || "",
           }));
         }
-
         if (isEdit && campaignId) {
           const detail = await getMetaCampaign(businessId, campaignId, {
             days: 30,
           });
           setCampaign(detail.campaign);
-          const pageId =
-            detail.connection?.selectedPage?.pageId ||
-            status.selectedPage?.pageId ||
-            "";
-          setForm(campaignToForm(detail.campaign, pageId));
+          setForm(
+            campaignToForm(
+              detail.campaign,
+              detail.connection?.selectedPage?.pageId ||
+                status.selectedPage?.pageId ||
+                ""
+            )
+          );
           if (detail.connection) setConnection(detail.connection);
         }
       } catch (error: any) {
@@ -310,6 +378,33 @@ export default function MetaCampaignEditorPage() {
     boot();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, campaignId, isEdit]);
+
+  const loadLeadForms = async (pageId = form.pageId) => {
+    if (!businessId || !pageId) return;
+    try {
+      setFormsBusy(true);
+      const data = await listMetaLeadForms(businessId, pageId);
+      setLeadForms(data.forms || []);
+      if (!form.leadFormId && data.forms?.[0]?.id) {
+        setForm((prev) => ({ ...prev, leadFormId: data.forms[0].id }));
+      }
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          t("metaCampaigns.errors.leadForms")
+      );
+    } finally {
+      setFormsBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!isEdit && isLeads && createStep === 5 && form.pageId) {
+      loadLeadForms(form.pageId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [createStep, isLeads, form.pageId, isEdit]);
 
   const updateField = <K extends keyof FormState>(key: K, value: FormState[K]) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -327,6 +422,11 @@ export default function MetaCampaignEditorPage() {
     });
   };
 
+  const ctaValue = () =>
+    (form.ctaCustom.trim() || form.callToAction || "LEARN_MORE")
+      .replace(/\s+/g, "_")
+      .toUpperCase();
+
   const buildFullPayload = () => {
     const dailyBudget = form.dailyBudget ? Number(form.dailyBudget) : null;
     const lifetimeBudget = form.lifetimeBudget
@@ -336,6 +436,16 @@ export default function MetaCampaignEditorPage() {
       .split(/[,\s]+/)
       .map((item) => item.trim().toUpperCase())
       .filter(Boolean);
+
+    const facebookPositions = [
+      form.facebookFeed ? "feed" : "",
+      form.facebookStory ? "story" : "",
+    ].filter(Boolean);
+    const instagramPositions = [
+      form.instagramFeed ? "stream" : "",
+      form.instagramStory ? "story" : "",
+      form.instagramReels ? "reels" : "",
+    ].filter(Boolean);
 
     return {
       full: true,
@@ -352,27 +462,58 @@ export default function MetaCampaignEditorPage() {
       endTime: form.stopTime ? new Date(form.stopTime).toISOString() : null,
       stopTime: form.stopTime ? new Date(form.stopTime).toISOString() : null,
       pageId: form.pageId,
+      leadFormId: isLeads ? form.leadFormId : undefined,
       countries: countries.length ? countries : ["IL"],
       ageMin: form.ageMin ? Number(form.ageMin) : null,
       ageMax: form.ageMax ? Number(form.ageMax) : null,
+      genders: form.gender === "all" ? [] : [Number(form.gender)],
+      advantageAudience: form.advantageAudience,
+      advantagePlacements: form.placementMode === "advantage",
+      placementMode: form.placementMode,
+      publisherPlatforms:
+        form.placementMode === "facebook"
+          ? ["facebook"]
+          : form.placementMode === "instagram"
+            ? ["instagram"]
+            : form.placementMode === "both"
+              ? ["facebook", "instagram"]
+              : undefined,
+      facebookPositions,
+      instagramPositions,
       primaryText: form.primaryText.trim(),
       headline: form.headline.trim(),
       description: form.description.trim(),
-      link: form.link.trim(),
-      imageUrl: form.imageUrl.trim(),
-      callToAction: form.callToAction,
-      adFormat: form.adFormat,
+      displayLink: form.displayLink.trim(),
+      link: form.link.trim() || (isLeads ? "https://fb.me/" : ""),
+      imageHash: form.imageHash || undefined,
+      imageUrl: form.imagePreviewUrl || undefined,
+      videoId: form.videoId || undefined,
+      creativeFormat: form.creativeFormat,
+      carouselCards:
+        form.creativeFormat === "carousel"
+          ? form.carouselCards.map((card) => ({
+              headline: card.headline,
+              description: card.description,
+              link: card.link || form.link,
+              imageHash: card.imageHash,
+              imageUrl: card.imageUrl,
+            }))
+          : undefined,
+      callToAction: ctaValue(),
+      ctaCustom: form.ctaCustom.trim() || undefined,
     };
   };
 
-  const validateCreateStep = (step: CreateStep) => {
-    if (step === 2 && !form.name.trim()) {
-      toast.error(t("metaCampaigns.form.nameRequired"));
-      return false;
-    }
-    if (step === 2 && !form.pageId) {
-      toast.error(t("metaCampaigns.form.pageRequired"));
-      return false;
+  const validateStep = (step: CreateStep) => {
+    if (step === 2) {
+      if (!form.name.trim()) {
+        toast.error(t("metaCampaigns.form.nameRequired"));
+        return false;
+      }
+      if (!form.pageId) {
+        toast.error(t("metaCampaigns.form.pageRequired"));
+        return false;
+      }
     }
     if (step === 3) {
       if (!form.dailyBudget && !form.lifetimeBudget) {
@@ -392,54 +533,97 @@ export default function MetaCampaignEditorPage() {
         return false;
       }
     }
-    if (step === 4) {
-      if (!form.primaryText.trim()) {
-        toast.error(t("metaCampaigns.form.primaryTextRequired"));
+    if (step === 5 && isLeads && !form.leadFormId) {
+      toast.error(t("metaCampaigns.form.leadFormRequired"));
+      return false;
+    }
+    if (step === 6) {
+      if (!form.primaryText.trim() || !form.headline.trim()) {
+        toast.error(t("metaCampaigns.form.creativeRequired"));
         return false;
       }
-      if (!form.headline.trim()) {
-        toast.error(t("metaCampaigns.form.headlineRequired"));
-        return false;
-      }
-      if (!form.link.trim()) {
+      if (!isLeads && !form.link.trim()) {
         toast.error(t("metaCampaigns.form.linkRequired"));
         return false;
+      }
+      if (form.creativeFormat === "single" && !form.imageHash && !form.imagePreviewUrl) {
+        toast.error(t("metaCampaigns.form.mediaRequired"));
+        return false;
+      }
+      if (form.creativeFormat === "video" && !form.videoId) {
+        toast.error(t("metaCampaigns.form.videoRequired"));
+        return false;
+      }
+      if (form.creativeFormat === "carousel") {
+        const ready = form.carouselCards.filter(
+          (card) => card.imageHash || card.imageUrl
+        );
+        if (ready.length < 2) {
+          toast.error(t("metaCampaigns.form.carouselRequired"));
+          return false;
+        }
       }
     }
     return true;
   };
 
-  const goNext = () => {
-    if (!validateCreateStep(createStep)) return;
-    setCreateStep((prev) => Math.min(5, prev + 1) as CreateStep);
+  const nextStep = () => {
+    if (!validateStep(createStep)) return;
+    const idx = visibleSteps.indexOf(createStep);
+    const next = visibleSteps[Math.min(visibleSteps.length - 1, idx + 1)];
+    setCreateStep(next);
   };
 
-  const goBack = () => {
-    setCreateStep((prev) => Math.max(1, prev - 1) as CreateStep);
+  const prevStep = () => {
+    const idx = visibleSteps.indexOf(createStep);
+    const prev = visibleSteps[Math.max(0, idx - 1)];
+    setCreateStep(prev);
   };
 
-  const loadPreview = async () => {
+  const uploadFile = async (
+    file: File,
+    kind: "image" | "video",
+    onDone: (result: {
+      imageHash?: string;
+      url?: string;
+      videoId?: string;
+    }) => void
+  ) => {
     if (!businessId) return;
-    if (!validateCreateStep(4)) return;
+    try {
+      setUploadBusy(true);
+      const result = await uploadMetaMedia(businessId, file, kind);
+      onDone(result);
+      toast.success(t("metaCampaigns.toasts.mediaUploaded"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          t("metaCampaigns.errors.mediaUpload")
+      );
+    } finally {
+      setUploadBusy(false);
+    }
+  };
 
+  const loadPreviews = async () => {
+    if (!businessId || !validateStep(6)) return;
     try {
       setPreviewBusy(true);
+      const payload = buildFullPayload();
       const result = await previewMetaAd(businessId, {
-        pageId: form.pageId,
-        primaryText: form.primaryText.trim(),
-        headline: form.headline.trim(),
-        description: form.description.trim(),
-        link: form.link.trim(),
-        imageUrl: form.imageUrl.trim(),
-        callToAction: form.callToAction,
-        adFormat: form.adFormat,
+        ...payload,
+        adFormats: ALL_PREVIEW_FORMATS,
       });
-      setPreviewHtml(result.preview?.body || "");
-      if (!result.preview?.body) {
-        toast.info(t("metaCampaigns.preview.empty"));
-      }
+      const rows = result.previews?.length
+        ? result.previews
+        : result.preview
+          ? [result.preview]
+          : [];
+      setPreviews(rows);
+      const firstOk = rows.find((row) => row.body)?.adFormat;
+      if (firstOk) setActivePreview(firstOk);
     } catch (error: any) {
-      setPreviewHtml("");
       toast.error(
         error?.response?.data?.error ||
           error?.response?.data?.message ||
@@ -451,15 +635,53 @@ export default function MetaCampaignEditorPage() {
   };
 
   useEffect(() => {
-    if (!isEdit && createStep === 5 && !previewHtml && !previewBusy) {
-      loadPreview();
+    if (!isEdit && createStep === 7 && !previews.length && !previewBusy) {
+      loadPreviews();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createStep]);
 
+  const createLeadFormQuick = async () => {
+    if (!businessId || !form.pageId || !newFormName.trim()) {
+      toast.error(t("metaCampaigns.form.leadFormNameRequired"));
+      return;
+    }
+    try {
+      setFormsBusy(true);
+      const questions = customQuestions
+        .split("\n")
+        .map((line) => line.trim())
+        .filter(Boolean)
+        .map((label, index) => ({
+          type: "CUSTOM",
+          key: `q_${index + 1}`,
+          label,
+        }));
+      const result = await createMetaLeadForm(businessId, {
+        pageId: form.pageId,
+        name: newFormName.trim(),
+        questions,
+        thankYouUrl: form.link || undefined,
+      });
+      await loadLeadForms(form.pageId);
+      if (result.form?.id) {
+        updateField("leadFormId", result.form.id);
+      }
+      setNewFormName("");
+      toast.success(t("metaCampaigns.toasts.leadFormCreated"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          t("metaCampaigns.errors.createLeadForm")
+      );
+    } finally {
+      setFormsBusy(false);
+    }
+  };
+
   const save = async () => {
     if (!businessId) return;
-
     if (isEdit) {
       if (!form.name.trim()) {
         toast.error(t("metaCampaigns.form.nameRequired"));
@@ -485,7 +707,6 @@ export default function MetaCampaignEditorPage() {
             : null,
         });
         setCampaign(result.campaign);
-        setForm(campaignToForm(result.campaign, form.pageId));
         toast.success(t("metaCampaigns.toasts.updated"));
       } catch (error: any) {
         toast.error(
@@ -499,14 +720,10 @@ export default function MetaCampaignEditorPage() {
       return;
     }
 
-    if (!validateCreateStep(2) || !validateCreateStep(3) || !validateCreateStep(4)) {
-      return;
-    }
-
+    if (!validateStep(6)) return;
     try {
       setSaving(true);
       const result = await createMetaCampaign(businessId, buildFullPayload());
-      if (result.preview?.body) setPreviewHtml(result.preview.body);
       toast.success(t("metaCampaigns.toasts.createdFull"));
       navigate(`${basePath}/edit/${result.campaign.id}`, { replace: true });
     } catch (error: any) {
@@ -531,7 +748,6 @@ export default function MetaCampaignEditorPage() {
       setStatusBusy(true);
       const result = await setMetaCampaignStatus(businessId, campaignId, next);
       setCampaign(result.campaign);
-      setForm((prev) => ({ ...prev, status: result.campaign.status }));
       toast.success(
         next === "ACTIVE"
           ? t("metaCampaigns.toasts.activated")
@@ -578,54 +794,24 @@ export default function MetaCampaignEditorPage() {
   const tone = statusTone(campaign?.effectiveStatus || form.status);
   const isActive =
     String(campaign?.effectiveStatus || form.status).toUpperCase() === "ACTIVE";
-  const selectedObjective = objectives.find(
-    (item) => item.value === form.objective
-  );
-  const selectedPageName =
-    connection?.pages?.find((page) => page.id === form.pageId)?.name ||
-    connection?.selectedPage?.pageName ||
-    "—";
-  const ctaLabel =
-    callToActions.find((item) => item.value === form.callToAction)?.label ||
-    form.callToAction;
+  const selectedObjective = objectives.find((item) => item.value === form.objective);
+  const activePreviewHtml =
+    previews.find((item) => item.adFormat === activePreview)?.body || "";
 
-  const stepLabel = (step: CreateStep) => {
-    const keys: Record<CreateStep, string> = {
-      1: "metaCampaigns.form.stepObjective",
-      2: "metaCampaigns.form.stepDetails",
-      3: "metaCampaigns.form.stepSchedule",
-      4: "metaCampaigns.form.stepCreative",
-      5: "metaCampaigns.form.stepPreview",
+  const stepTitle = (step: CreateStep) => {
+    const map: Record<CreateStep, string> = {
+      1: t("metaCampaigns.form.stepObjective"),
+      2: t("metaCampaigns.form.stepDetails"),
+      3: t("metaCampaigns.form.stepSchedule"),
+      4: t("metaCampaigns.form.stepAudience"),
+      5: t("metaCampaigns.form.stepLeadForm"),
+      6: t("metaCampaigns.form.stepCreative"),
+      7: t("metaCampaigns.form.stepPreview"),
     };
-    return t(keys[step]);
+    return map[step];
   };
 
-  const accountCard = (
-    <div className={`${cardBase} p-4`}>
-      <p className="text-sm font-black text-slate-900">
-        {t("metaCampaigns.form.accountCard")}
-      </p>
-      <p className="mt-2 text-sm font-bold text-slate-700">
-        {connection?.selectedAdAccount?.name || "—"}
-      </p>
-      {accountIdLabel ? (
-        <p className="mt-1 text-xs font-semibold tabular-nums text-slate-500">
-          {t("metaCampaigns.form.accountId", { id: accountIdLabel })}
-        </p>
-      ) : null}
-      <p className="mt-1 text-xs font-semibold text-slate-500">
-        {t("metaCampaigns.form.currency", { currency })}
-      </p>
-      <Link
-        to={`${basePath}/settings`}
-        className={`${btnSecondary} mt-3 w-full`}
-      >
-        {t("metaCampaigns.form.manageConnection")}
-      </Link>
-    </div>
-  );
-
-  const localPreviewCard = (
+  const localPreview = (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div className="flex items-center gap-3 border-b border-slate-100 px-3 py-2.5">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#1877F2] text-xs font-black text-white">
@@ -640,274 +826,223 @@ export default function MetaCampaignEditorPage() {
           </p>
         </div>
       </div>
-      <div className="space-y-2 px-3 py-3">
-        <p className="whitespace-pre-wrap text-sm font-semibold text-slate-800">
-          {form.primaryText || t("metaCampaigns.preview.primaryPlaceholder")}
-        </p>
+      <div className="px-3 py-3 text-sm font-semibold text-slate-800 whitespace-pre-wrap">
+        {form.primaryText || t("metaCampaigns.preview.primaryPlaceholder")}
       </div>
-      {form.imageUrl ? (
-        <img
-          src={form.imageUrl}
-          alt=""
-          className="max-h-64 w-full object-cover"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = "none";
-          }}
-        />
+      {form.imagePreviewUrl || form.imageHash ? (
+        form.imagePreviewUrl ? (
+          <img
+            src={form.imagePreviewUrl}
+            alt=""
+            className="max-h-64 w-full object-cover"
+          />
+        ) : (
+          <div className="flex h-40 items-center justify-center bg-slate-100 text-xs font-bold text-slate-500">
+            Meta image hash ready
+          </div>
+        )
       ) : (
         <div className="flex h-40 items-center justify-center bg-slate-100 text-slate-400">
-          <ImageIcon className="h-8 w-8" />
+          <ImagePlus className="h-8 w-8" />
         </div>
       )}
       <div className="flex items-center justify-between gap-3 border-t border-slate-100 bg-slate-50 px-3 py-2.5">
         <div className="min-w-0">
           <p className="truncate text-[11px] font-bold uppercase tracking-wide text-slate-400">
-            {form.link
-              ? form.link.replace(/^https?:\/\//, "").split("/")[0]
-              : "example.com"}
+            {form.displayLink ||
+              form.link.replace(/^https?:\/\//, "").split("/")[0] ||
+              "example.com"}
           </p>
           <p className="truncate text-sm font-black text-slate-900">
             {form.headline || t("metaCampaigns.preview.headlinePlaceholder")}
           </p>
-          <p className="truncate text-xs font-semibold text-slate-500">
-            {form.description || t("metaCampaigns.preview.descPlaceholder")}
-          </p>
         </div>
         <span className="shrink-0 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-black text-slate-700">
-          {ctaLabel}
+          {form.ctaCustom ||
+            callToActions.find((item) => item.value === form.callToAction)
+              ?.label ||
+            form.callToAction}
         </span>
       </div>
     </div>
   );
 
+  const navFooter = (
+    <div className="flex justify-between gap-2 pt-2">
+      <button
+        type="button"
+        onClick={prevStep}
+        disabled={createStep === 1}
+        className={btnSecondary}
+      >
+        {t("metaCampaigns.form.backStep")}
+      </button>
+      {createStep === 7 ? (
+        <button
+          type="button"
+          onClick={save}
+          disabled={saving}
+          className={btnPrimary}
+        >
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {t("metaCampaigns.form.createFull")}
+        </button>
+      ) : (
+        <button type="button" onClick={nextStep} className={btnPrimary}>
+          {t("metaCampaigns.form.continue")}
+          <ArrowRight className="h-4 w-4 rotate-180" />
+        </button>
+      )}
+    </div>
+  );
+
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <Link
-            to={`${basePath}/overview`}
-            className="inline-flex items-center gap-1 text-xs font-black text-violet-700 hover:underline"
-          >
-            <ArrowRight className="h-3.5 w-3.5 rotate-180" />
-            {t("metaCampaigns.form.back")}
-          </Link>
-          <h2 className="mt-1 text-xl font-black text-slate-900">
-            {isEdit
-              ? t("metaCampaigns.form.editTitle")
-              : t("metaCampaigns.form.createTitle")}
-          </h2>
-          <p className="mt-0.5 text-sm font-semibold text-slate-500">
-            {isEdit
-              ? t("metaCampaigns.form.subtitle")
-              : t(`metaCampaigns.form.createStep${createStep}Subtitle`)}
-          </p>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {isEdit ? (
-            <>
+      <div className="relative overflow-hidden rounded-3xl border border-[#1877F2]/15 bg-gradient-to-l from-[#1877F2]/10 via-white to-[#E1306C]/5 p-5">
+        <div className="absolute -left-10 -top-10 h-32 w-32 rounded-full bg-[#1877F2]/10 blur-2xl" />
+        <div className="relative flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <Link
+              to={`${basePath}/overview`}
+              className="inline-flex items-center gap-1 text-xs font-black text-[#1877F2] hover:underline"
+            >
+              <ArrowRight className="h-3.5 w-3.5 rotate-180" />
+              {t("metaCampaigns.form.back")}
+            </Link>
+            <h2 className="mt-1 text-2xl font-black text-slate-900">
+              {isEdit
+                ? t("metaCampaigns.form.editTitle")
+                : t("metaCampaigns.form.createTitleWow")}
+            </h2>
+            <p className="mt-1 text-sm font-semibold text-slate-500">
+              {isEdit
+                ? t("metaCampaigns.form.subtitle")
+                : t("metaCampaigns.form.createWowSubtitle")}
+            </p>
+          </div>
+          {!isEdit ? (
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1.5 text-xs font-black text-slate-600 shadow-sm">
+              <Sparkles className="h-3.5 w-3.5 text-[#1877F2]" />
+              {t("metaCampaigns.form.simplerThanMeta")}
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}
               >
-                <span className={`h-1.5 w-1.5 rounded-full ${tone.dot}`} />
                 {campaign?.effectiveStatus || form.status}
               </span>
-              <button
-                type="button"
-                onClick={toggleStatus}
-                disabled={statusBusy}
-                className={btnSecondary}
-              >
-                {statusBusy ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : isActive ? (
-                  <Pause className="h-4 w-4" />
-                ) : (
-                  <Play className="h-4 w-4" />
-                )}
-                {isActive
-                  ? t("metaCampaigns.actions.pause")
-                  : t("metaCampaigns.actions.activate")}
+              <button type="button" onClick={toggleStatus} disabled={statusBusy} className={btnSecondary}>
+                {statusBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : isActive ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isActive ? t("metaCampaigns.actions.pause") : t("metaCampaigns.actions.activate")}
               </button>
-              <button
-                type="button"
-                onClick={remove}
-                disabled={saving}
-                className={btnGhost}
-              >
+              <button type="button" onClick={remove} disabled={saving} className={btnGhost}>
                 <Trash2 className="h-4 w-4" />
                 {t("metaCampaigns.actions.delete")}
               </button>
-              <button
-                type="button"
-                onClick={save}
-                disabled={saving}
-                className={btnPrimary}
-              >
-                {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
+              <button type="button" onClick={save} disabled={saving} className={btnPrimary}>
+                {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
                 {t("metaCampaigns.form.save")}
               </button>
-            </>
-          ) : null}
+            </div>
+          )}
         </div>
       </div>
 
       {!isEdit ? (
-        <div className="flex flex-wrap items-center gap-2">
-          {CREATE_STEPS.map((step, index) => (
-            <React.Fragment key={step}>
-              {index > 0 ? <span className="text-slate-300">—</span> : null}
-              <button
-                type="button"
-                onClick={() => {
-                  if (step < createStep) setCreateStep(step);
-                }}
-                className={[
-                  "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black",
-                  createStep === step
-                    ? "border-violet-200 bg-violet-50 text-violet-800"
-                    : createStep > step
-                      ? "border-emerald-100 bg-emerald-50 text-emerald-700"
-                      : "border-slate-200 bg-white text-slate-500",
-                ].join(" ")}
-              >
-                <span
-                  className={[
-                    "flex h-5 w-5 items-center justify-center rounded-full text-[10px] text-white",
-                    createStep >= step ? "bg-violet-600" : "bg-slate-300",
-                  ].join(" ")}
-                >
-                  {step}
-                </span>
-                {stepLabel(step)}
-              </button>
-            </React.Fragment>
+        <div className="flex flex-wrap gap-2">
+          {visibleSteps.map((step, index) => (
+            <button
+              key={step}
+              type="button"
+              onClick={() => {
+                if (visibleSteps.indexOf(step) <= visibleSteps.indexOf(createStep)) {
+                  setCreateStep(step);
+                }
+              }}
+              className={[
+                "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black transition",
+                createStep === step
+                  ? "border-[#1877F2] bg-[#1877F2] text-white shadow-sm"
+                  : visibleSteps.indexOf(step) < visibleSteps.indexOf(createStep)
+                    ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                    : "border-slate-200 bg-white text-slate-500",
+              ].join(" ")}
+            >
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-black/10 text-[10px]">
+                {index + 1}
+              </span>
+              {stepTitle(step)}
+            </button>
           ))}
         </div>
       ) : null}
 
-      {/* CREATE STEP 1 — Objective */}
+      {/* STEP 1 */}
       {!isEdit && createStep === 1 ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className={`${cardBase} p-4 sm:p-5`}>
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#1877F2]/10 text-[#1877F2]">
-                <Megaphone className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-900">
-                  {t("metaCampaigns.form.chooseObjective")}
-                </p>
-                <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {t("metaCampaigns.form.chooseObjectiveHint")}
-                </p>
-              </div>
-            </div>
-            <div className="mt-5 grid gap-3 sm:grid-cols-2">
-              {objectives.map((item) => {
-                const Icon = OBJECTIVE_ICONS[item.value] || MegaphoneFallback;
-                const active = form.objective === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => updateField("objective", item.value)}
+        <div className={`${cardBase} p-5`}>
+          <p className="text-lg font-black text-slate-900">
+            {t("metaCampaigns.form.chooseObjective")}
+          </p>
+          <p className="mt-1 text-sm font-semibold text-slate-500">
+            {t("metaCampaigns.form.chooseObjectiveHint")}
+          </p>
+          <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            {objectives.map((item) => {
+              const Icon = OBJECTIVE_ICONS[item.value] || Megaphone;
+              const active = form.objective === item.value;
+              return (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => updateField("objective", item.value)}
+                  className={[
+                    "rounded-2xl border p-4 text-start transition",
+                    active
+                      ? "border-[#1877F2] bg-[#1877F2]/5 ring-2 ring-[#1877F2]/20"
+                      : "border-slate-200 bg-white hover:border-slate-300",
+                  ].join(" ")}
+                >
+                  <span
                     className={[
-                      "rounded-2xl border p-4 text-start transition",
-                      active
-                        ? "border-[#1877F2] bg-[#1877F2]/5 shadow-sm ring-2 ring-[#1877F2]/20"
-                        : "border-slate-200 bg-white hover:border-slate-300",
+                      "mb-3 flex h-11 w-11 items-center justify-center rounded-2xl",
+                      active ? "bg-[#1877F2] text-white" : "bg-slate-100 text-slate-600",
                     ].join(" ")}
                   >
-                    <div className="flex items-start gap-3">
-                      <span
-                        className={[
-                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl",
-                          active
-                            ? "bg-[#1877F2] text-white"
-                            : "bg-slate-100 text-slate-600",
-                        ].join(" ")}
-                      >
-                        <Icon className="h-5 w-5" />
-                      </span>
-                      <span>
-                        <span className="block text-sm font-black text-slate-900">
-                          {item.label}
-                        </span>
-                        <span className="mt-1 block text-xs font-semibold leading-relaxed text-slate-500">
-                          {item.description}
-                        </span>
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-            <div className="mt-5 flex justify-end">
-              <button type="button" onClick={goNext} className={btnPrimary}>
-                {t("metaCampaigns.form.continue")}
-                <ArrowRight className="h-4 w-4 rotate-180" />
-              </button>
-            </div>
+                    <Icon className="h-5 w-5" />
+                  </span>
+                  <span className="block text-sm font-black text-slate-900">
+                    {item.label}
+                  </span>
+                  <span className="mt-1 block text-xs font-semibold text-slate-500">
+                    {item.description}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-          <aside className="space-y-4">{accountCard}</aside>
+          {navFooter}
         </div>
       ) : null}
 
-      {/* CREATE STEP 2 — Campaign details */}
+      {/* STEP 2 */}
       {!isEdit && createStep === 2 ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className={`${cardBase} p-4 sm:p-5 space-y-4`}>
-            <p className="text-sm font-black text-slate-900">
-              {t("metaCampaigns.form.basics")}
-            </p>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.name")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.name}
-                onChange={(e) => updateField("name", e.target.value)}
-                placeholder={t("metaCampaigns.form.namePlaceholder")}
-              />
-            </label>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.objective")}
-                </span>
-                <div className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5">
-                  <p className="text-sm font-black text-slate-800">
-                    {selectedObjective?.label || form.objective}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setCreateStep(1)}
-                    className="text-xs font-black text-[#1877F2] hover:underline"
-                  >
-                    {t("metaCampaigns.form.changeObjective")}
-                  </button>
-                </div>
-              </div>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.status")}
-                </span>
-                <select
-                  className={inputBase}
-                  value={form.status}
-                  onChange={(e) => updateField("status", e.target.value)}
-                >
-                  <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
-                  <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
-                </select>
-              </label>
-            </div>
+        <div className={`${cardBase} space-y-4 p-5`}>
+          <p className="text-lg font-black text-slate-900">
+            {t("metaCampaigns.form.basics")}
+          </p>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-black text-slate-500">
+              {t("metaCampaigns.form.name")}
+            </span>
+            <input
+              className={inputBase}
+              value={form.name}
+              onChange={(e) => updateField("name", e.target.value)}
+              placeholder={t("metaCampaigns.form.namePlaceholder")}
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
                 {t("metaCampaigns.form.page")}
@@ -917,9 +1052,7 @@ export default function MetaCampaignEditorPage() {
                 value={form.pageId}
                 onChange={(e) => updateField("pageId", e.target.value)}
               >
-                <option value="">
-                  {t("metaCampaigns.form.pagePlaceholder")}
-                </option>
+                <option value="">{t("metaCampaigns.form.pagePlaceholder")}</option>
                 {(connection?.pages || []).map((page) => (
                   <option key={page.id} value={page.id}>
                     {page.name}
@@ -927,126 +1060,157 @@ export default function MetaCampaignEditorPage() {
                 ))}
               </select>
             </label>
-            <div>
-              <p className="text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.specialTitle")}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {specialCategories.map((item) => {
-                  const active = form.specialAdCategories.includes(item.value);
-                  return (
-                    <button
-                      key={item.value}
-                      type="button"
-                      onClick={() => toggleCategory(item.value)}
-                      className={[
-                        "rounded-lg border px-3 py-2 text-xs font-black transition",
-                        active
-                          ? "border-violet-200 bg-violet-50 text-violet-800"
-                          : "border-slate-200 bg-white text-slate-600",
-                      ].join(" ")}
-                    >
-                      {item.label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-            <div className="flex justify-between gap-2 pt-2">
-              <button type="button" onClick={goBack} className={btnSecondary}>
-                {t("metaCampaigns.form.backStep")}
-              </button>
-              <button type="button" onClick={goNext} className={btnPrimary}>
-                {t("metaCampaigns.form.continue")}
-              </button>
-            </div>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.status")}
+              </span>
+              <select
+                className={inputBase}
+                value={form.status}
+                onChange={(e) => updateField("status", e.target.value)}
+              >
+                <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
+                <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
+              </select>
+            </label>
           </div>
-          <aside className="space-y-4">{accountCard}</aside>
+          <div className="flex flex-wrap gap-2">
+            {specialCategories.map((item) => {
+              const active = form.specialAdCategories.includes(item.value);
+              return (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => toggleCategory(item.value)}
+                  className={[
+                    "rounded-lg border px-3 py-2 text-xs font-black",
+                    active
+                      ? "border-[#1877F2]/30 bg-[#1877F2]/10 text-[#1877F2]"
+                      : "border-slate-200 bg-white text-slate-600",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+          {navFooter}
         </div>
       ) : null}
 
-      {/* CREATE STEP 3 — Budget & schedule */}
+      {/* STEP 3 schedule */}
       {!isEdit && createStep === 3 ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className={`${cardBase} p-4 sm:p-5 space-y-4`}>
-            <div className="flex items-start gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                <CalendarRange className="h-5 w-5" />
+        <div className={`${cardBase} space-y-4 p-5`}>
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-violet-50 text-violet-700">
+              <CalendarRange className="h-5 w-5" />
+            </div>
+            <div>
+              <p className="text-lg font-black text-slate-900">
+                {t("metaCampaigns.form.scheduleTitle")}
+              </p>
+              <p className="text-sm font-semibold text-slate-500">
+                {t("metaCampaigns.form.scheduleHint")}
+              </p>
+            </div>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.startTime")} *
+              </span>
+              <input
+                type="datetime-local"
+                className={inputBase}
+                value={form.startTime}
+                onChange={(e) => updateField("startTime", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.stopTime")}
+              </span>
+              <input
+                type="datetime-local"
+                className={inputBase}
+                value={form.stopTime}
+                onChange={(e) => updateField("stopTime", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.dailyBudget")} ({currency})
+              </span>
+              <input
+                type="number"
+                min="1"
+                className={inputBase}
+                value={form.dailyBudget}
+                onChange={(e) => updateField("dailyBudget", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.lifetimeBudget")} ({currency})
+              </span>
+              <input
+                type="number"
+                min="1"
+                className={inputBase}
+                value={form.lifetimeBudget}
+                disabled={Boolean(form.dailyBudget)}
+                onChange={(e) => updateField("lifetimeBudget", e.target.value)}
+              />
+            </label>
+          </div>
+          {navFooter}
+        </div>
+      ) : null}
+
+      {/* STEP 4 audience + placements */}
+      {!isEdit && createStep === 4 ? (
+        <div className="grid gap-4 xl:grid-cols-2">
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+                <Target className="h-5 w-5" />
               </div>
               <div>
-                <p className="text-sm font-black text-slate-900">
-                  {t("metaCampaigns.form.scheduleTitle")}
+                <p className="text-lg font-black text-slate-900">
+                  {t("metaCampaigns.form.audienceTitle")}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {t("metaCampaigns.form.scheduleHint")}
+                <p className="text-sm font-semibold text-slate-500">
+                  {t("metaCampaigns.form.audienceHint")}
                 </p>
               </div>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.startTime")} *
+            <label className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <span>
+                <span className="block text-sm font-black text-slate-900">
+                  Advantage+ {t("metaCampaigns.form.audience")}
                 </span>
-                <input
-                  type="datetime-local"
-                  className={inputBase}
-                  value={form.startTime}
-                  onChange={(e) => updateField("startTime", e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.stopTime")}
+                <span className="block text-xs font-semibold text-slate-500">
+                  {t("metaCampaigns.form.advantageAudienceHint")}
                 </span>
-                <input
-                  type="datetime-local"
-                  className={inputBase}
-                  value={form.stopTime}
-                  onChange={(e) => updateField("stopTime", e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.dailyBudget")} ({currency})
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  className={inputBase}
-                  value={form.dailyBudget}
-                  onChange={(e) => updateField("dailyBudget", e.target.value)}
-                  placeholder="50"
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.lifetimeBudget")} ({currency})
-                </span>
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  className={inputBase}
-                  value={form.lifetimeBudget}
-                  onChange={(e) =>
-                    updateField("lifetimeBudget", e.target.value)
-                  }
-                  placeholder="3000"
-                  disabled={Boolean(form.dailyBudget)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.countries")}
-                </span>
-                <input
-                  className={inputBase}
-                  value={form.countries}
-                  onChange={(e) => updateField("countries", e.target.value)}
-                  placeholder="IL"
-                />
-              </label>
+              </span>
+              <input
+                type="checkbox"
+                checked={form.advantageAudience}
+                onChange={(e) => updateField("advantageAudience", e.target.checked)}
+                className="h-5 w-5"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.countries")}
+              </span>
+              <input
+                className={inputBase}
+                value={form.countries}
+                onChange={(e) => updateField("countries", e.target.value)}
+              />
+            </label>
+            {!form.advantageAudience ? (
               <div className="grid grid-cols-2 gap-3">
                 <label className="block">
                   <span className="mb-1.5 block text-xs font-black text-slate-500">
@@ -1074,36 +1238,255 @@ export default function MetaCampaignEditorPage() {
                     onChange={(e) => updateField("ageMax", e.target.value)}
                   />
                 </label>
+                <label className="col-span-2 block">
+                  <span className="mb-1.5 block text-xs font-black text-slate-500">
+                    {t("metaCampaigns.form.gender")}
+                  </span>
+                  <select
+                    className={inputBase}
+                    value={form.gender}
+                    onChange={(e) =>
+                      updateField("gender", e.target.value as FormState["gender"])
+                    }
+                  >
+                    <option value="all">{t("metaCampaigns.form.genderAll")}</option>
+                    <option value="1">{t("metaCampaigns.form.genderMale")}</option>
+                    <option value="2">{t("metaCampaigns.form.genderFemale")}</option>
+                  </select>
+                </label>
+              </div>
+            ) : null}
+          </div>
+
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <div className="flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E1306C]/10 text-[#E1306C]">
+                <Layers3 className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-lg font-black text-slate-900">
+                  {t("metaCampaigns.form.placementsTitle")}
+                </p>
+                <p className="text-sm font-semibold text-slate-500">
+                  {t("metaCampaigns.form.placementsHint")}
+                </p>
               </div>
             </div>
-            <div className="flex justify-between gap-2 pt-2">
-              <button type="button" onClick={goBack} className={btnSecondary}>
-                {t("metaCampaigns.form.backStep")}
-              </button>
-              <button type="button" onClick={goNext} className={btnPrimary}>
-                {t("metaCampaigns.form.continue")}
-              </button>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {(
+                [
+                  ["advantage", t("metaCampaigns.form.placementAdvantage")],
+                  ["both", t("metaCampaigns.form.placementBoth")],
+                  ["facebook", t("metaCampaigns.form.placementFacebook")],
+                  ["instagram", t("metaCampaigns.form.placementInstagram")],
+                ] as const
+              ).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => updateField("placementMode", value)}
+                  className={[
+                    "rounded-xl border px-3 py-3 text-start text-sm font-black",
+                    form.placementMode === value
+                      ? "border-[#1877F2] bg-[#1877F2]/5 text-[#1877F2]"
+                      : "border-slate-200 bg-white text-slate-700",
+                  ].join(" ")}
+                >
+                  {value === "facebook" ? (
+                    <Facebook className="mb-2 h-4 w-4" />
+                  ) : value === "instagram" ? (
+                    <Instagram className="mb-2 h-4 w-4" />
+                  ) : null}
+                  {label}
+                </button>
+              ))}
             </div>
+            {form.placementMode !== "advantage" ? (
+              <div className="space-y-2 rounded-2xl border border-slate-100 bg-slate-50 p-3 text-sm font-semibold text-slate-700">
+                {(form.placementMode === "facebook" ||
+                  form.placementMode === "both") && (
+                  <>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.facebookFeed}
+                        onChange={(e) => updateField("facebookFeed", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posFacebookFeed")}
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.facebookStory}
+                        onChange={(e) => updateField("facebookStory", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posFacebookStory")}
+                    </label>
+                  </>
+                )}
+                {(form.placementMode === "instagram" ||
+                  form.placementMode === "both") && (
+                  <>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.instagramFeed}
+                        onChange={(e) => updateField("instagramFeed", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posInstagramFeed")}
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.instagramStory}
+                        onChange={(e) => updateField("instagramStory", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posInstagramStory")}
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.instagramReels}
+                        onChange={(e) => updateField("instagramReels", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posInstagramReels")}
+                    </label>
+                  </>
+                )}
+              </div>
+            ) : null}
+            {navFooter}
           </div>
-          <aside className="space-y-4">
-            {accountCard}
-            <div className={`${cardBase} p-4 text-xs font-semibold text-slate-500`}>
-              {t("metaCampaigns.form.scheduleAside")}
-            </div>
-          </aside>
         </div>
       ) : null}
 
-      {/* CREATE STEP 4 — Creative */}
-      {!isEdit && createStep === 4 ? (
+      {/* STEP 5 lead form */}
+      {!isEdit && createStep === 5 && isLeads ? (
         <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
-          <div className={`${cardBase} p-4 sm:p-5 space-y-4`}>
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <p className="text-lg font-black text-slate-900">
+              {t("metaCampaigns.form.leadFormTitle")}
+            </p>
+            <p className="text-sm font-semibold text-slate-500">
+              {t("metaCampaigns.form.leadFormHint")}
+            </p>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                className={btnSecondary}
+                disabled={formsBusy}
+                onClick={() => loadLeadForms()}
+              >
+                {formsBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {t("metaCampaigns.form.refreshLeadForms")}
+              </button>
+            </div>
+            <div className="space-y-2">
+              {leadForms.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => updateField("leadFormId", item.id)}
+                  className={[
+                    "w-full rounded-2xl border p-4 text-start",
+                    form.leadFormId === item.id
+                      ? "border-[#1877F2] bg-[#1877F2]/5"
+                      : "border-slate-200 bg-white",
+                  ].join(" ")}
+                >
+                  <p className="text-sm font-black text-slate-900">{item.name}</p>
+                  <p className="mt-1 text-xs font-semibold text-slate-500">
+                    {item.status} · {item.leadsCount || 0} leads · {item.id}
+                  </p>
+                </button>
+              ))}
+              {!leadForms.length && !formsBusy ? (
+                <p className="text-sm font-semibold text-slate-500">
+                  {t("metaCampaigns.form.noLeadForms")}
+                </p>
+              ) : null}
+            </div>
+            {selectedForm?.questions?.length ? (
+              <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
+                <p className="text-sm font-black text-slate-900">
+                  {t("metaCampaigns.form.formQuestions")}
+                </p>
+                <ul className="mt-2 space-y-1 text-sm font-semibold text-slate-600">
+                  {selectedForm.questions.map((q) => (
+                    <li key={q.key || q.id}>
+                      • {q.label || q.key}{" "}
+                      <span className="text-slate-400">({q.type})</span>
+                      {q.options?.length
+                        ? ` — ${q.options.map((o) => o.value).join(", ")}`
+                        : ""}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+            {navFooter}
+          </div>
+          <div className={`${cardBase} space-y-3 p-5`}>
             <p className="text-sm font-black text-slate-900">
+              {t("metaCampaigns.form.createLeadFormTitle")}
+            </p>
+            <input
+              className={inputBase}
+              value={newFormName}
+              onChange={(e) => setNewFormName(e.target.value)}
+              placeholder={t("metaCampaigns.form.leadFormNamePlaceholder")}
+            />
+            <textarea
+              className={`${inputBase} min-h-[120px]`}
+              value={customQuestions}
+              onChange={(e) => setCustomQuestions(e.target.value)}
+              placeholder={t("metaCampaigns.form.customQuestionsPlaceholder")}
+            />
+            <button
+              type="button"
+              className={btnPrimary}
+              disabled={formsBusy}
+              onClick={createLeadFormQuick}
+            >
+              <Plus className="h-4 w-4" />
+              {t("metaCampaigns.form.createLeadForm")}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {/* STEP 6 creative */}
+      {!isEdit && createStep === 6 ? (
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <p className="text-lg font-black text-slate-900">
               {t("metaCampaigns.form.creativeTitle")}
             </p>
-            <p className="text-xs font-semibold text-slate-500">
-              {t("metaCampaigns.form.creativeHint")}
-            </p>
+            <div className="grid gap-2 sm:grid-cols-3">
+              {(
+                [
+                  ["single", ImagePlus, t("metaCampaigns.form.formatSingle")],
+                  ["video", Clapperboard, t("metaCampaigns.form.formatVideo")],
+                  ["carousel", Layers3, t("metaCampaigns.form.formatCarousel")],
+                ] as const
+              ).map(([value, Icon, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => updateField("creativeFormat", value)}
+                  className={[
+                    "rounded-2xl border px-3 py-3 text-sm font-black",
+                    form.creativeFormat === value
+                      ? "border-[#1877F2] bg-[#1877F2]/5 text-[#1877F2]"
+                      : "border-slate-200 bg-white text-slate-700",
+                  ].join(" ")}
+                >
+                  <Icon className="mb-2 h-4 w-4" />
+                  {label}
+                </button>
+              ))}
+            </div>
+
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
                 {t("metaCampaigns.form.primaryText")}
@@ -1112,7 +1495,6 @@ export default function MetaCampaignEditorPage() {
                 className={`${inputBase} min-h-[96px]`}
                 value={form.primaryText}
                 onChange={(e) => updateField("primaryText", e.target.value)}
-                placeholder={t("metaCampaigns.form.primaryTextPlaceholder")}
               />
             </label>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -1124,7 +1506,6 @@ export default function MetaCampaignEditorPage() {
                   className={inputBase}
                   value={form.headline}
                   onChange={(e) => updateField("headline", e.target.value)}
-                  placeholder={t("metaCampaigns.form.headlinePlaceholder")}
                 />
               </label>
               <label className="block">
@@ -1135,31 +1516,21 @@ export default function MetaCampaignEditorPage() {
                   className={inputBase}
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
-                  placeholder={t("metaCampaigns.form.descriptionPlaceholder")}
                 />
               </label>
-              <label className="block sm:col-span-2">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.link")}
-                </span>
-                <input
-                  className={inputBase}
-                  value={form.link}
-                  onChange={(e) => updateField("link", e.target.value)}
-                  placeholder="https://"
-                />
-              </label>
-              <label className="block sm:col-span-2">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.imageUrl")}
-                </span>
-                <input
-                  className={inputBase}
-                  value={form.imageUrl}
-                  onChange={(e) => updateField("imageUrl", e.target.value)}
-                  placeholder="https://"
-                />
-              </label>
+              {!isLeads || form.creativeFormat !== "single" ? (
+                <label className="block sm:col-span-2">
+                  <span className="mb-1.5 block text-xs font-black text-slate-500">
+                    {t("metaCampaigns.form.link")}
+                  </span>
+                  <input
+                    className={inputBase}
+                    value={form.link}
+                    onChange={(e) => updateField("link", e.target.value)}
+                    placeholder="https://"
+                  />
+                </label>
+              ) : null}
               <label className="block">
                 <span className="mb-1.5 block text-xs font-black text-slate-500">
                   {t("metaCampaigns.form.cta")}
@@ -1176,319 +1547,333 @@ export default function MetaCampaignEditorPage() {
                   ))}
                 </select>
               </label>
+              <label className="block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.ctaCustom")}
+                </span>
+                <input
+                  className={inputBase}
+                  value={form.ctaCustom}
+                  onChange={(e) => updateField("ctaCustom", e.target.value)}
+                  placeholder={t("metaCampaigns.form.ctaCustomPlaceholder")}
+                />
+              </label>
             </div>
-            <div className="flex justify-between gap-2 pt-2">
-              <button type="button" onClick={goBack} className={btnSecondary}>
-                {t("metaCampaigns.form.backStep")}
-              </button>
-              <button type="button" onClick={goNext} className={btnPrimary}>
-                {t("metaCampaigns.form.continueToPreview")}
-              </button>
-            </div>
+
+            {form.creativeFormat === "single" ? (
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+                {uploadBusy ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-[#1877F2]" />
+                ) : (
+                  <Upload className="h-6 w-6 text-[#1877F2]" />
+                )}
+                <span className="text-sm font-black text-slate-800">
+                  {t("metaCampaigns.form.uploadImage")}
+                </span>
+                <span className="text-xs font-semibold text-slate-500">
+                  {form.imageHash
+                    ? t("metaCampaigns.form.mediaReady")
+                    : t("metaCampaigns.form.uploadImageHint")}
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    const localUrl = URL.createObjectURL(file);
+                    updateField("imagePreviewUrl", localUrl);
+                    uploadFile(file, "image", (result) => {
+                      updateField("imageHash", result.imageHash || "");
+                      if (result.url) updateField("imagePreviewUrl", result.url);
+                    });
+                  }}
+                />
+              </label>
+            ) : null}
+
+            {form.creativeFormat === "video" ? (
+              <label className="flex cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center">
+                {uploadBusy ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-[#1877F2]" />
+                ) : (
+                  <Clapperboard className="h-6 w-6 text-[#1877F2]" />
+                )}
+                <span className="text-sm font-black text-slate-800">
+                  {t("metaCampaigns.form.uploadVideo")}
+                </span>
+                <span className="text-xs font-semibold text-slate-500">
+                  {form.videoId || t("metaCampaigns.form.uploadVideoHint")}
+                </span>
+                <input
+                  type="file"
+                  accept="video/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    uploadFile(file, "video", (result) => {
+                      updateField("videoId", result.videoId || "");
+                    });
+                  }}
+                />
+              </label>
+            ) : null}
+
+            {form.creativeFormat === "carousel" ? (
+              <div className="space-y-3">
+                {form.carouselCards.map((card, index) => (
+                  <div
+                    key={index}
+                    className="rounded-2xl border border-slate-200 p-4 space-y-3"
+                  >
+                    <p className="text-sm font-black text-slate-800">
+                      {t("metaCampaigns.form.carouselCard", { n: index + 1 })}
+                    </p>
+                    <input
+                      className={inputBase}
+                      placeholder={t("metaCampaigns.form.headline")}
+                      value={card.headline}
+                      onChange={(e) => {
+                        const next = [...form.carouselCards];
+                        next[index] = { ...next[index], headline: e.target.value };
+                        updateField("carouselCards", next);
+                      }}
+                    />
+                    <input
+                      className={inputBase}
+                      placeholder={t("metaCampaigns.form.link")}
+                      value={card.link}
+                      onChange={(e) => {
+                        const next = [...form.carouselCards];
+                        next[index] = { ...next[index], link: e.target.value };
+                        updateField("carouselCards", next);
+                      }}
+                    />
+                    <label className="flex cursor-pointer items-center gap-2 rounded-xl border border-dashed border-slate-300 px-3 py-3 text-xs font-black text-slate-600">
+                      <Upload className="h-4 w-4" />
+                      {card.imageHash
+                        ? t("metaCampaigns.form.mediaReady")
+                        : t("metaCampaigns.form.uploadImage")}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (!file) return;
+                          const localUrl = URL.createObjectURL(file);
+                          const next = [...form.carouselCards];
+                          next[index] = { ...next[index], imageUrl: localUrl };
+                          updateField("carouselCards", next);
+                          uploadFile(file, "image", (result) => {
+                            const cards = [...form.carouselCards];
+                            cards[index] = {
+                              ...cards[index],
+                              imageHash: result.imageHash || "",
+                              imageUrl: result.url || localUrl,
+                            };
+                            updateField("carouselCards", cards);
+                          });
+                        }}
+                      />
+                    </label>
+                  </div>
+                ))}
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  onClick={() =>
+                    updateField("carouselCards", [
+                      ...form.carouselCards,
+                      { ...EMPTY_CARD },
+                    ])
+                  }
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("metaCampaigns.form.addCarouselCard")}
+                </button>
+              </div>
+            ) : null}
+
+            {navFooter}
           </div>
-          <aside className="space-y-4">
-            <div className={`${cardBase} p-4`}>
-              <p className="mb-3 text-sm font-black text-slate-900">
-                {t("metaCampaigns.preview.localTitle")}
-              </p>
-              {localPreviewCard}
-            </div>
+          <aside className={`${cardBase} p-4`}>
+            <p className="mb-3 text-sm font-black text-slate-900">
+              {t("metaCampaigns.preview.localTitle")}
+            </p>
+            {localPreview}
+            <p className="mt-3 text-xs font-semibold text-slate-500">
+              {t("metaCampaigns.form.accountId", { id: accountIdLabel || "—" })} ·{" "}
+              {currency}
+            </p>
           </aside>
         </div>
       ) : null}
 
-      {/* CREATE STEP 5 — Preview + publish */}
-      {!isEdit && createStep === 5 ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className={`${cardBase} p-4 sm:p-5 space-y-4`}>
-            <div className="flex flex-wrap items-start justify-between gap-3">
+      {/* STEP 7 preview */}
+      {!isEdit && createStep === 7 ? (
+        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+          <div className={`${cardBase} space-y-4 p-5`}>
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <p className="text-sm font-black text-slate-900">
+                <p className="text-lg font-black text-slate-900">
                   {t("metaCampaigns.form.previewTitle")}
                 </p>
-                <p className="mt-1 text-xs font-semibold text-slate-500">
-                  {t("metaCampaigns.form.previewHint")}
+                <p className="text-sm font-semibold text-slate-500">
+                  {t("metaCampaigns.form.previewAllHint")}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <select
-                  className={`${inputBase} !w-auto min-w-[160px]`}
-                  value={form.adFormat}
-                  onChange={(e) => updateField("adFormat", e.target.value)}
-                >
-                  {previewFormats.map((item) => (
-                    <option key={item.value} value={item.value}>
-                      {item.label}
-                    </option>
-                  ))}
-                </select>
-                <button
-                  type="button"
-                  onClick={loadPreview}
-                  disabled={previewBusy}
-                  className={btnSecondary}
-                >
-                  {previewBusy ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Smartphone className="h-4 w-4" />
-                  )}
-                  {t("metaCampaigns.preview.refresh")}
-                </button>
-              </div>
+              <button
+                type="button"
+                className={btnSecondary}
+                disabled={previewBusy}
+                onClick={loadPreviews}
+              >
+                {previewBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Eye className="h-4 w-4" />
+                )}
+                {t("metaCampaigns.preview.refresh")}
+              </button>
             </div>
-
-            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-3">
-              {previewHtml ? (
+            <div className="flex flex-wrap gap-2">
+              {previewFormats.map((item) => (
+                <button
+                  key={item.value}
+                  type="button"
+                  onClick={() => setActivePreview(item.value)}
+                  className={[
+                    "rounded-full border px-3 py-1.5 text-xs font-black",
+                    activePreview === item.value
+                      ? "border-[#1877F2] bg-[#1877F2] text-white"
+                      : "border-slate-200 bg-white text-slate-600",
+                  ].join(" ")}
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+            <div className="min-h-[320px] rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-3">
+              {previewBusy ? (
+                <div className="flex h-full min-h-[280px] items-center justify-center text-sm font-semibold text-slate-500">
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("metaCampaigns.preview.loading")}
+                </div>
+              ) : activePreviewHtml ? (
                 <div
-                  className="meta-ad-preview overflow-auto"
-                  dangerouslySetInnerHTML={{ __html: previewHtml }}
+                  className="overflow-auto"
+                  dangerouslySetInnerHTML={{ __html: activePreviewHtml }}
                 />
               ) : (
-                <div className="py-6 text-center text-sm font-semibold text-slate-500">
-                  {previewBusy
-                    ? t("metaCampaigns.preview.loading")
-                    : t("metaCampaigns.preview.fallbackHint")}
+                <div className="flex min-h-[280px] items-center justify-center p-4 text-center text-sm font-semibold text-slate-500">
+                  {t("metaCampaigns.preview.fallbackHint")}
                 </div>
               )}
             </div>
-
-            <dl className="grid gap-2 rounded-xl border border-slate-100 bg-white p-3 text-xs sm:grid-cols-2">
+            <dl className="grid gap-2 rounded-xl border border-slate-100 p-3 text-xs sm:grid-cols-2">
               <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.name")}
-                </dt>
+                <dt className="text-slate-400">{t("metaCampaigns.form.name")}</dt>
                 <dd className="font-black text-slate-800">{form.name}</dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.objective")}
-                </dt>
+                <dt className="text-slate-400">{t("metaCampaigns.form.objective")}</dt>
                 <dd className="font-black text-slate-800">
                   {selectedObjective?.label}
                 </dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.startTime")}
-                </dt>
+                <dt className="text-slate-400">{t("metaCampaigns.form.startTime")}</dt>
                 <dd className="font-black text-slate-800">
                   {form.startTime
-                    ? new Date(form.startTime).toLocaleString(
-                        isHe ? "he-IL" : "en-US"
-                      )
+                    ? new Date(form.startTime).toLocaleString(isHe ? "he-IL" : "en-US")
                     : "—"}
                 </dd>
               </div>
               <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.stopTime")}
-                </dt>
-                <dd className="font-black text-slate-800">
-                  {form.stopTime
-                    ? new Date(form.stopTime).toLocaleString(
-                        isHe ? "he-IL" : "en-US"
-                      )
-                    : t("metaCampaigns.form.noEndDate")}
-                </dd>
-              </div>
-              <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.dailyBudget")}
-                </dt>
+                <dt className="text-slate-400">{t("metaCampaigns.form.dailyBudget")}</dt>
                 <dd className="font-black text-slate-800">
                   {form.dailyBudget
                     ? formatCurrency(Number(form.dailyBudget), currency)
-                    : form.lifetimeBudget
-                      ? formatCurrency(Number(form.lifetimeBudget), currency)
-                      : "—"}
+                    : "—"}
                 </dd>
               </div>
-              <div>
-                <dt className="font-semibold text-slate-400">
-                  {t("metaCampaigns.form.page")}
-                </dt>
-                <dd className="font-black text-slate-800">{selectedPageName}</dd>
-              </div>
             </dl>
-
-            <div className="flex justify-between gap-2 pt-2">
-              <button type="button" onClick={goBack} className={btnSecondary}>
-                {t("metaCampaigns.form.backStep")}
-              </button>
-              <button
-                type="button"
-                onClick={save}
-                disabled={saving}
-                className={btnPrimary}
-              >
-                {saving ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Save className="h-4 w-4" />
-                )}
-                {t("metaCampaigns.form.createFull")}
-              </button>
-            </div>
+            {navFooter}
           </div>
           <aside className="space-y-4">
             <div className={`${cardBase} p-4`}>
               <p className="mb-3 text-sm font-black text-slate-900">
                 {t("metaCampaigns.preview.localTitle")}
               </p>
-              {localPreviewCard}
+              {localPreview}
             </div>
-            {accountCard}
           </aside>
         </div>
       ) : null}
 
-      {/* EDIT MODE — keep campaign-level editor */}
       {isEdit ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_300px]">
-          <div className="space-y-4">
-            <div className={`${cardBase} p-4 sm:p-5`}>
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.form.basics")}
-              </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="sm:col-span-2 block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.name")}
-                  </span>
-                  <input
-                    className={inputBase}
-                    value={form.name}
-                    onChange={(e) => updateField("name", e.target.value)}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.objective")}
-                  </span>
-                  <select
-                    className={inputBase}
-                    value={form.objective}
-                    disabled
-                  >
-                    {objectives.map((item) => (
-                      <option key={item.value} value={item.value}>
-                        {item.label}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="mt-1 block text-[11px] font-semibold text-slate-400">
-                    {t("metaCampaigns.form.objectiveLocked")}
-                  </span>
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.status")}
-                  </span>
-                  <select
-                    className={inputBase}
-                    value={form.status}
-                    onChange={(e) => updateField("status", e.target.value)}
-                  >
-                    <option value="PAUSED">
-                      {t("metaCampaigns.status.paused")}
-                    </option>
-                    <option value="ACTIVE">
-                      {t("metaCampaigns.status.active")}
-                    </option>
-                  </select>
-                </label>
-              </div>
-            </div>
-
-            <div className={`${cardBase} p-4 sm:p-5`}>
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.form.scheduleTitle")}
-              </p>
-              <p className="mt-1 text-xs font-semibold text-slate-500">
-                {t("metaCampaigns.form.budgetHint")}
-              </p>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2">
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.startTime")}
-                  </span>
-                  <input
-                    type="datetime-local"
-                    className={inputBase}
-                    value={form.startTime}
-                    onChange={(e) => updateField("startTime", e.target.value)}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.stopTime")}
-                  </span>
-                  <input
-                    type="datetime-local"
-                    className={inputBase}
-                    value={form.stopTime}
-                    onChange={(e) => updateField("stopTime", e.target.value)}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.dailyBudget")}
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    className={inputBase}
-                    value={form.dailyBudget}
-                    onChange={(e) => updateField("dailyBudget", e.target.value)}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.lifetimeBudget")}
-                  </span>
-                  <input
-                    type="number"
-                    min="0"
-                    className={inputBase}
-                    value={form.lifetimeBudget}
-                    onChange={(e) =>
-                      updateField("lifetimeBudget", e.target.value)
-                    }
-                    disabled={Boolean(form.dailyBudget)}
-                  />
-                </label>
-              </div>
-            </div>
+        <div className={`${cardBase} space-y-4 p-5`}>
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-black text-slate-500">
+              {t("metaCampaigns.form.name")}
+            </span>
+            <input
+              className={inputBase}
+              value={form.name}
+              onChange={(e) => updateField("name", e.target.value)}
+            />
+          </label>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.startTime")}
+              </span>
+              <input
+                type="datetime-local"
+                className={inputBase}
+                value={form.startTime}
+                onChange={(e) => updateField("startTime", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.stopTime")}
+              </span>
+              <input
+                type="datetime-local"
+                className={inputBase}
+                value={form.stopTime}
+                onChange={(e) => updateField("stopTime", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.dailyBudget")}
+              </span>
+              <input
+                type="number"
+                className={inputBase}
+                value={form.dailyBudget}
+                onChange={(e) => updateField("dailyBudget", e.target.value)}
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.form.status")}
+              </span>
+              <select
+                className={inputBase}
+                value={form.status}
+                onChange={(e) => updateField("status", e.target.value)}
+              >
+                <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
+                <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
+              </select>
+            </label>
           </div>
-          <aside className="space-y-4">
-            {accountCard}
-            {campaign ? (
-              <div className={`${cardBase} p-4`}>
-                <p className="text-sm font-black text-slate-900">
-                  {t("metaCampaigns.form.metricsTitle")}
-                </p>
-                <dl className="mt-3 space-y-2 text-sm">
-                  <div className="flex items-center justify-between gap-3">
-                    <dt className="font-semibold text-slate-500">
-                      {t("metaCampaigns.table.spend")}
-                    </dt>
-                    <dd className="font-black text-slate-900">
-                      {formatCurrency(campaign.metrics?.spend || 0, currency)}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-3">
-                    <dt className="font-semibold text-slate-500">
-                      {t("metaCampaigns.table.leads")}
-                    </dt>
-                    <dd className="font-black text-slate-900">
-                      {campaign.metrics?.leads || 0}
-                    </dd>
-                  </div>
-                </dl>
-              </div>
-            ) : null}
-          </aside>
         </div>
       ) : null}
     </div>

@@ -4709,7 +4709,8 @@
       "leadsHint": "לידים מקמפייני מטא",
       "budget": "תקציב חודשי",
       "budgetHint": "{{spent}} מתוך {{total}} ({{percent}}%)",
-      "spendHint": "הוצאה מצטברת בתקופה"
+      "spendHint": "סה״כ הוצאה בתקופה שנבחרה",
+      "spend": "הוצאה"
     },
     "ranges": {
       "last7": "7 ימים אחרונים",
@@ -4875,7 +4876,60 @@
       "save": "שמירת שינויים",
       "create": "יצירת קמפיין",
       "createFull": "יצירת קמפיין + מודעה במטא",
-      "confirmDelete": "למחוק / לארכב את הקמפיין במטא?"
+      "confirmDelete": "למחוק / לארכב את הקמפיין במטא?",
+      "createTitleWow": "יצירת קמפיין מטא – פשוט וואו",
+      "createWowSubtitle": "שלב אחרי שלב: מטרה, תקציב, קהל, מיקומים, טופס לידים, מדיה ותצוגות מקדימות.",
+      "simplerThanMeta": "פשוט יותר ממנהל המודעות של מטא",
+      "stepAudience": "קהל ומיקומים",
+      "stepLeadForm": "טופס לידים",
+      "audienceTitle": "קהל יעד",
+      "audienceHint": "Advantage+ או סינון ידני לפי מדינה, גיל ומגדר.",
+      "audience": "קהל",
+      "advantageAudienceHint": "מטא מרחיב את הקהל כדי למצוא אנשים עם סיכוי גבוה יותר להמרה.",
+      "gender": "מגדר",
+      "genderAll": "הכל",
+      "genderMale": "גברים",
+      "genderFemale": "נשים",
+      "placementsTitle": "מיקום המודעה",
+      "placementsHint": "פייסבוק, אינסטגרם, או גם וגם – כולל פיד וסטורי.",
+      "placementAdvantage": "Advantage+ פלייסמנטים",
+      "placementBoth": "פייסבוק + אינסטגרם",
+      "placementFacebook": "פייסבוק בלבד",
+      "placementInstagram": "אינסטגרם בלבד",
+      "posFacebookFeed": "פיד פייסבוק",
+      "posFacebookStory": "סטורי פייסבוק",
+      "posInstagramFeed": "פיד אינסטגרם",
+      "posInstagramStory": "סטורי אינסטגרם",
+      "posInstagramReels": "רילס אינסטגרם",
+      "leadFormTitle": "טופס לידים",
+      "leadFormHint": "בחרו טופס קיים או צרו חדש עם שאלות ותשובות.",
+      "leadFormRequired": "יש לבחור טופס לידים",
+      "refreshLeadForms": "רענון טפסים",
+      "noLeadForms": "לא נמצאו טפסי לידים בעמוד. צרו טופס חדש כאן.",
+      "formQuestions": "שאלות בטופס",
+      "createLeadFormTitle": "יצירת טופס לידים חדש",
+      "leadFormNamePlaceholder": "שם הטופס",
+      "leadFormNameRequired": "יש להזין שם לטופס",
+      "customQuestionsPlaceholder": "שאלה בכל שורה (לדוגמה: שם מלא, טלפון, תקציב)",
+      "createLeadForm": "יצירת טופס",
+      "formatSingle": "תמונה",
+      "formatVideo": "סרטון",
+      "formatCarousel": "קרוסלה",
+      "uploadImage": "העלאת תמונה",
+      "uploadImageHint": "JPG / PNG – מועלה ישירות למטא",
+      "uploadVideo": "העלאת סרטון",
+      "uploadVideoHint": "MP4 – מועלה ישירות למטא",
+      "mediaReady": "המדיה מוכנה במטא ✓",
+      "mediaRequired": "יש להעלות תמונה למודעה",
+      "videoRequired": "יש להעלות סרטון",
+      "carouselRequired": "לקרוסלה צריך לפחות 2 כרטיסים עם תמונה",
+      "carouselCard": "כרטיס {{n}}",
+      "addCarouselCard": "הוספת כרטיס לקרוסלה",
+      "ctaCustom": "קריאה לפעולה חופשית",
+      "ctaCustomPlaceholder": "לדוגמה: קבלו ייעוץ חינם",
+      "creativeRequired": "יש למלא טקסט ראשי וכותרת",
+      "previewAllHint": "תצוגה מקדימה לכל הפידים והסטוריז – פייסבוק ואינסטגרם.",
+      "settingsSubtitleNoBudget": "חברו Meta, בחרו חשבון מודעות ועמוד. התקציב מוגדר לכל קמפיין בנפרד."
     },
     "cta": {
       "learnMore": "מידע נוסף",
@@ -4896,12 +4950,21 @@
       "refresh": "רענון תצוגה מקדימה",
       "loading": "טוען תצוגה מקדימה ממטא…",
       "empty": "מטא לא החזיר תצוגה מקדימה — מוצגת תצוגה מקומית",
-      "fallbackHint": "לחצו על רענון כדי לטעון תצוגה מקדימה ממטא, או בדקו את התצוגה המקומית משמאל."
+      "fallbackHint": "לחצו על רענון כדי לטעון תצוגה מקדימה ממטא, או בדקו את התצוגה המקומית משמאל.",
+      "formats": {
+        "MOBILE_FEED_STANDARD": "פיד פייסבוק (מובייל)",
+        "DESKTOP_FEED_STANDARD": "פיד פייסבוק (דסקטופ)",
+        "FACEBOOK_STORY_MOBILE": "סטורי פייסבוק",
+        "INSTAGRAM_STANDARD": "פיד אינסטגרם",
+        "INSTAGRAM_STORY": "סטורי אינסטגרם",
+        "INSTAGRAM_REELS": "רילס אינסטגרם",
+        "RIGHT_COLUMN_STANDARD": "עמודה ימנית"
+      }
     },
     "settings": {
       "badge": "חיבור",
       "title": "חיבור Meta Ads",
-      "subtitle": "התחברות עם הרשאות ניהול מודעות, בחירת חשבון מודעות והגדרת תקציב חודשי.",
+      "subtitle": "התחברות עם הרשאות ניהול מודעות ובחירת חשבון מודעות ועמוד. התקציב נקבע לכל קמפיין.",
       "connected": "מחובר",
       "disconnected": "לא מחובר",
       "connect": "התחברות ל-Meta",
@@ -4940,7 +5003,9 @@
       "updated": "הקמפיין עודכן",
       "deleted": "הקמפיין נמחק / הועבר לארכיון",
       "activated": "הקמפיין הופעל",
-      "paused": "הקמפיין הושהה"
+      "paused": "הקמפיין הושהה",
+      "mediaUploaded": "המדיה הועלתה למטא",
+      "leadFormCreated": "טופס הלידים נוצר"
     },
     "errors": {
       "loadOverview": "טעינת סקירת הקמפיינים נכשלה",
@@ -4955,7 +5020,10 @@
       "selectPage": "בחירת העמוד נכשלה",
       "saveSettings": "שמירת ההגדרות נכשלה",
       "refresh": "רענון החשבונות נכשל",
-      "disconnect": "ניתוק Meta Ads נכשל"
+      "disconnect": "ניתוק Meta Ads נכשל",
+      "mediaUpload": "העלאת המדיה נכשלה",
+      "leadForms": "טעינת טפסי לידים נכשלה",
+      "createLeadForm": "יצירת טופס לידים נכשלה"
     }
   }
 }

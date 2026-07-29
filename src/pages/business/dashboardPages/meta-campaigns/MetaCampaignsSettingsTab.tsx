@@ -9,7 +9,6 @@ import {
   Plug,
   RefreshCw,
   Unplug,
-  Wallet,
 } from "lucide-react";
 import {
   disconnectMetaAds,
@@ -18,7 +17,6 @@ import {
   refreshMetaAdAccounts,
   selectMetaAdAccount,
   selectMetaAdsPage,
-  updateMetaAdsSettings,
   type MetaAdsConnectionStatus,
 } from "../../../../api/metaCampaignsApi";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
@@ -51,7 +49,6 @@ export default function MetaCampaignsSettingsTab() {
   const [status, setStatus] = useState<MetaAdsConnectionStatus | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState("");
   const [selectedPageId, setSelectedPageId] = useState("");
-  const [monthlyBudgetCap, setMonthlyBudgetCap] = useState("");
 
   const load = async () => {
     if (!businessId) return;
@@ -64,9 +61,6 @@ export default function MetaCampaignsSettingsTab() {
       setStatus(data);
       setSelectedAccountId(data.selectedAdAccount?.id || "");
       setSelectedPageId(data.selectedPage?.pageId || "");
-      setMonthlyBudgetCap(
-        data.monthlyBudgetCap ? String(data.monthlyBudgetCap) : ""
-      );
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error ||
@@ -165,25 +159,6 @@ export default function MetaCampaignsSettingsTab() {
     }
   };
 
-  const saveBudget = async () => {
-    if (!businessId) return;
-    try {
-      setBusy(true);
-      const data = await updateMetaAdsSettings(businessId, {
-        monthlyBudgetCap: Number(monthlyBudgetCap) || 0,
-      });
-      setStatus(data);
-      toast.success(t("metaCampaigns.toasts.settingsSaved"));
-    } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.errors.saveSettings")
-      );
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const refresh = async () => {
     if (!businessId) return;
@@ -409,38 +384,6 @@ export default function MetaCampaignsSettingsTab() {
             </button>
           </div>
 
-          <div className={`${cardBase} p-5`}>
-            <div className="flex items-center gap-2">
-              <Wallet className="h-4 w-4 text-violet-600" />
-              <p className="text-sm font-black text-slate-900">
-                {t("metaCampaigns.settings.budgetTitle")}
-              </p>
-            </div>
-            <p className="mt-1 text-xs font-semibold text-slate-500">
-              {t("metaCampaigns.settings.budgetHint")}
-            </p>
-            <label className="mt-4 block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.settings.monthlyBudget")}
-              </span>
-              <input
-                type="number"
-                min="0"
-                className={inputBase}
-                value={monthlyBudgetCap}
-                onChange={(e) => setMonthlyBudgetCap(e.target.value)}
-                placeholder="25000"
-              />
-            </label>
-            <button
-              type="button"
-              onClick={saveBudget}
-              disabled={busy}
-              className={`${btnPrimary} mt-4`}
-            >
-              {t("metaCampaigns.settings.saveBudget")}
-            </button>
-          </div>
         </>
       ) : null}
     </div>
