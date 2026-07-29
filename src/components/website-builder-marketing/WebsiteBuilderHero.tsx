@@ -1,5 +1,4 @@
 import React from "react";
-import HeroActions from "./HeroActions";
 import TemplateShowcase from "./TemplateShowcase";
 import "./WebsiteBuilderHero.css";
 
@@ -15,17 +14,7 @@ export default function WebsiteBuilderHero() {
 
       <div className="wb-hero__inner">
         <div className="wb-hero__copy">
-          <p className="wb-hero__brand">Bizuply</p>
-          <h1 className="wb-hero__title">
-            בונים אתר שלא רק נראה טוב —
-            <br />
-            אלא <span className="wb-hero__title-accent">עובד בשביל העסק</span>
-          </h1>
-          <p className="wb-hero__subtitle">
-            בחרו תבנית מקצועית, התאימו אותה לעסק — והאתר כבר מחובר ללידים, תורים
-            ואוטומציות.
-          </p>
-          <HeroActions primaryTo="/register" />
+          <h1 className="wb-hero__title">בניית אתרים מקצועיים</h1>
         </div>
 
         <div id="wb-templates" className="wb-hero__templates">
