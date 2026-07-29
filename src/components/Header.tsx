@@ -95,14 +95,14 @@ export default function Header() {
             </button>
 
             {!user ? (
-              <Link
-                to="/login"
-                className="site-header__icon-btn"
-                aria-label={t("common.login")}
-                title={t("common.login")}
-              >
-                <FaUser size={15} />
-              </Link>
+              <>
+                <Link to="/login" className="site-header__signin">
+                  {t("common.login")}
+                </Link>
+                <Link to="/register" className="site-header__cta">
+                  {t("nav.cta")}
+                </Link>
+              </>
             ) : (
               <>
                 <Link

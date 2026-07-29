@@ -27,13 +27,14 @@
     "howItWorks": "How it works",
     "pricing": "Pricing",
     "about": "About",
-    "crm": "CRM & Leads",
+    "crm": "CRM",
     "collaborations": "Collaborations",
     "website": "Website & Store",
     "appointments": "Appointments",
     "automations": "Automations",
     "agents": "Business Agents",
-    "contact": "Contact"
+    "contact": "Contact",
+    "cta": "Start free"
   },
   "seo": {
     "homeTitle": "Bizuply — Run your business. All in one place.",

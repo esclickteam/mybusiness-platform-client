@@ -1,4 +1,5 @@
 export { Reveal, Stagger, StaggerItem, WordReveal, revealEase } from "./Reveal";
+export { default as AppFrame } from "./AppFrame";
 export { default as AuroraBackdrop } from "./AuroraBackdrop";
 export { default as CenteredProductHero } from "./CenteredProductHero";
 export { default as CountUp } from "./CountUp";
@@ -14,3 +15,4 @@ export { default as StatStrip } from "./StatStrip";
 export type { MarketingFaq } from "./FaqAccordion";
 export type { MarketingStat } from "./StatStrip";
 export type { HeroBadge } from "./CenteredProductHero";
+export type { AppFrameProps } from "./AppFrame";

@@ -27,13 +27,14 @@
     "howItWorks": "איך זה עובד",
     "pricing": "מחירים",
     "about": "אודות",
-    "crm": "CRM ולידים",
+    "crm": "CRM",
     "collaborations": "שיתופי פעולה",
     "website": "בניית אתר וחנות",
     "appointments": "תורים",
     "automations": "אוטומציות",
     "agents": "נציגים לעסק",
-    "contact": "צרו קשר"
+    "contact": "צרו קשר",
+    "cta": "התחילו בחינם"
   },
   "seo": {
     "homeTitle": "Bizuply — נהלו את העסק שלכם. במקום אחד.",

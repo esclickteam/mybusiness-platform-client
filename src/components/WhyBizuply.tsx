@@ -95,7 +95,7 @@ export default function WhyBizuply() {
         </svg>
       ),
       badge: t("why.feature3Badge"),
-      gradient: "from-violet-200 via-sky-200 to-cyan-200",
+      gradient: "from-violet-600 to-fuchsia-500",
       glow: "bg-violet-300/35",
     },
   ];
@@ -144,20 +144,20 @@ export default function WhyBizuply() {
 
         <div className="mt-16 overflow-hidden rounded-[2.5rem] border border-white/80 bg-white/75 p-3 shadow-[0_28px_90px_rgba(79,70,229,0.16)] backdrop-blur-xl">
           <div className="grid overflow-hidden rounded-[2rem] border border-slate-100 bg-white lg:grid-cols-[0.95fr_1.05fr]">
-            <div className="relative overflow-hidden border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 sm:p-10">
-              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-500/30 blur-3xl" />
-              <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-400/20 blur-3xl" />
+            <div className="relative overflow-hidden border-b border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-7 text-slate-800 sm:p-10 lg:border-b-0 lg:border-e">
+              <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-300/40 blur-3xl" />
+              <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-300/30 blur-3xl" />
 
               <div className="relative">
-                <div className="mb-8 inline-flex rounded-full border border-white/10 bg-white/10 px-4 py-2 text-sm font-black text-cyan-100">
+                <div className="mb-8 inline-flex rounded-full border border-white/80 bg-white/80 px-4 py-2 text-sm font-black text-indigo-700 shadow-sm">
                   {t("why.builtFor")}
                 </div>
 
-                <h3 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] sm:text-5xl">
+                <h3 className="max-w-xl text-4xl font-black leading-[1.05] tracking-[-0.04em] text-slate-900 sm:text-5xl">
                   {t("why.panelTitle")}
                 </h3>
 
-                <p className="mt-6 max-w-xl text-lg leading-8 text-slate-300">
+                <p className="mt-6 max-w-xl text-lg leading-8 text-slate-600">
                   {t("why.panelText")}
                 </p>
 
@@ -165,10 +165,12 @@ export default function WhyBizuply() {
                   {stats.map(([value, label]) => (
                     <div
                       key={label}
-                      className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur"
+                      className="rounded-2xl border border-white/80 bg-white/80 p-4 shadow-sm backdrop-blur"
                     >
-                      <p className="text-3xl font-black">{value}</p>
-                      <p className="mt-1 text-sm font-bold text-slate-300">
+                      <p className="text-3xl font-black text-slate-900">
+                        {value}
+                      </p>
+                      <p className="mt-1 text-sm font-bold text-slate-500">
                         {label}
                       </p>
                     </div>
@@ -184,7 +186,7 @@ export default function WhyBizuply() {
                     key={title}
                     className="group flex items-center gap-4 rounded-3xl border border-slate-100 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-indigo-100"
                   >
-                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 text-base font-black text-black shadow-lg shadow-indigo-100">
+                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-violet-200/80 bg-gradient-to-br from-violet-100 via-sky-100 to-cyan-100 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100">
                       {index + 1}
                     </div>
 
