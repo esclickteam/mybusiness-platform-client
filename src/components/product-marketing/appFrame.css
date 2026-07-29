@@ -57,21 +57,31 @@
 .pmk-frame__live {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
   margin-inline-start: auto;
-  padding: 0.2rem 0.55rem;
-  border-radius: 999px;
-  background: #eef2ff;
-  font-size: 0.68rem;
-  font-weight: 900;
-  color: #4338ca;
 }
 
 .pmk-frame__live i {
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.45rem;
+  height: 0.45rem;
   border-radius: 999px;
-  background: #4f46e5;
+  background: #10b981;
+  animation: pmk-pulse 1.9s ease-in-out infinite;
+}
+
+@keyframes pmk-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pmk-frame__live i {
+    animation: none;
+  }
 }
 
 .pmk-frame__body {

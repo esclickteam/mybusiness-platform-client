@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
 import HeroSection from "../components/HeroSection";
+import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
 import FAQMini from "../components/FAQMini";
@@ -28,6 +29,8 @@ export default function Home() {
       </Helmet>
 
       <HeroSection />
+
+      <ProductsGrid />
 
       <ScrollStory />
 

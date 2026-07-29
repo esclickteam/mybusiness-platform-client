@@ -10,35 +10,6 @@
     "trustTrial": "14 dagen gratis proberen",
     "trustCancel": "Altijd opzegbaar"
   },
-  "preview": {
-    "themeLight": "Licht",
-    "themeSmart": "Slim",
-    "businessOs": "Business OS",
-    "sidebarDashboard": "Dashboard",
-    "sidebarClients": "Klanten",
-    "sidebarAppointments": "Afspraken",
-    "sidebarCrm": "CRM",
-    "sidebarCollaborations": "Samenwerkingen",
-    "sidebarReports": "Rapporten",
-    "sidebarAiTools": "AI-tools",
-    "greeting": "Goedemorgen, Michael",
-    "pipelineTitle": "Je zakelijke pipeline",
-    "thisMonth": "Deze maand",
-    "salesPipeline": "Sales- en klantpipeline",
-    "salesPipelineSubtitle": "Actieve kansen, afspraken en voorstellen",
-    "activeDeals": "296 actieve deals",
-    "stageLeads": "Leads",
-    "stageContacted": "Gecontacteerd",
-    "stageProposal": "Voorstel",
-    "stageScheduled": "Gepland",
-    "stageConverted": "Geconverteerd",
-    "revenueGrowth": "Omzetgroei",
-    "aiAssistant": "AI-assistent",
-    "aiMessage": "Ik heb 3 vrije tijdsloten gevonden en een voorstelconcept voorbereid voor je nieuwe klant.",
-    "aiSummarize": "Vat mijn week samen",
-    "aiDraftProposal": "Voorstel maken",
-    "aiFindSlots": "Vrije tijden vinden"
-  },
   "dashboard": {
     "live": "Live",
     "title": "Bedrijfsdashboard",
@@ -51,7 +22,6 @@
     "paid": "Betaald",
     "trial": "Proefperiode",
     "yourBusiness": "Je bedrijf",
-
     "metrics": {
       "profileViews": "Profielweergaven",
       "profileViewsHint": "Realtime zichtbaarheid van je openbare bedrijfspagina",
@@ -62,27 +32,23 @@
       "reviews": "Beoordelingen",
       "reviewsHint": "Klantvertrouwen en beoordelingsactiviteit"
     },
-
     "agenda": {
       "eyebrow": "Dagagenda",
       "title": "Planning voor de geselecteerde dag",
       "description": "Bekijk de afspraken van de geselecteerde datum in een duidelijke en georganiseerde weergave.",
       "loading": "Agenda laden..."
     },
-
     "calendar": {
       "eyebrow": "Kalender",
       "title": "Afsprakenoverzicht",
       "description": "Kies een datum en beheer de afsprakenstroom van je bedrijf.",
       "loading": "Kalender laden..."
     },
-
     "ai": {
       "eyebrow": "AI-actiecentrum",
       "title": "Slimme inzichten voor je bedrijf",
       "description": "AI-aanbevelingen op basis van je activiteit, klanten, afspraken en bedrijfsprestaties."
     },
-
     "operations": {
       "eyebrow": "Overzicht van vandaag",
       "title": "Operationele status",
@@ -90,7 +56,6 @@
       "upcomingWeek": "Komende week",
       "pendingAiApprovals": "AI-goedkeuringen in behandeling"
     },
-
     "recommendations": {
       "eyebrow": "Wacht op goedkeuring",
       "title": "AI-aanbevelingen",
@@ -99,65 +64,58 @@
       "aiSuggestion": "AI-suggestie:",
       "approveAndSend": "Goedkeuren en verzenden"
     },
-
     "performance": {
       "eyebrow": "Bedrijfsprestaties",
       "title": "Dashboardkaarten",
       "description": "Je prestatiekaarten zijn gekoppeld aan realtime bedrijfsgegevens.",
       "loading": "Kaarten laden..."
     },
-
     "analytics": {
       "eyebrow": "Groeianalyse",
       "title": "Klanten die per maand afspraken hebben geboekt",
       "description": "Maandelijkse trends in afspraakaanvragen en klantactiviteit.",
       "loading": "Grafiek laden..."
     },
-
     "upcoming": {
       "eyebrow": "Aankomende afspraken",
       "title": "Volgende activiteit",
       "description": "Een snelle weergave van de volgende afspraken in je bedrijf.",
       "empty": "Nog geen aankomende afspraken."
     },
-
     "dailyAgenda": {
-  "upcomingAppointments": "Aankomende afspraken",
-  "viewCalendar": "Kalender bekijken",
-  "noAppointments": "Geen afspraken op deze datum",
-  "noAppointmentsDescription": "Wanneer klanten afspraken voor deze dag boeken, verschijnen ze hier.",
-  "confirmed": "Bevestigd",
-  "email": "E-mail",
-  "manage": "Beheren",
-  "viewAllAppointments": "Alle afspraken bekijken",
-  "service": "Service",
-  "clientEmailMissing": "Het e-mailadres van de klant is niet beschikbaar",
-  "appointmentReminderSubject": "Afspraakherinnering – {{businessName}}",
-  "appointmentReminderBody": "Hallo {{clientName}},\n\nDit is een vriendelijke herinnering aan je komende afspraak.\n\nDatum: {{date}}\nTijd: {{time}}\nService: {{service}}\n\nMet vriendelijke groet,\n{{businessName}}"
-},
-
-"cards": {
-  "ariaLabel": "Belangrijkste dashboardstatistieken",
-  "profileViews": "Profielweergaven",
-  "appointments": "Afspraken",
-  "messages": "Berichten",
-  "revenue": "Omzet",
-  "reviews": "Beoordelingen",
-  "period30Days": "30 dagen",
-  "vsLast30Days": "vergeleken met de afgelopen 30 dagen"
-},
-
-"calendarView": {
-  "ariaLabel": "Afsprakenkalender",
-  "previousMonth": "Vorige maand",
-  "nextMonth": "Volgende maand",
-  "hint": "Klik op een datum om je dagagenda te bekijken",
-  "today": "Vandaag",
-  "selected": "Geselecteerd",
-  "appointment": "{{count}} afspraak",
-  "appointments": "{{count}} afspraken"
-},
-
+      "upcomingAppointments": "Aankomende afspraken",
+      "viewCalendar": "Kalender bekijken",
+      "noAppointments": "Geen afspraken op deze datum",
+      "noAppointmentsDescription": "Wanneer klanten afspraken voor deze dag boeken, verschijnen ze hier.",
+      "confirmed": "Bevestigd",
+      "email": "E-mail",
+      "manage": "Beheren",
+      "viewAllAppointments": "Alle afspraken bekijken",
+      "service": "Service",
+      "clientEmailMissing": "Het e-mailadres van de klant is niet beschikbaar",
+      "appointmentReminderSubject": "Afspraakherinnering – {{businessName}}",
+      "appointmentReminderBody": "Hallo {{clientName}},\n\nDit is een vriendelijke herinnering aan je komende afspraak.\n\nDatum: {{date}}\nTijd: {{time}}\nService: {{service}}\n\nMet vriendelijke groet,\n{{businessName}}"
+    },
+    "cards": {
+      "ariaLabel": "Belangrijkste dashboardstatistieken",
+      "profileViews": "Profielweergaven",
+      "appointments": "Afspraken",
+      "messages": "Berichten",
+      "revenue": "Omzet",
+      "reviews": "Beoordelingen",
+      "period30Days": "30 dagen",
+      "vsLast30Days": "vergeleken met de afgelopen 30 dagen"
+    },
+    "calendarView": {
+      "ariaLabel": "Afsprakenkalender",
+      "previousMonth": "Vorige maand",
+      "nextMonth": "Volgende maand",
+      "hint": "Klik op een datum om je dagagenda te bekijken",
+      "today": "Vandaag",
+      "selected": "Geselecteerd",
+      "appointment": "{{count}} afspraak",
+      "appointments": "{{count}} afspraken"
+    },
     "states": {
       "loading": "Bedrijfsdashboard laden...",
       "refreshingUser": "Gebruikersgegevens vernieuwen...",

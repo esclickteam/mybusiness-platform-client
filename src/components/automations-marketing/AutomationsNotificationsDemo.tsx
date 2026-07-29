@@ -93,7 +93,7 @@ export default function AutomationsNotificationsDemo() {
               <span className="pm-grad">היא מודיעה בזמן</span>
             </>
           }
-          lead="ליד חדש, משימה שעבר זמנה או תזכורת לפגישה — הכל עולה למרכז ההתראות. כך זה נראה במערכת, עם דוגמאות פקטיביות שמדמות את מה שתקבלו ביום־יום."
+          lead="ליד חדש, משימה שעבר זמנה או תזכורת לפגישה — הכל עולה למרכז ההתראות, עם סימון למה שעוד לא נקרא."
         />
 
         <Reveal from="up" delay={0.08}>
@@ -105,7 +105,6 @@ export default function AutomationsNotificationsDemo() {
                 <Bell size={22} strokeWidth={2.2} />
                 <span className="amx-notif__count">{unreadCount}</span>
               </span>
-              <p>ככה זה נראה במערכת</p>
             </div>
 
             <div className="amx-notif__panel" dir="rtl">
