@@ -92,6 +92,29 @@ const MiniSaaSManager = lazy(() =>
 
 const HelpCenter = lazy(() => import("../HelpCenter"));
 
+/* WhatsApp messaging */
+const WhatsAppMain = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppMain")
+);
+const WhatsAppComposeTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppComposeTab")
+);
+const WhatsAppTemplatesTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppTemplatesTab")
+);
+const WhatsAppListsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppListsTab")
+);
+const WhatsAppAutomationsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppAutomationsTab")
+);
+const WhatsAppHistoryTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppHistoryTab")
+);
+const WhatsAppSettingsTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
+);
+
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const WebsiteBuildingGuidePage = lazy(() =>
@@ -368,6 +391,18 @@ const BusinessDashboardRoutes = () => {
           />
           <Route path="affiliate" element={<AffiliatePage />} />
           <Route path="billing" element={<BillingPage />} />
+
+          {/* WhatsApp messaging */}
+          <Route path="whatsapp" element={<WhatsAppMain />}>
+            <Route index element={<Navigate to="compose" replace />} />
+            <Route path="compose" element={<WhatsAppComposeTab />} />
+            <Route path="templates" element={<WhatsAppTemplatesTab />} />
+            <Route path="lists" element={<WhatsAppListsTab />} />
+            <Route path="automations" element={<WhatsAppAutomationsTab />} />
+            <Route path="history" element={<WhatsAppHistoryTab />} />
+            <Route path="settings" element={<WhatsAppSettingsTab />} />
+            <Route path="*" element={<Navigate to="compose" replace />} />
+          </Route>
 
           {/* CRM internal pages */}
           <Route path="crm" element={<CRMMain />}>
