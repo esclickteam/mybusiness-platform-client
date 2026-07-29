@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import LiveTemplateMockup from "./LiveTemplateMockup";
+import TemplateBrowserMockup from "./TemplateBrowserMockup";
 import {
   websiteHeroTemplates,
   type WebsiteHeroTemplate,
@@ -62,6 +62,8 @@ export default function TemplateShowcase({
   const touchStartX = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const parallaxRef = useRef({ x: 0, y: 0 });
+  const switchingTimer = useRef<number | null>(null);
+  const [isSwitching, setIsSwitching] = useState(false);
 
   const prefersReduced = useMemo(() => {
     if (typeof window === "undefined") return false;
@@ -72,23 +74,60 @@ export default function TemplateShowcase({
     setReducedMotion(prefersReduced);
   }, [prefersReduced]);
 
+  // Preload every desktop shot so slides swap instantly.
+  useEffect(() => {
+    templates.forEach((template) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = template.desktopImage;
+    });
+  }, [templates]);
+
+  const markSwitching = useCallback(() => {
+    if (reducedMotion) return;
+    setIsSwitching(true);
+    if (switchingTimer.current != null) {
+      window.clearTimeout(switchingTimer.current);
+    }
+    switchingTimer.current = window.setTimeout(() => {
+      setIsSwitching(false);
+      switchingTimer.current = null;
+    }, 620);
+  }, [reducedMotion]);
+
   const goTo = useCallback(
     (index: number) => {
-      setActive(wrapIndex(index, count));
+      const nextIndex = wrapIndex(index, count);
+      setActive((current) => {
+        if (current === nextIndex) return current;
+        markSwitching();
+        return nextIndex;
+      });
     },
-    [count],
+    [count, markSwitching],
   );
 
   const next = useCallback(() => goTo(active + 1), [active, goTo]);
   const prev = useCallback(() => goTo(active - 1), [active, goTo]);
 
   useEffect(() => {
+    return () => {
+      if (switchingTimer.current != null) {
+        window.clearTimeout(switchingTimer.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (paused || reducedMotion || count < 2) return;
     const id = window.setInterval(() => {
-      setActive((value) => wrapIndex(value + 1, count));
-    }, 5000);
+      setActive((value) => {
+        markSwitching();
+        return wrapIndex(value + 1, count);
+      });
+    }, 3800);
     return () => window.clearInterval(id);
-  }, [paused, reducedMotion, count]);
+  }, [paused, reducedMotion, count, markSwitching]);
 
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
@@ -110,8 +149,8 @@ export default function TemplateShowcase({
       const px = (event.clientX - rect.left) / rect.width - 0.5;
       const py = (event.clientY - rect.top) / rect.height - 0.5;
       parallaxRef.current = {
-        x: Math.max(-12, Math.min(12, px * 18)),
-        y: Math.max(-10, Math.min(10, py * 14)),
+        x: Math.max(-10, Math.min(10, px * 14)),
+        y: Math.max(-8, Math.min(8, py * 10)),
       };
       wrap.style.setProperty("--px", `${parallaxRef.current.x}px`);
       wrap.style.setProperty("--py", `${parallaxRef.current.y}px`);
@@ -141,7 +180,7 @@ export default function TemplateShowcase({
 
   return (
     <div
-      className="wb-hero__stage-wrap"
+      className={`wb-hero__stage-wrap${isSwitching ? " is-switching" : ""}`}
       style={
         {
           "--wb-stage-glow": activeTemplate?.accent,
@@ -149,6 +188,12 @@ export default function TemplateShowcase({
         } as React.CSSProperties
       }
     >
+      <div className="wb-hero__stage-glow" aria-hidden="true">
+        <span className="wb-hero__stage-glow-core" />
+        <span className="wb-hero__stage-glow-ring" />
+        <span className="wb-hero__stage-glow-floor" />
+      </div>
+
       <div
         ref={stageRef}
         className={`wb-hero__stage${paused ? " is-paused" : ""}`}
@@ -176,7 +221,6 @@ export default function TemplateShowcase({
         {templates.map((template, index) => {
           const offset = shortestOffset(active, index, count);
           const slot = slotForOffset(offset);
-          const mountLive = Math.abs(offset) <= 1;
           return (
             <button
               key={template.id}
@@ -187,18 +231,23 @@ export default function TemplateShowcase({
               aria-current={slot === "center" ? "true" : undefined}
               onClick={() => goTo(index)}
             >
-              <LiveTemplateMockup
-                templateId={template.id}
+              <TemplateBrowserMockup
+                src={template.desktopImage}
                 title={template.title}
                 accent={template.accent}
                 accentSoft={template.accentSoft}
+                priority={Math.abs(offset) <= 1}
                 isCenter={slot === "center"}
-                mountLive={mountLive}
               />
             </button>
           );
         })}
+      </div>
 
+      <div className="wb-hero__caption" aria-live="polite">
+        <span className="wb-hero__caption-title">{activeTemplate?.title}</span>
+        <span className="wb-hero__caption-dot" aria-hidden="true" />
+        <span className="wb-hero__caption-cat">{activeTemplate?.category}</span>
       </div>
 
       <div className="wb-hero__controls">
