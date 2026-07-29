@@ -184,7 +184,7 @@ function BasketHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: 
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#8aa89a" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#86efac", color: "#86efacText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#86efac", color: "#0f1412" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -434,7 +434,7 @@ function BasketReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
           <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#86efac" }} onSubmit={(e) => e.preventDefault()}>
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(240,245,242,0.12)", color: "#f0f5f2" }} placeholder="שם + טלפון" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(240,245,242,0.12)", color: "#f0f5f2" }} placeholder="תאריך ושעה" />
-            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#86efac", color: "#86efacText" }}>{v(data, "cta")}</button>
+            <button type="button" onClick={onCta} className="px-4 py-3 text-sm font-bold" style={{ background: "#86efac", color: "#0f1412" }}>{v(data, "cta")}</button>
           </form>
         </div>
       </div>

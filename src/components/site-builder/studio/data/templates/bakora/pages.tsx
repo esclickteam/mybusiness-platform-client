@@ -187,7 +187,7 @@ function LamHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (id
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#8a6f5c" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#c4784a", color: "#c4784aText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#c4784a", color: "#fffaf3" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -445,7 +445,7 @@ function LamReserveForm({ data, onCta }: { data: Record<string, any>; onCta: () 
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="תאריך" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="מספר סועדים" />
-          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#c4784a", color: "#c4784aText" }}>{v(data, "cta")}</button>
+          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#c4784a", color: "#fffaf3" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

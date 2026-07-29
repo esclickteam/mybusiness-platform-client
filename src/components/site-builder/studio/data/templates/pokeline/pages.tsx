@@ -101,7 +101,7 @@ function OrbitProcessSteps({ data }: { data: Record<string, any> }) {
           {steps.map(([t, x], i) => (
             <Reveal key={t} delayMs={i * 80} variant="left" className="flex-1">
               <div className="flex h-full flex-col items-start gap-3 border p-5" style={{ borderColor: "rgba(232,247,246,0.12)", background: "#071a1f" }}>
-                <span className="grid h-10 w-10 place-items-center rounded-full text-sm font-bold" style={{ background: "#2dd4bf", color: "#2dd4bfText" }}>{i + 1}</span>
+                <span className="grid h-10 w-10 place-items-center rounded-full text-sm font-bold" style={{ background: "#2dd4bf", color: "#071a1f" }}>{i + 1}</span>
                 <h3 className="tpl-display text-xl font-bold">{t}</h3>
                 <p className="text-sm leading-7" style={{ color: "#7eb8b4" }}>{x}</p>
               </div>
@@ -182,7 +182,7 @@ function OrbitHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#7eb8b4" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#2dd4bf", color: "#2dd4bfText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#2dd4bf", color: "#071a1f" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -441,7 +441,7 @@ function OrbitReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="שם מלא" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="טלפון" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="תאריך" />
-          <button type="button" onClick={onCta} className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#2dd4bf", color: "#2dd4bfText" }}>{v(data, "cta")}</button>
+          <button type="button" onClick={onCta} className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#2dd4bf", color: "#071a1f" }}>{v(data, "cta")}</button>
         </form>
         <p className="mt-6 text-sm" style={{ color: "#7eb8b4" }}>{v(data, "phone")} · {v(data, "email")}</p>
       </div>

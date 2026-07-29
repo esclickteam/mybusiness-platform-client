@@ -182,7 +182,7 @@ function SmashHomeCtaTeaser({ data, goTo }: { data: Record<string, any>; goTo: (
           <h2 className="tpl-display text-3xl font-bold md:text-4xl">{v(data, "ctaBandTitle")}</h2>
           <p className="mt-3 max-w-xl text-sm leading-7" style={{ color: "#a3a3a3" }}>{v(data, "ctaBandText")}</p>
         </div>
-        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => goTo("contact")} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#f59e0b", color: "#111111" }}>{v(data, "heroPrimary")}</button>
       </div>
     </section>
   );
@@ -440,7 +440,7 @@ function SmashReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="תאריך" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="מספר סועדים" />
-          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>
+          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#111111" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>
