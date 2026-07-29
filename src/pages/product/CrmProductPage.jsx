@@ -1,6 +1,8 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { Link } from "react-router-dom";
 import {
+  ArrowLeft,
   BellRing,
   CalendarClock,
   ChevronLeft,
@@ -12,6 +14,8 @@ import {
   PlugZap,
   Search,
   UserRound,
+  Workflow,
+  Zap,
 } from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
 import CrmScreenshotTour from "../../components/crm-marketing/CrmScreenshotTour";
@@ -260,6 +264,47 @@ export default function CrmProductPage() {
       </section>
 
       <CrmMetaTrust />
+
+      {/* Automations — lives under CRM in the product story */}
+      <section className="pm-section pm-section--tight crx crmp__automations">
+        <AuroraBackdrop />
+        <div className="pm-shell">
+          <SectionHeading
+            eyebrow={
+              <>
+                <Workflow size={14} aria-hidden="true" />
+                אוטומציות בתוך ה־CRM
+              </>
+            }
+            title={
+              <>
+                אחרי שהליד נכנס —{" "}
+                <span className="pm-grad">המערכת ממשיכה בשבילכם</span>
+              </>
+            }
+            lead="תזכורות, פולואפים והתראות על לידים חדשים ומשימות שעבר זמנן — רצים ברקע ומחוברים לאותו צינור לידים."
+          />
+
+          <Reveal from="up" delay={0.1}>
+            <div className="crmp__auto-card">
+              <span className="crmp__auto-icon" aria-hidden="true">
+                <Zap size={22} />
+              </span>
+              <div>
+                <h3>אוטומציות והתראות חכמות</h3>
+                <p>
+                  ליד חדש מופיע בהתראות מיד, משימה שעבר זמנה עולה למרכז ההתראות,
+                  ופולואפים נשארים על המסך עד שמטפלים — בלי לרדוף אחרי פתקים.
+                </p>
+              </div>
+              <Link to="/automations" className="pm-cta pm-cta--primary">
+                לעמוד האוטומציות
+                <ArrowLeft size={17} aria-hidden="true" />
+              </Link>
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* FAQ + closing */}
       <section className="pm-section pm-section--tight crx">
