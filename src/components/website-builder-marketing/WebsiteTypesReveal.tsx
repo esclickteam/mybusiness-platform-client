@@ -1,19 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-
-type SiteType = {
-  label: string;
-  from: "right" | "left";
-};
-
-const SITE_TYPES: SiteType[] = [
-  { label: "אתר תדמית", from: "right" },
-  { label: "אתר חנות", from: "left" },
-  { label: "אתר זימון פגישות", from: "right" },
-  { label: "אתר נדל״ן", from: "left" },
-  { label: "אתר מסעדה", from: "right" },
-  { label: "אתר קורסים", from: "left" },
-];
+import AutoScrollTemplatePreview from "./AutoScrollTemplatePreview";
+import { websiteTypeBlocks } from "./websiteTypeBlocks";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -21,23 +9,39 @@ export default function WebsiteTypesReveal() {
   return (
     <section className="wb-types" aria-label="סוגי אתרים">
       <div className="wb-types__inner">
-        {SITE_TYPES.map((item, index) => {
-          const fromX = item.from === "right" ? 120 : -120;
+        {websiteTypeBlocks.map((block) => {
+          const fromX = block.from === "right" ? 140 : -140;
+          const flip = block.from === "left";
+
           return (
-            <motion.p
-              key={item.label}
-              className={`wb-types__line wb-types__line--${item.from}`}
-              initial={{ opacity: 0, x: fromX, filter: "blur(8px)" }}
+            <motion.article
+              key={block.id}
+              className={`wb-type-block${flip ? " is-flip" : ""}`}
+              style={
+                {
+                  "--wb-type-accent": block.accent,
+                  "--wb-type-accent-soft": block.accentSoft,
+                } as React.CSSProperties
+              }
+              initial={{ opacity: 0, x: fromX, filter: "blur(10px)" }}
               whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-              viewport={{ once: true, amount: 0.55 }}
-              transition={{
-                duration: 0.85,
-                delay: index * 0.08,
-                ease,
-              }}
+              viewport={{ once: true, amount: 0.28 }}
+              transition={{ duration: 1.35, ease }}
             >
-              {item.label}
-            </motion.p>
+              <div className="wb-type-block__copy">
+                <h2 className="wb-type-block__title">{block.label}</h2>
+                <p className="wb-type-block__teaser">{block.teaser}</p>
+              </div>
+
+              <div className="wb-type-block__preview">
+                <AutoScrollTemplatePreview
+                  templateId={block.templateId}
+                  title={block.templateTitle}
+                  accent={block.accent}
+                  accentSoft={block.accentSoft}
+                />
+              </div>
+            </motion.article>
           );
         })}
       </div>
