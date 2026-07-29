@@ -34,6 +34,14 @@ const emptyForm = {
   language: "he",
 };
 
+function nextMetaVariableToken(body: string) {
+  const nums = Array.from(String(body).matchAll(/\{\{\s*(\d+)\s*\}\}/g)).map(
+    (m) => Number(m[1])
+  );
+  const next = (nums.length ? Math.max(...nums) : 0) + 1;
+  return `{{${next}}}`;
+}
+
 export default function WhatsAppTemplatesTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -223,6 +231,27 @@ export default function WhatsAppTemplatesTab() {
                 }
                 placeholder={t("whatsapp.templates.bodyPlaceholder")}
               />
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  onClick={() =>
+                    setForm((prev) => ({
+                      ...prev,
+                      body: `${prev.body}${prev.body && !/\s$/.test(prev.body) ? " " : ""}${nextMetaVariableToken(prev.body)}`,
+                    }))
+                  }
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  {t("whatsapp.templates.addVariable")}
+                </button>
+                <span className="text-xs font-medium text-slate-400">
+                  {t("whatsapp.templates.variablesHint")}{" "}
+                  <span dir="ltr" className="font-bold text-slate-500">
+                    {"{{1}} {{2}} {{3}}"}
+                  </span>
+                </span>
+              </div>
             </label>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -265,14 +294,20 @@ export default function WhatsAppTemplatesTab() {
             </p>
             {!!tpl.variables?.length && (
               <div className="mt-3 flex flex-wrap gap-1.5">
-                {tpl.variables.map((variable) => (
-                  <span
-                    key={variable}
-                    className="rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
-                  >
-                    {`{{${variable}}}`}
-                  </span>
-                ))}
+                {tpl.variables.map((variable, index) => {
+                  const label = /^\d+$/.test(String(variable))
+                    ? String(variable)
+                    : String(index + 1);
+                  return (
+                    <span
+                      key={`${label}-${index}`}
+                      dir="ltr"
+                      className="rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
+                    >
+                      {`{{${label}}}`}
+                    </span>
+                  );
+                })}
               </div>
             )}
             <div className="mt-4 flex gap-2">

@@ -274,7 +274,7 @@ export default function WhatsAppComposeTab() {
               <span className="text-xs font-medium text-slate-400">
                 {t("whatsapp.compose.variablesHint")}{" "}
                 <span dir="ltr" className="font-bold text-slate-500">
-                  {"{{name}} {{date}} {{time}} {{service}}"}
+                  {"{{1}} {{2}} {{3}} {{4}}"}
                 </span>
               </span>
             </div>
