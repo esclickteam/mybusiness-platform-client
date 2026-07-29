@@ -1,0 +1,300 @@
+import API from "../api";
+
+export type MetaAdAccount = {
+  id: string;
+  accountId: string;
+  name: string;
+  currency?: string;
+  accountStatus?: number;
+  timezoneName?: string;
+};
+
+export type MetaAdsPage = {
+  id: string;
+  name: string;
+};
+
+export type MetaSelectedAdAccount = {
+  id: string;
+  accountId: string;
+  name: string;
+  currency?: string;
+  selectedAt?: string | null;
+};
+
+export type MetaCampaignMetrics = {
+  spend: number;
+  leads: number;
+  clicks: number;
+  impressions: number;
+  ctr: number;
+  cpc: number;
+  costPerLead: number;
+  roas: number;
+  reach?: number;
+};
+
+export type MetaCampaign = {
+  id: string;
+  name: string;
+  status: string;
+  effectiveStatus: string;
+  objective: string;
+  dailyBudget: number;
+  lifetimeBudget: number;
+  budgetRemaining?: number;
+  specialAdCategories?: string[];
+  buyingType?: string;
+  bidStrategy?: string;
+  createdTime?: string | null;
+  updatedTime?: string | null;
+  startTime?: string | null;
+  stopTime?: string | null;
+  metrics: MetaCampaignMetrics;
+};
+
+export type MetaCampaignSeriesPoint = {
+  date: string;
+  leads: number;
+  spend: number;
+  clicks: number;
+  impressions: number;
+};
+
+export type MetaCampaignInsight = {
+  id: string;
+  tone: "success" | "warning" | "info";
+  title: string;
+  body: string;
+  action?: string;
+};
+
+export type MetaAdsConnectionStatus = {
+  success?: boolean;
+  connected: boolean;
+  isConnected: boolean;
+  metaUserName?: string;
+  adAccounts: MetaAdAccount[];
+  selectedAdAccount: MetaSelectedAdAccount | null;
+  pages: MetaAdsPage[];
+  selectedPage: {
+    pageId: string;
+    pageName: string;
+    selectedAt?: string | null;
+  } | null;
+  lastSyncAt?: string | null;
+  lastError?: string;
+  monthlyBudgetCap?: number;
+  hasAccessToken?: boolean;
+  tokenExpiresAt?: string | null;
+  objectives?: Array<{ value: string; labelHe: string; labelEn: string }>;
+  specialAdCategories?: Array<{
+    value: string;
+    labelHe: string;
+    labelEn: string;
+  }>;
+};
+
+export type MetaCampaignsOverview = {
+  success?: boolean;
+  connection: MetaAdsConnectionStatus;
+  range?: { since: string; until: string };
+  kpis: {
+    roas: number;
+    costPerLead: number;
+    leads: number;
+    spend: number;
+    clicks?: number;
+    impressions?: number;
+    ctr?: number;
+    monthlyBudget: number;
+    budgetUsedPercent: number;
+  };
+  series: MetaCampaignSeriesPoint[];
+  campaigns: MetaCampaign[];
+  insights: MetaCampaignInsight[];
+};
+
+export type MetaCampaignPayload = {
+  name: string;
+  objective?: string;
+  status?: string;
+  dailyBudget?: number | null;
+  lifetimeBudget?: number | null;
+  specialAdCategories?: string[];
+  startTime?: string | null;
+  stopTime?: string | null;
+  bidStrategy?: string;
+};
+
+function withBusiness(businessId?: string, extra?: Record<string, unknown>) {
+  const params: Record<string, unknown> = { ...(extra || {}) };
+  if (businessId) params.businessId = businessId;
+  return { params };
+}
+
+export async function getMetaCampaignsStatus(businessId?: string) {
+  const { data } = await API.get<MetaAdsConnectionStatus>(
+    "/meta-campaigns/status",
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function getMetaCampaignsAuthUrl(businessId?: string) {
+  const { data } = await API.get<{ success: boolean; url: string }>(
+    "/meta-campaigns/auth-url",
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function selectMetaAdAccount(
+  businessId: string | undefined,
+  adAccountId: string
+) {
+  const { data } = await API.post<MetaAdsConnectionStatus>(
+    "/meta-campaigns/select-ad-account",
+    { adAccountId, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function selectMetaAdsPage(
+  businessId: string | undefined,
+  pageId: string
+) {
+  const { data } = await API.post<MetaAdsConnectionStatus>(
+    "/meta-campaigns/select-page",
+    { pageId, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function updateMetaAdsSettings(
+  businessId: string | undefined,
+  payload: { monthlyBudgetCap?: number }
+) {
+  const { data } = await API.put<MetaAdsConnectionStatus>(
+    "/meta-campaigns/settings",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function refreshMetaAdAccounts(businessId?: string) {
+  const { data } = await API.post<MetaAdsConnectionStatus>(
+    "/meta-campaigns/refresh-accounts",
+    { businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function disconnectMetaAds(businessId?: string) {
+  const { data } = await API.post<MetaAdsConnectionStatus>(
+    "/meta-campaigns/disconnect",
+    { businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function getMetaCampaignsOverview(
+  businessId?: string,
+  range?: { since?: string; until?: string; days?: number }
+) {
+  const { data } = await API.get<MetaCampaignsOverview>(
+    "/meta-campaigns/overview",
+    withBusiness(businessId, range)
+  );
+  return data;
+}
+
+export async function listMetaCampaigns(
+  businessId?: string,
+  query?: {
+    since?: string;
+    until?: string;
+    days?: number;
+    segment?: string;
+    q?: string;
+    status?: string;
+  }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    campaigns: MetaCampaign[];
+    currency?: string;
+  }>("/meta-campaigns/campaigns", withBusiness(businessId, query));
+  return data;
+}
+
+export async function getMetaCampaign(
+  businessId: string | undefined,
+  campaignId: string,
+  range?: { since?: string; until?: string; days?: number }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    campaign: MetaCampaign;
+    series: MetaCampaignSeriesPoint[];
+    currency?: string;
+    objectives?: MetaAdsConnectionStatus["objectives"];
+    specialAdCategories?: MetaAdsConnectionStatus["specialAdCategories"];
+    connection?: MetaAdsConnectionStatus;
+  }>(`/meta-campaigns/campaigns/${campaignId}`, withBusiness(businessId, range));
+  return data;
+}
+
+export async function createMetaCampaign(
+  businessId: string | undefined,
+  payload: MetaCampaignPayload
+) {
+  const { data } = await API.post<{ success: boolean; campaign: MetaCampaign }>(
+    "/meta-campaigns/campaigns",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function updateMetaCampaign(
+  businessId: string | undefined,
+  campaignId: string,
+  payload: Partial<MetaCampaignPayload>
+) {
+  const { data } = await API.patch<{ success: boolean; campaign: MetaCampaign }>(
+    `/meta-campaigns/campaigns/${campaignId}`,
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function setMetaCampaignStatus(
+  businessId: string | undefined,
+  campaignId: string,
+  status: string
+) {
+  const { data } = await API.post<{ success: boolean; campaign: MetaCampaign }>(
+    `/meta-campaigns/campaigns/${campaignId}/status`,
+    { status, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function deleteMetaCampaign(
+  businessId: string | undefined,
+  campaignId: string
+) {
+  const { data } = await API.delete<{ success: boolean }>(
+    `/meta-campaigns/campaigns/${campaignId}`,
+    withBusiness(businessId)
+  );
+  return data;
+}

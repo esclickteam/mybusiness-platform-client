@@ -255,7 +255,8 @@
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
     "ariaLabel": "Business workspace navigation",
-    "whatsapp": "WhatsApp Messages"
+    "whatsapp": "WhatsApp Messages",
+    "metaCampaigns": "Meta Campaign Management"
   },
   "layout": {
     "adminImpersonationTitle": "Admin mode — business access",
@@ -4499,6 +4500,211 @@
       "saveSettings": "Failed to save WhatsApp settings",
       "disconnect": "Failed to disconnect WhatsApp",
       "testFailed": "Test message failed"
+    }
+  },
+  "metaCampaigns": {
+    "shell": {
+      "badge": "Meta Ads",
+      "title": "Meta Campaign Management",
+      "subtitle": "Manage, track, and optimize Facebook and Instagram campaigns in one place.",
+      "channel": "Meta Marketing API"
+    },
+    "nav": {
+      "overview": "Overview",
+      "create": "New campaign",
+      "settings": "Meta connection"
+    },
+    "overview": {
+      "heading": "Campaign management",
+      "subheading": "Manage and optimize your Meta campaigns here.",
+      "account": "Ad account",
+      "spendCard": "Spend in range",
+      "spendCardHint": "Total spend for the selected date range"
+    },
+    "actions": {
+      "create": "Create new campaign",
+      "refresh": "Refresh",
+      "edit": "Edit",
+      "pause": "Pause",
+      "activate": "Activate",
+      "delete": "Delete"
+    },
+    "kpis": {
+      "roas": "ROAS",
+      "roasHint": "Return on ad spend",
+      "cpl": "Cost per lead",
+      "cplHint": "Average in selected range",
+      "leads": "Leads",
+      "leadsHint": "Leads from Meta campaigns",
+      "budget": "Monthly budget",
+      "budgetHint": "{{spent}} of {{total}} ({{percent}}%)",
+      "spendHint": "Cumulative spend in range"
+    },
+    "ranges": {
+      "last7": "Last 7 days",
+      "last14": "Last 14 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days"
+    },
+    "segments": {
+      "all": "All",
+      "leads": "Leads",
+      "sales": "Sales",
+      "traffic": "Traffic",
+      "awareness": "Awareness",
+      "engagement": "Engagement"
+    },
+    "chart": {
+      "title": "Performance over time",
+      "subtitle": "Leads vs spend",
+      "leads": "Leads",
+      "spend": "Spend",
+      "clicks": "Clicks",
+      "empty": "No chart data for this period yet"
+    },
+    "table": {
+      "title": "Campaigns",
+      "subtitle": "{{count}} campaigns",
+      "name": "Campaign name",
+      "platform": "Platform",
+      "status": "Status",
+      "budget": "Budget",
+      "spend": "Spend",
+      "leads": "Leads",
+      "cpl": "Cost per lead",
+      "ctr": "CTR",
+      "actions": "Actions",
+      "empty": "No campaigns to show. Create one or change the filter."
+    },
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "archived": "Archived",
+      "deleted": "Deleted",
+      "draft": "Draft",
+      "pending_review": "Pending review",
+      "in_process": "In process",
+      "with_issues": "With issues",
+      "campaign_paused": "Campaign paused"
+    },
+    "objectives": {
+      "leads": "Leads",
+      "sales": "Sales",
+      "traffic": "Traffic",
+      "awareness": "Awareness",
+      "engagement": "Engagement",
+      "app": "App promotion"
+    },
+    "special": {
+      "housing": "Housing",
+      "employment": "Employment",
+      "financial": "Financial products"
+    },
+    "insights": {
+      "title": "Smart insights"
+    },
+    "automations": {
+      "title": "Post-lead automations",
+      "subtitle": "Recommended sequence after a Meta lead arrives",
+      "stepLabel": "Step {{n}}",
+      "step1": "WhatsApp follow-up within minutes",
+      "step2": "Automated email sequence",
+      "step3": "Assign the lead to a CRM owner",
+      "cta": "Create / edit automation"
+    },
+    "empty": {
+      "notConnectedTitle": "Meta Ads is not connected yet",
+      "notConnectedBody": "Connect your Meta ad account to manage campaigns, budgets, and insights here.",
+      "connectCta": "Go to Meta connection"
+    },
+    "form": {
+      "back": "Back to overview",
+      "createTitle": "Create Meta campaign",
+      "editTitle": "Edit Meta campaign",
+      "subtitle": "Set objective, budget, and status — then activate when ready.",
+      "basics": "Campaign details",
+      "name": "Campaign name",
+      "namePlaceholder": "e.g. Leads – Summer 2026",
+      "nameRequired": "Campaign name is required",
+      "objective": "Objective",
+      "objectiveLocked": "Objective cannot be changed after Meta creates the campaign",
+      "status": "Initial status",
+      "budgetTitle": "Budget & schedule",
+      "budgetHint": "Daily budget takes priority over lifetime budget. Amounts use the ad account currency.",
+      "dailyBudget": "Daily budget",
+      "lifetimeBudget": "Lifetime budget",
+      "startTime": "Start time",
+      "stopTime": "End time",
+      "specialTitle": "Special ad categories",
+      "specialHint": "Select only if the campaign relates to housing, employment, or financial products.",
+      "accountCard": "Ad account",
+      "connectedAs": "Connected as {{name}}",
+      "currency": "Currency: {{currency}}",
+      "manageConnection": "Manage connection",
+      "metricsTitle": "Performance",
+      "tipsTitle": "Creation tips",
+      "tip1": "Start paused, then finish ad sets and creatives in Meta if needed.",
+      "tip2": "For lead gen choose OUTCOME_LEADS and continue with an Ad Set.",
+      "tip3": "Set a monthly budget cap in settings to track utilization.",
+      "save": "Save changes",
+      "create": "Create campaign",
+      "confirmDelete": "Delete / archive this campaign in Meta?"
+    },
+    "settings": {
+      "badge": "Connection",
+      "title": "Meta Ads connection",
+      "subtitle": "Sign in with ads permissions, pick an ad account, and set a monthly budget cap.",
+      "connected": "Connected",
+      "disconnected": "Disconnected",
+      "connect": "Connect Meta",
+      "reconnect": "Reconnect",
+      "refreshAccounts": "Refresh accounts",
+      "disconnect": "Disconnect",
+      "confirmDisconnect": "Disconnect Meta Ads?",
+      "connectedAs": "Connected as {{name}}",
+      "adAccountTitle": "Ad account",
+      "adAccountHint": "Choose the ad account used to manage campaigns.",
+      "adAccount": "Ad Account",
+      "adAccountPlaceholder": "Select an ad account",
+      "selectAccountRequired": "Please select an ad account",
+      "saveAccount": "Save ad account",
+      "activeAccount": "Active account: {{name}}",
+      "pageTitle": "Facebook Page (optional)",
+      "pageHint": "Useful for creatives and lead forms later.",
+      "page": "Page",
+      "pagePlaceholder": "Select a page",
+      "savePage": "Save page",
+      "budgetTitle": "Monthly budget tracking",
+      "budgetHint": "Used by the budget utilization KPI on the overview.",
+      "monthlyBudget": "Monthly budget cap",
+      "saveBudget": "Save budget"
+    },
+    "toasts": {
+      "connected": "Meta Ads connected successfully",
+      "disconnected": "Disconnected",
+      "accountSelected": "Ad account saved",
+      "pageSelected": "Page saved",
+      "settingsSaved": "Settings saved",
+      "refreshed": "Accounts refreshed",
+      "created": "Campaign created in Meta",
+      "updated": "Campaign updated",
+      "deleted": "Campaign deleted / archived",
+      "activated": "Campaign activated",
+      "paused": "Campaign paused"
+    },
+    "errors": {
+      "loadOverview": "Failed to load campaign overview",
+      "loadCampaign": "Failed to load campaign",
+      "loadSettings": "Failed to load Meta settings",
+      "saveCampaign": "Failed to save campaign",
+      "deleteCampaign": "Failed to delete campaign",
+      "updateStatus": "Failed to update status",
+      "authUrl": "Failed to create login URL",
+      "selectAccount": "Failed to select ad account",
+      "selectPage": "Failed to select page",
+      "saveSettings": "Failed to save settings",
+      "refresh": "Failed to refresh accounts",
+      "disconnect": "Failed to disconnect Meta Ads"
     }
   }
 }

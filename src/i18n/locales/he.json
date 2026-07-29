@@ -255,7 +255,8 @@
     "collapseSidebar": "כיווץ תפריט צד",
     "expandSidebar": "הרחבת תפריט צד",
     "ariaLabel": "ניווט סביבת העבודה העסקית",
-    "whatsapp": "שליחת הודעות וואטסאפ"
+    "whatsapp": "שליחת הודעות וואטסאפ",
+    "metaCampaigns": "ניהול קמפיינים מטא"
   },
   "layout": {
     "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",
@@ -4488,6 +4489,211 @@
       "saveSettings": "שמירת החיבור נכשלה",
       "disconnect": "ניתוק הוואטסאפ נכשל",
       "testFailed": "הודעת הבדיקה נכשלה"
+    }
+  },
+  "metaCampaigns": {
+    "shell": {
+      "badge": "Meta Ads",
+      "title": "ניהול קמפיינים מטא",
+      "subtitle": "נהלו, עקבו וייעלו קמפיינים בפייסבוק ואינסטגרם במקום אחד.",
+      "channel": "Meta Marketing API"
+    },
+    "nav": {
+      "overview": "סקירה",
+      "create": "קמפיין חדש",
+      "settings": "חיבור Meta"
+    },
+    "overview": {
+      "heading": "ניהול קמפיינים",
+      "subheading": "כאן מנהלים ומייעלים את קמפייני המטא של העסק.",
+      "account": "חשבון מודעות",
+      "spendCard": "הוצאה בתקופה",
+      "spendCardHint": "סה״כ הוצאה לפי טווח התאריכים שנבחר"
+    },
+    "actions": {
+      "create": "צור קמפיין חדש",
+      "refresh": "רענון",
+      "edit": "עריכה",
+      "pause": "השהיה",
+      "activate": "הפעלה",
+      "delete": "מחיקה"
+    },
+    "kpis": {
+      "roas": "ROAS",
+      "roasHint": "החזר על הוצאה פרסומית",
+      "cpl": "עלות לליד",
+      "cplHint": "ממוצע בתקופה שנבחרה",
+      "leads": "לידים",
+      "leadsHint": "לידים מקמפייני מטא",
+      "budget": "תקציב חודשי",
+      "budgetHint": "{{spent}} מתוך {{total}} ({{percent}}%)",
+      "spendHint": "הוצאה מצטברת בתקופה"
+    },
+    "ranges": {
+      "last7": "7 ימים אחרונים",
+      "last14": "14 ימים אחרונים",
+      "last30": "30 ימים אחרונים",
+      "last90": "90 ימים אחרונים"
+    },
+    "segments": {
+      "all": "הכל",
+      "leads": "לידים",
+      "sales": "מכירות",
+      "traffic": "תנועה",
+      "awareness": "מודעות",
+      "engagement": "מעורבות"
+    },
+    "chart": {
+      "title": "ביצועים לאורך זמן",
+      "subtitle": "לידים מול הוצאה",
+      "leads": "לידים",
+      "spend": "הוצאה",
+      "clicks": "קליקים",
+      "empty": "אין עדיין נתוני גרף לתקופה זו"
+    },
+    "table": {
+      "title": "קמפיינים",
+      "subtitle": "{{count}} קמפיינים",
+      "name": "שם הקמפיין",
+      "platform": "פלטפורמה",
+      "status": "סטטוס",
+      "budget": "תקציב",
+      "spend": "הוצאה",
+      "leads": "לידים",
+      "cpl": "עלות לליד",
+      "ctr": "CTR",
+      "actions": "פעולות",
+      "empty": "אין קמפיינים להצגה. צרו קמפיין חדש או שנו את הסינון."
+    },
+    "status": {
+      "active": "פעיל",
+      "paused": "מושהה",
+      "archived": "בארכיון",
+      "deleted": "נמחק",
+      "draft": "טיוטה",
+      "pending_review": "ממתין לבדיקה",
+      "in_process": "בתהליך",
+      "with_issues": "עם בעיות",
+      "campaign_paused": "קמפיין מושהה"
+    },
+    "objectives": {
+      "leads": "לידים",
+      "sales": "מכירות",
+      "traffic": "תנועה",
+      "awareness": "מודעות",
+      "engagement": "מעורבות",
+      "app": "קידום אפליקציה"
+    },
+    "special": {
+      "housing": "דיור",
+      "employment": "תעסוקה",
+      "financial": "מוצרים פיננסיים"
+    },
+    "insights": {
+      "title": "תובנות חכמות"
+    },
+    "automations": {
+      "title": "אוטומציות אחרי ליד",
+      "subtitle": "רצף מומלץ אחרי קבלת ליד מקמפיין מטא",
+      "stepLabel": "שלב {{n}}",
+      "step1": "מעקב בוואטסאפ תוך דקות",
+      "step2": "רצף מיילים אוטומטי",
+      "step3": "שיוך הליד למנהל ב-CRM",
+      "cta": "יצירה / עריכת אוטומציה"
+    },
+    "empty": {
+      "notConnectedTitle": "חשבון Meta Ads עדיין לא מחובר",
+      "notConnectedBody": "חברו את חשבון המודעות של מטא כדי לנהל קמפיינים, תקציבים ותובנות מכאן.",
+      "connectCta": "מעבר לחיבור Meta"
+    },
+    "form": {
+      "back": "חזרה לסקירה",
+      "createTitle": "יצירת קמפיין מטא",
+      "editTitle": "עריכת קמפיין מטא",
+      "subtitle": "הגדירו מטרה, תקציב וסטטוס — ואז הפעילו כשמוכנים.",
+      "basics": "פרטי הקמפיין",
+      "name": "שם הקמפיין",
+      "namePlaceholder": "לדוגמה: לידים – קיץ 2026",
+      "nameRequired": "שם הקמפיין הוא שדה חובה",
+      "objective": "מטרה",
+      "objectiveLocked": "לא ניתן לשנות מטרה אחרי יצירת הקמפיין במטא",
+      "status": "סטטוס התחלתי",
+      "budgetTitle": "תקציב ולוח זמנים",
+      "budgetHint": "תקציב יומי מקבל עדיפות על תקציב כולל. הסכומים במטבע חשבון המודעות.",
+      "dailyBudget": "תקציב יומי",
+      "lifetimeBudget": "תקציב כולל",
+      "startTime": "תאריך התחלה",
+      "stopTime": "תאריך סיום",
+      "specialTitle": "קטגוריות מיוחדות",
+      "specialHint": "סמנו רק אם הקמפיין שייך לדיור, תעסוקה או מוצרים פיננסיים.",
+      "accountCard": "חשבון מודעות",
+      "connectedAs": "מחובר כ־{{name}}",
+      "currency": "מטבע: {{currency}}",
+      "manageConnection": "ניהול חיבור",
+      "metricsTitle": "ביצועים",
+      "tipsTitle": "טיפים ליצירה",
+      "tip1": "מומלץ להתחיל בסטטוס מושהה ולבדוק את מערכי המודעות במטא.",
+      "tip2": "לקמפיין לידים בחרו OUTCOME_LEADS והמשיכו להגדרת Ad Set.",
+      "tip3": "הגדירו תקציב חודשי בלשונית החיבור כדי לעקוב אחרי ניצול.",
+      "save": "שמירת שינויים",
+      "create": "יצירת קמפיין",
+      "confirmDelete": "למחוק / לארכב את הקמפיין במטא?"
+    },
+    "settings": {
+      "badge": "חיבור",
+      "title": "חיבור Meta Ads",
+      "subtitle": "התחברות עם הרשאות ניהול מודעות, בחירת חשבון מודעות והגדרת תקציב חודשי.",
+      "connected": "מחובר",
+      "disconnected": "לא מחובר",
+      "connect": "התחברות ל-Meta",
+      "reconnect": "חיבור מחדש",
+      "refreshAccounts": "רענון חשבונות",
+      "disconnect": "ניתוק",
+      "confirmDisconnect": "לנתק את חיבור Meta Ads?",
+      "connectedAs": "מחובר כ־{{name}}",
+      "adAccountTitle": "חשבון מודעות",
+      "adAccountHint": "בחרו את חשבון המודעות שממנו ינוהלו הקמפיינים.",
+      "adAccount": "Ad Account",
+      "adAccountPlaceholder": "בחירת חשבון מודעות",
+      "selectAccountRequired": "יש לבחור חשבון מודעות",
+      "saveAccount": "שמירת חשבון מודעות",
+      "activeAccount": "חשבון פעיל: {{name}}",
+      "pageTitle": "עמוד פייסבוק (אופציונלי)",
+      "pageHint": "שימושי לקישור קריאייטיב ודפי לידים בהמשך.",
+      "page": "עמוד",
+      "pagePlaceholder": "בחירת עמוד",
+      "savePage": "שמירת עמוד",
+      "budgetTitle": "תקציב חודשי למעקב",
+      "budgetHint": "משמש לכרטיס ה-KPI של ניצול תקציב בסקירה.",
+      "monthlyBudget": "תקרת תקציב חודשית",
+      "saveBudget": "שמירת תקציב"
+    },
+    "toasts": {
+      "connected": "חשבון Meta Ads חובר בהצלחה",
+      "disconnected": "החיבור נותק",
+      "accountSelected": "חשבון המודעות נשמר",
+      "pageSelected": "העמוד נשמר",
+      "settingsSaved": "ההגדרות נשמרו",
+      "refreshed": "החשבונות רועננו",
+      "created": "הקמפיין נוצר במטא",
+      "updated": "הקמפיין עודכן",
+      "deleted": "הקמפיין נמחק / הועבר לארכיון",
+      "activated": "הקמפיין הופעל",
+      "paused": "הקמפיין הושהה"
+    },
+    "errors": {
+      "loadOverview": "טעינת סקירת הקמפיינים נכשלה",
+      "loadCampaign": "טעינת הקמפיין נכשלה",
+      "loadSettings": "טעינת הגדרות Meta נכשלה",
+      "saveCampaign": "שמירת הקמפיין נכשלה",
+      "deleteCampaign": "מחיקת הקמפיין נכשלה",
+      "updateStatus": "עדכון הסטטוס נכשל",
+      "authUrl": "יצירת קישור ההתחברות נכשלה",
+      "selectAccount": "בחירת חשבון המודעות נכשלה",
+      "selectPage": "בחירת העמוד נכשלה",
+      "saveSettings": "שמירת ההגדרות נכשלה",
+      "refresh": "רענון החשבונות נכשל",
+      "disconnect": "ניתוק Meta Ads נכשל"
     }
   }
 }
