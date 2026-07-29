@@ -1,0 +1,333 @@
+/* Section-level visuals for the /crm page. */
+
+.crx {
+  direction: rtl;
+}
+
+/* ------------------------------------------------- real screenshot frames */
+
+.crx-tour {
+  display: grid;
+  gap: clamp(3rem, 6vw, 5rem);
+  margin-top: 3rem;
+}
+
+.crx-tour__block > * + * {
+  margin-top: 1.75rem;
+}
+
+.crx-tour__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+@media (min-width: 880px) {
+  .crx-tour__row {
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+}
+
+.crx-shot {
+  margin: 0;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  background: #fff;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow:
+    0 22px 55px rgba(15, 23, 42, 0.09),
+    0 2px 6px rgba(15, 23, 42, 0.04);
+  transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.crx-shot:hover {
+  box-shadow:
+    0 28px 68px rgba(109, 40, 217, 0.14),
+    0 2px 6px rgba(15, 23, 42, 0.04);
+}
+
+.crx-shot--portrait {
+  max-width: 20rem;
+  margin-inline: auto;
+}
+
+.crx-shot__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.1rem;
+  padding-inline: 0.9rem;
+  background: linear-gradient(180deg, #fbfcfe, #f1f5f9);
+  border-bottom: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.crx-shot__bar span {
+  width: 0.44rem;
+  height: 0.44rem;
+  border-radius: 999px;
+  background: #cbd5e1;
+}
+
+.crx-shot__bar span:nth-child(1) {
+  background: #fca5a5;
+}
+.crx-shot__bar span:nth-child(2) {
+  background: #fcd34d;
+}
+.crx-shot__bar span:nth-child(3) {
+  background: #86efac;
+}
+
+.crx-shot__bar em {
+  margin-inline-start: 0.55rem;
+  font-style: normal;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #94a3b8;
+}
+
+.crx-shot img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #f8fafc;
+}
+
+.crx-shot figcaption {
+  padding: 0.95rem 1.15rem 1.1rem;
+  font-size: 0.87rem;
+  font-weight: 600;
+  line-height: 1.7;
+  color: #64748b;
+  border-top: 1px solid rgba(241, 245, 249, 0.9);
+}
+
+/* --------------------------------------------------------- integration rail */
+
+.crx-sources {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  margin-top: 2.75rem;
+}
+
+@media (min-width: 900px) {
+  .crx-sources {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1.15rem;
+  }
+}
+
+.crx-source {
+  --crx-accent: #7c3aed;
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+  justify-items: center;
+  padding: 1.75rem 1.4rem;
+  border-radius: 1.4rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+}
+
+.crx-source::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 3px;
+  background: linear-gradient(
+    90deg,
+    var(--crx-accent),
+    color-mix(in srgb, var(--crx-accent) 25%, transparent)
+  );
+}
+
+.crx-source__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: var(--crx-accent);
+  background: color-mix(in srgb, var(--crx-accent) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--crx-accent) 26%, transparent);
+}
+
+.crx-source__name {
+  margin: 0;
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+  color: #0b1220;
+}
+
+.crx-source__steps {
+  display: grid;
+  gap: 0.7rem;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: crx;
+}
+
+.crx-source__steps li {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.65;
+  color: #475569;
+}
+
+.crx-source__steps li::before {
+  counter-increment: crx;
+  content: counter(crx);
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #fff;
+  background: var(--crx-accent);
+}
+
+.crx-source__note {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  width: 100%;
+  margin: 0;
+  padding: 0.85rem 0.9rem;
+  border-radius: 0.9rem;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.65;
+  color: #334155;
+  background: #f8fafc;
+  border: 1px solid rgba(226, 232, 240, 0.95);
+}
+
+.crx-source__note svg {
+  color: var(--crx-accent);
+}
+
+/* -------------------------------------------------------------- meta trust */
+
+.crx-meta {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(1.75rem, 3.5vw, 2.75rem);
+  border-radius: 1.75rem;
+  background:
+    radial-gradient(ellipse 70% 80% at 50% 0%, rgba(24, 119, 242, 0.12), transparent 60%),
+    linear-gradient(180deg, #ffffff 0%, #f0f6ff 100%);
+  border: 1px solid rgba(24, 119, 242, 0.2);
+  box-shadow: 0 22px 56px rgba(24, 119, 242, 0.1);
+}
+
+.crx-meta__points {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.7rem;
+  margin: 2rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 900px) {
+  .crx-meta__points {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.crx-meta__points li {
+  display: grid;
+  justify-items: center;
+  gap: 0.55rem;
+  padding: 1.15rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.65;
+  color: #1e293b;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(191, 219, 254, 0.9);
+}
+
+.crx-meta__points svg {
+  color: #1877f2;
+}
+
+.crx-scopes {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-top: 0.9rem;
+}
+
+.crx-scopes span {
+  direction: ltr;
+  padding: 0.24rem 0.6rem;
+  border-radius: 0.45rem;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: rgba(24, 119, 242, 0.08);
+  border: 1px solid rgba(147, 197, 253, 0.75);
+}
+
+/* -------------------------------------------------------- pipeline strip */
+
+.crx-pipeline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.crx-pipeline li {
+  --crx-accent: #7c3aed;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.1rem;
+  border-radius: 999px;
+  font-size: 0.92rem;
+  font-weight: 900;
+  color: #fff;
+  background: linear-gradient(
+    135deg,
+    var(--crx-accent),
+    color-mix(in srgb, var(--crx-accent) 55%, #2563eb)
+  );
+  box-shadow: 0 10px 26px
+    color-mix(in srgb, var(--crx-accent) 28%, transparent);
+}
+
+.crx-pipeline__arrow {
+  color: #cbd5e1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crx-shot {
+    transition: none !important;
+  }
+}
