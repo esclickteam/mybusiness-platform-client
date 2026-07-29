@@ -10,35 +10,6 @@
     "trustTrial": "Prova gratuita di 14 giorni",
     "trustCancel": "Annulla in qualsiasi momento"
   },
-  "preview": {
-    "themeLight": "Chiaro",
-    "themeSmart": "Smart",
-    "businessOs": "Sistema aziendale",
-    "sidebarDashboard": "Dashboard",
-    "sidebarClients": "Clienti",
-    "sidebarAppointments": "Appuntamenti",
-    "sidebarCrm": "CRM",
-    "sidebarCollaborations": "Collaborazioni",
-    "sidebarReports": "Report",
-    "sidebarAiTools": "Strumenti IA",
-    "greeting": "Buongiorno, Michael",
-    "pipelineTitle": "La tua pipeline aziendale",
-    "thisMonth": "Questo mese",
-    "salesPipeline": "Pipeline vendite e clienti",
-    "salesPipelineSubtitle": "Opportunità attive, appuntamenti e proposte",
-    "activeDeals": "296 trattative attive",
-    "stageLeads": "Lead",
-    "stageContacted": "Contattati",
-    "stageProposal": "Proposta",
-    "stageScheduled": "Pianificati",
-    "stageConverted": "Convertiti",
-    "revenueGrowth": "Crescita dei ricavi",
-    "aiAssistant": "Assistente IA",
-    "aiMessage": "Ho trovato 3 slot disponibili e preparato una bozza di proposta per il tuo nuovo cliente.",
-    "aiSummarize": "Riassumi la mia settimana",
-    "aiDraftProposal": "Crea proposta",
-    "aiFindSlots": "Trova slot liberi"
-  },
   "dashboard": {
     "live": "Live",
     "title": "Dashboard aziendale",
@@ -51,7 +22,6 @@
     "paid": "Pagato",
     "trial": "Prova",
     "yourBusiness": "La tua attività",
-
     "metrics": {
       "profileViews": "Visualizzazioni profilo",
       "profileViewsHint": "Visibilità in tempo reale dalla tua pagina pubblica",
@@ -62,27 +32,23 @@
       "reviews": "Recensioni",
       "reviewsHint": "Fiducia dei clienti e attività delle valutazioni"
     },
-
     "agenda": {
       "eyebrow": "Agenda giornaliera",
       "title": "Programma del giorno selezionato",
       "description": "Visualizza gli appuntamenti della data selezionata in modo chiaro e organizzato.",
       "loading": "Caricamento agenda..."
     },
-
     "calendar": {
       "eyebrow": "Calendario",
       "title": "Panoramica appuntamenti",
       "description": "Scegli una data e gestisci il flusso degli appuntamenti della tua attività.",
       "loading": "Caricamento calendario..."
     },
-
     "ai": {
       "eyebrow": "Centro azioni IA",
       "title": "Insight intelligenti per la tua attività",
       "description": "Raccomandazioni IA basate sulla tua attività, sui clienti, sugli appuntamenti e sulle performance aziendali."
     },
-
     "operations": {
       "eyebrow": "Panoramica di oggi",
       "title": "Stato operativo",
@@ -90,7 +56,6 @@
       "upcomingWeek": "Prossima settimana",
       "pendingAiApprovals": "Approvazioni IA in sospeso"
     },
-
     "recommendations": {
       "eyebrow": "In attesa di approvazione",
       "title": "Raccomandazioni IA",
@@ -99,65 +64,58 @@
       "aiSuggestion": "Suggerimento IA:",
       "approveAndSend": "Approva e invia"
     },
-
     "performance": {
       "eyebrow": "Performance aziendale",
       "title": "Schede dashboard",
       "description": "Le tue schede di performance sono collegate ai dati aziendali in tempo reale.",
       "loading": "Caricamento schede..."
     },
-
     "analytics": {
       "eyebrow": "Analisi crescita",
       "title": "Clienti che hanno prenotato appuntamenti per mese",
       "description": "Trend mensili della domanda di appuntamenti e dell’attività dei clienti.",
       "loading": "Caricamento grafico..."
     },
-
     "upcoming": {
       "eyebrow": "Prossimi appuntamenti",
       "title": "Prossima attività",
       "description": "Una vista rapida dei prossimi appuntamenti della tua attività.",
       "empty": "Non ci sono ancora appuntamenti in programma."
     },
-
     "dailyAgenda": {
-  "upcomingAppointments": "Prossimi appuntamenti",
-  "viewCalendar": "Vedi calendario",
-  "noAppointments": "Nessun appuntamento in questa data",
-  "noAppointmentsDescription": "Quando i clienti prenoteranno appuntamenti per questo giorno, appariranno qui.",
-  "confirmed": "Confermato",
-  "email": "Email",
-  "manage": "Gestisci",
-  "viewAllAppointments": "Vedi tutti gli appuntamenti",
-  "service": "Servizio",
-  "clientEmailMissing": "L’email del cliente non è disponibile",
-  "appointmentReminderSubject": "Promemoria appuntamento – {{businessName}}",
-  "appointmentReminderBody": "Ciao {{clientName}},\n\nQuesto è un promemoria per il tuo prossimo appuntamento.\n\nData: {{date}}\nOra: {{time}}\nServizio: {{service}}\n\nCordiali saluti,\n{{businessName}}"
-},
-
-"cards": {
-  "ariaLabel": "Metriche principali della dashboard",
-  "profileViews": "Visualizzazioni profilo",
-  "appointments": "Appuntamenti",
-  "messages": "Messaggi",
-  "revenue": "Ricavi",
-  "reviews": "Recensioni",
-  "period30Days": "30 giorni",
-  "vsLast30Days": "rispetto agli ultimi 30 giorni"
-},
-
-"calendarView": {
-  "ariaLabel": "Calendario appuntamenti",
-  "previousMonth": "Mese precedente",
-  "nextMonth": "Mese successivo",
-  "hint": "Clicca su una data per vedere l’agenda giornaliera",
-  "today": "Oggi",
-  "selected": "Selezionato",
-  "appointment": "{{count}} appuntamento",
-  "appointments": "{{count}} appuntamenti"
-},
-
+      "upcomingAppointments": "Prossimi appuntamenti",
+      "viewCalendar": "Vedi calendario",
+      "noAppointments": "Nessun appuntamento in questa data",
+      "noAppointmentsDescription": "Quando i clienti prenoteranno appuntamenti per questo giorno, appariranno qui.",
+      "confirmed": "Confermato",
+      "email": "Email",
+      "manage": "Gestisci",
+      "viewAllAppointments": "Vedi tutti gli appuntamenti",
+      "service": "Servizio",
+      "clientEmailMissing": "L’email del cliente non è disponibile",
+      "appointmentReminderSubject": "Promemoria appuntamento – {{businessName}}",
+      "appointmentReminderBody": "Ciao {{clientName}},\n\nQuesto è un promemoria per il tuo prossimo appuntamento.\n\nData: {{date}}\nOra: {{time}}\nServizio: {{service}}\n\nCordiali saluti,\n{{businessName}}"
+    },
+    "cards": {
+      "ariaLabel": "Metriche principali della dashboard",
+      "profileViews": "Visualizzazioni profilo",
+      "appointments": "Appuntamenti",
+      "messages": "Messaggi",
+      "revenue": "Ricavi",
+      "reviews": "Recensioni",
+      "period30Days": "30 giorni",
+      "vsLast30Days": "rispetto agli ultimi 30 giorni"
+    },
+    "calendarView": {
+      "ariaLabel": "Calendario appuntamenti",
+      "previousMonth": "Mese precedente",
+      "nextMonth": "Mese successivo",
+      "hint": "Clicca su una data per vedere l’agenda giornaliera",
+      "today": "Oggi",
+      "selected": "Selezionato",
+      "appointment": "{{count}} appuntamento",
+      "appointments": "{{count}} appuntamenti"
+    },
     "states": {
       "loading": "Caricamento dashboard aziendale...",
       "refreshingUser": "Aggiornamento dati utente...",

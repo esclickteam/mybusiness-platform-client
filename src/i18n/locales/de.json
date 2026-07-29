@@ -10,35 +10,6 @@
     "trustTrial": "14 Tage kostenlos testen",
     "trustCancel": "Jederzeit kündbar"
   },
-  "preview": {
-    "themeLight": "Hell",
-    "themeSmart": "Smart",
-    "businessOs": "Business OS",
-    "sidebarDashboard": "Dashboard",
-    "sidebarClients": "Kunden",
-    "sidebarAppointments": "Termine",
-    "sidebarCrm": "CRM",
-    "sidebarCollaborations": "Kooperationen",
-    "sidebarReports": "Berichte",
-    "sidebarAiTools": "KI-Tools",
-    "greeting": "Guten Morgen, Michael",
-    "pipelineTitle": "Ihre Business-Pipeline",
-    "thisMonth": "Diesen Monat",
-    "salesPipeline": "Vertriebs- & Kundenpipeline",
-    "salesPipelineSubtitle": "Aktive Chancen, Termine und Angebote",
-    "activeDeals": "296 aktive Deals",
-    "stageLeads": "Leads",
-    "stageContacted": "Kontaktiert",
-    "stageProposal": "Angebot",
-    "stageScheduled": "Geplant",
-    "stageConverted": "Abgeschlossen",
-    "revenueGrowth": "Umsatzwachstum",
-    "aiAssistant": "KI-Assistent",
-    "aiMessage": "Ich habe 3 freie Zeitfenster gefunden und einen Angebotsentwurf für Ihren neuen Kunden vorbereitet.",
-    "aiSummarize": "Meine Woche zusammenfassen",
-    "aiDraftProposal": "Angebot erstellen",
-    "aiFindSlots": "Freie Zeiten finden"
-  },
   "dashboard": {
     "live": "Live",
     "title": "Business-Dashboard",
@@ -51,7 +22,6 @@
     "paid": "Bezahlt",
     "trial": "Testphase",
     "yourBusiness": "Ihr Unternehmen",
-
     "metrics": {
       "profileViews": "Profilaufrufe",
       "profileViewsHint": "Live-Sichtbarkeit Ihrer öffentlichen Unternehmensseite",
@@ -62,27 +32,23 @@
       "reviews": "Bewertungen",
       "reviewsHint": "Kundenvertrauen und Bewertungsaktivität"
     },
-
     "agenda": {
       "eyebrow": "Tagesagenda",
       "title": "Zeitplan für den ausgewählten Tag",
       "description": "Sehen Sie die Termine des ausgewählten Datums in einer klaren und organisierten Ansicht.",
       "loading": "Agenda wird geladen..."
     },
-
     "calendar": {
       "eyebrow": "Kalender",
       "title": "Terminübersicht",
       "description": "Wählen Sie ein Datum aus und verwalten Sie Ihren Terminablauf.",
       "loading": "Kalender wird geladen..."
     },
-
     "ai": {
       "eyebrow": "KI-Aktionszentrum",
       "title": "Intelligente Insights für Ihr Unternehmen",
       "description": "KI-Empfehlungen basierend auf Ihrer Aktivität, Ihren Kunden, Terminen und Geschäftsergebnissen."
     },
-
     "operations": {
       "eyebrow": "Tagesübersicht",
       "title": "Operativer Überblick",
@@ -90,7 +56,6 @@
       "upcomingWeek": "Kommende Woche",
       "pendingAiApprovals": "Ausstehende KI-Freigaben"
     },
-
     "recommendations": {
       "eyebrow": "Wartet auf Freigabe",
       "title": "KI-Empfehlungen",
@@ -99,65 +64,58 @@
       "aiSuggestion": "KI-Vorschlag:",
       "approveAndSend": "Freigeben und senden"
     },
-
     "performance": {
       "eyebrow": "Business-Performance",
       "title": "Dashboard-Karten",
       "description": "Ihre Performance-Karten sind mit Live-Unternehmensdaten verbunden.",
       "loading": "Karten werden geladen..."
     },
-
     "analytics": {
       "eyebrow": "Wachstumsanalyse",
       "title": "Kunden, die Termine pro Monat gebucht haben",
       "description": "Monatliche Trends bei Terminnachfrage und Kundenaktivität.",
       "loading": "Diagramm wird geladen..."
     },
-
     "upcoming": {
       "eyebrow": "Bevorstehende Termine",
       "title": "Nächste Aktivität",
       "description": "Schneller Überblick über die nächsten Termine in Ihrem Unternehmen.",
       "empty": "Noch keine bevorstehenden Termine."
     },
-
     "dailyAgenda": {
-  "upcomingAppointments": "Bevorstehende Termine",
-  "viewCalendar": "Kalender ansehen",
-  "noAppointments": "Keine Termine an diesem Datum",
-  "noAppointmentsDescription": "Wenn Kunden Termine für diesen Tag buchen, werden sie hier angezeigt.",
-  "confirmed": "Bestätigt",
-  "email": "E-Mail",
-  "manage": "Verwalten",
-  "viewAllAppointments": "Alle Termine ansehen",
-  "service": "Service",
-  "clientEmailMissing": "Die E-Mail-Adresse des Kunden ist nicht verfügbar",
-  "appointmentReminderSubject": "Terminerinnerung – {{businessName}}",
-  "appointmentReminderBody": "Hallo {{clientName}},\n\nDies ist eine freundliche Erinnerung an Ihren bevorstehenden Termin.\n\nDatum: {{date}}\nUhrzeit: {{time}}\nService: {{service}}\n\nMit freundlichen Grüßen,\n{{businessName}}"
-},
-
-"cards": {
-  "ariaLabel": "Wichtige Dashboard-Kennzahlen",
-  "profileViews": "Profilaufrufe",
-  "appointments": "Termine",
-  "messages": "Nachrichten",
-  "revenue": "Umsatz",
-  "reviews": "Bewertungen",
-  "period30Days": "30 Tage",
-  "vsLast30Days": "im Vergleich zu den letzten 30 Tagen"
-},
-
-"calendarView": {
-  "ariaLabel": "Terminkalender",
-  "previousMonth": "Vorheriger Monat",
-  "nextMonth": "Nächster Monat",
-  "hint": "Klicken Sie auf ein Datum, um Ihre Tagesagenda zu sehen",
-  "today": "Heute",
-  "selected": "Ausgewählt",
-  "appointment": "{{count}} Termin",
-  "appointments": "{{count}} Termine"
-},
-
+      "upcomingAppointments": "Bevorstehende Termine",
+      "viewCalendar": "Kalender ansehen",
+      "noAppointments": "Keine Termine an diesem Datum",
+      "noAppointmentsDescription": "Wenn Kunden Termine für diesen Tag buchen, werden sie hier angezeigt.",
+      "confirmed": "Bestätigt",
+      "email": "E-Mail",
+      "manage": "Verwalten",
+      "viewAllAppointments": "Alle Termine ansehen",
+      "service": "Service",
+      "clientEmailMissing": "Die E-Mail-Adresse des Kunden ist nicht verfügbar",
+      "appointmentReminderSubject": "Terminerinnerung – {{businessName}}",
+      "appointmentReminderBody": "Hallo {{clientName}},\n\nDies ist eine freundliche Erinnerung an Ihren bevorstehenden Termin.\n\nDatum: {{date}}\nUhrzeit: {{time}}\nService: {{service}}\n\nMit freundlichen Grüßen,\n{{businessName}}"
+    },
+    "cards": {
+      "ariaLabel": "Wichtige Dashboard-Kennzahlen",
+      "profileViews": "Profilaufrufe",
+      "appointments": "Termine",
+      "messages": "Nachrichten",
+      "revenue": "Umsatz",
+      "reviews": "Bewertungen",
+      "period30Days": "30 Tage",
+      "vsLast30Days": "im Vergleich zu den letzten 30 Tagen"
+    },
+    "calendarView": {
+      "ariaLabel": "Terminkalender",
+      "previousMonth": "Vorheriger Monat",
+      "nextMonth": "Nächster Monat",
+      "hint": "Klicken Sie auf ein Datum, um Ihre Tagesagenda zu sehen",
+      "today": "Heute",
+      "selected": "Ausgewählt",
+      "appointment": "{{count}} Termin",
+      "appointments": "{{count}} Termine"
+    },
     "states": {
       "loading": "Business-Dashboard wird geladen...",
       "refreshingUser": "Benutzerdaten werden aktualisiert...",

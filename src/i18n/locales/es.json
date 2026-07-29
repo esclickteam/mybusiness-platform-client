@@ -10,35 +10,6 @@
     "trustTrial": "Prueba gratis de 14 días",
     "trustCancel": "Cancela cuando quieras"
   },
-  "preview": {
-    "themeLight": "Claro",
-    "themeSmart": "Inteligente",
-    "businessOs": "Sistema empresarial",
-    "sidebarDashboard": "Panel",
-    "sidebarClients": "Clientes",
-    "sidebarAppointments": "Citas",
-    "sidebarCrm": "CRM",
-    "sidebarCollaborations": "Colaboraciones",
-    "sidebarReports": "Informes",
-    "sidebarAiTools": "Herramientas IA",
-    "greeting": "Buenos días, Michael",
-    "pipelineTitle": "Tu pipeline de negocio",
-    "thisMonth": "Este mes",
-    "salesPipeline": "Pipeline de ventas y clientes",
-    "salesPipelineSubtitle": "Oportunidades activas, citas y propuestas",
-    "activeDeals": "296 negocios activos",
-    "stageLeads": "Leads",
-    "stageContacted": "Contactados",
-    "stageProposal": "Propuesta",
-    "stageScheduled": "Programados",
-    "stageConverted": "Convertidos",
-    "revenueGrowth": "Crecimiento de ingresos",
-    "aiAssistant": "Asistente IA",
-    "aiMessage": "Encontré 3 horarios disponibles y preparé un borrador de propuesta para tu nuevo cliente.",
-    "aiSummarize": "Resumir mi semana",
-    "aiDraftProposal": "Crear propuesta",
-    "aiFindSlots": "Encontrar horarios"
-  },
   "dashboard": {
     "live": "En vivo",
     "title": "Panel de negocio",
@@ -51,7 +22,6 @@
     "paid": "Pagado",
     "trial": "Prueba",
     "yourBusiness": "Tu negocio",
-
     "metrics": {
       "profileViews": "Vistas del perfil",
       "profileViewsHint": "Visibilidad en vivo desde tu página pública",
@@ -62,27 +32,23 @@
       "reviews": "Reseñas",
       "reviewsHint": "Confianza de clientes y actividad de valoraciones"
     },
-
     "agenda": {
       "eyebrow": "Agenda diaria",
       "title": "Horario del día seleccionado",
       "description": "Consulta las citas de la fecha seleccionada en una vista clara y organizada.",
       "loading": "Cargando agenda..."
     },
-
     "calendar": {
       "eyebrow": "Calendario",
       "title": "Resumen de citas",
       "description": "Elige una fecha y gestiona el flujo de citas de tu negocio.",
       "loading": "Cargando calendario..."
     },
-
     "ai": {
       "eyebrow": "Centro de acciones IA",
       "title": "Insights inteligentes para tu negocio",
       "description": "Recomendaciones de IA basadas en tu actividad, clientes, citas y rendimiento del negocio."
     },
-
     "operations": {
       "eyebrow": "Resumen de hoy",
       "title": "Pulso operativo",
@@ -90,7 +56,6 @@
       "upcomingWeek": "Próxima semana",
       "pendingAiApprovals": "Aprobaciones IA pendientes"
     },
-
     "recommendations": {
       "eyebrow": "Pendiente de aprobación",
       "title": "Recomendaciones IA",
@@ -99,65 +64,58 @@
       "aiSuggestion": "Sugerencia IA:",
       "approveAndSend": "Aprobar y enviar"
     },
-
     "performance": {
       "eyebrow": "Rendimiento del negocio",
       "title": "Tarjetas del panel",
       "description": "Tus tarjetas de rendimiento están conectadas a los datos en vivo del negocio.",
       "loading": "Cargando tarjetas..."
     },
-
     "analytics": {
       "eyebrow": "Análisis de crecimiento",
       "title": "Clientes que reservaron citas por mes",
       "description": "Tendencias mensuales de demanda de citas y actividad de clientes.",
       "loading": "Cargando gráfico..."
     },
-
     "upcoming": {
       "eyebrow": "Próximas citas",
       "title": "Próxima actividad",
       "description": "Vista rápida de las próximas citas de tu negocio.",
       "empty": "Aún no hay próximas citas."
     },
-
     "dailyAgenda": {
-  "upcomingAppointments": "Próximas citas",
-  "viewCalendar": "Ver calendario",
-  "noAppointments": "No hay citas en esta fecha",
-  "noAppointmentsDescription": "Cuando los clientes reserven citas para este día, aparecerán aquí.",
-  "confirmed": "Confirmado",
-  "email": "Email",
-  "manage": "Gestionar",
-  "viewAllAppointments": "Ver todas las citas",
-  "service": "Servicio",
-  "clientEmailMissing": "El email del cliente no está disponible",
-  "appointmentReminderSubject": "Recordatorio de cita – {{businessName}}",
-  "appointmentReminderBody": "Hola {{clientName}},\n\nEste es un recordatorio amable sobre tu próxima cita.\n\nFecha: {{date}}\nHora: {{time}}\nServicio: {{service}}\n\nSaludos,\n{{businessName}}"
-},
-
-"cards": {
-  "ariaLabel": "Métricas clave del panel",
-  "profileViews": "Vistas del perfil",
-  "appointments": "Citas",
-  "messages": "Mensajes",
-  "revenue": "Ingresos",
-  "reviews": "Reseñas",
-  "period30Days": "30 días",
-  "vsLast30Days": "frente a los últimos 30 días"
-},
-
-"calendarView": {
-  "ariaLabel": "Calendario de citas",
-  "previousMonth": "Mes anterior",
-  "nextMonth": "Mes siguiente",
-  "hint": "Haz clic en una fecha para ver tu agenda diaria",
-  "today": "Hoy",
-  "selected": "Seleccionado",
-  "appointment": "{{count}} cita",
-  "appointments": "{{count}} citas"
-},
-
+      "upcomingAppointments": "Próximas citas",
+      "viewCalendar": "Ver calendario",
+      "noAppointments": "No hay citas en esta fecha",
+      "noAppointmentsDescription": "Cuando los clientes reserven citas para este día, aparecerán aquí.",
+      "confirmed": "Confirmado",
+      "email": "Email",
+      "manage": "Gestionar",
+      "viewAllAppointments": "Ver todas las citas",
+      "service": "Servicio",
+      "clientEmailMissing": "El email del cliente no está disponible",
+      "appointmentReminderSubject": "Recordatorio de cita – {{businessName}}",
+      "appointmentReminderBody": "Hola {{clientName}},\n\nEste es un recordatorio amable sobre tu próxima cita.\n\nFecha: {{date}}\nHora: {{time}}\nServicio: {{service}}\n\nSaludos,\n{{businessName}}"
+    },
+    "cards": {
+      "ariaLabel": "Métricas clave del panel",
+      "profileViews": "Vistas del perfil",
+      "appointments": "Citas",
+      "messages": "Mensajes",
+      "revenue": "Ingresos",
+      "reviews": "Reseñas",
+      "period30Days": "30 días",
+      "vsLast30Days": "frente a los últimos 30 días"
+    },
+    "calendarView": {
+      "ariaLabel": "Calendario de citas",
+      "previousMonth": "Mes anterior",
+      "nextMonth": "Mes siguiente",
+      "hint": "Haz clic en una fecha para ver tu agenda diaria",
+      "today": "Hoy",
+      "selected": "Seleccionado",
+      "appointment": "{{count}} cita",
+      "appointments": "{{count}} citas"
+    },
     "states": {
       "loading": "Cargando panel de negocio...",
       "refreshingUser": "Actualizando datos del usuario...",
