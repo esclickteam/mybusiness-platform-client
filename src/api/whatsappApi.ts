@@ -27,6 +27,8 @@ export type WhatsAppTemplate = {
   language: string;
   body: string;
   variables: string[];
+  /** Ordered CRM field bindings for {{1}}, {{2}}, … */
+  variableBindings?: string[];
   metaTemplateName?: string;
   status: "draft" | "active" | "archived";
   isSystem?: boolean;
