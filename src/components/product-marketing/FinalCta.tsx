@@ -7,9 +7,10 @@ type Props = {
   eyebrow: string;
   title: string;
   text: string;
-  primaryLabel: string;
+  primaryLabel?: string;
   primaryTo?: string;
-  secondaryLabel: string;
+  /** @deprecated Prefer a single CTA — secondary is optional */
+  secondaryLabel?: string;
   secondaryTo?: string;
 };
 
@@ -17,8 +18,8 @@ export default function FinalCta({
   eyebrow,
   title,
   text,
-  primaryLabel,
-  primaryTo = "/register",
+  primaryLabel = "לצפייה בחבילות",
+  primaryTo = "/pricing",
   secondaryLabel,
   secondaryTo = "/contact",
 }: Props) {
@@ -39,9 +40,11 @@ export default function FinalCta({
               {primaryLabel}
               <ArrowLeft size={17} aria-hidden="true" />
             </Link>
-            <Link to={secondaryTo} className="pm-cta pm-cta--outline-light">
-              {secondaryLabel}
-            </Link>
+            {secondaryLabel ? (
+              <Link to={secondaryTo} className="pm-cta pm-cta--outline-light">
+                {secondaryLabel}
+              </Link>
+            ) : null}
           </div>
         </div>
       </section>

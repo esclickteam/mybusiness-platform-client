@@ -86,8 +86,6 @@ export default function AgentsProductPage() {
           text: "כל שיחה, סטטוס ומשימה מתועדים ב־CRM — כדי שתראו בדיוק מה קרה עם כל פנייה, בלי שיחות אבודות מחוץ לצינור.",
         }}
         stats={agentsHeroStats}
-        secondaryLabel="דברו איתנו"
-        secondaryTo="/contact"
       />
 
       {/* How it works */}
@@ -248,10 +246,8 @@ export default function AgentsProductPage() {
               eyebrow="צריכים שכבה אנושית"
               title="חברו נציגים שמביאים תוצאות — בלי לאבד שליטה"
               text="טיפול בלידים, תיאום פגישות וניהול שיתופים מתוך BizUply. כל פעילות מתועדת, כל סטטוס גלוי, והעומס יורד מהיום הראשון."
-              primaryLabel="דברו איתנו"
-              primaryTo="/contact"
-              secondaryLabel="לשיתופי פעולה"
-              secondaryTo="/collaborations"
+              primaryLabel="לצפייה בחבילות"
+              primaryTo="/pricing"
             />
           </div>
         </div>

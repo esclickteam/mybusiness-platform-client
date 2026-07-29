@@ -79,12 +79,9 @@ export default function CrmProductHero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.76, duration: 0.65, ease }}
         >
-          <Link to="/register" className="pm-cta pm-cta--primary">
-            מתחילים בחינם
+          <Link to="/pricing" className="pm-cta pm-cta--primary">
+            לצפייה בחבילות
             <ArrowLeft size={17} aria-hidden="true" />
-          </Link>
-          <Link to="/pricing" className="pm-cta pm-cta--ghost">
-            לצפייה במסלולים
           </Link>
         </motion.div>
 

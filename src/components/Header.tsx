@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { FaGlobe, FaUser } from "react-icons/fa";
+import { ChevronDown } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import logo from "../images/logo_final.svg";
@@ -9,9 +10,15 @@ import MobileMenu from "./MobileMenu";
 import { normalizeLanguage, setSessionLanguageOverride } from "../i18n/localeUtils";
 import "../styles/SiteHeader.css";
 
+type NavChild = {
+  to: string;
+  labelKey: string;
+};
+
 type NavLink = {
   to: string;
   labelKey: string;
+  children?: NavChild[];
 };
 
 type Language = {
@@ -19,11 +26,21 @@ type Language = {
   label: string;
 };
 
-/** RTL order: About on the right, then product pages, pricing on the left. */
+/**
+ * Visual RTL order (right → left):
+ * Logo · About · Website · CRM(+Automations) · Agents · Collaborations · Pricing · Lang · Login
+ */
 const navLinks: NavLink[] = [
   { to: "/about", labelKey: "nav.about" },
   { to: "/website-builder", labelKey: "nav.website" },
-  { to: "/crm", labelKey: "nav.crm" },
+  {
+    to: "/crm",
+    labelKey: "nav.crm",
+    children: [
+      { to: "/crm", labelKey: "nav.crm" },
+      { to: "/crm#automations", labelKey: "nav.automations" },
+    ],
+  },
   { to: "/agents", labelKey: "nav.agents" },
   { to: "/collaborations", labelKey: "nav.collaborations" },
   { to: "/pricing", labelKey: "nav.pricing" },
@@ -40,13 +57,14 @@ export default function Header() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [menuOpen, setMenuOpen] = useState<boolean>(false);
-  const [languageOpen, setLanguageOpen] = useState<boolean>(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+  const [crmOpen, setCrmOpen] = useState(false);
 
   const languageRef = useRef<HTMLDivElement | null>(null);
+  const crmRef = useRef<HTMLDivElement | null>(null);
 
   const currentLangCode = normalizeLanguage(i18n.language);
-
   const currentLanguage =
     languages.find((lang) => lang.code === currentLangCode) ?? languages[0];
 
@@ -56,27 +74,29 @@ export default function Header() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        languageRef.current &&
-        !languageRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as Node;
+      if (languageRef.current && !languageRef.current.contains(target)) {
         setLanguageOpen(false);
+      }
+      if (crmRef.current && !crmRef.current.contains(target)) {
+        setCrmOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    setCrmOpen(false);
+    setLanguageOpen(false);
+  }, [location.pathname, location.hash]);
 
   const handleChangeLanguage = async (lng: string) => {
     if (normalizeLanguage(lng) === currentLangCode) {
       setLanguageOpen(false);
       return;
     }
-
     setSessionLanguageOverride(lng);
     await i18n.changeLanguage(lng);
     setLanguageOpen(false);
@@ -95,17 +115,87 @@ export default function Header() {
 
   if (isDashboard) return null;
 
+  const crmActive =
+    location.pathname === "/crm" || location.pathname === "/automations";
+
   return (
     <>
-      <header className="site-header">
+      <header className="site-header" dir="rtl">
         <nav className="site-header__bar" aria-label="ניווט ראשי">
-          {/* RTL: first = right → big logo */}
+          {/* Right side in RTL */}
           <Link to="/" className="site-header__logo" aria-label="BizUply">
             <img src={logo} alt="BizUply" />
           </Link>
 
           <div className="site-header__nav">
             {navLinks.map((item) => {
+              if (item.children?.length) {
+                return (
+                  <div
+                    key={item.to}
+                    ref={crmRef}
+                    className={`site-header__dropdown${crmOpen ? " is-open" : ""}`}
+                  >
+                    <button
+                      type="button"
+                      className={`site-header__link site-header__link--btn${
+                        crmActive ? " is-active" : ""
+                      }`}
+                      aria-expanded={crmOpen}
+                      aria-haspopup="menu"
+                      onClick={() => setCrmOpen((prev) => !prev)}
+                    >
+                      {t(item.labelKey)}
+                      <ChevronDown
+                        size={14}
+                        className="site-header__chevron"
+                        aria-hidden="true"
+                      />
+                    </button>
+
+                    {crmOpen ? (
+                      <div className="site-header__menu" role="menu">
+                        {item.children.map((child) => {
+                          const isHash = child.to.includes("#");
+                          const childActive =
+                            child.to === "/crm#automations"
+                              ? location.pathname === "/crm" &&
+                                location.hash === "#automations"
+                              : location.pathname === child.to &&
+                                !location.hash;
+
+                          return (
+                            <Link
+                              key={child.to}
+                              to={child.to}
+                              role="menuitem"
+                              className={`site-header__menu-item${
+                                childActive ? " is-active" : ""
+                              }`}
+                              onClick={() => {
+                                setCrmOpen(false);
+                                if (isHash && location.pathname === "/crm") {
+                                  requestAnimationFrame(() => {
+                                    document
+                                      .getElementById("automations")
+                                      ?.scrollIntoView({
+                                        behavior: "smooth",
+                                        block: "start",
+                                      });
+                                  });
+                                }
+                              }}
+                            >
+                              {t(child.labelKey)}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    ) : null}
+                  </div>
+                );
+              }
+
               const isActive = location.pathname === item.to;
 
               return (
@@ -120,7 +210,7 @@ export default function Header() {
             })}
           </div>
 
-          {/* RTL: last = left → language + login */}
+          {/* Left side in RTL */}
           <div className="site-header__actions">
             <div ref={languageRef} className="site-header__lang">
               <button
@@ -140,7 +230,6 @@ export default function Header() {
                   </div>
                   {languages.map((lang) => {
                     const isActive = currentLanguage.code === lang.code;
-
                     return (
                       <button
                         key={lang.code}
@@ -171,9 +260,6 @@ export default function Header() {
               </Link>
             ) : (
               <div className="site-header__user">
-                <span className="site-header__user-name">
-                  {t("common.hello", { name: user.name })}
-                </span>
                 <Link
                   to="/dashboard"
                   className="site-header__icon-btn site-header__icon-btn--login"

@@ -186,9 +186,8 @@ export default function WebsiteProductPage() {
               eyebrow="מוכנים לעלות לאוויר"
               title="האתר הבא שלכם מתחיל מתבנית — ונגמר בפניות"
               text="בוחרים תבנית, עורכים אותה בעורך הוויזואלי, מוסיפים תוספים ומפרסמים. הפניות מהאתר מחכות לכם בצינור הלידים ב־CRM."
-              primaryLabel="מתחילים בחינם"
-              secondaryLabel="לצפייה במסלולים"
-              secondaryTo="/pricing"
+              primaryLabel="לצפייה בחבילות"
+              primaryTo="/pricing"
             />
           </div>
         </div>
