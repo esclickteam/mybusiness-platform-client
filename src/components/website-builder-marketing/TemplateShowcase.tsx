@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import TemplateBrowserMockup from "./TemplateBrowserMockup";
+import LiveTemplateMockup from "./LiveTemplateMockup";
 import {
   websiteHeroTemplates,
   type WebsiteHeroTemplate,
@@ -59,6 +59,9 @@ export default function TemplateShowcase({
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [warmed, setWarmed] = useState<Record<string, true>>(() =>
+    templates[0]?.id ? { [templates[0].id]: true } : {},
+  );
   const touchStartX = useRef<number | null>(null);
   const stageRef = useRef<HTMLDivElement | null>(null);
   const parallaxRef = useRef({ x: 0, y: 0 });
@@ -74,15 +77,6 @@ export default function TemplateShowcase({
     setReducedMotion(prefersReduced);
   }, [prefersReduced]);
 
-  // Preload every desktop shot so slides swap instantly.
-  useEffect(() => {
-    templates.forEach((template) => {
-      const img = new Image();
-      img.decoding = "async";
-      img.src = template.desktopImage;
-    });
-  }, [templates]);
-
   const markSwitching = useCallback(() => {
     if (reducedMotion) return;
     setIsSwitching(true);
@@ -92,7 +86,7 @@ export default function TemplateShowcase({
     switchingTimer.current = window.setTimeout(() => {
       setIsSwitching(false);
       switchingTimer.current = null;
-    }, 620);
+    }, 560);
   }, [reducedMotion]);
 
   const goTo = useCallback(
@@ -125,7 +119,7 @@ export default function TemplateShowcase({
         markSwitching();
         return wrapIndex(value + 1, count);
       });
-    }, 3800);
+    }, 4200);
     return () => window.clearInterval(id);
   }, [paused, reducedMotion, count, markSwitching]);
 
@@ -149,8 +143,8 @@ export default function TemplateShowcase({
       const px = (event.clientX - rect.left) / rect.width - 0.5;
       const py = (event.clientY - rect.top) / rect.height - 0.5;
       parallaxRef.current = {
-        x: Math.max(-10, Math.min(10, px * 14)),
-        y: Math.max(-8, Math.min(8, py * 10)),
+        x: Math.max(-8, Math.min(8, px * 12)),
+        y: Math.max(-6, Math.min(6, py * 8)),
       };
       wrap.style.setProperty("--px", `${parallaxRef.current.x}px`);
       wrap.style.setProperty("--py", `${parallaxRef.current.y}px`);
@@ -171,11 +165,33 @@ export default function TemplateShowcase({
 
   const activeTemplate = templates[active];
 
+  // Keep nearby slides warm so live swaps stay quick after first visit.
+  useEffect(() => {
+    const ids = [
+      templates[active]?.id,
+      templates[wrapIndex(active - 1, count)]?.id,
+      templates[wrapIndex(active + 1, count)]?.id,
+    ].filter(Boolean) as string[];
+
+    setWarmed((prev) => {
+      let changed = false;
+      const nextMap = { ...prev };
+      ids.forEach((id) => {
+        if (!nextMap[id]) {
+          nextMap[id] = true;
+          changed = true;
+        }
+      });
+      return changed ? nextMap : prev;
+    });
+  }, [active, count, templates]);
+
   useEffect(() => {
     const hero = stageRef.current?.closest(".wb-hero") as HTMLElement | null;
     if (!hero || !activeTemplate) return;
     hero.style.setProperty("--wb-stage-glow", activeTemplate.accent);
     hero.style.setProperty("--wb-stage-glow-soft", activeTemplate.accentSoft);
+    hero.dataset.activeTemplate = activeTemplate.id;
   }, [activeTemplate]);
 
   return (
@@ -221,6 +237,8 @@ export default function TemplateShowcase({
         {templates.map((template, index) => {
           const offset = shortestOffset(active, index, count);
           const slot = slotForOffset(offset);
+          const nearby = Math.abs(offset) <= 1;
+          const mountLive = Boolean(warmed[template.id] || nearby);
           return (
             <button
               key={template.id}
@@ -231,23 +249,17 @@ export default function TemplateShowcase({
               aria-current={slot === "center" ? "true" : undefined}
               onClick={() => goTo(index)}
             >
-              <TemplateBrowserMockup
-                src={template.desktopImage}
+              <LiveTemplateMockup
+                templateId={template.id}
                 title={template.title}
                 accent={template.accent}
                 accentSoft={template.accentSoft}
-                priority={Math.abs(offset) <= 1}
                 isCenter={slot === "center"}
+                mountLive={mountLive}
               />
             </button>
           );
         })}
-      </div>
-
-      <div className="wb-hero__caption" aria-live="polite">
-        <span className="wb-hero__caption-title">{activeTemplate?.title}</span>
-        <span className="wb-hero__caption-dot" aria-hidden="true" />
-        <span className="wb-hero__caption-cat">{activeTemplate?.category}</span>
       </div>
 
       <div className="wb-hero__controls">

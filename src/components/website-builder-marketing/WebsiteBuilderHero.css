@@ -1,14 +1,10 @@
 .wb-hero {
-  --wb-violet: #5b21b6;
-  --wb-blue: #2563eb;
-  --wb-sky: #0ea5e9;
   --wb-ink: #0b1220;
-  --wb-muted: #64748b;
   --wb-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --wb-snap: cubic-bezier(0.33, 1.15, 0.4, 1);
   --wb-nav: 4.5rem;
-  --wb-stage-glow: #6d28d9;
-  --wb-stage-glow-soft: #38bdf8;
+  --wb-stage-glow: #e11d8c;
+  --wb-stage-glow-soft: #f9a8d4;
 
   position: relative;
   isolation: isolate;
@@ -23,16 +19,21 @@
   font-family: "Assistant", "Heebo", system-ui, sans-serif;
   background:
     radial-gradient(
-      ellipse 58% 42% at 78% 12%,
-      color-mix(in srgb, var(--wb-stage-glow-soft) 18%, transparent),
-      transparent 62%
+      ellipse 72% 58% at 50% 78%,
+      color-mix(in srgb, var(--wb-stage-glow) 46%, transparent) 0%,
+      transparent 68%
     ),
     radial-gradient(
-      ellipse 48% 40% at 14% 78%,
-      color-mix(in srgb, var(--wb-stage-glow) 14%, transparent),
-      transparent 58%
+      ellipse 48% 42% at 84% 18%,
+      color-mix(in srgb, var(--wb-stage-glow-soft) 40%, transparent) 0%,
+      transparent 66%
     ),
-    linear-gradient(180deg, #ffffff 0%, #f5f7fb 48%, #eef2f8 100%);
+    radial-gradient(
+      ellipse 42% 38% at 12% 22%,
+      color-mix(in srgb, var(--wb-stage-glow) 28%, transparent) 0%,
+      transparent 62%
+    ),
+    linear-gradient(180deg, #ffffff 0%, #f7f8fb 52%, #eef2f7 100%);
   transition: background 0.55s var(--wb-ease);
 }
 
@@ -47,34 +48,35 @@
 .wb-hero__glow span {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(80px);
-  opacity: 0.28;
+  filter: blur(78px);
+  opacity: 0.55;
   transition: background 0.55s var(--wb-ease), opacity 0.45s ease;
 }
 
 .wb-hero__glow .g1 {
-  top: 8%;
-  right: 8%;
-  width: 18rem;
-  height: 18rem;
-  background: color-mix(in srgb, var(--wb-stage-glow) 34%, transparent);
+  top: auto;
+  bottom: 8%;
+  right: 12%;
+  width: 22rem;
+  height: 22rem;
+  background: color-mix(in srgb, var(--wb-stage-glow) 55%, transparent);
 }
 
 .wb-hero__glow .g2 {
-  bottom: 10%;
-  left: 6%;
-  width: 20rem;
-  height: 20rem;
-  background: color-mix(in srgb, var(--wb-stage-glow-soft) 30%, transparent);
+  bottom: 4%;
+  left: 10%;
+  width: 24rem;
+  height: 24rem;
+  background: color-mix(in srgb, var(--wb-stage-glow-soft) 48%, transparent);
 }
 
 .wb-hero__glow .g3 {
-  top: 42%;
-  left: 42%;
-  width: 14rem;
-  height: 14rem;
-  background: color-mix(in srgb, var(--wb-stage-glow) 18%, transparent);
-  opacity: 0.18;
+  top: 55%;
+  left: 40%;
+  width: 16rem;
+  height: 16rem;
+  background: color-mix(in srgb, var(--wb-stage-glow) 32%, transparent);
+  opacity: 0.35;
 }
 
 .wb-hero__dots {
@@ -82,10 +84,10 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.22;
+  opacity: 0.16;
   background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1px, transparent 1px);
   background-size: 26px 26px;
-  mask-image: radial-gradient(ellipse 68% 52% at 50% 62%, #000 18%, transparent 72%);
+  mask-image: radial-gradient(ellipse 68% 52% at 50% 68%, #000 18%, transparent 72%);
 }
 
 .wb-hero__inner {
@@ -94,43 +96,40 @@
   width: 100%;
   max-width: 1480px;
   margin: 0 auto;
-  padding: 1.15rem 1.25rem 1.35rem;
+  padding: 1.1rem 1.25rem 1.35rem;
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  gap: 0.35rem;
+  gap: 1.1rem;
 }
 
 @media (min-width: 1024px) {
   .wb-hero__inner {
-    padding: 1.35rem 2.5rem 1.5rem;
+    padding: 1.25rem 2.5rem 1.5rem;
+    gap: 1.25rem;
   }
 }
 
-/* Short title only — sits cleanly above the carousel */
+/* Title lives in its own band ABOVE the carousel — never overlapping templates */
 .wb-hero__copy {
   position: relative;
-  z-index: 40;
+  z-index: 50;
+  flex: 0 0 auto;
+  width: 100%;
   max-width: 48rem;
   margin: 0 auto;
   text-align: center;
-  flex: 0 0 auto;
-  padding: 0.2rem 0.75rem 0.35rem;
+  padding: 0.15rem 0.75rem 0;
 }
 
 .wb-hero__title {
-  position: relative;
-  z-index: 2;
   margin: 0;
-  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-size: clamp(1.9rem, 4.2vw, 3rem);
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.03em;
   color: #0b1220;
-  text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.95),
-    0 0 22px rgba(255, 255, 255, 0.8);
 }
 
 .wb-hero__templates,
@@ -145,7 +144,7 @@
 
 .wb-hero__stage-wrap {
   position: relative;
-  margin-top: 0.15rem;
+  margin-top: 0;
   perspective: 1800px;
   overflow: visible;
   flex: 1 1 auto;
@@ -159,7 +158,7 @@
 .wb-hero__stage-glow {
   pointer-events: none;
   position: absolute;
-  inset: 8% 10% 4%;
+  inset: 4% 6% 0;
   z-index: 0;
 }
 
@@ -170,61 +169,61 @@
   inset: 0;
   border-radius: 50%;
   transition:
-    background 0.45s var(--wb-ease),
+    background 0.5s var(--wb-ease),
     opacity 0.45s var(--wb-ease),
-    transform 0.55s var(--wb-ease);
+    transform 0.5s var(--wb-ease);
 }
 
 .wb-hero__stage-glow-core {
-  inset: 18% 22% 22%;
+  inset: 10% 16% 14%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--wb-stage-glow) 58%, transparent) 0%,
-    color-mix(in srgb, var(--wb-stage-glow-soft) 34%, transparent) 42%,
-    transparent 72%
+    color-mix(in srgb, var(--wb-stage-glow) 72%, transparent) 0%,
+    color-mix(in srgb, var(--wb-stage-glow-soft) 48%, transparent) 42%,
+    transparent 74%
   );
-  filter: blur(34px);
-  opacity: 0.9;
-  animation: wb-glow-breathe 3.4s ease-in-out infinite alternate;
+  filter: blur(36px);
+  opacity: 0.95;
+  animation: wb-glow-breathe 3.2s ease-in-out infinite alternate;
 }
 
 .wb-hero__stage-glow-ring {
-  inset: 8% 12% 16%;
+  inset: 0% 6% 8%;
   background: radial-gradient(
     ellipse at center,
-    transparent 36%,
-    color-mix(in srgb, var(--wb-stage-glow-soft) 28%, transparent) 58%,
+    transparent 30%,
+    color-mix(in srgb, var(--wb-stage-glow-soft) 40%, transparent) 55%,
     transparent 78%
   );
-  filter: blur(28px);
-  opacity: 0.7;
+  filter: blur(30px);
+  opacity: 0.85;
 }
 
 .wb-hero__stage-glow-floor {
-  inset: auto 18% 0;
-  height: 28%;
+  inset: auto 12% 0;
+  height: 34%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--wb-stage-glow) 42%, transparent) 0%,
-    transparent 72%
+    color-mix(in srgb, var(--wb-stage-glow) 58%, transparent) 0%,
+    transparent 74%
   );
-  filter: blur(22px);
-  opacity: 0.75;
+  filter: blur(24px);
+  opacity: 0.9;
 }
 
 .wb-hero__stage-wrap.is-switching .wb-hero__stage-glow-core {
-  transform: scale(1.08);
+  transform: scale(1.1);
   opacity: 1;
 }
 
 @keyframes wb-glow-breathe {
   from {
     transform: scale(0.96);
-    opacity: 0.72;
+    opacity: 0.78;
   }
   to {
-    transform: scale(1.06);
-    opacity: 0.98;
+    transform: scale(1.07);
+    opacity: 1;
   }
 }
 
@@ -233,9 +232,9 @@
   z-index: 1;
   width: 100%;
   flex: 1 1 auto;
-  min-height: 280px;
-  max-height: min(52dvh, 520px);
-  height: min(52dvh, 520px);
+  min-height: 300px;
+  max-height: min(54dvh, 540px);
+  height: min(54dvh, 540px);
   overflow: visible;
   transform-style: preserve-3d;
   animation: wb-stage-float 5.8s ease-in-out infinite alternate;
@@ -250,24 +249,24 @@
     transform: translateY(0);
   }
   to {
-    transform: translateY(-5px);
+    transform: translateY(-4px);
   }
 }
 
+/* Top-anchored cards: grow downward, never into the title above */
 .wb-template {
   position: absolute;
-  top: 52%;
+  top: 0;
   left: 50%;
   width: min(700px, 56vw);
-  aspect-ratio: 16 / 10;
-  transform-origin: center center;
+  aspect-ratio: 16 / 10.4;
+  transform-origin: top center;
   transform-style: preserve-3d;
   transition:
-    transform 0.58s var(--wb-snap),
-    opacity 0.48s var(--wb-ease),
-    filter 0.48s var(--wb-ease),
-    width 0.58s var(--wb-snap),
-    box-shadow 0.45s ease;
+    transform 0.55s var(--wb-snap),
+    opacity 0.45s var(--wb-ease),
+    filter 0.45s var(--wb-ease),
+    width 0.55s var(--wb-snap);
   will-change: transform, opacity, filter;
   cursor: pointer;
   border: 0;
@@ -281,18 +280,16 @@
   z-index: 30;
   opacity: 1;
   filter: blur(0);
-  width: min(860px, 70vw);
-  /* Keep transform transition-only so slide swaps stay snappy */
-  transform: translate(-50%, -50%) translate3d(0, 0, 110px) scale(1.04) rotateY(0deg);
+  width: min(880px, 72vw);
+  transform: translateX(-50%) translate3d(0, 0, 100px) scale(1.04) rotateY(0deg);
 }
 
-/* True carousel wings — depth + yaw, then recede as lit shadow */
 .wb-template[data-slot="near-start"] {
   z-index: 20;
   opacity: 0.9;
   filter: blur(0.15px) brightness(0.96);
   width: min(640px, 50vw);
-  transform: translate(-50%, -50%) translate3d(34%, 0, -50px) scale(0.86) rotateY(20deg);
+  transform: translateX(-50%) translate3d(34%, 4%, -50px) scale(0.86) rotateY(18deg);
 }
 
 .wb-template[data-slot="near-end"] {
@@ -300,39 +297,39 @@
   opacity: 0.9;
   filter: blur(0.15px) brightness(0.96);
   width: min(640px, 50vw);
-  transform: translate(-50%, -50%) translate3d(-34%, 0, -50px) scale(0.86) rotateY(-20deg);
+  transform: translateX(-50%) translate3d(-34%, 4%, -50px) scale(0.86) rotateY(-18deg);
 }
 
 .wb-template[data-slot="far-start"] {
   z-index: 10;
-  opacity: 0.48;
-  filter: blur(1.4px) brightness(0.9);
+  opacity: 0.45;
+  filter: blur(1.35px) brightness(0.9);
   width: min(520px, 40vw);
-  transform: translate(-50%, -50%) translate3d(58%, 2%, -150px) scale(0.72) rotateY(30deg);
+  transform: translateX(-50%) translate3d(58%, 8%, -150px) scale(0.72) rotateY(28deg);
 }
 
 .wb-template[data-slot="far-end"] {
   z-index: 10;
-  opacity: 0.48;
-  filter: blur(1.4px) brightness(0.9);
+  opacity: 0.45;
+  filter: blur(1.35px) brightness(0.9);
   width: min(520px, 40vw);
-  transform: translate(-50%, -50%) translate3d(-58%, 2%, -150px) scale(0.72) rotateY(-30deg);
+  transform: translateX(-50%) translate3d(-58%, 8%, -150px) scale(0.72) rotateY(-28deg);
 }
 
 .wb-template[data-slot="back-start"],
 .wb-template[data-slot="back-end"] {
   z-index: 5;
-  opacity: 0.22;
+  opacity: 0.2;
   filter: blur(2.8px) brightness(0.85);
   width: min(460px, 36vw);
 }
 
 .wb-template[data-slot="back-start"] {
-  transform: translate(-50%, -50%) translate3d(76%, 4%, -250px) scale(0.62) rotateY(36deg);
+  transform: translateX(-50%) translate3d(76%, 12%, -250px) scale(0.62) rotateY(34deg);
 }
 
 .wb-template[data-slot="back-end"] {
-  transform: translate(-50%, -50%) translate3d(-76%, 4%, -250px) scale(0.62) rotateY(-36deg);
+  transform: translateX(-50%) translate3d(-76%, 12%, -250px) scale(0.62) rotateY(-34deg);
 }
 
 .wb-template[data-slot="hidden"] {
@@ -340,19 +337,19 @@
   opacity: 0;
   pointer-events: none;
   filter: blur(4px);
-  transform: translate(-50%, -50%) translate3d(0, 0, -320px) scale(0.55);
+  transform: translateX(-50%) translate3d(0, 16%, -320px) scale(0.55);
 }
 
 .wb-template[data-slot="near-start"]:hover {
   opacity: 1;
   filter: blur(0) brightness(1);
-  transform: translate(-50%, -50%) translate3d(30%, 0, -24px) scale(0.9) rotateY(14deg);
+  transform: translateX(-50%) translate3d(30%, 2%, -24px) scale(0.9) rotateY(12deg);
 }
 
 .wb-template[data-slot="near-end"]:hover {
   opacity: 1;
   filter: blur(0) brightness(1);
-  transform: translate(-50%, -50%) translate3d(-30%, 0, -24px) scale(0.9) rotateY(-14deg);
+  transform: translateX(-50%) translate3d(-30%, 2%, -24px) scale(0.9) rotateY(-12deg);
 }
 
 .wb-mockup-shell {
@@ -363,36 +360,36 @@
 
 .wb-mockup-glow {
   position: absolute;
-  inset: -10%;
+  inset: -12%;
   z-index: 0;
   border-radius: 1.85rem;
   background: radial-gradient(
     circle at 50% 48%,
-    color-mix(in srgb, var(--wb-glow) 55%, transparent) 0%,
-    color-mix(in srgb, var(--wb-glow-soft, var(--wb-glow)) 28%, transparent) 48%,
+    color-mix(in srgb, var(--wb-glow) 62%, transparent) 0%,
+    color-mix(in srgb, var(--wb-glow-soft, var(--wb-glow)) 36%, transparent) 48%,
     transparent 74%
   );
-  filter: blur(28px);
-  opacity: 0.35;
+  filter: blur(30px);
+  opacity: 0.4;
   pointer-events: none;
   transition: background 0.45s var(--wb-ease), opacity 0.4s ease, transform 0.45s ease;
 }
 
 .wb-mockup-shell.is-center .wb-mockup-glow {
-  inset: -14%;
-  opacity: 0.78;
-  filter: blur(34px);
+  inset: -16%;
+  opacity: 0.9;
+  filter: blur(36px);
   animation: wb-card-glow 2.4s ease-in-out infinite alternate;
 }
 
 @keyframes wb-card-glow {
   from {
-    opacity: 0.58;
+    opacity: 0.68;
     transform: scale(0.98);
   }
   to {
-    opacity: 0.9;
-    transform: scale(1.05);
+    opacity: 1;
+    transform: scale(1.06);
   }
 }
 
@@ -414,7 +411,7 @@
 
 .wb-template[data-slot="center"] .wb-mockup {
   box-shadow:
-    0 28px 64px color-mix(in srgb, var(--wb-glow, #2563eb) 28%, transparent),
+    0 30px 70px color-mix(in srgb, var(--wb-glow, #2563eb) 34%, transparent),
     0 16px 36px rgba(15, 23, 42, 0.12),
     0 1px 0 rgba(255, 255, 255, 0.7) inset;
 }
@@ -466,65 +463,23 @@
   background: #f8fafc;
 }
 
-.wb-mockup__img {
-  display: block;
+.wb-mockup__live-scale {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.wb-mockup__fallback {
+  display: grid;
+  place-items: center;
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: top center;
-  transform: scale(1.01);
-  transition: transform 0.58s var(--wb-ease);
-  user-select: none;
-  pointer-events: none;
-}
-
-.wb-mockup-shell.is-center .wb-mockup__img {
-  animation: wb-img-grow 3.4s var(--wb-ease) forwards;
-}
-
-.wb-hero__stage.is-paused .wb-mockup-shell.is-center .wb-mockup__img {
-  animation-play-state: paused;
-}
-
-@keyframes wb-img-grow {
-  from {
-    transform: scale(1.01);
-  }
-  to {
-    transform: scale(1.08);
-  }
-}
-
-.wb-hero__caption {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.55rem;
-  margin-top: 0.55rem;
-  min-height: 1.35rem;
-  color: #334155;
-  font-size: 0.92rem;
-  font-weight: 600;
-}
-
-.wb-hero__caption-title {
-  color: #0f172a;
+  color: #fff;
+  font-size: 1.4rem;
   font-weight: 800;
-  letter-spacing: -0.01em;
-}
-
-.wb-hero__caption-dot {
-  width: 0.28rem;
-  height: 0.28rem;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--wb-stage-glow) 80%, #64748b);
-}
-
-.wb-hero__caption-cat {
-  color: #64748b;
-  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 .wb-hero__controls {
@@ -532,7 +487,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  margin-top: 0.55rem;
+  margin-top: 0.7rem;
   flex: 0 0 auto;
 }
 
@@ -543,7 +498,7 @@
   height: 2.25rem;
   border-radius: 9999px;
   border: 1px solid rgba(15, 23, 42, 0.1);
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   color: #0f172a;
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease,
@@ -551,7 +506,7 @@
 }
 
 .wb-hero__nav-btn:hover {
-  border-color: color-mix(in srgb, var(--wb-stage-glow) 45%, rgba(15, 23, 42, 0.1));
+  border-color: color-mix(in srgb, var(--wb-stage-glow) 50%, rgba(15, 23, 42, 0.1));
   background: #fff;
   transform: translateY(-1px);
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
@@ -589,13 +544,17 @@
     min-height: auto;
   }
 
+  .wb-hero__inner {
+    gap: 0.9rem;
+  }
+
   .wb-hero__title {
-    font-size: clamp(1.75rem, 7vw, 2.35rem);
+    font-size: clamp(1.7rem, 7vw, 2.25rem);
   }
 
   .wb-hero__stage {
-    height: min(54vw, 300px);
-    max-height: 300px;
+    height: min(58vw, 320px);
+    max-height: 320px;
     animation: none;
   }
 
@@ -608,34 +567,28 @@
   }
 
   .wb-template[data-slot="center"] {
-    width: 88vw;
-    animation: none;
-    transform: translate(-50%, -50%) translate3d(0, 0, 40px) scale(1.02);
+    width: 90vw;
+    transform: translateX(-50%) translate3d(0, 0, 40px) scale(1.02);
   }
 
   .wb-template[data-slot="near-start"] {
     opacity: 0.7;
     filter: blur(0.4px);
-    transform: translate(-50%, -50%) translate3d(36%, 0, -30px) scale(0.84) rotateY(12deg);
-    width: 72vw;
+    transform: translateX(-50%) translate3d(36%, 4%, -30px) scale(0.84) rotateY(12deg);
+    width: 74vw;
   }
 
   .wb-template[data-slot="near-end"] {
     opacity: 0.7;
     filter: blur(0.4px);
-    transform: translate(-50%, -50%) translate3d(-36%, 0, -30px) scale(0.84) rotateY(-12deg);
-    width: 72vw;
-  }
-
-  .wb-mockup-shell.is-center .wb-mockup__img {
-    animation: none;
+    transform: translateX(-50%) translate3d(-36%, 4%, -30px) scale(0.84) rotateY(-12deg);
+    width: 74vw;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .wb-hero__stage,
   .wb-mockup-shell.is-center .wb-mockup-glow,
-  .wb-mockup-shell.is-center .wb-mockup__img,
   .wb-hero__stage-glow-core {
     animation: none !important;
   }
