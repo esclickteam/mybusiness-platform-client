@@ -17,33 +17,33 @@ function PrivacyPolicy() {
     "mb-5 ml-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
 
   const sections = [
-    "Introduction",
-    "Scope and Application",
-    "Definitions",
-    "Data We Collect",
-    "How We Use Your Data",
-    "Data Sharing",
-    "Cookies",
-    "Data Retention",
-    "User Rights",
-    "Refunds and Payments",
-    "Limitation of Liability",
-    "Data Location",
-    "Policy Updates",
-    "Legal Compliance",
-    "Legal Disclaimer",
-    "Governing Law",
-    "Contact and DPO",
-    "Final Clause",
+    "מבוא",
+    "היקף ותחולה",
+    "הגדרות",
+    "נתונים שאנו אוספים",
+    "כיצד אנו משתמשים בנתונים שלכם",
+    "שיתוף נתונים",
+    "קובצי Cookie",
+    "שמירת נתונים",
+    "זכויות משתמשים",
+    "החזרים ותשלומים",
+    "הגבלת אחריות",
+    "מיקום נתונים",
+    "עדכוני מדיניות",
+    "ציות משפטי",
+    "כתב ויתור משפטי",
+    "הדין החל",
+    "יצירת קשר וממונה הגנת מידע",
+    "סעיף סופי",
   ];
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
+    <main dir="rtl" className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-slate-800">
       <Helmet>
-        <title>Privacy Policy - BizUply</title>
+        <title>מדיניות הפרטיות - BizUply</title>
         <meta
           name="description"
-          content="Read the BizUply Privacy Policy, including how we collect, use, store, protect, and share user and business data."
+          content="קראו את מדיניות הפרטיות של BizUply, לרבות כיצד אנו אוספים, משתמשים, מאחסנים, מגינים ומשתפים נתוני משתמשים ועסקים."
         />
         <link rel="canonical" href="https://bizuply.com/privacy" />
         <meta name="robots" content="index, follow" />
@@ -58,20 +58,20 @@ function PrivacyPolicy() {
       <section className="relative mx-auto max-w-7xl px-5 pb-10 pt-20 text-center sm:px-8 lg:px-10 lg:pt-24">
         <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          Privacy Center
+          מרכז פרטיות
         </div>
 
         <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-          Privacy Policy
+          מדיניות הפרטיות
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-          This Privacy Policy explains how BizUply collects, stores, uses, and
-          protects personal and business information across the platform.
+          מדיניות פרטיות זו מסבירה כיצד BizUply אוספת, מאחסנת, משתמשת ומגינה על
+          מידע אישי ועסקי ברחבי הפלטפורמה.
         </p>
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
-          Last Updated: October 14, 2025
+          עודכן לאחרונה: 14 באוקטובר 2025
         </div>
       </section>
 
@@ -83,12 +83,12 @@ function PrivacyPolicy() {
           </div>
 
           <h2 className="text-2xl font-black tracking-[-0.03em] text-slate-800">
-            Policy Overview
+            סקירת המדיניות
           </h2>
 
           <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
-            Quick navigation between privacy, data, security, user rights and
-            legal sections.
+            ניווט מהיר בין סעיפי פרטיות, נתונים, אבטחה, זכויות משתמשים וסעיפים
+            משפטיים.
           </p>
 
           <nav className="mt-6 max-h-[55vh] space-y-2 overflow-auto pr-1">
@@ -107,7 +107,7 @@ function PrivacyPolicy() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-            <p className="text-sm font-black text-amber-300">Privacy Contact</p>
+            <p className="text-sm font-black text-amber-300">יצירת קשר בנושא פרטיות</p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
               privacy@bizuply.com
             </p>
@@ -117,556 +117,525 @@ function PrivacyPolicy() {
         {/* Content */}
         <div className="space-y-6">
           <section id="section-1" className={sectionBase}>
-            <h2 className={h2Base}>1. Introduction</h2>
+            <h2 className={h2Base}>1. מבוא</h2>
 
             <p className={pBase}>
-              This Privacy Policy explains how <strong>BizUply</strong>{" "}
-              operated by private ownership, under U.S. law collects, stores,
-              uses, and protects personal information of its users and business
-              clients “Users”, “Businesses”, or “You”. By using the BizUply
-              platform, you agree to the terms described herein.
+              מדיניות פרטיות זו מסבירה כיצד <strong>BizUply</strong>{" "}
+              המופעלת בבעלות פרטית, לפי דיני ארצות הברית, אוספת, מאחסנת,
+              משתמשת ומגינה על מידע אישי של משתמשיה ושל לקוחות עסקיים
+              “משתמשים”, “עסקים” או “אתם”. בשימוש בפלטפורמת BizUply, אתם
+              מסכימים לתנאים המתוארים במסמך זה.
             </p>
 
             <p className={pBase}>
-              BizUply is a cloud-based SaaS platform headquartered in New York,
-              USA, designed to provide business management, client
-              communication, and AI automation tools to small and medium-sized
-              businesses “SMBs”.
+              BizUply היא פלטפורמת SaaS מבוססת ענן שמשרדיה הראשיים בניו יורק,
+              ארה"ב, המיועדת לספק כלים לניהול עסקי, לתקשורת עם לקוחות
+              ולאוטומציה מבוססת בינה מלאכותית לעסקים קטנים ובינוניים “SMBs”.
             </p>
 
             <p className={pBase}>
-              This Privacy Policy applies to all our products, services,
-              websites, and applications “Platform” and describes in detail how
-              we process data, what information we collect, and what rights you
-              have regarding your information.
+              מדיניות פרטיות זו חלה על כל המוצרים, השירותים, האתרים
+              והאפליקציות שלנו “הפלטפורמה”, ומתארת בפירוט כיצד אנו מעבדים
+              נתונים, איזה מידע אנו אוספים ואילו זכויות עומדות לכם ביחס למידע
+              שלכם.
             </p>
 
             <p className={pBase}>
-              By accessing or using our Platform, you acknowledge that you have
-              read and understood this Privacy Policy. If you do not agree,
-              please do not use BizUply or any of its services.
+              בגישה לפלטפורמה שלנו או בשימוש בה, אתם מאשרים שקראתם והבנתם את
+              מדיניות פרטיות זו. אם אינכם מסכימים, אנא אל תשתמשו ב-BizUply או
+              בכל אחד משירותיה.
             </p>
           </section>
 
           <section id="section-2" className={sectionBase}>
-            <h2 className={h2Base}>2. Scope and Application</h2>
+            <h2 className={h2Base}>2. היקף ותחולה</h2>
 
             <p className={pBase}>
-              This Privacy Policy applies to all users, including businesses,
-              employees, administrators, affiliates, and website visitors
-              interacting with BizUply in any form, whether via desktop, mobile
-              applications, API integrations, or third-party plug-ins.
+              מדיניות פרטיות זו חלה על כל המשתמשים, לרבות עסקים, עובדים,
+              מנהלים, חברות קשורות ומבקרי אתר המקיימים אינטראקציה עם BizUply
+              בכל צורה, בין אם באמצעות שולחן עבודה, אפליקציות מובייל, אינטגרציות
+              API או תוספים של צד שלישי.
             </p>
 
             <p className={pBase}>
-              It governs the processing of personal and non-personal information
-              by BizUply and explains our data handling practices in compliance
-              with U.S. federal law, New York State privacy regulations, and
-              international standards such as GDPR and CCPA for reference
-              purposes only.
+              היא מסדירה את עיבוד המידע האישי והלא-אישי על ידי BizUply ומסבירה
+              את נוהלי הטיפול שלנו בנתונים בהתאם לדין הפדרלי של ארצות הברית,
+              לתקנות הפרטיות של מדינת ניו יורק ולתקנים בינלאומיים כגון GDPR
+              ו-CCPA לצורכי התייחסות בלבד.
             </p>
 
             <p className={pBase}>
-              This policy does not apply to third-party services, links, or
-              integrations not owned or operated by BizUply. We encourage you to
-              review their respective privacy policies before engaging with
-              them.
+              מדיניות זו אינה חלה על שירותים, קישורים או אינטגרציות של צד
+              שלישי שאינם בבעלות BizUply או אינם מופעלים על ידה. אנו ממליצים
+              לכם לעיין במדיניות הפרטיות שלהם לפני התקשרות עמם.
             </p>
           </section>
 
           <section id="section-3" className={sectionBase}>
-            <h2 className={h2Base}>3. Definitions</h2>
+            <h2 className={h2Base}>3. הגדרות</h2>
 
             <p className={pBase}>
-              <strong>“BizUply”</strong> – Refers to the private-owned SaaS
-              company registered and operated under U.S. law, based in New York,
-              USA.
+              <strong>“BizUply”</strong> – מתייחס לחברת SaaS בבעלות פרטית
+              הרשומה ומופעלת לפי דיני ארצות הברית, שמושבה בניו יורק, ארה"ב.
             </p>
 
             <p className={pBase}>
-              <strong>“Platform”</strong> – Includes all BizUply products,
-              websites, systems, servers, applications, APIs, AI modules, CRM
-              dashboards, automation tools, and related software infrastructure.
+              <strong>“הפלטפורמה”</strong> – כוללת את כל מוצרי BizUply,
+              האתרים, המערכות, השרתים, האפליקציות, ה-APIs, מודולי הבינה
+              המלאכותית, לוחות המחוונים של CRM, כלי האוטומציה ותשתית התוכנה
+              הקשורה.
             </p>
 
             <p className={pBase}>
-              <strong>“User”</strong> – Any natural or legal person using the
-              BizUply services, including business owners, employees, clients,
-              or visitors of the website.
+              <strong>“משתמש”</strong> – כל אדם טבעי או משפטי המשתמש בשירותי
+              BizUply, לרבות בעלי עסקים, עובדים, לקוחות או מבקרי האתר.
             </p>
 
             <p className={pBase}>
-              <strong>“Personal Information”</strong> – Data that identifies or
-              can reasonably identify an individual, including but not limited
-              to name, email, phone number, address, payment details, business
-              profile data, and digital identifiers such as IP addresses or
-              cookies.
+              <strong>“מידע אישי”</strong> – נתונים המזהים אדם או יכולים לזהות
+              אדם באופן סביר, לרבות אך לא רק שם, דוא"ל, מספר טלפון, כתובת, פרטי
+              תשלום, נתוני פרופיל עסקי ומזהים דיגיטליים כגון כתובות IP או קובצי
+              Cookie.
             </p>
 
             <p className={pBase}>
-              <strong>“Third Parties”</strong> – External entities engaged by
-              BizUply for hosting, payment processing, analytics, or
-              communication purposes, under binding confidentiality and data
-              protection agreements.
+              <strong>“צדדים שלישיים”</strong> – ישויות חיצוניות המועסקות על
+              ידי BizUply למטרות אירוח, עיבוד תשלומים, אנליטיקה או תקשורת,
+              בכפוף להסכמי סודיות והגנת מידע מחייבים.
             </p>
           </section>
 
           <section id="section-4" className={sectionBase}>
-            <h2 className={h2Base}>4. Data We Collect</h2>
+            <h2 className={h2Base}>4. נתונים שאנו אוספים</h2>
 
             <p className={pBase}>
-              BizUply collects both personal and non-personal data required to
-              deliver, improve, and secure its services. Data collection may
-              occur directly from you, automatically through your device, or
-              from verified business integrations.
+              BizUply אוספת הן נתונים אישיים והן נתונים לא-אישיים הנדרשים
+              לאספקת שירותיה, לשיפורם ולאבטחתם. איסוף נתונים עשוי להתרחש ישירות
+              מכם, באופן אוטומטי דרך המכשיר שלכם או מאינטגרציות עסקיות
+              מאומתות.
             </p>
 
-            <h3 className={h3Base}>4.1. Personal Data You Provide</h3>
+            <h3 className={h3Base}>4.1. נתונים אישיים שאתם מספקים</h3>
             <ul className={ulBase}>
-              <li>Full name, email, and phone number</li>
-              <li>Business name, registration number, and address</li>
-              <li>Payment and billing information</li>
-              <li>Login credentials encrypted</li>
-              <li>Communications, reviews, and feedback sent via the platform</li>
+              <li>שם מלא, דוא"ל ומספר טלפון</li>
+              <li>שם העסק, מספר רישום וכתובת</li>
+              <li>מידע תשלום וחיוב</li>
+              <li>פרטי התחברות מוצפנים</li>
+              <li>תקשורת, ביקורות ומשוב שנשלחו באמצעות הפלטפורמה</li>
             </ul>
 
-            <h3 className={h3Base}>4.2. Data Collected Automatically</h3>
+            <h3 className={h3Base}>4.2. נתונים הנאספים באופן אוטומטי</h3>
             <ul className={ulBase}>
-              <li>IP address and approximate geolocation</li>
-              <li>Device type, browser version, and operating system</li>
-              <li>Session activity, interaction history, and timestamps</li>
-              <li>Cookies and tracking pixels for analytics and performance</li>
+              <li>כתובת IP ומיקום גיאוגרפי משוער</li>
+              <li>סוג מכשיר, גרסת דפדפן ומערכת הפעלה</li>
+              <li>פעילות הפעלה, היסטוריית אינטראקציות וחותמות זמן</li>
+              <li>קובצי Cookie ופיקסלי מעקב לאנליטיקה וביצועים</li>
             </ul>
 
-            <h3 className={h3Base}>4.3. Business and Analytical Data</h3>
+            <h3 className={h3Base}>4.3. נתונים עסקיים ואנליטיים</h3>
             <ul className={ulBase}>
-              <li>Client and appointment records</li>
-              <li>Business messages and chat logs</li>
-              <li>AI analysis of performance metrics and recommendations</li>
-              <li>Aggregated insights generated from anonymized usage data</li>
+              <li>רשומות לקוחות ופגישות</li>
+              <li>הודעות עסקיות ויומני צ'אט</li>
+              <li>ניתוח בינה מלאכותית של מדדי ביצועים והמלצות</li>
+              <li>תובנות מצטברות שנוצרו מנתוני שימוש אנונימיים</li>
             </ul>
           </section>
 
           <section id="section-5" className={sectionBase}>
-            <h2 className={h2Base}>5. How We Use Your Data</h2>
+            <h2 className={h2Base}>5. כיצד אנו משתמשים בנתונים שלכם</h2>
 
             <p className={pBase}>
-              BizUply uses collected information solely for legitimate business
-              purposes related to the operation and enhancement of its Platform.
-              We do not sell or rent personal data under any circumstance.
+              BizUply משתמשת במידע שנאסף אך ורק למטרות עסקיות לגיטימיות
+              הקשורות להפעלת הפלטפורמה שלה ולשיפורה. איננו מוכרים או משכירים
+              נתונים אישיים בשום נסיבה.
             </p>
 
             <ul className={ulBase}>
-              <li>To provide and maintain our services and customer accounts</li>
-              <li>To process payments, invoices, and billing cycles</li>
-              <li>To improve product performance, UX, and AI accuracy</li>
-              <li>To send service updates, alerts, or marketing offers</li>
-              <li>To ensure compliance with legal and regulatory requirements</li>
-              <li>To prevent fraud, abuse, or unauthorized access</li>
-              <li>To support customer service and technical troubleshooting</li>
-              <li>To analyze user behavior for statistical and security purposes</li>
+              <li>כדי לספק ולתחזק את השירותים שלנו ואת חשבונות הלקוחות</li>
+              <li>כדי לעבד תשלומים, חשבוניות ומחזורי חיוב</li>
+              <li>כדי לשפר את ביצועי המוצר, UX ודיוק הבינה המלאכותית</li>
+              <li>כדי לשלוח עדכוני שירות, התראות או הצעות שיווקיות</li>
+              <li>כדי להבטיח עמידה בדרישות משפטיות ורגולטוריות</li>
+              <li>כדי למנוע הונאה, שימוש לרעה או גישה בלתי מורשית</li>
+              <li>כדי לתמוך בשירות לקוחות ובפתרון תקלות טכניות</li>
+              <li>כדי לנתח התנהגות משתמשים למטרות סטטיסטיות ואבטחה</li>
             </ul>
 
             <p className={pBase}>
-              All processing is done under secure data management protocols and
-              complies with New York privacy standards and international best
-              practices.
+              כל העיבוד מתבצע לפי פרוטוקולי ניהול נתונים מאובטחים ועומד בתקני
+              הפרטיות של ניו יורק ובנהגים בינלאומיים מיטביים.
             </p>
           </section>
 
           <section id="section-6" className={sectionBase}>
-            <h2 className={h2Base}>6. Data Sharing and Third Parties</h2>
+            <h2 className={h2Base}>6. שיתוף נתונים וצדדים שלישיים</h2>
 
             <p className={pBase}>
-              BizUply does not sell or trade personal data. However, we may
-              share limited information with verified third parties only when
-              necessary to operate the Platform, fulfill our legal obligations,
-              or provide core services under strict confidentiality and security
-              standards.
+              BizUply אינה מוכרת או סוחרת בנתונים אישיים. עם זאת, אנו עשויים
+              לשתף מידע מוגבל עם צדדים שלישיים מאומתים רק כאשר הדבר נחוץ להפעלת
+              הפלטפורמה, לקיום חובותינו המשפטיות או לאספקת שירותי ליבה לפי תקני
+              סודיות ואבטחה מחמירים.
             </p>
 
-            <h3 className={h3Base}>6.1. Authorized Service Providers</h3>
+            <h3 className={h3Base}>6.1. ספקי שירות מורשים</h3>
 
             <p className={pBase}>
-              We may share data with carefully selected third-party service
-              providers that assist us in:
+              אנו עשויים לשתף נתונים עם ספקי שירות צד שלישי שנבחרו בקפידה
+              המסייעים לנו ב:
             </p>
 
             <ul className={ulBase}>
-              <li>Hosting and server infrastructure e.g., AWS, Google Cloud</li>
-              <li>Payment processing and billing e.g., Stripe, PayPal</li>
+              <li>אירוח ותשתית שרתים, למשל AWS, Google Cloud</li>
+              <li>עיבוד תשלומים וחיוב, למשל Stripe, PayPal</li>
               <li>
-                Customer communication and notifications e.g., Twilio, SendGrid
+                תקשורת עם לקוחות והתראות, למשל Twilio, SendGrid
               </li>
               <li>
-                Analytics, security, and performance monitoring e.g.,
-                Cloudflare
+                אנליטיקה, אבטחה וניטור ביצועים, למשל Cloudflare
               </li>
-              <li>AI and automation modules for analytics or predictions</li>
+              <li>מודולי בינה מלאכותית ואוטומציה לאנליטיקה או תחזיות</li>
             </ul>
 
             <p className={pBase}>
-              All providers are bound by confidentiality agreements and may use
-              the information only for the purpose of providing contracted
-              services to BizUply, in accordance with this Policy and applicable
-              law.
+              כל הספקים מחויבים בהסכמי סודיות ורשאים להשתמש במידע רק לצורך
+              אספקת שירותים מוסכמים ל-BizUply, בהתאם למדיניות זו ולדין החל.
             </p>
 
-            <h3 className={h3Base}>6.2. Legal Requirements</h3>
+            <h3 className={h3Base}>6.2. דרישות משפטיות</h3>
 
             <p className={pBase}>
-              We may disclose information to law enforcement, government
-              agencies, or legal advisors if required to comply with applicable
-              laws, court orders, or protect our rights, security, or property,
-              including fraud prevention and dispute resolution.
+              אנו עשויים לגלות מידע לרשויות אכיפת חוק, סוכנויות ממשלתיות או
+              יועצים משפטיים אם הדבר נדרש לצורך עמידה בדינים החלים, בצווי בית
+              משפט או כדי להגן על זכויותינו, אבטחתנו או רכושנו, לרבות מניעת
+              הונאה ויישוב מחלוקות.
             </p>
 
-            <h3 className={h3Base}>6.3. Business Transfers</h3>
+            <h3 className={h3Base}>6.3. העברות עסקיות</h3>
 
             <p className={pBase}>
-              In the event of a merger, acquisition, reorganization, or sale of
-              assets, personal data may be transferred to the acquiring entity,
-              provided that the same data protection obligations continue to
-              apply.
+              במקרה של מיזוג, רכישה, ארגון מחדש או מכירת נכסים, נתונים אישיים
+              עשויים להיות מועברים לישות הרוכשת, ובלבד שאותן חובות הגנת מידע
+              ימשיכו לחול.
             </p>
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base}>7. Cookies and Tracking Technologies</h2>
+            <h2 className={h2Base}>7. קובצי Cookie וטכנולוגיות מעקב</h2>
 
             <p className={pBase}>
-              BizUply uses cookies, pixels, and tracking technologies to enhance
-              user experience, improve system functionality, and analyze usage
-              data. These tools help us understand performance, measure traffic,
-              and ensure platform security.
+              BizUply משתמשת בקובצי Cookie, פיקסלים וטכנולוגיות מעקב כדי לשפר
+              את חוויית המשתמש, לשפר את פונקציונליות המערכת ולנתח נתוני שימוש.
+              כלים אלה עוזרים לנו להבין ביצועים, למדוד תנועה ולהבטיח את אבטחת
+              הפלטפורמה.
             </p>
 
-            <h3 className={h3Base}>7.1. Types of Cookies Used</h3>
+            <h3 className={h3Base}>7.1. סוגי קובצי Cookie שבהם נעשה שימוש</h3>
 
             <ul className={ulBase}>
-              <li>Essential cookies – required for system operation and login</li>
-              <li>Functional cookies – store user preferences and settings</li>
-              <li>Analytics cookies – help monitor usage patterns and performance</li>
-              <li>Security cookies – protect accounts and prevent unauthorized access</li>
+              <li>קובצי Cookie חיוניים – נדרשים להפעלת המערכת ולהתחברות</li>
+              <li>קובצי Cookie פונקציונליים – שומרים העדפות והגדרות משתמש</li>
+              <li>קובצי Cookie אנליטיים – מסייעים לנטר דפוסי שימוש וביצועים</li>
+              <li>קובצי Cookie לאבטחה – מגינים על חשבונות ומונעים גישה בלתי מורשית</li>
               <li>
-                Marketing cookies – used only with consent, for internal
-                campaign analysis
+                קובצי Cookie שיווקיים – משמשים רק בהסכמה, לניתוח קמפיינים
+                פנימי
               </li>
             </ul>
 
-            <h3 className={h3Base}>7.2. Managing Cookies</h3>
+            <h3 className={h3Base}>7.2. ניהול קובצי Cookie</h3>
 
             <p className={pBase}>
-              Users may disable cookies through their browser settings. However,
-              disabling essential cookies may impact functionality or access to
-              certain system features.
+              משתמשים רשאים להשבית קובצי Cookie דרך הגדרות הדפדפן שלהם. עם
+              זאת, השבתת קובצי Cookie חיוניים עשויה להשפיע על פונקציונליות או
+              על גישה לתכונות מערכת מסוימות.
             </p>
 
             <p className={pBase}>
-              BizUply does not respond to “Do Not Track” browser signals. For
-              more information, contact us at{" "}
-              <strong>support@bizuply.com</strong>.
+              BizUply אינה מגיבה לאותות דפדפן “Do Not Track”. למידע נוסף, צרו
+              איתנו קשר בכתובת <strong>support@bizuply.com</strong>.
             </p>
           </section>
 
           <section id="section-8" className={sectionBase}>
-            <h2 className={h2Base}>8. Data Retention and Security</h2>
+            <h2 className={h2Base}>8. שמירת נתונים ואבטחה</h2>
 
             <p className={pBase}>
-              BizUply retains personal and business data only as long as
-              necessary to provide its services, comply with legal obligations,
-              and prevent abuse or fraud. Once data is no longer required, it is
-              securely deleted or anonymized.
+              BizUply שומרת נתונים אישיים ועסקיים רק כל עוד הדבר נחוץ לאספקת
+              שירותיה, לקיום חובות משפטיות ולמניעת שימוש לרעה או הונאה. כאשר
+              נתונים אינם נדרשים עוד, הם נמחקים באופן מאובטח או עוברים
+              אנונימיזציה.
             </p>
 
             <p className={pBase}>
-              We employ industry-standard security measures including
-              encryption, firewalls, intrusion detection, two-factor
-              authentication, and restricted access to protect all stored data.
-              However, no online system is entirely immune to breaches. By using
-              BizUply, you acknowledge and accept the inherent risks of
-              transmitting data over the Internet.
+              אנו משתמשים באמצעי אבטחה מקובלים בתעשייה, לרבות הצפנה, חומות אש,
+              זיהוי חדירות, אימות דו-שלבי וגישה מוגבלת כדי להגן על כל הנתונים
+              המאוחסנים. עם זאת, אין מערכת מקוונת חסינה לחלוטין מפני פרצות.
+              בשימוש ב-BizUply, אתם מאשרים ומקבלים את הסיכונים המובנים בהעברת
+              נתונים דרך האינטרנט.
             </p>
 
             <p className={pBase}>
-              In the event of a data breach, BizUply will notify affected users
-              as required by law.
+              במקרה של פרצת מידע, BizUply תודיע למשתמשים המושפעים כפי שנדרש
+              לפי דין.
             </p>
           </section>
 
           <section id="section-9" className={sectionBase}>
-            <h2 className={h2Base}>9. User Rights</h2>
+            <h2 className={h2Base}>9. זכויות משתמשים</h2>
 
             <p className={pBase}>
-              Under applicable privacy regulations including U.S. federal and
-              New York law, users have the following rights:
+              לפי תקנות פרטיות חלות, לרבות הדין הפדרלי של ארצות הברית ודין ניו
+              יורק, למשתמשים עומדות הזכויות הבאות:
             </p>
 
             <ul className={ulBase}>
-              <li>The right to access personal data stored by BizUply</li>
-              <li>The right to correct or update inaccurate information</li>
-              <li>The right to request deletion “Right to be Forgotten”</li>
-              <li>The right to receive a copy of personal data “Data Portability”</li>
-              <li>The right to object to processing or marketing use</li>
+              <li>הזכות לגשת לנתונים אישיים המאוחסנים על ידי BizUply</li>
+              <li>הזכות לתקן או לעדכן מידע לא מדויק</li>
+              <li>הזכות לבקש מחיקה “הזכות להישכח”</li>
+              <li>הזכות לקבל עותק של נתונים אישיים “ניידות נתונים”</li>
+              <li>הזכות להתנגד לעיבוד או לשימוש שיווקי</li>
             </ul>
 
             <p className={pBase}>
-              Requests must be submitted in writing to{" "}
-              <strong>privacy@bizuply.com</strong>. BizUply will verify the
-              identity of the requester and respond within 30 business days, in
-              accordance with U.S. law.
+              יש להגיש בקשות בכתב לכתובת <strong>privacy@bizuply.com</strong>.
+              BizUply תאמת את זהות המבקש ותשיב בתוך 30 ימי עסקים, בהתאם לדיני
+              ארצות הברית.
             </p>
           </section>
 
           <section id="section-10" className={sectionBase}>
-            <h2 className={h2Base}>10. Refunds, Payments, and Legal Waiver</h2>
+            <h2 className={h2Base}>10. החזרים, תשלומים וויתור משפטי</h2>
 
             <p className={pBase}>
-              All payments, subscriptions, and service fees made to BizUply are
-              final and non-refundable under any circumstances, including but
-              not limited to account closure, user dissatisfaction, technical
-              issues, downtime, or business suspension.
+              כל התשלומים, המנויים ודמי השירות ששולמו ל-BizUply הם סופיים
+              ואינם ניתנים להחזר בשום נסיבה, לרבות אך לא רק סגירת חשבון, אי
+              שביעות רצון משתמש, בעיות טכניות, זמן השבתה או השעיית עסק.
             </p>
 
             <p className={pBase}>
-              By using BizUply, the User explicitly agrees and confirms that:
+              בשימוש ב-BizUply, המשתמש מסכים ומאשר במפורש כי:
             </p>
 
             <ul className={ulBase}>
-              <li>No refund, credit, or compensation will be granted for any reason.</li>
+              <li>לא יינתנו החזר, זיכוי או פיצוי מכל סיבה שהיא.</li>
               <li>
-                The User waives any right to claim damages, initiate lawsuits,
-                or demand monetary relief against BizUply, its owners,
-                employees, partners, or affiliates.
+                המשתמש מוותר על כל זכות לתבוע נזקים, ליזום הליכים משפטיים או
+                לדרוש סעד כספי נגד BizUply, בעליה, עובדיה, שותפיה או חברותיה
+                הקשורות.
               </li>
               <li>
-                BizUply shall not be liable for indirect, consequential, or
-                incidental losses including profit loss, data loss, or
-                reputational harm.
+                BizUply לא תישא באחריות להפסדים עקיפים, תוצאתיים או מקריים,
+                לרבות אובדן רווחים, אובדן נתונים או פגיעה במוניטין.
               </li>
             </ul>
 
             <p className={pBase}>
-              The User acknowledges full understanding that use of the BizUply
-              platform is entirely at their own discretion and risk.
+              המשתמש מאשר הבנה מלאה כי השימוש בפלטפורמת BizUply נעשה כולו לפי
+              שיקול דעתו ועל אחריותו.
             </p>
 
             <p className={pBase}>
-              No verbal or written communication shall override this section.
-              This clause is final and binding under New York State law.
+              שום תקשורת בעל פה או בכתב לא תגבר על סעיף זה. סעיף זה הוא סופי
+              ומחייב לפי דיני מדינת ניו יורק.
             </p>
           </section>
 
           <section id="section-11" className={sectionBase}>
-            <h2 className={h2Base}>11. Limitation of Liability</h2>
+            <h2 className={h2Base}>11. הגבלת אחריות</h2>
 
             <p className={pBase}>
-              BizUply provides its services “As-Is” and “As Available.” We make
-              no warranties regarding uninterrupted operation, accuracy,
-              completeness, or suitability for any purpose.
+              BizUply מספקת את שירותיה “כמות שהם” ו-“כפי שהם זמינים”. איננו
+              נותנים אחריות לגבי פעולה רציפה, דיוק, שלמות או התאמה לכל מטרה.
             </p>
 
             <p className={pBase}>
-              To the maximum extent permitted by law, BizUply and its
-              affiliates disclaim all liability for any direct, indirect,
-              incidental, consequential, or punitive damages arising out of the
-              use of or inability to use the Platform.
+              במידה המרבית המותרת לפי דין, BizUply וחברותיה הקשורות מתנערות מכל
+              אחריות לכל נזק ישיר, עקיף, מקרי, תוצאתי או עונשי הנובע מהשימוש
+              בפלטפורמה או מאי-היכולת להשתמש בה.
             </p>
 
             <p className={pBase}>
-              In any case, BizUply’s total liability shall not exceed the amount
-              paid by the user in the thirty 30 days preceding the event giving
-              rise to the claim.
+              בכל מקרה, אחריותה הכוללת של BizUply לא תעלה על הסכום ששולם על ידי
+              המשתמש בשלושים 30 הימים שקדמו לאירוע שהוליד את התביעה.
             </p>
           </section>
 
           <section id="section-12" className={sectionBase}>
             <h2 className={h2Base}>
-              12. Data Location and International Transfers
+              12. מיקום נתונים והעברות בינלאומיות
             </h2>
 
             <p className={pBase}>
-              All personal and business data collected by BizUply is processed
-              and stored exclusively in the United States of America, primarily
-              within secure servers located in New York and other U.S.
-              jurisdictions that comply with federal data protection standards.
+              כל הנתונים האישיים והעסקיים שנאספים על ידי BizUply מעובדים
+              ומאוחסנים אך ורק בארצות הברית של אמריקה, בעיקר בשרתים מאובטחים
+              הממוקמים בניו יורק ובתחומי שיפוט אחרים בארצות הברית העומדים
+              בתקני הגנת מידע פדרליים.
             </p>
 
             <p className={pBase}>
-              BizUply does not intentionally transfer or store user data outside
-              of the United States. In the rare event of data processing through
-              third-party services located abroad, such transfer will be
-              performed only when necessary to operate the Platform, and always
-              under contractual clauses ensuring equivalent security,
-              confidentiality, and lawful handling.
+              BizUply אינה מעבירה או מאחסנת במכוון נתוני משתמשים מחוץ לארצות
+              הברית. במקרה נדיר של עיבוד נתונים באמצעות שירותי צד שלישי הממוקמים
+              בחו"ל, העברה כאמור תבוצע רק כאשר הדבר נחוץ להפעלת הפלטפורמה, ותמיד
+              לפי סעיפים חוזיים המבטיחים אבטחה, סודיות וטיפול חוקי שווי ערך.
             </p>
 
             <p className={pBase}>
-              By using BizUply, you consent to the processing of your personal
-              data within the United States and acknowledge that your
-              information will be governed solely by U.S. and New York State law.
+              בשימוש ב-BizUply, אתם מסכימים לעיבוד הנתונים האישיים שלכם בתוך
+              ארצות הברית ומאשרים כי המידע שלכם יהיה כפוף אך ורק לדיני ארצות
+              הברית ומדינת ניו יורק.
             </p>
           </section>
 
           <section id="section-13" className={sectionBase}>
-            <h2 className={h2Base}>13. Policy Updates and Notifications</h2>
+            <h2 className={h2Base}>13. עדכוני מדיניות והודעות</h2>
 
             <p className={pBase}>
-              BizUply reserves the right to modify, update, or revise this
-              Privacy Policy at any time, at its sole discretion. The latest
-              version will be published on our official website at{" "}
-              <strong>www.bizuply.com/privacy</strong>.
+              BizUply שומרת לעצמה את הזכות לשנות, לעדכן או לתקן מדיניות פרטיות
+              זו בכל עת, לפי שיקול דעתה הבלעדי. הגרסה האחרונה תפורסם באתר
+              הרשמי שלנו בכתובת <strong>www.bizuply.com/privacy</strong>.
             </p>
 
             <p className={pBase}>
-              Substantial changes will be communicated via email or in-platform
-              notifications where applicable. Continued use of the Platform
-              after such updates constitutes full acceptance of the revised
-              Policy.
+              שינויים מהותיים יימסרו בדוא"ל או באמצעות הודעות בתוך הפלטפורמה
+              כאשר הדבר רלוונטי. המשך השימוש בפלטפורמה לאחר עדכונים כאמור מהווה
+              הסכמה מלאה למדיניות המתוקנת.
             </p>
 
             <p className={pBase}>
-              Users are responsible for reviewing this Policy periodically to
-              remain informed of any changes.
+              המשתמשים אחראים לעיין במדיניות זו מעת לעת כדי להישאר מעודכנים
+              לגבי כל שינוי.
             </p>
           </section>
 
           <section id="section-14" className={sectionBase}>
-            <h2 className={h2Base}>14. Legal Compliance and Cooperation</h2>
+            <h2 className={h2Base}>14. ציות משפטי ושיתוף פעולה</h2>
 
             <p className={pBase}>
-              BizUply operates under the laws of the United States and the State
-              of New York. The Company will cooperate with legal authorities,
-              regulators, and compliance bodies as required by applicable law.
+              BizUply פועלת לפי דיני ארצות הברית ומדינת ניו יורק. החברה תשתף
+              פעולה עם רשויות משפטיות, רגולטורים וגופי ציות כפי שנדרש לפי הדין
+              החל.
             </p>
 
             <p className={pBase}>
-              We may retain or disclose certain records if required by subpoena,
-              judicial order, or governmental request, provided such disclosure
-              complies with U.S. law and due process requirements.
+              אנו עשויים לשמור או לגלות רשומות מסוימות אם הדבר נדרש לפי זימון,
+              צו שיפוטי או בקשה ממשלתית, ובלבד שגילוי כאמור עומד בדיני ארצות
+              הברית ובדרישות הליך הוגן.
             </p>
 
             <p className={pBase}>
-              BizUply is committed to preventing illegal activity, fraud, money
-              laundering, or misuse of its systems. Any suspected violation will
-              be reported to the relevant authorities.
+              BizUply מחויבת למניעת פעילות בלתי חוקית, הונאה, הלבנת הון או
+              שימוש לרעה במערכותיה. כל חשד להפרה ידווח לרשויות הרלוונטיות.
             </p>
           </section>
 
           <section id="section-15" className={sectionBase}>
-            <h2 className={h2Base}>15. Legal Disclaimer and No Liability</h2>
+            <h2 className={h2Base}>15. כתב ויתור משפטי והיעדר אחריות</h2>
 
             <p className={pBase}>
-              The User expressly acknowledges that use of the BizUply Platform,
-              services, and associated materials is entirely at their own risk.
-              All content and data are provided “As-Is” without warranties,
-              expressed or implied, including but not limited to fitness for a
-              particular purpose, merchantability, accuracy, or reliability.
+              המשתמש מאשר במפורש כי השימוש בפלטפורמת BizUply, בשירותים ובחומרים
+              הקשורים נעשה כולו על אחריותו. כל התוכן והנתונים מסופקים “כמות
+              שהם” ללא אחריות, מפורשת או משתמעת, לרבות אך לא רק התאמה למטרה
+              מסוימת, סחירות, דיוק או מהימנות.
             </p>
 
             <p className={pBase}>
-              BizUply, its owners, affiliates, employees, contractors, and
-              partners shall not be held liable for any direct, indirect,
-              special, consequential, punitive, or incidental damages arising
-              from the use of or inability to use the Platform.
+              BizUply, בעליה, חברותיה הקשורות, עובדיה, קבלניה ושותפיה לא יישאו
+              באחריות לכל נזק ישיר, עקיף, מיוחד, תוצאתי, עונשי או מקרי הנובע
+              מהשימוש בפלטפורמה או מאי-היכולת להשתמש בה.
             </p>
 
             <p className={pBase}>
-              This includes, without limitation, loss of profits, data,
-              goodwill, business interruption, or claims of third parties.
+              הדבר כולל, ללא הגבלה, אובדן רווחים, נתונים, מוניטין, שיבוש עסקי
+              או תביעות של צדדים שלישיים.
             </p>
 
             <p className={pBase}>
-              The User hereby releases and waives any right to initiate legal
-              action, arbitration, or class action against BizUply for any cause
-              related to service use, fees, or data handling.
+              המשתמש משחרר בזאת ומוותר על כל זכות ליזום הליך משפטי, בוררות או
+              תובענה ייצוגית נגד BizUply מכל עילה הקשורה לשימוש בשירות, לעמלות
+              או לטיפול בנתונים.
             </p>
 
             <p className={pBase}>
-              This waiver applies globally and perpetually and is binding upon
-              the User, their affiliates, successors, and representatives.
+              ויתור זה חל ברחבי העולם ולצמיתות, והוא מחייב את המשתמש, חברותיו
+              הקשורות, ממשיכיו ונציגיו.
             </p>
           </section>
 
           <section id="section-16" className={sectionBase}>
-            <h2 className={h2Base}>16. Governing Law and Jurisdiction</h2>
+            <h2 className={h2Base}>16. הדין החל וסמכות שיפוט</h2>
 
             <p className={pBase}>
-              This Privacy Policy, along with any disputes arising hereunder,
-              shall be governed exclusively by the laws of the State of New
-              York, United States, without regard to conflict of law principles.
+              מדיניות פרטיות זו, יחד עם כל מחלוקת הנובעת מכוחה, תהיה כפופה
+              באופן בלעדי לדיני מדינת ניו יורק, ארצות הברית, ללא התחשבות
+              בעקרונות ברירת דין.
             </p>
 
             <p className={pBase}>
-              Any dispute, claim, or proceeding shall be brought exclusively
-              before the competent courts of New York City, New York, USA.
+              כל מחלוקת, תביעה או הליך יובאו באופן בלעדי בפני בתי המשפט
+              המוסמכים של העיר ניו יורק, ניו יורק, ארה"ב.
             </p>
 
             <p className={pBase}>
-              Users agree to submit to the personal jurisdiction of such courts
-              and waive any objection to venue or forum.
+              משתמשים מסכימים להיכפף לסמכות השיפוט האישית של בתי משפט אלה
+              ומוותרים על כל התנגדות למקום השיפוט או לפורום.
             </p>
           </section>
 
           <section id="section-17" className={sectionBase}>
             <h2 className={h2Base}>
-              17. Contact Information and Data Protection Officer
+              17. פרטי התקשרות וממונה הגנת מידע
             </h2>
 
             <p className={pBase}>
-              If you have questions, concerns, or requests regarding this
-              Privacy Policy or your personal data, please contact:
+              אם יש לכם שאלות, חששות או בקשות בנוגע למדיניות פרטיות זו או
+              לנתונים האישיים שלכם, אנא צרו קשר עם:
             </p>
 
             <div className="mb-5 rounded-3xl border border-slate-100 bg-white/80 p-5 text-base font-medium leading-8 text-slate-600">
               <p>
-                <strong>BizUply – Data Protection Office</strong>
+                <strong>BizUply – משרד הגנת המידע</strong>
               </p>
               <p>
-                Email: <strong>privacy@bizuply.com</strong>
+                דוא"ל: <strong>privacy@bizuply.com</strong>
               </p>
               <p>
-                General Support: <strong>support@bizuply.com</strong>
+                תמיכה כללית: <strong>support@bizuply.com</strong>
               </p>
-              <p>Headquarters: New York, NY, United States</p>
+              <p>מטה: New York, NY, United States</p>
             </div>
 
             <p className={pBase}>
-              BizUply’s appointed Data Protection Officer DPO is responsible for
-              monitoring compliance, responding to user inquiries, and ensuring
-              all internal data handling practices meet industry and legal
-              standards.
+              ממונה הגנת המידע (DPO) שמונה על ידי BizUply אחראי לניטור הציות,
+              למענה לפניות משתמשים ולהבטחה שכל נוהלי הטיפול הפנימיים בנתונים
+              עומדים בתקני התעשייה והדין.
             </p>
           </section>
 
           <section id="section-18" className={sectionBase}>
-            <h2 className={h2Base}>18. Final Clause</h2>
+            <h2 className={h2Base}>18. סעיף סופי</h2>
 
             <p className={pBase}>
-              By accessing or using the BizUply Platform, you confirm that you
-              have read, understood, and agreed to all terms set forth in this
-              Privacy Policy. You further acknowledge that this Policy
-              constitutes the entire and exclusive statement of understanding
-              between you and BizUply regarding privacy and supersedes any prior
-              agreements or representations.
+              בגישה לפלטפורמת BizUply או בשימוש בה, אתם מאשרים שקראתם, הבנתם
+              והסכמתם לכל התנאים המפורטים במדיניות פרטיות זו. אתם מאשרים עוד כי
+              מדיניות זו מהווה את ההצהרה המלאה והבלעדית של ההבנה ביניכם לבין
+              BizUply בנוגע לפרטיות, ומחליפה כל הסכם או מצג קודם.
             </p>
 
             <p className={pBase}>
-              If any part of this Policy is deemed unenforceable, the remaining
-              sections shall continue in full effect to the maximum extent
-              permitted by law.
+              אם חלק כלשהו ממדיניות זו ייחשב בלתי אכיף, יתר הסעיפים ימשיכו
+              לעמוד בתוקף מלא במידה המרבית המותרת לפי דין.
             </p>
 
             <p className={pBase}>
-              Use of BizUply signifies explicit and irrevocable consent to all
-              clauses contained herein.
+              השימוש ב-BizUply מסמן הסכמה מפורשת ובלתי חוזרת לכל הסעיפים
+              הכלולים במסמך זה.
             </p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
-                Last Updated
+                עודכן לאחרונה
               </p>
-              <p className="mt-2 text-xl font-black">October 14, 2025</p>
+              <p className="mt-2 text-xl font-black">14 באוקטובר 2025</p>
             </div>
           </section>
         </div>
