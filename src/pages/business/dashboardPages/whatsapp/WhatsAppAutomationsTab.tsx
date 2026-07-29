@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -10,6 +10,7 @@ import {
   listWhatsAppTemplates,
   updateWhatsAppAutomation,
   type WhatsAppAutomation,
+  type WhatsAppAutomationTrigger,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
 import {
@@ -21,6 +22,64 @@ import {
 
 type OutletCtx = { businessId: string | null };
 
+const TRIGGERS: WhatsAppAutomationTrigger[] = [
+  "new_lead_welcome",
+  "lead_no_response",
+  "lead_followup_2",
+  "appointment_reminder_1_day",
+  "appointment_reminder_hours",
+  "appointment_thanks",
+  "appointment_review_request",
+  "new_client_welcome",
+  "inactive_client",
+];
+
+const DEFAULTS: Record<
+  WhatsAppAutomationTrigger,
+  {
+    nameKey: string;
+    hoursBefore?: number;
+    delayMinutes?: number;
+    delayHours?: number;
+    delayDays?: number;
+  }
+> = {
+  new_lead_welcome: {
+    nameKey: "whatsapp.automations.defaults.new_lead_welcome",
+    delayMinutes: 10,
+  },
+  lead_no_response: {
+    nameKey: "whatsapp.automations.defaults.lead_no_response",
+    delayHours: 24,
+  },
+  lead_followup_2: {
+    nameKey: "whatsapp.automations.defaults.lead_followup_2",
+    delayDays: 3,
+  },
+  appointment_reminder_1_day: {
+    nameKey: "whatsapp.automations.defaults.appointment_reminder_1_day",
+  },
+  appointment_reminder_hours: {
+    nameKey: "whatsapp.automations.defaults.appointment_reminder_hours",
+    hoursBefore: 2,
+  },
+  appointment_thanks: {
+    nameKey: "whatsapp.automations.defaults.appointment_thanks",
+  },
+  appointment_review_request: {
+    nameKey: "whatsapp.automations.defaults.appointment_review_request",
+    delayHours: 24,
+  },
+  new_client_welcome: {
+    nameKey: "whatsapp.automations.defaults.new_client_welcome",
+    delayMinutes: 5,
+  },
+  inactive_client: {
+    nameKey: "whatsapp.automations.defaults.inactive_client",
+    delayDays: 30,
+  },
+};
+
 export default function WhatsAppAutomationsTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -28,11 +87,24 @@ export default function WhatsAppAutomationsTab() {
   const [saving, setSaving] = useState(false);
   const [automations, setAutomations] = useState<WhatsAppAutomation[]>([]);
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
-  const [name, setName] = useState("");
   const [trigger, setTrigger] =
-    useState<WhatsAppAutomation["trigger"]>("appointment_reminder_1_day");
+    useState<WhatsAppAutomationTrigger>("new_lead_welcome");
+  const [name, setName] = useState("");
   const [templateId, setTemplateId] = useState("");
-  const [hoursBefore, setHoursBefore] = useState(24);
+  const [hoursBefore, setHoursBefore] = useState(2);
+  const [delayMinutes, setDelayMinutes] = useState(10);
+  const [delayHours, setDelayHours] = useState(24);
+  const [delayDays, setDelayDays] = useState(3);
+
+  const applyTriggerDefaults = (next: WhatsAppAutomationTrigger) => {
+    const conf = DEFAULTS[next];
+    setTrigger(next);
+    setName(t(conf.nameKey));
+    if (conf.hoursBefore != null) setHoursBefore(conf.hoursBefore);
+    if (conf.delayMinutes != null) setDelayMinutes(conf.delayMinutes);
+    if (conf.delayHours != null) setDelayHours(conf.delayHours);
+    if (conf.delayDays != null) setDelayDays(conf.delayDays);
+  };
 
   const load = async () => {
     if (!businessId) return;
@@ -45,7 +117,7 @@ export default function WhatsAppAutomationsTab() {
       setAutomations(autos);
       setTemplates(tpls);
       if (!templateId && tpls[0]?._id) setTemplateId(tpls[0]._id);
-      if (!name) setName(t("whatsapp.automations.defaultReminderName"));
+      if (!name) applyTriggerDefaults(trigger);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error || t("whatsapp.errors.loadAutomations")
@@ -60,6 +132,19 @@ export default function WhatsAppAutomationsTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
 
+  const showHoursBefore = trigger === "appointment_reminder_hours";
+  const showDelayMinutes =
+    trigger === "new_lead_welcome" || trigger === "new_client_welcome";
+  const showDelayHours =
+    trigger === "lead_no_response" || trigger === "appointment_review_request";
+  const showDelayDays =
+    trigger === "lead_followup_2" || trigger === "inactive_client";
+
+  const triggerHint = useMemo(
+    () => t(`whatsapp.automations.hints.${trigger}`),
+    [t, trigger]
+  );
+
   const createAutomation = async () => {
     if (!businessId || !name.trim() || !templateId) {
       toast.error(t("whatsapp.automations.required"));
@@ -72,6 +157,9 @@ export default function WhatsAppAutomationsTab() {
         trigger,
         templateId,
         hoursBefore,
+        delayMinutes,
+        delayHours,
+        delayDays,
         enabled: true,
       });
       toast.success(t("whatsapp.automations.created"));
@@ -121,6 +209,39 @@ export default function WhatsAppAutomationsTab() {
     return found?.name || "—";
   };
 
+  const timingLabel = (auto: WhatsAppAutomation) => {
+    if (auto.trigger === "appointment_reminder_hours") {
+      return t("whatsapp.automations.timing.hoursBefore", {
+        count: auto.hoursBefore ?? 24,
+      });
+    }
+    if (
+      auto.trigger === "new_lead_welcome" ||
+      auto.trigger === "new_client_welcome"
+    ) {
+      return t("whatsapp.automations.timing.minutes", {
+        count: auto.delayMinutes ?? 10,
+      });
+    }
+    if (
+      auto.trigger === "lead_no_response" ||
+      auto.trigger === "appointment_review_request"
+    ) {
+      return t("whatsapp.automations.timing.hours", {
+        count: auto.delayHours ?? 24,
+      });
+    }
+    if (
+      auto.trigger === "lead_followup_2" ||
+      auto.trigger === "inactive_client"
+    ) {
+      return t("whatsapp.automations.timing.days", {
+        count: auto.delayDays ?? 3,
+      });
+    }
+    return "";
+  };
+
   if (loading) {
     return (
       <div className={`${cardBase} flex items-center justify-center gap-2 p-10`}>
@@ -150,6 +271,30 @@ export default function WhatsAppAutomationsTab() {
         </div>
 
         <div className="mt-5 grid gap-3 md:grid-cols-2">
+          <label className="grid gap-1.5 md:col-span-2">
+            <span className="text-xs font-black text-slate-600">
+              {t("whatsapp.automations.trigger")}
+            </span>
+            <select
+              className={inputBase}
+              value={trigger}
+              onChange={(e) =>
+                applyTriggerDefaults(
+                  e.target.value as WhatsAppAutomationTrigger
+                )
+              }
+            >
+              {TRIGGERS.map((key) => (
+                <option key={key} value={key}>
+                  {t(`whatsapp.automations.triggers.${key}`)}
+                </option>
+              ))}
+            </select>
+            <span className="text-xs font-medium text-slate-400">
+              {triggerHint}
+            </span>
+          </label>
+
           <label className="grid gap-1.5">
             <span className="text-xs font-black text-slate-600">
               {t("whatsapp.automations.name")}
@@ -160,40 +305,7 @@ export default function WhatsAppAutomationsTab() {
               onChange={(e) => setName(e.target.value)}
             />
           </label>
-          <label className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              {t("whatsapp.automations.trigger")}
-            </span>
-            <select
-              className={inputBase}
-              value={trigger}
-              onChange={(e) =>
-                setTrigger(e.target.value as WhatsAppAutomation["trigger"])
-              }
-            >
-              <option value="appointment_reminder_1_day">
-                {t("whatsapp.automations.triggers.appointment_reminder_1_day")}
-              </option>
-              <option value="appointment_reminder_hours">
-                {t("whatsapp.automations.triggers.appointment_reminder_hours")}
-              </option>
-            </select>
-          </label>
-          {trigger === "appointment_reminder_hours" && (
-            <label className="grid gap-1.5">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.automations.hoursBefore")}
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={168}
-                className={inputBase}
-                value={hoursBefore}
-                onChange={(e) => setHoursBefore(Number(e.target.value) || 24)}
-              />
-            </label>
-          )}
+
           <label className="grid gap-1.5">
             <span className="text-xs font-black text-slate-600">
               {t("whatsapp.automations.template")}
@@ -210,6 +322,70 @@ export default function WhatsAppAutomationsTab() {
               ))}
             </select>
           </label>
+
+          {showHoursBefore && (
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black text-slate-600">
+                {t("whatsapp.automations.hoursBefore")}
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={168}
+                className={inputBase}
+                value={hoursBefore}
+                onChange={(e) => setHoursBefore(Number(e.target.value) || 24)}
+              />
+            </label>
+          )}
+
+          {showDelayMinutes && (
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black text-slate-600">
+                {t("whatsapp.automations.delayMinutes")}
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={10080}
+                className={inputBase}
+                value={delayMinutes}
+                onChange={(e) => setDelayMinutes(Number(e.target.value) || 10)}
+              />
+            </label>
+          )}
+
+          {showDelayHours && (
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black text-slate-600">
+                {t("whatsapp.automations.delayHours")}
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={720}
+                className={inputBase}
+                value={delayHours}
+                onChange={(e) => setDelayHours(Number(e.target.value) || 24)}
+              />
+            </label>
+          )}
+
+          {showDelayDays && (
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black text-slate-600">
+                {t("whatsapp.automations.delayDays")}
+              </span>
+              <input
+                type="number"
+                min={1}
+                max={365}
+                className={inputBase}
+                value={delayDays}
+                onChange={(e) => setDelayDays(Number(e.target.value) || 3)}
+              />
+            </label>
+          )}
         </div>
 
         <button
@@ -258,6 +434,7 @@ export default function WhatsAppAutomationsTab() {
                 </div>
                 <p className="mt-1 text-sm font-medium text-slate-500">
                   {t(`whatsapp.automations.triggers.${auto.trigger}`)}
+                  {timingLabel(auto) ? ` · ${timingLabel(auto)}` : ""}
                   {" · "}
                   {t("whatsapp.automations.usesTemplate", {
                     name: templateName(auto),

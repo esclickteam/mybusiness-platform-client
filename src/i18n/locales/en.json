@@ -4320,11 +4320,9 @@
     },
     "compose": {
       "messageTitle": "Message content",
-      "messageSubtitle": "Pick an existing template or write a custom message.",
+      "messageSubtitle": "Choose an existing template or create a new one to send.",
       "campaignName": "Campaign name (optional)",
       "campaignNamePlaceholder": "e.g. July promo",
-      "fromTemplate": "From template",
-      "customMessage": "Custom message",
       "selectTemplate": "Select template",
       "body": "Message body",
       "bodyPlaceholder": "Hello {name}, …",
@@ -4350,7 +4348,9 @@
       "notConnected": "Connect WhatsApp API in the settings tab before sending",
       "notConnectedTitle": "WhatsApp API is not connected yet",
       "notConnectedHint": "You can prepare templates and lists now. To send, open the API connection tab and add your Cloud API credentials.",
-      "sendSuccess": "Done — sent: {{sent}}, failed: {{failed}}"
+      "sendSuccess": "Done — sent: {{sent}}, failed: {{failed}}",
+      "createTemplate": "Create template",
+      "noTemplatesYet": "No templates yet"
     },
     "templates": {
       "title": "Message templates",
@@ -4401,7 +4401,7 @@
     },
     "automations": {
       "title": "Smart automations",
-      "subtitle": "Automatically remind clients about appointments — for example one day before.",
+      "subtitle": "Turn on automatic messages for leads, appointments, new clients, and follow-ups.",
       "defaultReminderName": "Appointment reminder – 1 day before",
       "name": "Automation name",
       "trigger": "Trigger",
@@ -4422,8 +4422,45 @@
       "stats": "Sent {{sent}} · Failed {{failed}}",
       "triggers": {
         "appointment_reminder_1_day": "Appointment reminder – 1 day before",
-        "appointment_reminder_hours": "Appointment reminder – custom hours before",
-        "new_client_welcome": "Welcome new client"
+        "appointment_reminder_hours": "Appointment reminder – hours before",
+        "appointment_thanks": "Thank-you after appointment",
+        "appointment_review_request": "Review request after appointment",
+        "new_lead_welcome": "New CRM lead – automatic message",
+        "lead_no_response": "Lead no response – follow-up",
+        "lead_followup_2": "Second lead follow-up",
+        "new_client_welcome": "New CRM client – welcome",
+        "inactive_client": "Inactive client nudge"
+      },
+      "delayMinutes": "Minutes after event",
+      "delayHours": "Hours after previous step",
+      "delayDays": "Days after previous step",
+      "defaults": {
+        "new_lead_welcome": "New lead – message after 10 minutes",
+        "lead_no_response": "Lead no response within 24 hours",
+        "lead_followup_2": "Second lead follow-up after 3 days",
+        "appointment_reminder_1_day": "Appointment reminder – 1 day before",
+        "appointment_reminder_hours": "Appointment reminder – 2 hours before",
+        "appointment_thanks": "Thank-you after appointment",
+        "appointment_review_request": "Review request after 24 hours",
+        "new_client_welcome": "Welcome new client",
+        "inactive_client": "Inactive client reminder"
+      },
+      "hints": {
+        "new_lead_welcome": "When a new lead enters the CRM, a WhatsApp message is sent after a few minutes.",
+        "lead_no_response": "If the lead is still new and did not respond after the first message, a follow-up is sent.",
+        "lead_followup_2": "Another follow-up for leads that still were not converted after the previous nudge.",
+        "appointment_reminder_1_day": "Automatic reminder one day before the appointment.",
+        "appointment_reminder_hours": "Reminder a custom number of hours before the appointment.",
+        "appointment_thanks": "Thank-you message after an appointment is marked completed.",
+        "appointment_review_request": "A review request is sent hours after the thank-you message.",
+        "new_client_welcome": "Welcome message when a new client is added to the CRM.",
+        "inactive_client": "Nudge clients with no recent interaction."
+      },
+      "timing": {
+        "hoursBefore": "{{count}} hours before",
+        "minutes": "after {{count}} minutes",
+        "hours": "after {{count}} hours",
+        "days": "after {{count}} days"
       }
     },
     "history": {

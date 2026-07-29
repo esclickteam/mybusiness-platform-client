@@ -4309,11 +4309,9 @@
     },
     "compose": {
       "messageTitle": "תוכן ההודעה",
-      "messageSubtitle": "בחרו תבנית קיימת או כתבו הודעה מותאמת.",
+      "messageSubtitle": "בחרו תבנית קיימת או צרו תבנית חדשה לשליחה.",
       "campaignName": "שם הקמפיין (אופציונלי)",
       "campaignNamePlaceholder": "לדוגמה: מבצע יולי",
-      "fromTemplate": "מתבנית קיימת",
-      "customMessage": "הודעה חופשית",
       "selectTemplate": "בחירת תבנית",
       "body": "גוף ההודעה",
       "bodyPlaceholder": "שלום {name}, …",
@@ -4339,7 +4337,9 @@
       "notConnected": "יש לחבר את WhatsApp API בלשונית החיבור לפני שליחה",
       "notConnectedTitle": "WhatsApp API עדיין לא מחובר",
       "notConnectedHint": "אפשר כבר ליצור תבניות ורשימות. לשליחה בפועל עברו ללשונית חיבור API והזינו את פרטי ה-Cloud API.",
-      "sendSuccess": "השליחה הסתיימה — נשלחו: {{sent}}, נכשלו: {{failed}}"
+      "sendSuccess": "השליחה הסתיימה — נשלחו: {{sent}}, נכשלו: {{failed}}",
+      "createTemplate": "צור תבנית",
+      "noTemplatesYet": "אין עדיין תבניות"
     },
     "templates": {
       "title": "תבניות הודעה",
@@ -4390,7 +4390,7 @@
     },
     "automations": {
       "title": "אוטומציות חכמות",
-      "subtitle": "שלחו אוטומטית תזכורות לפגישות — למשל יום לפני.",
+      "subtitle": "הפעילו הודעות אוטומטיות ללידים, פגישות, לקוחות חדשים ומעקבים.",
       "defaultReminderName": "תזכורת פגישה – יום לפני",
       "name": "שם האוטומציה",
       "trigger": "טריגר",
@@ -4412,7 +4412,44 @@
       "triggers": {
         "appointment_reminder_1_day": "תזכורת פגישה – יום לפני",
         "appointment_reminder_hours": "תזכורת פגישה – מספר שעות לפני",
-        "new_client_welcome": "ברוכים הבאים ללקוח חדש"
+        "appointment_thanks": "תודה אחרי פגישה",
+        "appointment_review_request": "בקשת ביקורת אחרי פגישה",
+        "new_lead_welcome": "ליד חדש ב-CRM – הודעה אוטומטית",
+        "lead_no_response": "ליד לא ענה – הודעת מעקב",
+        "lead_followup_2": "מעקב ליד נוסף",
+        "new_client_welcome": "לקוח חדש ב-CRM – ברוכים הבאים",
+        "inactive_client": "לקוח לא פעיל"
+      },
+      "delayMinutes": "דקות אחרי האירוע",
+      "delayHours": "שעות אחרי השלב הקודם",
+      "delayDays": "ימים אחרי השלב הקודם",
+      "defaults": {
+        "new_lead_welcome": "ליד חדש – הודעה אחרי 10 דקות",
+        "lead_no_response": "ליד לא ענה תוך 24 שעות",
+        "lead_followup_2": "מעקב ליד נוסף אחרי 3 ימים",
+        "appointment_reminder_1_day": "תזכורת פגישה – יום לפני",
+        "appointment_reminder_hours": "תזכורת פגישה – שעתיים לפני",
+        "appointment_thanks": "תודה אחרי פגישה",
+        "appointment_review_request": "בקשת ביקורת אחרי 24 שעות",
+        "new_client_welcome": "ברוכים הבאים ללקוח חדש",
+        "inactive_client": "תזכורת ללקוח לא פעיל"
+      },
+      "hints": {
+        "new_lead_welcome": "כשנכנס ליד חדש ל-CRM, נשלחת אליו הודעה אוטומטית אחרי מספר דקות.",
+        "lead_no_response": "אם הליד עדיין במצב חדש ולא ענה אחרי ההודעה הראשונה – נשלחת הודעת מעקב.",
+        "lead_followup_2": "מעקב נוסף ללידים שעדיין לא הומרו אחרי הודעת המעקב הקודמת.",
+        "appointment_reminder_1_day": "תזכורת אוטומטית יום לפני הפגישה.",
+        "appointment_reminder_hours": "תזכורת מספר שעות לפני הפגישה (למשל שעתיים).",
+        "appointment_thanks": "הודעת תודה אחרי שפגישה מסומנת כהושלמה.",
+        "appointment_review_request": "בקשת ביקורת נשלחת מספר שעות אחרי הודעת התודה.",
+        "new_client_welcome": "הודעת ברוכים הבאים ללקוח חדש שנוסף ל-CRM.",
+        "inactive_client": "תזכורת ללקוחות שלא הייתה איתם אינטראקציה זמן רב."
+      },
+      "timing": {
+        "hoursBefore": "{{count}} שעות לפני",
+        "minutes": "אחרי {{count}} דקות",
+        "hours": "אחרי {{count}} שעות",
+        "days": "אחרי {{count}} ימים"
       }
     },
     "history": {
