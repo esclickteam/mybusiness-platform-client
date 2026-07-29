@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
-  ArrowLeft,
   BellRing,
   CalendarClock,
   ChevronLeft,
@@ -14,13 +13,12 @@ import {
   PlugZap,
   Search,
   UserRound,
-  Workflow,
-  Zap,
 } from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
 import CrmScreenshotTour from "../../components/crm-marketing/CrmScreenshotTour";
 import CrmIntegrationRail from "../../components/crm-marketing/CrmIntegrationRail";
 import CrmMetaTrust from "../../components/crm-marketing/CrmMetaTrust";
+import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import {
   crmFaq,
   pipelineStages,
@@ -114,6 +112,19 @@ const LIST_CARDS = [
 ];
 
 export default function CrmProductPage() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash !== "#automations") return;
+    const timer = window.setTimeout(() => {
+      document.getElementById("automations")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 120);
+    return () => window.clearTimeout(timer);
+  }, [location.hash]);
+
   return (
     <div className="pm crm-page crmp" dir="rtl">
       <Helmet>
@@ -265,46 +276,10 @@ export default function CrmProductPage() {
 
       <CrmMetaTrust />
 
-      {/* Automations — lives under CRM in the product story */}
-      <section className="pm-section pm-section--tight crx crmp__automations">
-        <AuroraBackdrop />
-        <div className="pm-shell">
-          <SectionHeading
-            eyebrow={
-              <>
-                <Workflow size={14} aria-hidden="true" />
-                אוטומציות בתוך ה־CRM
-              </>
-            }
-            title={
-              <>
-                אחרי שהליד נכנס —{" "}
-                <span className="pm-grad">המערכת ממשיכה בשבילכם</span>
-              </>
-            }
-            lead="תזכורות, פולואפים והתראות על לידים חדשים ומשימות שעבר זמנן — רצים ברקע ומחוברים לאותו צינור לידים."
-          />
-
-          <Reveal from="up" delay={0.1}>
-            <div className="crmp__auto-card">
-              <span className="crmp__auto-icon" aria-hidden="true">
-                <Zap size={22} />
-              </span>
-              <div>
-                <h3>אוטומציות והתראות חכמות</h3>
-                <p>
-                  ליד חדש מופיע בהתראות מיד, משימה שעבר זמנה עולה למרכז ההתראות,
-                  ופולואפים נשארים על המסך עד שמטפלים — בלי לרדוף אחרי פתקים.
-                </p>
-              </div>
-              <Link to="/automations" className="pm-cta pm-cta--primary">
-                לעמוד האוטומציות
-                <ArrowLeft size={17} aria-hidden="true" />
-              </Link>
-            </div>
-          </Reveal>
-        </div>
-      </section>
+      {/* Automations + fake notifications demo — under CRM */}
+      <div id="automations">
+        <AutomationsNotificationsDemo />
+      </div>
 
       {/* FAQ + closing */}
       <section className="pm-section pm-section--tight crx">
@@ -317,9 +292,8 @@ export default function CrmProductPage() {
               eyebrow="מתחילים לסדר את הצינור"
               title="סדרו את צינור הלידים — ואל תפספסו אף פנייה"
               text="מחברים את מקורות הלידים, עובדים בסטטוסים ובמשימות, וממשיכים לתיק לקוח וליומן תורים. הכל באפליקציית Meta שעברה App Review."
-              primaryLabel="מתחילים בחינם"
-              secondaryLabel="דברו איתנו"
-              secondaryTo="/contact"
+              primaryLabel="לצפייה בחבילות"
+              primaryTo="/pricing"
             />
           </div>
         </div>

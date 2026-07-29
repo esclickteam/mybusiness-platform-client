@@ -12,6 +12,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
     { to: "/about", label: t("nav.about") },
     { to: "/website-builder", label: t("nav.website") },
     { to: "/crm", label: t("nav.crm") },
+    { to: "/crm#automations", label: t("nav.automations") },
     { to: "/agents", label: t("nav.agents") },
     { to: "/collaborations", label: t("nav.collaborations") },
     { to: "/pricing", label: t("nav.pricing") },

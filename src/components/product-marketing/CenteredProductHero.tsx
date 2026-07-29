@@ -28,8 +28,6 @@ type Props = {
   };
   primaryLabel?: string;
   primaryTo?: string;
-  secondaryLabel?: string;
-  secondaryTo?: string;
   stats: MarketingStat[];
 };
 
@@ -41,10 +39,8 @@ export default function CenteredProductHero({
   titleHighlight,
   lead,
   note,
-  primaryLabel = "מתחילים בחינם",
-  primaryTo = "/register",
-  secondaryLabel = "לצפייה במסלולים",
-  secondaryTo = "/pricing",
+  primaryLabel = "לצפייה בחבילות",
+  primaryTo = "/pricing",
   stats,
 }: Props) {
   const reduceMotion = useReducedMotion();
@@ -116,9 +112,6 @@ export default function CenteredProductHero({
           <Link to={primaryTo} className="pm-cta pm-cta--primary">
             {primaryLabel}
             <ArrowLeft size={17} aria-hidden="true" />
-          </Link>
-          <Link to={secondaryTo} className="pm-cta pm-cta--ghost">
-            {secondaryLabel}
           </Link>
         </motion.div>
 

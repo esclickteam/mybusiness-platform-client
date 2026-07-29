@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, CalendarClock, LayoutTemplate, Sparkles } from "lucide-react";
+import { ArrowLeft, CalendarClock, LayoutTemplate } from "lucide-react";
 import TemplateShowcase from "./TemplateShowcase";
 import WebsiteTypesReveal from "./WebsiteTypesReveal";
 import { StatStrip, WordReveal } from "../product-marketing";
@@ -69,14 +69,10 @@ export default function WebsiteBuilderHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.68, duration: 0.7, ease: EASE }}
             >
-              <Link to="/register" className="pm-cta pm-cta--primary">
-                מתחילים לבנות
+              <Link to="/pricing" className="pm-cta pm-cta--primary">
+                לצפייה בחבילות
                 <ArrowLeft size={17} aria-hidden="true" />
               </Link>
-              <a href="#wb-templates" className="pm-cta pm-cta--ghost">
-                <Sparkles size={16} aria-hidden="true" />
-                רואים תבניות
-              </a>
             </motion.div>
           </div>
 

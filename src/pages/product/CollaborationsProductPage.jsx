@@ -198,9 +198,8 @@ export default function CollaborationsProductPage() {
               eyebrow="מוכנים לפתוח ערוץ צמיחה"
               title="חברו שותפים רלוונטיים — ותנו לצמיחה לרוץ בשני כיוונים"
               text="בונים פרופיל שיתוף, מגלים עסקים משלימים, שולחים הצעה ומנהלים הכל בשוק ובצ׳אט. אפשר גם לחבר נציג אנושי שינהל את התהליך בשבילכם."
-              primaryLabel="מתחילים בחינם"
-              secondaryLabel="לנציגים אנושיים"
-              secondaryTo="/agents"
+              primaryLabel="לצפייה בחבילות"
+              primaryTo="/pricing"
             />
           </div>
         </div>

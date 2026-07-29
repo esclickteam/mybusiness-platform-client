@@ -241,9 +241,8 @@ export default function AutomationsProductPage() {
               eyebrow="תנו לעסק לרוץ גם בליכם"
               title="הפעילו תהליכים ששומרים על כל פנייה בתנועה"
               text="תזכורות, פולואפים והתראות שמחוברים ל־CRM — כדי שתתמקדו בלקוחות, והמערכת תשמור שהמשך לא יישכח."
-              primaryLabel="מתחילים בחינם"
-              secondaryLabel="ל־CRM ולידים"
-              secondaryTo="/crm"
+              primaryLabel="לצפייה בחבילות"
+              primaryTo="/pricing"
             />
           </div>
         </div>
