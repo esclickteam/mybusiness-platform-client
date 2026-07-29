@@ -225,7 +225,10 @@ export default function MetaLeadAdsIntegration({
       setError("");
       setSuccess("");
 
-      await API.post("/meta-leads/disconnect", {}, { params: tenantParams });
+      const { data } = await API.post<{
+        success?: boolean;
+        purgedHistorical?: number;
+      }>("/meta-leads/disconnect", {}, { params: tenantParams });
 
       setConnectedPage(null);
       setForms([]);
@@ -233,6 +236,10 @@ export default function MetaLeadAdsIntegration({
       setSelectedPageId("");
       setForceSetup(true);
       setSuccess(t(`${T}.successDisconnected`));
+
+      if ((data?.purgedHistorical || 0) > 0) {
+        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      }
 
       await loadStatus();
     } catch (err) {
