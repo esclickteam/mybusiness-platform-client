@@ -47,6 +47,7 @@ import {
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import {
+  formatAdAccountLabel,
   DATE_RANGE_OPTIONS,
   formatCurrency,
   formatNumber,
@@ -286,11 +287,12 @@ export default function MetaCampaignsOverviewTab() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
-            <Facebook className="h-4 w-4 text-[#1877F2]" />
-            <span className="max-w-[220px] truncate">
-              {data?.connection?.selectedAdAccount?.name ||
-                t("metaCampaigns.overview.account")}
+          <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
+            <Facebook className="h-4 w-4 shrink-0 text-[#1877F2]" />
+            <span className="max-w-[280px] truncate tabular-nums" title={formatAdAccountLabel(data?.connection?.selectedAdAccount, { fallbackName: t("metaCampaigns.overview.account") })}>
+              {formatAdAccountLabel(data?.connection?.selectedAdAccount, {
+                fallbackName: t("metaCampaigns.overview.account"),
+              })}
             </span>
           </div>
           <button
