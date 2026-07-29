@@ -130,7 +130,14 @@ export function StaggerItem({
   );
 }
 
-/** Headline that assembles itself word by word. */
+/**
+ * Headline that assembles itself word by word.
+ *
+ * Deliberately animates only opacity and offset: a `filter` on the word spans
+ * gives them their own painting context, which stops an ancestor's
+ * `background-clip: text` gradient from reaching them and renders the words
+ * invisible.
+ */
 export function WordReveal({
   text,
   className,
@@ -153,8 +160,8 @@ export function WordReveal({
         <motion.span
           key={`${word}-${index}`}
           className="pm-word"
-          initial={{ opacity: 0, y: "0.5em", filter: "blur(8px)" }}
-          animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+          initial={{ opacity: 0, y: "0.45em" }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{
             duration: 0.7,
             delay: delay + index * step,

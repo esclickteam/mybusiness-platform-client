@@ -5,25 +5,17 @@ type Props = {
   eyebrow?: React.ReactNode;
   title: React.ReactNode;
   lead?: React.ReactNode;
-  center?: boolean;
   accent?: string;
-  className?: string;
 };
 
 export default function SectionHeading({
   eyebrow,
   title,
   lead,
-  center = false,
   accent,
-  className,
 }: Props) {
   return (
-    <div
-      className={`pm-heading-block${center ? " pm-heading-block--center" : ""}${
-        className ? ` ${className}` : ""
-      }`}
-    >
+    <div className="pm-heading-block">
       {eyebrow ? (
         <Reveal from="up" distance={16} duration={0.55}>
           <p

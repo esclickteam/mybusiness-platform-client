@@ -1,8 +1,9 @@
+/* Hero (template carousel) and website-type blocks for /website-builder. */
+
 .wb-hero {
   --wb-ink: #0b1220;
   --wb-ease: cubic-bezier(0.22, 1, 0.36, 1);
   --wb-snap: cubic-bezier(0.25, 1, 0.35, 1);
-  --wb-nav: 4.5rem;
   --wb-stage-glow: #e11d8c;
   --wb-stage-glow-soft: #f9a8d4;
 
@@ -14,25 +15,21 @@
   width: 100%;
   display: flex;
   flex-direction: column;
+  text-align: center;
   color: var(--wb-ink);
   font-family: "Assistant", "Heebo", system-ui, sans-serif;
   background:
     radial-gradient(
-      ellipse 70% 55% at 50% 76%,
-      color-mix(in srgb, var(--wb-stage-glow) 42%, transparent) 0%,
+      ellipse 70% 55% at 50% 78%,
+      color-mix(in srgb, var(--wb-stage-glow) 30%, transparent) 0%,
       transparent 70%
     ),
     radial-gradient(
-      ellipse 46% 40% at 82% 20%,
-      color-mix(in srgb, var(--wb-stage-glow-soft) 36%, transparent) 0%,
+      ellipse 46% 40% at 84% 16%,
+      color-mix(in srgb, var(--wb-stage-glow-soft) 28%, transparent) 0%,
       transparent 68%
     ),
-    radial-gradient(
-      ellipse 40% 36% at 14% 24%,
-      color-mix(in srgb, var(--wb-stage-glow) 24%, transparent) 0%,
-      transparent 64%
-    ),
-    linear-gradient(180deg, #ffffff 0%, #f7f8fb 52%, #eef2f7 100%);
+    linear-gradient(180deg, #ffffff 0%, #f7f8fc 54%, #f2f5fb 100%);
   transition: background 0.6s var(--wb-ease);
 }
 
@@ -47,8 +44,8 @@
 .wb-hero__glow span {
   position: absolute;
   border-radius: 9999px;
-  filter: blur(78px);
-  opacity: 0.5;
+  filter: blur(80px);
+  opacity: 0.4;
   transition: background 0.6s var(--wb-ease);
 }
 
@@ -57,7 +54,7 @@
   right: 12%;
   width: 22rem;
   height: 22rem;
-  background: color-mix(in srgb, var(--wb-stage-glow) 52%, transparent);
+  background: color-mix(in srgb, var(--wb-stage-glow) 40%, transparent);
 }
 
 .wb-hero__glow .g2 {
@@ -65,7 +62,7 @@
   left: 10%;
   width: 24rem;
   height: 24rem;
-  background: color-mix(in srgb, var(--wb-stage-glow-soft) 44%, transparent);
+  background: color-mix(in srgb, var(--wb-stage-glow-soft) 34%, transparent);
 }
 
 .wb-hero__glow .g3 {
@@ -73,8 +70,8 @@
   left: 40%;
   width: 16rem;
   height: 16rem;
-  background: color-mix(in srgb, var(--wb-stage-glow) 28%, transparent);
-  opacity: 0.3;
+  background: color-mix(in srgb, var(--wb-stage-glow) 22%, transparent);
+  opacity: 0.28;
 }
 
 .wb-hero__dots {
@@ -82,7 +79,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  opacity: 0.14;
+  opacity: 0.13;
   background-image: radial-gradient(rgba(15, 23, 42, 0.12) 1px, transparent 1px);
   background-size: 26px 26px;
   mask-image: radial-gradient(ellipse 68% 52% at 50% 68%, #000 18%, transparent 72%);
@@ -94,19 +91,12 @@
   width: 100%;
   max-width: 1480px;
   margin: 0 auto;
-  padding: 2.25rem 1.25rem 2.75rem;
+  padding: clamp(2.25rem, 5vw, 3.25rem) 1.25rem clamp(2.5rem, 4vw, 3.5rem);
   flex: 1;
   display: flex;
   flex-direction: column;
   min-height: 0;
-  gap: 1.75rem;
-}
-
-@media (min-width: 1024px) {
-  .wb-hero__inner {
-    padding: 3rem 2.5rem 3.5rem;
-    gap: 2.1rem;
-  }
+  gap: 1.85rem;
 }
 
 .wb-hero__copy {
@@ -117,7 +107,6 @@
   max-width: 52rem;
   margin: 0 auto;
   text-align: center;
-  padding: 0.25rem 0.75rem 0.35rem;
 }
 
 .wb-hero__badges {
@@ -125,12 +114,12 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.45rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1.15rem;
 }
 
 .wb-hero__title {
   margin: 0;
-  font-size: clamp(2.15rem, 5.4vw, 3.9rem);
+  font-size: clamp(2.15rem, 5.2vw, 3.85rem);
   font-weight: 900;
   line-height: 1.06;
   letter-spacing: -0.045em;
@@ -141,10 +130,10 @@
 .wb-hero__title-grad {
   background: linear-gradient(
     100deg,
-    color-mix(in srgb, var(--wb-stage-glow) 88%, #0b1220) 0%,
+    color-mix(in srgb, var(--wb-stage-glow) 82%, #0b1220) 0%,
     var(--wb-stage-glow) 42%,
     var(--wb-stage-glow-soft) 78%,
-    color-mix(in srgb, var(--wb-stage-glow) 88%, #0b1220) 100%
+    color-mix(in srgb, var(--wb-stage-glow) 82%, #0b1220) 100%
   );
   background-size: 240% 100%;
   -webkit-background-clip: text;
@@ -161,11 +150,12 @@
 
 .wb-hero__lead {
   margin: 1.1rem auto 0;
-  max-width: 40rem;
-  font-size: clamp(1rem, 1.35vw, 1.16rem);
+  max-width: 42rem;
+  font-size: clamp(1rem, 1.3vw, 1.15rem);
   font-weight: 600;
   line-height: 1.75;
   color: #475569;
+  text-wrap: pretty;
 }
 
 .wb-hero__actions {
@@ -184,6 +174,8 @@
   max-width: 62rem;
   margin-inline: auto;
 }
+
+/* -------------------------------------------------------- template carousel */
 
 .wb-hero__templates,
 #wb-templates {
@@ -225,12 +217,12 @@
   inset: 12% 18% 16%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--wb-stage-glow) 70%, transparent) 0%,
-    color-mix(in srgb, var(--wb-stage-glow-soft) 44%, transparent) 45%,
+    color-mix(in srgb, var(--wb-stage-glow) 52%, transparent) 0%,
+    color-mix(in srgb, var(--wb-stage-glow-soft) 32%, transparent) 45%,
     transparent 74%
   );
   filter: blur(34px);
-  opacity: 0.95;
+  opacity: 0.85;
 }
 
 .wb-hero__stage-glow-ring {
@@ -238,11 +230,11 @@
   background: radial-gradient(
     ellipse at center,
     transparent 32%,
-    color-mix(in srgb, var(--wb-stage-glow-soft) 36%, transparent) 56%,
+    color-mix(in srgb, var(--wb-stage-glow-soft) 28%, transparent) 56%,
     transparent 78%
   );
   filter: blur(28px);
-  opacity: 0.8;
+  opacity: 0.7;
 }
 
 .wb-hero__stage-glow-floor {
@@ -250,11 +242,11 @@
   height: 32%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--wb-stage-glow) 52%, transparent) 0%,
+    color-mix(in srgb, var(--wb-stage-glow) 38%, transparent) 0%,
     transparent 74%
   );
   filter: blur(22px);
-  opacity: 0.85;
+  opacity: 0.75;
 }
 
 .wb-hero__stage {
@@ -377,19 +369,19 @@
   border-radius: 1.85rem;
   background: radial-gradient(
     circle at 50% 48%,
-    color-mix(in srgb, var(--wb-glow) 58%, transparent) 0%,
-    color-mix(in srgb, var(--wb-glow-soft, var(--wb-glow)) 32%, transparent) 50%,
+    color-mix(in srgb, var(--wb-glow) 46%, transparent) 0%,
+    color-mix(in srgb, var(--wb-glow-soft, var(--wb-glow)) 26%, transparent) 50%,
     transparent 74%
   );
   filter: blur(28px);
-  opacity: 0.35;
+  opacity: 0.32;
   pointer-events: none;
   transition: background 0.55s var(--wb-ease), opacity 0.4s ease;
 }
 
 .wb-mockup-shell.is-center .wb-mockup-glow {
   inset: -15%;
-  opacity: 0.88;
+  opacity: 0.8;
   filter: blur(34px);
 }
 
@@ -411,7 +403,7 @@
 
 .wb-template[data-slot="center"] .wb-mockup {
   box-shadow:
-    0 28px 64px color-mix(in srgb, var(--wb-glow, #e11d8c) 32%, transparent),
+    0 28px 64px color-mix(in srgb, var(--wb-glow, #e11d8c) 28%, transparent),
     0 14px 32px rgba(15, 23, 42, 0.1),
     0 1px 0 rgba(255, 255, 255, 0.7) inset;
 }
@@ -504,17 +496,8 @@
 }
 
 @media (max-width: 900px) {
-  .wb-hero {
-    max-height: none;
-    min-height: auto;
-  }
-
   .wb-hero__inner {
     gap: 1.6rem;
-  }
-
-  .wb-hero__title {
-    font-size: clamp(1.7rem, 7vw, 2.25rem);
   }
 
   .wb-hero__stage {
@@ -543,49 +526,38 @@
   }
 }
 
-/* Website type blocks under the carousel */
+/* --------------------------------------------------- website type blocks */
+
 .wb-types {
   position: relative;
   direction: rtl;
   width: 100%;
-  padding: 3.25rem 1.25rem 4.75rem;
+  padding: clamp(3rem, 6vw, 4.75rem) 1.25rem clamp(3.5rem, 6vw, 5rem);
   overflow: clip;
-  background: linear-gradient(180deg, #f7f8fb 0%, #ffffff 46%, #f4f6fa 100%);
+  text-align: center;
+  background: linear-gradient(180deg, #f2f5fb 0%, #ffffff 46%, #f5f7fc 100%);
   font-family: "Assistant", "Heebo", system-ui, sans-serif;
 }
 
 .wb-types__inner {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1120px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(2.4rem, 5vw, 4.25rem);
+  gap: clamp(3rem, 6vw, 5rem);
 }
 
 .wb-type-block {
   --wb-type-accent: #2563eb;
   --wb-type-accent-soft: #93c5fd;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
-  gap: clamp(1.25rem, 3vw, 2.75rem);
-  align-items: center;
-}
-
-.wb-type-block.is-flip {
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
-}
-
-.wb-type-block.is-flip .wb-type-block__copy {
-  order: 2;
-}
-
-.wb-type-block.is-flip .wb-type-block__preview {
-  order: 1;
+  justify-items: center;
+  gap: 1.75rem;
 }
 
 .wb-type-block__copy {
-  min-width: 0;
+  max-width: 40rem;
 }
 
 .wb-type-block__index {
@@ -594,19 +566,19 @@
   font-weight: 900;
   letter-spacing: 0.24em;
   color: var(--wb-type-accent);
-  opacity: 0.7;
+  opacity: 0.75;
 }
 
 .wb-type-block__title {
-  margin: 0;
-  font-size: clamp(2.2rem, 5.4vw, 4.1rem);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: -0.04em;
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.9rem, 4vw, 2.9rem);
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.045em;
   background: linear-gradient(
     115deg,
     #0b1220 12%,
-    var(--wb-type-accent) 88%
+    var(--wb-type-accent) 92%
   );
   -webkit-background-clip: text;
   background-clip: text;
@@ -615,43 +587,50 @@
 }
 
 .wb-type-block__teaser {
-  margin: 0.85rem 0 0;
-  max-width: 28rem;
-  font-size: clamp(1rem, 1.5vw, 1.15rem);
-  line-height: 1.65;
-  font-weight: 500;
+  margin: 0.85rem auto 0;
+  max-width: 34rem;
+  font-size: clamp(1rem, 1.25vw, 1.12rem);
+  line-height: 1.75;
+  font-weight: 600;
   color: #475569;
+  text-wrap: pretty;
 }
 
 .wb-type-block__points {
-  display: grid;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 0.5rem;
-  margin: 1.15rem 0 0;
+  margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
-  max-width: 28rem;
 }
 
 .wb-type-block__points li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
-  font-size: 0.94rem;
-  font-weight: 700;
-  line-height: 1.6;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.88rem;
+  font-weight: 800;
   color: #334155;
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid rgba(226, 232, 240, 0.95);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.04);
 }
 
 .wb-type-block__points svg {
   flex-shrink: 0;
-  margin-top: 0.25rem;
   color: var(--wb-type-accent);
 }
 
 .wb-type-block__preview {
-  min-width: 0;
+  width: 100%;
+  max-width: 62rem;
 }
 
+/* Live template preview frame */
 .wb-type-preview {
   position: relative;
   width: 100%;
@@ -664,8 +643,8 @@
   border-radius: 50%;
   background: radial-gradient(
     ellipse at center,
-    color-mix(in srgb, var(--wb-glow) 42%, transparent) 0%,
-    color-mix(in srgb, var(--wb-glow-soft) 28%, transparent) 48%,
+    color-mix(in srgb, var(--wb-glow) 34%, transparent) 0%,
+    color-mix(in srgb, var(--wb-glow-soft) 22%, transparent) 48%,
     transparent 74%
   );
   filter: blur(28px);
@@ -678,17 +657,17 @@
   display: flex;
   align-items: center;
   gap: 0.38rem;
-  height: 1.7rem;
-  padding: 0 0.75rem;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  height: 1.9rem;
+  padding: 0 0.85rem;
+  border: 1px solid rgba(226, 232, 240, 0.95);
   border-bottom: 0;
-  border-radius: 1rem 1rem 0 0;
-  background: linear-gradient(180deg, #f8fafc, #eef2f7);
+  border-radius: 1.1rem 1.1rem 0 0;
+  background: linear-gradient(180deg, #fbfcfe, #f1f5f9);
 }
 
 .wb-type-preview__chrome span {
-  width: 0.4rem;
-  height: 0.4rem;
+  width: 0.42rem;
+  height: 0.42rem;
   border-radius: 9999px;
   background: #cbd5e1;
 }
@@ -706,7 +685,7 @@
 .wb-type-preview__chrome i {
   flex: 1;
   height: 0.9rem;
-  margin-inline-start: 0.4rem;
+  margin-inline-start: 0.45rem;
   border-radius: 9999px;
   background: rgba(15, 23, 42, 0.05);
 }
@@ -717,13 +696,13 @@
   width: 100%;
   aspect-ratio: 16 / 10.4;
   overflow: hidden;
-  border: 1px solid rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(226, 232, 240, 0.95);
   border-top: 0;
-  border-radius: 0 0 1rem 1rem;
+  border-radius: 0 0 1.1rem 1.1rem;
   background: #ffffff;
   box-shadow:
-    0 22px 48px color-mix(in srgb, var(--wb-glow) 18%, transparent),
-    0 10px 24px rgba(15, 23, 42, 0.08);
+    0 24px 56px color-mix(in srgb, var(--wb-glow) 16%, transparent),
+    0 10px 26px rgba(15, 23, 42, 0.08);
 }
 
 .wb-type-preview__scale {
@@ -744,28 +723,7 @@
   font-weight: 800;
 }
 
-@media (min-width: 1024px) {
-  .wb-types {
-    padding: 4.5rem 2.5rem 5.75rem;
-  }
-}
-
 @media (max-width: 900px) {
-  .wb-type-block,
-  .wb-type-block.is-flip {
-    grid-template-columns: 1fr;
-    gap: 1.15rem;
-  }
-
-  .wb-type-block.is-flip .wb-type-block__copy,
-  .wb-type-block.is-flip .wb-type-block__preview {
-    order: initial;
-  }
-
-  .wb-type-block__title {
-    font-size: clamp(2rem, 9vw, 2.8rem);
-  }
-
   .wb-type-preview__viewport {
     aspect-ratio: 16 / 11;
   }

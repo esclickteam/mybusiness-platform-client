@@ -2,22 +2,25 @@ import React from "react";
 import { Helmet } from "react-helmet-async";
 import {
   BellRing,
+  CalendarClock,
+  ChevronLeft,
+  Clock,
   Filter,
   Gauge,
   Images,
-  LayoutList,
-  MessageCircle,
-  Radar,
+  ListChecks,
+  PlugZap,
   Search,
-  Sparkles,
+  UserRound,
 } from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
-import CrmLiveConsole from "../../components/crm-marketing/CrmLiveConsole";
+import CrmScreenshotTour from "../../components/crm-marketing/CrmScreenshotTour";
 import CrmIntegrationRail from "../../components/crm-marketing/CrmIntegrationRail";
-import CrmTopicSections from "../../components/crm-marketing/CrmTopicSections";
-import CrmCapabilityShowcase from "../../components/crm-marketing/CrmCapabilityShowcase";
 import CrmMetaTrust from "../../components/crm-marketing/CrmMetaTrust";
-import { crmFaq } from "../../components/crm-marketing/crmMarketingData";
+import {
+  crmFaq,
+  pipelineStages,
+} from "../../components/crm-marketing/crmMarketingData";
 import {
   AuroraBackdrop,
   FaqAccordion,
@@ -33,41 +36,45 @@ import "../../components/product-marketing/marketingKit.css";
 import "../../components/crm-marketing/CrmProductHero.css";
 import "./crmProductPage.css";
 
-const CONSOLE_CARDS = [
+const SEO_TITLE = "CRM ולידים מ־Meta | BizUply — Meta App Review Developers";
+const SEO_DESCRIPTION =
+  "BizUply הם מפתחי Meta שעברו App Review. חברו Facebook Lead Ads ל־CRM ונהלו לידים, לקוחות ופגישות במקום אחד.";
+
+const MODULE_CARDS = [
   {
-    icon: Search,
+    icon: ListChecks,
     accent: "#7c3aed",
-    title: "חיפוש שמוצא כל פנייה",
-    text: "חיפוש חופשי על שם, טלפון, אימייל, מקור וגם על השדות שהגיעו מהטופס עצמו — כולל נתוני הקמפיין.",
-    tags: ["שם", "טלפון", "אימייל", "שדות טופס"],
+    title: "כרטיס ליד שמספר את כל הסיפור",
+    text: "פרטי הפנייה וכל שדות הטופס, תיעוד של הערות, שיחות ווואטסאפ, שינויי סטטוס אוטומטיים, ומשימה עם תאריך ושעה.",
+    tags: ["הערה", "שיחה", "וואטסאפ", "משימה"],
   },
   {
-    icon: Filter,
+    icon: UserRound,
     accent: "#2563eb",
-    title: "סינון לפי סטטוס ומקור",
-    text: "מצמצמים את הרשימה לסטטוס אחד או לערוץ אחד — Meta, Google או אתר — כדי לעבוד על מה שחשוב עכשיו.",
-    tags: ["5 סטטוסים", "Meta", "Google", "אתר"],
+    title: "תיק לקוח מלא",
+    text: "פרטי קשר, סטטוס שנגזר מהיסטוריית הפגישות, סך ההכנסות, תיעוד עם שבעה סוגי רשומות והעלאת מסמכים.",
+    tags: ["פגישה", "קובץ", "הסכם", "שדות מותאמים"],
   },
   {
-    icon: LayoutList,
+    icon: CalendarClock,
     accent: "#0891b2",
-    title: "רשימה שמחזיקה נפח",
-    text: "50 לידים בעמוד עם עימוד, וקיבוץ לפי תאריך הפנייה — כדי לראות מה נכנס היום ומה מחכה מאתמול.",
-    tags: ["50 בעמוד", "קיבוץ לפי תאריך"],
+    title: "יומן שמחשב לבד מה פנוי",
+    text: "החלונות הפנויים נגזרים משעות הפעילות וממשך השירות בקפיצות של 15 דקות, והתור נשמר עם מחיר וסטטוס תשלום.",
+    tags: ["לוח חודשי", "היום", "עתידי"],
+  },
+  {
+    icon: Clock,
+    accent: "#059669",
+    title: "שירותים ושעות פעילות",
+    text: "קטלוג שירותים עם שם, תיאור, משך, מחיר ותמונה, ולוח שבועי של שעות פעילות — שמזינים גם את היומן וגם את עמוד הזימון ללקוחות.",
+    tags: ["קטלוג שירותים", "שעות פעילות"],
   },
   {
     icon: BellRing,
     accent: "#f59e0b",
-    title: "התראות בזמן אמת",
-    text: "ליד חדש נכנס — ומופיע בהתראות מיד. משימה שעבר זמנה עולה למרכז ההתראות עד שמסמנים אותה כבוצעה.",
+    title: "התראות שלא נותנות לפספס",
+    text: "ליד חדש נכנס ומופיע בהתראות מיד, ומשימה שעבר זמנה עולה למרכז ההתראות עד שמסמנים אותה כבוצעה.",
     tags: ["לידים חדשים", "משימות שעבר זמנן"],
-  },
-  {
-    icon: MessageCircle,
-    accent: "#16a34a",
-    title: "וואטסאפ וטלפון בלחיצה",
-    text: "מהרשימה ומכרטיס הליד יוצאים ישר לשיחה או לוואטסאפ, ומתעדים את מה שקרה באותו מקום.",
-    tags: ["WhatsApp", "שיחה", "תיעוד"],
   },
   {
     icon: Gauge,
@@ -78,9 +85,29 @@ const CONSOLE_CARDS = [
   },
 ];
 
-const SEO_TITLE = "CRM ולידים מ־Meta | BizUply — Meta App Review Developers";
-const SEO_DESCRIPTION =
-  "BizUply הם מפתחי Meta שעברו App Review. חברו Facebook Lead Ads ל־CRM ונהלו לידים, לקוחות ופגישות במקום אחד.";
+const LIST_CARDS = [
+  {
+    icon: Search,
+    accent: "#6d28d9",
+    title: "חיפוש שמוצא כל פנייה",
+    text: "חיפוש חופשי על שם, טלפון, אימייל, מקור וגם על השדות שהגיעו מהטופס עצמו.",
+    tags: ["שם", "טלפון", "אימייל", "שדות טופס"],
+  },
+  {
+    icon: Filter,
+    accent: "#2563eb",
+    title: "סינון לפי סטטוס ומקור",
+    text: "מצמצמים את הרשימה לסטטוס אחד או לערוץ אחד — Meta, Google או האתר שלכם.",
+    tags: ["5 סטטוסים", "Meta", "Google", "אתר"],
+  },
+  {
+    icon: Images,
+    accent: "#0891b2",
+    title: "רשימה שמחזיקה נפח",
+    text: "50 לידים בעמוד עם עימוד, וקיבוץ לפי תאריך הפנייה — כדי לראות מה נכנס היום ומה מחכה מאתמול.",
+    tags: ["50 בעמוד", "קיבוץ לפי תאריך"],
+  },
+];
 
 export default function CrmProductPage() {
   return (
@@ -101,43 +128,53 @@ export default function CrmProductPage() {
 
       <CrmProductHero />
 
-      {/* The leads console, animated */}
-      <section
-        className="pm-section pm-section--dark crmp__console"
-        style={{ "--pm-seam-top": "#f5f7fb", "--pm-seam-bottom": "#f5f7fb" }}
-      >
-        <AuroraBackdrop vivid dark grain />
+      {/* The five real lead statuses */}
+      <section className="pm-section pm-section--tight crx">
         <div className="pm-shell">
           <SectionHeading
-            center
-            accent="#c4b5fd"
             eyebrow={
               <>
-                <Radar size={14} aria-hidden="true" />
+                <ListChecks size={14} aria-hidden="true" />
                 צינור הלידים
               </>
             }
             title={
               <>
-                ליד נכנס, זז בין סטטוסים{" "}
-                <span className="pm-grad">ולא נשכח</span>
+                חמישה סטטוסים, <span className="pm-grad">תמונה אחת ברורה</span>
               </>
             }
-            lead="ככה נראה יום עבודה במערכת: פנייה חדשה מהקמפיין נכנסת לצינור, מתעדים שיחה, פותחים משימה עם תאריך, וכשהליד מומר הוא ממשיך כלקוח עם פגישה ביומן."
+            lead="כל ליד מחזיק סטטוס אחד, וכל שינוי סטטוס נרשם אוטומטית בציר הזמן שלו — כך שרואים מתי הוא זז ולאן."
           />
 
-          <Reveal from="up" delay={0.12} className="crmp__console-frame">
-            <CrmLiveConsole />
+          <Reveal from="up" delay={0.1}>
+            <ol className="crx-pipeline">
+              {pipelineStages.map((stage, index) => (
+                <React.Fragment key={stage.id}>
+                  <li
+                    style={{ "--crx-accent": stage.accent }}
+                  >
+                    {stage.label}
+                  </li>
+                  {index < pipelineStages.length - 1 ? (
+                    <ChevronLeft
+                      className="crx-pipeline__arrow"
+                      size={18}
+                      aria-hidden="true"
+                    />
+                  ) : null}
+                </React.Fragment>
+              ))}
+            </ol>
           </Reveal>
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
-            {CONSOLE_CARDS.map((card) => {
+            {LIST_CARDS.map((card) => {
               const Icon = card.icon;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent} dark>
+                  <SpotlightCard accent={card.accent}>
                     <span className="pm-spot__icon">
-                      <Icon size={18} />
+                      <Icon size={19} />
                     </span>
                     <h3 className="pm-spot__title">{card.title}</h3>
                     <p className="pm-spot__text">{card.text}</p>
@@ -154,14 +191,11 @@ export default function CrmProductPage() {
         </div>
       </section>
 
-      <CrmIntegrationRail />
-
-      {/* Real product screenshots */}
-      <section className="pm-section pm-section--tight crmp__shots">
-        <AuroraBackdrop beam={false} />
+      {/* Real captures from the dashboard */}
+      <section className="pm-section crx crmp__shots">
+        <AuroraBackdrop />
         <div className="pm-shell">
           <SectionHeading
-            center
             eyebrow={
               <>
                 <Images size={14} aria-hidden="true" />
@@ -173,20 +207,22 @@ export default function CrmProductPage() {
                 לא הדמיה — <span className="pm-grad">המסכים האמיתיים</span>
               </>
             }
-            lead="לידים, לקוחות ופגישות — שלושת המודולים שאתם עובדים איתם בפועל, בדיוק כפי שהם נראים בלוח הבקרה של העסק."
+            lead="לידים, לקוחות ופגישות: שלושת המודולים שאתם עובדים איתם בפועל, בדיוק כפי שהם נראים בלוח הבקרה של העסק."
           />
+
+          <CrmScreenshotTour />
         </div>
-        <CrmTopicSections />
       </section>
 
-      {/* Deep-dive rail */}
-      <section className="pm-section crmp__capabilities">
+      <CrmIntegrationRail />
+
+      {/* What each module holds */}
+      <section className="pm-section crx">
         <div className="pm-shell">
           <SectionHeading
-            center
             eyebrow={
               <>
-                <Sparkles size={14} aria-hidden="true" />
+                <PlugZap size={14} aria-hidden="true" />
                 מה יש בכל מודול
               </>
             }
@@ -196,28 +232,40 @@ export default function CrmProductPage() {
                 <span className="pm-grad">התור הבא ביומן</span>
               </>
             }
-            lead="כרטיס ליד, תיק לקוח, יומן תורים וקטלוג שירותים — ארבעה מודולים שמדברים ביניהם, בלי לייצא ולייבא כלום."
+            lead="כרטיס ליד, תיק לקוח, יומן תורים וקטלוג שירותים — מודולים שמדברים ביניהם, בלי לייצא ולייבא כלום."
           />
 
-          <div className="crmp__capabilities-inner">
-            <CrmCapabilityShowcase />
-          </div>
+          <Stagger className="pm-grid pm-grid--3" gap={0.07}>
+            {MODULE_CARDS.map((card) => {
+              const Icon = card.icon;
+              return (
+                <StaggerItem key={card.title}>
+                  <SpotlightCard accent={card.accent}>
+                    <span className="pm-spot__icon">
+                      <Icon size={19} />
+                    </span>
+                    <h3 className="pm-spot__title">{card.title}</h3>
+                    <p className="pm-spot__text">{card.text}</p>
+                    <ul className="pm-spot__tags">
+                      {card.tags.map((tag) => (
+                        <li key={tag}>{tag}</li>
+                      ))}
+                    </ul>
+                  </SpotlightCard>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
         </div>
       </section>
 
       <CrmMetaTrust />
 
       {/* FAQ + closing */}
-      <section className="pm-section pm-section--tight crmp__faq">
+      <section className="pm-section pm-section--tight crx">
         <div className="pm-shell">
-          <SectionHeading
-            center
-            eyebrow="שאלות נפוצות"
-            title="מה שחשוב לדעת על ה־CRM"
-          />
-          <div className="crmp__faq-inner">
-            <FaqAccordion items={crmFaq} />
-          </div>
+          <SectionHeading eyebrow="שאלות נפוצות" title="מה שחשוב לדעת על ה־CRM" />
+          <FaqAccordion items={crmFaq} />
 
           <div className="crmp__final">
             <FinalCta

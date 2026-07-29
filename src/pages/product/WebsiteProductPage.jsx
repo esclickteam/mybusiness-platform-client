@@ -3,17 +3,17 @@ import { Helmet } from "react-helmet-async";
 import {
   Code2,
   History,
-  Languages,
+  Layers,
+  Library,
   MonitorSmartphone,
   MousePointerClick,
   Palette,
-  Puzzle,
+  Share2,
   Sparkles,
-  Wand2,
 } from "lucide-react";
 import WebsiteBuilderHero from "../../components/website-builder-marketing/WebsiteBuilderHero";
-import WebsiteStudioSimulator from "../../components/website-builder-marketing/WebsiteStudioSimulator";
-import WebsiteCapabilityShowcase from "../../components/website-builder-marketing/WebsiteCapabilityShowcase";
+import WebsiteTemplateLibrary from "../../components/website-builder-marketing/WebsiteTemplateLibrary";
+import WebsiteSeoSection from "../../components/website-builder-marketing/WebsiteSeoSection";
 import WebsiteEcosystem from "../../components/website-builder-marketing/WebsiteEcosystem";
 import WebsiteLaunchFlow from "../../components/website-builder-marketing/WebsiteLaunchFlow";
 import { websiteFaq } from "../../components/website-builder-marketing/websiteMarketingData";
@@ -21,7 +21,6 @@ import {
   AuroraBackdrop,
   FaqAccordion,
   FinalCta,
-  Reveal,
   ScrollProgress,
   SectionHeading,
   SpotlightCard,
@@ -30,6 +29,10 @@ import {
 } from "../../components/product-marketing";
 import "../../components/product-marketing/marketingKit.css";
 import "./websiteProductPage.css";
+
+const SEO_TITLE = "בניית אתרים מקצועיים | BizUply";
+const SEO_DESCRIPTION =
+  "בונים אתר, חנות או אתר עם זימון תורים מתוך 205 תבניות, עורכים בעורך ויזואלי ומפרסמים לדומיין שלכם — כשכל פנייה מהאתר נכנסת ל־CRM.";
 
 const EDITOR_CARDS = [
   {
@@ -47,38 +50,55 @@ const EDITOR_CARDS = [
     tags: ["צבעים", "טיפוגרפיה", "אנימציות"],
   },
   {
-    icon: MonitorSmartphone,
+    icon: Layers,
+    accent: "#4f46e5",
+    title: "מבנה שאתם קובעים",
+    text: "פאנל שכבות עם גרירה לסידור הסקשנים, הוספת עמודים ותתי־עמודים, קביעת עמוד בית ותפריט שמתעדכן לבד.",
+    tags: ["גרירת סקשנים", "עמודים", "תפריט"],
+  },
+  {
+    icon: Library,
     accent: "#0891b2",
+    title: "ספריות תוכן",
+    text: "140 עמודים מוכנים וקטלוג סקשנים לפי קטגוריה, בונה טפסים וספריית מדיה עם חיפוש תמונות — הכל בתוך העורך.",
+    tags: ["140 עמודים", "סקשנים", "מדיה"],
+  },
+  {
+    icon: MonitorSmartphone,
+    accent: "#059669",
     title: "דסקטופ, טאבלט ומובייל",
     text: "עוברים בין מצבי תצוגה ומכוונים את העיצוב לכל מכשיר, כולל תפריט מובייל שמותאם באתר שפורסם.",
     tags: ["רספונסיבי", "תפריט מובייל"],
   },
   {
     icon: History,
-    accent: "#4f46e5",
+    accent: "#f59e0b",
     title: "80 צעדי ביטול",
     text: "היסטוריית עריכה עמוקה עם ביטול וחזרה בקיצורי מקלדת, כדי להתנסות בלי לפחד לשבור.",
     tags: ["Undo", "Redo", "קיצורי מקלדת"],
   },
   {
-    icon: Wand2,
-    accent: "#f59e0b",
-    title: "כלי AI לטקסט",
-    text: "בחירת טקסט ובקשה לשכתב, לקצר, להרחיב או לתרגם — וגם הצעות פלטת צבעים ווריאציות לסקשן.",
-    tags: ["שכתוב", "קיצור", "תרגום"],
-  },
-  {
     icon: Code2,
-    accent: "#059669",
+    accent: "#2563eb",
     title: "קוד משלכם כשצריך",
     text: "CSS ברמת אתר או עמוד, ותגיות HTML ל־head ול־body — לפיקסלים, לסקריפטים ולהתאמות מדויקות.",
     tags: ["CSS", "HTML", "סקריפטים"],
   },
+  {
+    icon: Share2,
+    accent: "#db2777",
+    title: "עבודה עם שותפים",
+    text: "מזמינים מעצב או שותף לאתר בהרשאת עריכה או צפייה, רואים מי מחובר, מסירים גישה או מעבירים בעלות.",
+    tags: ["עריכה", "צפייה", "העברת בעלות"],
+  },
+  {
+    icon: Sparkles,
+    accent: "#6d28d9",
+    title: "פרסום בלחיצה",
+    text: "האתר עולה לאוויר לכתובת שלכם תחת sites.bizuply.com, ואפשר לחזור לטיוטה ולפרסם שוב בכל שלב.",
+    tags: ["טיוטה", "פרסום", "דומיין"],
+  },
 ];
-
-const SEO_TITLE = "בניית אתרים מקצועיים | BizUply";
-const SEO_DESCRIPTION =
-  "בונים אתר, חנות או אתר עם זימון תורים מתוך 205 תבניות, עורכים בעורך ויזואלי ומפרסמים לדומיין שלכם — כשכל פנייה מהאתר נכנסת ל־CRM.";
 
 export default function WebsiteProductPage() {
   return (
@@ -101,43 +121,35 @@ export default function WebsiteProductPage() {
 
       <WebsiteBuilderHero />
 
-      {/* The editor itself, animated */}
-      <section
-        className="pm-section pm-section--dark wbp__studio"
-        style={{ "--pm-seam-top": "#f4f6fa", "--pm-seam-bottom": "#f7f8fc" }}
-      >
-        <AuroraBackdrop vivid dark grain />
+      <WebsiteTemplateLibrary />
+
+      {/* What the visual editor gives you */}
+      <section className="pm-section wbp__editor">
+        <AuroraBackdrop />
         <div className="pm-shell">
           <SectionHeading
-            center
-            accent="#c4b5fd"
             eyebrow={
               <>
-                <Sparkles size={14} aria-hidden="true" />
+                <Palette size={14} aria-hidden="true" />
                 העורך הוויזואלי
               </>
             }
             title={
               <>
-                ככה נראית עריכה של אתר{" "}
-                <span className="pm-grad">בזמן אמת</span>
+                עורכים את האתר <span className="pm-grad">בלי שורת קוד</span>
               </>
             }
-            lead="בוחרים סקשן, משנים צבע מיתוג, מסדרים מחדש את סדר הסקשנים, בודקים במובייל ומפרסמים. בלי קוד, בלי מתווכים, בלי לצאת מהמסך."
+            lead="לוחצים על אלמנט ומשנים אותו במקום, מסדרים סקשנים בגרירה, בודקים במובייל ומפרסמים — הכל מאותו מסך, בלי מתווכים."
           />
-
-          <Reveal from="up" delay={0.12} className="wbp__studio-frame">
-            <WebsiteStudioSimulator />
-          </Reveal>
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
             {EDITOR_CARDS.map((card) => {
               const Icon = card.icon;
               return (
                 <StaggerItem key={card.title}>
-                  <SpotlightCard accent={card.accent} dark>
+                  <SpotlightCard accent={card.accent}>
                     <span className="pm-spot__icon">
-                      <Icon size={18} />
+                      <Icon size={19} />
                     </span>
                     <h3 className="pm-spot__title">{card.title}</h3>
                     <p className="pm-spot__text">{card.text}</p>
@@ -154,32 +166,7 @@ export default function WebsiteProductPage() {
         </div>
       </section>
 
-      {/* Deep-dive rail */}
-      <section className="pm-section wbp__capabilities">
-        <AuroraBackdrop />
-        <div className="pm-shell">
-          <SectionHeading
-            center
-            eyebrow={
-              <>
-                <Puzzle size={14} aria-hidden="true" />
-                כל מה שיש מתחת למכסה
-              </>
-            }
-            title={
-              <>
-                מהתבנית הראשונה ועד{" "}
-                <span className="pm-grad">הדומיין שלכם</span>
-              </>
-            }
-            lead="חמישה שלבים שקורים באותה מערכת: ספריית תבניות, בנייה עם AI, ספריות סקשנים ועמודים, פאנל SEO מלא, ופרסום עם דומיין ושיתוף צוות."
-          />
-
-          <div className="wbp__capabilities-inner">
-            <WebsiteCapabilityShowcase />
-          </div>
-        </div>
-      </section>
+      <WebsiteSeoSection />
 
       <WebsiteEcosystem />
 
@@ -189,18 +176,10 @@ export default function WebsiteProductPage() {
       <section className="pm-section pm-section--tight wbp__faq">
         <div className="pm-shell">
           <SectionHeading
-            center
-            eyebrow={
-              <>
-                <Languages size={14} aria-hidden="true" />
-                שאלות נפוצות
-              </>
-            }
+            eyebrow="שאלות נפוצות"
             title="מה שחשוב לדעת לפני שמתחילים"
           />
-          <div className="wbp__faq-inner">
-            <FaqAccordion items={websiteFaq} />
-          </div>
+          <FaqAccordion items={websiteFaq} />
 
           <div className="wbp__final">
             <FinalCta

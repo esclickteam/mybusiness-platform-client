@@ -27,14 +27,12 @@ export default function FinalCta({
       <section className="pm-final">
         <span className="pm-final__glow" aria-hidden="true" />
         <div className="pm-final__inner">
-          <div>
-            <p className="pm-eyebrow">
-              <Sparkles size={14} aria-hidden="true" />
-              {eyebrow}
-            </p>
-            <h2>{title}</h2>
-            <p>{text}</p>
-          </div>
+          <p className="pm-eyebrow">
+            <Sparkles size={14} aria-hidden="true" />
+            {eyebrow}
+          </p>
+          <h2>{title}</h2>
+          <p>{text}</p>
 
           <div className="pm-cta-row">
             <Link to={primaryTo} className="pm-cta pm-cta--light">

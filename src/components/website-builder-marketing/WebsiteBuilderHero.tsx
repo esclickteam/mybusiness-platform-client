@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
-import { ArrowLeft, LayoutTemplate, Sparkles, Wand2 } from "lucide-react";
+import { ArrowLeft, CalendarClock, LayoutTemplate, Sparkles } from "lucide-react";
 import TemplateShowcase from "./TemplateShowcase";
 import WebsiteTypesReveal from "./WebsiteTypesReveal";
 import { StatStrip, WordReveal } from "../product-marketing";
@@ -36,12 +36,12 @@ export default function WebsiteBuilderHero() {
                 205 תבניות מוכנות
               </span>
               <span className="pm-badge">
-                <Wand2 size={13} aria-hidden="true" />
-                בנייה עם AI
-              </span>
-              <span className="pm-badge">
                 <LayoutTemplate size={13} aria-hidden="true" />
                 עורך ויזואלי
+              </span>
+              <span className="pm-badge">
+                <CalendarClock size={13} aria-hidden="true" />
+                חנות ותורים
               </span>
             </motion.div>
 
@@ -59,8 +59,8 @@ export default function WebsiteBuilderHero() {
               transition={{ delay: 0.55, duration: 0.7, ease: EASE }}
             >
               בוחרים תבנית מתוך 205 תבניות לפי תחום, עורכים כל אלמנט במקום,
-              מוסיפים חנות, יומן ותוספים — ומפרסמים לכתובת שלכם. כל פנייה
-              מהאתר נכנסת ישר לצינור הלידים ב־CRM.
+              מוסיפים חנות, יומן ותוספים — ומפרסמים לכתובת שלכם. כל פנייה מהאתר
+              נכנסת ישר לצינור הלידים ב־CRM.
             </motion.p>
 
             <motion.div

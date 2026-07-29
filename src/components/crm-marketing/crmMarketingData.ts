@@ -2,8 +2,8 @@ import type { MarketingFaq, MarketingStat } from "../product-marketing";
 
 /**
  * Copy for the /crm page.
- * Statuses, activity types, field names and integration steps below mirror the
- * real CRM module (leads pipeline, client file, appointments, services).
+ * Statuses, field names and integration steps below mirror the real CRM module
+ * (leads pipeline, client file, appointments, services).
  */
 
 export const crmHeroStats: MarketingStat[] = [
@@ -26,79 +26,6 @@ export const pipelineStages: PipelineStage[] = [
   { id: "interested", label: "מעוניין", accent: "#0891b2" },
   { id: "converted", label: "הומר", accent: "#059669" },
   { id: "lost", label: "אבוד", accent: "#94a3b8" },
-];
-
-export type DemoLead = {
-  name: string;
-  source: "meta" | "google" | "website";
-  sourceLabel: string;
-  stage: PipelineStage["id"];
-  note: string;
-};
-
-export const demoLeads: DemoLead[] = [
-  {
-    name: "נועה כהן",
-    source: "meta",
-    sourceLabel: "Facebook Lead Ads",
-    stage: "new",
-    note: "מעוניינת בטיפול ראשון",
-  },
-  {
-    name: "יוסי לוי",
-    source: "website",
-    sourceLabel: "טופס באתר",
-    stage: "contacted",
-    note: "שיחה תועדה · חוזרים מחר",
-  },
-  {
-    name: "דנה אברהם",
-    source: "meta",
-    sourceLabel: "Instagram",
-    stage: "interested",
-    note: "משימה: לשלוח הצעת מחיר",
-  },
-  {
-    name: "איתי מזרחי",
-    source: "google",
-    sourceLabel: "Google Ads",
-    stage: "converted",
-    note: "הפך ללקוח · פגישה נקבעה",
-  },
-  {
-    name: "מיכל שמש",
-    source: "website",
-    sourceLabel: "טופס באתר",
-    stage: "new",
-    note: "פנייה חדשה מהאתר",
-  },
-];
-
-export const leadActivityTypes = [
-  "הערה",
-  "שיחה",
-  "וואטסאפ",
-  "שינוי סטטוס",
-  "משימה עם תאריך",
-];
-
-export const clientActivityTypes = [
-  "הערה",
-  "שיחה",
-  "וואטסאפ",
-  "משימה",
-  "פגישה",
-  "קובץ",
-  "הסכם",
-];
-
-export const clientFileFormats = [
-  "תמונות",
-  "PDF",
-  "Word",
-  "Excel",
-  "PowerPoint",
-  "טקסט",
 ];
 
 export type IntegrationSpec = {

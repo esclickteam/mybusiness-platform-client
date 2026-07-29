@@ -9,8 +9,6 @@ export { default as ScrollProgress } from "./ScrollProgress";
 export { default as SectionHeading } from "./SectionHeading";
 export { default as SpotlightCard } from "./SpotlightCard";
 export { default as StatStrip } from "./StatStrip";
-export { default as StickyShowcase } from "./StickyShowcase";
 
 export type { MarketingFaq } from "./FaqAccordion";
 export type { MarketingStat } from "./StatStrip";
-export type { ShowcaseItem } from "./StickyShowcase";

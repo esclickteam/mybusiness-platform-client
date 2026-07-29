@@ -7,7 +7,6 @@ export type WebsiteTypeBlock = {
   points: string[];
   templateId: string;
   templateTitle: string;
-  from: "right" | "left";
   accent: string;
   accentSoft: string;
 };
@@ -24,7 +23,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "brandforge",
     templateTitle: "Brandforge",
-    from: "right",
     accent: "#111827",
     accentSoft: "#F59E0B",
   },
@@ -39,7 +37,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "velmora",
     templateTitle: "Velmora",
-    from: "left",
     accent: "#9A6F3B",
     accentSoft: "#E7C9A0",
   },
@@ -54,7 +51,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "lunelle",
     templateTitle: "Lunelle",
-    from: "right",
     accent: "#2A171C",
     accentSoft: "#E8B8C1",
   },
@@ -69,7 +65,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "brokeria",
     templateTitle: "Brokeria",
-    from: "left",
     accent: "#C9A962",
     accentSoft: "#E8D5A3",
   },
@@ -84,7 +79,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "aurelia",
     templateTitle: "Aurelia",
-    from: "right",
     accent: "#8B1E3F",
     accentSoft: "#E8B4B8",
   },
@@ -99,7 +93,6 @@ export const websiteTypeBlocks: WebsiteTypeBlock[] = [
     ],
     templateId: "lectora",
     templateTitle: "Lectora",
-    from: "left",
     accent: "#1D4ED8",
     accentSoft: "#93C5FD",
   },

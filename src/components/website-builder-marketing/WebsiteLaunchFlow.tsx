@@ -1,5 +1,5 @@
 import React from "react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { BarChart3, Inbox, MousePointerClick, Workflow } from "lucide-react";
 import { Reveal, SectionHeading } from "../product-marketing";
 import "./websiteSections.css";
@@ -32,14 +32,18 @@ const NODES = [
 
 const SPARK = [34, 41, 38, 52, 47, 63, 58, 71, 66, 78, 84, 92];
 
-export default function WebsiteLaunchFlow() {
-  const reduceMotion = useReducedMotion();
+const KPIS = [
+  { title: "צפיות", text: "סך כל הצפיות בעמודים" },
+  { title: "מבקרים", text: "מבקרים ייחודיים" },
+  { title: "עמודים", text: "העמודים המובילים" },
+  { title: "מקורות", text: "תנועה כולל UTM" },
+];
 
+export default function WebsiteLaunchFlow() {
   return (
     <section className="pm-section wbx">
       <div className="pm-shell">
         <SectionHeading
-          center
           eyebrow={
             <>
               <Workflow size={14} aria-hidden="true" />
@@ -65,26 +69,12 @@ export default function WebsiteLaunchFlow() {
                 delay={index * 0.12}
                 className="wbx-flow__node"
               >
-                {index > 0 && !reduceMotion ? (
-                  <motion.span
-                    className="wbx-flow__pulse"
-                    aria-hidden="true"
-                    animate={{ opacity: [0, 1, 0], scale: [0.6, 1.3, 0.6] }}
-                    transition={{
-                      duration: 1.8,
-                      repeat: Infinity,
-                      delay: index * 0.45,
-                      ease: "easeInOut",
-                    }}
-                  />
-                ) : null}
-
                 <span
                   className="wbx-flow__icon"
                   style={{ background: node.accent }}
                   aria-hidden="true"
                 >
-                  <Icon size={20} />
+                  <Icon size={21} />
                 </span>
                 <h3>{node.title}</h3>
                 <p>{node.text}</p>
@@ -100,30 +90,10 @@ export default function WebsiteLaunchFlow() {
 
         <Reveal from="up" delay={0.1}>
           <div className="wbx-analytics">
-            <div>
-              <p className="pm-eyebrow">
-                <BarChart3 size={14} aria-hidden="true" />
-                מדידה בלוח הבקרה
-              </p>
-              <ul className="wbx-analytics__kpis" style={{ marginTop: "1rem" }}>
-                <li>
-                  <b>צפיות</b>
-                  <i>סך כל הצפיות בעמודים</i>
-                </li>
-                <li>
-                  <b>מבקרים</b>
-                  <i>מבקרים ייחודיים</i>
-                </li>
-                <li>
-                  <b>עמודים</b>
-                  <i>העמודים המובילים</i>
-                </li>
-                <li>
-                  <b>מקורות</b>
-                  <i>תנועה כולל UTM</i>
-                </li>
-              </ul>
-            </div>
+            <p className="pm-eyebrow">
+              <BarChart3 size={14} aria-hidden="true" />
+              מדידה בלוח הבקרה
+            </p>
 
             <div className="wbx-spark" aria-hidden="true">
               {SPARK.map((height, index) => (
@@ -141,6 +111,15 @@ export default function WebsiteLaunchFlow() {
                 />
               ))}
             </div>
+
+            <ul className="wbx-analytics__kpis">
+              {KPIS.map((kpi) => (
+                <li key={kpi.title}>
+                  <b>{kpi.title}</b>
+                  <i>{kpi.text}</i>
+                </li>
+              ))}
+            </ul>
           </div>
         </Reveal>
       </div>

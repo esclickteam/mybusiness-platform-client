@@ -1,5 +1,4 @@
-import type { MarketingFaq } from "../product-marketing";
-import type { MarketingStat } from "../product-marketing";
+import type { MarketingFaq, MarketingStat } from "../product-marketing";
 
 /**
  * Copy for the /website-builder page.
@@ -26,8 +25,8 @@ export const templateCategories: TemplateCategoryStat[] = [
   { label: "דפי נחיתה", count: 27, accent: "#2563eb" },
   { label: "פורטפוליו וסוכנות", count: 26, accent: "#0f172a" },
   { label: "יופי וטיפוח", count: 26, accent: "#e11d8c" },
-  { label: "אוכל ומסעדות", count: 24, accent: "#8b1e3f" },
   { label: "נדל״ן", count: 25, accent: "#c9a962" },
+  { label: "אוכל ומסעדות", count: 24, accent: "#8b1e3f" },
   { label: "תיירות וחוף", count: 10, accent: "#0891b2" },
   { label: "חינוך וקורסים", count: 10, accent: "#7c3aed" },
 ];
@@ -36,16 +35,14 @@ export type PluginChip = {
   name: string;
   category: string;
   accent: string;
-  /** Runs on the published site today (not just installable from the store). */
-  live?: boolean;
 };
 
 /** Names taken from the plugin store catalog. */
 export const pluginChips: PluginChip[] = [
-  { name: "כלי נגישות BizUply", category: "נגישות", accent: "#2563eb", live: true },
-  { name: "ספירה לאחור", category: "המרות", accent: "#f59e0b", live: true },
-  { name: "גלגל הטבות", category: "מועדון", accent: "#e11d8c", live: true },
-  { name: "חיפוש חכם", category: "חוויית משתמש", accent: "#0891b2", live: true },
+  { name: "כלי נגישות BizUply", category: "נגישות", accent: "#2563eb" },
+  { name: "ספירה לאחור", category: "המרות", accent: "#f59e0b" },
+  { name: "גלגל הטבות", category: "מועדון", accent: "#e11d8c" },
+  { name: "חיפוש חכם", category: "חוויית משתמש", accent: "#0891b2" },
   { name: "חנות אונליין", category: "מסחר", accent: "#9a6f3b" },
   { name: "יומן ותורים", category: "תורים", accent: "#4f46e5" },
   { name: "תשלומים", category: "פיננסים", accent: "#059669" },
@@ -53,8 +50,6 @@ export const pluginChips: PluginChip[] = [
   { name: "טופס לידים", category: "שיווק", accent: "#7c3aed" },
   { name: "ביקורות", category: "שיווק", accent: "#f59e0b" },
   { name: "מועדון לקוחות", category: "מועדון", accent: "#db2777" },
-  { name: "סוכן מכירות AI", category: "AI", accent: "#6d28d9" },
-  { name: "מצא את השירות שלי", category: "AI", accent: "#8b5cf6" },
   { name: "מפת חום", category: "אנליטיקס", accent: "#dc2626" },
   { name: "מנתח נטישת טפסים", category: "אנליטיקס", accent: "#ea580c" },
   { name: "הקלטת מסע לקוח", category: "אנליטיקס", accent: "#0284c7" },
@@ -62,6 +57,26 @@ export const pluginChips: PluginChip[] = [
   { name: "תפריט דיגיטלי", category: "מסעדות", accent: "#b91c1c" },
   { name: "פופאפ יציאה", category: "המרות", accent: "#c026d3" },
   { name: "בחירת שפה", category: "בינלאומי", accent: "#0ea5e9" },
+];
+
+/** Plugins that render on the published site, not just install from the store. */
+export const livePlugins = [
+  {
+    name: "כלי נגישות BizUply",
+    text: "ווידג׳ט נגישות שמופיע באתר שפורסם — התאמות ניגודיות, גופן ועוד.",
+  },
+  {
+    name: "ספירה לאחור",
+    text: "טיימר מבצע חי שמוטמע בסקשן ורץ מול המבקרים באתר.",
+  },
+  {
+    name: "גלגל הטבות",
+    text: "גלגל הטבות אינטראקטיבי לאיסוף פניות ולעידוד המרות.",
+  },
+  {
+    name: "חיפוש חכם",
+    text: "חיפוש פנימי באתר שמוצג כשכבה מעל התוכן שפורסם.",
+  },
 ];
 
 /** Schema.org types the JSON-LD builder can generate. */
@@ -101,8 +116,8 @@ export const websiteFaq: MarketingFaq[] = [
     a: "לא. בוחרים אחת מ־205 התבניות, לוחצים על כל אלמנט ומשנים אותו במקום — טקסט, צבע, תמונה ומרווחים. מי שכן רוצה לרדת לרזולוציה נמוכה יכול להוסיף CSS משלו ותגיות HTML ל־head ול־body של האתר.",
   },
   {
-    q: "מה בדיוק ה־AI בונה בשבילי?",
-    a: "אשף הבנייה שואל על העסק (שם, תחום, תיאור וקהל יעד), על סגנון וטון, ועל העמודים שאתם רוצים — ומייצר טיוטת אתר מרובת עמודים עם תוכן מותאם, שנפתחת ישירות בעורך הוויזואלי להמשך עריכה.",
+    q: "אפשר לשנות את מבנה האתר ולא רק את התוכן?",
+    a: "כן. פאנל השכבות מאפשר לגרור סקשנים ולסדר אותם מחדש, להוסיף ולמחוק עמודים ותתי־עמודים, לקבוע עמוד בית ולהסתיר עמודים מהתפריט — והתפריט מתעדכן בהתאם.",
   },
   {
     q: "איפה האתר מתפרסם ואפשר לחבר דומיין פרטי?",

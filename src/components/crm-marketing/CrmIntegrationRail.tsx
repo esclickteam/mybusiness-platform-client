@@ -15,7 +15,6 @@ export default function CrmIntegrationRail() {
     <section className="pm-section crx">
       <div className="pm-shell">
         <SectionHeading
-          center
           eyebrow={
             <>
               <PlugZap size={14} aria-hidden="true" />

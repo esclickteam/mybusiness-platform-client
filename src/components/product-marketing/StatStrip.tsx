@@ -12,11 +12,10 @@ export type MarketingStat = {
 
 type Props = {
   stats: MarketingStat[];
-  dark?: boolean;
   className?: string;
 };
 
-export default function StatStrip({ stats, dark = false, className }: Props) {
+export default function StatStrip({ stats, className }: Props) {
   return (
     <Stagger
       className={`pm-stats${className ? ` ${className}` : ""}`}
@@ -24,11 +23,7 @@ export default function StatStrip({ stats, dark = false, className }: Props) {
       amount={0.4}
     >
       {stats.map((stat) => (
-        <StaggerItem
-          key={stat.label}
-          as="div"
-          className={`pm-stat${dark ? " pm-stat--dark" : ""}`}
-        >
+        <StaggerItem key={stat.label} as="div" className="pm-stat">
           <span className="pm-stat__value">
             <CountUp
               to={stat.value}

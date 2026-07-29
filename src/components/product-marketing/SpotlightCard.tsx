@@ -3,7 +3,6 @@ import React, { useCallback, useRef } from "react";
 type Props = {
   children: React.ReactNode;
   accent?: string;
-  dark?: boolean;
   className?: string;
   as?: "div" | "article" | "li";
 };
@@ -15,7 +14,6 @@ type Props = {
 export default function SpotlightCard({
   children,
   accent = "#7c3aed",
-  dark = false,
   className,
   as: Tag = "article",
 }: Props) {
@@ -32,9 +30,7 @@ export default function SpotlightCard({
   return (
     <Tag
       ref={ref as never}
-      className={`pm-spot${dark ? " pm-spot--dark" : ""}${
-        className ? ` ${className}` : ""
-      }`}
+      className={`pm-spot${className ? ` ${className}` : ""}`}
       style={{ "--pm-spot-accent": accent } as React.CSSProperties}
       onPointerMove={handleMove}
     >
