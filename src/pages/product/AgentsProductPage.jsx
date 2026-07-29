@@ -32,6 +32,7 @@ import {
   agentsServices,
   agentsSteps,
 } from "../../components/agents-marketing/agentsMarketingData";
+import AgentsWorkspacePreview from "../../components/agents-marketing/AgentsWorkspacePreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
@@ -147,6 +148,8 @@ export default function AgentsProductPage() {
           </Reveal>
         </div>
       </section>
+
+      <AgentsWorkspacePreview />
 
       {/* Service packages */}
       <section className="pm-section">

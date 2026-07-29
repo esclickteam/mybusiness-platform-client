@@ -31,6 +31,7 @@ import {
   collaborationsHeroStats,
   collaborationsSteps,
 } from "../../components/collaborations-marketing/collaborationsMarketingData";
+import CollabWorkspacePreview from "../../components/collaborations-marketing/CollabWorkspacePreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
@@ -139,6 +140,8 @@ export default function CollaborationsProductPage() {
           </Reveal>
         </div>
       </section>
+
+      <CollabWorkspacePreview />
 
       {/* Modules */}
       <section className="pm-section">

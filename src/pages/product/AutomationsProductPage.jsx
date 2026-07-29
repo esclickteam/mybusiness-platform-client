@@ -33,6 +33,7 @@ import {
   automationsSteps,
 } from "../../components/automations-marketing/automationsMarketingData";
 import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
+import AutomationsBuilderPreview from "../../components/automations-marketing/AutomationsBuilderPreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
@@ -141,6 +142,8 @@ export default function AutomationsProductPage() {
           </Reveal>
         </div>
       </section>
+
+      <AutomationsBuilderPreview />
 
       <AutomationsNotificationsDemo />
 
