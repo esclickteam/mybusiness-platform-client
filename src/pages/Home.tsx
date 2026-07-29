@@ -5,6 +5,7 @@ import { Helmet } from "react-helmet-async";
 import { useTranslation } from "react-i18next";
 
 import HeroSection from "../components/HeroSection";
+import ProductsGrid from "../components/ProductsGrid";
 import ScrollStory from "../components/ScrollStory";
 import WhyBizuply from "../components/WhyBizuply";
 import FAQMini from "../components/FAQMini";
@@ -25,9 +26,19 @@ export default function Home() {
         <meta property="og:description" content={t("seo.homeDescription")} />
 
         <meta property="og:type" content="website" />
+
+        {/* The hero capture is the largest paint on the page. */}
+        <link
+          rel="preload"
+          as="image"
+          href="/home/crm-leads.webp"
+          type="image/webp"
+        />
       </Helmet>
 
       <HeroSection />
+
+      <ProductsGrid />
 
       <ScrollStory />
 
