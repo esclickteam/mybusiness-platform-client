@@ -214,21 +214,25 @@
   transform-style: preserve-3d;
 }
 
-/* Clear 3-up carousel: big center, smaller left + right */
+/*
+  3-up carousel anchored by stage percentages (not self-width %),
+  so side cards sit at the edges and never stack over the center.
+*/
 .wb-template {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: min(620px, 48vw);
+  width: min(420px, 28vw);
   aspect-ratio: 16 / 10;
   transform-origin: center center;
   transform-style: preserve-3d;
   transition:
-    transform 0.7s var(--wb-snap),
-    opacity 0.55s var(--wb-ease),
-    filter 0.55s var(--wb-ease),
-    width 0.7s var(--wb-snap);
-  will-change: transform, opacity;
+    transform 0.65s var(--wb-snap),
+    opacity 0.5s var(--wb-ease),
+    filter 0.5s var(--wb-ease),
+    width 0.65s var(--wb-snap),
+    left 0.65s var(--wb-snap);
+  will-change: transform, opacity, left;
   cursor: pointer;
   border: 0;
   padding: 0;
@@ -238,63 +242,71 @@
 }
 
 .wb-template[data-slot="center"] {
-  z-index: 30;
+  z-index: 40;
+  left: 50%;
   opacity: 1;
   filter: none;
-  width: min(820px, 68vw);
-  transform: translate(-50%, -50%) scale(1.06);
+  width: min(780px, 58vw);
+  transform: translate(-50%, -50%) scale(1.05);
 }
 
 .wb-template[data-slot="near-start"] {
-  z-index: 20;
-  opacity: 0.92;
-  filter: brightness(0.96);
-  width: min(560px, 42vw);
-  transform: translate(-50%, -50%) translateX(42%) scale(0.78) rotateY(14deg);
+  z-index: 15;
+  left: 11%;
+  opacity: 0.78;
+  filter: brightness(0.94);
+  width: min(380px, 24vw);
+  transform: translate(-50%, -50%) scale(0.9) rotateY(10deg);
 }
 
 .wb-template[data-slot="near-end"] {
-  z-index: 20;
-  opacity: 0.92;
-  filter: brightness(0.96);
-  width: min(560px, 42vw);
-  transform: translate(-50%, -50%) translateX(-42%) scale(0.78) rotateY(-14deg);
+  z-index: 15;
+  left: 89%;
+  opacity: 0.78;
+  filter: brightness(0.94);
+  width: min(380px, 24vw);
+  transform: translate(-50%, -50%) scale(0.9) rotateY(-10deg);
+}
+
+.wb-template[data-slot="far-start"],
+.wb-template[data-slot="far-end"] {
+  z-index: 5;
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  width: min(300px, 18vw);
+  transform: translate(-50%, -50%) scale(0.7);
 }
 
 .wb-template[data-slot="far-start"] {
-  z-index: 10;
-  opacity: 0.35;
-  filter: blur(1px) brightness(0.9);
-  width: min(460px, 34vw);
-  transform: translate(-50%, -50%) translateX(72%) scale(0.62) rotateY(22deg);
+  left: -4%;
 }
 
 .wb-template[data-slot="far-end"] {
-  z-index: 10;
-  opacity: 0.35;
-  filter: blur(1px) brightness(0.9);
-  width: min(460px, 34vw);
-  transform: translate(-50%, -50%) translateX(-72%) scale(0.62) rotateY(-22deg);
+  left: 104%;
 }
 
 .wb-template[data-slot="hidden"] {
   z-index: 1;
+  left: 50%;
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
-  transform: translate(-50%, -50%) scale(0.5);
+  transform: translate(-50%, -50%) scale(0.55);
 }
 
 .wb-template[data-slot="near-start"]:hover {
+  z-index: 25;
   opacity: 1;
   filter: none;
-  transform: translate(-50%, -50%) translateX(38%) scale(0.84) rotateY(10deg);
+  transform: translate(-50%, -50%) scale(0.95) rotateY(6deg);
 }
 
 .wb-template[data-slot="near-end"]:hover {
+  z-index: 25;
   opacity: 1;
   filter: none;
-  transform: translate(-50%, -50%) translateX(-38%) scale(0.84) rotateY(-10deg);
+  transform: translate(-50%, -50%) scale(0.95) rotateY(-6deg);
 }
 
 .wb-mockup-shell {
@@ -482,28 +494,24 @@
     max-height: 300px;
   }
 
-  .wb-template[data-slot="far-start"],
-  .wb-template[data-slot="far-end"] {
-    opacity: 0;
-    pointer-events: none;
-    visibility: hidden;
-  }
-
   .wb-template[data-slot="center"] {
+    left: 50%;
     width: 78vw;
-    transform: translate(-50%, -50%) scale(1.04);
+    transform: translate(-50%, -50%) scale(1.03);
   }
 
   .wb-template[data-slot="near-start"] {
-    opacity: 0.85;
-    width: 58vw;
-    transform: translate(-50%, -50%) translateX(48%) scale(0.72) rotateY(10deg);
+    left: 6%;
+    opacity: 0.7;
+    width: 42vw;
+    transform: translate(-50%, -50%) scale(0.88) rotateY(8deg);
   }
 
   .wb-template[data-slot="near-end"] {
-    opacity: 0.85;
-    width: 58vw;
-    transform: translate(-50%, -50%) translateX(-48%) scale(0.72) rotateY(-10deg);
+    left: 94%;
+    opacity: 0.7;
+    width: 42vw;
+    transform: translate(-50%, -50%) scale(0.88) rotateY(-8deg);
   }
 }
 
