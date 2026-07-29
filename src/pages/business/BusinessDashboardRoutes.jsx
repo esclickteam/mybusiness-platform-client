@@ -115,6 +115,20 @@ const WhatsAppSettingsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
 );
 
+/* Meta Ads campaign management */
+const MetaCampaignsMain = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaCampaignsMain")
+);
+const MetaCampaignsOverviewTab = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaCampaignsOverviewTab")
+);
+const MetaCampaignEditorPage = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaCampaignEditorPage")
+);
+const MetaCampaignsSettingsTab = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaCampaignsSettingsTab")
+);
+
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const WebsiteBuildingGuidePage = lazy(() =>
@@ -402,6 +416,16 @@ const BusinessDashboardRoutes = () => {
             <Route path="history" element={<WhatsAppHistoryTab />} />
             <Route path="settings" element={<WhatsAppSettingsTab />} />
             <Route path="*" element={<Navigate to="compose" replace />} />
+          </Route>
+
+          {/* Meta Ads campaign management */}
+          <Route path="meta-campaigns" element={<MetaCampaignsMain />}>
+            <Route index element={<Navigate to="overview" replace />} />
+            <Route path="overview" element={<MetaCampaignsOverviewTab />} />
+            <Route path="create" element={<MetaCampaignEditorPage />} />
+            <Route path="edit/:campaignId" element={<MetaCampaignEditorPage />} />
+            <Route path="settings" element={<MetaCampaignsSettingsTab />} />
+            <Route path="*" element={<Navigate to="overview" replace />} />
           </Route>
 
           {/* CRM internal pages */}
