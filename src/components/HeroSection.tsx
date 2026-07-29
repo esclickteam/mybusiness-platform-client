@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
 type PipelineStage = {
@@ -90,6 +91,34 @@ export default function HeroSection() {
           {t("home.subtitle")}
         </p>
 
+        {/* CTA */}
+        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+          <Link
+            to="/register"
+            className="inline-flex w-full items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 px-8 py-4 text-base font-black text-white shadow-xl shadow-indigo-200 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-indigo-300 sm:w-auto"
+          >
+            {t("home.startTrial")}
+          </Link>
+
+          <Link
+            to="/pricing"
+            className="inline-flex w-full items-center justify-center rounded-2xl border border-indigo-100 bg-white/85 px-8 py-4 text-base font-black text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur transition hover:-translate-y-0.5 hover:border-indigo-200 sm:w-auto"
+          >
+            {t("home.viewPricing")}
+          </Link>
+        </div>
+
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-bold text-slate-500">
+          {[t("home.trustTrial"), t("home.trustNoCard"), t("home.trustCancel")].map(
+            (item) => (
+              <span key={item} className="inline-flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                {item}
+              </span>
+            ),
+          )}
+        </div>
+
         {/* PRODUCT PREVIEW */}
         <div className="relative mx-auto mt-14 max-w-6xl lg:mt-16">
           <div className="absolute inset-x-10 -top-8 h-24 rounded-full bg-cyan-300/25 blur-3xl" />
@@ -99,7 +128,7 @@ export default function HeroSection() {
             <div className="relative overflow-hidden rounded-[1.5rem] border border-slate-100 bg-white">
               {/* TOP FLOATING TOGGLE */}
               <div className="absolute left-1/2 top-5 z-40 flex -translate-x-1/2 items-center rounded-full border border-slate-200 bg-white/95 p-1 shadow-xl shadow-indigo-100 backdrop-blur">
-                <span className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-black text-black sm:px-5 sm:text-sm">
+                <span className="rounded-full bg-indigo-600 px-4 py-2 text-xs font-black text-white sm:px-5 sm:text-sm">
                   {t("preview.themeLight")}
                 </span>
                 <span className="px-4 py-2 text-xs font-black text-slate-500 sm:px-5 sm:text-sm">
@@ -109,15 +138,17 @@ export default function HeroSection() {
 
               <div className="relative z-10 flex min-h-[560px]">
                 {/* SIDEBAR */}
-                <aside className="hidden w-[225px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 md:block">
+                <aside className="hidden w-[225px] shrink-0 border-e border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 p-5 pt-6 text-start text-slate-800 md:block">
                   <div className="mb-8 flex items-center gap-3">
-                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-500 to-cyan-400 text-lg font-black text-black shadow-lg shadow-indigo-950/30">
+                    <div className="grid h-11 w-11 place-items-center rounded-2xl bg-gradient-to-br from-indigo-600 to-cyan-500 text-lg font-black text-white shadow-lg shadow-indigo-200">
                       B
                     </div>
 
                     <div>
-                      <p className="text-lg font-black text-black">BizUply</p>
-                      <p className="text-xs font-semibold text-slate-400">
+                      <p className="text-lg font-black text-slate-900">
+                        BizUply
+                      </p>
+                      <p className="text-xs font-semibold text-slate-500">
                         {t("preview.businessOs")}
                       </p>
                     </div>
@@ -130,8 +161,8 @@ export default function HeroSection() {
                         className={[
                           "rounded-2xl px-4 py-3 text-sm font-bold transition",
                           index === 0
-                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-950/30"
-                            : "text-slate-400",
+                            ? "bg-gradient-to-r from-indigo-600 to-violet-600 text-white shadow-lg shadow-indigo-200"
+                            : "text-slate-600",
                         ].join(" ")}
                       >
                         {item}
@@ -139,18 +170,18 @@ export default function HeroSection() {
                     ))}
                   </nav>
 
-                  <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-4">
-                    <p className="text-xs font-black uppercase tracking-wide text-slate-500">
+                  <div className="mt-8 rounded-2xl border border-white/70 bg-white/70 p-4">
+                    <p className="text-xs font-black uppercase tracking-wide text-indigo-700">
                       AI Status
                     </p>
-                    <p className="mt-2 text-sm font-black text-black">
+                    <p className="mt-2 text-sm font-black text-slate-800">
                       Smart assistant active
                     </p>
                   </div>
                 </aside>
 
                 {/* DASHBOARD */}
-                <main className="flex-1 bg-gradient-to-br from-white via-indigo-50/40 to-cyan-50/40 p-4 pt-24 text-left sm:p-5 sm:pt-24 md:p-7 md:pt-24">
+                <main className="flex-1 bg-gradient-to-br from-white via-indigo-50/40 to-cyan-50/40 p-4 pt-24 text-start sm:p-5 sm:pt-24 md:p-7 md:pt-24">
                   {/* DASH HEADER */}
                   <div className="flex flex-col gap-4 border-b border-slate-200/70 pb-5 md:flex-row md:items-center md:justify-between">
                     <div>
@@ -169,7 +200,7 @@ export default function HeroSection() {
 
                       <button
                         type="button"
-                        className="grid h-10 w-10 place-items-center rounded-full bg-indigo-600 text-lg font-black text-black shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5"
+                        className="grid h-10 w-10 place-items-center rounded-full bg-indigo-600 text-lg font-black text-white shadow-lg shadow-indigo-200 transition hover:-translate-y-0.5"
                         aria-label="Add"
                       >
                         +
@@ -290,7 +321,7 @@ export default function HeroSection() {
                             <button
                               key={item}
                               type="button"
-                              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-left text-sm font-black text-black shadow-lg shadow-indigo-100 transition hover:-translate-y-0.5"
+                              className="w-full rounded-xl bg-gradient-to-r from-indigo-600 to-violet-600 px-4 py-3 text-start text-sm font-black text-white shadow-lg shadow-indigo-100 transition hover:-translate-y-0.5"
                             >
                               {item}
                             </button>
