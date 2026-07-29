@@ -8,7 +8,6 @@
   isolation: isolate;
   overflow: clip;
   width: 100%;
-  min-height: clamp(18rem, 42vh, 26rem);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -88,27 +87,98 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 900px;
+  max-width: 1040px;
   margin: 0 auto;
-  padding: 3rem 1.25rem 2.5rem;
+  padding: clamp(2.75rem, 6vw, 4.5rem) 1.25rem clamp(2.75rem, 5vw, 4rem);
   text-align: center;
+}
+
+.crm-hero__badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-bottom: 1.25rem;
 }
 
 .crm-hero__title {
   margin: 0;
-  font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-size: clamp(2.3rem, 5.6vw, 4.1rem);
   font-weight: 900;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
   line-height: 1.05;
   color: #0b1220;
+  text-wrap: balance;
+}
+
+.crm-hero__title-grad {
+  background: linear-gradient(
+    100deg,
+    #6d28d9 0%,
+    #2563eb 38%,
+    #06b6d4 62%,
+    #6d28d9 100%
+  );
+  background-size: 250% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: crm-title-drift 9s linear infinite;
+}
+
+@keyframes crm-title-drift {
+  to {
+    background-position: 250% 0;
+  }
+}
+
+.crm-hero__lead {
+  margin: 1.15rem auto 0;
+  max-width: 44rem;
+  font-size: clamp(1rem, 1.3vw, 1.16rem);
+  font-weight: 600;
+  line-height: 1.75;
+  color: #475569;
+}
+
+.crm-hero__trust {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  max-width: 40rem;
+  margin: 1.35rem auto 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  text-align: start;
+  background: rgba(240, 246, 255, 0.9);
+  border: 1px solid rgba(24, 119, 242, 0.24);
+}
+
+.crm-hero__trust svg {
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+  color: #1877f2;
+}
+
+.crm-hero__trust p {
+  margin: 0;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: #1e293b;
 }
 
 .crm-hero__actions {
-  margin-top: 1.5rem;
+  margin-top: 1.75rem;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.7rem;
+}
+
+.crm-hero__stats {
+  max-width: 62rem;
+  margin: 2.25rem auto 0;
 }
 
 .crm-hero__btn {
@@ -678,7 +748,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .crm-hero__orb,
-  .crm-hero__beam {
+  .crm-hero__beam,
+  .crm-hero__title-grad {
     animation: none !important;
     transition: none !important;
   }

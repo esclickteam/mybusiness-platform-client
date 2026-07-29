@@ -1,30 +1,91 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { useTranslation } from "react-i18next";
-import { CheckCircle2, Facebook } from "lucide-react";
+import {
+  BellRing,
+  Filter,
+  Gauge,
+  Images,
+  LayoutList,
+  MessageCircle,
+  Radar,
+  Search,
+  Sparkles,
+} from "lucide-react";
 import CrmProductHero from "../../components/crm-marketing/CrmProductHero";
+import CrmLiveConsole from "../../components/crm-marketing/CrmLiveConsole";
+import CrmIntegrationRail from "../../components/crm-marketing/CrmIntegrationRail";
 import CrmTopicSections from "../../components/crm-marketing/CrmTopicSections";
+import CrmCapabilityShowcase from "../../components/crm-marketing/CrmCapabilityShowcase";
+import CrmMetaTrust from "../../components/crm-marketing/CrmMetaTrust";
+import { crmFaq } from "../../components/crm-marketing/crmMarketingData";
+import {
+  AuroraBackdrop,
+  FaqAccordion,
+  FinalCta,
+  Reveal,
+  ScrollProgress,
+  SectionHeading,
+  SpotlightCard,
+  Stagger,
+  StaggerItem,
+} from "../../components/product-marketing";
+import "../../components/product-marketing/marketingKit.css";
 import "../../components/crm-marketing/CrmProductHero.css";
+import "./crmProductPage.css";
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 22 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+const CONSOLE_CARDS = [
+  {
+    icon: Search,
+    accent: "#7c3aed",
+    title: "חיפוש שמוצא כל פנייה",
+    text: "חיפוש חופשי על שם, טלפון, אימייל, מקור וגם על השדות שהגיעו מהטופס עצמו — כולל נתוני הקמפיין.",
+    tags: ["שם", "טלפון", "אימייל", "שדות טופס"],
   },
-};
+  {
+    icon: Filter,
+    accent: "#2563eb",
+    title: "סינון לפי סטטוס ומקור",
+    text: "מצמצמים את הרשימה לסטטוס אחד או לערוץ אחד — Meta, Google או אתר — כדי לעבוד על מה שחשוב עכשיו.",
+    tags: ["5 סטטוסים", "Meta", "Google", "אתר"],
+  },
+  {
+    icon: LayoutList,
+    accent: "#0891b2",
+    title: "רשימה שמחזיקה נפח",
+    text: "50 לידים בעמוד עם עימוד, וקיבוץ לפי תאריך הפנייה — כדי לראות מה נכנס היום ומה מחכה מאתמול.",
+    tags: ["50 בעמוד", "קיבוץ לפי תאריך"],
+  },
+  {
+    icon: BellRing,
+    accent: "#f59e0b",
+    title: "התראות בזמן אמת",
+    text: "ליד חדש נכנס — ומופיע בהתראות מיד. משימה שעבר זמנה עולה למרכז ההתראות עד שמסמנים אותה כבוצעה.",
+    tags: ["לידים חדשים", "משימות שעבר זמנן"],
+  },
+  {
+    icon: MessageCircle,
+    accent: "#16a34a",
+    title: "וואטסאפ וטלפון בלחיצה",
+    text: "מהרשימה ומכרטיס הליד יוצאים ישר לשיחה או לוואטסאפ, ומתעדים את מה שקרה באותו מקום.",
+    tags: ["WhatsApp", "שיחה", "תיעוד"],
+  },
+  {
+    icon: Gauge,
+    accent: "#4f46e5",
+    title: "תמונת מצב בלוח הבקרה",
+    text: "לידים חדשים, לידים שלא טופלו, שינוי מול התקופה הקודמת, טבלת הלידים האחרונים והפגישות הקרובות.",
+    tags: ["KPI", "לידים אחרונים", "פגישות קרובות"],
+  },
+];
 
 export default function CrmProductPage() {
   const { t, i18n } = useTranslation();
   const base = "productPages.crm";
   const dir = i18n.dir();
-  const metaPoints = [1, 2, 3].map((n) => t(`${base}.metaPoint${n}`));
 
   return (
-    <div className="crm-page" dir={dir}>
+    <div className="pm crm-page crmp" dir={dir}>
       <Helmet>
         <title>{t(`${base}.seoTitle`)}</title>
         <meta name="description" content={t(`${base}.seoDescription`)} />
@@ -37,63 +98,140 @@ export default function CrmProductPage() {
         <link rel="preload" as="image" href="/leads1.jpeg" />
       </Helmet>
 
+      <ScrollProgress />
+
       <CrmProductHero />
-      <CrmTopicSections />
 
-      <div className="crm-page__shell">
-        <motion.section
-          className="crm-page__section crm-page__meta"
-          variants={fadeUp}
-          initial="hidden"
-          whileInView="show"
-          viewport={{ once: true, amount: 0.2 }}
-        >
-          <div>
-            <p className="crm-page__eyebrow crm-page__eyebrow--meta">
-              <Facebook size={14} aria-hidden="true" />
-              {t(`${base}.metaSectionBadge`)}
-            </p>
-            <h2 className="crm-page__heading">{t(`${base}.metaSectionTitle`)}</h2>
-            <p className="crm-page__lead">{t(`${base}.metaSectionText`)}</p>
-          </div>
-          <div className="crm-page__meta-points">
-            {metaPoints.map((point, i) => (
-              <motion.div
-                key={point}
-                className="crm-page__meta-point"
-                initial={{ opacity: 0, x: 18 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, amount: 0.4 }}
-                transition={{ duration: 0.45, delay: 0.08 * i, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <CheckCircle2 size={20} />
-                <p>{point}</p>
-              </motion.div>
-            ))}
-          </div>
-        </motion.section>
+      {/* The leads console, animated */}
+      <section
+        className="pm-section pm-section--dark crmp__console"
+        style={{ "--pm-seam-top": "#f5f7fb", "--pm-seam-bottom": "#f5f7fb" }}
+      >
+        <AuroraBackdrop vivid dark grain />
+        <div className="pm-shell">
+          <SectionHeading
+            center
+            accent="#c4b5fd"
+            eyebrow={
+              <>
+                <Radar size={14} aria-hidden="true" />
+                צינור הלידים
+              </>
+            }
+            title={
+              <>
+                ליד נכנס, זז בין סטטוסים{" "}
+                <span className="pm-grad">ולא נשכח</span>
+              </>
+            }
+            lead="ככה נראה יום עבודה במערכת: פנייה חדשה מהקמפיין נכנסת לצינור, מתעדים שיחה, פותחים משימה עם תאריך, וכשהליד מומר הוא ממשיך כלקוח עם פגישה ביומן."
+          />
 
-        <motion.section
-          className="crm-page__cta"
-          initial={{ opacity: 0, y: 28, scale: 0.98 }}
-          whileInView={{ opacity: 1, y: 0, scale: 1 }}
-          viewport={{ once: true, amount: 0.35 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <div>
-            <h2>{t(`${base}.ctaTitle`)}</h2>
-            <p>{t(`${base}.ctaText`)}</p>
+          <Reveal from="up" delay={0.12} className="crmp__console-frame">
+            <CrmLiveConsole />
+          </Reveal>
+
+          <Stagger className="pm-grid pm-grid--3" gap={0.07}>
+            {CONSOLE_CARDS.map((card) => {
+              const Icon = card.icon;
+              return (
+                <StaggerItem key={card.title}>
+                  <SpotlightCard accent={card.accent} dark>
+                    <span className="pm-spot__icon">
+                      <Icon size={18} />
+                    </span>
+                    <h3 className="pm-spot__title">{card.title}</h3>
+                    <p className="pm-spot__text">{card.text}</p>
+                    <ul className="pm-spot__tags">
+                      {card.tags.map((tag) => (
+                        <li key={tag}>{tag}</li>
+                      ))}
+                    </ul>
+                  </SpotlightCard>
+                </StaggerItem>
+              );
+            })}
+          </Stagger>
+        </div>
+      </section>
+
+      <CrmIntegrationRail />
+
+      {/* Real product screenshots */}
+      <section className="pm-section pm-section--tight crmp__shots">
+        <AuroraBackdrop beam={false} />
+        <div className="pm-shell">
+          <SectionHeading
+            center
+            eyebrow={
+              <>
+                <Images size={14} aria-hidden="true" />
+                מתוך המערכת
+              </>
+            }
+            title={
+              <>
+                לא הדמיה — <span className="pm-grad">המסכים האמיתיים</span>
+              </>
+            }
+            lead="לידים, לקוחות ופגישות — שלושת המודולים שאתם עובדים איתם בפועל, בדיוק כפי שהם נראים בלוח הבקרה של העסק."
+          />
+        </div>
+        <CrmTopicSections />
+      </section>
+
+      {/* Deep-dive rail */}
+      <section className="pm-section crmp__capabilities">
+        <div className="pm-shell">
+          <SectionHeading
+            center
+            eyebrow={
+              <>
+                <Sparkles size={14} aria-hidden="true" />
+                מה יש בכל מודול
+              </>
+            }
+            title={
+              <>
+                מהפנייה הראשונה ועד{" "}
+                <span className="pm-grad">התור הבא ביומן</span>
+              </>
+            }
+            lead="כרטיס ליד, תיק לקוח, יומן תורים וקטלוג שירותים — ארבעה מודולים שמדברים ביניהם, בלי לייצא ולייבא כלום."
+          />
+
+          <div className="crmp__capabilities-inner">
+            <CrmCapabilityShowcase />
           </div>
-          <div className="crm-page__cta-actions">
-            <Link to="/register" className="crm-page__cta-btn crm-page__cta-btn--light">
-              {t("productPages.ctaPrimary")}
-            </Link>
-            <Link to="/contact" className="crm-page__cta-btn crm-page__cta-btn--ghost">
-              {t("productPages.ctaContact")}
-            </Link>
+        </div>
+      </section>
+
+      <CrmMetaTrust />
+
+      {/* FAQ + closing */}
+      <section className="pm-section pm-section--tight crmp__faq">
+        <div className="pm-shell">
+          <SectionHeading
+            center
+            eyebrow="שאלות נפוצות"
+            title="מה שחשוב לדעת על ה־CRM"
+          />
+          <div className="crmp__faq-inner">
+            <FaqAccordion items={crmFaq} />
           </div>
-        </motion.section>
-      </div>
+
+          <div className="crmp__final">
+            <FinalCta
+              eyebrow="מתחילים לסדר את הצינור"
+              title={t(`${base}.ctaTitle`)}
+              text={t(`${base}.ctaText`)}
+              primaryLabel={t("productPages.ctaPrimary")}
+              secondaryLabel={t("productPages.ctaContact")}
+              secondaryTo="/contact"
+            />
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
