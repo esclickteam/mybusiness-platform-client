@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import {
@@ -10,6 +10,10 @@ import {
   UserRound,
   XCircle,
 } from "lucide-react";
+import {
+  detectPhoneCountry,
+  detectPhoneCountrySync,
+} from "../utils/detectPhoneCountry";
 
 type SupportFormData = {
   name: string;
@@ -33,6 +37,17 @@ export default function BusinessSupport() {
 
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<StatusMessage>(null);
+  const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
+
+  useEffect(() => {
+    let active = true;
+    detectPhoneCountry().then((code) => {
+      if (active && code) setPhoneCountry(code);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -177,8 +192,9 @@ export default function BusinessSupport() {
                 </label>
 
                 <PhoneInput
-                  country="il"
-                  preferredCountries={["il", "us", "gb", "ca"]}
+                  key={phoneCountry}
+                  country={phoneCountry}
+                  preferredCountries={["il", "us", "gb", "ca", "fr", "de"]}
                   enableSearch
                   value={formData.phone}
                   onChange={(phone) =>

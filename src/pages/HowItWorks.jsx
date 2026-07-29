@@ -129,7 +129,7 @@ function HowItWorks() {
         <div className="absolute right-24 top-32 hidden h-56 w-56 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:16px_16px] opacity-20 lg:block" />
       </div>
 
-      <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 lg:px-8 lg:pt-24">
+      <main className="relative mx-auto max-w-7xl px-6 pb-24 pt-20 text-center lg:px-8 lg:pt-24" dir="rtl">
         {/* Hero */}
         <section className="mx-auto max-w-4xl text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-sm font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur">
