@@ -4718,7 +4718,8 @@
       "leadsHint": "Leads from Meta campaigns",
       "budget": "Monthly budget",
       "budgetHint": "{{spent}} of {{total}} ({{percent}}%)",
-      "spendHint": "Cumulative spend in range"
+      "spendHint": "Total spend in the selected range",
+      "spend": "Spend"
     },
     "ranges": {
       "last7": "Last 7 days",
@@ -4884,7 +4885,60 @@
       "save": "Save changes",
       "create": "Create campaign",
       "createFull": "Create campaign + ad in Meta",
-      "confirmDelete": "Delete / archive this campaign in Meta?"
+      "confirmDelete": "Delete / archive this campaign in Meta?",
+      "createTitleWow": "Create Meta campaign – simple & wow",
+      "createWowSubtitle": "Step by step: objective, budget, audience, placements, lead form, media and previews.",
+      "simplerThanMeta": "Simpler than Meta Ads Manager",
+      "stepAudience": "Audience & placements",
+      "stepLeadForm": "Lead form",
+      "audienceTitle": "Audience",
+      "audienceHint": "Advantage+ or manual filters by country, age and gender.",
+      "audience": "audience",
+      "advantageAudienceHint": "Meta expands the audience to find people more likely to convert.",
+      "gender": "Gender",
+      "genderAll": "All",
+      "genderMale": "Men",
+      "genderFemale": "Women",
+      "placementsTitle": "Ad placements",
+      "placementsHint": "Facebook, Instagram, or both — including Feed and Stories.",
+      "placementAdvantage": "Advantage+ placements",
+      "placementBoth": "Facebook + Instagram",
+      "placementFacebook": "Facebook only",
+      "placementInstagram": "Instagram only",
+      "posFacebookFeed": "Facebook Feed",
+      "posFacebookStory": "Facebook Story",
+      "posInstagramFeed": "Instagram Feed",
+      "posInstagramStory": "Instagram Story",
+      "posInstagramReels": "Instagram Reels",
+      "leadFormTitle": "Lead form",
+      "leadFormHint": "Pick an existing form or create one with questions and answers.",
+      "leadFormRequired": "Select a lead form",
+      "refreshLeadForms": "Refresh forms",
+      "noLeadForms": "No lead forms found on this Page. Create one here.",
+      "formQuestions": "Form questions",
+      "createLeadFormTitle": "Create a new lead form",
+      "leadFormNamePlaceholder": "Form name",
+      "leadFormNameRequired": "Form name is required",
+      "customQuestionsPlaceholder": "One question per line (e.g. Full name, Phone, Budget)",
+      "createLeadForm": "Create form",
+      "formatSingle": "Image",
+      "formatVideo": "Video",
+      "formatCarousel": "Carousel",
+      "uploadImage": "Upload image",
+      "uploadImageHint": "JPG / PNG – uploaded directly to Meta",
+      "uploadVideo": "Upload video",
+      "uploadVideoHint": "MP4 – uploaded directly to Meta",
+      "mediaReady": "Media ready in Meta ✓",
+      "mediaRequired": "Upload an image for the ad",
+      "videoRequired": "Upload a video",
+      "carouselRequired": "Carousel needs at least 2 cards with images",
+      "carouselCard": "Card {{n}}",
+      "addCarouselCard": "Add carousel card",
+      "ctaCustom": "Free-text call to action",
+      "ctaCustomPlaceholder": "e.g. Get a free consult",
+      "creativeRequired": "Primary text and headline are required",
+      "previewAllHint": "Preview every feed and story — Facebook and Instagram.",
+      "settingsSubtitleNoBudget": "Connect Meta, pick an ad account and Page. Budget is set per campaign."
     },
     "cta": {
       "learnMore": "Learn more",
@@ -4905,12 +4959,21 @@
       "refresh": "Refresh preview",
       "loading": "Loading Meta preview…",
       "empty": "Meta returned no preview — showing local preview",
-      "fallbackHint": "Click refresh to load a Meta preview, or check the local preview."
+      "fallbackHint": "Click refresh to load a Meta preview, or check the local preview.",
+      "formats": {
+        "MOBILE_FEED_STANDARD": "Facebook Feed (Mobile)",
+        "DESKTOP_FEED_STANDARD": "Facebook Feed (Desktop)",
+        "FACEBOOK_STORY_MOBILE": "Facebook Story",
+        "INSTAGRAM_STANDARD": "Instagram Feed",
+        "INSTAGRAM_STORY": "Instagram Story",
+        "INSTAGRAM_REELS": "Instagram Reels",
+        "RIGHT_COLUMN_STANDARD": "Right column"
+      }
     },
     "settings": {
       "badge": "Connection",
       "title": "Meta Ads connection",
-      "subtitle": "Sign in with ads permissions, pick an ad account, and set a monthly budget cap.",
+      "subtitle": "Sign in with ads permissions and pick an ad account and Page. Budget is set per campaign.",
       "connected": "Connected",
       "disconnected": "Disconnected",
       "connect": "Connect Meta",
@@ -4949,7 +5012,9 @@
       "updated": "Campaign updated",
       "deleted": "Campaign deleted / archived",
       "activated": "Campaign activated",
-      "paused": "Campaign paused"
+      "paused": "Campaign paused",
+      "mediaUploaded": "Media uploaded to Meta",
+      "leadFormCreated": "Lead form created"
     },
     "errors": {
       "loadOverview": "Failed to load campaign overview",
@@ -4964,7 +5029,10 @@
       "selectPage": "Failed to select page",
       "saveSettings": "Failed to save settings",
       "refresh": "Failed to refresh accounts",
-      "disconnect": "Failed to disconnect Meta Ads"
+      "disconnect": "Failed to disconnect Meta Ads",
+      "mediaUpload": "Media upload failed",
+      "leadForms": "Failed to load lead forms",
+      "createLeadForm": "Failed to create lead form"
     }
   }
 }

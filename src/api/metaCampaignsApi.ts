@@ -75,6 +75,26 @@ export type MetaLabeledOption = {
   labelEn: string;
 };
 
+export type MetaLeadFormQuestion = {
+  id?: string;
+  key: string;
+  label: string;
+  type: string;
+  required?: boolean;
+  options?: Array<{ key: string; value: string }>;
+};
+
+export type MetaLeadForm = {
+  id: string;
+  name: string;
+  status?: string;
+  locale?: string;
+  leadsCount?: number;
+  createdTime?: string | null;
+  privacyPolicyUrl?: string;
+  questions?: MetaLeadFormQuestion[];
+};
+
 export type MetaAdsConnectionStatus = {
   success?: boolean;
   connected: boolean;
@@ -90,7 +110,6 @@ export type MetaAdsConnectionStatus = {
   } | null;
   lastSyncAt?: string | null;
   lastError?: string;
-  monthlyBudgetCap?: number;
   hasAccessToken?: boolean;
   tokenExpiresAt?: string | null;
   objectives?: MetaLabeledOption[];
@@ -111,12 +130,19 @@ export type MetaCampaignsOverview = {
     clicks?: number;
     impressions?: number;
     ctr?: number;
-    monthlyBudget: number;
-    budgetUsedPercent: number;
   };
   series: MetaCampaignSeriesPoint[];
   campaigns: MetaCampaign[];
   insights: MetaCampaignInsight[];
+};
+
+export type MetaCarouselCard = {
+  headline?: string;
+  description?: string;
+  link?: string;
+  imageHash?: string;
+  imageUrl?: string;
+  picture?: string;
 };
 
 export type MetaCampaignPayload = {
@@ -136,17 +162,37 @@ export type MetaCampaignPayload = {
   countries?: string[];
   ageMin?: number | null;
   ageMax?: number | null;
+  genders?: number[];
+  advantageAudience?: boolean;
+  advantagePlus?: boolean;
+  advantagePlacements?: boolean;
+  placementMode?: "advantage" | "facebook" | "instagram" | "both" | string;
+  publisherPlatforms?: string[];
+  facebookPositions?: string[];
+  instagramPositions?: string[];
+  leadFormId?: string;
+  formId?: string;
   primaryText?: string;
   message?: string;
   headline?: string;
   description?: string;
+  ctaLabel?: string;
+  displayLink?: string;
   link?: string;
   websiteUrl?: string;
   imageUrl?: string;
   picture?: string;
+  imageHash?: string;
+  videoId?: string;
+  creativeFormat?: "single" | "video" | "carousel" | string;
+  format?: string;
+  carouselCards?: MetaCarouselCard[];
+  cards?: MetaCarouselCard[];
   callToAction?: string;
   cta?: string;
+  ctaCustom?: string;
   adFormat?: string;
+  adFormats?: string[];
   adSetName?: string;
   adName?: string;
   creativeName?: string;
@@ -155,6 +201,7 @@ export type MetaCampaignPayload = {
 export type MetaAdPreview = {
   adFormat: string;
   body: string;
+  error?: string;
   raw?: unknown;
 };
 
@@ -210,18 +257,6 @@ export async function selectMetaAdsPage(
   const { data } = await API.post<MetaAdsConnectionStatus>(
     "/meta-campaigns/select-page",
     { pageId, businessId },
-    withBusiness(businessId)
-  );
-  return data;
-}
-
-export async function updateMetaAdsSettings(
-  businessId: string | undefined,
-  payload: { monthlyBudgetCap?: number }
-) {
-  const { data } = await API.put<MetaAdsConnectionStatus>(
-    "/meta-campaigns/settings",
-    { ...payload, businessId },
     withBusiness(businessId)
   );
   return data;
@@ -304,27 +339,6 @@ export async function createMetaCampaign(
   return data;
 }
 
-export async function previewMetaAd(
-  businessId: string | undefined,
-  payload: Partial<MetaCampaignPayload> & {
-    creativeId?: string;
-    adId?: string;
-    adFormat?: string;
-  }
-) {
-  const { data } = await API.post<{
-    success: boolean;
-    preview: MetaAdPreview;
-    callToActions?: MetaLabeledOption[];
-    previewFormats?: MetaLabeledOption[];
-  }>(
-    "/meta-campaigns/ad-preview",
-    { ...payload, businessId },
-    withBusiness(businessId)
-  );
-  return data;
-}
-
 export async function updateMetaCampaign(
   businessId: string | undefined,
   campaignId: string,
@@ -357,6 +371,84 @@ export async function deleteMetaCampaign(
 ) {
   const { data } = await API.delete<{ success: boolean }>(
     `/meta-campaigns/campaigns/${campaignId}`,
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function previewMetaAd(
+  businessId: string | undefined,
+  payload: Partial<MetaCampaignPayload> & {
+    creativeId?: string;
+    adId?: string;
+    adFormat?: string;
+    adFormats?: string[];
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    preview?: MetaAdPreview;
+    previews?: MetaAdPreview[];
+    callToActions?: MetaLabeledOption[];
+    previewFormats?: MetaLabeledOption[];
+  }>(
+    "/meta-campaigns/ad-preview",
+    { ...payload, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function uploadMetaMedia(
+  businessId: string | undefined,
+  file: File,
+  kind: "image" | "video" = "image"
+) {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("kind", kind);
+  if (businessId) form.append("businessId", businessId);
+
+  const { data } = await API.post<{
+    success: boolean;
+    type: "image" | "video";
+    imageHash?: string;
+    url?: string;
+    videoId?: string;
+  }>("/meta-campaigns/media", form, {
+    params: businessId ? { businessId } : undefined,
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
+}
+
+export async function listMetaLeadForms(
+  businessId: string | undefined,
+  pageId?: string
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    pageId: string;
+    forms: MetaLeadForm[];
+  }>("/meta-campaigns/lead-forms", withBusiness(businessId, { pageId }));
+  return data;
+}
+
+export async function createMetaLeadForm(
+  businessId: string | undefined,
+  payload: {
+    pageId?: string;
+    name: string;
+    questions?: MetaLeadFormQuestion[];
+    privacyPolicyUrl?: string;
+    thankYouTitle?: string;
+    thankYouBody?: string;
+    thankYouUrl?: string;
+  }
+) {
+  const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(
+    "/meta-campaigns/lead-forms",
+    { ...payload, businessId },
     withBusiness(businessId)
   );
   return data;

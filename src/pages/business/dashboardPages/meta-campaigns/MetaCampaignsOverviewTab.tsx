@@ -332,24 +332,9 @@ export default function MetaCampaignsOverviewTab() {
           hint={t("metaCampaigns.kpis.leadsHint")}
         />
         <KpiCard
-          label={t("metaCampaigns.kpis.budget")}
-          value={
-            kpis?.monthlyBudget
-              ? formatCurrency(kpis.monthlyBudget, currency)
-              : formatCurrency(kpis?.spend || 0, currency)
-          }
-          hint={
-            kpis?.monthlyBudget
-              ? t("metaCampaigns.kpis.budgetHint", {
-                  spent: formatCurrency(kpis?.spend || 0, currency),
-                  total: formatCurrency(kpis.monthlyBudget, currency),
-                  percent: kpis?.budgetUsedPercent || 0,
-                })
-              : t("metaCampaigns.kpis.spendHint")
-          }
-          progress={
-            kpis?.monthlyBudget ? kpis.budgetUsedPercent || 0 : undefined
-          }
+          label={t("metaCampaigns.kpis.spend")}
+          value={formatCurrency(kpis?.spend || 0, currency)}
+          hint={t("metaCampaigns.kpis.spendHint")}
         />
       </div>
 
