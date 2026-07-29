@@ -43,7 +43,7 @@
   "home": {
     "badge": "All-in-one business management platform",
     "headlineTop": "Run your business",
-    "headlineHighlight": "in one place.",
+    "headlineHighlight": "in one place",
     "subtitle": "One smart platform to manage clients, appointments, CRM, collaborations, proposals and AI — everything connected in one premium workspace.",
     "startTrial": "Start a trial",
     "viewPricing": "View pricing",
@@ -51,12 +51,101 @@
     "trustTrial": "14-day free trial",
     "trustCancel": "Cancel anytime"
   },
+  "live": {
+    "crumb": "CRM · Lead management",
+    "title": "Lead management",
+    "statTotal": "Total leads",
+    "statNew": "New leads",
+    "statWorking": "In progress",
+    "statWon": "Converted",
+    "status_new": "New",
+    "status_contacted": "Contacted",
+    "status_interested": "Interested",
+    "status_won": "Converted",
+    "source_meta": "Meta",
+    "source_site": "Website",
+    "source_google": "Google Ads",
+    "source_whatsapp": "WhatsApp",
+    "justNow": "just now",
+    "people": [
+      {
+        "name": "Dana Levi",
+        "initials": "DL",
+        "service": "Kitchen renovation",
+        "source": "meta"
+      },
+      {
+        "name": "Amir Cohen",
+        "initials": "AC",
+        "service": "Quote request",
+        "source": "site"
+      },
+      {
+        "name": "Ronit Bar",
+        "initials": "RB",
+        "service": "First consultation",
+        "source": "google"
+      },
+      {
+        "name": "Yuval Sade",
+        "initials": "YS",
+        "service": "Contract renewal",
+        "source": "whatsapp"
+      },
+      {
+        "name": "Noa Avraham",
+        "initials": "NA",
+        "service": "Book an appointment",
+        "source": "meta"
+      },
+      {
+        "name": "Tomer Shapira",
+        "initials": "TS",
+        "service": "Product demo",
+        "source": "site"
+      },
+      {
+        "name": "Michal Levi",
+        "initials": "ML",
+        "service": "Site and store package",
+        "source": "google"
+      },
+      {
+        "name": "Idan Golan",
+        "initials": "IG",
+        "service": "Monthly retainer",
+        "source": "meta"
+      },
+      {
+        "name": "Hila David",
+        "initials": "HD",
+        "service": "Event photography",
+        "source": "whatsapp"
+      },
+      {
+        "name": "Eli Shemesh",
+        "initials": "ES",
+        "service": "Consulting session",
+        "source": "site"
+      }
+    ],
+    "sourcesEyebrow": "Where the enquiries come from",
+    "sources": [
+      "Facebook Lead Ads",
+      "Instagram",
+      "Google Ads",
+      "WhatsApp",
+      "Website form",
+      "Phone call",
+      "Business page",
+      "Partner referral"
+    ]
+  },
   "tour": {
     "eyebrow": "The product itself",
-    "titleTop": "No illustrations.",
-    "titleHighlight": "The actual screens.",
-    "subtitle": "Every capture on this page comes from the system businesses work in every day — no mock-ups and no screens invented for marketing.",
-    "shotNote": "A real capture of the lead management screen.",
+    "titleTop": "This is what it looks like",
+    "titleHighlight": "when the business runs",
+    "subtitle": "From the first enquiry to an appointment already paid for — same screens, same system",
     "heroCrumb": "CRM · Lead management",
     "heroAlt": "The BizUply lead management screen: lead metrics, filters by status and source, and the lead list with tasks",
     "leadsLabel": "Leads",
@@ -111,23 +200,14 @@
     "siteExtra1Alt": "Lunelle — a services site built with the BizUply website builder",
     "siteExtra2Crumb": "Website builder · Talentix",
     "siteExtra2Alt": "Talentix — a real-estate site built with the BizUply website builder",
-    "mobileLabel": "On mobile",
-    "mobileTitle": "The notification centre travels with you",
-    "mobileText": "A new lead and an overdue task both raise a notification, so even when you are away from the desk no enquiry waits a whole day.",
-    "mobileBullets": [
-      "A notification for every new lead",
-      "Overdue tasks surface at the top",
-      "Exactly the same information as on desktop",
-      "Runs in the mobile browser with nothing to install"
-    ],
     "mobileCrumb": "Notification centre",
     "mobileAlt": "The BizUply notification centre on mobile, with new leads and overdue tasks"
   },
   "modules": {
     "eyebrow": "The whole platform",
-    "titleTop": "Everything the business needs,",
-    "titleHighlight": "each with its own page.",
-    "subtitle": "Six layers working on the same leads and the same clients. Open any one of them to see exactly what it does.",
+    "titleTop": "Everything the business needs",
+    "titleHighlight": "each with its own page",
+    "subtitle": "Six layers working on the same leads and the same clients",
     "open": "Open the page",
     "crmTitle": "CRM & leads",
     "crmText": "Every enquiry in one pipeline with status, source, notes and a next task — then on to a full client file.",
@@ -144,11 +224,11 @@
   },
   "why": {
     "eyebrow": "WHY BIZUPLY",
-    "titleTop": "One platform.",
-    "titleHighlight": "Unlimited possibilities.",
+    "titleTop": "One platform",
+    "titleHighlight": "Unlimited possibilities",
     "subtitle": "Everything your business needs — CRM, clients, appointments, collaborations, automations and AI — in one simple, powerful platform.",
     "builtFor": "Built for modern businesses",
-    "panelTitle": "Stop managing your business across disconnected tools.",
+    "panelTitle": "Stop managing your business across disconnected tools",
     "panelText": "BizUply brings your daily business operations into one beautiful workspace — so you can move faster, stay organized and grow with confidence.",
     "statActions": "actions managed",
     "statSatisfaction": "satisfaction",
@@ -170,16 +250,16 @@
     "feature3Badge": "Scalable",
     "feature3Title": "Designed to grow with you",
     "feature3Text": "Start simple and unlock advanced CRM, collaboration, analytics and AI tools as your business grows.",
-    "bottomTitle": "Built to replace scattered tools with one beautiful business OS.",
+    "bottomTitle": "Built to replace scattered tools with one beautiful business OS",
     "bottomText": "Start with what you need today, and unlock more powerful workflows as your business grows."
   },
   "faqMini": {
     "eyebrow": "FAQ",
-    "titleTop": "Frequently asked",
-    "titleHighlight": "questions.",
-    "subtitle": "Everything you need to know about managing your business, clients, CRM, collaborations and AI inside Bizuply.",
-    "stillTitle": "Still have questions?",
-    "stillText": "Start with the FAQ, then explore how Bizuply can fit your workflow.",
+    "titleTop": "What matters",
+    "titleHighlight": "before you start",
+    "subtitle": "Short answers to the questions every business asks first",
+    "stillTitle": "Still not answered?",
+    "stillText": "Talk to us and we will walk your business through it — what goes into the system, what runs on its own, and where to start",
     "chipBusinessPage": "Business Page",
     "chipAiTools": "AI Tools",
     "ctaTitle": "Ready to manage your business in one place?",
@@ -228,7 +308,7 @@
   "finalCta": {
     "eyebrow": "BizUply business OS",
     "titleTop": "Run your business",
-    "titleHighlight": "in one place.",
+    "titleHighlight": "in one place",
     "subtitle": "Manage your business page, CRM, appointments, collaborations and AI tools — all from one connected workspace.",
     "crm": "CRM",
     "crmText": "Clients, leads and follow-ups",

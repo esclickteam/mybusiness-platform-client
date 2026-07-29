@@ -2,11 +2,15 @@
 
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { motion, useReducedMotion } from "framer-motion";
 
-import AppShot from "./AppShot";
+import { Reveal, WordReveal } from "./product-marketing";
+import LiveBoard from "./LiveBoard";
+import SourcesMarquee from "./SourcesMarquee";
 
 export default function HeroSection() {
   const { t } = useTranslation();
+  const reduceMotion = useReducedMotion();
 
   const trustItems = [
     t("home.trustTrial"),
@@ -29,23 +33,31 @@ export default function HeroSection() {
 
       <div className="relative mx-auto max-w-7xl px-5 pb-20 pt-16 text-center sm:px-6 lg:px-8 lg:pb-24 lg:pt-20">
         {/* BADGE */}
-        <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-xs font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur sm:text-sm">
-          <span className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_18px_rgba(79,70,229,0.85)]" />
-          {t("home.badge")}
-        </div>
+        <Reveal from="down" distance={14} duration={0.6}>
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-5 py-2 text-xs font-black text-indigo-700 shadow-xl shadow-indigo-100/70 backdrop-blur sm:text-sm">
+            <motion.span
+              className="h-2.5 w-2.5 rounded-full bg-indigo-600 shadow-[0_0_18px_rgba(79,70,229,0.85)]"
+              animate={reduceMotion ? undefined : { scale: [1, 1.35, 1], opacity: [1, 0.6, 1] }}
+              transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            />
+            {t("home.badge")}
+          </div>
+        </Reveal>
 
         {/* HEADLINE */}
         <h1 className="mx-auto mt-8 max-w-5xl text-5xl font-black leading-[0.95] tracking-[-0.055em] text-slate-800 sm:text-6xl lg:text-7xl">
-          {t("home.headlineTop")}
+          <WordReveal text={t("home.headlineTop")} delay={0.12} />
           <br />
           <span className="bg-gradient-to-r from-indigo-700 via-violet-600 to-cyan-500 bg-clip-text text-transparent">
-            {t("home.headlineHighlight")}
+            <WordReveal text={t("home.headlineHighlight")} delay={0.42} />
           </span>
         </h1>
 
-        <p className="mx-auto mt-7 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg lg:text-xl">
-          {t("home.subtitle")}
-        </p>
+        <Reveal from="up" distance={18} delay={0.5} className="mt-7">
+          <p className="mx-auto max-w-3xl text-base leading-8 text-slate-600 sm:text-lg lg:text-xl">
+            {t("home.subtitle")}
+          </p>
+        </Reveal>
 
         {/* CTA */}
         <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -73,20 +85,19 @@ export default function HeroSection() {
           ))}
         </div>
 
-        {/* REAL PRODUCT SHOT */}
-        <div className="mx-auto mt-14 max-w-6xl lg:mt-16">
-          <AppShot
-            src="/home/crm-leads.webp"
-            alt={t("tour.heroAlt")}
-            width={1400}
-            height={726}
-            crumb={t("tour.heroCrumb")}
-            priority
-          />
+        {/* THE BOARD, MOVING */}
+        <Reveal
+          from="up"
+          distance={34}
+          delay={0.55}
+          duration={0.9}
+          className="mx-auto mt-14 max-w-4xl lg:mt-16"
+        >
+          <LiveBoard />
+        </Reveal>
 
-          <p className="mt-5 text-sm font-bold text-slate-500">
-            {t("tour.shotNote")}
-          </p>
+        <div className="mx-auto mt-10 max-w-5xl">
+          <SourcesMarquee />
         </div>
       </div>
     </section>
