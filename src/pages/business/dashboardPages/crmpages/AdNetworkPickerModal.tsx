@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { X } from "lucide-react";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
-export type AdNetworkId = "meta";
+export type AdNetworkId = "meta" | "google";
 
 type AdNetworkPickerModalProps = {
   open: boolean;
@@ -44,6 +44,11 @@ const NETWORKS: Array<{
     labelKey: "meta",
     logo: <NetworkLogo src="/meta.svg" alt="Meta" wide />,
   },
+  {
+    id: "google",
+    labelKey: "google",
+    logo: <NetworkLogo src="/google-ads.svg" alt="Google Ads" />,
+  },
 ];
 
 export default function AdNetworkPickerModal({
@@ -67,7 +72,7 @@ export default function AdNetworkPickerModal({
         aria-label={t("crm.common.close")}
         onClick={onClose}
       />
-      <div className="relative flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:max-h-none sm:rounded-2xl">
+      <div className="relative flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-2xl bg-white shadow-[0_30px_100px_rgba(15,23,42,0.28)] sm:max-h-none sm:rounded-2xl">
         <div className="flex shrink-0 items-center justify-between bg-[#0F766E] px-4 py-3 text-white sm:px-5 sm:py-4">
           <h2 className="text-base font-black sm:text-lg">{t("crm.leads.adNetworks.title")}</h2>
           <button
@@ -79,13 +84,13 @@ export default function AdNetworkPickerModal({
           </button>
         </div>
 
-        <div className="flex flex-1 justify-center overflow-y-auto p-4 sm:p-5">
+        <div className="grid flex-1 grid-cols-2 gap-3 overflow-y-auto p-4 sm:gap-4 sm:p-5">
           {NETWORKS.map((network) => (
             <button
               key={network.id}
               type="button"
               onClick={() => onSelect(network.id)}
-              className="relative flex min-h-[120px] w-full max-w-xs flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-[#F3F4F6] p-3 transition hover:border-sky-300 hover:bg-white sm:min-h-[140px] sm:gap-3"
+              className="relative flex min-h-[120px] flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-[#F3F4F6] p-3 transition hover:border-sky-300 hover:bg-white sm:min-h-[140px] sm:gap-3"
             >
               {network.logo}
               <span className="text-xs font-black text-slate-600 sm:text-sm">
