@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
+import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
@@ -10,12 +11,17 @@ import {
 
 function Contact() {
   const { t } = useTranslation();
+  const location = useLocation();
+  const prefillMessage =
+    typeof location.state?.prefillMessage === "string"
+      ? location.state.prefillMessage
+      : "";
 
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
     email: "",
-    message: "",
+    message: prefillMessage,
   });
 
   const [status, setStatus] = useState(null);
@@ -31,6 +37,15 @@ function Contact() {
       active = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (!prefillMessage) return;
+    setFormData((prev) =>
+      prev.message === prefillMessage
+        ? prev
+        : { ...prev, message: prefillMessage }
+    );
+  }, [prefillMessage]);
 
   const highlights = [
     [t("contact.highlight1Title"), t("contact.highlight1Text")],
