@@ -59,6 +59,29 @@ type CreateForm = {
   category: string;
   password: string;
   plan: "monthly" | "yearly";
+  startCheckout: boolean;
+  includeWebsiteAddon: boolean;
+};
+
+type PurchaseLine = {
+  sku: string;
+  name: string;
+  kind: string;
+  billing: string;
+  amountIls: number;
+  quantity: number;
+};
+
+type BusinessPurchase = {
+  _id: string;
+  status: string;
+  source: string;
+  packageSku: string;
+  lineItems?: PurchaseLine[];
+  totals?: { packageIls?: number; upsellsIls?: number; totalIls?: number };
+  paidAt?: string | null;
+  notes?: string;
+  markedPaidBy?: { name?: string; email?: string } | null;
 };
 
 const EMPTY_FORM: CreateForm = {
@@ -69,6 +92,8 @@ const EMPTY_FORM: CreateForm = {
   category: "general",
   password: "",
   plan: "monthly",
+  startCheckout: true,
+  includeWebsiteAddon: false,
 };
 
 const PACKAGES = [
@@ -142,9 +167,14 @@ function AdminCustomers() {
   const [form, setForm] = useState<CreateForm>(EMPTY_FORM);
   const [creating, setCreating] = useState(false);
   const [checkoutUserId, setCheckoutUserId] = useState<string | null>(null);
+  const [markingUserId, setMarkingUserId] = useState<string | null>(null);
   const [payPlanByUser, setPayPlanByUser] = useState<
     Record<string, "monthly" | "yearly">
   >({});
+  const [addonByUser, setAddonByUser] = useState<Record<string, boolean>>({});
+  const [purchasesFor, setPurchasesFor] = useState<AdminCustomer | null>(null);
+  const [purchases, setPurchases] = useState<BusinessPurchase[]>([]);
+  const [purchasesLoading, setPurchasesLoading] = useState(false);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -219,8 +249,15 @@ function AdminCustomers() {
 
     try {
       const { data } = await API.post("/admin/customers", {
-        ...form,
-        startCheckout: true,
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        businessName: form.businessName,
+        category: form.category,
+        password: form.password,
+        plan: form.plan,
+        startCheckout: form.startCheckout,
+        includeWebsiteAddon: form.includeWebsiteAddon,
       });
 
       const checkoutUrl = data?.checkout?.url;
@@ -231,7 +268,9 @@ function AdminCustomers() {
 
       setBanner(
         data?.warning ||
-          "הלקוח נוצר בהצלחה. לא התקבל קישור תשלום — אפשר לשלוח לתשלום מהרשימה."
+          (form.startCheckout
+            ? "הלקוח נוצר בהצלחה. לא התקבל קישור תשלום — אפשר לשלוח לתשלום מהרשימה."
+            : "הלקוח נוצר בהצלחה. אפשר לסמן שולם ידנית או לשלוח ל־Stripe.")
       );
       setShowCreate(false);
       setForm(EMPTY_FORM);
@@ -259,6 +298,7 @@ function AdminCustomers() {
     try {
       const { data } = await API.post(`/admin/customers/${userId}/checkout`, {
         plan,
+        includeWebsiteAddon: Boolean(addonByUser[userId]),
       });
 
       const checkoutUrl = data?.checkout?.url;
@@ -273,6 +313,63 @@ function AdminCustomers() {
       setError(err?.response?.data?.error || "לא ניתן לפתוח תשלום Stripe");
     } finally {
       setCheckoutUserId(null);
+    }
+  }
+
+  async function handleMarkPaid(customer: AdminCustomer) {
+    const userId = customer.owner?._id;
+    if (!userId) {
+      setError("לעסק זה אין בעלים מקושר");
+      return;
+    }
+    const plan = payPlanByUser[userId] || "monthly";
+    if (
+      !window.confirm(
+        `לסמן את ${customer.businessName || "העסק"} כשולם עבור חבילת ${
+          plan === "yearly" ? "שנתית" : "חודשית"
+        }${addonByUser[userId] ? " + תוספת אתר" : ""}?`
+      )
+    ) {
+      return;
+    }
+
+    setMarkingUserId(userId);
+    setError("");
+    setBanner("");
+    try {
+      await API.post(`/admin/customers/${userId}/mark-paid`, {
+        plan,
+        includeWebsiteAddon: Boolean(addonByUser[userId]),
+        notes: "סומן כשולם ידנית ממסך ניהול לקוחות",
+      });
+      setBanner("סומן כשולם — הרכישה נשמרה במערכת עם פירוט מלא.");
+      await loadCustomers();
+    } catch (err: any) {
+      console.error("Mark paid failed:", err);
+      setError(err?.response?.data?.error || "לא ניתן לסמן שולם");
+    } finally {
+      setMarkingUserId(null);
+    }
+  }
+
+  async function openPurchases(customer: AdminCustomer) {
+    const userId = customer.owner?._id;
+    if (!userId) {
+      setError("לעסק זה אין בעלים מקושר");
+      return;
+    }
+    setPurchasesFor(customer);
+    setPurchasesLoading(true);
+    setPurchases([]);
+    try {
+      const { data } = await API.get(`/admin/customers/${userId}/purchases`);
+      setPurchases(Array.isArray(data?.purchases) ? data.purchases : []);
+    } catch (err) {
+      console.error("Load purchases failed:", err);
+      setError("לא ניתן לטעון את פירוט הרכישות");
+      setPurchasesFor(null);
+    } finally {
+      setPurchasesLoading(false);
     }
   }
 
@@ -493,10 +590,14 @@ function AdminCustomers() {
                             )}
                           </td>
                           <td className="px-4 py-4">
-                            <div className="flex min-w-[220px] flex-col gap-2">
+                            <div className="flex min-w-[240px] flex-col gap-2">
                               <select
                                 value={selectedPlan}
-                                disabled={!ownerId || checkoutUserId === ownerId}
+                                disabled={
+                                  !ownerId ||
+                                  checkoutUserId === ownerId ||
+                                  markingUserId === ownerId
+                                }
                                 onChange={(e) =>
                                   setPayPlanByUser((prev) => ({
                                     ...prev,
@@ -507,14 +608,28 @@ function AdminCustomers() {
                                 }
                                 className="rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-300"
                               >
-                                <option value="monthly">חודשי · ₪149</option>
-                                <option value="yearly">שנתי · ₪1,490</option>
+                                <option value="monthly">חודשי</option>
+                                <option value="yearly">שנתי</option>
                               </select>
+                              <label className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-600">
+                                <input
+                                  type="checkbox"
+                                  checked={Boolean(addonByUser[ownerId])}
+                                  disabled={!ownerId}
+                                  onChange={(e) =>
+                                    setAddonByUser((prev) => ({
+                                      ...prev,
+                                      [ownerId]: e.target.checked,
+                                    }))
+                                  }
+                                />
+                                + תוספת אתר
+                              </label>
                               <button
                                 type="button"
                                 disabled={!ownerId || checkoutUserId === ownerId}
                                 onClick={() => handleCheckout(customer)}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                               >
                                 <CreditCard className="h-3.5 w-3.5" />
                                 {checkoutUserId === ownerId
@@ -522,6 +637,25 @@ function AdminCustomers() {
                                   : customer.owner?.hasPaid
                                     ? "שדרוג / חידוש"
                                     : "תשלום ב־Stripe"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={!ownerId || markingUserId === ownerId}
+                                onClick={() => handleMarkPaid(customer)}
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-black text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5" />
+                                {markingUserId === ownerId
+                                  ? "מסמן..."
+                                  : "סמן שולם ידני"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={!ownerId}
+                                onClick={() => openPurchases(customer)}
+                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                              >
+                                פירוט רכישות
                               </button>
                             </div>
                           </td>
@@ -673,9 +807,41 @@ function AdminCustomers() {
                 </div>
               </div>
 
+              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={form.includeWebsiteAddon}
+                  onChange={(e) =>
+                    updateForm("includeWebsiteAddon", e.target.checked)
+                  }
+                />
+                <span>
+                  + תוספת אתר (אפסייל)
+                  <span className="mt-1 block text-xs font-semibold text-slate-500">
+                    יתווסף לפירוט הרכישה ול־Stripe כשפותחים תשלום.
+                  </span>
+                </span>
+              </label>
+
+              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
+                <input
+                  type="checkbox"
+                  className="mt-1"
+                  checked={form.startCheckout}
+                  onChange={(e) => updateForm("startCheckout", e.target.checked)}
+                />
+                <span>
+                  עבור מיד ל־Stripe אחרי יצירה
+                  <span className="mt-1 block text-xs font-semibold text-slate-500">
+                    אם כבוי — הלקוח נוצר בלי תשלום, ואפשר לסמן שולם ידנית מהרשימה.
+                  </span>
+                </span>
+              </label>
+
               <div className="rounded-2xl border border-sky-100 bg-sky-50 px-4 py-3 text-xs font-bold leading-6 text-sky-800">
-                לאחר יצירת הלקוח תועברו אוטומטית ל־Stripe להשלמת התשלום עבור
-                החבילה שנבחרה. בסיום התשלום תחזרו לדשבורד הלקוחות.
+                יצירת משתמש עסקי נשמרת במערכת. תשלום Stripe או סימון ידני ישמרו
+                רכישה מלאה (חבילה + אפסיילים) במונגו.
               </div>
 
               <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-start">
@@ -684,8 +850,16 @@ function AdminCustomers() {
                   disabled={creating}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-5 py-3.5 text-sm font-black text-white shadow-lg shadow-[#7C4DFF]/25 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-70"
                 >
-                  <CreditCard className="h-4 w-4" />
-                  {creating ? "יוצר ומעביר לתשלום..." : "צור לקוח ועבור לתשלום"}
+                  {form.startCheckout ? (
+                    <CreditCard className="h-4 w-4" />
+                  ) : (
+                    <UserPlus className="h-4 w-4" />
+                  )}
+                  {creating
+                    ? "יוצר..."
+                    : form.startCheckout
+                      ? "צור לקוח ועבור לתשלום"
+                      : "צור לקוח בלי תשלום"}
                 </button>
                 <button
                   type="button"
@@ -697,6 +871,93 @@ function AdminCustomers() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      ) : null}
+
+      {purchasesFor ? (
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/45 p-4 backdrop-blur-sm sm:items-center">
+          <div
+            dir="rtl"
+            className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[28px] border border-purple-100 bg-white p-5 shadow-2xl md:p-7"
+          >
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-black text-purple-950">
+                  פירוט רכישות
+                </h2>
+                <p className="mt-1 text-sm font-bold text-slate-500">
+                  {purchasesFor.businessName || "עסק"} · כל חבילה ואפסייל שנשמרו
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPurchasesFor(null)}
+                className="grid h-10 w-10 place-items-center rounded-2xl bg-slate-100 text-slate-500"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            {purchasesLoading ? (
+              <BizuplyLoader label="טוען רכישות..." />
+            ) : purchases.length === 0 ? (
+              <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-10 text-center text-sm font-bold text-slate-500">
+                אין רכישות שמורות לעסק הזה עדיין.
+              </p>
+            ) : (
+              <div className="space-y-3">
+                {purchases.map((purchase) => (
+                  <article
+                    key={purchase._id}
+                    className="rounded-2xl border border-purple-100 bg-purple-50/40 p-4"
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <strong className="text-sm font-black text-purple-950">
+                        {purchase.packageSku} · {purchase.status}
+                      </strong>
+                      <span className="text-xs font-bold text-slate-500">
+                        {formatDate(purchase.paidAt)} · {purchase.source}
+                      </span>
+                    </div>
+                    <ul className="mt-3 space-y-1.5">
+                      {(purchase.lineItems || []).map((line) => (
+                        <li
+                          key={`${purchase._id}-${line.sku}`}
+                          className="flex items-center justify-between text-sm font-bold text-slate-700"
+                        >
+                          <span>
+                            {line.name}
+                            <span className="ms-2 text-[11px] text-slate-400">
+                              {line.billing === "one_time"
+                                ? "חד־פעמי"
+                                : line.billing === "recurring_year"
+                                  ? "שנתי מתחדש"
+                                  : "חודשי מתחדש"}
+                            </span>
+                          </span>
+                          <span>₪{Number(line.amountIls || 0).toLocaleString("he-IL")}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-3 border-t border-purple-100 pt-2 text-sm font-black text-slate-900">
+                      סה״כ: ₪
+                      {Number(purchase.totals?.totalIls || 0).toLocaleString(
+                        "he-IL"
+                      )}
+                    </div>
+                    {purchase.notes ? (
+                      <p className="mt-2 text-xs font-semibold text-slate-500">
+                        {purchase.notes}
+                        {purchase.markedPaidBy?.name
+                          ? ` · ע״י ${purchase.markedPaidBy.name}`
+                          : ""}
+                      </p>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       ) : null}
