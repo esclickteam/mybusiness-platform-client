@@ -140,10 +140,22 @@ export type WhatsAppHealthMetric = {
   source: string;
 };
 
+export type WhatsAppMessagingLimits = {
+  raw: string;
+  currentKey: string;
+  currentLabel: string;
+  description: string;
+  numeric: number | null;
+  steps: Array<{ key: string; label: string }>;
+  updatedAt?: string | null;
+  source: string;
+};
+
 export type WhatsAppAccountHealth = {
   success?: boolean;
   connection: WhatsAppConnection;
   metrics: WhatsAppHealthMetric[];
+  messagingLimits?: WhatsAppMessagingLimits | null;
   chart7d: Array<{
     date: string;
     sent: number;

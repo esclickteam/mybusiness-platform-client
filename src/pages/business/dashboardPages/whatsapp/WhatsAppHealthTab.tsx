@@ -6,6 +6,7 @@ import {
   syncWhatsAppAccountHealth,
   type WhatsAppAccountHealth,
   type WhatsAppHealthMetric,
+  type WhatsAppMessagingLimits,
 } from "../../../../api/whatsappApi";
 import {
   btnPrimary,
@@ -66,6 +67,69 @@ function MetricCard({ metric }: { metric: WhatsAppHealthMetric }) {
         {formatMetricValue(metric.value)}
       </p>
     </article>
+  );
+}
+
+function MessagingLimitsPanel({
+  limits,
+}: {
+  limits: WhatsAppMessagingLimits;
+}) {
+  return (
+    <section className={`${cardBase} p-4 sm:p-5`} dir="rtl">
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div>
+          <h3 className="text-sm font-black text-slate-900">
+            הגבלות על התכתבות
+          </h3>
+          <p className="mt-1 text-xs font-semibold text-slate-500">
+            מקור: {limits.source}
+            {limits.updatedAt
+              ? ` · עודכן ${new Date(limits.updatedAt).toLocaleString("he-IL")}`
+              : ""}
+          </p>
+        </div>
+        <span className="rounded-md border border-sky-100 bg-sky-50 px-2 py-0.5 text-[10px] font-black text-sky-700">
+          Meta
+        </span>
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-stretch justify-center gap-2">
+        {limits.steps.map((step) => {
+          const isCurrent = step.key === limits.currentKey;
+          return (
+            <div
+              key={step.key}
+              className={[
+                "relative min-w-[88px] flex-1 rounded-xl border px-3 py-4 text-center",
+                isCurrent
+                  ? "border-emerald-300 bg-white shadow-sm"
+                  : "border-slate-200 bg-slate-50 text-slate-500",
+              ].join(" ")}
+            >
+              {isCurrent ? (
+                <span className="absolute -top-2 start-1/2 -translate-x-1/2 rounded-full bg-emerald-600 px-2 py-0.5 text-[10px] font-black text-white">
+                  נוכחית
+                </span>
+              ) : null}
+              <p
+                className={[
+                  "text-lg font-black",
+                  isCurrent ? "text-slate-900" : "text-slate-500",
+                ].join(" ")}
+              >
+                {step.label}
+              </p>
+              {isCurrent ? (
+                <p className="mt-2 text-[11px] font-semibold leading-snug text-slate-600">
+                  {limits.description}
+                </p>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
@@ -209,6 +273,10 @@ export default function WhatsAppHealthTab() {
 
       {health ? (
         <>
+          {health.messagingLimits ? (
+            <MessagingLimitsPanel limits={health.messagingLimits} />
+          ) : null}
+
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {(health.metrics || []).map((metric) => (
               <MetricCard key={metric.key} metric={metric} />
