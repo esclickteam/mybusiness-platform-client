@@ -113,10 +113,18 @@ export default function WhatsAppSettingsTab() {
   }, []);
 
   const handleConnect = async () => {
-    if (!businessId || !connection?.embeddedSignup) return;
+    if (!businessId) {
+      toast.error(t("whatsapp.errors.connectFailed"));
+      return;
+    }
 
-    const { appId, configId, graphVersion, ready, encryptionReady } =
-      connection.embeddedSignup;
+    const signup = connection?.embeddedSignup;
+    if (!signup) {
+      toast.error(t("whatsapp.settings.configMissing"));
+      return;
+    }
+
+    const { appId, configId, graphVersion, ready, encryptionReady } = signup;
 
     if (!ready || !appId || !configId) {
       toast.error(t("whatsapp.settings.configMissing"));
@@ -133,62 +141,93 @@ export default function WhatsAppSettingsTab() {
       const FB = await loadFacebookSdk(appId, graphVersion || "v21.0");
 
       await new Promise<void>((resolve, reject) => {
-        FB.login(
-          async (response) => {
-            try {
-              const code = response?.authResponse?.code;
-              if (!code) {
-                reject(
-                  new Error(
-                    t("whatsapp.settings.connectCancelled")
-                  )
+        let settled = false;
+        const settleReject = (error: Error) => {
+          if (settled) return;
+          settled = true;
+          reject(error);
+        };
+        const settleResolve = () => {
+          if (settled) return;
+          settled = true;
+          resolve();
+        };
+
+        try {
+          FB.login(
+            async (response) => {
+              try {
+                const code = response?.authResponse?.code;
+                if (!code) {
+                  settleReject(
+                    new Error(t("whatsapp.settings.connectCancelled"))
+                  );
+                  return;
+                }
+
+                // Allow session postMessage to arrive.
+                await new Promise((r) => setTimeout(r, 600));
+                const assets = sessionRef.current;
+                if (!assets?.phoneNumberId || !assets?.wabaId) {
+                  settleReject(
+                    new Error(t("whatsapp.settings.missingSessionAssets"))
+                  );
+                  return;
+                }
+
+                const status = await completeWhatsAppEmbeddedSignup(
+                  businessId,
+                  {
+                    code,
+                    phoneNumberId: assets.phoneNumberId,
+                    wabaId: assets.wabaId,
+                    metaBusinessId: assets.metaBusinessId,
+                  }
                 );
-                return;
-              }
 
-              // Allow session postMessage to arrive.
-              await new Promise((r) => setTimeout(r, 400));
-              const assets = sessionRef.current;
-              if (!assets?.phoneNumberId || !assets?.wabaId) {
-                reject(new Error(t("whatsapp.settings.missingSessionAssets")));
-                return;
-              }
+                if (!status.connected) {
+                  settleReject(
+                    new Error(
+                      status.lastError || t("whatsapp.settings.connectFailed")
+                    )
+                  );
+                  return;
+                }
 
-              const status = await completeWhatsAppEmbeddedSignup(businessId, {
-                code,
-                phoneNumberId: assets.phoneNumberId,
-                wabaId: assets.wabaId,
-                metaBusinessId: assets.metaBusinessId,
-              });
-
-              if (!status.connected) {
-                reject(
-                  new Error(
-                    status.lastError || t("whatsapp.settings.connectFailed")
-                  )
+                setConnection(status);
+                toast.success(t("whatsapp.settings.connectedSuccess"));
+                await load();
+                settleResolve();
+              } catch (error: any) {
+                settleReject(
+                  error instanceof Error
+                    ? error
+                    : new Error(
+                        error?.response?.data?.error ||
+                          error?.message ||
+                          t("whatsapp.errors.connectFailed")
+                      )
                 );
-                return;
               }
-
-              setConnection(status);
-              toast.success(t("whatsapp.settings.connectedSuccess"));
-              await load();
-              resolve();
-            } catch (error: any) {
-              reject(error);
-            }
-          },
-          {
-            config_id: configId,
-            response_type: "code",
-            override_default_response_type: true,
-            extras: {
-              setup: {},
-              featureType: "",
-              sessionInfoVersion: "3",
             },
-          }
-        );
+            {
+              config_id: configId,
+              response_type: "code",
+              override_default_response_type: true,
+              extras: {
+                setup: {},
+                featureType: "",
+                sessionInfoVersion: "3",
+              },
+            }
+          );
+        } catch (error: any) {
+          settleReject(
+            error instanceof Error
+              ? error
+              : new Error(error?.message || t("whatsapp.errors.connectFailed"))
+          );
+        }
       });
     } catch (error: any) {
       toast.error(
