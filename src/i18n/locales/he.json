@@ -4477,13 +4477,14 @@
       "channel": "WhatsApp Cloud API"
     },
     "nav": {
-      "compose": "Send",
-      "templates": "Templates",
-      "lists": "Mailing lists",
-      "automations": "Automations",
-      "inbox": "Inbox",
-      "history": "History",
-      "settings": "API connection"
+      "compose": "שליחה",
+      "templates": "תבניות",
+      "lists": "רשימות תפוצה",
+      "automations": "אוטומציות",
+      "inbox": "תיבת דואר נכנס",
+      "history": "היסטוריה",
+      "health": "נתוני שימוש ובריאות החשבון",
+      "settings": "חיבור API"
     },
     "categories": {
       "appointment_reminder": "Appointment reminder",

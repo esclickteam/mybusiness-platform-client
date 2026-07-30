@@ -117,6 +117,9 @@ const WhatsAppInboxTab = lazy(() =>
 const WhatsAppSettingsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
 );
+const WhatsAppHealthTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppHealthTab")
+);
 
 /* Meta Ads campaign management */
 const MetaCampaignsMain = lazy(() =>
@@ -418,6 +421,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="automations" element={<WhatsAppAutomationsTab />} />
             <Route path="inbox" element={<WhatsAppInboxTab />} />
             <Route path="history" element={<WhatsAppHistoryTab />} />
+            <Route path="health" element={<WhatsAppHealthTab />} />
             <Route path="settings" element={<WhatsAppSettingsTab />} />
             <Route path="*" element={<Navigate to="compose" replace />} />
           </Route>

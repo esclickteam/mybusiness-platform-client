@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
+  Activity,
   History,
   Inbox,
   ListChecks,
@@ -34,6 +35,7 @@ const tabs: WhatsAppTab[] = [
   { path: "automations", labelKey: "whatsapp.nav.automations", icon: Workflow },
   { path: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
   { path: "history", labelKey: "whatsapp.nav.history", icon: History },
+  { path: "health", labelKey: "whatsapp.nav.health", icon: Activity },
   { path: "settings", labelKey: "whatsapp.nav.settings", icon: Settings2 },
 ];
 

@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import {
+  useNavigate,
+  useOutletContext,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -21,6 +25,7 @@ import {
   type WhatsAppMailingList,
   type WhatsAppRecipient,
   type WhatsAppTemplate,
+  type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
 import {
   btnPrimary,
@@ -59,6 +64,7 @@ function renderPreview(
 export default function WhatsAppComposeTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { businessId } = useOutletContext<OutletCtx>();
 
   const [loading, setLoading] = useState(true);
@@ -83,13 +89,14 @@ export default function WhatsAppComposeTab() {
   useEffect(() => {
     if (!businessId) return;
     let cancelled = false;
+    const preselected = searchParams.get("templateId") || "";
 
     (async () => {
       try {
         setLoading(true);
         const [status, tpls, ls, people] = await Promise.all([
           getWhatsAppStatus(businessId),
-          listWhatsAppTemplates(businessId, { approvedOnly: true }),
+          listWhatsAppTemplates(businessId, { readyOnly: true }),
           listWhatsAppLists(businessId),
           listWhatsAppRecipients(businessId),
         ]);
@@ -98,7 +105,11 @@ export default function WhatsAppComposeTab() {
         setTemplates(tpls);
         setLists(ls);
         setRecipients(people);
-        if (tpls[0]?._id) setTemplateId(tpls[0]._id);
+        if (preselected && tpls.some((tpl) => tpl._id === preselected)) {
+          setTemplateId(preselected);
+        } else if (tpls[0]?._id) {
+          setTemplateId(tpls[0]._id);
+        }
         if (ls[0]?._id) setMailingListId(ls[0]._id);
       } catch (error: any) {
         toast.error(
@@ -112,7 +123,7 @@ export default function WhatsAppComposeTab() {
     return () => {
       cancelled = true;
     };
-  }, [businessId, t]);
+  }, [businessId, t, searchParams]);
 
   const selectedTemplate = useMemo(
     () => templates.find((tpl) => tpl._id === templateId) || null,
@@ -121,6 +132,9 @@ export default function WhatsAppComposeTab() {
 
   const body = selectedTemplate?.body || "";
   const variableKeys = selectedTemplate?.variables || [];
+  const mappings: WhatsAppVariableMapping[] =
+    selectedTemplate?.variableMappings || [];
+  const manualMappings = mappings.filter((m) => m.source === "manual");
 
   useEffect(() => {
     if (!selectedTemplate) {
@@ -128,8 +142,17 @@ export default function WhatsAppComposeTab() {
       return;
     }
     const next: Record<string, string> = {};
-    for (const key of selectedTemplate.variables || []) {
-      next[key] = selectedTemplate.exampleValues?.[key] || "";
+    const manuals = (selectedTemplate.variableMappings || []).filter(
+      (m) => m.source === "manual"
+    );
+    if (manuals.length) {
+      for (const row of manuals) {
+        next[row.variable] = row.exampleValue || "";
+      }
+    } else {
+      for (const key of selectedTemplate.variables || []) {
+        next[key] = selectedTemplate.exampleValues?.[key] || "";
+      }
     }
     setVariableValues(next);
   }, [selectedTemplate?._id]);
@@ -155,9 +178,14 @@ export default function WhatsAppComposeTab() {
   }, [body, variableValues, selectedTemplate, selectedRecipient]);
 
   const missingVariables = useMemo(() => {
+    if (manualMappings.length) {
+      return manualMappings
+        .filter((m) => m.required !== false)
+        .map((m) => m.variable)
+        .filter((key) => !variableValues[key]?.trim());
+    }
     return variableKeys.filter((key) => {
       if (variableValues[key]?.trim()) return false;
-      // {{1}} can come from selected recipient name when bound to name
       const idx = Number(key) - 1;
       const binding = selectedTemplate?.variableBindings?.[idx];
       if (
@@ -166,9 +194,19 @@ export default function WhatsAppComposeTab() {
       ) {
         return false;
       }
+      // Mapped non-manual fields resolve on the server per recipient.
+      const mapped = mappings.find((m) => m.variable === key);
+      if (mapped && mapped.source && mapped.source !== "manual") return false;
       return true;
     });
-  }, [variableKeys, variableValues, selectedTemplate, selectedRecipient]);
+  }, [
+    variableKeys,
+    variableValues,
+    selectedTemplate,
+    selectedRecipient,
+    manualMappings,
+    mappings,
+  ]);
 
   const filteredRecipients = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -345,34 +383,38 @@ export default function WhatsAppComposeTab() {
                 )}
                 {templates.map((tpl) => (
                   <option key={tpl._id} value={tpl._id}>
-                    {tpl.name} · {tpl.language} · {tpl.metaStatus || "APPROVED"}
+                    {tpl.name} · {tpl.language} · מוכנה לשליחה
                   </option>
                 ))}
               </select>
             </label>
 
-            {variableKeys.length > 0 && (
+            {manualMappings.length > 0 && (
               <div className="grid gap-2 rounded-xl border border-slate-200 p-3">
                 <p className="text-xs font-black text-slate-600">
-                  {t("whatsapp.compose.fillVariables")}
+                  ערכים ידניים לשליחה
                 </p>
-                {variableKeys.map((key) => (
-                  <label key={key} className="grid gap-1">
-                    <span className="text-xs font-semibold text-slate-500" dir="ltr">
-                      {`{{${key}}}`}
+                {manualMappings.map((row) => (
+                  <label key={row.variable} className="grid gap-1">
+                    <span className="text-xs font-semibold text-slate-500">
+                      <span dir="ltr">{`{{${row.variable}}}`}</span>
+                      {row.friendlyName ? ` · ${row.friendlyName}` : ""}
                     </span>
                     <input
                       className={inputBase}
-                      value={variableValues[key] || ""}
+                      value={variableValues[row.variable] || ""}
                       onChange={(e) =>
                         setVariableValues((prev) => ({
                           ...prev,
-                          [key]: e.target.value,
+                          [row.variable]: e.target.value,
                         }))
                       }
-                      placeholder={t("whatsapp.compose.variablePlaceholder", {
-                        n: key,
-                      })}
+                      placeholder={
+                        row.exampleValue ||
+                        t("whatsapp.compose.variablePlaceholder", {
+                          n: row.variable,
+                        })
+                      }
                     />
                   </label>
                 ))}

@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useOutletContext, useSearchParams } from "react-router-dom";
+import {
+  useNavigate,
+  useOutletContext,
+  useSearchParams,
+} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -12,6 +16,8 @@ import {
   Pencil,
   Plus,
   RefreshCw,
+  Send,
+  Settings2,
   Strikethrough,
   Trash2,
   Video,
@@ -23,6 +29,7 @@ import {
   syncWhatsAppTemplates,
   updateWhatsAppTemplate,
   type WhatsAppHeaderType,
+  type WhatsAppMappingStatus,
   type WhatsAppTemplate,
   type WhatsAppTemplateButton,
 } from "../../../../api/whatsappApi";
@@ -33,6 +40,39 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
+import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
+
+function getTemplateCardStatusLabel(tpl: WhatsAppTemplate): string {
+  const meta = String(tpl.metaStatus || "").toUpperCase();
+  if (meta === "PENDING" || meta === "IN_APPEAL") {
+    return "ממתינה לאישור מטא";
+  }
+  if (meta === "REJECTED") return "נדחתה על ידי מטא";
+  if (meta === "DISABLED") return "מושבתת במטא";
+  if (meta === "PAUSED") return "מושהית במטא";
+  if (meta === "APPROVED") {
+    const mapping = (tpl.mappingStatus || "") as WhatsAppMappingStatus;
+    if (mapping === "ready" || tpl.mappingReady) return "מוכנה לשליחה";
+    if (mapping === "partial") return "הגדרת המשתנים לא הושלמה";
+    return "המשתנים עדיין לא הוגדרו";
+  }
+  if (meta === "LOCAL" || tpl.source === "local") return "טיוטה מקומית";
+  return meta || "טיוטה מקומית";
+}
+
+function getTemplateCardStatusClass(tpl: WhatsAppTemplate): string {
+  const label = getTemplateCardStatusLabel(tpl);
+  if (label === "מוכנה לשליחה") return "bg-emerald-50 text-emerald-700";
+  if (label === "ממתינה לאישור מטא") return "bg-amber-50 text-amber-700";
+  if (label === "נדחתה על ידי מטא") return "bg-rose-50 text-rose-700";
+  if (
+    label === "המשתנים עדיין לא הוגדרו" ||
+    label === "הגדרת המשתנים לא הושלמה"
+  ) {
+    return "bg-sky-50 text-sky-700";
+  }
+  return "bg-slate-100 text-slate-600";
+}
 
 type OutletCtx = { businessId: string | null };
 
@@ -135,6 +175,7 @@ export default function WhatsAppTemplatesTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const bodyRef = useRef<HTMLTextAreaElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
@@ -143,6 +184,8 @@ export default function WhatsAppTemplatesTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<TemplateForm>(emptyForm);
   const [showForm, setShowForm] = useState(false);
+  const [mappingTemplate, setMappingTemplate] =
+    useState<WhatsAppTemplate | null>(null);
 
   const bodyVariables = useMemo(
     () => extractMetaVariables(form.body),
@@ -354,6 +397,27 @@ export default function WhatsAppTemplatesTab() {
           {t("whatsapp.loading")}
         </span>
       </div>
+    );
+  }
+
+  if (mappingTemplate && businessId) {
+    return (
+      <WhatsAppVariableMappingScreen
+        businessId={businessId}
+        template={mappingTemplate}
+        onClose={() => setMappingTemplate(null)}
+        onSaved={(updated) => {
+          setTemplates((prev) =>
+            prev.map((tpl) =>
+              tpl._id === updated._id ? { ...tpl, ...updated } : tpl
+            )
+          );
+          setMappingTemplate((prev) =>
+            prev && prev._id === updated._id ? { ...prev, ...updated } : prev
+          );
+          load();
+        }}
+      />
     );
   }
 
@@ -957,114 +1021,154 @@ export default function WhatsAppTemplatesTab() {
       )}
 
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {templates.map((tpl) => (
-          <article key={tpl._id} className={`${cardBase} flex flex-col p-4`}>
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-wide text-emerald-700">
-                  {tpl.metaCategory ||
-                    t(`whatsapp.categories.${tpl.category}`, {
-                      defaultValue: tpl.category,
-                    })}
-                </p>
-                <h3 className="mt-1 text-base font-black text-slate-900">
-                  {tpl.name}
-                </h3>
-                <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                  {tpl.language} · {tpl.source === "meta" ? "Meta" : "Local"}
-                </p>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                <span
-                  className={[
-                    "rounded-md px-2 py-0.5 text-[10px] font-black",
-                    tpl.metaStatus === "APPROVED"
-                      ? "bg-emerald-50 text-emerald-700"
-                      : tpl.metaStatus === "PENDING"
-                        ? "bg-amber-50 text-amber-700"
-                        : tpl.metaStatus === "REJECTED"
-                          ? "bg-rose-50 text-rose-700"
-                          : "bg-slate-100 text-slate-600",
-                  ].join(" ")}
-                >
-                  {tpl.metaStatus || "LOCAL"}
-                </span>
-                {tpl.isSystem && (
-                  <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-600">
-                    {t("whatsapp.templates.system")}
-                  </span>
-                )}
-              </div>
-            </div>
-            {tpl.headerText ? (
-              <p className="mt-2 text-sm font-bold text-slate-800">
-                {tpl.headerText}
-              </p>
-            ) : null}
-            <p className="mt-3 flex-1 whitespace-pre-wrap text-sm font-medium leading-relaxed text-slate-600">
-              {tpl.body}
-            </p>
-            {tpl.footer ? (
-              <p className="mt-2 text-xs font-medium text-slate-400">
-                {tpl.footer}
-              </p>
-            ) : null}
-            {!!tpl.buttons?.length && (
-              <div className="mt-3 flex flex-col gap-1.5">
-                {tpl.buttons.map((btn, i) => (
+        {templates.map((tpl) => {
+          const isApproved = tpl.metaStatus === "APPROVED";
+          const isReady = Boolean(tpl.mappingReady || tpl.mappingStatus === "ready");
+          const hasVars = (tpl.variables || []).length > 0;
+          const mappingLabel =
+            isReady || !hasVars ? "עריכת מיפוי" : "הגדרת משתנים";
+
+          return (
+            <article key={tpl._id} className={`${cardBase} flex flex-col p-4`}>
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wide text-emerald-700">
+                    {tpl.metaCategory ||
+                      t(`whatsapp.categories.${tpl.category}`, {
+                        defaultValue: tpl.category,
+                      })}
+                  </p>
+                  <h3 className="mt-1 text-base font-black text-slate-900">
+                    {tpl.name}
+                  </h3>
+                  <p className="mt-0.5 text-xs font-semibold text-slate-500">
+                    {tpl.language} ·{" "}
+                    {tpl.source === "meta" ? "מטא" : "מקומית"}
+                  </p>
+                </div>
+                <div className="flex flex-col items-end gap-1">
                   <span
-                    key={i}
-                    className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-center text-[11px] font-bold text-slate-700"
+                    className={[
+                      "rounded-md px-2 py-0.5 text-[10px] font-black",
+                      getTemplateCardStatusClass(tpl),
+                    ].join(" ")}
                   >
-                    {btn.text || t("whatsapp.templates.buttonN", { n: i + 1 })}
+                    {getTemplateCardStatusLabel(tpl)}
                   </span>
-                ))}
-              </div>
-            )}
-            {!!tpl.variables?.length && (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {tpl.variables.map((variable, index) => {
-                  const label = /^\d+$/.test(String(variable))
-                    ? String(variable)
-                    : String(index + 1);
-                  return (
-                    <span
-                      key={`${label}-${index}`}
-                      dir="ltr"
-                      className="rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
-                    >
-                      {`{{${label}}}`}
+                  {tpl.isSystem && (
+                    <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-black text-slate-600">
+                      {t("whatsapp.templates.system")}
                     </span>
-                  );
-                })}
+                  )}
+                </div>
               </div>
-            )}
-            <div className="mt-4 flex gap-2">
-              <button
-                type="button"
-                className={btnSecondary}
-                disabled={tpl.source === "meta"}
-                title={
-                  tpl.source === "meta"
-                    ? t("whatsapp.templates.metaReadOnly")
-                    : undefined
-                }
-                onClick={() => startEdit(tpl)}
-              >
-                <Pencil className="h-3.5 w-3.5" />
-                {t("whatsapp.templates.edit")}
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                onClick={() => handleDelete(tpl._id)}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-                {t("whatsapp.templates.delete")}
-              </button>
-            </div>
-          </article>
-        ))}
+              {tpl.headerText ? (
+                <p className="mt-2 text-sm font-bold text-slate-800">
+                  {tpl.headerText}
+                </p>
+              ) : null}
+              <p className="mt-3 flex-1 whitespace-pre-wrap text-sm font-medium leading-relaxed text-slate-600">
+                {tpl.body}
+              </p>
+              {tpl.footer ? (
+                <p className="mt-2 text-xs font-medium text-slate-400">
+                  {tpl.footer}
+                </p>
+              ) : null}
+              {!!tpl.buttons?.length && (
+                <div className="mt-3 flex flex-col gap-1.5">
+                  {tpl.buttons.map((btn, i) => (
+                    <span
+                      key={i}
+                      className="rounded-md border border-slate-200 bg-slate-50 px-2 py-1 text-center text-[11px] font-bold text-slate-700"
+                    >
+                      {btn.text || t("whatsapp.templates.buttonN", { n: i + 1 })}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {!!tpl.variables?.length && (
+                <div className="mt-3 flex flex-wrap gap-1.5">
+                  {tpl.variables.map((variable, index) => {
+                    const label = /^\d+$/.test(String(variable))
+                      ? String(variable)
+                      : String(index + 1);
+                    return (
+                      <span
+                        key={`${label}-${index}`}
+                        dir="ltr"
+                        className="rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
+                      >
+                        {`{{${label}}}`}
+                      </span>
+                    );
+                  })}
+                </div>
+              )}
+              <div className="mt-4 flex flex-wrap gap-2">
+                {isApproved ? (
+                  <>
+                    <button
+                      type="button"
+                      className={btnSecondary}
+                      onClick={() => setMappingTemplate(tpl)}
+                    >
+                      <Settings2 className="h-3.5 w-3.5" />
+                      {mappingLabel}
+                    </button>
+                    <button
+                      type="button"
+                      className={btnSecondary}
+                      onClick={() => setMappingTemplate(tpl)}
+                    >
+                      בדיקת מיפוי
+                    </button>
+                    <button
+                      type="button"
+                      className={btnPrimary}
+                      disabled={!isReady && hasVars}
+                      title={
+                        !isReady && hasVars
+                          ? "יש להשלים את הגדרת המשתנים לפני השליחה"
+                          : undefined
+                      }
+                      onClick={() => {
+                        if (!businessId) return;
+                        navigate(`../compose?templateId=${tpl._id}`);
+                      }}
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      שליחה
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    className={btnSecondary}
+                    disabled={tpl.source === "meta"}
+                    title={
+                      tpl.source === "meta"
+                        ? t("whatsapp.templates.metaReadOnly")
+                        : undefined
+                    }
+                    onClick={() => startEdit(tpl)}
+                  >
+                    <Pencil className="h-3.5 w-3.5" />
+                    {t("whatsapp.templates.edit")}
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  onClick={() => handleDelete(tpl._id)}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                  {t("whatsapp.templates.delete")}
+                </button>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </div>
   );

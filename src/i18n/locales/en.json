@@ -4494,6 +4494,7 @@
       "automations": "Automations",
       "inbox": "Inbox",
       "history": "History",
+      "health": "Account usage & health",
       "settings": "API connection"
     },
     "categories": {

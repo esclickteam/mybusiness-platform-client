@@ -55,6 +55,48 @@ export type WhatsAppMetaStatus =
   | "IN_APPEAL"
   | "LOCAL";
 
+export type WhatsAppMappingStatus =
+  | "pending_meta"
+  | "rejected"
+  | "disabled"
+  | "paused"
+  | "not_approved"
+  | "unmapped"
+  | "partial"
+  | "ready";
+
+export type WhatsAppVariableMapping = {
+  variable: string;
+  component?: "body" | "header" | "button";
+  exampleValue?: string;
+  friendlyName?: string;
+  source?: string;
+  field?: string;
+  format?: string;
+  constantValue?: string;
+  fallbackValue?: string;
+  prefix?: string;
+  suffix?: string;
+  required?: boolean;
+};
+
+export type WhatsAppMappingCatalogField = {
+  id: string;
+  label: string;
+  valueType?: string;
+};
+
+export type WhatsAppMappingCatalogSource = {
+  id: string;
+  label: string;
+  fields: WhatsAppMappingCatalogField[];
+};
+
+export type WhatsAppMappingCatalog = {
+  sources: WhatsAppMappingCatalogSource[];
+  formats: Record<string, Array<{ id: string; label: string }>>;
+};
+
 export type WhatsAppTemplate = {
   _id: string;
   name: string;
@@ -74,6 +116,7 @@ export type WhatsAppTemplate = {
   footer?: string;
   variables: string[];
   variableBindings?: string[];
+  variableMappings?: WhatsAppVariableMapping[];
   exampleValues?: Record<string, string>;
   buttons?: WhatsAppTemplateButton[];
   metaTemplateName?: string;
@@ -84,8 +127,35 @@ export type WhatsAppTemplate = {
   lastSyncedAt?: string | null;
   status: "draft" | "active" | "archived";
   isSystem?: boolean;
+  mappingStatus?: WhatsAppMappingStatus;
+  mappingReady?: boolean;
   createdAt?: string;
   updatedAt?: string;
+};
+
+export type WhatsAppHealthMetric = {
+  key: string;
+  label: string;
+  value: unknown;
+  source: string;
+};
+
+export type WhatsAppAccountHealth = {
+  success?: boolean;
+  connection: WhatsAppConnection;
+  metrics: WhatsAppHealthMetric[];
+  chart7d: Array<{
+    date: string;
+    sent: number;
+    delivered: number;
+    read: number;
+    failed: number;
+  }>;
+  comparison: {
+    current: Record<string, unknown>;
+    previous: Record<string, unknown>;
+  };
+  history?: Array<Record<string, unknown>>;
 };
 
 export type WhatsAppListMember = {
@@ -271,16 +341,102 @@ export async function disconnectWhatsApp(businessId: string) {
 
 export async function listWhatsAppTemplates(
   businessId: string,
-  options?: { approvedOnly?: boolean; includeArchived?: boolean }
+  options?: {
+    approvedOnly?: boolean;
+    includeArchived?: boolean;
+    readyOnly?: boolean;
+  }
 ) {
   const { data } = await API.get("/whatsapp/templates", {
     params: {
       businessId,
       ...(options?.approvedOnly ? { approvedOnly: "1" } : {}),
       ...(options?.includeArchived ? { includeArchived: "1" } : {}),
+      ...(options?.readyOnly ? { readyOnly: "1" } : {}),
     },
   });
   return (data?.templates || []) as WhatsAppTemplate[];
+}
+
+export async function getWhatsAppTemplateVariableMappings(
+  businessId: string,
+  templateId: string
+) {
+  const { data } = await API.get(
+    `/whatsapp/templates/${templateId}/variable-mappings`,
+    withBusiness(businessId)
+  );
+  return data as {
+    success: boolean;
+    template: WhatsAppTemplate;
+    mappings: WhatsAppVariableMapping[];
+    catalog: WhatsAppMappingCatalog;
+    variables: string[];
+    mappingStatus: WhatsAppMappingStatus;
+  };
+}
+
+export async function saveWhatsAppTemplateVariableMappings(
+  businessId: string,
+  templateId: string,
+  mappings: WhatsAppVariableMapping[]
+) {
+  const { data } = await API.put(
+    `/whatsapp/templates/${templateId}/variable-mappings`,
+    { businessId, mappings }
+  );
+  return data as {
+    success: boolean;
+    template: WhatsAppTemplate;
+    mappings: WhatsAppVariableMapping[];
+    catalog: WhatsAppMappingCatalog;
+    variables: string[];
+    mappingStatus: WhatsAppMappingStatus;
+  };
+}
+
+export async function previewWhatsAppTemplateMappings(
+  businessId: string,
+  templateId: string,
+  payload: {
+    crmClientId?: string | null;
+    leadId?: string | null;
+    appointmentId?: string | null;
+    phone?: string;
+    name?: string;
+    manualValues?: Record<string, string>;
+    mappings?: WhatsAppVariableMapping[];
+  }
+) {
+  const { data } = await API.post(
+    `/whatsapp/templates/${templateId}/mapping-preview`,
+    { businessId, ...payload }
+  );
+  return data as {
+    success: boolean;
+    resolved: Record<string, string>;
+    missing: string[];
+    previewBody: string;
+    previewHeader: string;
+    mappingStatus: WhatsAppMappingStatus;
+  };
+}
+
+export async function getWhatsAppAccountHealth(businessId: string) {
+  const { data } = await API.get(
+    "/whatsapp/account-health",
+    withBusiness(businessId)
+  );
+  return data as WhatsAppAccountHealth;
+}
+
+export async function syncWhatsAppAccountHealth(businessId: string) {
+  const { data } = await API.post("/whatsapp/account-health/sync", {
+    businessId,
+  });
+  return data as WhatsAppAccountHealth & {
+    templateSync?: { synced: number; totalFromMeta: number };
+  };
 }
 
 export async function syncWhatsAppTemplates(businessId: string) {
