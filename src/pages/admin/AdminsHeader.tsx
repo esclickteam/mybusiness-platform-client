@@ -7,6 +7,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
+  { path: "/admin/customers", label: "לקוחות" },
   { path: "/admin/early-access", label: "הרשמה מוקדמת" },
   { path: "/admin/users", label: "משתמשים" },
   { path: "/admin/businesses", label: "עסקים" },

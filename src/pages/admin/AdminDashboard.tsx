@@ -5,9 +5,9 @@ import {
   Building2,
   CalendarDays,
   CircleDollarSign,
+  CreditCard,
   HeartHandshake,
   Sparkles,
-  UserPlus,
   Users,
   UsersRound,
   Wallet,
@@ -331,11 +331,11 @@ function AdminDashboard() {
 
                 <button
                   type="button"
-                  onClick={() => navigate("/admin/users")}
+                  onClick={() => navigate("/admin/customers")}
                   className="inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-[#7C4DFF] bg-white px-6 py-4 text-sm font-black text-[#7C4DFF] shadow-sm transition hover:-translate-y-1 hover:bg-violet-50"
                 >
-                  <UserPlus className="h-4 w-4" />
-                  ניהול משתמשים
+                  <CreditCard className="h-4 w-4" />
+                  ניהול לקוחות
                 </button>
               </div>
             </div>
@@ -423,6 +423,14 @@ function AdminDashboard() {
             </div>
 
             <div className="grid gap-4 text-right sm:grid-cols-2 xl:grid-cols-3">
+              <QuickAction
+                icon={<CreditCard className="h-5 w-5" />}
+                iconClassName="bg-emerald-100 text-emerald-700"
+                title="ניהול לקוחות"
+                description="חיפוש עסקים, יצירת לקוח, בחירת חבילה ותשלום Stripe"
+                onClick={() => navigate("/admin/customers")}
+              />
+
               <QuickAction
                 icon={<Users className="h-5 w-5" />}
                 iconClassName="bg-violet-100 text-[#7C4DFF]"
