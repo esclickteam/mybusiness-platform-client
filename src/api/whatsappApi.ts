@@ -122,6 +122,9 @@ export type WhatsAppTemplate = {
   metaTemplateName?: string;
   metaTemplateId?: string;
   metaStatus?: WhatsAppMetaStatus;
+  metaStatusRaw?: string;
+  metaQualityScore?: string;
+  metaStatusLabelHe?: string;
   metaCategory?: string;
   source?: "local" | "meta";
   lastSyncedAt?: string | null;
