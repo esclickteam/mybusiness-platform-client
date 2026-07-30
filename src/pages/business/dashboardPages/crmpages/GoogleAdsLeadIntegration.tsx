@@ -354,6 +354,26 @@ export default function GoogleAdsLeadIntegration({
     }
   };
 
+  const sendTestLead = async () => {
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+      await API.post("/google-ads-leads/send-test", {}, { params: tenantParams });
+      setSuccess("Google Ads test lead created successfully.");
+      await loadStatus();
+    } catch (err) {
+      setError(
+        mapGoogleAdsError(
+          getApiErrorMessage(err),
+          "We could not create the Google Ads test lead. Please try again."
+        )
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const disconnect = async () => {
     try {
       setBusy(true);
@@ -669,6 +689,14 @@ export default function GoogleAdsLeadIntegration({
                 <button
                   type="button"
                   disabled={busy}
+                  onClick={() => void sendTestLead()}
+                  className="inline-flex h-10 items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-800"
+                >
+                  {busy ? "Sending..." : "Send test lead"}
+                </button>
+                <button
+                  type="button"
+                  disabled={busy}
                   onClick={() => setForceSetup(true)}
                   className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
                 >
@@ -724,9 +752,16 @@ export default function GoogleAdsLeadIntegration({
                         className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
                       >
                         <div className="min-w-0">
-                          <p className="truncate text-sm font-black text-slate-800">
-                            {lead.fullName || lead.name || "Unnamed lead"}
-                          </p>
+                          <div className="flex items-center gap-2">
+                            <p className="truncate text-sm font-black text-slate-800">
+                              {lead.fullName || lead.name || "Unnamed lead"}
+                            </p>
+                            {lead.google?.isTest && (
+                              <span className="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-black text-amber-700 ring-1 ring-amber-100">
+                                Test
+                              </span>
+                            )}
+                          </div>
                           <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
                             {[lead.email, lead.phone].filter(Boolean).join(" · ") ||
                               "No contact details"}
