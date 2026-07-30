@@ -152,6 +152,7 @@ export type WhatsAppMessagingLimits = {
   steps: Array<{ key: string; label: string }>;
   updatedAt?: string | null;
   source: string;
+  available?: boolean;
 };
 
 export type WhatsAppAccountHealth = {
@@ -461,6 +462,15 @@ export async function syncWhatsAppTemplates(businessId: string) {
     synced: number;
     totalFromMeta: number;
     templates: WhatsAppTemplate[];
+    rawStatuses?: Array<{
+      name: string;
+      language: string;
+      id: string;
+      status: string;
+      qualityScore?: string;
+      labelHe?: string;
+    }>;
+    messagingLimit?: string;
   };
 }
 

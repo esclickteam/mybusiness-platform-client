@@ -263,10 +263,16 @@ export default function WhatsAppTemplatesTab() {
       setSyncing(true);
       const result = await syncWhatsAppTemplates(businessId);
       setTemplates(result.templates || (await listWhatsAppTemplates(businessId)));
+      const statusSummary = (result.rawStatuses || [])
+        .map((row) => `${row.name}: ${row.labelHe || row.status}`)
+        .slice(0, 5)
+        .join(" · ");
       toast.success(
-        t("whatsapp.templates.synced", {
-          count: result.synced ?? 0,
-        })
+        statusSummary
+          ? `סונכרנו ${result.synced ?? 0} תבניות מ-Meta. ${statusSummary}`
+          : t("whatsapp.templates.synced", {
+              count: result.synced ?? 0,
+            })
       );
     } catch (error: any) {
       toast.error(

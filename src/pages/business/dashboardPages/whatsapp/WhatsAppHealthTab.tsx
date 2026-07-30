@@ -75,6 +75,7 @@ function MessagingLimitsPanel({
 }: {
   limits: WhatsAppMessagingLimits;
 }) {
+  const available = Boolean(limits.available && limits.currentKey);
   return (
     <section className={`${cardBase} p-4 sm:p-5`} dir="rtl">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -94,9 +95,17 @@ function MessagingLimitsPanel({
         </span>
       </div>
 
+      {!available ? (
+        <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm font-semibold text-amber-800">
+          עדיין לא התקבלה מגבלת התכתבות מ-Meta. לחצו על &quot;סנכרון ממטא&quot;.
+          אם המגבלה מופיעה במנהל WhatsApp (למשל 10,000) והסנכרון לא מושך אותה,
+          ייתכן שההרשאה או גרסת ה-API של Meta לא מחזירות את השדה לחשבון זה.
+        </div>
+      ) : null}
+
       <div className="mt-4 flex flex-wrap items-stretch justify-center gap-2">
         {limits.steps.map((step) => {
-          const isCurrent = step.key === limits.currentKey;
+          const isCurrent = available && step.key === limits.currentKey;
           return (
             <div
               key={step.key}
@@ -273,8 +282,27 @@ export default function WhatsAppHealthTab() {
 
       {health ? (
         <>
-          {health.messagingLimits ? (
-            <MessagingLimitsPanel limits={health.messagingLimits} />
+          {health.messagingLimits || health.connection?.connected ? (
+            <MessagingLimitsPanel
+              limits={
+                health.messagingLimits || {
+                  raw: "",
+                  currentKey: "",
+                  currentLabel: "",
+                  description: "שיחה ביוזמת העסק בפרק זמן של 24 שעות",
+                  numeric: null,
+                  steps: [
+                    { key: "250", label: "250" },
+                    { key: "2000", label: "2,000" },
+                    { key: "10000", label: "10,000" },
+                    { key: "100000", label: "100,000" },
+                    { key: "unlimited", label: "ללא הגבלה" },
+                  ],
+                  source: "Meta",
+                  available: false,
+                }
+              }
+            />
           ) : null}
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
