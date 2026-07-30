@@ -129,11 +129,25 @@ export default function Plans() {
     }));
   };
 
+  const goToBusinessRegister = (plan, wantsWebsiteAddon) => {
+    const planKey = plan.checkoutPlan || plan.type;
+    const params = new URLSearchParams({ plan: planKey });
+    if (wantsWebsiteAddon) params.set("websiteAddon", "1");
+    navigate(`/register?${params.toString()}`);
+  };
+
   const handleCheckout = async (plan) => {
     const wantsWebsiteAddon = Boolean(
       plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
     );
 
+    // Guests: business registration (fixed as בעל עסק) → Stripe → account only after payment
+    if (!userId) {
+      goToBusinessRegister(plan, wantsWebsiteAddon);
+      return;
+    }
+
+    // Logged-in: website-only has no subscription checkout plan
     if (!plan.checkoutPlan) {
       navigate("/contact", {
         state: {
@@ -145,12 +159,6 @@ export default function Plans() {
 
     try {
       setLoadingPlan(plan.checkoutPlan);
-
-      if (!userId) {
-        alert(t("pricing.alertUserNotLoaded"));
-        setLoadingPlan(null);
-        return;
-      }
 
       const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
         method: "POST",

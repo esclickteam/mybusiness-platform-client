@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 
@@ -59,13 +59,26 @@ export default function Login() {
     });
   }, []);
 
+  const searchParams = useMemo(
+    () => new URLSearchParams(location.search),
+    [location.search]
+  );
+  const checkoutSuccess = searchParams.get("checkout") === "success";
+  const checkoutEmail = searchParams.get("email") || "";
+
   useEffect(() => {
     const remembered = localStorage.getItem("bizuply_remember_email");
+    const emailFromCheckout = checkoutEmail.trim().toLowerCase();
+    if (emailFromCheckout) {
+      setForm((prev) => ({ ...prev, email: emailFromCheckout }));
+      setRememberMe(true);
+      return;
+    }
     if (remembered) {
       setForm((prev) => ({ ...prev, email: remembered }));
       setRememberMe(true);
     }
-  }, []);
+  }, [checkoutEmail]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -147,6 +160,15 @@ export default function Login() {
         subtitle="התחברו כדי לנהל את העסק שלכם ב-BizUply"
       >
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
+          {checkoutSuccess ? (
+            <p
+              className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold leading-6 text-emerald-800"
+              role="status"
+            >
+              התשלום התקבל בהצלחה. החשבון נפתח — התחברו עם האימייל והסיסמה שבחרתם בהרשמה.
+            </p>
+          ) : null}
+
           <div className="text-right">
             <label
               htmlFor="email"

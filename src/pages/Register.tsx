@@ -34,10 +34,26 @@ type ApiError = {
     status?: number;
     data?: {
       error?: string;
+      url?: string;
     };
   };
   message?: string;
 };
+
+type PricingPlan = "monthly" | "yearly" | "website";
+
+const PLAN_LABELS: Record<PricingPlan, string> = {
+  monthly: "חבילה עסקית חודשית",
+  yearly: "חבילה עסקית שנתית",
+  website: "בניית אתר בלבד",
+};
+
+function parsePlan(value: string | null): PricingPlan | null {
+  if (value === "monthly" || value === "yearly" || value === "website") {
+    return value;
+  }
+  return null;
+}
 
 export default function Register() {
   const [formData, setFormData] = useState<RegisterFormData>({
@@ -68,6 +84,13 @@ export default function Register() {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [searchParams] = useSearchParams();
+
+  const selectedPlan = parsePlan(searchParams.get("plan"));
+  const includeWebsiteAddon =
+    searchParams.get("websiteAddon") === "1" &&
+    (selectedPlan === "monthly" || selectedPlan === "yearly");
+  const checkoutCancelled = searchParams.get("checkout") === "cancel";
+  const isPaidSignupFlow = Boolean(selectedPlan);
 
   useEffect(() => {
     const refFromUrl = searchParams.get("ref");
@@ -136,6 +159,39 @@ export default function Register() {
     setLoading(true);
 
     try {
+      // Pricing packages: collect details → Stripe → create account only after payment
+      if (selectedPlan) {
+        const { data } = await API.post<{ url?: string; error?: string }>(
+          "/stripe/create-signup-checkout",
+          {
+            name: name.trim(),
+            email: email.trim().toLowerCase(),
+            phone: phone.trim(),
+            password,
+            businessName: businessName.trim(),
+            plan: selectedPlan,
+            includeWebsiteAddon,
+            referralCode:
+              referralCode ||
+              localStorage.getItem("affiliate_referral") ||
+              undefined,
+          }
+        );
+
+        if (!data?.url) {
+          setError(data?.error || "נכשל בפתיחת תשלום. נסו שוב.");
+          return;
+        }
+
+        if (window.fbq) {
+          window.fbq("track", "InitiateCheckout");
+        }
+
+        window.location.href = data.url;
+        return;
+      }
+
+      // Legacy free/trial register (no plan selected)
       await API.post(
         "/auth/register",
         {
@@ -204,16 +260,45 @@ export default function Register() {
       }
     >
       <AuthCard
-        title="הרשמה"
-        subtitle="צרו חשבון עסקי ב-BizUply והתחילו לנהל הכל במקום אחד"
+        title="הרשמה כעסק"
+        subtitle={
+          isPaidSignupFlow
+            ? "מלאו פרטים, המשיכו לתשלום — החשבון נפתח רק אחרי התשלום"
+            : "צרו חשבון עסקי ב-BizUply והתחילו לנהל הכל במקום אחד"
+        }
       >
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-right">
             <p className="text-sm font-black text-violet-800">סוג חשבון: בעל עסק</p>
             <p className="mt-1 text-xs font-semibold text-violet-700/70">
-              ניהול לקוחות, CRM, תורים, אתר וכלים עסקיים
+              מוגדר אוטומטית — אין צורך לבחור. ניהול לקוחות, CRM, תורים, אתר וכלים עסקיים
             </p>
           </div>
+
+          {selectedPlan ? (
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-right">
+              <p className="text-sm font-black text-emerald-800">
+                חבילה נבחרת: {PLAN_LABELS[selectedPlan]}
+              </p>
+              {includeWebsiteAddon ? (
+                <p className="mt-1 text-xs font-semibold text-emerald-700/80">
+                  כולל תוספת אתר חד־פעמית
+                </p>
+              ) : null}
+              <p className="mt-1 text-xs font-semibold text-emerald-700/70">
+                אחרי השליחה תועברו לתשלום מאובטח בסטרייפ
+              </p>
+            </div>
+          ) : null}
+
+          {checkoutCancelled ? (
+            <p
+              className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-700"
+              role="status"
+            >
+              התשלום בוטל. אפשר לעדכן פרטים ולהמשיך שוב לתשלום.
+            </p>
+          ) : null}
 
           <div className="text-right">
             <label className="mb-2 block text-sm font-bold text-slate-700">
@@ -386,7 +471,13 @@ export default function Register() {
             disabled={loading}
             className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? "נרשם..." : "הרשמה"}
+            {loading
+              ? isPaidSignupFlow
+                ? "מעביר לתשלום..."
+                : "נרשם..."
+              : isPaidSignupFlow
+                ? "המשך לתשלום"
+                : "הרשמה"}
             {!loading ? <span aria-hidden>←</span> : null}
           </button>
 
