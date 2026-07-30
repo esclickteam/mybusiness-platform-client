@@ -22,7 +22,10 @@ import {
   PRICING_CATEGORY_LABELS,
   PRICING_CATEGORY_ORDER,
 } from "../../data/pricingAddonsData";
-import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
+import {
+  PRICING_PACKAGES,
+  WEBSITE_ADDON,
+} from "../../data/pricingPackagesData";
 
 const ICON_MAP = {
   headset: Headset,
@@ -65,9 +68,15 @@ export default function Plans() {
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
   const [query, setQuery] = useState("");
+  const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
+    monthly: false,
+    yearly: false,
+  });
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
+  const websiteAddonLabel = isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn;
+  const websiteAddonHint = isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn;
 
   const catLabel = (key) => {
     const entry = PRICING_CATEGORY_LABELS[key];
@@ -75,8 +84,19 @@ export default function Plans() {
     return isHe ? entry.he : entry.en;
   };
 
-  const handleCheckout = async (checkoutPlan) => {
-    if (!checkoutPlan) {
+  const toggleWebsiteAddon = (planType) => {
+    setWebsiteAddonByPlan((prev) => ({
+      ...prev,
+      [planType]: !prev[planType],
+    }));
+  };
+
+  const handleCheckout = async (plan) => {
+    const wantsWebsiteAddon = Boolean(
+      plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
+    );
+
+    if (!plan.checkoutPlan) {
       navigate("/contact", {
         state: {
           prefillMessage: t("pricing.websiteContactMessage"),
@@ -85,8 +105,23 @@ export default function Plans() {
       return;
     }
 
+    // Website add-on is a one-time ILS charge — collect via contact for now
+    if (wantsWebsiteAddon) {
+      navigate("/contact", {
+        state: {
+          prefillMessage: t("pricing.packageWithWebsiteContactMessage", {
+            package: plan.name,
+            price: formatIls(plan.price),
+            period: plan.pricePeriod,
+            websitePrice: formatIls(WEBSITE_ADDON.price),
+          }),
+        },
+      });
+      return;
+    }
+
     try {
-      setLoadingPlan(checkoutPlan);
+      setLoadingPlan(plan.checkoutPlan);
 
       if (!userId) {
         alert(t("pricing.alertUserNotLoaded"));
@@ -99,7 +134,7 @@ export default function Plans() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          plan: checkoutPlan,
+          plan: plan.checkoutPlan,
         }),
       });
 
@@ -238,6 +273,9 @@ export default function Plans() {
           {packages.map((plan, index) => {
             const isLoading =
               plan.checkoutPlan != null && loadingPlan === plan.checkoutPlan;
+            const websiteAddonChecked = Boolean(
+              plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
+            );
 
             return (
               <motion.article
@@ -261,13 +299,13 @@ export default function Plans() {
                 )}
 
                 <div
-                  className={`relative h-full rounded-[1.85rem] border p-6 sm:p-7 ${
+                  className={`relative flex h-full flex-col rounded-[1.85rem] border p-6 sm:p-7 ${
                     plan.highlighted
                       ? "border-white/50 bg-white/55"
                       : "border-slate-100 bg-white"
                   }`}
                 >
-                  <div className="relative text-start">
+                  <div className="relative flex flex-1 flex-col text-start">
                     <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-3.5 py-1.5 text-sm font-black text-indigo-700">
                       {plan.badge}
                     </div>
@@ -308,11 +346,48 @@ export default function Plans() {
                       ))}
                     </ul>
 
+                    {plan.allowsWebsiteAddon && (
+                      <label
+                        className={`mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
+                          websiteAddonChecked
+                            ? "border-indigo-300 bg-indigo-50/80 shadow-sm"
+                            : "border-slate-200 bg-slate-50/70 hover:border-indigo-200"
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={websiteAddonChecked}
+                          onChange={() => toggleWebsiteAddon(plan.type)}
+                          className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="min-w-0">
+                          <span className="block text-sm font-black leading-5 text-slate-900">
+                            {websiteAddonLabel}
+                          </span>
+                          <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
+                            {websiteAddonHint}
+                          </span>
+                        </span>
+                      </label>
+                    )}
+
+                    {websiteAddonChecked && (
+                      <p className="mt-3 text-sm font-black text-indigo-700">
+                        {t("pricing.websiteAddonSelectedNote", {
+                          packagePrice: formatIls(plan.price),
+                          period: plan.pricePeriod,
+                          websitePrice: formatIls(WEBSITE_ADDON.price),
+                        })}
+                      </p>
+                    )}
+
                     <button
                       type="button"
-                      onClick={() => handleCheckout(plan.checkoutPlan)}
+                      onClick={() => handleCheckout(plan)}
                       disabled={isLoading}
-                      className={`group mt-8 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
+                      className={`group mt-auto inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
+                        plan.allowsWebsiteAddon ? "mt-6" : "mt-8"
+                      } ${
                         plan.highlighted
                           ? "bg-slate-900 text-white hover:bg-slate-800"
                           : "border border-violet-200 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 text-slate-900"
