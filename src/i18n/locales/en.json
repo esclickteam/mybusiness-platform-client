@@ -785,7 +785,10 @@
     "websiteContactMessage": "Hi, I’d like to start with the Website-only package at ₪600/year (self-serve from template / AI).",
     "packageWithWebsiteContactMessage": "Hi, I’d like to join {{package}} at {{price}}{{period}}, including the website add-on {{websitePrice}} one-time (self-serve website build).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + website add-on {{websitePrice}} one-time",
+    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + website {{websitePrice}} one-time (in Stripe)",
     "addonsBadge": "12 ready packages",
+    "upsellsBadge": "Upsells",
+    "upsellsTitle": "Upsells & extra services",
     "addonsTitle": "Choose your service packages",
     "addonsSubtitle": "Leads & sales, business ops, setup & automations, marketing & growth — select what fits, open full details, and get a tailored quote.",
     "addonsSearch": "Search a service...",
@@ -810,9 +813,9 @@
     "modalTracks": "Tracks",
     "modalExtras": "Add-ons",
     "modalExamples": "Examples",
-    "platformBadge": "BizUply platform",
-    "platformTitle": "Business platform plans",
-    "platformSubtitle": "CRM, appointments, collaborations, and AI — separate from managed service packages. You can add a one-time website to any business plan."
+    "platformBadge": "System packages",
+    "platformTitle": "System packages",
+    "platformSubtitle": "CRM, appointments, collaborations, and AI. Add a one-time website upsell — the checkout total updates automatically."
   },
   "howItWorks": {
     "seoTitle": "How It Works - Bizuply | Platform Guide",

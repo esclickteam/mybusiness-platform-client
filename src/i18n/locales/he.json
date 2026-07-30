@@ -785,7 +785,10 @@
     "websiteContactMessage": "שלום, אשמח להתחיל עם חבילת בניית אתר בלבד ב־₪600 לשנה (בניה עצמאית מתבנית / AI).",
     "packageWithWebsiteContactMessage": "שלום, אשמח להצטרף ל{{package}} במחיר {{price}}{{period}}, כולל תוספת אתר {{websitePrice}} חד־פעמי (בניית אתר עצמאית).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + תוספת אתר {{websitePrice}} חד־פעמי",
+    "websiteAddonStripeNote": "{{packagePrice}}{{period}} + אתר {{websitePrice}} חד־פעמי (בסטרייפ)",
     "addonsBadge": "12 חבילות מוכנות",
+    "upsellsBadge": "אפסיילים",
+    "upsellsTitle": "אפסיילים ושירותים נוספים",
     "addonsTitle": "בחרו את חבילות השירות שלכם",
     "addonsSubtitle": "לידים ומכירות, ניהול העסק, הקמה ואוטומציות, שיווק וצמיחה — סמנו מה מתאים, פתחו פירוט מלא, וקבלו הצעה מותאמת.",
     "addonsSearch": "חיפוש שירות...",
@@ -810,9 +813,9 @@
     "modalTracks": "מסלולים",
     "modalExtras": "תוספות",
     "modalExamples": "דוגמאות",
-    "platformBadge": "מערכת BizUply",
-    "platformTitle": "חבילות המערכת העסקית",
-    "platformSubtitle": "CRM, תורים, שיתופי פעולה ו-AI — בנפרד מחבילות השירות. אפשר להוסיף אתר חד־פעמי לכל חבילה עסקית."
+    "platformBadge": "חבילות מערכת",
+    "platformTitle": "חבילות המערכת",
+    "platformSubtitle": "CRM, תורים, שיתופי פעולה ו-AI. אפשר להוסיף תוספת אתר חד־פעמי — והמחיר מתעדכן אוטומטית בתשלום."
   },
   "howItWorks": {
     "seoTitle": "איך זה עובד - Bizuply | מדריך לפלטפורמה",
