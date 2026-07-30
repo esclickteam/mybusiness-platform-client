@@ -160,14 +160,14 @@ export default function UpgradeOfferCard({
 
         <h2 className="mb-2 text-3xl font-black tracking-tight text-slate-800">
           First Month Only{" "}
-          <span className="text-violet-700">$119</span>
+          <span className="text-violet-700">₪119</span>
           <span className="ml-2 align-middle text-lg font-black text-slate-400 line-through">
-            $149
+            ₪149
           </span>
         </h2>
 
         <p className="mb-4 text-sm font-bold text-emerald-600">
-          Save $30 on your first month
+          Save ₪30 on your first month
         </p>
 
         {!isExpired && (
@@ -184,7 +184,7 @@ export default function UpgradeOfferCard({
         </p>
 
         <p className="mb-5 text-sm text-slate-500">
-          Then <strong className="text-slate-800">$149/month</strong>. Cancel
+          Then <strong className="text-slate-800">₪149/month</strong>. Cancel
           anytime.
         </p>
 
@@ -210,7 +210,7 @@ export default function UpgradeOfferCard({
             pointer-events-auto
           "
         >
-          {upgrading ? "Redirecting to checkout..." : "Upgrade for $119"}
+          {upgrading ? "Redirecting to checkout..." : "Upgrade for ₪119"}
         </button>
 
         <p className="mt-4 text-xs font-semibold text-slate-400">
