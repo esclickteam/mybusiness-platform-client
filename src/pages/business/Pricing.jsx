@@ -3,31 +3,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
-  Accessibility,
-  Bell,
   Bot,
   CalendarCheck2,
-  CalendarDays,
   Check,
-  CircleDot,
-  Compass,
-  CreditCard,
-  FileText,
-  Flame,
-  FormInput,
+  Globe,
   Handshake,
   Headset,
-  LayoutGrid,
-  Mail,
+  Megaphone,
+  MessageCircle,
   Plus,
-  Puzzle,
-  Route,
   Search,
-  ShoppingBag,
   Sparkles,
-  Star,
-  Timer,
-  Users,
   X,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -36,34 +22,21 @@ import {
   PRICING_CATEGORY_LABELS,
   PRICING_CATEGORY_ORDER,
 } from "../../data/pricingAddonsData";
+import { PRICING_PACKAGES } from "../../data/pricingPackagesData";
 
 const ICON_MAP = {
-  "shopping-bag": ShoppingBag,
-  calendar: CalendarDays,
-  "calendar-check": CalendarCheck2,
-  "credit-card": CreditCard,
-  "file-text": FileText,
-  mail: Mail,
-  star: Star,
-  users: Users,
-  flame: Flame,
-  "form-input": FormInput,
-  route: Route,
-  timer: Timer,
-  "circle-dot": CircleDot,
-  bot: Bot,
-  compass: Compass,
-  accessibility: Accessibility,
   headset: Headset,
+  "calendar-check": CalendarCheck2,
   handshake: Handshake,
-  search: Search,
-  bell: Bell,
-  puzzle: Puzzle,
-  "layout-grid": LayoutGrid,
+  bot: Bot,
+  sparkles: Sparkles,
+  megaphone: Megaphone,
+  message: MessageCircle,
+  globe: Globe,
 };
 
 function AddonIcon({ name, accent }) {
-  const Icon = ICON_MAP[name] || Puzzle;
+  const Icon = ICON_MAP[name] || Sparkles;
   return (
     <span
       className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/70 shadow-sm"
@@ -77,6 +50,10 @@ function AddonIcon({ name, accent }) {
   );
 }
 
+function formatIls(amount) {
+  return `₪${Number(amount).toLocaleString("he-IL")}`;
+}
+
 export default function Plans() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -88,7 +65,6 @@ export default function Plans() {
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
   const [query, setQuery] = useState("");
-  const [showIncluded, setShowIncluded] = useState(true);
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
@@ -99,18 +75,18 @@ export default function Plans() {
     return isHe ? entry.he : entry.en;
   };
 
-  const localizeAddon = (addon) => ({
-    ...addon,
-    displayName: !isHe && addon.nameEn ? addon.nameEn : addon.name,
-    displayDescription:
-      !isHe && addon.descriptionEn ? addon.descriptionEn : addon.description,
-    displayPrice:
-      !isHe && addon.priceLabelEn ? addon.priceLabelEn : addon.priceLabel,
-  });
+  const handleCheckout = async (checkoutPlan) => {
+    if (!checkoutPlan) {
+      navigate("/contact", {
+        state: {
+          prefillMessage: t("pricing.websiteContactMessage"),
+        },
+      });
+      return;
+    }
 
-  const handleCheckout = async (plan) => {
     try {
-      setLoadingPlan(plan);
+      setLoadingPlan(checkoutPlan);
 
       if (!userId) {
         alert(t("pricing.alertUserNotLoaded"));
@@ -123,7 +99,7 @@ export default function Plans() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          plan,
+          plan: checkoutPlan,
         }),
       });
 
@@ -143,91 +119,58 @@ export default function Plans() {
     }
   };
 
-  const features = [
-    t("pricing.feature1"),
-    t("pricing.feature2"),
-    t("pricing.feature3"),
-    t("pricing.feature4"),
-    t("pricing.feature5"),
-    t("pricing.feature6"),
-    t("pricing.feature7"),
-    t("pricing.feature8"),
-    t("pricing.feature9"),
-    t("pricing.feature10"),
-  ];
+  const packages = useMemo(
+    () =>
+      PRICING_PACKAGES.map((pkg) => ({
+        ...pkg,
+        name: isHe ? pkg.nameHe : pkg.nameEn,
+        badge: isHe ? pkg.badgeHe : pkg.badgeEn,
+        description: isHe ? pkg.descriptionHe : pkg.descriptionEn,
+        note: isHe ? pkg.noteHe : pkg.noteEn,
+        button: isHe ? pkg.buttonHe : pkg.buttonEn,
+        pricePeriod: isHe ? pkg.pricePeriodHe : pkg.pricePeriodEn,
+        features: isHe ? pkg.featuresHe : pkg.featuresEn,
+      })),
+    [isHe]
+  );
 
-  const plans = [
-    {
-      type: "monthly",
-      name: t("pricing.monthlyName"),
-      price: t("pricing.monthlyPrice"),
-      duration: t("pricing.monthlyDuration"),
-      description: t("pricing.monthlyDescription"),
-      button: t("pricing.monthlyButton"),
-      highlighted: false,
-      badge: t("pricing.monthlyBadge"),
-      note: t("pricing.monthlyNote"),
-    },
-    {
-      type: "yearly",
-      name: t("pricing.yearlyName"),
-      price: t("pricing.yearlyPrice"),
-      duration: t("pricing.yearlyDuration"),
-      description: t("pricing.yearlyDescription"),
-      button: t("pricing.yearlyButton"),
-      highlighted: true,
-      badge: t("pricing.yearlyBadge"),
-      note: t("pricing.yearlyNote"),
-    },
-  ];
-
-  const categories = useMemo(() => {
-    const present = new Set(PRICING_ADDONS.map((a) => a.category));
-    return [
-      "all",
-      ...PRICING_CATEGORY_ORDER.filter((key) => present.has(key)),
-    ];
-  }, []);
+  const categories = useMemo(
+    () => ["all", ...PRICING_CATEGORY_ORDER],
+    []
+  );
 
   const filteredAddons = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PRICING_ADDONS.map(localizeAddon).filter((addon) => {
-      if (!showIncluded && addon.isIncluded) return false;
+    return PRICING_ADDONS.filter((addon) => {
       if (activeCategory !== "all" && addon.category !== activeCategory) {
         return false;
       }
+      const name = isHe ? addon.name : addon.nameEn;
+      const description = isHe ? addon.description : addon.descriptionEn;
       if (!q) return true;
       return (
-        addon.displayName.toLowerCase().includes(q) ||
-        addon.displayDescription.toLowerCase().includes(q) ||
+        name.toLowerCase().includes(q) ||
+        description.toLowerCase().includes(q) ||
         addon.key.toLowerCase().includes(q)
       );
-    });
-  }, [activeCategory, query, showIncluded, isHe]);
+    }).map((addon) => ({
+      ...addon,
+      displayName: isHe ? addon.name : addon.nameEn,
+      displayDescription: isHe ? addon.description : addon.descriptionEn,
+      displayPrice: isHe ? addon.priceLabel : addon.priceLabelEn,
+    }));
+  }, [activeCategory, query, isHe]);
 
   const selectedAddons = useMemo(
     () =>
-      PRICING_ADDONS.map(localizeAddon).filter((a) => selectedKeys.has(a.key)),
+      PRICING_ADDONS.filter((a) => selectedKeys.has(a.key)).map((addon) => ({
+        ...addon,
+        displayName: isHe ? addon.name : addon.nameEn,
+      })),
     [selectedKeys, isHe]
   );
 
-  const selectedEstimate = useMemo(() => {
-    let min = 0;
-    let max = 0;
-    let customCount = 0;
-    selectedAddons.forEach((addon) => {
-      if (addon.priceMonthly == null) {
-        if (addon.isAddon) customCount += 1;
-        return;
-      }
-      min += addon.priceMonthly;
-      max += addon.priceMax != null ? addon.priceMax : addon.priceMonthly;
-    });
-    return { min, max, customCount };
-  }, [selectedAddons]);
-
-  const toggleAddon = (key, isIncluded) => {
-    if (isIncluded) return;
+  const toggleAddon = (key) => {
     startTransition(() => {
       setSelectedKeys((prev) => {
         const next = new Set(prev);
@@ -257,31 +200,6 @@ export default function Plans() {
         transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
       };
 
-  const renderButton = (type, label, highlighted) => {
-    const isLoading = loadingPlan === type;
-
-    return (
-      <button
-        type="button"
-        aria-pressed={isLoading}
-        onClick={() => handleCheckout(type)}
-        disabled={isLoading}
-        className={`group mt-8 inline-flex w-full items-center justify-center rounded-full px-7 py-4 text-base font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 ${
-          highlighted
-            ? "bg-slate-900 text-white shadow-indigo-300/50 hover:bg-slate-800"
-            : "border border-violet-200 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 text-slate-900 shadow-slate-100 hover:border-indigo-300"
-        }`}
-      >
-        {isLoading ? t("pricing.processing") : label}
-        {!isLoading && (
-          <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
-            →
-          </span>
-        )}
-      </button>
-    );
-  };
-
   return (
     <div className="relative min-h-screen overflow-hidden bg-[radial-gradient(circle_at_top,#ffffff_0%,#f7f8ff_42%,#eef3ff_76%,#ffffff_100%)] text-slate-800">
       <div className="pointer-events-none absolute inset-0">
@@ -289,20 +207,6 @@ export default function Plans() {
         <div className="absolute -right-40 top-80 h-[420px] w-[420px] rounded-full bg-cyan-200/35 blur-3xl" />
         <div className="absolute -left-40 top-[680px] h-[420px] w-[420px] rounded-full bg-violet-200/35 blur-3xl" />
         <div className="absolute inset-0 bg-[radial-gradient(circle,#6366f1_1px,transparent_1px)] [background-size:22px_22px] opacity-[0.08]" />
-        {!reduceMotion && (
-          <>
-            <motion.div
-              className="absolute left-[12%] top-40 h-24 w-24 rounded-full bg-violet-400/20 blur-2xl"
-              animate={{ y: [0, -18, 0], opacity: [0.35, 0.6, 0.35] }}
-              transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-            />
-            <motion.div
-              className="absolute right-[16%] top-56 h-28 w-28 rounded-full bg-cyan-400/20 blur-2xl"
-              animate={{ y: [0, 16, 0], opacity: [0.3, 0.55, 0.3] }}
-              transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
-            />
-          </>
-        )}
       </div>
 
       <main
@@ -329,103 +233,106 @@ export default function Plans() {
           </p>
         </motion.header>
 
-        <section className="mx-auto mt-16 grid max-w-6xl gap-8 lg:grid-cols-2">
-          {plans.map((plan, index) => (
-            <motion.article
-              key={plan.type}
-              {...fadeUp}
-              transition={{
-                duration: 0.55,
-                delay: reduceMotion ? 0 : 0.08 + index * 0.08,
-                ease: [0.22, 1, 0.36, 1],
-              }}
-              className={`relative overflow-hidden rounded-[2.5rem] border p-3 backdrop-blur-xl transition duration-300 hover:-translate-y-2 ${
-                plan.highlighted
-                  ? "border-indigo-200 bg-gradient-to-br from-teal-100/80 via-violet-100 to-sky-100 shadow-[0_30px_100px_rgba(79,70,229,0.26)]"
-                  : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.14)]"
-              }`}
-            >
-              {plan.highlighted && (
-                <div className="absolute start-8 top-8 z-20 rounded-full bg-white px-4 py-2 text-xs font-black uppercase tracking-wide text-indigo-700 shadow-xl">
-                  {t("pricing.mostPopular")}
-                </div>
-              )}
+        {/* Service packages */}
+        <section className="mx-auto mt-16 grid max-w-6xl gap-7 lg:grid-cols-3">
+          {packages.map((plan, index) => {
+            const isLoading =
+              plan.checkoutPlan != null && loadingPlan === plan.checkoutPlan;
 
-              <div
-                className={`relative h-full rounded-[2rem] border p-7 sm:p-8 ${
+            return (
+              <motion.article
+                key={plan.type}
+                {...fadeUp}
+                transition={{
+                  duration: 0.55,
+                  delay: reduceMotion ? 0 : 0.06 + index * 0.07,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+                className={`relative overflow-hidden rounded-[2.25rem] border p-3 backdrop-blur-xl transition duration-300 hover:-translate-y-2 ${
                   plan.highlighted
-                    ? "border-white/50 bg-white/55 text-slate-800"
-                    : "border-slate-100 bg-white text-slate-800"
+                    ? "border-indigo-200 bg-gradient-to-br from-teal-100/80 via-violet-100 to-sky-100 shadow-[0_30px_100px_rgba(79,70,229,0.26)] lg:scale-[1.02]"
+                    : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.12)]"
                 }`}
               >
                 {plan.highlighted && (
-                  <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[2rem]">
-                    <div className="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-indigo-400/25 blur-3xl" />
-                    <div className="absolute -bottom-28 left-10 h-72 w-72 rounded-full bg-cyan-300/25 blur-3xl" />
+                  <div className="absolute start-6 top-6 z-20 rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-indigo-700 shadow-xl">
+                    {t("pricing.mostPopular")}
                   </div>
                 )}
 
-                <div className="relative text-start">
-                  <div
-                    className={`mb-6 inline-flex rounded-full px-4 py-2 text-sm font-black ${
-                      plan.highlighted
-                        ? "border border-indigo-100/80 bg-white/70 text-indigo-700"
-                        : "bg-indigo-50 text-indigo-700"
-                    }`}
-                  >
-                    {plan.badge}
-                  </div>
+                <div
+                  className={`relative h-full rounded-[1.85rem] border p-6 sm:p-7 ${
+                    plan.highlighted
+                      ? "border-white/50 bg-white/55"
+                      : "border-slate-100 bg-white"
+                  }`}
+                >
+                  <div className="relative text-start">
+                    <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-3.5 py-1.5 text-sm font-black text-indigo-700">
+                      {plan.badge}
+                    </div>
 
-                  <h2 className="text-3xl font-black tracking-[-0.04em] sm:text-4xl">
-                    {plan.name}
-                  </h2>
+                    <h2 className="text-2xl font-black tracking-[-0.03em] sm:text-3xl">
+                      {plan.name}
+                    </h2>
 
-                  <p className="mt-4 text-base font-semibold leading-7 text-slate-600">
-                    {plan.description}
-                  </p>
+                    <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 sm:text-base">
+                      {plan.description}
+                    </p>
 
-                  <div className="mt-8 flex items-end gap-2">
-                    <span className="text-6xl font-black tracking-[-0.06em]">
-                      {plan.price}
-                    </span>
-                    <span className="pb-2 text-base font-black text-slate-500">
-                      {plan.duration}
-                    </span>
-                  </div>
+                    <div className="mt-7 flex items-end gap-2">
+                      <span className="text-5xl font-black tracking-[-0.05em] sm:text-6xl">
+                        {formatIls(plan.price)}
+                      </span>
+                      <span className="pb-2 text-sm font-black text-slate-500">
+                        {plan.pricePeriod}
+                      </span>
+                    </div>
 
-                  <div
-                    className={`mt-5 rounded-2xl px-5 py-4 text-sm font-black ${
-                      plan.highlighted
-                        ? "border border-indigo-100 bg-white/80 text-indigo-700"
-                        : "bg-indigo-50 text-indigo-700"
-                    }`}
-                  >
-                    {plan.note}
-                  </div>
+                    <div className="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-700">
+                      {plan.note}
+                    </div>
 
-                  <div className="mt-8 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                    <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
 
-                  <ul className="mt-8 grid gap-3">
-                    {features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-500 text-xs text-white shadow-sm">
-                          ✓
+                    <ul className="mt-6 grid gap-2.5">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2.5">
+                          <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-500 text-[10px] text-white">
+                            ✓
+                          </span>
+                          <span className="text-sm font-bold leading-5 text-slate-600">
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      type="button"
+                      onClick={() => handleCheckout(plan.checkoutPlan)}
+                      disabled={isLoading}
+                      className={`group mt-8 inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
+                        plan.highlighted
+                          ? "bg-slate-900 text-white hover:bg-slate-800"
+                          : "border border-violet-200 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 text-slate-900"
+                      }`}
+                    >
+                      {isLoading ? t("pricing.processing") : plan.button}
+                      {!isLoading && (
+                        <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                          →
                         </span>
-                        <span className="text-sm font-bold leading-6 text-slate-600">
-                          {feature}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {renderButton(plan.type, plan.button, plan.highlighted)}
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </motion.article>
-          ))}
+              </motion.article>
+            );
+          })}
         </section>
 
-        {/* Additional business services / upsells */}
+        {/* Additional BizUply business services */}
         <motion.section
           id="business-services"
           className="relative mx-auto mt-28 max-w-6xl"
@@ -459,20 +366,6 @@ export default function Plans() {
                   className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-4 ps-11 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
                 />
               </label>
-
-              <button
-                type="button"
-                onClick={() => setShowIncluded((v) => !v)}
-                className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl border px-4 text-sm font-bold transition ${
-                  showIncluded
-                    ? "border-indigo-200 bg-indigo-50 text-indigo-700"
-                    : "border-slate-200 bg-white text-slate-600 hover:border-indigo-200"
-                }`}
-              >
-                {showIncluded
-                  ? t("pricing.addonsHideIncluded")
-                  : t("pricing.addonsShowIncluded")}
-              </button>
             </div>
 
             <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -504,29 +397,24 @@ export default function Plans() {
             <AnimatePresence mode="popLayout">
               {filteredAddons.map((addon) => {
                 const selected = selectedKeys.has(addon.key);
-                const included = Boolean(addon.isIncluded);
-                const selectable = !included;
 
                 return (
                   <motion.button
                     layout={!reduceMotion}
                     key={addon.key}
                     type="button"
-                    disabled={!selectable}
-                    onClick={() => toggleAddon(addon.key, included)}
+                    onClick={() => toggleAddon(addon.key)}
                     initial={reduceMotion ? false : { opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={reduceMotion ? undefined : { opacity: 0, scale: 0.96 }}
                     transition={{ duration: 0.28 }}
                     className={`group relative overflow-hidden rounded-[1.75rem] border p-5 text-start transition duration-300 ${
-                      included
-                        ? "cursor-default border-emerald-100 bg-emerald-50/40"
-                        : selected
-                          ? "border-indigo-300 bg-gradient-to-br from-violet-50 via-white to-cyan-50 shadow-[0_18px_50px_rgba(79,70,229,0.18)] ring-2 ring-indigo-200"
-                          : "border-slate-200/90 bg-white/90 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-[0_16px_40px_rgba(79,70,229,0.12)]"
+                      selected
+                        ? "border-indigo-300 bg-gradient-to-br from-violet-50 via-white to-cyan-50 shadow-[0_18px_50px_rgba(79,70,229,0.18)] ring-2 ring-indigo-200"
+                        : "border-slate-200/90 bg-white/90 hover:-translate-y-1 hover:border-indigo-200 hover:shadow-[0_16px_40px_rgba(79,70,229,0.12)]"
                     }`}
                   >
-                    {addon.featured && !included && (
+                    {addon.featured && (
                       <span className="absolute end-4 top-4 rounded-full bg-violet-100 px-2.5 py-1 text-[10px] font-black uppercase tracking-wide text-violet-700">
                         {t("pricing.addonsFeatured")}
                       </span>
@@ -544,36 +432,23 @@ export default function Plans() {
                       </div>
                     </div>
 
-                    <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-600">
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
                       {addon.displayDescription}
                     </p>
 
                     <div className="mt-4 flex items-center justify-between gap-3">
-                      <span
-                        className={`text-sm font-black ${
-                          included ? "text-emerald-700" : "text-indigo-700"
-                        }`}
-                      >
-                        {included
-                          ? t("pricing.addonsIncluded")
-                          : addon.displayPrice}
+                      <span className="text-sm font-black text-indigo-700">
+                        {addon.displayPrice}
                       </span>
 
                       <span
                         className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-xs font-black transition ${
-                          included
-                            ? "bg-emerald-100 text-emerald-700"
-                            : selected
-                              ? "bg-slate-900 text-white"
-                              : "bg-indigo-50 text-indigo-700 group-hover:bg-indigo-100"
+                          selected
+                            ? "bg-slate-900 text-white"
+                            : "bg-indigo-50 text-indigo-700 group-hover:bg-indigo-100"
                         }`}
                       >
-                        {included ? (
-                          <>
-                            <Check size={14} />
-                            {t("pricing.addonsInPlan")}
-                          </>
-                        ) : selected ? (
+                        {selected ? (
                           <>
                             <Check size={14} />
                             {t("pricing.addonsAdded")}
@@ -640,28 +515,7 @@ export default function Plans() {
                   {t("pricing.addonsSelected", { count: selectedKeys.size })}
                 </p>
                 <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
-                  {selectedEstimate.min > 0
-                    ? selectedEstimate.min === selectedEstimate.max
-                      ? t("pricing.addonsEstimate", {
-                          amount: `₪${selectedEstimate.min}`,
-                        })
-                      : t("pricing.addonsEstimateRange", {
-                          min: `₪${selectedEstimate.min}`,
-                          max: `₪${selectedEstimate.max}`,
-                        })
-                    : null}
-                  {selectedEstimate.customCount > 0
-                    ? ` · ${t("pricing.addonsCustomCount", {
-                        count: selectedEstimate.customCount,
-                      })}`
-                    : null}
-                  {selectedEstimate.min === 0 &&
-                  selectedEstimate.customCount === 0
-                    ? selectedAddons
-                        .map((a) => a.displayName)
-                        .slice(0, 3)
-                        .join(" · ")
-                    : null}
+                  {selectedAddons.map((a) => a.displayName).join(" · ")}
                 </p>
               </div>
 
