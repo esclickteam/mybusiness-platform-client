@@ -1,0 +1,176 @@
+/* Wow layer for /pricing service packages — complements Tailwind */
+
+.pricing-wow {
+  --pw-ink: #0b1220;
+  --pw-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: "Assistant", "Heebo", system-ui, sans-serif;
+}
+
+.pricing-wow__orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(72px);
+  pointer-events: none;
+  will-change: transform;
+}
+
+.pricing-wow__orb--a {
+  top: -8rem;
+  inset-inline-start: 50%;
+  width: 42rem;
+  height: 28rem;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.28), transparent 70%);
+  animation: pricing-orb-float 14s var(--pw-ease) infinite alternate;
+}
+
+.pricing-wow__orb--b {
+  top: 18rem;
+  inset-inline-end: -8rem;
+  width: 26rem;
+  height: 26rem;
+  background: radial-gradient(circle, rgba(6, 182, 212, 0.22), transparent 70%);
+  animation: pricing-orb-float 18s var(--pw-ease) infinite alternate-reverse;
+}
+
+.pricing-wow__orb--c {
+  top: 42rem;
+  inset-inline-start: -10rem;
+  width: 28rem;
+  height: 28rem;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.16), transparent 70%);
+  animation: pricing-orb-float 16s var(--pw-ease) infinite alternate;
+}
+
+.pricing-wow__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(99, 102, 241, 0.12) 1px, transparent 0);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.pricing-wow__brand {
+  background: linear-gradient(120deg, #0f172a 0%, #4f46e5 42%, #0891b2 78%, #059669 100%);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pricing-brand-shift 10s ease-in-out infinite;
+}
+
+.pricing-wow__cat-sticky {
+  position: sticky;
+  top: 4.5rem;
+  z-index: 30;
+}
+
+.pricing-wow__service {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  transition:
+    transform 0.45s var(--pw-ease),
+    box-shadow 0.45s var(--pw-ease),
+    border-color 0.35s ease;
+}
+
+.pricing-wow__service::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    420px circle at var(--pw-mx, 50%) var(--pw-my, 0%),
+    color-mix(in srgb, var(--pw-accent, #4f46e5) 16%, transparent),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pricing-wow__service:hover::before,
+.pricing-wow__service.is-selected::before {
+  opacity: 1;
+}
+
+.pricing-wow__service:hover {
+  transform: translateY(-6px);
+}
+
+.pricing-wow__service.is-featured {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--pw-accent, #4f46e5) 35%, transparent),
+    0 28px 80px color-mix(in srgb, var(--pw-accent, #4f46e5) 18%, transparent);
+}
+
+.pricing-wow__service > * {
+  position: relative;
+  z-index: 1;
+}
+
+.pricing-wow__sheen {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: -40%;
+  width: 40%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  transform: skewX(-18deg);
+  pointer-events: none;
+  opacity: 0;
+}
+
+.pricing-wow__service:hover .pricing-wow__sheen {
+  opacity: 1;
+  animation: pricing-sheen 1.1s var(--pw-ease);
+}
+
+@keyframes pricing-orb-float {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(18px, 28px, 0);
+  }
+}
+
+@keyframes pricing-brand-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes pricing-sheen {
+  from {
+    inset-inline-start: -40%;
+  }
+  to {
+    inset-inline-start: 120%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pricing-wow__orb,
+  .pricing-wow__brand,
+  .pricing-wow__service,
+  .pricing-wow__sheen {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .pricing-wow__service:hover {
+    transform: none;
+  }
+}
