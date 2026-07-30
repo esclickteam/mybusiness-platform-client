@@ -148,7 +148,9 @@ type Lead = {
     leadId?: string;
     formId?: string;
     formName?: string;
+    customerId?: string;
     campaignId?: string;
+    campaignName?: string;
     adgroupId?: string;
     gclId?: string;
     createdTime?: string;
@@ -2777,18 +2779,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             selectedLead.facebook?.formId
                           }
                         />
-                        {isGoogleLead(selectedLead) ? (
-                          <>
-                            <DetailRow
-                              label={t("crm.leads.drawer.campaignId")}
-                              value={selectedLead.google?.campaignId}
-                            />
-                            <DetailRow
-                              label={t("crm.leads.drawer.gclid")}
-                              value={selectedLead.google?.gclId}
-                            />
-                          </>
-                        ) : (
+                        {!isGoogleLead(selectedLead) && (
                           <DetailRow
                             label={t("crm.leads.drawer.pageId")}
                             value={
@@ -2799,6 +2790,56 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         )}
                       </div>
                     </section>
+
+                    {isGoogleLead(selectedLead) && (
+                      <section className="rounded-2xl border border-emerald-100 bg-emerald-50/40 p-3 shadow-sm" dir="ltr">
+                        <div className="mb-3">
+                          <h4 className="text-sm font-black text-slate-800">
+                            Google Ads Information
+                          </h4>
+                        </div>
+                        <div className="space-y-2 sm:space-y-3">
+                          {[
+                            [
+                              "Google Ads Customer ID",
+                              selectedLead.google?.customerId,
+                            ],
+                            [
+                              "Campaign",
+                              selectedLead.google?.campaignName,
+                            ],
+                            [
+                              "Campaign ID",
+                              selectedLead.google?.campaignId,
+                            ],
+                            ["Lead Form", selectedLead.google?.formName],
+                            ["Lead Form ID", selectedLead.google?.formId],
+                            [
+                              "Submission ID",
+                              selectedLead.externalLeadId ||
+                                selectedLead.google?.leadId,
+                            ],
+                            [
+                              "Submitted At",
+                              selectedLead.google?.createdTime
+                                ? new Date(
+                                    selectedLead.google.createdTime
+                                  ).toLocaleString("en-US")
+                                : "",
+                            ],
+                            ["Google Click ID", selectedLead.google?.gclId],
+                          ]
+                            .filter(([, value]) => Boolean(value))
+                            .map(([label, value]) => (
+                              <DetailRow
+                                key={String(label)}
+                                label={String(label)}
+                                value={String(value)}
+                              />
+                            ))}
+                        </div>
+                      </section>
+                    )}
                   </div>
                 </aside>
               </div>
