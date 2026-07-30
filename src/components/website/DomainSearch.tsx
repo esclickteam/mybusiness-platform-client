@@ -95,6 +95,12 @@ function formatIls(amount: number) {
   }).format(amount || 0);
 }
 
+function formatDomainPrice(amount: number | null | undefined, free?: boolean) {
+  if (free || amount === 0) return "חינם";
+  if (amount == null) return "—";
+  return formatIls(amount);
+}
+
 function cleanDomainInput(value: string) {
   return String(value || "")
     .trim()
@@ -163,6 +169,7 @@ export default function DomainSearch({
   const [periodPrices, setPeriodPrices] = useState<
     Partial<Record<DomainYears, number>>
   >({});
+  const [freeDomainAvailable, setFreeDomainAvailable] = useState(false);
   const [quote, setQuote] = useState<DomainQuoteResult | null>(null);
   const [isQuoting, setIsQuoting] = useState(false);
   const [isEstimating, setIsEstimating] = useState(false);
@@ -286,22 +293,33 @@ export default function DomainSearch({
         const estimates = await Promise.all(
           options.map(async (years) => {
             if (years === seed.years) {
-              return { years, price: seed.price };
+              return {
+                years,
+                price: seed.price,
+                freeYearApplied: Boolean(seed.freeYearApplied),
+              };
             }
             const estimate = await estimateDomainRegistration({
               domain,
               years,
             });
-            return { years, price: estimate.price };
+            return {
+              years,
+              price: estimate.price,
+              freeYearApplied: Boolean(estimate.freeYearApplied),
+            };
           }),
         );
         if (cancelled) return;
 
         const prices: Partial<Record<DomainYears, number>> = {};
         for (const item of estimates) {
-          prices[item.years] = item.price;
+          prices[item.years as DomainYears] = item.price;
         }
 
+        setFreeDomainAvailable(
+          Boolean(seed.freeDomainAvailable || seed.freeYearApplied),
+        );
         setYearOptions(options);
         setPeriodPrices(prices);
         const nextSelected = options.includes(selectedYears)
@@ -312,13 +330,20 @@ export default function DomainSearch({
           success: true,
           domain,
           years: nextSelected,
-          price: prices[nextSelected] || 0,
+          price: prices[nextSelected] ?? 0,
+          freeYearApplied:
+            nextSelected === 1 &&
+            Boolean(seed.freeDomainAvailable || seed.freeYearApplied),
+          freeDomainAvailable: Boolean(
+            seed.freeDomainAvailable || seed.freeYearApplied,
+          ),
           currency: "ILS",
           options,
         });
       } catch (requestError) {
         if (!cancelled) {
           setPeriodPrices({});
+          setFreeDomainAvailable(false);
           setError(
             requestError instanceof Error
               ? requestError.message
@@ -353,6 +378,11 @@ export default function DomainSearch({
         });
         if (!cancelled) {
           setQuote(nextQuote);
+          setFreeDomainAvailable(
+            Boolean(
+              nextQuote.freeDomainAvailable || nextQuote.freeYearApplied,
+            ),
+          );
           if (Array.isArray(nextQuote.options) && nextQuote.options.length) {
             const nextOptions = nextQuote.options.filter((year): year is DomainYears =>
               DEFAULT_DOMAIN_YEAR_OPTIONS.includes(year as DomainYears),
@@ -536,10 +566,10 @@ export default function DomainSearch({
         vatNumber: contact.vatNumber,
       });
 
-      if (checkout.alreadyRegistered) {
+      if (checkout.alreadyRegistered || checkout.freeYearApplied) {
         setRegisterResult({
           success: true,
-          alreadyRegistered: true,
+          alreadyRegistered: Boolean(checkout.alreadyRegistered),
           domain: checkout.domain,
           registrationId: checkout.registrationId,
           status: checkout.status || "registered",
@@ -547,6 +577,7 @@ export default function DomainSearch({
         if (checkout.domain) {
           void onRegistered?.(checkout.domain);
         }
+        setFreeDomainAvailable(false);
         return;
       }
 
@@ -735,10 +766,16 @@ export default function DomainSearch({
                     <p className="mt-1 text-2xl font-black text-slate-900">
                       {isEstimating
                         ? "מחשב..."
-                        : periodPrices[selectedYears] != null
-                          ? formatIls(periodPrices[selectedYears] || 0)
-                          : "—"}
+                        : formatDomainPrice(
+                            periodPrices[selectedYears],
+                            freeDomainAvailable && selectedYears === 1,
+                          )}
                     </p>
+                    {freeDomainAvailable && selectedYears === 1 ? (
+                      <p className="mt-1 text-xs font-bold text-emerald-700">
+                        כלול ברכישת אתר · שנה ראשונה
+                      </p>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
@@ -753,6 +790,7 @@ export default function DomainSearch({
                       {yearOptions.map((years) => {
                         const active = selectedYears === years;
                         const price = periodPrices[years];
+                        const isFree = freeDomainAvailable && years === 1;
                         return (
                           <button
                             key={years}
@@ -765,6 +803,8 @@ export default function DomainSearch({
                                   domain: result.domain,
                                   years,
                                   price,
+                                  freeYearApplied: isFree,
+                                  freeDomainAvailable,
                                   currency: "ILS",
                                   options: yearOptions,
                                 });
@@ -783,9 +823,7 @@ export default function DomainSearch({
                             <span className="text-xs font-black">
                               {isEstimating
                                 ? "..."
-                                : price != null
-                                  ? formatIls(price)
-                                  : "—"}
+                                : formatDomainPrice(price, isFree)}
                               {active ? " · נבחר" : ""}
                             </span>
                           </button>
@@ -804,12 +842,15 @@ export default function DomainSearch({
                     <p className="mt-4 text-2xl font-black text-slate-900">
                       {isEstimating
                         ? "מחשב מחיר..."
-                        : periodPrices[selectedYears] != null
-                          ? formatIls(periodPrices[selectedYears] || 0)
-                          : "—"}
+                        : formatDomainPrice(
+                            periodPrices[selectedYears],
+                            freeDomainAvailable && selectedYears === 1,
+                          )}
                     </p>
                     <p className="mt-1 text-xs font-semibold text-slate-500">
-                      בחרו תקופה והמשיכו למילוי פרטים
+                      {freeDomainAvailable && selectedYears === 1
+                        ? "דומיין חינם לשנה · כלול ברכישת אתר"
+                        : "בחרו תקופה והמשיכו למילוי פרטים"}
                     </p>
                     <button
                       type="button"
@@ -1032,29 +1073,42 @@ export default function DomainSearch({
                             {isQuoting
                               ? "מחשב מחיר..."
                               : quote
-                                ? formatIls(quote.price)
+                                ? formatDomainPrice(
+                                    quote.price,
+                                    Boolean(quote.freeYearApplied) ||
+                                      (freeDomainAvailable &&
+                                        selectedYears === 1),
+                                  )
                                 : "—"}
                           </p>
                           <p className="mt-1 text-xs font-semibold text-slate-500">
-                            תשלום מאובטח · חידוש שנתי לפי תנאי הרישום
+                            {freeDomainAvailable && selectedYears === 1
+                              ? "דומיין חינם לשנה · כלול ברכישת אתר"
+                              : "תשלום מאובטח · חידוש שנתי לפי תנאי הרישום"}
                           </p>
                           <button
                             type="button"
                             onClick={() => void handlePayAndRegister()}
                             disabled={
-                              isCheckingOut || isQuoting || !quote?.price
+                              isCheckingOut ||
+                              isQuoting ||
+                              quote?.price == null
                             }
                             className="mt-5 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-blue-600 px-6 text-sm font-black text-white shadow-lg shadow-blue-200 transition hover:-translate-y-0.5 hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
                           >
                             {isCheckingOut ? (
                               <>
                                 <BizuplyLoader size="sm" compact />
-                                מעביר לתשלום...
+                                {freeDomainAvailable && selectedYears === 1
+                                  ? "רושם דומיין חינם..."
+                                  : "מעביר לתשלום..."}
                               </>
                             ) : (
                               <>
                                 <ShieldCheck className="h-5 w-5" />
-                                המשך לתשלום מאובטח
+                                {freeDomainAvailable && selectedYears === 1
+                                  ? "רשום דומיין חינם לשנה"
+                                  : "המשך לתשלום מאובטח"}
                               </>
                             )}
                           </button>

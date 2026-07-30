@@ -27,10 +27,13 @@ export type PricingPackage = {
 /** One-time self-serve website add-on for business packages (ILS) */
 export const WEBSITE_ADDON = {
   price: 550,
-  labelHe: "תוספת אתר ₪550 חד־פעמי — בניית אתר עצמאית",
-  labelEn: "Website add-on ₪550 one-time — self-serve website build",
-  hintHe: "תבניות ועורך ויזואלי, מקושר ל-CRM — חד־פעמי, לא כלול בחבילה",
-  hintEn: "Templates and visual editor, linked to CRM — one-time, not included in the package",
+  labelHe: "תוספת אתר ₪550 חד־פעמי — בניית אתר עצמאית + דומיין חינם לשנה",
+  labelEn:
+    "Website add-on ₪550 one-time — self-serve website build + free domain for 1 year",
+  hintHe:
+    "תבניות ועורך ויזואלי, מקושר ל-CRM — כולל דומיין חינם לשנה · חד־פעמי, לא כלול בחבילה",
+  hintEn:
+    "Templates and visual editor, linked to CRM — includes free domain for 1 year · one-time, not included in the package",
 } as const;
 
 export const PRICING_PACKAGES: PricingPackage[] = [
@@ -59,6 +62,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "מאות תבניות מוכנות לענפים שונים",
       "עמודים, סקשנים, גלריות וטפסים",
       "התאמה למובייל, טאבלט ודסקטופ",
+      "דומיין חינם לשנה הראשונה",
       "פרסום לכתובת BizUply או דומיין שלכם",
       "טופס לידים מהאתר מקושר ל-CRM",
       "כלי נגישות מובנים",
@@ -70,6 +74,7 @@ export const PRICING_PACKAGES: PricingPackage[] = [
       "Hundreds of ready-made industry templates",
       "Pages, sections, galleries, and forms",
       "Mobile, tablet, and desktop responsive",
+      "Free domain for the first year",
       "Publish to BizUply URL or your domain",
       "Site lead form linked to CRM",
       "Built-in accessibility tools",
