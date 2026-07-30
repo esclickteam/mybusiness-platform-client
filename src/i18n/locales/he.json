@@ -782,7 +782,7 @@
     "alertUserNotLoaded": "נתוני המשתמש עדיין לא נטענו. התחברו או הירשמו כדי להמשיך לתשלום.",
     "alertCheckoutFailed": "נכשל בהתחלת תשלום",
     "alertGenericError": "שגיאה, אנא נסו שוב.",
-    "websiteContactMessage": "שלום, אשמח להתחיל עם חבילת בניית אתר בלבד ב־₪600 לשנה (בניה עצמאית מתבנית / AI).",
+    "websiteContactMessage": "שלום, אשמח להתחיל עם חבילת בניית אתר בלבד ב־₪600 לשנה (בניה עצמאית מתבנית, מקושר ל-CRM).",
     "packageWithWebsiteContactMessage": "שלום, אשמח להצטרף ל{{package}} במחיר {{price}}{{period}}, כולל תוספת אתר {{websitePrice}} חד־פעמי (בניית אתר עצמאית).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + תוספת אתר {{websitePrice}} חד־פעמי",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + אתר {{websitePrice}} חד־פעמי (בסטרייפ)",
