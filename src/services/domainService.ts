@@ -469,6 +469,9 @@ export type DomainQuoteResult = {
   years: number;
   periodMonths?: number;
   price: number;
+  originalPrice?: number;
+  freeYearApplied?: boolean;
+  freeDomainAvailable?: boolean;
   currency: string;
   options?: number[];
   error?: string;
@@ -477,13 +480,16 @@ export type DomainQuoteResult = {
 export type DomainCheckoutResult = {
   success: boolean;
   alreadyRegistered?: boolean;
+  freeYearApplied?: boolean;
   paymentUrl?: string;
   lowProfileCode?: string;
   registrationId?: string;
   domain?: string;
   years?: number;
   price?: number;
+  originalPrice?: number;
   currency?: string;
+  provider?: string;
   status?: DomainRegistrationStatus;
   error?: string;
 };
@@ -516,7 +522,8 @@ export async function estimateDomainRegistration(payload: {
       getApiErrorMessage(response, data, "הערכת מחיר הדומיין נכשלה"),
     );
   }
-  if (!(Number(data.price) > 0)) {
+  const price = Number(data.price);
+  if (!(price > 0) && !data.freeYearApplied) {
     throw new Error("הערכת מחיר הדומיין החזירה מחיר לא תקין");
   }
   return data;
