@@ -773,12 +773,12 @@ export default function BusinessDashboardLayout() {
                       </span>
 
                       <span>
-                        Save <strong>$30</strong> today — first month only{" "}
+                        Save <strong>₪30</strong> today — first month only{" "}
                         <span className="font-black text-violet-700">
-                          $119
+                          ₪119
                         </span>{" "}
                         <span className="text-slate-400 line-through">
-                          $149
+                          ₪149
                         </span>
                       </span>
                     </div>
