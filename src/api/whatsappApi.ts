@@ -37,7 +37,7 @@ export type WhatsAppHeaderType =
   | "location";
 
 export type WhatsAppTemplateButton = {
-  type: "url" | "phone_number" | "quick_reply";
+  type: "url" | "phone_number" | "quick_reply" | "copy_code";
   text: string;
   url?: string;
   urlType?: "static" | "dynamic";
@@ -302,6 +302,48 @@ export async function createWhatsAppTemplate(
     ...payload,
   });
   return data?.template as WhatsAppTemplate;
+}
+
+export type WhatsAppTemplateSubmitPayload = {
+  name: string;
+  metaTemplateName?: string;
+  language: string;
+  metaCategory: "MARKETING" | "UTILITY" | "AUTHENTICATION";
+  category?: WhatsAppTemplate["category"];
+  variableType?: "number" | "name";
+  headerType?: WhatsAppHeaderType;
+  headerText?: string;
+  headerMediaUrl?: string;
+  body: string;
+  footer?: string;
+  exampleValues?: Record<string, string>;
+  buttons?: WhatsAppTemplateButton[];
+};
+
+export async function saveWhatsAppTemplateDraft(
+  businessId: string,
+  payload: WhatsAppTemplateSubmitPayload
+) {
+  const { data } = await API.post("/whatsapp/templates/draft", {
+    businessId,
+    ...payload,
+  });
+  return data?.template as WhatsAppTemplate;
+}
+
+export async function submitWhatsAppTemplateToMeta(
+  businessId: string,
+  payload: WhatsAppTemplateSubmitPayload
+) {
+  const { data } = await API.post("/whatsapp/templates/submit", {
+    businessId,
+    ...payload,
+  });
+  return data as {
+    success: boolean;
+    template: WhatsAppTemplate;
+    meta: { id: string; status: string; category: string };
+  };
 }
 
 export async function updateWhatsAppTemplate(

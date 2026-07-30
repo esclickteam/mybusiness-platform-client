@@ -32,6 +32,7 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
 
 type OutletCtx = { businessId: string | null };
 
@@ -400,21 +401,27 @@ export default function WhatsAppTemplatesTab() {
         {t("whatsapp.templates.metaOnlyHint")}
       </p>
 
-      {showForm && (
+      {showForm && !editingId && businessId && (
+        <WhatsAppCreateTemplateWizard
+          businessId={businessId}
+          onClose={resetForm}
+          onSubmitted={load}
+        />
+      )}
+
+      {showForm && editingId && (
         <section className={`${cardBase} space-y-5 p-4 sm:p-5`}>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <h3 className="text-base font-black text-slate-900">
-                {editingId
-                  ? t("whatsapp.templates.editTitle")
-                  : t("whatsapp.templates.createTitle")}
+                {t("whatsapp.templates.editTitle")}
               </h3>
               <p className="mt-1 text-sm font-medium text-slate-500">
                 {t("whatsapp.templates.metaEditorHint")}
               </p>
             </div>
             <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
-              Meta Cloud API
+              Local draft
             </span>
           </div>
 
