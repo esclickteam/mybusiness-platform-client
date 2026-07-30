@@ -61,6 +61,22 @@
   animation: pricing-brand-shift 10s ease-in-out infinite;
 }
 
+.pricing-wow__title {
+  background: linear-gradient(
+    115deg,
+    #0f172a 0%,
+    #2563eb 28%,
+    #0891b2 55%,
+    #059669 78%,
+    #0f172a 100%
+  );
+  background-size: 220% 220%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: pricing-brand-shift 12s ease-in-out infinite;
+}
+
 .pricing-wow__cat-sticky {
   position: sticky;
   top: 4.5rem;

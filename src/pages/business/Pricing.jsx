@@ -143,20 +143,6 @@ export default function Plans() {
       return;
     }
 
-    if (wantsWebsiteAddon) {
-      navigate("/contact", {
-        state: {
-          prefillMessage: t("pricing.packageWithWebsiteContactMessage", {
-            package: plan.name,
-            price: formatIls(plan.price),
-            period: plan.pricePeriod,
-            websitePrice: formatIls(WEBSITE_ADDON.price),
-          }),
-        },
-      });
-      return;
-    }
-
     try {
       setLoadingPlan(plan.checkoutPlan);
 
@@ -172,6 +158,7 @@ export default function Plans() {
         body: JSON.stringify({
           userId,
           plan: plan.checkoutPlan,
+          includeWebsiteAddon: wantsWebsiteAddon,
         }),
       });
 
@@ -443,61 +430,190 @@ export default function Plans() {
           selectedKeys.size > 0 ? "pb-44" : ""
         }`}
       >
-        {/* Hero — brand first, one composition */}
+        {/* Compact title — no fluff hero */}
         <motion.header
           className="mx-auto max-w-4xl text-center"
           initial={reduceMotion ? false : { opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
         >
-          <p className="pricing-wow__brand text-5xl font-black tracking-[-0.06em] sm:text-6xl lg:text-7xl">
+          <p className="pricing-wow__brand text-3xl font-black tracking-[-0.05em] sm:text-4xl">
             BizUply
           </p>
-
-          <div className="mx-auto mt-5 inline-flex items-center gap-2 rounded-full border border-indigo-100/90 bg-white/85 px-4 py-1.5 text-xs font-black uppercase tracking-[0.18em] text-indigo-700 shadow-lg shadow-indigo-100/70 backdrop-blur">
-            <span className="h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_14px_rgba(16,185,129,0.8)]" />
-            {t("pricing.badge")}
-          </div>
-
-          <h1 className="mt-6 text-4xl font-black leading-[1.05] tracking-[-0.045em] text-slate-900 sm:text-5xl lg:text-6xl">
-            {t("pricing.heroTitleTop")}{" "}
-            <span className="bg-gradient-to-l from-emerald-600 via-indigo-600 to-cyan-500 bg-clip-text text-transparent">
-              {t("pricing.heroTitleHighlight")}
-            </span>
+          <h1 className="pricing-wow__title mt-4 text-4xl font-black leading-[1.08] tracking-[-0.045em] sm:text-5xl lg:text-6xl">
+            {t("pricing.addonsTitle")}
           </h1>
-
-          <p className="mx-auto mt-6 max-w-2xl text-base font-semibold leading-8 text-slate-600 sm:text-lg">
-            {t("pricing.heroSubtitle")}
-          </p>
-
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-            <a
-              href="#business-services"
-              className="inline-flex h-12 items-center justify-center rounded-full bg-slate-900 px-7 text-sm font-black text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-slate-800"
-            >
-              {t("pricing.heroCtaServices")}
-            </a>
-            <a
-              href="#platform-packages"
-              className="inline-flex h-12 items-center justify-center rounded-full border border-white/80 bg-white/80 px-7 text-sm font-black text-slate-800 shadow-sm backdrop-blur transition hover:-translate-y-0.5"
-            >
-              {t("pricing.heroCtaPlatform")}
-            </a>
-          </div>
         </motion.header>
 
-        {/* Service packages — main wow section */}
+        {/* 1) System / platform packages first */}
+        <section
+          id="platform-packages"
+          className="mx-auto mt-14 max-w-6xl scroll-mt-28 sm:mt-16"
+        >
+          <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
+            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-1.5 text-sm font-black text-indigo-700 shadow-lg shadow-indigo-100/60">
+              <Globe size={14} aria-hidden="true" />
+              {t("pricing.platformBadge")}
+            </div>
+            <h2 className="mt-5 text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
+              {t("pricing.platformTitle")}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-slate-600">
+              {t("pricing.platformSubtitle")}
+            </p>
+          </motion.div>
+
+          <div className="mt-12 grid gap-7 lg:grid-cols-3">
+            {packages.map((plan, index) => {
+              const isLoading =
+                plan.checkoutPlan != null && loadingPlan === plan.checkoutPlan;
+              const websiteAddonChecked = Boolean(
+                plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
+              );
+
+              return (
+                <motion.article
+                  key={plan.type}
+                  {...fadeUp}
+                  transition={{
+                    duration: 0.55,
+                    delay: reduceMotion ? 0 : 0.06 + index * 0.07,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className={`relative overflow-hidden rounded-[2.25rem] border p-3 backdrop-blur-xl transition duration-300 hover:-translate-y-2 ${
+                    plan.highlighted
+                      ? "border-indigo-200 bg-gradient-to-br from-teal-100/80 via-violet-100 to-sky-100 shadow-[0_30px_100px_rgba(79,70,229,0.26)] lg:scale-[1.02]"
+                      : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.12)]"
+                  }`}
+                >
+                  {plan.highlighted && (
+                    <div className="absolute start-6 top-6 z-20 rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-indigo-700 shadow-xl">
+                      {t("pricing.mostPopular")}
+                    </div>
+                  )}
+
+                  <div
+                    className={`relative flex h-full flex-col rounded-[1.85rem] border p-6 sm:p-7 ${
+                      plan.highlighted
+                        ? "border-white/50 bg-white/55"
+                        : "border-slate-100 bg-white"
+                    }`}
+                  >
+                    <div className="relative flex flex-1 flex-col text-start">
+                      <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-3.5 py-1.5 text-sm font-black text-indigo-700">
+                        {plan.badge}
+                      </div>
+
+                      <h3 className="text-2xl font-black tracking-[-0.03em] sm:text-3xl">
+                        {plan.name}
+                      </h3>
+
+                      <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 sm:text-base">
+                        {plan.description}
+                      </p>
+
+                      <div className="mt-7 flex items-end gap-2">
+                        <span className="text-5xl font-black tracking-[-0.05em] sm:text-6xl">
+                          {formatIls(plan.price)}
+                        </span>
+                        <span className="pb-2 text-sm font-black text-slate-500">
+                          {plan.pricePeriod}
+                        </span>
+                      </div>
+
+                      {websiteAddonChecked && (
+                        <p className="mt-2 text-base font-black text-emerald-700">
+                          {t("pricing.websiteAddonStripeNote", {
+                            packagePrice: formatIls(plan.price),
+                            period: plan.pricePeriod,
+                            websitePrice: formatIls(WEBSITE_ADDON.price),
+                          })}
+                        </p>
+                      )}
+
+                      <div className="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-700">
+                        {plan.note}
+                      </div>
+
+                      <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+
+                      <ul className="mt-6 grid gap-2.5">
+                        {plan.features.map((feature) => (
+                          <li key={feature} className="flex items-start gap-2.5">
+                            <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-500 text-[10px] text-white">
+                              ✓
+                            </span>
+                            <span className="text-sm font-bold leading-5 text-slate-600">
+                              {feature}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+
+                      {plan.allowsWebsiteAddon && (
+                        <label
+                          className={`mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
+                            websiteAddonChecked
+                              ? "border-emerald-300 bg-emerald-50/80 shadow-sm"
+                              : "border-slate-200 bg-slate-50/70 hover:border-indigo-200"
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={websiteAddonChecked}
+                            onChange={() => toggleWebsiteAddon(plan.type)}
+                            className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                          />
+                          <span className="min-w-0">
+                            <span className="block text-sm font-black leading-5 text-slate-900">
+                              {websiteAddonLabel}
+                            </span>
+                            <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
+                              {websiteAddonHint}
+                            </span>
+                          </span>
+                        </label>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => handleCheckout(plan)}
+                        disabled={isLoading}
+                        className={`group mt-auto inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
+                          plan.allowsWebsiteAddon ? "mt-6" : "mt-8"
+                        } ${
+                          plan.highlighted
+                            ? "bg-slate-900 text-white hover:bg-slate-800"
+                            : "border border-violet-200 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 text-slate-900"
+                        }`}
+                      >
+                        {isLoading ? t("pricing.processing") : plan.button}
+                        {!isLoading && (
+                          <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
+                            →
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </motion.article>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 2) Upsells / managed service packages after system plans */}
         <section
           id="business-services"
-          className="relative mx-auto mt-20 max-w-6xl scroll-mt-28"
+          className="relative mx-auto mt-24 max-w-6xl scroll-mt-28 sm:mt-28"
         >
           <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-white/90 px-4 py-1.5 text-sm font-black text-emerald-700 shadow-lg shadow-emerald-100/50">
               <Sparkles size={14} aria-hidden="true" />
-              {t("pricing.addonsBadge")}
+              {t("pricing.upsellsBadge")}
             </div>
-            <h2 className="mt-5 text-4xl font-black tracking-[-0.04em] text-slate-900 sm:text-5xl">
-              {t("pricing.addonsTitle")}
+            <h2 className="mt-5 text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
+              {t("pricing.upsellsTitle")}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-slate-600 sm:text-lg">
               {t("pricing.addonsSubtitle")}
@@ -605,163 +721,6 @@ export default function Plans() {
               </Link>
             </div>
           </motion.div>
-        </section>
-
-        {/* Platform subscription packages */}
-        <section
-          id="platform-packages"
-          className="mx-auto mt-28 max-w-6xl scroll-mt-28"
-        >
-          <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/85 px-4 py-1.5 text-sm font-black text-indigo-700 shadow-lg shadow-indigo-100/60">
-              <Globe size={14} aria-hidden="true" />
-              {t("pricing.platformBadge")}
-            </div>
-            <h2 className="mt-5 text-3xl font-black tracking-[-0.04em] text-slate-900 sm:text-4xl">
-              {t("pricing.platformTitle")}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-base font-semibold leading-7 text-slate-600">
-              {t("pricing.platformSubtitle")}
-            </p>
-          </motion.div>
-
-          <div className="mt-12 grid gap-7 lg:grid-cols-3">
-            {packages.map((plan, index) => {
-              const isLoading =
-                plan.checkoutPlan != null && loadingPlan === plan.checkoutPlan;
-              const websiteAddonChecked = Boolean(
-                plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
-              );
-
-              return (
-                <motion.article
-                  key={plan.type}
-                  {...fadeUp}
-                  transition={{
-                    duration: 0.55,
-                    delay: reduceMotion ? 0 : 0.06 + index * 0.07,
-                    ease: [0.22, 1, 0.36, 1],
-                  }}
-                  className={`relative overflow-hidden rounded-[2.25rem] border p-3 backdrop-blur-xl transition duration-300 hover:-translate-y-2 ${
-                    plan.highlighted
-                      ? "border-indigo-200 bg-gradient-to-br from-teal-100/80 via-violet-100 to-sky-100 shadow-[0_30px_100px_rgba(79,70,229,0.26)] lg:scale-[1.02]"
-                      : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.12)]"
-                  }`}
-                >
-                  {plan.highlighted && (
-                    <div className="absolute start-6 top-6 z-20 rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-indigo-700 shadow-xl">
-                      {t("pricing.mostPopular")}
-                    </div>
-                  )}
-
-                  <div
-                    className={`relative flex h-full flex-col rounded-[1.85rem] border p-6 sm:p-7 ${
-                      plan.highlighted
-                        ? "border-white/50 bg-white/55"
-                        : "border-slate-100 bg-white"
-                    }`}
-                  >
-                    <div className="relative flex flex-1 flex-col text-start">
-                      <div className="mb-5 inline-flex rounded-full bg-indigo-50 px-3.5 py-1.5 text-sm font-black text-indigo-700">
-                        {plan.badge}
-                      </div>
-
-                      <h3 className="text-2xl font-black tracking-[-0.03em] sm:text-3xl">
-                        {plan.name}
-                      </h3>
-
-                      <p className="mt-3 text-sm font-semibold leading-6 text-slate-600 sm:text-base">
-                        {plan.description}
-                      </p>
-
-                      <div className="mt-7 flex items-end gap-2">
-                        <span className="text-5xl font-black tracking-[-0.05em] sm:text-6xl">
-                          {formatIls(plan.price)}
-                        </span>
-                        <span className="pb-2 text-sm font-black text-slate-500">
-                          {plan.pricePeriod}
-                        </span>
-                      </div>
-
-                      <div className="mt-4 rounded-2xl bg-indigo-50 px-4 py-3 text-sm font-black text-indigo-700">
-                        {plan.note}
-                      </div>
-
-                      <div className="mt-6 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-
-                      <ul className="mt-6 grid gap-2.5">
-                        {plan.features.map((feature) => (
-                          <li key={feature} className="flex items-start gap-2.5">
-                            <span className="mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-gradient-to-br from-violet-500 via-indigo-500 to-cyan-500 text-[10px] text-white">
-                              ✓
-                            </span>
-                            <span className="text-sm font-bold leading-5 text-slate-600">
-                              {feature}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      {plan.allowsWebsiteAddon && (
-                        <label
-                          className={`mt-6 flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
-                            websiteAddonChecked
-                              ? "border-indigo-300 bg-indigo-50/80 shadow-sm"
-                              : "border-slate-200 bg-slate-50/70 hover:border-indigo-200"
-                          }`}
-                        >
-                          <input
-                            type="checkbox"
-                            checked={websiteAddonChecked}
-                            onChange={() => toggleWebsiteAddon(plan.type)}
-                            className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                          />
-                          <span className="min-w-0">
-                            <span className="block text-sm font-black leading-5 text-slate-900">
-                              {websiteAddonLabel}
-                            </span>
-                            <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
-                              {websiteAddonHint}
-                            </span>
-                          </span>
-                        </label>
-                      )}
-
-                      {websiteAddonChecked && (
-                        <p className="mt-3 text-sm font-black text-indigo-700">
-                          {t("pricing.websiteAddonSelectedNote", {
-                            packagePrice: formatIls(plan.price),
-                            period: plan.pricePeriod,
-                            websitePrice: formatIls(WEBSITE_ADDON.price),
-                          })}
-                        </p>
-                      )}
-
-                      <button
-                        type="button"
-                        onClick={() => handleCheckout(plan)}
-                        disabled={isLoading}
-                        className={`group mt-auto inline-flex w-full items-center justify-center rounded-full px-6 py-3.5 text-sm font-black shadow-xl transition duration-300 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70 sm:text-base ${
-                          plan.allowsWebsiteAddon ? "mt-6" : "mt-8"
-                        } ${
-                          plan.highlighted
-                            ? "bg-slate-900 text-white hover:bg-slate-800"
-                            : "border border-violet-200 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 text-slate-900"
-                        }`}
-                      >
-                        {isLoading ? t("pricing.processing") : plan.button}
-                        {!isLoading && (
-                          <span className="ms-2 transition group-hover:translate-x-1 rtl:group-hover:-translate-x-1">
-                            →
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </motion.article>
-              );
-            })}
-          </div>
         </section>
       </main>
 
