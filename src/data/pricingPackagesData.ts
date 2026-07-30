@@ -29,8 +29,8 @@ export const WEBSITE_ADDON = {
   price: 550,
   labelHe: "תוספת אתר ₪550 חד־פעמי — בניית אתר עצמאית",
   labelEn: "Website add-on ₪550 one-time — self-serve website build",
-  hintHe: "תבניות, בנייה עם AI ועורך ויזואלי — חד־פעמי, לא כלול בחבילה",
-  hintEn: "Templates, AI build and visual editor — one-time, not included in the package",
+  hintHe: "תבניות ועורך ויזואלי, מקושר ל-CRM — חד־פעמי, לא כלול בחבילה",
+  hintEn: "Templates and visual editor, linked to CRM — one-time, not included in the package",
 } as const;
 
 export const PRICING_PACKAGES: PricingPackage[] = [
@@ -47,9 +47,9 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     badgeHe: "בניה עצמאית",
     badgeEn: "Self-serve",
     descriptionHe:
-      "בונים אתר מקצועי לבד — מתבנית או עם AI — מפרסמים ומתחילים לקבל פניות.",
+      "בונים אתר מקצועי לבד מתבנית — מפרסמים, מקבלים פניות, והכול מקושר ל-CRM.",
     descriptionEn:
-      "Build a professional site yourself — from a template or with AI — publish and start getting inquiries.",
+      "Build a professional site yourself from a template — publish, get inquiries, and everything links to the CRM.",
     noteHe: "₪50 לחודש בממוצע · ללא התחייבות לחבילה העסקית המלאה",
     noteEn: "About ₪50/month · no full business plan required",
     buttonHe: "התחילו עם אתר",
@@ -57,11 +57,10 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     featuresHe: [
       "בונה אתרים עם עורך ויזואלי מלא",
       "מאות תבניות מוכנות לענפים שונים",
-      "בנייה עם AI לפי שאלון קצר",
       "עמודים, סקשנים, גלריות וטפסים",
       "התאמה למובייל, טאבלט ודסקטופ",
       "פרסום לכתובת BizUply או דומיין שלכם",
-      "טופס לידים מהאתר",
+      "טופס לידים מהאתר מקושר ל-CRM",
       "כלי נגישות מובנים",
       "SEO בסיסי לעמודים",
       "עריכה עצמאית בכל זמן",
@@ -69,11 +68,10 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     featuresEn: [
       "Full visual website builder",
       "Hundreds of ready-made industry templates",
-      "AI site build from a short questionnaire",
       "Pages, sections, galleries, and forms",
       "Mobile, tablet, and desktop responsive",
       "Publish to BizUply URL or your domain",
-      "Lead form from the site",
+      "Site lead form linked to CRM",
       "Built-in accessibility tools",
       "Basic page SEO",
       "Edit anytime on your own",
@@ -151,7 +149,6 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     featuresHe: [
       "הכול מהחבילה העסקית החודשית",
       "חיסכון שנתי משמעותי",
-      "עדיפות בתמיכה וליווי",
       "גישה מלאה לכל המודולים העסקיים",
       "CRM + תורים + שיתופים + AI",
       "אוטומציות והתראות ללא הגבלה",
@@ -162,7 +159,6 @@ export const PRICING_PACKAGES: PricingPackage[] = [
     featuresEn: [
       "Everything in the Business monthly package",
       "Meaningful yearly savings",
-      "Priority support",
       "Full access to all business modules",
       "CRM + appointments + collaborations + AI",
       "Automations and alerts without limits",

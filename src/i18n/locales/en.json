@@ -782,7 +782,7 @@
     "alertUserNotLoaded": "User data is not loaded yet. Sign in or register to continue to checkout.",
     "alertCheckoutFailed": "Failed to start checkout",
     "alertGenericError": "Error, please try again.",
-    "websiteContactMessage": "Hi, I’d like to start with the Website-only package at ₪600/year (self-serve from template / AI).",
+    "websiteContactMessage": "Hi, I’d like to start with the Website-only package at ₪600/year (self-serve from template, linked to CRM).",
     "packageWithWebsiteContactMessage": "Hi, I’d like to join {{package}} at {{price}}{{period}}, including the website add-on {{websitePrice}} one-time (self-serve website build).",
     "websiteAddonSelectedNote": "{{packagePrice}}{{period}} + website add-on {{websitePrice}} one-time",
     "websiteAddonStripeNote": "{{packagePrice}}{{period}} + website {{websitePrice}} one-time (in Stripe)",

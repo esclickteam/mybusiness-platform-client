@@ -129,11 +129,25 @@ export default function Plans() {
     }));
   };
 
+  const goToBusinessRegister = (plan, wantsWebsiteAddon) => {
+    const planKey = plan.checkoutPlan || plan.type;
+    const params = new URLSearchParams({ plan: planKey });
+    if (wantsWebsiteAddon) params.set("websiteAddon", "1");
+    navigate(`/register?${params.toString()}`);
+  };
+
   const handleCheckout = async (plan) => {
     const wantsWebsiteAddon = Boolean(
       plan.allowsWebsiteAddon && websiteAddonByPlan[plan.type]
     );
 
+    // Guests: business registration (fixed as בעל עסק) → Stripe → account only after payment
+    if (!userId) {
+      goToBusinessRegister(plan, wantsWebsiteAddon);
+      return;
+    }
+
+    // Logged-in: website-only has no subscription checkout plan
     if (!plan.checkoutPlan) {
       navigate("/contact", {
         state: {
@@ -145,12 +159,6 @@ export default function Plans() {
 
     try {
       setLoadingPlan(plan.checkoutPlan);
-
-      if (!userId) {
-        alert(t("pricing.alertUserNotLoaded"));
-        setLoadingPlan(null);
-        return;
-      }
 
       const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
         method: "POST",
@@ -486,12 +494,6 @@ export default function Plans() {
                       : "border-white/80 bg-white/75 shadow-[0_24px_80px_rgba(79,70,229,0.12)]"
                   }`}
                 >
-                  {plan.highlighted && (
-                    <div className="absolute start-6 top-6 z-20 rounded-full bg-white px-3.5 py-1.5 text-[11px] font-black uppercase tracking-wide text-indigo-700 shadow-xl">
-                      {t("pricing.mostPopular")}
-                    </div>
-                  )}
-
                   <div
                     className={`relative flex h-full flex-col rounded-[1.85rem] border p-6 sm:p-7 ${
                       plan.highlighted
