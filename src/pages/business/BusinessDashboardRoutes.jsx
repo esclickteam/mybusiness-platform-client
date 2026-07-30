@@ -111,6 +111,9 @@ const WhatsAppAutomationsTab = lazy(() =>
 const WhatsAppHistoryTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppHistoryTab")
 );
+const WhatsAppInboxTab = lazy(() =>
+  import("./dashboardPages/whatsapp/WhatsAppInboxTab")
+);
 const WhatsAppSettingsTab = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppSettingsTab")
 );
@@ -413,6 +416,7 @@ const BusinessDashboardRoutes = () => {
             <Route path="templates" element={<WhatsAppTemplatesTab />} />
             <Route path="lists" element={<WhatsAppListsTab />} />
             <Route path="automations" element={<WhatsAppAutomationsTab />} />
+            <Route path="inbox" element={<WhatsAppInboxTab />} />
             <Route path="history" element={<WhatsAppHistoryTab />} />
             <Route path="settings" element={<WhatsAppSettingsTab />} />
             <Route path="*" element={<Navigate to="compose" replace />} />

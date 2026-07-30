@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import {
   CheckCircle2,
   Loader2,
-  Plus,
+  PlugZap,
   Search,
   Send,
   Users,
@@ -30,15 +30,30 @@ import {
 } from "../../../../styles/bizuplyUi";
 
 type OutletCtx = { businessId: string | null };
+type AudienceType = "selected_clients" | "mailing_list";
 
-type AudienceType = "all_clients" | "selected_clients" | "mailing_list";
-
-function renderPreview(body: string, name = "ישראל ישראלי") {
-  return String(body || "")
-    .replace(/\{\{\s*name\s*\}\}/gi, name)
-    .replace(/\{\{\s*date\s*\}\}/gi, "30/07/2026")
-    .replace(/\{\{\s*time\s*\}\}/gi, "10:00")
-    .replace(/\{\{\s*service\s*\}\}/gi, "טיפול");
+function renderPreview(
+  body: string,
+  variables: Record<string, string>,
+  bindings: string[] = [],
+  fallbackName = ""
+) {
+  return String(body || "").replace(
+    /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g,
+    (_, key) => {
+      if (/^\d+$/.test(key)) {
+        const idx = Number(key) - 1;
+        const bound = bindings[idx];
+        if (bound && variables[bound]) return variables[bound];
+        if (variables[key]) return variables[key];
+        if (key === "1" && (variables.name || fallbackName)) {
+          return variables.name || fallbackName;
+        }
+        return `{{${key}}}`;
+      }
+      return variables[key] || `{{${key}}}`;
+    }
+  );
 }
 
 export default function WhatsAppComposeTab() {
@@ -56,9 +71,14 @@ export default function WhatsAppComposeTab() {
 
   const [templateId, setTemplateId] = useState("");
   const [campaignName, setCampaignName] = useState("");
-  const [audienceType, setAudienceType] = useState<AudienceType>("all_clients");
+  const [audienceType, setAudienceType] =
+    useState<AudienceType>("selected_clients");
   const [selectedClientIds, setSelectedClientIds] = useState<string[]>([]);
   const [mailingListId, setMailingListId] = useState("");
+  const [variableValues, setVariableValues] = useState<Record<string, string>>(
+    {}
+  );
+  const [consentConfirmed, setConsentConfirmed] = useState(false);
 
   useEffect(() => {
     if (!businessId) return;
@@ -69,7 +89,7 @@ export default function WhatsAppComposeTab() {
         setLoading(true);
         const [status, tpls, ls, people] = await Promise.all([
           getWhatsAppStatus(businessId),
-          listWhatsAppTemplates(businessId),
+          listWhatsAppTemplates(businessId, { approvedOnly: true }),
           listWhatsAppLists(businessId),
           listWhatsAppRecipients(businessId),
         ]);
@@ -100,6 +120,55 @@ export default function WhatsAppComposeTab() {
   );
 
   const body = selectedTemplate?.body || "";
+  const variableKeys = selectedTemplate?.variables || [];
+
+  useEffect(() => {
+    if (!selectedTemplate) {
+      setVariableValues({});
+      return;
+    }
+    const next: Record<string, string> = {};
+    for (const key of selectedTemplate.variables || []) {
+      next[key] = selectedTemplate.exampleValues?.[key] || "";
+    }
+    setVariableValues(next);
+  }, [selectedTemplate?._id]);
+
+  const selectedRecipient = useMemo(() => {
+    if (audienceType !== "selected_clients" || selectedClientIds.length !== 1) {
+      return null;
+    }
+    return recipients.find((r) => r.id === selectedClientIds[0]) || null;
+  }, [audienceType, selectedClientIds, recipients]);
+
+  const previewBody = useMemo(() => {
+    const vars = {
+      ...variableValues,
+      name: selectedRecipient?.name || variableValues["1"] || "",
+    };
+    return renderPreview(
+      body,
+      vars,
+      selectedTemplate?.variableBindings || [],
+      selectedRecipient?.name || ""
+    );
+  }, [body, variableValues, selectedTemplate, selectedRecipient]);
+
+  const missingVariables = useMemo(() => {
+    return variableKeys.filter((key) => {
+      if (variableValues[key]?.trim()) return false;
+      // {{1}} can come from selected recipient name when bound to name
+      const idx = Number(key) - 1;
+      const binding = selectedTemplate?.variableBindings?.[idx];
+      if (
+        (binding === "name" || key === "1") &&
+        selectedRecipient?.name
+      ) {
+        return false;
+      }
+      return true;
+    });
+  }, [variableKeys, variableValues, selectedTemplate, selectedRecipient]);
 
   const filteredRecipients = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -113,7 +182,6 @@ export default function WhatsAppComposeTab() {
   }, [query, recipients]);
 
   const estimatedCount = useMemo(() => {
-    if (audienceType === "all_clients") return recipients.length;
     if (audienceType === "selected_clients") return selectedClientIds.length;
     if (audienceType === "mailing_list") {
       return (
@@ -123,13 +191,7 @@ export default function WhatsAppComposeTab() {
       );
     }
     return 0;
-  }, [
-    audienceType,
-    recipients.length,
-    selectedClientIds.length,
-    lists,
-    mailingListId,
-  ]);
+  }, [audienceType, selectedClientIds.length, lists, mailingListId]);
 
   const toggleClient = (id: string) => {
     setSelectedClientIds((prev) =>
@@ -139,8 +201,24 @@ export default function WhatsAppComposeTab() {
 
   const handleSend = async () => {
     if (!businessId) return;
-    if (!templateId || !body.trim()) {
-      toast.error(t("whatsapp.compose.emptyBody"));
+    if (!connection?.connected) {
+      toast.error(t("whatsapp.compose.notConnected"));
+      return;
+    }
+    if (!templateId || !selectedTemplate) {
+      toast.error(t("whatsapp.compose.noTemplatesYet"));
+      return;
+    }
+    if (selectedTemplate.metaStatus !== "APPROVED") {
+      toast.error(t("whatsapp.compose.templateNotApproved"));
+      return;
+    }
+    if (missingVariables.length) {
+      toast.error(
+        t("whatsapp.compose.missingVariables", {
+          vars: missingVariables.map((v) => `{{${v}}}`).join(", "),
+        })
+      );
       return;
     }
     if (audienceType === "selected_clients" && !selectedClientIds.length) {
@@ -151,8 +229,8 @@ export default function WhatsAppComposeTab() {
       toast.error(t("whatsapp.compose.noList"));
       return;
     }
-    if (!connection?.connected) {
-      toast.error(t("whatsapp.compose.notConnected"));
+    if (!consentConfirmed) {
+      toast.error(t("whatsapp.compose.consentRequired"));
       return;
     }
 
@@ -166,7 +244,18 @@ export default function WhatsAppComposeTab() {
           audienceType === "selected_clients" ? selectedClientIds : undefined,
         mailingListId:
           audienceType === "mailing_list" ? mailingListId : undefined,
+        variables: variableValues,
+        consentConfirmed: true,
       });
+
+      if ((campaign?.stats?.sent ?? 0) < 1) {
+        toast.error(
+          t("whatsapp.compose.sendFailedStats", {
+            failed: campaign?.stats?.failed ?? 0,
+          })
+        );
+        return;
+      }
 
       toast.success(
         t("whatsapp.compose.sendSuccess", {
@@ -198,14 +287,24 @@ export default function WhatsAppComposeTab() {
     <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
       <div className="space-y-4">
         {!connection?.connected && (
-          <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900">
-            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-            <div>
-              <p>{t("whatsapp.compose.notConnectedTitle")}</p>
-              <p className="mt-1 font-medium text-amber-800">
-                {t("whatsapp.compose.notConnectedHint")}
-              </p>
+          <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p>{t("whatsapp.compose.notConnectedTitle")}</p>
+                <p className="mt-1 font-medium text-amber-800">
+                  {t("whatsapp.compose.notConnectedHint")}
+                </p>
+              </div>
             </div>
+            <button
+              type="button"
+              className={btnPrimary}
+              onClick={() => navigate("../settings")}
+            >
+              <PlugZap className="h-4 w-4" />
+              {t("whatsapp.compose.connectCta")}
+            </button>
           </div>
         )}
 
@@ -230,53 +329,65 @@ export default function WhatsAppComposeTab() {
               />
             </label>
 
-            <div className="flex flex-wrap items-end gap-2">
-              <label className="grid min-w-[220px] flex-1 gap-1.5">
-                <span className="text-xs font-black text-slate-600">
-                  {t("whatsapp.compose.selectTemplate")}
-                </span>
-                <select
-                  className={inputBase}
-                  value={templateId}
-                  onChange={(e) => setTemplateId(e.target.value)}
-                >
-                  {templates.length === 0 && (
-                    <option value="">
-                      {t("whatsapp.compose.noTemplatesYet")}
-                    </option>
-                  )}
-                  {templates.map((tpl) => (
-                    <option key={tpl._id} value={tpl._id}>
-                      {tpl.name}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button
-                type="button"
-                className={btnSecondary}
-                onClick={() => navigate("../templates?create=1")}
+            <label className="grid gap-1.5">
+              <span className="text-xs font-black text-slate-600">
+                {t("whatsapp.compose.selectTemplate")}
+              </span>
+              <select
+                className={inputBase}
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
               >
-                <Plus className="h-4 w-4" />
-                {t("whatsapp.compose.createTemplate")}
-              </button>
-            </div>
+                {templates.length === 0 && (
+                  <option value="">
+                    {t("whatsapp.compose.noTemplatesYet")}
+                  </option>
+                )}
+                {templates.map((tpl) => (
+                  <option key={tpl._id} value={tpl._id}>
+                    {tpl.name} · {tpl.language} · {tpl.metaStatus || "APPROVED"}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            {variableKeys.length > 0 && (
+              <div className="grid gap-2 rounded-xl border border-slate-200 p-3">
+                <p className="text-xs font-black text-slate-600">
+                  {t("whatsapp.compose.fillVariables")}
+                </p>
+                {variableKeys.map((key) => (
+                  <label key={key} className="grid gap-1">
+                    <span className="text-xs font-semibold text-slate-500" dir="ltr">
+                      {`{{${key}}}`}
+                    </span>
+                    <input
+                      className={inputBase}
+                      value={variableValues[key] || ""}
+                      onChange={(e) =>
+                        setVariableValues((prev) => ({
+                          ...prev,
+                          [key]: e.target.value,
+                        }))
+                      }
+                      placeholder={t("whatsapp.compose.variablePlaceholder", {
+                        n: key,
+                      })}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
 
             <div className="grid gap-1.5">
               <span className="text-xs font-black text-slate-600">
                 {t("whatsapp.compose.body")}
               </span>
               <div
-                className={`${inputBase} min-h-[160px] whitespace-pre-wrap py-3 text-slate-700`}
+                className={`${inputBase} min-h-[120px] whitespace-pre-wrap py-3 text-slate-700`}
               >
                 {body || t("whatsapp.compose.previewEmpty")}
               </div>
-              <span className="text-xs font-medium text-slate-400">
-                {t("whatsapp.compose.variablesHint")}{" "}
-                <span dir="ltr" className="font-bold text-slate-500">
-                  {"{{1}} {{2}} {{3}} {{4}}"}
-                </span>
-              </span>
             </div>
           </div>
         </section>
@@ -289,10 +400,9 @@ export default function WhatsAppComposeTab() {
             {t("whatsapp.compose.audienceSubtitle")}
           </p>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-3">
+          <div className="mt-4 grid gap-2 sm:grid-cols-2">
             {(
               [
-                ["all_clients", "whatsapp.compose.audienceAll"],
                 ["selected_clients", "whatsapp.compose.audienceSelected"],
                 ["mailing_list", "whatsapp.compose.audienceList"],
               ] as const
@@ -400,8 +510,8 @@ export default function WhatsAppComposeTab() {
             </h3>
           </div>
           <div className="bg-[#ECE5DD] p-4">
-            <div className="ms-auto max-w-[85%] rounded-2xl rounded-ee-md bg-[#DCF8C6] px-3 py-2 text-sm font-medium leading-relaxed text-slate-800 shadow-sm">
-              {renderPreview(body) || t("whatsapp.compose.previewEmpty")}
+            <div className="ms-auto max-w-[85%] rounded-2xl rounded-ee-md bg-[#DCF8C6] px-3 py-2 text-sm font-medium leading-relaxed text-slate-800 shadow-sm whitespace-pre-wrap">
+              {previewBody || t("whatsapp.compose.previewEmpty")}
             </div>
           </div>
         </section>
@@ -421,9 +531,26 @@ export default function WhatsAppComposeTab() {
             </div>
           </div>
 
+          <label className="mt-4 flex items-start gap-2 text-xs font-semibold text-slate-600">
+            <input
+              type="checkbox"
+              className="mt-0.5 accent-emerald-600"
+              checked={consentConfirmed}
+              onChange={(e) => setConsentConfirmed(e.target.checked)}
+            />
+            <span>{t("whatsapp.compose.consentLabel")}</span>
+          </label>
+
           <button
             type="button"
-            disabled={sending || estimatedCount === 0 || !templateId}
+            disabled={
+              sending ||
+              !connection?.connected ||
+              estimatedCount === 0 ||
+              !templateId ||
+              !consentConfirmed ||
+              missingVariables.length > 0
+            }
             onClick={handleSend}
             className={`${btnPrimary} mt-4 w-full`}
           >
@@ -435,6 +562,14 @@ export default function WhatsAppComposeTab() {
             {sending
               ? t("whatsapp.compose.sending")
               : t("whatsapp.compose.sendCta")}
+          </button>
+
+          <button
+            type="button"
+            className={`${btnSecondary} mt-2 w-full`}
+            onClick={() => navigate("../templates")}
+          >
+            {t("whatsapp.compose.manageTemplates")}
           </button>
         </section>
       </aside>

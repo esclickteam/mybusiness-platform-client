@@ -5,13 +5,27 @@ export type WhatsAppConnection = {
   status: "connected" | "disconnected" | "error";
   phoneNumberId: string;
   wabaId: string;
+  wabaName?: string;
   displayPhoneNumber: string;
   verifiedName: string;
-  accessTokenMasked: string;
+  metaBusinessId?: string;
+  connectionSource?: string;
+  webhookSubscribed?: boolean;
   hasAccessToken: boolean;
   usingEnvFallback: boolean;
   lastError: string;
   connectedAt: string | null;
+  signupReady?: boolean;
+  embeddedSignup?: WhatsAppEmbeddedSignupConfig;
+};
+
+export type WhatsAppEmbeddedSignupConfig = {
+  ready: boolean;
+  appId: string;
+  configId: string;
+  graphVersion: string;
+  encryptionReady?: boolean;
+  permissions?: string[];
 };
 
 export type WhatsAppHeaderType =
@@ -31,6 +45,16 @@ export type WhatsAppTemplateButton = {
   phoneNumber?: string;
 };
 
+export type WhatsAppMetaStatus =
+  | ""
+  | "APPROVED"
+  | "PENDING"
+  | "REJECTED"
+  | "DISABLED"
+  | "PAUSED"
+  | "IN_APPEAL"
+  | "LOCAL";
+
 export type WhatsAppTemplate = {
   _id: string;
   name: string;
@@ -49,12 +73,15 @@ export type WhatsAppTemplate = {
   body: string;
   footer?: string;
   variables: string[];
-  /** Ordered CRM field bindings for {{1}}, {{2}}, … */
   variableBindings?: string[];
-  /** Sample values for Meta review, keyed by placeholder number */
   exampleValues?: Record<string, string>;
   buttons?: WhatsAppTemplateButton[];
   metaTemplateName?: string;
+  metaTemplateId?: string;
+  metaStatus?: WhatsAppMetaStatus;
+  metaCategory?: string;
+  source?: "local" | "meta";
+  lastSyncedAt?: string | null;
   status: "draft" | "active" | "archived";
   isSystem?: boolean;
   createdAt?: string;
@@ -109,6 +136,7 @@ export type WhatsAppCampaign = {
     status: string;
     error?: string;
     sentAt?: string;
+    providerMessageId?: string;
   }>;
   createdAt?: string;
   completedAt?: string;
@@ -151,11 +179,33 @@ export type WhatsAppMessageLog = {
   _id: string;
   recipientName?: string;
   recipientPhone: string;
+  conversationPhone?: string;
   body?: string;
+  templateName?: string;
+  templateLanguage?: string;
+  direction?: "outbound" | "inbound";
   status: string;
   source?: string;
   error?: string;
+  providerMessageId?: string;
+  leadId?: string | null;
+  crmClientId?: string | null;
+  sentAt?: string | null;
+  deliveredAt?: string | null;
+  readAt?: string | null;
+  failedAt?: string | null;
   createdAt?: string;
+};
+
+export type WhatsAppConversation = {
+  phone: string;
+  recipientName?: string;
+  lastMessageAt?: string;
+  lastBody?: string;
+  lastDirection?: string;
+  lastStatus?: string;
+  leadId?: string | null;
+  crmClientId?: string | null;
 };
 
 export type WhatsAppOverview = {
@@ -188,17 +238,24 @@ export async function getWhatsAppStatus(businessId: string) {
   return data as { success: boolean } & WhatsAppConnection;
 }
 
-export async function saveWhatsAppConnection(
+export async function getWhatsAppEmbeddedSignupConfig(businessId: string) {
+  const { data } = await API.get(
+    "/whatsapp/embedded-signup/config",
+    withBusiness(businessId)
+  );
+  return data as { success: boolean } & WhatsAppEmbeddedSignupConfig;
+}
+
+export async function completeWhatsAppEmbeddedSignup(
   businessId: string,
   payload: {
-    phoneNumberId?: string;
-    wabaId?: string;
-    accessToken?: string;
-    displayPhoneNumber?: string;
-    verifiedName?: string;
+    code: string;
+    phoneNumberId: string;
+    wabaId: string;
+    metaBusinessId?: string;
   }
 ) {
-  const { data } = await API.put("/whatsapp/connection", {
+  const { data } = await API.post("/whatsapp/embedded-signup/complete", {
     businessId,
     ...payload,
   });
@@ -212,12 +269,28 @@ export async function disconnectWhatsApp(businessId: string) {
   return data as { success: boolean } & WhatsAppConnection;
 }
 
-export async function listWhatsAppTemplates(businessId: string) {
-  const { data } = await API.get(
-    "/whatsapp/templates",
-    withBusiness(businessId)
-  );
+export async function listWhatsAppTemplates(
+  businessId: string,
+  options?: { approvedOnly?: boolean; includeArchived?: boolean }
+) {
+  const { data } = await API.get("/whatsapp/templates", {
+    params: {
+      businessId,
+      ...(options?.approvedOnly ? { approvedOnly: "1" } : {}),
+      ...(options?.includeArchived ? { includeArchived: "1" } : {}),
+    },
+  });
   return (data?.templates || []) as WhatsAppTemplate[];
+}
+
+export async function syncWhatsAppTemplates(businessId: string) {
+  const { data } = await API.post("/whatsapp/templates/sync", { businessId });
+  return data as {
+    success: boolean;
+    synced: number;
+    totalFromMeta: number;
+    templates: WhatsAppTemplate[];
+  };
 }
 
 export async function createWhatsAppTemplate(
@@ -250,10 +323,7 @@ export async function deleteWhatsAppTemplate(businessId: string, id: string) {
   return data;
 }
 
-export async function listWhatsAppRecipients(
-  businessId: string,
-  q = ""
-) {
+export async function listWhatsAppRecipients(businessId: string, q = "") {
   const { data } = await API.get("/whatsapp/recipients", {
     params: { businessId, q },
   });
@@ -324,16 +394,12 @@ export async function sendWhatsAppCampaign(
   payload: {
     name?: string;
     templateId?: string;
-    body?: string;
-    audienceType:
-      | "all_clients"
-      | "selected_clients"
-      | "mailing_list"
-      | "manual";
+    audienceType: "selected_clients" | "mailing_list" | "manual";
     clientIds?: string[];
     mailingListId?: string;
     manualRecipients?: Array<{ name?: string; phone: string }>;
     variables?: Record<string, string>;
+    consentConfirmed: boolean;
   }
 ) {
   const { data } = await API.post("/whatsapp/campaigns/send", {
@@ -416,14 +482,58 @@ export async function listWhatsAppLogs(businessId: string, limit = 50) {
   return (data?.logs || []) as WhatsAppMessageLog[];
 }
 
+export async function listWhatsAppConversations(businessId: string) {
+  const { data } = await API.get("/whatsapp/conversations", {
+    params: { businessId },
+  });
+  return (data?.conversations || []) as WhatsAppConversation[];
+}
+
+export async function listWhatsAppConversationMessages(
+  businessId: string,
+  phone: string
+) {
+  const { data } = await API.get(
+    `/whatsapp/conversations/${encodeURIComponent(phone)}`,
+    { params: { businessId } }
+  );
+  return (data?.messages || []) as WhatsAppMessageLog[];
+}
+
+export async function replyWhatsAppConversation(
+  businessId: string,
+  phone: string,
+  payload: { body: string; leadId?: string }
+) {
+  const { data } = await API.post(
+    `/whatsapp/conversations/${encodeURIComponent(phone)}/reply`,
+    { businessId, ...payload }
+  );
+  return data as {
+    success: boolean;
+    log: WhatsAppMessageLog;
+    providerMessageId?: string;
+  };
+}
+
+export async function listLeadWhatsAppMessages(
+  businessId: string,
+  leadId: string
+) {
+  const { data } = await API.get(`/whatsapp/leads/${leadId}/messages`, {
+    params: { businessId },
+  });
+  return (data?.messages || []) as WhatsAppMessageLog[];
+}
+
 export async function sendWhatsAppTest(
   businessId: string,
   payload: {
     phone: string;
-    body: string;
     name?: string;
-    templateId?: string;
+    templateId: string;
     variables?: Record<string, string>;
+    consentConfirmed: boolean;
   }
 ) {
   const { data } = await API.post("/whatsapp/send-test", {

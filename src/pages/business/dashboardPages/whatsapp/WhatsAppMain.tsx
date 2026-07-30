@@ -9,6 +9,7 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   History,
+  Inbox,
   ListChecks,
   MessageCircle,
   Send,
@@ -31,6 +32,7 @@ const tabs: WhatsAppTab[] = [
   { path: "templates", labelKey: "whatsapp.nav.templates", icon: MessageCircle },
   { path: "lists", labelKey: "whatsapp.nav.lists", icon: ListChecks },
   { path: "automations", labelKey: "whatsapp.nav.automations", icon: Workflow },
+  { path: "inbox", labelKey: "whatsapp.nav.inbox", icon: Inbox },
   { path: "history", labelKey: "whatsapp.nav.history", icon: History },
   { path: "settings", labelKey: "whatsapp.nav.settings", icon: Settings2 },
 ];

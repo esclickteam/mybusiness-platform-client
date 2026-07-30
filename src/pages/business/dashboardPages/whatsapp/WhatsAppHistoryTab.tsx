@@ -14,7 +14,13 @@ import { cardBase } from "../../../../styles/bizuplyUi";
 type OutletCtx = { businessId: string | null };
 
 function statusClass(status: string) {
-  if (status === "sent" || status === "delivered" || status === "read" || status === "completed") {
+  if (
+    status === "sent" ||
+    status === "delivered" ||
+    status === "read" ||
+    status === "completed" ||
+    status === "received"
+  ) {
     return "bg-emerald-50 text-emerald-700";
   }
   if (status === "failed") return "bg-rose-50 text-rose-700";
@@ -153,20 +159,41 @@ export default function WhatsAppHistoryTab() {
                         defaultValue: log.status,
                       })}
                     </span>
+                    {log.direction && (
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-black text-slate-600">
+                        {t(`whatsapp.history.direction.${log.direction}`, {
+                          defaultValue: log.direction,
+                        })}
+                      </span>
+                    )}
                   </div>
-                  <p className="mt-1 line-clamp-2 text-sm font-medium text-slate-600">
-                    {log.body}
+                  <p className="mt-1 text-xs font-semibold text-slate-500" dir="ltr">
+                    {log.recipientPhone}
                   </p>
+                  <p className="mt-1 line-clamp-3 text-sm font-medium text-slate-600 whitespace-pre-wrap">
+                    {log.body || "—"}
+                  </p>
+                  {log.templateName && (
+                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                      {t("whatsapp.history.template")}: {log.templateName}
+                      {log.templateLanguage ? ` (${log.templateLanguage})` : ""}
+                    </p>
+                  )}
+                  {log.providerMessageId && (
+                    <p className="mt-1 break-all font-mono text-[11px] font-semibold text-slate-500" dir="ltr">
+                      Meta Message ID: {log.providerMessageId}
+                    </p>
+                  )}
                   {log.error && (
                     <p className="mt-1 text-xs font-semibold text-rose-600">
-                      {log.error}
+                      {t("whatsapp.history.failureReason")}: {log.error}
                     </p>
                   )}
                 </div>
                 <div className="text-xs font-semibold text-slate-400 sm:text-end">
                   <p>
-                    {log.createdAt
-                      ? new Date(log.createdAt).toLocaleString()
+                    {log.sentAt || log.createdAt
+                      ? new Date(log.sentAt || log.createdAt || "").toLocaleString()
                       : ""}
                   </p>
                   <p className="mt-1">

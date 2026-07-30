@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -6,16 +6,20 @@ import {
   CheckCircle2,
   Loader2,
   PlugZap,
+  RefreshCw,
   ShieldAlert,
   Unplug,
 } from "lucide-react";
 import {
+  completeWhatsAppEmbeddedSignup,
   disconnectWhatsApp,
   getWhatsAppStatus,
-  saveWhatsAppConnection,
+  listWhatsAppTemplates,
   sendWhatsAppTest,
   type WhatsAppConnection,
+  type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
+import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import {
   btnPrimary,
   btnSecondary,
@@ -25,21 +29,27 @@ import {
 
 type OutletCtx = { businessId: string | null };
 
+type SessionAssets = {
+  phoneNumberId: string;
+  wabaId: string;
+  metaBusinessId?: string;
+};
+
 export default function WhatsAppSettingsTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
+  const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
-  const [form, setForm] = useState({
-    phoneNumberId: "",
-    wabaId: "",
-    accessToken: "",
-    displayPhoneNumber: "",
-    verifiedName: "",
-  });
+  const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
+    []
+  );
   const [testPhone, setTestPhone] = useState("");
+  const [testTemplateId, setTestTemplateId] = useState("");
+  const [testConsent, setTestConsent] = useState(false);
+  const sessionRef = useRef<SessionAssets | null>(null);
 
   const load = async () => {
     if (!businessId) return;
@@ -47,13 +57,16 @@ export default function WhatsAppSettingsTab() {
     try {
       const status = await getWhatsAppStatus(businessId);
       setConnection(status);
-      setForm({
-        phoneNumberId: status.phoneNumberId || "",
-        wabaId: status.wabaId || "",
-        accessToken: "",
-        displayPhoneNumber: status.displayPhoneNumber || "",
-        verifiedName: status.verifiedName || "",
-      });
+      if (status.connected) {
+        const templates = await listWhatsAppTemplates(businessId, {
+          approvedOnly: true,
+        });
+        setApprovedTemplates(templates);
+        if (templates[0]?._id) setTestTemplateId(templates[0]._id);
+      } else {
+        setApprovedTemplates([]);
+        setTestTemplateId("");
+      }
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error || t("whatsapp.errors.loadSettings")
@@ -68,26 +81,123 @@ export default function WhatsAppSettingsTab() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
 
-  const handleSave = async () => {
-    if (!businessId) return;
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (
+        event.origin !== "https://www.facebook.com" &&
+        event.origin !== "https://web.facebook.com"
+      ) {
+        return;
+      }
+
+      try {
+        const data =
+          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if (data?.type !== "WA_EMBEDDED_SIGNUP") return;
+
+        if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA") {
+          const phoneNumberId = String(data?.data?.phone_number_id || "").trim();
+          const wabaId = String(data?.data?.waba_id || "").trim();
+          const metaBusinessId = String(data?.data?.business_id || "").trim();
+          if (phoneNumberId && wabaId) {
+            sessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
+          }
+        }
+      } catch {
+        // Ignore non-JSON postMessages from the popup.
+      }
+    };
+
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  const handleConnect = async () => {
+    if (!businessId || !connection?.embeddedSignup) return;
+
+    const { appId, configId, graphVersion, ready, encryptionReady } =
+      connection.embeddedSignup;
+
+    if (!ready || !appId || !configId) {
+      toast.error(t("whatsapp.settings.configMissing"));
+      return;
+    }
+    if (!encryptionReady) {
+      toast.error(t("whatsapp.settings.encryptionMissing"));
+      return;
+    }
+
     try {
-      setSaving(true);
-      const status = await saveWhatsAppConnection(businessId, {
-        phoneNumberId: form.phoneNumberId,
-        wabaId: form.wabaId,
-        accessToken: form.accessToken || undefined,
-        displayPhoneNumber: form.displayPhoneNumber,
-        verifiedName: form.verifiedName,
+      setConnecting(true);
+      sessionRef.current = null;
+      const FB = await loadFacebookSdk(appId, graphVersion || "v21.0");
+
+      await new Promise<void>((resolve, reject) => {
+        FB.login(
+          async (response) => {
+            try {
+              const code = response?.authResponse?.code;
+              if (!code) {
+                reject(
+                  new Error(
+                    t("whatsapp.settings.connectCancelled")
+                  )
+                );
+                return;
+              }
+
+              // Allow session postMessage to arrive.
+              await new Promise((r) => setTimeout(r, 400));
+              const assets = sessionRef.current;
+              if (!assets?.phoneNumberId || !assets?.wabaId) {
+                reject(new Error(t("whatsapp.settings.missingSessionAssets")));
+                return;
+              }
+
+              const status = await completeWhatsAppEmbeddedSignup(businessId, {
+                code,
+                phoneNumberId: assets.phoneNumberId,
+                wabaId: assets.wabaId,
+                metaBusinessId: assets.metaBusinessId,
+              });
+
+              if (!status.connected) {
+                reject(
+                  new Error(
+                    status.lastError || t("whatsapp.settings.connectFailed")
+                  )
+                );
+                return;
+              }
+
+              setConnection(status);
+              toast.success(t("whatsapp.settings.connectedSuccess"));
+              await load();
+              resolve();
+            } catch (error: any) {
+              reject(error);
+            }
+          },
+          {
+            config_id: configId,
+            response_type: "code",
+            override_default_response_type: true,
+            extras: {
+              setup: {},
+              featureType: "",
+              sessionInfoVersion: "3",
+            },
+          }
+        );
       });
-      setConnection(status);
-      setForm((prev) => ({ ...prev, accessToken: "" }));
-      toast.success(t("whatsapp.settings.saved"));
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.saveSettings")
+        error?.response?.data?.error ||
+          error?.message ||
+          t("whatsapp.errors.connectFailed")
       );
     } finally {
-      setSaving(false);
+      setConnecting(false);
     }
   };
 
@@ -98,13 +208,7 @@ export default function WhatsAppSettingsTab() {
       setSaving(true);
       const status = await disconnectWhatsApp(businessId);
       setConnection(status);
-      setForm({
-        phoneNumberId: "",
-        wabaId: "",
-        accessToken: "",
-        displayPhoneNumber: "",
-        verifiedName: "",
-      });
+      setApprovedTemplates([]);
       toast.success(t("whatsapp.settings.disconnected"));
     } catch (error: any) {
       toast.error(
@@ -120,14 +224,28 @@ export default function WhatsAppSettingsTab() {
       toast.error(t("whatsapp.settings.testPhoneRequired"));
       return;
     }
+    if (!testTemplateId) {
+      toast.error(t("whatsapp.settings.testTemplateRequired"));
+      return;
+    }
+    if (!testConsent) {
+      toast.error(t("whatsapp.settings.consentRequired"));
+      return;
+    }
     try {
       setTesting(true);
-      await sendWhatsAppTest(businessId, {
+      const result = await sendWhatsAppTest(businessId, {
         phone: testPhone.trim(),
         name: t("whatsapp.settings.testName"),
-        body: t("whatsapp.settings.testBody"),
+        templateId: testTemplateId,
+        consentConfirmed: true,
+        variables: { "1": t("whatsapp.settings.testName") },
       });
-      toast.success(t("whatsapp.settings.testSent"));
+      toast.success(
+        t("whatsapp.settings.testSent", {
+          id: result?.providerMessageId || "",
+        })
+      );
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error || t("whatsapp.errors.testFailed")
@@ -148,6 +266,8 @@ export default function WhatsAppSettingsTab() {
     );
   }
 
+  const connected = Boolean(connection?.connected);
+
   return (
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       <section className={`${cardBase} p-4 sm:p-5`}>
@@ -158,138 +278,146 @@ export default function WhatsAppSettingsTab() {
           {t("whatsapp.settings.subtitle")}
         </p>
 
-        <div className="mt-5 grid gap-3">
-          <label className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              Phone Number ID
-            </span>
-            <input
-              className={inputBase}
-              value={form.phoneNumberId}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, phoneNumberId: e.target.value }))
-              }
-              placeholder="123456789012345"
-            />
-          </label>
-          <label className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              WhatsApp Business Account ID
-            </span>
-            <input
-              className={inputBase}
-              value={form.wabaId}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, wabaId: e.target.value }))
-              }
-              placeholder="WABA ID"
-            />
-          </label>
-          <label className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              Access Token
-            </span>
-            <input
-              className={inputBase}
-              type="password"
-              value={form.accessToken}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, accessToken: e.target.value }))
-              }
-              placeholder={
-                connection?.hasAccessToken
-                  ? connection.accessTokenMasked || "••••••••"
-                  : t("whatsapp.settings.tokenPlaceholder")
-              }
-            />
-          </label>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <label className="grid gap-1.5">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.settings.displayPhone")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.displayPhoneNumber}
-                onChange={(e) =>
-                  setForm((prev) => ({
-                    ...prev,
-                    displayPhoneNumber: e.target.value,
-                  }))
-                }
-                placeholder="+972..."
-              />
-            </label>
-            <label className="grid gap-1.5">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.settings.verifiedName")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.verifiedName}
-                onChange={(e) =>
-                  setForm((prev) => ({ ...prev, verifiedName: e.target.value }))
-                }
-              />
-            </label>
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-wrap gap-2">
-          <button
-            type="button"
-            className={btnPrimary}
-            disabled={saving}
-            onClick={handleSave}
-          >
-            {saving ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : (
-              <PlugZap className="h-4 w-4" />
+        {!connected ? (
+          <div className="mt-6 space-y-4">
+            <p className="text-sm font-medium text-slate-600">
+              {t("whatsapp.settings.connectIntro")}
+            </p>
+            <button
+              type="button"
+              className={btnPrimary}
+              disabled={connecting}
+              onClick={handleConnect}
+            >
+              {connecting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <PlugZap className="h-4 w-4" />
+              )}
+              {connecting
+                ? t("whatsapp.settings.connecting")
+                : t("whatsapp.settings.connectCta")}
+            </button>
+            {!connection?.embeddedSignup?.ready && (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+                {t("whatsapp.settings.configMissing")}
+              </p>
             )}
-            {t("whatsapp.settings.save")}
-          </button>
-          <button
-            type="button"
-            className={btnSecondary}
-            disabled={saving}
-            onClick={handleDisconnect}
-          >
-            <Unplug className="h-4 w-4" />
-            {t("whatsapp.settings.disconnect")}
-          </button>
-        </div>
+            {connection?.embeddedSignup?.ready &&
+              !connection?.embeddedSignup?.encryptionReady && (
+                <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
+                  {t("whatsapp.settings.encryptionMissing")}
+                </p>
+              )}
+          </div>
+        ) : (
+          <div className="mt-5 space-y-3">
+            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                <p className="text-sm font-black text-emerald-800">
+                  {t("whatsapp.settings.connected")}
+                </p>
+              </div>
+              <dl className="mt-3 grid gap-2 text-sm">
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="font-semibold text-slate-500">
+                    {t("whatsapp.settings.accountName")}
+                  </dt>
+                  <dd className="font-bold text-slate-900">
+                    {connection?.verifiedName ||
+                      connection?.wabaName ||
+                      "—"}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="font-semibold text-slate-500">
+                    {t("whatsapp.settings.displayPhone")}
+                  </dt>
+                  <dd className="font-bold text-slate-900" dir="ltr">
+                    {connection?.displayPhoneNumber || "—"}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="font-semibold text-slate-500">WABA ID</dt>
+                  <dd className="font-mono text-xs font-bold text-slate-800" dir="ltr">
+                    {connection?.wabaId || "—"}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="font-semibold text-slate-500">
+                    Phone Number ID
+                  </dt>
+                  <dd className="font-mono text-xs font-bold text-slate-800" dir="ltr">
+                    {connection?.phoneNumberId || "—"}
+                  </dd>
+                </div>
+                <div className="flex flex-wrap justify-between gap-2">
+                  <dt className="font-semibold text-slate-500">
+                    {t("whatsapp.settings.connectedAt")}
+                  </dt>
+                  <dd className="font-bold text-slate-900">
+                    {connection?.connectedAt
+                      ? new Date(connection.connectedAt).toLocaleString()
+                      : "—"}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                className={btnPrimary}
+                disabled={connecting}
+                onClick={handleConnect}
+              >
+                {connecting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <RefreshCw className="h-4 w-4" />
+                )}
+                {t("whatsapp.settings.reconnect")}
+              </button>
+              <button
+                type="button"
+                className={btnSecondary}
+                disabled={saving}
+                onClick={handleDisconnect}
+              >
+                <Unplug className="h-4 w-4" />
+                {t("whatsapp.settings.disconnect")}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {connection?.lastError && (
+          <p className="mt-4 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
+            {connection.lastError}
+          </p>
+        )}
       </section>
 
       <div className="space-y-4">
         <section className={`${cardBase} p-4 sm:p-5`}>
           <div className="flex items-center gap-2">
-            {connection?.connected ? (
+            {connected ? (
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
             ) : (
               <ShieldAlert className="h-5 w-5 text-amber-600" />
             )}
             <h3 className="text-base font-black text-slate-900">
-              {connection?.connected
+              {connected
                 ? t("whatsapp.settings.connected")
                 : t("whatsapp.settings.disconnectedStatus")}
             </h3>
           </div>
           <p className="mt-2 text-sm font-medium text-slate-500">
-            {connection?.connected
+            {connected
               ? t("whatsapp.settings.connectedHint")
               : t("whatsapp.settings.disconnectedHint")}
           </p>
-          {connection?.lastError && (
-            <p className="mt-3 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
-              {connection.lastError}
-            </p>
-          )}
-          {connection?.usingEnvFallback && (
-            <p className="mt-3 rounded-xl border border-sky-100 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-700">
-              {t("whatsapp.settings.envFallback")}
-            </p>
-          )}
         </section>
 
         <section className={`${cardBase} p-4 sm:p-5`}>
@@ -299,16 +427,50 @@ export default function WhatsAppSettingsTab() {
           <p className="mt-1 text-sm font-medium text-slate-500">
             {t("whatsapp.settings.testSubtitle")}
           </p>
+          <select
+            className={`${inputBase} mt-3`}
+            value={testTemplateId}
+            disabled={!connected}
+            onChange={(e) => setTestTemplateId(e.target.value)}
+          >
+            {approvedTemplates.length === 0 && (
+              <option value="">
+                {t("whatsapp.settings.noApprovedTemplates")}
+              </option>
+            )}
+            {approvedTemplates.map((tpl) => (
+              <option key={tpl._id} value={tpl._id}>
+                {tpl.name} ({tpl.language}) · {tpl.metaStatus}
+              </option>
+            ))}
+          </select>
           <input
             className={`${inputBase} mt-3`}
             value={testPhone}
+            disabled={!connected}
             onChange={(e) => setTestPhone(e.target.value)}
             placeholder="050-0000000"
           />
+          <label className="mt-3 flex items-start gap-2 text-xs font-semibold text-slate-600">
+            <input
+              type="checkbox"
+              className="mt-0.5 accent-emerald-600"
+              checked={testConsent}
+              disabled={!connected}
+              onChange={(e) => setTestConsent(e.target.checked)}
+            />
+            <span>{t("whatsapp.settings.consentLabel")}</span>
+          </label>
           <button
             type="button"
             className={`${btnPrimary} mt-3 w-full`}
-            disabled={testing || !connection?.connected}
+            disabled={
+              testing ||
+              !connected ||
+              !testTemplateId ||
+              !testConsent ||
+              !testPhone.trim()
+            }
             onClick={handleTest}
           >
             {testing ? (
