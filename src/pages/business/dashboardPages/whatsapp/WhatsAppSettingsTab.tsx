@@ -13,6 +13,7 @@ import {
 import {
   completeWhatsAppEmbeddedSignup,
   disconnectWhatsApp,
+  getWhatsAppEmbeddedSignupConfig,
   getWhatsAppStatus,
   listWhatsAppTemplates,
   sendWhatsAppTest,
@@ -49,6 +50,8 @@ export default function WhatsAppSettingsTab() {
   const [testPhone, setTestPhone] = useState("");
   const [testTemplateId, setTestTemplateId] = useState("");
   const [testConsent, setTestConsent] = useState(false);
+  const [actionError, setActionError] = useState("");
+  const [actionInfo, setActionInfo] = useState("");
   const sessionRef = useRef<SessionAssets | null>(null);
 
   const load = async () => {
@@ -113,33 +116,57 @@ export default function WhatsAppSettingsTab() {
   }, []);
 
   const handleConnect = async () => {
+    setActionError("");
+    setActionInfo("Starting WhatsApp Embedded Signup…");
+    console.info("[whatsapp] Connect clicked", { businessId });
+
     if (!businessId) {
-      toast.error(t("whatsapp.errors.connectFailed"));
-      return;
-    }
-
-    const signup = connection?.embeddedSignup;
-    if (!signup) {
-      toast.error(t("whatsapp.settings.configMissing"));
-      return;
-    }
-
-    const { appId, configId, graphVersion, ready, encryptionReady } = signup;
-
-    if (!ready || !appId || !configId) {
-      toast.error(t("whatsapp.settings.configMissing"));
-      return;
-    }
-    if (!encryptionReady) {
-      toast.error(t("whatsapp.settings.encryptionMissing"));
+      const msg = "Missing business id. Refresh the page and try again.";
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
       return;
     }
 
     try {
       setConnecting(true);
-      sessionRef.current = null;
-      const FB = await loadFacebookSdk(appId, graphVersion || "v21.0");
 
+      // Fresh config from server — clearer than relying on cached status only.
+      const signup = await getWhatsAppEmbeddedSignupConfig(businessId);
+      console.info("[whatsapp] Embedded Signup config", {
+        ready: signup.ready,
+        hasAppId: Boolean(signup.appId),
+        hasConfigId: Boolean(signup.configId),
+        encryptionReady: signup.encryptionReady,
+        graphVersion: signup.graphVersion,
+      });
+
+      if (!signup.appId) {
+        throw new Error(
+          "META_APP_ID is missing on the server. Add it in Railway."
+        );
+      }
+      if (!signup.configId) {
+        throw new Error(
+          "WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID is missing on the server. Add the Configuration ID in Railway."
+        );
+      }
+      if (!signup.encryptionReady) {
+        throw new Error(t("whatsapp.settings.encryptionMissing"));
+      }
+      if (!signup.ready) {
+        throw new Error(t("whatsapp.settings.configMissing"));
+      }
+
+      setActionInfo("Loading Meta SDK…");
+      sessionRef.current = null;
+      const FB = await loadFacebookSdk(
+        signup.appId,
+        signup.graphVersion || "v21.0"
+      );
+      console.info("[whatsapp] Facebook SDK ready");
+
+      setActionInfo("Opening Meta login popup…");
       await new Promise<void>((resolve, reject) => {
         let settled = false;
         const settleReject = (error: Error) => {
@@ -156,6 +183,10 @@ export default function WhatsAppSettingsTab() {
         try {
           FB.login(
             async (response) => {
+              console.info("[whatsapp] FB.login response", {
+                hasCode: Boolean(response?.authResponse?.code),
+                status: response?.status,
+              });
               try {
                 const code = response?.authResponse?.code;
                 if (!code) {
@@ -165,6 +196,7 @@ export default function WhatsAppSettingsTab() {
                   return;
                 }
 
+                setActionInfo("Completing connection on server…");
                 // Allow session postMessage to arrive.
                 await new Promise((r) => setTimeout(r, 600));
                 const assets = sessionRef.current;
@@ -195,6 +227,7 @@ export default function WhatsAppSettingsTab() {
                 }
 
                 setConnection(status);
+                setActionInfo("");
                 toast.success(t("whatsapp.settings.connectedSuccess"));
                 await load();
                 settleResolve();
@@ -211,7 +244,7 @@ export default function WhatsAppSettingsTab() {
               }
             },
             {
-              config_id: configId,
+              config_id: signup.configId,
               response_type: "code",
               override_default_response_type: true,
               extras: {
@@ -230,11 +263,14 @@ export default function WhatsAppSettingsTab() {
         }
       });
     } catch (error: any) {
-      toast.error(
+      const msg =
         error?.response?.data?.error ||
-          error?.message ||
-          t("whatsapp.errors.connectFailed")
-      );
+        error?.message ||
+        t("whatsapp.errors.connectFailed");
+      console.error("[whatsapp] Connect failed", error);
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
     } finally {
       setConnecting(false);
     }
@@ -326,7 +362,9 @@ export default function WhatsAppSettingsTab() {
               type="button"
               className={btnPrimary}
               disabled={connecting}
-              onClick={handleConnect}
+              onClick={() => {
+                void handleConnect();
+              }}
             >
               {connecting ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -337,6 +375,16 @@ export default function WhatsAppSettingsTab() {
                 ? t("whatsapp.settings.connecting")
                 : t("whatsapp.settings.connectCta")}
             </button>
+            {actionInfo && (
+              <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800">
+                {actionInfo}
+              </p>
+            )}
+            {actionError && (
+              <p className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
+                {actionError}
+              </p>
+            )}
             {!connection?.embeddedSignup?.ready && (
               <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-800">
                 {t("whatsapp.settings.configMissing")}
