@@ -147,6 +147,14 @@ export default function SelectTimeFromSlots({
     );
   }
 
+  if (!serviceId) {
+    return (
+      <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
+        Select a service first to see available times
+      </div>
+    );
+  }
+
   if (!isDayValid) {
     return (
       <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
