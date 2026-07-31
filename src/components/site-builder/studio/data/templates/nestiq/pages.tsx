@@ -65,11 +65,11 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="שם מלא" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="טלפון" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="אימייל" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="מה אתם מחפשים?" />
+    <form className="grid gap-3"  data-bizuply-block="lead-form" data-bizuply-form-id="nestiq-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+      <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="שם מלא" />
+      <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="טלפון" />
+      <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="אימייל" />
+      <textarea name="message" data-bizuply-form-field-id="message"  className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="מה אתם מחפשים?" />
       <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );

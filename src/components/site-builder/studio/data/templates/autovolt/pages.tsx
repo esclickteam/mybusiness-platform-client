@@ -318,10 +318,10 @@ function Booking({ data }: { data: Record<string, any> }) {
           <a href={`tel:${getValue(data, "phone")}`} className="t-display mt-10 block text-6xl font-bold uppercase leading-none text-[var(--blue)] md:text-7xl">{getValue(data, "phone")}</a>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10">
+          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-form-id="autovolt-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="שם מלא" />
-              <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="טלפון" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="טלפון" />
             </div>
             <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="דגם הרכב" />
             <select className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition focus:border-[var(--blue)]" defaultValue="">
@@ -329,7 +329,7 @@ function Booking({ data }: { data: Record<string, any> }) {
               <option>{getValue(data, "packageOneTitle")}</option>
               <option>{getValue(data, "packageTwoTitle")}</option>
             </select>
-            <textarea className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="מה מצב הצבע ומה חשוב לכם?" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-[140px] border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="מה מצב הצבע ומה חשוב לכם?" />
             <button type="button" className="bg-[var(--blue)] px-8 py-4 text-sm font-black uppercase tracking-[0.24em] text-[#0A0F14] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>

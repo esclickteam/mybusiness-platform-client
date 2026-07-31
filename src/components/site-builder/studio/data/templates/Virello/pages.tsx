@@ -1091,11 +1091,11 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
           ))}
         </div>
 
-        <form onSubmit={(event) => event.preventDefault()} className="rounded-[2rem] bg-white/70 p-5 shadow-sm">
+        <form  data-bizuply-block="lead-form" data-bizuply-form-id="Virello-newsletter-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."  className="rounded-[2rem] bg-white/70 p-5 shadow-sm">
           <VisualText id="footer.newsletterLabel" fallback="הצטרפו לעדכונים" as="label" className="mb-3 block text-sm font-black text-[#301b12]" />
 
           <div className="flex gap-2">
-            <input type="email" placeholder="כתובת אימייל" className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
+            <input name="email" data-bizuply-form-field-id="email"  type="email" placeholder="כתובת אימייל" className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
 
             <button className="rounded-full bg-[#301b12] px-5 py-3 text-sm font-black text-white">
               <VisualText id="footer.newsletterButton" fallback="הצטרפות" />
@@ -1226,14 +1226,14 @@ function ContactPage() {
           <VisualText id="contact.description" fallback={base.contact.description} as="p" className="mt-8 max-w-xl text-xl font-bold leading-9 text-[#301b12]/62" />
         </div>
 
-        <form onSubmit={(event) => event.preventDefault()} className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
+        <form  data-bizuply-block="lead-form" data-bizuply-form-id="Virello-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."  className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
           <div className="grid gap-4 md:grid-cols-2">
-            <input placeholder="שם מלא" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
-            <input placeholder="טלפון" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  placeholder="שם מלא" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  placeholder="טלפון" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
           </div>
 
-          <input placeholder="אימייל" className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
-          <textarea placeholder="ספרו לנו על הפרויקט" className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none" />
+          <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  placeholder="אימייל" className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none" />
+          <textarea name="message" data-bizuply-form-field-id="message"  placeholder="ספרו לנו על הפרויקט" className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none" />
 
           <button className="mt-4 w-full rounded-full bg-[#301b12] px-6 py-5 text-sm font-black text-white">
             <VisualText id="contact.button" fallback={base.contact.button} />

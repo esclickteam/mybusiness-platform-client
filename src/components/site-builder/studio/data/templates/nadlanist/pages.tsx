@@ -971,7 +971,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
         <form
           dir="rtl"
           className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8"
-        >
+         data-bizuply-block="lead-form" data-bizuply-form-id="nadlanist-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             ["שם", "השם שלך"],
             ["אימייל", "hello@email.com"],
@@ -992,7 +992,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
             <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">
               הודעה
             </span>
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"

@@ -169,11 +169,11 @@ function SurveyRequest({ data }: { data: Record<string, any> }) {
           <p className="mt-5 text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "contactText")}</p>
           <p className="mt-10 border-t pt-4 text-sm font-bold tracking-[0.18em]" style={{ borderColor: "rgba(107,90,46,0.28)", color: "#6b5a2e" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3 self-start" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="שם מלא" />
+        <form className="grid gap-3 self-start"  data-bizuply-block="lead-form" data-bizuply-form-id="parcel-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="שם מלא" />
           <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="אזור מבוקש" />
           <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="גודל רצוי במ״ר" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="ייעוד, תקציב, הערות תכנון" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-32`} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="ייעוד, תקציב, הערות תכנון" />
           <button type="button" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "cta")}</button>
         </form>
       </div>

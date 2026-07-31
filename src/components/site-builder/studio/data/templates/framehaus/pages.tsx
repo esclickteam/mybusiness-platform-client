@@ -279,7 +279,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#5e5e5e]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border-2 border-black">
+        <form className="mt-8 grid gap-0 border-2 border-black" data-bizuply-block="lead-form" data-bizuply-form-id="framehaus-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -292,7 +292,7 @@ function InquiryModal({
               placeholder={placeholder}
             />
           ))}
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
             placeholder="ספרו לנו איזה עולם אתם רוצים לבנות בפריים."
           />
@@ -714,7 +714,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-white">
+        <form className="grid gap-0 bg-white" data-bizuply-block="lead-form" data-bizuply-form-id="framehaus-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -727,7 +727,7 @@ function ContactSection({
               placeholder={placeholder}
             />
           ))}
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-40 border-b-2 border-black bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
             placeholder="מה אתם רוצים שנראה, נצלם ונגרום לו להרגיש?"
           />

@@ -881,8 +881,11 @@ function Booking({
 
         <form
           data-ido-reveal="booking-form"
+          data-bizuply-block="lead-form"
           data-bizuply-form-id="ido-booking"
           data-bizuply-form-builder="true"
+          data-bizuply-crm-lead="true"
+          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
           data-visual-editable="true"
           data-visual-edit-id="booking.formBox"
           data-visual-edit-type="box"
@@ -895,6 +898,9 @@ function Booking({
           <div className="ido-form-fields relative flex flex-col gap-4">
             <FormFieldSlot id="booking.form.name" label="שדה שם מלא">
               <input
+                name="name"
+                data-bizuply-form-field-id="name"
+                autoComplete="name"
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
                 placeholder="שם מלא"
               />
@@ -902,6 +908,10 @@ function Booking({
 
             <FormFieldSlot id="booking.form.phone" label="שדה טלפון">
               <input
+                name="phone"
+                data-bizuply-form-field-id="phone"
+                type="tel"
+                autoComplete="tel"
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
                 placeholder="טלפון"
               />
@@ -926,19 +936,20 @@ function Booking({
 
             <FormFieldSlot id="booking.form.message" label="שדה הודעה">
               <textarea
+                name="message"
+                data-bizuply-form-field-id="message"
                 className="min-h-32 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
                 placeholder="ספרו בקצרה על העסק והמטרה"
               />
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
-              <div
-                role="button"
-                tabIndex={0}
+              <button
+                type="submit"
                 className="flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
               >
                 שליחת בקשה לשיחה
-              </div>
+              </button>
             </FormFieldSlot>
           </div>
         </form>

@@ -758,7 +758,7 @@ function ContactSection({ data }: { data: TemplateData }) {
           data-visual-edit-label="טופס יצירת קשר"
           className="citadel-panel grid gap-0 rounded-sm border md:grid-cols-2"
           style={{ borderColor: citadelTheme.border }}
-        >
+         data-bizuply-block="lead-form" data-bizuply-form-id="citadel-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             ["contact.form.name", "שם מלא", "שם מלא"],
             ["contact.form.phone", "טלפון", "טלפון"],
@@ -776,7 +776,7 @@ function ContactSection({ data }: { data: TemplateData }) {
               data-visual-edit-label={label}
             />
           ))}
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-40 border bg-transparent px-5 py-4 text-right text-sm outline-none md:col-span-2"
             style={{ borderColor: citadelTheme.border, color: citadelTheme.light }}
             placeholder="ספרו לנו על האתגר, הסביבה והדחיפות."

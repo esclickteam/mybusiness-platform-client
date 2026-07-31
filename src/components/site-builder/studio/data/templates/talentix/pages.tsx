@@ -381,12 +381,12 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={100} className="bg-[var(--bg)] p-7 md:p-10 lg:[direction:rtl]">
-          <form className="grid gap-3">
-            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
-            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="talentix-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
             <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="תפקיד / חברה" />
-            <textarea className="min-h-36 border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="לשלוח קורות חיים או לדבר עם מגייס/ת?" />
-            <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-36 border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="לשלוח קורות חיים או לדבר עם מגייס/ת?" />
+            <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>

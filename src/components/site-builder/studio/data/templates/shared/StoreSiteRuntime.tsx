@@ -694,8 +694,8 @@ export default function StoreSiteRuntime({
             <h2 className="store-display mt-3 text-3xl font-black md:text-4xl">{g("newsletterTitle")}</h2>
             <p className="mt-3 text-[var(--muted)]">{g("newsletterText")}</p>
           </div>
-          <form className="flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="האימייל שלך" className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
+          <form className="flex flex-col gap-3 sm:flex-row"  data-bizuply-block="lead-form" data-bizuply-form-id="shared-newsletter-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+            <input name="email" data-bizuply-form-field-id="email"  type="email" placeholder="האימייל שלך" className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-[var(--on-p)]">
               {g("newsletterButton")}
             </button>
@@ -1493,11 +1493,11 @@ export default function StoreSiteRuntime({
             </div>
           </Reveal>
           <Reveal variant="left">
-            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" onSubmit={(e) => e.preventDefault()}>
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="שם מלא" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="טלפון" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="אימייל" />
-              <textarea className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder="הודעה" />
+            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6"  data-bizuply-block="lead-form" data-bizuply-form-id="shared-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="טלפון" />
+              <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="אימייל" />
+              <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder="הודעה" />
               <button type="submit" className="bg-[var(--p)] px-5 py-3.5 text-sm font-black text-[var(--on-p)]">{g("contactButton")}</button>
             </form>
           </Reveal>

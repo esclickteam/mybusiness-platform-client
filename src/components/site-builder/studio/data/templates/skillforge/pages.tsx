@@ -445,10 +445,10 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
     <section data-template-section-type="contact" className="px-5 py-12 md:py-24 lg:px-8">
       <div className="mx-auto max-w-xl border-2 border-[var(--p)] p-8">
         <Reveal><h2 className="t-display text-3xl font-bold uppercase text-[var(--p)]">{getValue(data,"contactTitle")}</h2></Reveal>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--muted)]/40 bg-transparent px-4 py-3 uppercase outline-none" placeholder="FULL NAME" />
-          <input className="border border-[var(--muted)]/40 bg-transparent px-4 py-3 uppercase outline-none" placeholder="PHONE" />
-          <button type="button" onClick={openModal} className="bg-[var(--p)] py-4 font-black uppercase text-[var(--dark)]">{getValue(data,"contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="skillforge-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--muted)]/40 bg-transparent px-4 py-3 uppercase outline-none" placeholder="FULL NAME" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--muted)]/40 bg-transparent px-4 py-3 uppercase outline-none" placeholder="PHONE" />
+          <button type="submit" onClick={openModal} className="bg-[var(--p)] py-4 font-black uppercase text-[var(--dark)]">{getValue(data,"contactButton")}</button>
         </form>
       </div>
     </section>
@@ -474,10 +474,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="skillforge-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

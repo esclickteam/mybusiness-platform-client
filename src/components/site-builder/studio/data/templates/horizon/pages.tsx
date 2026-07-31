@@ -591,12 +591,12 @@ function ContactSection({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12">
+        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-form-id="horizon-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל" />
-            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים." />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון" />
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים." />
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#1c1c1c]/10 pt-6">
             <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">

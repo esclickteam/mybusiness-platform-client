@@ -158,8 +158,8 @@ function HomaraPhoneContact({ data, onCta }: { data: Record<string, any>; onCta:
           <a href={`tel:${v(data, "phone")}`} className="tpl-display mt-8 block text-6xl font-bold leading-none md:text-8xl" style={{ color: "#3f6f5a" }}>{v(data, "phone")}</a>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6d7568" }}>{v(data, "contactText")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }} onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="שם" />
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }}  data-bizuply-block="lead-form" data-bizuply-form-id="homara-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="שם" />
           <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="אזור ושכונה" />
           <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="כמה חדרים?" />
           <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-bold" style={{ background: "#3f6f5a", color: "#f3f0e8" }}>{v(data, "cta")}</button>

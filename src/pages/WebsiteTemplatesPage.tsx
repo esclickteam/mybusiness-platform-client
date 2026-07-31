@@ -840,7 +840,15 @@ export default function WebsiteTemplatesPage() {
       businessId,
       name: selectedTemplate.name || localSeed?.name || t("websiteTemplates.defaultSiteName"),
       templateKey: cleanTemplateKey,
+      templateId: cleanTemplateKey,
       templateName: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
+      templateCategory:
+        String(
+          localSeed?.category ||
+            selectedTemplate.category ||
+            (localSeed as any)?.categoryId ||
+            "",
+        ).trim() || undefined,
     });
 
     if (site?._id) {

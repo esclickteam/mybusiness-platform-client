@@ -550,12 +550,12 @@ function ContactIntake({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12">
+        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-form-id="kinetic-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="אימייל" />
-            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?" />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון" />
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="אימייל" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?" />
           </div>
           <div className="mt-6 grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">

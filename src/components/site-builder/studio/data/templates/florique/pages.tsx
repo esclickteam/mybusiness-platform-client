@@ -364,14 +364,14 @@ function OrderForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="florique-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="טלפון" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="טלפון" />
             </div>
             <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="אירוע או סיבה למשלוח" />
             <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="תקציב וגוונים מועדפים" />
-            <textarea className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="ברכה, כתובת ושעה רצויה" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="ברכה, כתובת ושעה רצויה" />
             <button type="button" className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>

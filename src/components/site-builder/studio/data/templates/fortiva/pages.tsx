@@ -233,12 +233,12 @@ function BookingModal({
           פגישת ייעוץ דיסקרטית.
         </h3>
         <p className="mt-3 text-sm leading-6 text-[#4a5568]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-4">
-          <input
+        <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="fortiva-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
             className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
             placeholder="שם מלא"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
             placeholder="טלפון"
           />
@@ -249,7 +249,7 @@ function BookingModal({
             <option>מיסוי ופיננסים</option>
             <option>ליטיגציה ויישוב סכסוכים</option>
           </select>
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-24 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
             placeholder="פרטים על הפנייה"
           />
@@ -581,21 +581,21 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-2xl bg-[#f6f5f1] p-6 lg:m-6 lg:p-8">
+        <form className="m-4 rounded-2xl bg-[#f6f5f1] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="fortiva-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
               placeholder="טלפון"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
               placeholder="אימייל"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-32 rounded-lg border border-[#0f1e3d]/12 bg-white px-5 py-4 text-right outline-none transition focus:border-[#b8935a]"
               placeholder="פרטים על הפנייה"
             />

@@ -288,16 +288,16 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="border border-black p-6 md:p-8">
+          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="atelierx-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="שם מלא" />
-              <input aria-label="טלפון" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="טלפון" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  aria-label="שם מלא" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  aria-label="טלפון" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="טלפון" />
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
               <input aria-label="מידה" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מידה" />
               <input aria-label="מועד רצוי" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מועד רצוי" />
             </div>
-            <textarea aria-label="מה מחפשים" className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מה תרצו למדוד או לאיזה אירוע?" />
+            <textarea name="message" data-bizuply-form-field-id="message"  aria-label="מה מחפשים" className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מה תרצו למדוד או לאיזה אירוע?" />
             <button type="button" className="mt-8 w-full bg-black px-8 py-4 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:bg-[var(--a)]">
               {getValue(data, "contactButton")}
             </button>

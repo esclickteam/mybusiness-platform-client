@@ -336,11 +336,11 @@ function JoinForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
-            <input aria-label="שם מלא" placeholder="שם מלא" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
-            <input aria-label="טלפון" placeholder="טלפון" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
-            <input aria-label="אימייל" placeholder="אימייל" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
-            <textarea aria-label="מה תרצו לתרגל" placeholder="מה תרצו לתרגל?" rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="aurayoga-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  aria-label="שם מלא" placeholder="שם מלא" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  aria-label="טלפון" placeholder="טלפון" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  aria-label="אימייל" placeholder="אימייל" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+            <textarea name="message" data-bizuply-form-field-id="message"  aria-label="מה תרצו לתרגל" placeholder="מה תרצו לתרגל?" rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)] transition hover:bg-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>

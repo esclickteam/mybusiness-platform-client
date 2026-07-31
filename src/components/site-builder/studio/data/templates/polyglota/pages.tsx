@@ -457,11 +457,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
     <section data-template-section-type="contact" className="px-5 py-12 md:py-24 lg:px-8">
       <div className="mx-auto max-w-lg rounded-3xl bg-white p-8 shadow-sm">
         <Reveal><h2 className="t-display text-3xl font-bold text-[var(--dark)]">{getValue(data,"contactTitle")}</h2></Reveal>
-        <form className="mt-6 grid gap-3">
-          <input className="rounded-xl border border-[var(--p)]/20 px-5 py-4 outline-none" placeholder="שם" />
-          <input className="rounded-xl border border-[var(--p)]/20 px-5 py-4 outline-none" placeholder="טלפון" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="polyglota-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="rounded-xl border border-[var(--p)]/20 px-5 py-4 outline-none" placeholder="שם" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="rounded-xl border border-[var(--p)]/20 px-5 py-4 outline-none" placeholder="טלפון" />
           <select className="rounded-xl border border-[var(--p)]/20 px-5 py-4 outline-none"><option>בחרו שפה</option><option>אנגלית</option><option>ספרדית</option><option>ערבית</option></select>
-          <button type="button" onClick={openModal} className="rounded-xl bg-[var(--p)] py-4 font-bold text-white">{getValue(data,"contactButton")}</button>
+          <button type="submit" onClick={openModal} className="rounded-xl bg-[var(--p)] py-4 font-bold text-white">{getValue(data,"contactButton")}</button>
         </form>
       </div>
     </section>
@@ -485,10 +485,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="polyglota-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

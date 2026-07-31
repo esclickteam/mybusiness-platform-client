@@ -485,49 +485,41 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section id="booking" data-section-kind="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-24 text-white">
+<section id="booking" data-section-kind="booking" data-bizuply-block="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-24 text-white">
   <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
     <div>
       <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#d6a24a]">
         קביעת תור
       </p>
       <h2 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">
-        בחרי טיפול ושלחי בקשה לתור הבא שלך.
+        בחרי טיפול וקבעי תור ישירות מהיומן.
       </h2>
       <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-white/60">
-        אפשר להחליף את הטופס הזה אחר כך ליומן האמיתי של ביזאפלי עם שעות פנויות.
+        היומן מחובר לשירותים ולזמינות ב-CRM של העסק.
       </p>
     </div>
 
-    <form class="lunelle-card rounded-[38px] border border-white/10 bg-white p-7 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]">
-      <div class="grid gap-4 md:grid-cols-2">
-        <input placeholder="שם מלא" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="טלפון" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="תאריך מועדף" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="שעה מועדפת" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-      </div>
-
-      <select class="mt-4 w-full rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none">
-        <option>בחירת טיפול</option>
-        <option>מניקור קלאסי</option>
-        <option>לק ג׳ל</option>
-        <option>מבנה אנטומי</option>
-        <option>פדיקור עדין</option>
-        <option>עיצובי נייל ארט</option>
-      </select>
-
-      <textarea placeholder="הודעה / השראה / בקשה מיוחדת" class="mt-4 min-h-[150px] w-full rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
-
-      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
-        שליחת בקשה
-      </button>
-    </form>
+    <div
+      class="lunelle-card min-h-[520px] rounded-[38px] border border-white/10 bg-white p-4 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)] md:p-6"
+      dir="rtl"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="week"
+      data-bizuply-booking-accent="#d6a24a"
+      data-bizuply-booking-ink="#2a171c"
+      data-bizuply-booking-surface="#ffffff"
+      data-bizuply-booking-muted="#8a4f5f"
+      data-bizuply-booking-line="rgba(42,23,28,0.12)"
+      data-bizuply-booking-soft="#fff7f1"
+      aria-label="יומן פגישות — שירותים ויומן מה-CRM"
+    ></div>
   </div>
 </section>
 
 <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-[#fff7f1] px-5 py-24">
   <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_.8fr]">
-    <form class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]">
+    <form class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]" data-bizuply-block="lead-form" data-bizuply-form-id="lunelle-contact" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
       <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">
         צור קשר
       </p>
@@ -541,15 +533,15 @@ ${marqueeHtml()}
       </p>
 
       <div class="mt-8 grid gap-4 md:grid-cols-2">
-        <input placeholder="שם מלא" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="טלפון" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+        <input name="name" data-bizuply-form-field-id="name" autocomplete="name" placeholder="שם מלא" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+        <input name="phone" data-bizuply-form-field-id="phone" type="tel" autocomplete="tel" placeholder="טלפון" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
       </div>
 
-      <input placeholder="אימייל" class="mt-4 w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+      <input name="email" data-bizuply-form-field-id="email" type="email" autocomplete="email" placeholder="אימייל" class="mt-4 w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
 
-      <textarea placeholder="כתבי כאן את ההודעה שלך" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
+      <textarea name="message" data-bizuply-form-field-id="message" placeholder="כתבי כאן את ההודעה שלך" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
 
-      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
+      <button type="submit" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
         שליחת הודעה
       </button>
 

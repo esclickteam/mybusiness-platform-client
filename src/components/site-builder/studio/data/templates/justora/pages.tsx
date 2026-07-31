@@ -703,21 +703,18 @@ function ConsultationModal({
 
           <form
             className="p-6 lg:p-10"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onClose();
-            }}
+            data-bizuply-block="lead-form" data-bizuply-form-id="justora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
           >
             <div className="grid gap-4">
-              <input
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
                 placeholder="שם מלא"
               />
-              <input
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
                 placeholder="טלפון"
               />
-              <input
+              <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
                 placeholder="אימייל"
               />
@@ -728,7 +725,7 @@ function ConsultationModal({
                 <option>נדל״ן ומקרקעין</option>
                 <option>ליטיגציה וייצוג</option>
               </select>
-              <textarea
+              <textarea name="message" data-bizuply-form-field-id="message" 
                 className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
                 placeholder="כמה מילים על המקרה"
               />
@@ -1752,25 +1749,22 @@ function ContactSection({
 
         <form
           className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7"
-          onSubmit={(event) => {
-            event.preventDefault();
-            openConsultation();
-          }}
+          data-bizuply-block="lead-form" data-bizuply-form-id="justora-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
         >
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder="טלפון"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder="אימייל"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder="מה תרצו לשאול?"
             />

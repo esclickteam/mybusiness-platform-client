@@ -717,8 +717,8 @@ function ConsultationSection({ data }: { data: any }) {
               data-visual-edit-id="consultation.form"
               data-visual-edit-type="box"
               data-visual-edit-label="טופס ייעוץ"
-            >
-              <input
+             data-bizuply-block="lead-form" data-bizuply-form-id="shinora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
                 placeholder="שם מלא"
                 data-visual-editable="true"
@@ -726,7 +726,7 @@ function ConsultationSection({ data }: { data: any }) {
                 data-visual-edit-type="button"
                 data-visual-edit-label="שדה שם מלא"
               />
-              <input
+              <input name="phone" data-bizuply-form-field-id="phone" 
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
                 placeholder="טלפון"
                 data-visual-editable="true"
@@ -742,7 +742,7 @@ function ConsultationSection({ data }: { data: any }) {
                 data-visual-edit-type="button"
                 data-visual-edit-label="שדה טיפול"
               />
-              <textarea
+              <textarea name="message" data-bizuply-form-field-id="message" 
                 className="min-h-32 rounded-[32px] border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4] md:col-span-2"
                 placeholder="ספרי לנו בקצרה מה חשוב לך"
                 data-visual-editable="true"

@@ -354,16 +354,16 @@ function Reservation({ data, openModal }: { data: Record<string, any>; openModal
             </p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9">
-          <input
+        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-form-id="savory-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="שם מלא"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="טלפון"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={getValue(data, "reservationDateLabel")}
           />
@@ -371,7 +371,7 @@ function Reservation({ data, openModal }: { data: Record<string, any>; openModal
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder={getValue(data, "reservationGuestsLabel")}
           />
-          <textarea
+          <textarea name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="min-h-[132px] border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)] md:col-span-2"
             placeholder={getValue(data, "reservationNoteLabel")}
           />
@@ -422,12 +422,12 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <p className="s-section-kicker">הזמנה</p>
         <h3 className="s-display mt-3 text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3">
-          <input
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="savory-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
             className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="שם מלא"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="טלפון"
           />

@@ -2370,8 +2370,8 @@ function NewsletterSection({ data, mode }: SharedProps) {
           onSubmit={handleSubmit}
           data-visual-edit-id="home.newsletter.form"
           data-visual-edit-type="form"
-        >
-          <input
+         data-bizuply-block="lead-form" data-bizuply-form-id="chanel-newsletter-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="email" data-bizuply-form-field-id="email" 
             type="email"
             placeholder={data.newsletter.placeholder}
             className="flex-1 border border-[#1a1a1a]/20 bg-transparent px-5 py-3.5 text-sm outline-none placeholder:text-[#1a1a1a]/35 focus:border-[#1a1a1a]"

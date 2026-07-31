@@ -175,13 +175,13 @@ function KeyoraBluePanelContact({ data, onCta }: { data: Record<string, any>; on
             <p>{v(data, "address")}</p>
           </div>
         </aside>
-        <form className="grid gap-4 p-8 lg:p-12" onSubmit={(e) => e.preventDefault()}>
+        <form className="grid gap-4 p-8 lg:p-12"  data-bizuply-block="lead-form" data-bizuply-form-id="keyora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
           <div className="grid gap-4 md:grid-cols-2">
-            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="שם מלא" />
-            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="טלפון" />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="טלפון" />
           </div>
           <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="עיר, תקציב, מספר חדרים" />
-          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="מה צריך לקרות כדי שתגידו כן?" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-28`} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="מה צריך לקרות כדי שתגידו כן?" />
           <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-black" style={{ background: "#0f1b2d", color: "#ffffff" }}>{v(data, "cta")}</button>
         </form>
       </div>

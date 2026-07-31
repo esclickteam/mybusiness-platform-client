@@ -408,9 +408,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
             <p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="שם מלא" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="טלפון" />
+        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }}  data-bizuply-block="lead-form" data-bizuply-form-id="emberplate-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="תאריך" />
           <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#e85d04", color: "#140c08" }}>{v(data, "cta")}</button>
         </form>

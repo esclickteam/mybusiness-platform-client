@@ -315,11 +315,11 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
         <p className="text-xs font-bold tracking-[0.42em] text-[var(--p)]">{getValue(data, "bookingEyebrow")}</p>
         <h2 className="t-display mt-4 text-5xl font-semibold leading-none md:text-7xl">{getValue(data, "contactTitle")}</h2>
         <p className="mx-auto mt-6 max-w-xl text-base leading-8 text-[var(--muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-10 grid gap-4 border border-[var(--p)]/25 bg-[#251F22]/70 p-6 text-right md:p-9">
-          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="שם מלא" />
-          <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="טלפון" />
+        <form className="mt-10 grid gap-4 border border-[var(--p)]/25 bg-[#251F22]/70 p-6 text-right md:p-9" data-bizuply-block="lead-form" data-bizuply-form-id="glintica-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="טלפון" />
           <input className="border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="תאריך האירוע" />
-          <textarea className="min-h-[120px] border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="מה תרצי שנדע?" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-[120px] border-b border-[var(--p)]/25 bg-transparent px-1 py-4 text-right outline-none transition placeholder:text-white/35 focus:border-[var(--p)]" placeholder="מה תרצי שנדע?" />
           <button type="button" onClick={openModal} className="gl-button mt-3 px-8 py-4 text-sm font-bold tracking-[0.22em]">
             {getValue(data, "contactButton")}
           </button>
@@ -357,10 +357,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">x</button>
         <h3 className="t-display text-2xl sm:text-4xl font-semibold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון" />
-          <button type="button" className="gl-button py-4 text-sm font-bold tracking-[0.22em]">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="glintica-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון" />
+          <button type="submit" className="gl-button py-4 text-sm font-bold tracking-[0.22em]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

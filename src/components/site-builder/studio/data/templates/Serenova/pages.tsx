@@ -297,17 +297,17 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-form-id="Serenova-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4">
-              <input
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="שם מלא"
               />
-              <input
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="טלפון"
               />
-              <input
+              <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="אימייל"
               />
@@ -318,7 +318,7 @@ function BookingModal({
                 <option>ליווי זוגי</option>
                 <option>סדנה / הרצאה</option>
               </select>
-              <textarea
+              <textarea name="message" data-bizuply-form-field-id="message" 
                 className="min-h-28 rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="כמה מילים על הצורך"
               />
@@ -1189,21 +1189,21 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7">
+        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-form-id="Serenova-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="טלפון"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="אימייל"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-36 rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="מה תרצו לשאול?"
             />

@@ -438,9 +438,9 @@ function FoamReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
       <div className="mx-auto max-w-xl text-center">
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 leading-8" style={{ color: "#7aa8b8" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#38bdf8", background: "#0a2430" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder="שם מלא" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder="טלפון" />
+        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#38bdf8", background: "#0a2430" }}  data-bizuply-block="lead-form" data-bizuply-form-id="seafoodix-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder="טלפון" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(230,244,248,0.12)", color: "#e6f4f8" }} placeholder="תאריך" />
           <button type="button" onClick={onCta} className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#38bdf8", color: "#38bdf8Text" }}>{v(data, "cta")}</button>
         </form>
