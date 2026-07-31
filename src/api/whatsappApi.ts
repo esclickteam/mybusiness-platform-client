@@ -28,7 +28,11 @@ export type WhatsAppWabaBillingHealth = {
   businessVerificationStatus?: string | null;
   canSendMessage?: string | null;
   hasPrimaryFundingId?: boolean | null;
+  /** Same semantics as Ad Account hasPaymentMethod — WABA biller only. */
+  hasPaymentMethod?: boolean | null;
   primaryFundingId?: string | null;
+  /** e.g. "MASTERCARD *4787" from Meta CreditCard fields */
+  paymentMethodDisplay?: string | null;
   severity: "ok" | "warning" | "error";
   ok: boolean;
   actionRequired: boolean;
