@@ -127,6 +127,33 @@ export type MetaLeadForm = {
   };
 };
 
+/** Marketing API Ad Account billing health (separate from WABA). */
+export type MetaAdAccountBillingHealth = {
+  kind: "meta_ad_account";
+  billingOwner: "meta_ads";
+  billingSeparationNote: string;
+  connected: boolean;
+  id: string;
+  accountId: string;
+  name: string;
+  currency: string;
+  statusCode: number | null;
+  statusKey: string;
+  statusLabel: string;
+  disableReasonCode?: number;
+  disableReasonKey?: string;
+  hasPaymentMethod: boolean | null;
+  paymentMethodDisplay?: string | null;
+  fundingSourceId?: string | null;
+  severity: "ok" | "warning" | "error";
+  ok: boolean;
+  actionRequired: boolean;
+  issues: string[];
+  manageBillingUrl: string;
+  actionLabel?: string;
+  actionUrl?: string;
+};
+
 export type MetaAdsConnectionStatus = {
   success?: boolean;
   connected: boolean;
@@ -144,6 +171,7 @@ export type MetaAdsConnectionStatus = {
   lastError?: string;
   hasAccessToken?: boolean;
   tokenExpiresAt?: string | null;
+  adAccountBillingHealth?: MetaAdAccountBillingHealth | null;
   objectives?: MetaLabeledOption[];
   specialAdCategories?: MetaLabeledOption[];
   callToActions?: MetaLabeledOption[];

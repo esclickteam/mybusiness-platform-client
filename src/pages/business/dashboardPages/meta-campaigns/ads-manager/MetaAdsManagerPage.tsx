@@ -487,6 +487,38 @@ export default function MetaAdsManagerPage() {
         </div>
       )}
 
+      {connection?.adAccountBillingHealth?.actionRequired ? (
+        <div
+          className={[
+            "border-b px-4 py-2.5 text-[13px] font-semibold",
+            connection.adAccountBillingHealth.severity === "error"
+              ? "border-rose-200 bg-rose-50 text-rose-900"
+              : "border-amber-200 bg-amber-50 text-amber-900",
+          ].join(" ")}
+        >
+          <span className="font-bold">Meta Ad Account billing: </span>
+          {connection.adAccountBillingHealth.issues?.[0] ||
+            "This ad account needs billing attention before ads can deliver."}
+          {connection.adAccountBillingHealth.actionUrl ? (
+            <>
+              {" "}
+              <a
+                href={connection.adAccountBillingHealth.actionUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="font-bold underline"
+              >
+                {connection.adAccountBillingHealth.actionLabel ||
+                  "Open Meta Billing"}
+              </a>
+            </>
+          ) : null}
+          <span className="mt-1 block text-[11px] font-semibold opacity-80">
+            Ad spend billing is separate from WhatsApp Business message fees.
+          </span>
+        </div>
+      ) : null}
+
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#CED0D4] bg-white px-3 py-2.5 sm:px-4">
         <div className="flex min-w-0 flex-wrap items-center gap-1 text-[13px]">
           {crumbs.map((crumb, index) => (

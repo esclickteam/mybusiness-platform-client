@@ -14,6 +14,30 @@ export type WhatsAppReadiness =
   | "registration_failed"
   | "error";
 
+/** WABA billing/readiness health (separate from Meta Ad Account). */
+export type WhatsAppWabaBillingHealth = {
+  kind: "whatsapp_waba";
+  billingOwner: "whatsapp_waba";
+  billingSeparationNote: string;
+  connected: boolean;
+  wabaId: string;
+  wabaName?: string;
+  currency?: string;
+  status?: string;
+  accountReviewStatus?: string | null;
+  businessVerificationStatus?: string | null;
+  canSendMessage?: string | null;
+  hasPrimaryFundingId?: boolean | null;
+  primaryFundingId?: string | null;
+  severity: "ok" | "warning" | "error";
+  ok: boolean;
+  actionRequired: boolean;
+  issues: string[];
+  manageBillingUrl: string;
+  actionLabel?: string;
+  actionUrl?: string;
+};
+
 export type WhatsAppConnection = {
   connected: boolean;
   readyToSend?: boolean;
@@ -40,6 +64,14 @@ export type WhatsAppConnection = {
   connectedAt: string | null;
   signupReady?: boolean;
   embeddedSignup?: WhatsAppEmbeddedSignupConfig;
+  wabaBillingHealth?: WhatsAppWabaBillingHealth | null;
+  whatsappManagerUrl?: string;
+  accountReviewStatus?: string;
+  currency?: string;
+  wabaPlatformStatus?: string;
+  businessVerificationStatus?: string;
+  canSendMessage?: string;
+  hasPrimaryFundingId?: boolean | null;
   registration?: {
     attempted?: boolean;
     success?: boolean;

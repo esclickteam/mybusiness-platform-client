@@ -21,6 +21,11 @@ import {
   type WhatsAppConnection,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
+import {
+  getMetaCampaignsStatus,
+  type MetaAdAccountBillingHealth,
+} from "../../../../api/metaCampaignsApi";
+import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import {
   btnPrimary,
@@ -75,6 +80,8 @@ export default function WhatsAppSettingsTab() {
   const [registering, setRegistering] = useState(false);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
+  const [adAccountBilling, setAdAccountBilling] =
+    useState<MetaAdAccountBillingHealth | null>(null);
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
     []
   );
@@ -90,8 +97,12 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const status = await getWhatsAppStatus(businessId);
+      const [status, metaStatus] = await Promise.all([
+        getWhatsAppStatus(businessId),
+        getMetaCampaignsStatus(businessId).catch(() => null),
+      ]);
       setConnection(status);
+      setAdAccountBilling(metaStatus?.adAccountBillingHealth || null);
       if (status.connected) {
         const templates = await listWhatsAppTemplates(businessId, {
           approvedOnly: true,
@@ -443,6 +454,14 @@ export default function WhatsAppSettingsTab() {
         : t("whatsapp.settings.disconnectedHint");
 
   return (
+    <div className="space-y-4">
+      <MetaBillingAccountCards
+        adAccountBilling={adAccountBilling}
+        wabaBilling={connection?.wabaBillingHealth || null}
+        adsSettingsPath="../meta-campaigns/settings"
+        whatsappSettingsPath="."
+      />
+
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
       <section className={`${cardBase} p-4 sm:p-5`}>
         <h2 className="text-lg font-black text-slate-900">
