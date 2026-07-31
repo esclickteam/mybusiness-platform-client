@@ -6,22 +6,26 @@ import type { MetaLocationTarget } from "../../../../api/metaCampaignsApi";
 type Props = {
   locations: MetaLocationTarget[];
   hint?: string;
-  /** Force-draw this radius (km) on non-country pins when location has no radiusKm. */
-  fallbackRadiusKm?: number | null;
+  /** Location identity to focus (Meta-style: show that city's real radius). */
+  focusKey?: string | null;
+  onSelectLocation?: (identity: string) => void;
 };
 
 const ISRAEL_BOUNDS = L.latLngBounds([29.45, 34.2], [33.35, 35.9]);
 
-const pinIcon = L.divIcon({
-  className: "meta-loc-pin",
-  html: `<div style="
-    width:20px;height:20px;border-radius:9999px;
-    background:#1877F2;border:3px solid #fff;
-    box-shadow:0 2px 10px rgba(15,23,42,.4);
-  "></div>`,
-  iconSize: [20, 20],
-  iconAnchor: [10, 10],
-});
+function pinIcon(active: boolean) {
+  const color = active ? "#1877F2" : "#64748b";
+  return L.divIcon({
+    className: "meta-loc-pin",
+    html: `<div style="
+      width:${active ? 22 : 16}px;height:${active ? 22 : 16}px;border-radius:9999px;
+      background:${color};border:3px solid #fff;
+      box-shadow:0 2px 10px rgba(15,23,42,.4);
+    "></div>`,
+    iconSize: [active ? 22 : 16, active ? 22 : 16],
+    iconAnchor: [active ? 11 : 8, active ? 11 : 8],
+  });
+}
 
 function hasCoords(item: MetaLocationTarget) {
   return (
@@ -32,10 +36,16 @@ function hasCoords(item: MetaLocationTarget) {
   );
 }
 
+function identityOf(item: MetaLocationTarget) {
+  if (item.type === "custom") return `custom:${item.addressString || item.key}`;
+  return `${item.type}:${item.key}`;
+}
+
 export default function MetaLocationsMap({
   locations,
   hint,
-  fallbackRadiusKm = null,
+  focusKey = null,
+  onSelectLocation,
 }: Props) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
@@ -44,27 +54,23 @@ export default function MetaLocationsMap({
   const points = useMemo(
     () =>
       locations.filter(hasCoords).map((item) => {
-        const explicit =
-          item.radiusKm != null && Number(item.radiusKm) > 0
-            ? Number(item.radiusKm)
-            : null;
         const radiusKm =
           item.type === "country"
             ? null
-            : explicit ??
-              (fallbackRadiusKm != null && fallbackRadiusKm > 0
-                ? Number(fallbackRadiusKm)
-                : null);
+            : item.radiusKm != null && Number(item.radiusKm) > 0
+              ? Number(item.radiusKm)
+              : null;
         return {
-          id: `${item.type}:${item.key}:${radiusKm || 0}:${item.latitude}:${item.longitude}`,
+          identity: identityOf(item),
           name: item.name,
           lat: Number(item.latitude),
           lng: Number(item.longitude),
           radiusKm,
           isCountry: item.type === "country",
+          active: focusKey ? identityOf(item) === focusKey : Boolean(radiusKm),
         };
       }),
-    [locations, fallbackRadiusKm]
+    [locations, focusKey]
   );
 
   useEffect(() => {
@@ -87,7 +93,7 @@ export default function MetaLocationsMap({
     layerRef.current = L.layerGroup().addTo(map);
 
     const onResize = () => map.invalidateSize();
-    window.setTimeout(onResize, 100);
+    window.setTimeout(onResize, 120);
     window.addEventListener("resize", onResize);
 
     return () => {
@@ -110,65 +116,72 @@ export default function MetaLocationsMap({
       return;
     }
 
-    const bounds = L.latLngBounds([]);
-    let hasRadius = false;
+    const focus =
+      points.find((p) => p.identity === focusKey) ||
+      points.find((p) => p.radiusKm != null) ||
+      points[0];
 
     points.forEach((point) => {
-      const marker = L.marker([point.lat, point.lng], { icon: pinIcon });
+      const isFocus = point.identity === focus.identity;
+      const marker = L.marker([point.lat, point.lng], {
+        icon: pinIcon(isFocus),
+      });
+      marker.on("click", () => onSelectLocation?.(point.identity));
       marker.bindPopup(
         `<strong>${point.name}</strong>${
           point.radiusKm != null
-            ? `<br/>רדיוס: ${point.radiusKm} ק״מ`
+            ? `<br/>רדיוס אמיתי: ${point.radiusKm} ק״מ סביב העיר`
             : point.isCountry
               ? "<br/>מדינה שלמה"
               : ""
         }`
       );
       marker.addTo(layer);
-      bounds.extend([point.lat, point.lng]);
 
-      if (point.radiusKm != null && point.radiusKm > 0) {
-        hasRadius = true;
-        const meters = point.radiusKm * 1000;
+      // Draw REAL geographic circle only for the focused city (Facebook-style).
+      if (isFocus && point.radiusKm != null && point.radiusKm > 0) {
         const circle = L.circle([point.lat, point.lng], {
-          radius: meters,
+          radius: point.radiusKm * 1000, // meters — true Earth distance
           color: "#1877F2",
           weight: 3,
           fillColor: "#1877F2",
-          fillOpacity: 0.18,
-          opacity: 0.95,
+          fillOpacity: 0.2,
+          opacity: 1,
         });
-        circle.bindTooltip(`${point.name} · ${point.radiusKm} ק״מ`, {
+        circle.bindTooltip(`${point.name} · רדיוס ${point.radiusKm} ק״מ`, {
           sticky: true,
           direction: "center",
-          className: "meta-radius-tooltip",
         });
         circle.addTo(layer);
-        bounds.extend(circle.getBounds());
+
+        // Zoom so the full real radius fills the map (user sees what's included).
+        map.fitBounds(circle.getBounds().pad(0.15), {
+          animate: true,
+          maxZoom: 12,
+        });
       }
     });
 
-    if (bounds.isValid()) {
-      // Zoom out enough so the full radius circle is visible (what's included).
-      map.fitBounds(bounds.pad(hasRadius ? 0.35 : 0.25), {
-        maxZoom: hasRadius ? 11 : 12,
-        animate: true,
-      });
+    // If focus has no radius (country / places mode), show all pins.
+    if (focus && (focus.radiusKm == null || focus.radiusKm <= 0)) {
+      const bounds = L.latLngBounds(points.map((p) => [p.lat, p.lng] as [number, number]));
+      if (bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.35), { maxZoom: 11, animate: true });
+      }
     }
-    window.setTimeout(() => map.invalidateSize(), 80);
-  }, [points]);
 
-  const radiusSummary = points
-    .filter((p) => p.radiusKm != null)
-    .map((p) => `${p.name}: ${p.radiusKm} ק״מ`)
-    .join(" · ");
+    window.setTimeout(() => map.invalidateSize(), 80);
+  }, [points, focusKey, onSelectLocation]);
+
+  const focusPoint = points.find((p) => p.identity === focusKey && p.radiusKm != null);
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-      <div ref={containerRef} className="h-80 w-full" />
-      {radiusSummary ? (
+      <div ref={containerRef} className="h-[360px] w-full" />
+      {focusPoint ? (
         <p className="border-t border-slate-200 bg-[#1877F2]/5 px-3 py-2 text-[11px] font-black text-[#1877F2]">
-          אזור שנכלל ברדיוס — {radiusSummary}
+          רדיוס אמיתי סביב {focusPoint.name}: {focusPoint.radiusKm} ק״מ — העיגול
+          במפה בקנה מידה גאוגרפי
         </p>
       ) : null}
       {hint ? (

@@ -102,6 +102,7 @@ export default function MetaAudienceTargetingPanel({
   const [interestBusy, setInterestBusy] = useState(false);
   const [suggestionsBusy, setSuggestionsBusy] = useState(false);
   const [radiusKm, setRadiusKm] = useState(25);
+  const [activeLocationKey, setActiveLocationKey] = useState<string | null>(null);
   const [locationError, setLocationError] = useState("");
   const [interestError, setInterestError] = useState("");
   const [interestOpen, setInterestOpen] = useState(false);
@@ -150,26 +151,31 @@ export default function MetaAudienceTargetingPanel({
       try {
         setLocationBusy(true);
         setLocationError("");
+        // Radius mode = cities only (Facebook drop-pin around a city).
+        const locationTypes =
+          locationMode === "radius"
+            ? ["city"]
+            : ["country", "region", "city", "zip"];
         const data = await searchMetaLocations(businessId, {
           q,
           countryCode: "IL",
-          locationTypes:
-            locationMode === "radius"
-              ? ["city", "region", "zip"]
-              : ["country", "region", "city", "zip"],
+          locationTypes,
         });
         if (reqId !== locationReq.current) return;
         let results = data.results || [];
         if (!results.length) {
           const worldwide = await searchMetaLocations(businessId, {
             q,
-            locationTypes:
-              locationMode === "radius"
-                ? ["city", "region", "zip"]
-                : ["country", "region", "city", "zip"],
+            locationTypes,
           });
           if (reqId !== locationReq.current) return;
           results = worldwide.results || [];
+        }
+        // In radius mode keep only real cities from Meta.
+        if (locationMode === "radius") {
+          results = results.filter((item) =>
+            /city|subcity|neighborhood/i.test(item.type || "city")
+          );
         }
         setLocationResults(results);
         setLocationOpen(true);
@@ -309,50 +315,86 @@ export default function MetaAudienceTargetingPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locations.map((item) => `${item.key}:${item.name}`).join("|")]);
 
-  const setRadiusAndSync = (nextRadius: number) => {
+  // Keep focus on a radius city when list changes.
+  useEffect(() => {
+    if (locationMode !== "radius") return;
+    const radiusLocs = locations.filter(
+      (loc) => loc.radiusKm != null && Number(loc.radiusKm) > 0
+    );
+    if (!radiusLocs.length) {
+      setActiveLocationKey(null);
+      return;
+    }
+    if (
+      !activeLocationKey ||
+      !radiusLocs.some((loc) => locationIdentity(loc) === activeLocationKey)
+    ) {
+      setActiveLocationKey(locationIdentity(radiusLocs[radiusLocs.length - 1]));
+    }
+  }, [locations, locationMode, activeLocationKey]);
+
+  const setRadiusForActiveCity = (nextRadius: number) => {
     const value = Math.min(80, Math.max(1, nextRadius || 25));
     setRadiusKm(value);
-    // In radius mode, changing the slider updates all selected radius locations live.
-    if (locationMode === "radius") {
-      onLocationsChange(
-        locations.map((loc) =>
-          loc.type === "custom" || loc.radiusKm != null
-            ? { ...loc, radiusKm: value }
-            : loc
-        )
-      );
-    }
+    if (locationMode !== "radius") return;
+    const targetKey =
+      activeLocationKey ||
+      (locations.length ? locationIdentity(locations[locations.length - 1]) : null);
+    if (!targetKey) return;
+    onLocationsChange(
+      locations.map((loc) =>
+        locationIdentity(loc) === targetKey ? { ...loc, radiusKm: value } : loc
+      )
+    );
   };
 
   const addLocation = async (item: MetaLocationTarget) => {
     const addressString = [
       item.name,
       item.region,
-      item.countryName || item.countryCode,
+      item.countryName || item.countryCode || "Israel",
     ]
       .filter(Boolean)
       .join(", ");
 
-    const point = await geocodeLocation({ ...item, addressString });
+    const point = await geocodeLocation({
+      ...item,
+      addressString,
+      countryCode: item.countryCode || "IL",
+    });
 
-    const next: MetaLocationTarget =
-      locationMode === "radius"
-        ? {
-            ...item,
-            type: "custom",
-            key: item.key || addressString,
-            radiusKm,
-            addressString,
-            latitude: point?.latitude ?? item.latitude ?? null,
-            longitude: point?.longitude ?? item.longitude ?? null,
-          }
-        : {
-            ...item,
-            radiusKm: undefined,
-            addressString: undefined,
-            latitude: point?.latitude ?? item.latitude ?? null,
-            longitude: point?.longitude ?? item.longitude ?? null,
-          };
+    if (locationMode === "radius") {
+      // Facebook style: one city + real radius around it.
+      const next: MetaLocationTarget = {
+        ...item,
+        type: /city|subcity|neighborhood/i.test(item.type || "")
+          ? item.type
+          : "city",
+        key: item.key,
+        metaCityKey: item.key,
+        radiusKm,
+        addressString,
+        latitude: point?.latitude ?? null,
+        longitude: point?.longitude ?? null,
+        countryCode: item.countryCode || "IL",
+      };
+      // Replace previous radius cities with the newly chosen city (clear Meta-like pin).
+      onLocationsChange([next]);
+      setActiveLocationKey(locationIdentity(next));
+      setLocationQuery("");
+      setLocationResults([]);
+      setLocationOpen(false);
+      return;
+    }
+
+    const next: MetaLocationTarget = {
+      ...item,
+      radiusKm: undefined,
+      addressString: undefined,
+      metaCityKey: undefined,
+      latitude: point?.latitude ?? item.latitude ?? null,
+      longitude: point?.longitude ?? item.longitude ?? null,
+    };
 
     const identity = locationIdentity(next);
     const withoutDupes = locations.filter(
@@ -366,6 +408,7 @@ export default function MetaAudienceTargetingPanel({
         : withoutDupes;
 
     onLocationsChange([...filtered, next]);
+    setActiveLocationKey(identity);
     setLocationQuery("");
     setLocationResults([]);
     setLocationOpen(false);
@@ -375,12 +418,18 @@ export default function MetaAudienceTargetingPanel({
     const next = locations.filter(
       (loc) => locationIdentity(loc) !== locationIdentity(item)
     );
-    onLocationsChange(next.length ? next : [DEFAULT_ISRAEL_LOCATION]);
+    onLocationsChange(
+      next.length ? next : locationMode === "radius" ? [] : [DEFAULT_ISRAEL_LOCATION]
+    );
+    if (activeLocationKey === locationIdentity(item)) {
+      setActiveLocationKey(next.length ? locationIdentity(next[next.length - 1]) : null);
+    }
   };
 
   const updateLocationRadius = (item: MetaLocationTarget, nextRadius: number) => {
     const value = Math.min(80, Math.max(1, nextRadius || 25));
     setRadiusKm(value);
+    setActiveLocationKey(locationIdentity(item));
     onLocationsChange(
       locations.map((loc) =>
         locationIdentity(loc) === locationIdentity(item)
@@ -388,6 +437,26 @@ export default function MetaAudienceTargetingPanel({
           : loc
       )
     );
+  };
+
+  const switchLocationMode = (mode: "places" | "radius") => {
+    onLocationModeChange(mode);
+    if (mode === "radius") {
+      // Start clean like Facebook pin drop — wait for a city.
+      onLocationsChange([]);
+      setActiveLocationKey(null);
+    } else if (!locations.length) {
+      onLocationsChange([{ ...DEFAULT_ISRAEL_LOCATION }]);
+    } else {
+      // Strip radius when leaving radius mode.
+      onLocationsChange(
+        locations.map((loc) => ({
+          ...loc,
+          radiusKm: undefined,
+          metaCityKey: undefined,
+        }))
+      );
+    }
   };
 
   const addInterest = (item: MetaInterestTarget) => {
@@ -472,7 +541,7 @@ export default function MetaAudienceTargetingPanel({
         <div className="mb-3 grid gap-2 sm:grid-cols-2">
           <button
             type="button"
-            onClick={() => onLocationModeChange("places")}
+            onClick={() => switchLocationMode("places")}
             className={[
               "rounded-xl border px-3 py-2.5 text-start text-xs font-black",
               locationMode === "places"
@@ -484,7 +553,7 @@ export default function MetaAudienceTargetingPanel({
           </button>
           <button
             type="button"
-            onClick={() => onLocationModeChange("radius")}
+            onClick={() => switchLocationMode("radius")}
             className={[
               "rounded-xl border px-3 py-2.5 text-start text-xs font-black",
               locationMode === "radius"
@@ -500,22 +569,31 @@ export default function MetaAudienceTargetingPanel({
         </div>
 
         {locationMode === "radius" ? (
-          <label className="mb-3 block">
-            <span className="mb-1.5 block text-xs font-black text-slate-500">
-              {t("metaCampaigns.form.radiusKm", { km: radiusKm })}
-            </span>
-            <input
-              type="range"
-              min={1}
-              max={80}
-              value={radiusKm}
-              onChange={(e) => setRadiusAndSync(Number(e.target.value) || 25)}
-              className="w-full accent-[#1877F2]"
-            />
-            <span className="mt-1 block text-[11px] font-semibold text-slate-400">
-              העיגול הכחול במפה = האזור שנכלל ברדיוס ({radiusKm} ק״מ)
-            </span>
-          </label>
+          <div className="mb-3 rounded-xl border border-[#1877F2]/20 bg-[#1877F2]/5 p-3">
+            <p className="mb-2 text-xs font-black text-[#1877F2]">
+              כמו בפייסבוק: בחרו עיר ← הוסיפו ← הגדירו רדיוס רק סביב העיר הזו
+            </p>
+            <label className="block">
+              <span className="mb-1.5 block text-xs font-black text-slate-600">
+                {t("metaCampaigns.form.radiusKm", { km: radiusKm })}
+              </span>
+              <input
+                type="range"
+                min={1}
+                max={80}
+                value={radiusKm}
+                onChange={(e) =>
+                  setRadiusForActiveCity(Number(e.target.value) || 25)
+                }
+                className="w-full accent-[#1877F2]"
+              />
+              <span className="mt-1 block text-[11px] font-semibold text-slate-500">
+                {locations[0]?.name
+                  ? `רדיוס אמיתי סביב ${locations[0].name}: ${radiusKm} ק״מ`
+                  : "קודם חפשו והוסיפו עיר — ואז הרדיוס יופיע סביבה במפה"}
+              </span>
+            </label>
+          </div>
         ) : null}
 
         <div className="relative mb-3" ref={locationBoxRef}>
@@ -580,47 +658,83 @@ export default function MetaAudienceTargetingPanel({
         ) : null}
 
         <div className="mb-3 flex flex-wrap gap-2">
-          {locations.map((item) => (
-            <span
-              key={locationIdentity(item)}
-              className="inline-flex items-center gap-2 rounded-full border border-[#1877F2]/20 bg-[#1877F2]/5 px-3 py-1.5 text-xs font-black text-slate-800"
-            >
-              <MapPin className="h-3.5 w-3.5 text-[#1877F2]" />
-              <span>
-                {item.name}
-                {item.radiusKm
-                  ? ` · ${item.radiusKm}${t("metaCampaigns.form.kmShort")}`
-                  : ""}
-              </span>
-              {item.radiusKm != null || item.type === "custom" ? (
-                <input
-                  type="number"
-                  min={1}
-                  max={80}
-                  value={item.radiusKm ?? radiusKm}
-                  onChange={(e) =>
-                    updateLocationRadius(item, Number(e.target.value) || 25)
-                  }
-                  className="w-14 rounded-md border border-slate-200 px-1 py-0.5 text-[11px]"
-                  title={t("metaCampaigns.form.radiusEdit")}
-                />
-              ) : null}
-              <button
-                type="button"
-                onClick={() => removeLocation(item)}
-                className="rounded-full p-0.5 hover:bg-white"
-                aria-label={t("metaCampaigns.form.remove")}
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            </span>
-          ))}
+          {locations.length ? (
+            locations.map((item) => {
+              const id = locationIdentity(item);
+              const active = activeLocationKey === id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => {
+                    setActiveLocationKey(id);
+                    if (item.radiusKm != null) setRadiusKm(Number(item.radiusKm));
+                  }}
+                  className={[
+                    "inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black",
+                    active
+                      ? "border-[#1877F2] bg-[#1877F2] text-white"
+                      : "border-[#1877F2]/20 bg-[#1877F2]/5 text-slate-800",
+                  ].join(" ")}
+                >
+                  <MapPin className="h-3.5 w-3.5" />
+                  <span>
+                    {item.name}
+                    {item.radiusKm != null
+                      ? ` · ${item.radiusKm}${t("metaCampaigns.form.kmShort")}`
+                      : ""}
+                  </span>
+                  {locationMode === "radius" ? (
+                    <input
+                      type="number"
+                      min={1}
+                      max={80}
+                      value={item.radiusKm ?? radiusKm}
+                      onClick={(e) => e.stopPropagation()}
+                      onChange={(e) =>
+                        updateLocationRadius(item, Number(e.target.value) || 25)
+                      }
+                      className="w-14 rounded-md border border-white/40 bg-white px-1 py-0.5 text-[11px] text-slate-800"
+                      title={t("metaCampaigns.form.radiusEdit")}
+                    />
+                  ) : null}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeLocation(item);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.stopPropagation();
+                        removeLocation(item);
+                      }
+                    }}
+                    className="rounded-full p-0.5 hover:bg-white/30"
+                    aria-label={t("metaCampaigns.form.remove")}
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </span>
+                </button>
+              );
+            })
+          ) : locationMode === "radius" ? (
+            <p className="text-xs font-semibold text-slate-400">
+              חפשו עיר (לדוגמה: באר שבע / חיפה) והוסיפו — ואז הגדירו רדיוס סביבה
+            </p>
+          ) : null}
         </div>
 
         <MetaLocationsMap
           locations={locations}
-          fallbackRadiusKm={locationMode === "radius" ? radiusKm : null}
-          hint={t("metaCampaigns.form.locationsMapHint")}
+          focusKey={activeLocationKey}
+          onSelectLocation={setActiveLocationKey}
+          hint={
+            locationMode === "radius"
+              ? "כמו בפייסבוק: העיגול הוא רדיוס אמיתי בק״מ רק סביב העיר שנבחרה. זום המפה מציג מה נכלל בתוך הרדיוס."
+              : t("metaCampaigns.form.locationsMapHint")
+          }
         />
       </div>
 
