@@ -230,7 +230,7 @@ export default function MetaBillingAccountCards({
                 wabaBilling.hasPrimaryFundingId === false) ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  No payment method — add one in WhatsApp Manager
+                  No payment method — add one in Meta WhatsApp account settings
                 </p>
               ) : null}
               {!wabaBilling.paymentMethodDisplay &&
@@ -241,10 +241,10 @@ export default function MetaBillingAccountCards({
                 <p className="inline-flex items-start gap-1 text-xs font-semibold text-slate-600">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
                   <span>
-                    Payment method: view in WhatsApp Manager
+                    Payment method: check in Meta WhatsApp account settings
                     <span className="mt-0.5 block font-medium text-slate-500">
-                      Meta does not expose WhatsApp card brand/last 4 to apps
-                      the way it does for Ad Accounts.
+                      Meta shows the card there (Summary → Payment method). Apps
+                      do not get Ad-Account-style brand/last 4 for WhatsApp.
                     </span>
                   </span>
                 </p>
@@ -275,10 +275,7 @@ export default function MetaBillingAccountCards({
                   rel="noreferrer"
                   className={`${btnSecondary} inline-flex items-center gap-1.5`}
                 >
-                  {wabaBilling.paymentMethodDisplay ||
-                  wabaBilling.hasPaymentMethod === true
-                    ? wabaBilling.actionLabel || "Open WhatsApp Manager"
-                    : "Manage WhatsApp billing"}
+                  {wabaBilling.actionLabel || "Check WhatsApp billing"}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}

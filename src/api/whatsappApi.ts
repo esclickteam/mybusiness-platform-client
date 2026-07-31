@@ -42,6 +42,8 @@ export type WhatsAppWabaBillingHealth = {
   actionRequired: boolean;
   issues: string[];
   manageBillingUrl: string;
+  /** WhatsApp Manager overview (ops); billing CTA uses manageBillingUrl / actionUrl */
+  whatsappManagerUrl?: string;
   actionLabel?: string;
   actionUrl?: string;
 };
