@@ -5221,7 +5221,7 @@
       "interestSearchPlaceholder": "Search an interest, e.g. eyebrows",
       "interestSearchError": "Could not search interests in Meta",
       "interestsEmpty": "Type in the search box to see Meta interests",
-      "interestSuggestionsTitle": "Related suggestions from Meta",
+      "interestSuggestionsTitle": "Related interests (real targeting only)",
       "interestSuggestionsEmpty": "No extra suggestions from Meta right now",
       "audienceSize": "Audience ≈ {{size}}",
       "add": "Add",
