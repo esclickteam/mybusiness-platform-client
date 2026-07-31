@@ -177,6 +177,8 @@ export type MetaLocationTarget = {
   longitude?: number | null;
   addressString?: string;
   distanceUnit?: string;
+  /** Original Meta city key when using Facebook-style city + radius. */
+  metaCityKey?: string;
 };
 
 export type MetaInterestTarget = {
