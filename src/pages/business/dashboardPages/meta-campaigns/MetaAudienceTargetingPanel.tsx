@@ -82,6 +82,22 @@ function looksLikeInterestMatch(item: MetaInterestTarget, q: string) {
   return name.includes(query) || path.includes(query) || query.includes(name);
 }
 
+/** Drop Meta junk that is NOT a real related interest (devices/birthdays/etc). */
+function isJunkRelatedSuggestion(item: MetaInterestTarget) {
+  const haystack = [
+    item.name,
+    ...(item.path || []),
+    item.topic,
+    item.description,
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+  return /גישה לפייסבוק|facebook access|friends of|חברים של|יום הולדת|ימי הולדת|birthday|android|ios|iphone|tablet|טאבלט|סמארטפון|smartphone|מכשיר|device|behaviors|התנהגויות|demographics|דמוגרפ/.test(
+    haystack
+  );
+}
+
 export default function MetaAudienceTargetingPanel({
   businessId,
   section,
@@ -288,7 +304,12 @@ export default function MetaAudienceTargetingPanel({
         });
         if (cancelled) return;
         setInterestSuggestions(
-          (data.results || []).filter((item) => !selectedInterestIds.has(item.id))
+          (data.results || []).filter(
+            (item) =>
+              item?.id &&
+              !selectedInterestIds.has(item.id) &&
+              !isJunkRelatedSuggestion(item)
+          )
         );
       } catch {
         if (!cancelled) setInterestSuggestions([]);

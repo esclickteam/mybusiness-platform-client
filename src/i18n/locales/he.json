@@ -5210,7 +5210,7 @@
       "interestSearchPlaceholder": "חפשו תחום עניין, לדוגמה: גבות",
       "interestSearchError": "לא הצלחנו לחפש מיקודים במטא",
       "interestsEmpty": "הקלידו בשורת החיפוש כדי לראות מיקודים ממטא",
-      "interestSuggestionsTitle": "הצעות קשורות ממטא",
+      "interestSuggestionsTitle": "תחומי עניין קשורים (רק מיקודים אמיתיים)",
       "interestSuggestionsEmpty": "אין כרגע הצעות נוספות ממטא",
       "audienceSize": "קהל ≈ {{size}}",
       "add": "הוספה",
