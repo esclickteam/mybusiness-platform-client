@@ -51,6 +51,104 @@ function ColorField({
   );
 }
 
+function SmartBotLivePreview({ settings }: { settings: SmartBotSettings }) {
+  const triggerStyle = settings.triggerStyle || "both";
+  const showIcon = triggerStyle === "icon" || triggerStyle === "both";
+  const showLabel = triggerStyle === "label" || triggerStyle === "both";
+  const triggerColor = settings.triggerColor || "#0F766E";
+  const triggerTextColor = settings.triggerTextColor || "#FFFFFF";
+  const headerColor = settings.windowHeaderColor || "#0F766E";
+  const windowBg = settings.windowBgColor || "#FFFFFF";
+  const botBubble = settings.botBubbleColor || "#F1F5F9";
+  const botText = settings.botBubbleTextColor || "#0F172A";
+  const label = settings.triggerLabel || "צריכים עזרה?";
+
+  return (
+    <div className="space-y-3 md:sticky md:top-4">
+      <div className="overflow-hidden rounded-2xl border border-teal-200/80 bg-gradient-to-br from-teal-50 via-white to-slate-50 shadow-sm">
+        <div className="border-b border-teal-100/80 px-4 py-3">
+          <p className="text-[11px] font-bold uppercase tracking-wide text-teal-700">
+            תצוגה מקדימה
+          </p>
+          <p className="mt-0.5 text-xs text-slate-500">
+            הכפתור כפי שיופיע באתר
+          </p>
+        </div>
+
+        <div
+          className="relative flex min-h-[168px] items-end justify-end p-5"
+          style={{
+            backgroundImage:
+              "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 45%, #f1f5f9 100%)",
+          }}
+        >
+          <div
+            className="pointer-events-none absolute inset-4 rounded-xl border border-dashed border-slate-300/70 bg-white/40"
+            aria-hidden
+          />
+          <span
+            className={`relative z-[1] inline-flex items-center gap-2 shadow-lg ${
+              showLabel
+                ? "rounded-full px-4 py-3"
+                : "h-14 w-14 justify-center rounded-full"
+            }`}
+            style={{ background: triggerColor, color: triggerTextColor }}
+          >
+            {showIcon ? <Bot size={22} /> : null}
+            {showLabel ? (
+              <span className="text-sm font-bold whitespace-nowrap">{label}</span>
+            ) : null}
+          </span>
+        </div>
+      </div>
+
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div
+          className="flex items-center gap-2.5 px-3 py-2.5 text-white"
+          style={{ background: headerColor }}
+        >
+          <span className="grid h-8 w-8 place-items-center rounded-xl bg-white/15">
+            <Bot size={16} />
+          </span>
+          <div className="min-w-0">
+            <strong className="block truncate text-xs font-black">
+              {settings.botName || "בוט חכם"}
+            </strong>
+            <span className="block text-[10px] font-semibold text-white/80">
+              אונליין · עונה מיד
+            </span>
+          </div>
+        </div>
+        <div className="space-y-2 px-3 py-3" style={{ background: windowBg }}>
+          <div
+            className="mr-auto max-w-[90%] rounded-2xl px-3 py-2 text-[11px] font-medium leading-5"
+            style={{ background: botBubble, color: botText }}
+          >
+            {settings.welcomeMessage || "שלום! איך אפשר לעזור לכם היום?"}
+          </div>
+          <div className="flex flex-wrap gap-1.5">
+            {(settings.nodes?.[0]?.options || [])
+              .slice(0, 2)
+              .map((option) => (
+                <span
+                  key={option.id}
+                  className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-bold text-slate-700"
+                >
+                  {option.label}
+                </span>
+              ))}
+          </div>
+        </div>
+      </div>
+
+      <InfoCallout variant="tip">
+        בעורך: תוספים → גררו את כפתור הבוט למיקום הרצוי. בלחיצה באתר החי נפתח חלון
+        השיחה לפי עץ השיחה שהגדרתם.
+      </InfoCallout>
+    </div>
+  );
+}
+
 export default function SmartBotPanel(props: PluginPanelProps) {
   const { settings, loading, saving, message, save, updateField } =
     useSitePluginSettings(props.siteId, "smart-bot");
@@ -100,12 +198,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
       saving={saving}
       message={message}
       onSave={() => save()}
-      sidebar={
-        <InfoCallout variant="tip">
-          בעורך: תוספים → גררו את כפתור הבוט למיקום הרצוי. בלחיצה באתר החי נפתח חלון
-          השיחה לפי עץ השיחה שהגדרתם.
-        </InfoCallout>
-      }
+      sidebar={<SmartBotLivePreview settings={merged} />}
     >
       <SettingsSection title="הפעלה" description="זמינות התוסף באתר">
         <Toggle
