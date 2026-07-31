@@ -633,13 +633,13 @@ export default function WhatsAppSettingsTab() {
           </div>
         )}
 
-        {(connection?.registrationLastError ||
-          connection?.lastError ||
-          actionError) && (
+        {(actionError ||
+          connection?.registrationLastError ||
+          (!readyToSend && connection?.lastError)) && (
           <p className="mt-4 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
-            {connection?.registrationLastError ||
-              connection?.lastError ||
-              actionError}
+            {actionError ||
+              connection?.registrationLastError ||
+              connection?.lastError}
           </p>
         )}
       </section>
