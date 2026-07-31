@@ -206,6 +206,14 @@ export default function MetaBillingAccountCards({
                   Account review: {wabaBilling.accountReviewStatus}
                 </p>
               ) : null}
+              {wabaBilling.businessVerificationLabel ||
+              wabaBilling.businessVerificationStatus ? (
+                <p className="text-xs font-semibold text-slate-600">
+                  Business verification:{" "}
+                  {wabaBilling.businessVerificationLabel ||
+                    wabaBilling.businessVerificationStatus}
+                </p>
+              ) : null}
               {wabaBilling.paymentMethodDisplay ||
               wabaBilling.hasPaymentMethod === true ||
               wabaBilling.hasPrimaryFundingId === true ? (
@@ -222,29 +230,42 @@ export default function MetaBillingAccountCards({
                 wabaBilling.hasPrimaryFundingId === false) ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  No payment method — add one in WhatsApp Manager if sending is
-                  blocked
+                  No payment method — add one in WhatsApp Manager
                 </p>
               ) : null}
               {!wabaBilling.paymentMethodDisplay &&
-              wabaBilling.hasPaymentMethod == null &&
-              wabaBilling.hasPrimaryFundingId == null ? (
-                <p className="text-xs font-semibold text-slate-500">
-                  Payment method not returned by Meta for this token yet — open
-                  WhatsApp Manager to confirm billing.
+              wabaBilling.hasPaymentMethod !== true &&
+              wabaBilling.hasPrimaryFundingId !== true &&
+              wabaBilling.hasPaymentMethod !== false &&
+              wabaBilling.hasPrimaryFundingId !== false ? (
+                <p className="inline-flex items-start gap-1 text-xs font-semibold text-slate-600">
+                  <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
+                  <span>
+                    Payment method: view in WhatsApp Manager
+                    <span className="mt-0.5 block font-medium text-slate-500">
+                      Meta does not expose WhatsApp card brand/last 4 to apps
+                      the way it does for Ad Accounts.
+                    </span>
+                  </span>
                 </p>
               ) : null}
               <p className="text-[11px] font-semibold leading-relaxed text-slate-500">
                 {wabaBilling.billingSeparationNote}
               </p>
-              {(wabaBilling.issues || []).map((issue) => (
-                <p
-                  key={issue}
-                  className="text-xs font-semibold text-rose-700"
-                >
-                  {issue}
-                </p>
-              ))}
+              {(wabaBilling.issues || [])
+                .filter((issue) => {
+                  // Already shown as a dedicated verification row.
+                  const lower = issue.toLowerCase();
+                  return !lower.startsWith("business verification:");
+                })
+                .map((issue) => (
+                  <p
+                    key={issue}
+                    className="text-xs font-semibold text-rose-700"
+                  >
+                    {issue}
+                  </p>
+                ))}
               {wabaBilling.actionUrl || wabaBilling.manageBillingUrl ? (
                 <a
                   href={
@@ -254,7 +275,10 @@ export default function MetaBillingAccountCards({
                   rel="noreferrer"
                   className={`${btnSecondary} inline-flex items-center gap-1.5`}
                 >
-                  {wabaBilling.actionLabel || "Open WhatsApp Manager"}
+                  {wabaBilling.paymentMethodDisplay ||
+                  wabaBilling.hasPaymentMethod === true
+                    ? wabaBilling.actionLabel || "Open WhatsApp Manager"
+                    : "Manage WhatsApp billing"}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}
