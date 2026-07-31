@@ -494,6 +494,7 @@ export async function createMetaLeadForm(
     thankYouTitle?: string;
     thankYouBody?: string;
     thankYouUrl?: string;
+    thankYouButtonText?: string;
   }
 ) {
   const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(

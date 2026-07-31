@@ -5254,7 +5254,31 @@
         "verticalHint": "סטורי ורילס",
         "horizontal": "אופקי 1.91:1",
         "horizontalHint": "פיד רחב ומיקומים נוספים",
-        "noImage": "העלו תמונה כדי לראות חיתוך"
+        "noImage": "העלו תמונה כדי לראות חיתוך",
+        "autoFitNote": "התמונה תותאם אוטומטית לכל פורמטי הפלייסמנט שנבחרו."
+      },
+      "review": {
+        "checkDetails": "שם קמפיין ועמוד פייסבוק",
+        "checkBudget": "תקציב יומי או כולל",
+        "checkSchedule": "תאריך התחלה (וסיום אם הוגדר)"
+      },
+      "identity": {
+        "formsNote": "טפסי לידים ישויכו לעמוד זה."
+      },
+      "leadForm": {
+        "useExisting": "טופס קיים",
+        "createNew": "יצירת טופס חדש",
+        "createHint": "לחצו המשך כדי להגדיר טופס לידים חדש.",
+        "formType": "סוג טופס",
+        "typeVolume": "נפח — מקסימום לידים",
+        "typeIntent": "כוונה — איכות גבוהה יותר",
+        "intentNote": "אימות טלפון יתווסף בשלב מאוחר יותר.",
+        "introTitle": "כותרת פתיחה",
+        "introDescription": "תיאור פתיחה",
+        "privacyUrl": "קישור למדיניות פרטיות",
+        "thankYouTitle": "כותרת מסך תודה",
+        "thankYouBody": "טקסט מסך תודה",
+        "thankYouButton": "טקסט כפתור"
       },
       "formPreview": {
         "platformFacebook": "טופס מיידי — פייסבוק",
@@ -5271,7 +5295,14 @@
         "thankYouBodyPlaceholder": "נחזור אליכם בהקדם",
         "continue": "המשך",
         "submit": "שליחה",
-        "done": "סיום"
+        "done": "סיום",
+        "privacyRequired": "נדרש קישור למדיניות פרטיות",
+        "screen": {
+          "intro": "פתיחה",
+          "questions": "שאלות",
+          "privacy": "פרטיות",
+          "thanks": "תודה"
+        }
       }
     },
     "cta": {

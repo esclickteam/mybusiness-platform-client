@@ -5265,7 +5265,31 @@
         "verticalHint": "Stories & Reels",
         "horizontal": "Horizontal 1.91:1",
         "horizontalHint": "Wide feed and other placements",
-        "noImage": "Upload an image to preview crops"
+        "noImage": "Upload an image to preview crops",
+        "autoFitNote": "Your image will auto-fit all selected placement formats."
+      },
+      "review": {
+        "checkDetails": "Campaign name and Facebook Page",
+        "checkBudget": "Daily or lifetime budget",
+        "checkSchedule": "Start date (and end if set)"
+      },
+      "identity": {
+        "formsNote": "Lead forms will be attached to this Page."
+      },
+      "leadForm": {
+        "useExisting": "Existing form",
+        "createNew": "Create new form",
+        "createHint": "Click Continue to set up a new lead form.",
+        "formType": "Form type",
+        "typeVolume": "Volume — maximize leads",
+        "typeIntent": "Intent — higher quality",
+        "intentNote": "Phone verification will be added in a later step.",
+        "introTitle": "Intro title",
+        "introDescription": "Intro description",
+        "privacyUrl": "Privacy policy URL",
+        "thankYouTitle": "Thank-you title",
+        "thankYouBody": "Thank-you message",
+        "thankYouButton": "Button text"
       },
       "formPreview": {
         "platformFacebook": "Instant form — Facebook",
@@ -5282,7 +5306,14 @@
         "thankYouBodyPlaceholder": "We'll be in touch soon",
         "continue": "Continue",
         "submit": "Submit",
-        "done": "Done"
+        "done": "Done",
+        "privacyRequired": "Privacy policy URL is required",
+        "screen": {
+          "intro": "Intro",
+          "questions": "Questions",
+          "privacy": "Privacy",
+          "thanks": "Thanks"
+        }
       }
     },
     "cta": {
