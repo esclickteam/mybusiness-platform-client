@@ -262,7 +262,60 @@ export type MetaCreateCampaignResult = {
   adSetId?: string;
   creativeId?: string;
   adId?: string;
+  status?: string | null;
+  effectiveStatus?: string | null;
   preview?: MetaAdPreview | null;
+  publish?: MetaCampaignPublishRecord | null;
+};
+
+export type MetaCampaignPublishRecord = {
+  id: string;
+  businessId: string;
+  localName: string;
+  objective: string;
+  publishStatus: string;
+  failedStage?: string;
+  adAccountId: string;
+  pageId: string;
+  instantFormId: string;
+  metaCampaignId: string;
+  metaAdSetId: string;
+  metaCreativeId: string;
+  metaAdId: string;
+  metaConfiguredStatus?: string;
+  metaEffectiveStatus?: string;
+  metaReviewFeedback?: unknown;
+  metaIssuesInfo?: unknown;
+  displayStatus: string;
+  lastError?: string;
+  lastMetaErrorCode?: string;
+  lastMetaErrorMessage?: string;
+  publishedAt?: string | null;
+  lastMetaSyncAt?: string | null;
+  adsManagerUrl?: string;
+  success?: boolean;
+  auditLog?: Array<{
+    stage: string;
+    metaObjectId?: string;
+    responseStatus?: string;
+    metaErrorCode?: string;
+    metaErrorMessage?: string;
+    success?: boolean;
+    at?: string;
+  }>;
+};
+
+export type MetaPublishResult = {
+  success: boolean;
+  campaignId: string;
+  adSetId: string;
+  creativeId: string;
+  adId: string;
+  status: string;
+  effectiveStatus?: string;
+  configuredStatus?: string;
+  adsManagerUrl?: string;
+  publish: MetaCampaignPublishRecord;
 };
 
 function withBusiness(businessId?: string, extra?: Record<string, unknown>) {
@@ -602,5 +655,64 @@ export async function browseMetaInterestCategories(
     "/meta-campaigns/targeting/interest-browse",
     withBusiness(businessId, { locale: query?.locale })
   );
+  return data;
+}
+
+/** Real Meta Marketing API publish (campaign → ad set → creative → ad). */
+export async function publishMetaCampaign(
+  businessId: string,
+  payload: Record<string, unknown>
+) {
+  const { data } = await API.post<MetaPublishResult>(
+    "/meta-campaigns/publishes",
+    { businessId, ...payload }
+  );
+  return data;
+}
+
+export async function syncMetaPublish(
+  businessId: string,
+  publishId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    publish: MetaCampaignPublishRecord;
+    effectiveStatus?: string;
+    campaignStatus?: string;
+    adSetStatus?: string;
+    adStatus?: string;
+  }>(`/meta-campaigns/publishes/${publishId}/sync`, { businessId });
+  return data;
+}
+
+export async function retryMetaPublish(
+  businessId: string,
+  publishId: string
+) {
+  const { data } = await API.post<MetaPublishResult>(
+    `/meta-campaigns/publishes/${publishId}/retry`,
+    { businessId }
+  );
+  return data;
+}
+
+export async function listMetaPublishes(businessId: string) {
+  const { data } = await API.get<{
+    success: boolean;
+    publishes: MetaCampaignPublishRecord[];
+  }>("/meta-campaigns/publishes", withBusiness(businessId));
+  return data.publishes || [];
+}
+
+export async function pollMetaPublishes(businessId: string) {
+  const { data } = await API.post<{
+    success: boolean;
+    results: Array<{
+      id: string;
+      ok: boolean;
+      publish?: MetaCampaignPublishRecord;
+      error?: string;
+    }>;
+  }>("/meta-campaigns/publishes/poll", { businessId });
   return data;
 }

@@ -1,6 +1,17 @@
-import React, { useMemo } from "react";
-import { useOutletContext } from "react-router-dom";
-import { Check, ChevronRight } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link, useOutletContext } from "react-router-dom";
+import { toast } from "react-toastify";
+import { Check, ChevronRight, Loader2 } from "lucide-react";
+import {
+  getMetaCampaignsStatus,
+  listMetaLeadForms,
+  publishMetaCampaign,
+  retryMetaPublish,
+  syncMetaPublish,
+  type MetaAdsConnectionStatus,
+  type MetaCampaignPublishRecord,
+  type MetaLeadForm,
+} from "../../../../../api/metaCampaignsApi";
 import MetaAdsManagerTree from "./MetaAdsManagerTree";
 import CampaignLevelEditor from "./editors/CampaignLevelEditor";
 import AdSetLevelEditor from "./editors/AdSetLevelEditor";
@@ -8,6 +19,11 @@ import AdLevelEditor from "./editors/AdLevelEditor";
 import CampaignInsightsSidebar from "./sidebars/CampaignInsightsSidebar";
 import AdSetInsightsSidebar from "./sidebars/AdSetInsightsSidebar";
 import AdInsightsSidebar from "./sidebars/AdInsightsSidebar";
+import PublishResultModal from "./PublishResultModal";
+import {
+  buildPublishPayloadFromAdsManager,
+  validateAdsManagerClient,
+} from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
 import {
   metaBtnPrimary,
@@ -18,7 +34,7 @@ import {
 type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
-  useOutletContext<OutletCtx>();
+  const { businessId } = useOutletContext<OutletCtx>();
   const ctrl = useAdsManagerState();
   const {
     state,
@@ -32,6 +48,83 @@ export default function MetaAdsManagerPage() {
     patchAd,
     canPublish,
   } = ctrl;
+
+  const [connection, setConnection] = useState<MetaAdsConnectionStatus | null>(
+    null
+  );
+  const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
+  const [publishing, setPublishing] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [publishResult, setPublishResult] =
+    useState<MetaCampaignPublishRecord | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (!businessId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const status = await getMetaCampaignsStatus(businessId);
+        if (cancelled) return;
+        setConnection(status);
+        if (status.connected || status.isConnected) {
+          try {
+            const formsRes = await listMetaLeadForms(
+              businessId,
+              status.selectedPage?.pageId
+            );
+            if (!cancelled) setLeadForms(formsRes?.forms || []);
+          } catch {
+            if (!cancelled) setLeadForms([]);
+          }
+        }
+      } catch {
+        if (!cancelled) setConnection(null);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
+
+  const liveForms = useMemo(() => {
+    if (leadForms.length) {
+      return leadForms.map((form) => ({
+        id: form.id,
+        name: form.name,
+        status:
+          String(form.status || "").toUpperCase() === "ARCHIVED"
+            ? ("archived" as const)
+            : ("active" as const),
+        customQuestions: Array.isArray(form.questions)
+          ? form.questions.length
+          : 0,
+        updatedAt: form.createdTime
+          ? String(form.createdTime).slice(0, 10)
+          : "",
+      }));
+    }
+    return state.instantForms;
+  }, [leadForms, state.instantForms]);
+
+  // Prefill page id from connected Meta page.
+  useEffect(() => {
+    const pageId = connection?.selectedPage?.pageId;
+    if (!pageId || !selectedAd) return;
+    if (selectedAd.facebookPageId && selectedAd.facebookPageId !== "page_1") {
+      return;
+    }
+    patchAd(selectedAd.id, {
+      facebookPageId: pageId,
+      facebookPageName:
+        connection?.selectedPage?.pageName || "Facebook Page",
+    });
+  }, [
+    connection?.selectedPage?.pageId,
+    connection?.selectedPage?.pageName,
+    selectedAd,
+    patchAd,
+  ]);
 
   const crumbs = useMemo(() => {
     const items: Array<{
@@ -62,13 +155,167 @@ export default function MetaAdsManagerPage() {
     return items;
   }, [state, selectedAdSet, selectedAd]);
 
+  const handlePublish = async () => {
+    if (!businessId) return;
+    if (!connection?.connected && !connection?.isConnected) {
+      toast.error("Connect Meta Ads and select an Ad Account first");
+      return;
+    }
+    if (!connection.selectedAdAccount) {
+      toast.error("Select an Ad Account before publishing");
+      return;
+    }
+
+    const clientErrors = validateAdsManagerClient(state);
+    if (clientErrors.length) {
+      toast.error(clientErrors[0]);
+      setMode("review");
+      return;
+    }
+    if (!canPublish) {
+      toast.error("Resolve validation issues before publishing");
+      return;
+    }
+
+    try {
+      setPublishing(true);
+      const payload = buildPublishPayloadFromAdsManager(state);
+      // Prefer connected page when draft still has placeholder.
+      if (
+        !payload.pageId ||
+        payload.pageId === "page_1" ||
+        payload.pageId === "page_2"
+      ) {
+        payload.pageId =
+          connection.selectedPage?.pageId || payload.pageId;
+      }
+
+      const result = await publishMetaCampaign(businessId, payload);
+      if (!result?.adId) {
+        toast.error("Meta did not return an Ad ID — publish not confirmed");
+        return;
+      }
+      setPublishResult(result.publish);
+      setModalOpen(true);
+      toast.success("Campaign submitted to Meta");
+    } catch (error: unknown) {
+      const err = error as {
+        response?: {
+          data?: {
+            error?: string;
+            publish?: MetaCampaignPublishRecord;
+            failedStage?: string;
+          };
+        };
+        message?: string;
+      };
+      const publish = err.response?.data?.publish;
+      if (publish) {
+        setPublishResult(publish);
+        setModalOpen(true);
+      }
+      toast.error(
+        err.response?.data?.error ||
+          err.message ||
+          "Publish to Meta failed"
+      );
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleSync = async () => {
+    if (!businessId || !publishResult?.id) return;
+    try {
+      setSyncing(true);
+      const data = await syncMetaPublish(businessId, publishResult.id);
+      setPublishResult(data.publish);
+      toast.success(
+        `Synced from Meta · ${data.effectiveStatus || data.publish.displayStatus}`
+      );
+    } catch (error: unknown) {
+      toast.error(
+        (error as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error || "Sync from Meta failed"
+      );
+    } finally {
+      setSyncing(false);
+    }
+  };
+
+  const handleRetry = async () => {
+    if (!businessId || !publishResult?.id) return;
+    try {
+      setPublishing(true);
+      const result = await retryMetaPublish(businessId, publishResult.id);
+      setPublishResult(result.publish);
+      if (result.adId) {
+        toast.success("Retry completed — Ad ID confirmed from Meta");
+      }
+    } catch (error: unknown) {
+      const err = error as {
+        response?: { data?: { error?: string; publish?: MetaCampaignPublishRecord } };
+      };
+      if (err.response?.data?.publish) {
+        setPublishResult(err.response.data.publish);
+      }
+      toast.error(err.response?.data?.error || "Retry failed");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  // Poll Meta status while modal open and still pending review.
+  useEffect(() => {
+    if (!modalOpen || !businessId || !publishResult?.id) return;
+    if (
+      !publishResult.metaAdId ||
+      !["PENDING_REVIEW", "SUBMITTED", "UNKNOWN"].includes(
+        publishResult.displayStatus
+      )
+    ) {
+      return;
+    }
+    const timer = setInterval(() => {
+      void syncMetaPublish(businessId, publishResult.id)
+        .then((data) => setPublishResult(data.publish))
+        .catch(() => undefined);
+    }, 45000);
+    return () => clearInterval(timer);
+  }, [
+    modalOpen,
+    businessId,
+    publishResult?.id,
+    publishResult?.metaAdId,
+    publishResult?.displayStatus,
+  ]);
+
+  const connected = Boolean(connection?.connected || connection?.isConnected);
+
   return (
     <div
       dir="ltr"
       className="overflow-hidden rounded-xl border border-[#CED0D4] bg-white shadow-[0_2px_8px_rgba(0,0,0,0.06)]"
       style={{ background: metaPageBg }}
     >
-      {/* Top chrome — Meta Ads Manager style */}
+      {!connected ? (
+        <div className="border-b border-amber-200 bg-amber-50 px-4 py-2.5 text-[13px] font-semibold text-amber-900">
+          Connect Meta Ads and select an Ad Account + Page before publishing.{" "}
+          <Link
+            to="../settings"
+            className="font-bold text-[#1877F2] underline"
+          >
+            Open Meta connection
+          </Link>
+        </div>
+      ) : (
+        <div className="border-b border-[#E4E6EB] bg-[#E7F3FF] px-4 py-2 text-[12px] font-semibold text-[#050505]">
+          Ad account: {connection?.selectedAdAccount?.name || "—"} · Page:{" "}
+          {connection?.selectedPage?.pageName || "not selected"} · Publish
+          calls Meta Marketing API for real
+        </div>
+      )}
+
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#CED0D4] bg-white px-3 py-2.5 sm:px-4">
         <div className="flex min-w-0 flex-wrap items-center gap-1 text-[13px]">
           {crumbs.map((crumb, index) => (
@@ -114,19 +361,24 @@ export default function MetaAdsManagerPage() {
           <button
             type="button"
             className={metaBtnPrimary}
-            disabled={!canPublish}
+            disabled={publishing || !canPublish || !connected}
             title={
-              canPublish
-                ? "Publish campaign"
-                : "Resolve validation issues before publishing"
+              !connected
+                ? "Connect Meta first"
+                : canPublish
+                  ? "Publish to Meta Marketing API"
+                  : "Resolve validation issues before publishing"
             }
+            onClick={() => void handlePublish()}
           >
-            Publish
+            {publishing ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : null}
+            {publishing ? "Publishing…" : "Publish"}
           </button>
         </div>
       </div>
 
-      {/* 3-pane body */}
       <div className="grid min-h-[720px] grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_300px]">
         <div className="min-h-[220px] lg:min-h-0">
           <MetaAdsManagerTree
@@ -142,7 +394,7 @@ export default function MetaAdsManagerPage() {
               <h2 className="text-[20px] font-bold text-[#050505]">Review</h2>
               <p className="mt-1 text-[14px] text-[#65676B]">
                 Confirm settings across Campaign, Ad set and Ad before
-                publishing.
+                publishing to Meta.
               </p>
               <dl className="mt-5 space-y-3 text-[14px]">
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
@@ -178,9 +430,8 @@ export default function MetaAdsManagerPage() {
                 <div className="flex justify-between gap-4">
                   <dt className="text-[#65676B]">Instant form</dt>
                   <dd className="font-semibold text-[#050505]">
-                    {state.instantForms.find(
-                      (f) => f.id === selectedAd?.instantFormId
-                    )?.name || "Not selected"}
+                    {liveForms.find((f) => f.id === selectedAd?.instantFormId)
+                      ?.name || "Not selected"}
                   </dd>
                 </div>
               </dl>
@@ -213,7 +464,7 @@ export default function MetaAdsManagerPage() {
           selectedAd ? (
             <AdLevelEditor
               ad={selectedAd}
-              forms={state.instantForms}
+              forms={liveForms}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
             />
           ) : null}
@@ -237,32 +488,44 @@ export default function MetaAdsManagerPage() {
           {state.selectedLevel === "ad" && selectedAd ? (
             <AdInsightsSidebar
               ad={selectedAd}
-              forms={state.instantForms}
+              forms={liveForms}
               score={state.campaignScore}
             />
           ) : null}
         </aside>
       </div>
 
-      {/* Footer save status */}
       <div className="flex items-center justify-between gap-3 border-t border-[#CED0D4] bg-white px-4 py-2 text-[12px] text-[#65676B]">
         <div className="inline-flex items-center gap-1.5 font-semibold">
           {state.saveStatus === "saved" ? (
             <>
               <Check className="h-3.5 w-3.5 text-[#31A24C]" />
-              All edits saved
+              Draft edits saved locally
             </>
           ) : state.saveStatus === "saving" ? (
-            "Saving…"
+            "Saving draft…"
           ) : (
-            "Couldn’t save changes"
+            "Couldn’t save draft"
           )}
         </div>
         <span>
-          {state.mode === "edit" ? "Editing draft" : "Review mode"} · API-ready
-          local draft
+          Publish creates real Meta objects · never shows Published without
+          metaAdId
         </span>
       </div>
+
+      <PublishResultModal
+        open={modalOpen}
+        publish={publishResult}
+        syncing={syncing}
+        onClose={() => setModalOpen(false)}
+        onSync={() => void handleSync()}
+        onRetry={
+          publishResult && publishResult.publishStatus !== "submitted"
+            ? () => void handleRetry()
+            : undefined
+        }
+      />
     </div>
   );
 }
