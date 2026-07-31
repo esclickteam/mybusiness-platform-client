@@ -4778,7 +4778,11 @@
       "sessionHint": "Free-form replies work only inside the 24-hour customer care window after the customer messages you.",
       "replyPlaceholder": "Type a reply…",
       "reply": "Reply",
-      "replySent": "Reply sent"
+      "replySent": "Reply sent",
+      "clearConversation": "Clear conversation",
+      "clearing": "Clearing…",
+      "confirmClear": "Clear this conversation from BizUply? This deletes local message history for this chat. Messages on WhatsApp are not deleted.",
+      "cleared": "Conversation cleared"
     },
     "settings": {
       "title": "WhatsApp Cloud API connection",
@@ -4848,6 +4852,7 @@
       "loadHistory": "Failed to load history",
       "loadInbox": "Failed to load inbox",
       "replyFailed": "Failed to send reply",
+      "clearConversation": "Failed to clear conversation",
       "loadSettings": "Failed to load WhatsApp settings",
       "saveSettings": "Failed to save WhatsApp settings",
       "connectFailed": "Failed to connect WhatsApp Business",

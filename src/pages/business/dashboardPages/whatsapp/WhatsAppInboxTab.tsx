@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Loader2, Send } from "lucide-react";
+import { Loader2, Send, Trash2 } from "lucide-react";
 import {
+  clearWhatsAppConversation,
   listWhatsAppConversationMessages,
   listWhatsAppConversations,
   replyWhatsAppConversation,
@@ -12,6 +13,7 @@ import {
 } from "../../../../api/whatsappApi";
 import {
   btnPrimary,
+  btnSecondary,
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
@@ -38,6 +40,7 @@ export default function WhatsAppInboxTab() {
   const [loadingMessages, setLoadingMessages] = useState(false);
   const [reply, setReply] = useState("");
   const [sending, setSending] = useState(false);
+  const [clearing, setClearing] = useState(false);
 
   const loadConversations = async () => {
     if (!businessId) return;
@@ -119,6 +122,27 @@ export default function WhatsAppInboxTab() {
     }
   };
 
+  const handleClearConversation = async () => {
+    if (!businessId || !selectedPhone) return;
+    if (!window.confirm(t("whatsapp.inbox.confirmClear"))) return;
+    try {
+      setClearing(true);
+      await clearWhatsAppConversation(businessId, selectedPhone);
+      setMessages([]);
+      setReply("");
+      const rows = await listWhatsAppConversations(businessId);
+      setConversations(rows);
+      setSelectedPhone(rows[0]?.phone || "");
+      toast.success(t("whatsapp.inbox.cleared"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error || t("whatsapp.errors.clearConversation")
+      );
+    } finally {
+      setClearing(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className={`${cardBase} flex items-center justify-center gap-2 p-10`}>
@@ -177,17 +201,38 @@ export default function WhatsAppInboxTab() {
       </section>
 
       <section className={`${cardBase} flex min-h-[420px] flex-col`}>
-        <div className="border-b border-slate-100 px-4 py-4">
-          <h3 className="text-base font-black text-slate-900">
-            {selectedPhone
-              ? conversations.find((c) => c.phone === selectedPhone)
-                  ?.recipientName || selectedPhone
-              : t("whatsapp.inbox.selectConversation")}
-          </h3>
+        <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-4 py-4">
+          <div className="min-w-0">
+            <h3 className="text-base font-black text-slate-900">
+              {selectedPhone
+                ? conversations.find((c) => c.phone === selectedPhone)
+                    ?.recipientName || selectedPhone
+                : t("whatsapp.inbox.selectConversation")}
+            </h3>
+            {selectedPhone && (
+              <p className="mt-0.5 text-xs font-semibold text-slate-500" dir="ltr">
+                {selectedPhone}
+              </p>
+            )}
+          </div>
           {selectedPhone && (
-            <p className="mt-0.5 text-xs font-semibold text-slate-500" dir="ltr">
-              {selectedPhone}
-            </p>
+            <button
+              type="button"
+              className={btnSecondary}
+              disabled={clearing}
+              onClick={() => {
+                void handleClearConversation();
+              }}
+            >
+              {clearing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="h-3.5 w-3.5" />
+              )}
+              {clearing
+                ? t("whatsapp.inbox.clearing")
+                : t("whatsapp.inbox.clearConversation")}
+            </button>
           )}
         </div>
 

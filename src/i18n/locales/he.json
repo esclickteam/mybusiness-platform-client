@@ -4767,7 +4767,11 @@
       "sessionHint": "Free-form replies work only inside the 24-hour customer care window after the customer messages you.",
       "replyPlaceholder": "Type a reply…",
       "reply": "Reply",
-      "replySent": "Reply sent"
+      "replySent": "Reply sent",
+      "clearConversation": "ניקוי שיחה",
+      "clearing": "מנקה…",
+      "confirmClear": "לנקות את השיחה מ-BizUply? היסטוריית ההודעות המקומית של הצ'אט תימחק. הודעות בוואטסאפ לא יימחקו.",
+      "cleared": "השיחה נוקתה"
     },
     "settings": {
       "title": "WhatsApp Cloud API connection",
@@ -4837,6 +4841,7 @@
       "loadHistory": "Failed to load history",
       "loadInbox": "Failed to load inbox",
       "replyFailed": "Failed to send reply",
+      "clearConversation": "ניקוי השיחה נכשל",
       "loadSettings": "Failed to load WhatsApp settings",
       "saveSettings": "Failed to save WhatsApp settings",
       "connectFailed": "Failed to connect WhatsApp Business",

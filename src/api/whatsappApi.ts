@@ -767,6 +767,17 @@ export async function listWhatsAppConversationMessages(
   return (data?.messages || []) as WhatsAppMessageLog[];
 }
 
+export async function clearWhatsAppConversation(
+  businessId: string,
+  phone: string
+) {
+  const { data } = await API.delete(
+    `/whatsapp/conversations/${encodeURIComponent(phone)}`,
+    { params: { businessId } }
+  );
+  return data as { success: boolean; phone: string; deletedCount: number };
+}
+
 export async function replyWhatsAppConversation(
   businessId: string,
   phone: string,
