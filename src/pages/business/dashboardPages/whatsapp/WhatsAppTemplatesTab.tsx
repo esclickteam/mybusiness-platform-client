@@ -42,54 +42,68 @@ import {
 import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
 
-function getMetaStatusLabel(tpl: WhatsAppTemplate): string {
-  if (tpl.metaStatusLabelHe) return tpl.metaStatusLabelHe;
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
+function getMetaStatusKey(tpl: WhatsAppTemplate): string {
   const meta = String(tpl.metaStatus || "").toUpperCase();
   const quality = String(tpl.metaQualityScore || "").toUpperCase();
-  if (meta === "PENDING") return "בבדיקה";
-  if (meta === "IN_APPEAL") return "בערעור";
-  if (meta === "REJECTED") return "נדחתה";
-  if (meta === "DISABLED") return "מושבתת";
-  if (meta === "PAUSED") return "מושהית";
+  if (meta === "PENDING") return "pending";
+  if (meta === "IN_APPEAL") return "inAppeal";
+  if (meta === "REJECTED") return "rejected";
+  if (meta === "DISABLED") return "disabled";
+  if (meta === "PAUSED") return "paused";
   if (meta === "APPROVED") {
     if (!quality || quality === "UNKNOWN" || quality === "PENDING") {
-      return "פעילה - בהמתנה לבדיקה";
+      return "activePendingQuality";
     }
-    if (quality === "GREEN" || quality === "HIGH") return "פעילה - איכות גבוהה";
-    if (quality === "YELLOW" || quality === "MEDIUM") {
-      return "פעילה - איכות בינונית";
-    }
-    if (quality === "RED" || quality === "LOW") return "פעילה - איכות נמוכה";
-    return "פעילה";
+    if (quality === "GREEN" || quality === "HIGH") return "activeHighQuality";
+    if (quality === "YELLOW" || quality === "MEDIUM") return "activeMediumQuality";
+    if (quality === "RED" || quality === "LOW") return "activeLowQuality";
+    return "active";
   }
-  if (meta === "LOCAL" || tpl.source === "local") return "טיוטה מקומית";
-  return meta || "טיוטה מקומית";
+  if (meta === "LOCAL" || tpl.source === "local") return "localDraft";
+  return "localDraft";
 }
 
-function getMappingStatusLabel(tpl: WhatsAppTemplate): string | null {
+function getMetaStatusLabel(tpl: WhatsAppTemplate, t: TranslateFn): string {
+  return t(`whatsapp.templates.metaStatus.${getMetaStatusKey(tpl)}`);
+}
+
+function getMappingStatusKey(tpl: WhatsAppTemplate): string | null {
   if (String(tpl.metaStatus || "").toUpperCase() !== "APPROVED") return null;
   const mapping = (tpl.mappingStatus || "") as WhatsAppMappingStatus;
-  if (mapping === "ready" || tpl.mappingReady) return "מוכנה לשליחה";
-  if (mapping === "partial") return "הגדרת המשתנים לא הושלמה";
+  if (mapping === "ready" || tpl.mappingReady) return "ready";
+  if (mapping === "partial") return "partial";
   const hasVars = (tpl.variables || []).length > 0;
-  if (!hasVars) return "מוכנה לשליחה";
-  return "המשתנים עדיין לא הוגדרו";
+  if (!hasVars) return "ready";
+  return "unmapped";
 }
 
-function getMetaStatusClass(label: string): string {
-  if (label.startsWith("פעילה")) return "bg-emerald-50 text-emerald-700";
-  if (label === "בבדיקה" || label === "בערעור") {
+function getMappingStatusLabel(
+  tpl: WhatsAppTemplate,
+  t: TranslateFn
+): string | null {
+  const key = getMappingStatusKey(tpl);
+  if (!key) return null;
+  return t(`whatsapp.templates.mappingStatus.${key}`);
+}
+
+function getMetaStatusClass(tpl: WhatsAppTemplate): string {
+  const key = getMetaStatusKey(tpl);
+  if (key.startsWith("active")) return "bg-emerald-50 text-emerald-700";
+  if (key === "pending" || key === "inAppeal") {
     return "bg-amber-50 text-amber-700";
   }
-  if (label === "נדחתה" || label === "מושבתת") {
+  if (key === "rejected" || key === "disabled") {
     return "bg-rose-50 text-rose-700";
   }
-  if (label === "מושהית") return "bg-orange-50 text-orange-700";
+  if (key === "paused") return "bg-orange-50 text-orange-700";
   return "bg-slate-100 text-slate-600";
 }
 
-function getMappingStatusClass(label: string): string {
-  if (label === "מוכנה לשליחה") return "bg-emerald-50 text-emerald-700";
+function getMappingStatusClass(tpl: WhatsAppTemplate): string {
+  const key = getMappingStatusKey(tpl);
+  if (key === "ready") return "bg-emerald-50 text-emerald-700";
   return "bg-sky-50 text-sky-700";
 }
 
@@ -1050,8 +1064,11 @@ export default function WhatsAppTemplatesTab() {
           const isApproved = tpl.metaStatus === "APPROVED";
           const isReady = Boolean(tpl.mappingReady || tpl.mappingStatus === "ready");
           const hasVars = (tpl.variables || []).length > 0;
-          const mappingLabel =
-            isReady || !hasVars ? "עריכת מיפוי" : "הגדרת משתנים";
+          const mappingLabel = t(
+            isReady || !hasVars
+              ? "whatsapp.templates.editMapping"
+              : "whatsapp.templates.setupVariables"
+          );
 
           return (
             <article key={tpl._id} className={`${cardBase} flex flex-col p-4`}>
@@ -1068,19 +1085,21 @@ export default function WhatsAppTemplatesTab() {
                   </h3>
                   <p className="mt-0.5 text-xs font-semibold text-slate-500">
                     {tpl.language} ·{" "}
-                    {tpl.source === "meta" ? "מטא" : "מקומית"}
+                    {tpl.source === "meta"
+                      ? t("whatsapp.templates.sourceMeta")
+                      : t("whatsapp.templates.sourceLocal")}
                   </p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   {(() => {
-                    const metaLabel = getMetaStatusLabel(tpl);
-                    const mappingBadge = getMappingStatusLabel(tpl);
+                    const metaLabel = getMetaStatusLabel(tpl, t);
+                    const mappingBadge = getMappingStatusLabel(tpl, t);
                     return (
                       <>
                         <span
                           className={[
                             "rounded-md px-2 py-0.5 text-[10px] font-black",
-                            getMetaStatusClass(metaLabel),
+                            getMetaStatusClass(tpl),
                           ].join(" ")}
                         >
                           {metaLabel}
@@ -1089,7 +1108,7 @@ export default function WhatsAppTemplatesTab() {
                           <span
                             className={[
                               "rounded-md px-2 py-0.5 text-[10px] font-black",
-                              getMappingStatusClass(mappingBadge),
+                              getMappingStatusClass(tpl),
                             ].join(" ")}
                           >
                             {mappingBadge}
@@ -1164,7 +1183,7 @@ export default function WhatsAppTemplatesTab() {
                       className={btnSecondary}
                       onClick={() => setMappingTemplate(tpl)}
                     >
-                      בדיקת מיפוי
+                      {t("whatsapp.templates.testMapping")}
                     </button>
                     <button
                       type="button"
@@ -1172,7 +1191,7 @@ export default function WhatsAppTemplatesTab() {
                       disabled={!isReady && hasVars}
                       title={
                         !isReady && hasVars
-                          ? "יש להשלים את הגדרת המשתנים לפני השליחה"
+                          ? t("whatsapp.templates.mappingRequiredBeforeSend")
                           : undefined
                       }
                       onClick={() => {
@@ -1181,7 +1200,7 @@ export default function WhatsAppTemplatesTab() {
                       }}
                     >
                       <Send className="h-3.5 w-3.5" />
-                      שליחה
+                      {t("whatsapp.templates.send")}
                     </button>
                   </>
                 ) : (

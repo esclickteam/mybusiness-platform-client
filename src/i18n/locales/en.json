@@ -4547,7 +4547,13 @@
       "sendFailedStats": "No messages were accepted by Meta. Failed: {{failed}}",
       "createTemplate": "Create template",
       "manageTemplates": "Manage / sync templates",
-      "noTemplatesYet": "No Meta-approved templates yet. Sync templates from your WABA."
+      "noTemplatesYet": "No Meta-approved templates yet. Sync templates from your WABA.",
+      "approvedMetaActive": "Active - approved on Meta",
+      "mappingReadySuffix": "Ready to send",
+      "mappingNeededSuffix": "Variable mapping required",
+      "mappingBanner": "This template is approved on Meta, but variables must be mapped before sending.",
+      "goToMapping": "Go to variable mapping",
+      "manualValues": "Manual values for send"
     },
     "templates": {
       "title": "Message templates",
@@ -4604,6 +4610,31 @@
       "edit": "Edit",
       "delete": "Delete",
       "system": "Built-in",
+      "send": "Send",
+      "editMapping": "Edit mapping",
+      "setupVariables": "Set up variables",
+      "testMapping": "Test mapping",
+      "mappingRequiredBeforeSend": "Complete variable mapping before sending",
+      "sourceMeta": "Meta",
+      "sourceLocal": "Local",
+      "metaStatus": {
+        "pending": "In review",
+        "inAppeal": "In appeal",
+        "rejected": "Rejected",
+        "disabled": "Disabled",
+        "paused": "Paused",
+        "activePendingQuality": "Active - pending quality",
+        "activeHighQuality": "Active - high quality",
+        "activeMediumQuality": "Active - medium quality",
+        "activeLowQuality": "Active - low quality",
+        "active": "Active",
+        "localDraft": "Local draft"
+      },
+      "mappingStatus": {
+        "ready": "Ready to send",
+        "partial": "Variable mapping incomplete",
+        "unmapped": "Variables not mapped yet"
+      },
       "required": "Name and body are required",
       "created": "Template created",
       "updated": "Template updated",

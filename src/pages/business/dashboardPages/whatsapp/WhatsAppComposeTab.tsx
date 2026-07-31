@@ -450,7 +450,7 @@ export default function WhatsAppComposeTab() {
               >
                 {templates.length === 0 && (
                   <option value="">
-                    עדיין אין תבניות מאושרות ממטא. לחצו על ניהול/סנכרון תבניות.
+                    {t("whatsapp.compose.noTemplatesYet")}
                   </option>
                 )}
                 {templates.map((tpl) => {
@@ -458,12 +458,13 @@ export default function WhatsAppComposeTab() {
                     tpl.mappingReady ||
                     tpl.mappingStatus === "ready" ||
                     !(tpl.variables || []).length;
-                  const metaLabel =
-                    tpl.metaStatusLabelHe || "פעילה - מאושרת במטא";
+                  const metaLabel = t("whatsapp.compose.approvedMetaActive");
                   return (
                     <option key={tpl._id} value={tpl._id}>
                       {tpl.name} · {tpl.language} · {metaLabel}
-                      {ready ? " · מוכנה לשליחה" : " · נדרשת הגדרת משתנים"}
+                      {ready
+                        ? ` · ${t("whatsapp.compose.mappingReadySuffix")}`
+                        : ` · ${t("whatsapp.compose.mappingNeededSuffix")}`}
                     </option>
                   );
                 })}
@@ -472,13 +473,13 @@ export default function WhatsAppComposeTab() {
 
             {selectedTemplate && !mappingReady ? (
               <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm font-semibold text-amber-800">
-                התבנית מאושרת במטא, אך יש להגדיר את המשתנים לפני השליחה.{" "}
+                {t("whatsapp.compose.mappingBanner")}{" "}
                 <button
                   type="button"
                   className="font-black text-emerald-700 underline"
                   onClick={() => navigate("../templates")}
                 >
-                  מעבר להגדרת משתנים
+                  {t("whatsapp.compose.goToMapping")}
                 </button>
               </div>
             ) : null}
@@ -486,7 +487,7 @@ export default function WhatsAppComposeTab() {
             {manualMappings.length > 0 && (
               <div className="grid gap-2 rounded-xl border border-slate-200 p-3">
                 <p className="text-xs font-black text-slate-600">
-                  ערכים ידניים לשליחה
+                  {t("whatsapp.compose.manualValues")}
                 </p>
                 {manualMappings.map((row) => (
                   <label key={row.variable} className="grid gap-1">
