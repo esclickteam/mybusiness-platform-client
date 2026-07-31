@@ -46,7 +46,9 @@ function milesToKm(miles: number) {
 function locationLabel(loc: AdsManagerLocation) {
   const base = [loc.name, loc.region].filter(Boolean).join(", ");
   if (!isCityType(loc.type)) return base || loc.name;
-  if (loc.cityOnly || loc.radiusMiles == null) return base;
+  if (loc.cityOnly === true || loc.radiusMiles == null) {
+    return loc.cityOnly === true ? `${base} · city only` : base;
+  }
   return `${base} + ${loc.radiusMiles}mi`;
 }
 

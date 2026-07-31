@@ -209,28 +209,49 @@ export default function MetaAdsManagerPage() {
               ? [2]
               : [];
 
+        const hasCityOrPlace = locations.some((loc) =>
+          /city|subcity|neighborhood|region|zip/i.test(loc.type || "")
+        );
+
         const data = await estimateMetaAudienceReach(businessId, {
-          locations: locations.map((loc) => ({
-            key: loc.key,
-            name: loc.name,
-            type: loc.type,
-            countryCode: loc.countryCode,
-            countryName: loc.countryName,
-            region: loc.region,
-            metaCityKey: loc.metaCityKey,
-            radiusKm:
-              loc.cityOnly || loc.radiusMiles == null
-                ? null
-                : loc.radiusKm ?? loc.radiusMiles,
-            distanceUnit: loc.distanceUnit || "mile",
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-          })),
-          countries: countries.length ? countries : ["IL"],
+          locations: locations.map((loc) => {
+            const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
+            // Meta default for cities = "Cities within radius" 25mi (unless city only).
+            const cityOnly = loc.cityOnly === true;
+            const radiusMiles =
+              isCity && !cityOnly
+                ? Number(loc.radiusMiles != null ? loc.radiusMiles : 25)
+                : null;
+            return {
+              key: loc.key,
+              name: loc.name,
+              type: loc.type,
+              countryCode: loc.countryCode,
+              countryName: loc.countryName,
+              region: loc.region,
+              metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
+              radiusMiles,
+              // Server maps radiusKm as the numeric radius for Meta geo.
+              radiusKm: radiusMiles,
+              distanceUnit: radiusMiles != null ? "mile" : undefined,
+              latitude: loc.latitude,
+              longitude: loc.longitude,
+            };
+          }),
+          // Only send country list when targeting countries (don't force IL over a city).
+          countries: hasCityOrPlace
+            ? countries
+            : countries.length
+              ? countries
+              : ["IL"],
           ageMin: selectedAdSet.ageMin,
           ageMax: selectedAdSet.ageMax >= 65 ? 65 : selectedAdSet.ageMax,
           genders,
           locationsSummary: selectedAdSet.locationsSummary,
+          // Meta: Advantage+ suggestions → estimate ignores age/gender.
+          advantageAudience: selectedAdSet.advantageAudience !== false,
+          suggestAudience: selectedAdSet.suggestAudience !== false,
+          furtherLimitReach: Boolean(selectedAdSet.furtherLimitReach),
         });
 
         setAudienceEstimate({

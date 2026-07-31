@@ -587,12 +587,20 @@ export async function searchMetaLocations(
 export async function estimateMetaAudienceReach(
   businessId: string | undefined,
   payload: {
-    locations?: MetaLocationTarget[];
+    locations?: Array<
+      MetaLocationTarget & {
+        radiusMiles?: number | null;
+        cityOnly?: boolean;
+      }
+    >;
     countries?: string[];
     ageMin?: number;
     ageMax?: number;
     genders?: number[];
     locationsSummary?: string;
+    advantageAudience?: boolean;
+    suggestAudience?: boolean;
+    furtherLimitReach?: boolean;
   }
 ) {
   const { data } = await API.post<{
