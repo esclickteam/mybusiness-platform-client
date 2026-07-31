@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
@@ -20,6 +20,7 @@ import CampaignInsightsSidebar from "./sidebars/CampaignInsightsSidebar";
 import AdSetInsightsSidebar from "./sidebars/AdSetInsightsSidebar";
 import AdInsightsSidebar from "./sidebars/AdInsightsSidebar";
 import PublishResultModal from "./PublishResultModal";
+import CreateCampaignObjectiveModal from "./CreateCampaignObjectiveModal";
 import {
   buildPublishPayloadFromAdsManager,
   validateAdsManagerClient,
@@ -34,6 +35,7 @@ import {
 type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
+  const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const ctrl = useAdsManagerState();
   const {
@@ -46,6 +48,7 @@ export default function MetaAdsManagerPage() {
     patchCampaign,
     patchAdSet,
     patchAd,
+    applyCreateChoice,
     canPublish,
   } = ctrl;
 
@@ -58,6 +61,9 @@ export default function MetaAdsManagerPage() {
   const [publishResult, setPublishResult] =
     useState<MetaCampaignPublishRecord | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  // Meta-style gate: choose objective before opening the Ads Manager editor.
+  const [createChooserOpen, setCreateChooserOpen] = useState(true);
+  const [campaignStarted, setCampaignStarted] = useState(false);
 
   useEffect(() => {
     if (!businessId) return;
@@ -291,6 +297,23 @@ export default function MetaAdsManagerPage() {
   ]);
 
   const connected = Boolean(connection?.connected || connection?.isConnected);
+
+  if (!campaignStarted) {
+    return (
+      <CreateCampaignObjectiveModal
+        open={createChooserOpen}
+        onCancel={() => {
+          setCreateChooserOpen(false);
+          navigate("../overview");
+        }}
+        onContinue={(choice) => {
+          applyCreateChoice(choice);
+          setCreateChooserOpen(false);
+          setCampaignStarted(true);
+        }}
+      />
+    );
+  }
 
   return (
     <div

@@ -7,9 +7,23 @@ import type {
   AdsManagerState,
   AdsManagerTreeNode,
   AdSetDraft,
+  BuyingType,
   CampaignDraft,
+  CampaignObjective,
   ValidationSeverity,
 } from "./adsManagerTypes";
+
+function campaignNameForObjective(objective: CampaignObjective): string {
+  const map: Record<CampaignObjective, string> = {
+    OUTCOME_AWARENESS: "New awareness campaign",
+    OUTCOME_TRAFFIC: "New traffic campaign",
+    OUTCOME_ENGAGEMENT: "New engagement campaign",
+    OUTCOME_LEADS: "New leads campaign",
+    OUTCOME_APP_PROMOTION: "New app promotion campaign",
+    OUTCOME_SALES: "New sales campaign",
+  };
+  return map[objective] || "New campaign";
+}
 
 function deepCloneState(state: AdsManagerState): AdsManagerState {
   return JSON.parse(JSON.stringify(state)) as AdsManagerState;
@@ -172,6 +186,62 @@ export function useAdsManagerState() {
     setState(deepCloneState(createDefaultAdsManagerState()));
   }, []);
 
+  const applyCreateChoice = useCallback(
+    (choice: { buyingType: BuyingType; objective: CampaignObjective }) => {
+      const campaignName = campaignNameForObjective(choice.objective);
+      const adSetName = `${campaignName} — Ad set`;
+      const adName = `${campaignName} — Ad`;
+      const isLeads = choice.objective === "OUTCOME_LEADS";
+
+      setState((prev) => {
+        const adSetId = prev.adSets[0]?.id || "adset_1";
+        const adId = prev.ads[0]?.id || "ad_1";
+        return {
+          ...prev,
+          selectedLevel: "campaign",
+          selectedId: prev.campaign.id,
+          mode: "edit",
+          campaign: {
+            ...prev.campaign,
+            name: campaignName,
+            buyingType: choice.buyingType,
+            objective: choice.objective,
+            advantagePlusLeads: isLeads,
+          },
+          adSets: prev.adSets.map((row, index) =>
+            index === 0
+              ? {
+                  ...row,
+                  id: adSetId,
+                  name: adSetName,
+                  conversionLocation: isLeads
+                    ? "Instant forms"
+                    : "Website",
+                  performanceGoal: isLeads
+                    ? "Maximize number of leads"
+                    : "Maximize number of conversions",
+                }
+              : row
+          ),
+          ads: prev.ads.map((row, index) =>
+            index === 0
+              ? {
+                  ...row,
+                  id: adId,
+                  name: adName,
+                  callToAction: isLeads ? "SIGN_UP" : "LEARN_MORE",
+                  instantFormId: isLeads ? row.instantFormId : "",
+                }
+              : row
+          ),
+          saveStatus: "saved",
+          lastSavedAt: new Date().toISOString(),
+        };
+      });
+    },
+    []
+  );
+
   const canPublish =
     validation.campaign !== "error" &&
     validation.adset !== "error" &&
@@ -190,6 +260,7 @@ export function useAdsManagerState() {
     patchAd,
     renameSelected,
     resetDraft,
+    applyCreateChoice,
     canPublish,
   };
 }
