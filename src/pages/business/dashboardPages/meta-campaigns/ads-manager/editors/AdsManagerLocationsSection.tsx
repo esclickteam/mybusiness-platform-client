@@ -349,7 +349,7 @@ export default function AdsManagerLocationsSection({
                     </div>
 
                     {isCity && menuOpen ? (
-                      <div className="absolute z-40 mt-1 w-[280px] rounded-lg border border-[#CED0D4] bg-white p-2 shadow-lg">
+                      <div className="absolute z-[1220] mt-1 w-[280px] rounded-lg border border-[#CED0D4] bg-white p-2 shadow-lg">
                         <button
                           type="button"
                           className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
@@ -425,172 +425,184 @@ export default function AdsManagerLocationsSection({
             </p>
           )}
 
-          {/* Meta-style single search bar: Include | 🔍 Search locations | Browse */}
-          <div className="relative w-full" ref={searchBarRef} dir="ltr">
-            <div className="flex h-10 w-full items-stretch overflow-hidden rounded-md border border-[#CED0D4] bg-white focus-within:border-[#1877F2] focus-within:shadow-[0_0_0_2px_rgba(24,119,242,0.2)]">
-              <div className="relative shrink-0 border-r border-[#CED0D4]">
-                <button
-                  type="button"
-                  className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
-                  onClick={() => {
-                    setIncludeOpen((v) => !v);
-                    setBrowseOpen(false);
-                  }}
-                >
-                  {includeMode === "include" ? "Include" : "Exclude"}
-                  <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
-                </button>
-                {includeOpen ? (
-                  <div className="absolute left-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
-                    {(
-                      [
-                        ["include", "Include"],
-                        ["exclude", "Exclude"],
-                      ] as const
-                    ).map(([value, label]) => (
-                      <button
-                        key={value}
-                        type="button"
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-semibold hover:bg-[#F0F2F5]"
-                        onClick={() => {
-                          setIncludeMode(value);
-                          setIncludeOpen(false);
-                        }}
-                      >
-                        <span className="w-4">
-                          {includeMode === value ? (
-                            <Check className="h-3.5 w-3.5 text-[#1877F2]" />
-                          ) : null}
-                        </span>
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
+          {/* Search overlays the map (Meta): high z-index above Leaflet panes */}
+          <div className="relative">
+            <div
+              className="relative z-[1200] w-full"
+              ref={searchBarRef}
+              dir="ltr"
+            >
+              <div className="flex h-10 w-full items-stretch overflow-hidden rounded-md border border-[#CED0D4] bg-white focus-within:border-[#1877F2] focus-within:shadow-[0_0_0_2px_rgba(24,119,242,0.2)]">
+                <div className="relative shrink-0 border-r border-[#CED0D4]">
+                  <button
+                    type="button"
+                    className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                    onClick={() => {
+                      setIncludeOpen((v) => !v);
+                      setBrowseOpen(false);
+                    }}
+                  >
+                    {includeMode === "include" ? "Include" : "Exclude"}
+                    <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
+                  </button>
+                  {includeOpen ? (
+                    <div className="absolute left-0 top-full z-[1210] mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                      {(
+                        [
+                          ["include", "Include"],
+                          ["exclude", "Exclude"],
+                        ] as const
+                      ).map(([value, label]) => (
+                        <button
+                          key={value}
+                          type="button"
+                          className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-semibold hover:bg-[#F0F2F5]"
+                          onClick={() => {
+                            setIncludeMode(value);
+                            setIncludeOpen(false);
+                          }}
+                        >
+                          <span className="w-4">
+                            {includeMode === value ? (
+                              <Check className="h-3.5 w-3.5 text-[#1877F2]" />
+                            ) : null}
+                          </span>
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
+
+                <label className="relative flex min-w-0 flex-1 items-center">
+                  <Search className="pointer-events-none absolute left-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
+                  <input
+                    className="h-full w-full border-0 bg-transparent py-0 pl-9 pr-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
+                    placeholder="Search locations"
+                    value={query}
+                    autoComplete="off"
+                    onChange={(e) => {
+                      setQuery(e.target.value);
+                      if (e.target.value.trim().length >= 2) setOpen(true);
+                    }}
+                    onFocus={() => {
+                      setIncludeOpen(false);
+                      setBrowseOpen(false);
+                      if (results.length || query.trim().length >= 2) {
+                        setOpen(true);
+                      }
+                    }}
+                  />
+                  {busy ? (
+                    <span className="absolute right-3 text-[11px] font-semibold text-[#65676B]">
+                      …
+                    </span>
+                  ) : null}
+                </label>
+
+                <div className="relative shrink-0 border-l border-[#CED0D4]">
+                  <button
+                    type="button"
+                    className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                    onClick={() => {
+                      setBrowseOpen((v) => !v);
+                      setIncludeOpen(false);
+                      setOpen(false);
+                    }}
+                  >
+                    Browse
+                    <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
+                  </button>
+                  {browseOpen ? (
+                    <div className="absolute right-0 top-full z-[1210] mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                      {[
+                        { label: "Countries", q: "Israel" },
+                        { label: "Regions", q: "Haifa" },
+                        { label: "Cities", q: "Tel Aviv" },
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          type="button"
+                          className="block w-full px-3 py-2.5 text-left text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                          onClick={() => {
+                            setQuery(item.q);
+                            setBrowseOpen(false);
+                            setOpen(true);
+                          }}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                </div>
               </div>
 
-              <label className="relative flex min-w-0 flex-1 items-center">
-                <Search className="pointer-events-none absolute left-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
-                <input
-                  className="h-full w-full border-0 bg-transparent py-0 pl-9 pr-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
-                  placeholder="Search locations"
-                  value={query}
-                  autoComplete="off"
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    if (e.target.value.trim().length >= 2) setOpen(true);
-                  }}
-                  onFocus={() => {
-                    setIncludeOpen(false);
-                    setBrowseOpen(false);
-                    if (results.length || query.trim().length >= 2) setOpen(true);
-                  }}
-                />
-                {busy ? (
-                  <span className="absolute right-3 text-[11px] font-semibold text-[#65676B]">
-                    …
-                  </span>
-                ) : null}
-              </label>
-
-              <div className="relative shrink-0 border-l border-[#CED0D4]">
-                <button
-                  type="button"
-                  className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
-                  onClick={() => {
-                    setBrowseOpen((v) => !v);
-                    setIncludeOpen(false);
-                    setOpen(false);
-                  }}
-                >
-                  Browse
-                  <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
-                </button>
-                {browseOpen ? (
-                  <div className="absolute right-0 top-full z-50 mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
-                    {[
-                      { label: "Countries", q: "Israel" },
-                      { label: "Regions", q: "Haifa" },
-                      { label: "Cities", q: "Tel Aviv" },
-                    ].map((item) => (
-                      <button
-                        key={item.label}
-                        type="button"
-                        className="block w-full px-3 py-2.5 text-left text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
-                        onClick={() => {
-                          setQuery(item.q);
-                          setBrowseOpen(false);
-                          setOpen(true);
-                        }}
-                      >
-                        {item.label}
-                      </button>
-                    ))}
-                  </div>
-                ) : null}
-              </div>
+              {open && (results.length > 0 || busy) ? (
+                <div className="absolute left-0 right-0 top-full z-[1220] mt-1 max-h-60 overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-[0_8px_24px_rgba(0,0,0,0.18)]">
+                  {busy && !results.length ? (
+                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                      Searching…
+                    </p>
+                  ) : (
+                    results.map((item) => {
+                      const id = locationIdentity(item);
+                      const selected = selectedKeys.has(id);
+                      return (
+                        <button
+                          key={id}
+                          type="button"
+                          disabled={selected}
+                          className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#E7F3FF] disabled:opacity-50"
+                          onMouseDown={(e) => e.preventDefault()}
+                          onClick={() => addLocation(item)}
+                        >
+                          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[13px] font-semibold text-[#050505]">
+                              {item.name}
+                            </span>
+                            <span className="block truncate text-[11px] text-[#65676B]">
+                              {[
+                                item.type,
+                                item.region,
+                                item.countryName || item.countryCode,
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")}
+                            </span>
+                          </span>
+                          <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
+                            {selected ? "Added" : "Add"}
+                          </span>
+                        </button>
+                      );
+                    })
+                  )}
+                </div>
+              ) : null}
             </div>
 
-            {open && (results.length > 0 || busy) ? (
-              <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl">
-                {busy && !results.length ? (
-                  <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                    Searching…
-                  </p>
-                ) : (
-                  results.map((item) => {
-                    const id = locationIdentity(item);
-                    const selected = selectedKeys.has(id);
-                    return (
-                      <button
-                        key={id}
-                        type="button"
-                        disabled={selected}
-                        className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5] disabled:opacity-50"
-                        onMouseDown={(e) => e.preventDefault()}
-                        onClick={() => addLocation(item)}
-                      >
-                        <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
-                        <span className="min-w-0 flex-1">
-                          <span className="block truncate text-[13px] font-semibold text-[#050505]">
-                            {item.name}
-                          </span>
-                          <span className="block truncate text-[11px] text-[#65676B]">
-                            {[
-                              item.type,
-                              item.region,
-                              item.countryName || item.countryCode,
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
-                          </span>
-                        </span>
-                        <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
-                          {selected ? "Added" : "Add"}
-                        </span>
-                      </button>
-                    );
-                  })
-                )}
-              </div>
-            ) : null}
+            {error ? (
+              <p className="relative z-0 mt-2 text-[12px] font-semibold text-[#FA383E]">
+                {error}
+              </p>
+            ) : (
+              <p className="relative z-0 mt-2 text-[12px] leading-snug text-[#65676B]">
+                You can type countries, regions, cities or postal codes. For
+                cities, choose current city only or a radius — just like Meta.
+              </p>
+            )}
+
+            <div className="relative z-0 mt-3">
+              <MetaLocationsMap
+                locations={mapLocations}
+                focusKey={focusKey}
+                onSelectLocation={setFocusKey}
+                hint="Pins and radius circles match your selected cities from Meta location search."
+              />
+            </div>
           </div>
-
-          {error ? (
-            <p className="text-[12px] font-semibold text-[#FA383E]">{error}</p>
-          ) : (
-            <p className="text-[12px] leading-snug text-[#65676B]">
-              You can type countries, regions, cities or postal codes. For
-              cities, choose current city only or a radius — just like Meta.
-            </p>
-          )}
-
-          <MetaLocationsMap
-            locations={mapLocations}
-            focusKey={focusKey}
-            onSelectLocation={setFocusKey}
-            hint="Pins and radius circles match your selected cities from Meta location search."
-          />
 
           <label className="flex items-start gap-2 text-[13px] text-[#050505]">
             <input
