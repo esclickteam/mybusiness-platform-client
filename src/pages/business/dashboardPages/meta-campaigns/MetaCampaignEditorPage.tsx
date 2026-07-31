@@ -765,10 +765,7 @@ export default function MetaCampaignEditorPage() {
         }
         return true;
       case "lead-form-privacy":
-        if (leadFormMode === "create" && !privacyPolicyUrl.trim()) {
-          toast.error(t("metaCampaigns.wizard.formPreview.privacyRequired"));
-          return false;
-        }
+        // Privacy URL is optional in UI — Meta gets a safe default on the server.
         return true;
       case "creative-text":
       case "preview-publish":
@@ -804,7 +801,17 @@ export default function MetaCampaignEditorPage() {
 
   const prevStep = () => {
     if (currentFlatIndex <= 0) return;
-    goToFlatIndex(currentFlatIndex - 1);
+    let prevIndex = currentFlatIndex - 1;
+    // Mirror the forward skip when using an existing lead form.
+    if (
+      currentSubId === "creative-media" &&
+      isLeads &&
+      leadFormMode === "existing"
+    ) {
+      const selectIdx = flatSteps.findIndex((s) => s.id === "lead-form-select");
+      if (selectIdx >= 0) prevIndex = selectIdx;
+    }
+    goToFlatIndex(prevIndex);
   };
 
   const jumpMain = (main: WizardMainStep) => {
@@ -936,6 +943,8 @@ export default function MetaCampaignEditorPage() {
         pageId: form.pageId,
         name: newFormName.trim(),
         questions,
+        introTitle: introTitle.trim() || undefined,
+        introDescription: introDescription.trim() || undefined,
         privacyPolicyUrl: privacyPolicyUrl.trim() || undefined,
         thankYouTitle: thankYouTitle.trim() || undefined,
         thankYouBody: thankYouBody.trim() || undefined,
