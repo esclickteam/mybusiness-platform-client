@@ -723,6 +723,59 @@ export async function removeWhatsAppListMember(
   return data?.list as WhatsAppMailingList;
 }
 
+export type WhatsAppAppointmentStrategy =
+  | "next_upcoming"
+  | "per_client"
+  | "skip_missing";
+
+export type WhatsAppCampaignPreviewRow = {
+  recipientId: string | null;
+  crmClientId: string | null;
+  name: string;
+  phone: string;
+  appointmentId: string | null;
+  appointmentLabel: string;
+  appointments: WhatsAppMappingAppointment[];
+  resolved: Record<string, string>;
+  missing: string[];
+  previewBody: string;
+  validationStatus: string;
+  validationLabel: string;
+  ready: boolean;
+};
+
+export async function previewWhatsAppCampaign(
+  businessId: string,
+  payload: {
+    templateId: string;
+    audienceType: "selected_clients" | "mailing_list" | "manual";
+    clientIds?: string[];
+    mailingListId?: string;
+    manualRecipients?: Array<{ name?: string; phone: string }>;
+    variables?: Record<string, string>;
+    appointmentId?: string | null;
+    appointmentStrategy?: WhatsAppAppointmentStrategy;
+    recipientAppointments?: Record<string, string>;
+  }
+) {
+  const { data } = await API.post("/whatsapp/campaigns/preview", {
+    businessId,
+    ...payload,
+  });
+  return data as {
+    success: boolean;
+    rows: WhatsAppCampaignPreviewRow[];
+    variableKeys: string[];
+    needsAppointment: boolean;
+    strategy: WhatsAppAppointmentStrategy;
+    readyCount: number;
+    missingCount: number;
+    templateId: string;
+    templateName: string;
+    mappingStatus: WhatsAppMappingStatus;
+  };
+}
+
 export async function sendWhatsAppCampaign(
   businessId: string,
   payload: {
@@ -734,6 +787,8 @@ export async function sendWhatsAppCampaign(
     manualRecipients?: Array<{ name?: string; phone: string }>;
     variables?: Record<string, string>;
     appointmentId?: string | null;
+    appointmentStrategy?: WhatsAppAppointmentStrategy;
+    recipientAppointments?: Record<string, string>;
     consentConfirmed: boolean;
   }
 ) {

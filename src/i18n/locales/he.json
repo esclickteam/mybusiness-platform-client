@@ -4549,7 +4549,21 @@
       "noAppointmentForClient": "No appointment found for this client.",
       "selectOneClientForPreview": "בחרו לקוח אחד כדי לראות תצוגה מקדימה של משתני הפגישה.",
       "previewLoading": "טוען תצוגה מקדימה…",
-      "previewFailed": "טעינת תצוגה מקדימה לשליחה נכשלה"
+      "previewFailed": "טעינת תצוגה מקדימה לשליחה נכשלה",
+      "appointmentRule": "כלל בחירת פגישה",
+      "ruleNextUpcoming": "הפגישה הקרובה הבאה (מומלץ)",
+      "rulePerClient": "בחירת פגישה לכל לקוח",
+      "ruleSkipMissing": "דילוג על לקוחות ללא פגישה",
+      "recipientPreviewTitle": "תצוגה מקדימה לפי נמען",
+      "recipientPreviewHint": "{{ready}} מתוך {{total}} נמענים מוכנים לשליחה",
+      "colRecipient": "נמען",
+      "colPhone": "טלפון",
+      "colAppointment": "פגישה שנבחרה",
+      "colStatus": "סטטוס אימות",
+      "statusReady": "Ready",
+      "statusMissingAppointment": "Missing appointment",
+      "readyRecipientsCount": "{{ready}} מוכנים / {{total}} נבחרו",
+      "noReadyRecipients": "אין נמענים מוכנים. יש לפתור פגישות חסרות או לשנות את כלל בחירת הפגישה."
     },
     "templates": {
       "title": "Message templates",

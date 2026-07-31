@@ -4560,7 +4560,21 @@
       "noAppointmentForClient": "No appointment found for this client.",
       "selectOneClientForPreview": "Select one client to preview appointment variables.",
       "previewLoading": "Resolving preview…",
-      "previewFailed": "Failed to resolve send preview"
+      "previewFailed": "Failed to resolve send preview",
+      "appointmentRule": "Appointment selection rule",
+      "ruleNextUpcoming": "Next upcoming appointment (recommended)",
+      "rulePerClient": "Select appointment per client",
+      "ruleSkipMissing": "Skip clients without an appointment",
+      "recipientPreviewTitle": "Per-recipient preview",
+      "recipientPreviewHint": "{{ready}} of {{total}} recipients ready to send",
+      "colRecipient": "Recipient",
+      "colPhone": "Phone",
+      "colAppointment": "Selected appointment",
+      "colStatus": "Validation status",
+      "statusReady": "Ready",
+      "statusMissingAppointment": "Missing appointment",
+      "readyRecipientsCount": "{{ready}} ready / {{total}} selected",
+      "noReadyRecipients": "No recipients are ready. Fix missing appointments or change the appointment rule."
     },
     "templates": {
       "title": "Message templates",
