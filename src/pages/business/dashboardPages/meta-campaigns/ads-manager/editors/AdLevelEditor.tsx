@@ -1,7 +1,18 @@
-import React from "react";
-import { Search } from "lucide-react";
-import type { MetaAdsPage } from "../../../../../../api/metaCampaignsApi";
+import React, { useRef, useState } from "react";
+import {
+  Image as ImageIcon,
+  Loader2,
+  Search,
+  Upload,
+  Video,
+} from "lucide-react";
+import { toast } from "react-toastify";
+import {
+  uploadMetaMedia,
+  type MetaAdsPage,
+} from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
+import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
 import {
   MetaField,
   MetaLinkButton,
@@ -18,11 +29,78 @@ type Props = {
   ad: AdDraft;
   forms: InstantFormItem[];
   pages: MetaAdsPage[];
+  businessId: string | null;
   onChange: (patch: Partial<AdDraft>) => void;
+  onFormsRefresh?: () => Promise<void> | void;
 };
 
-export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
+export default function AdLevelEditor({
+  ad,
+  forms,
+  pages,
+  businessId,
+  onChange,
+  onFormsRefresh,
+}: Props) {
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [formSearch, setFormSearch] = useState("");
+  const [createFormOpen, setCreateFormOpen] = useState(false);
+
+  const filteredForms = visibleForms.filter((form) => {
+    const q = formSearch.trim().toLowerCase();
+    if (!q) return true;
+    return form.name.toLowerCase().includes(q);
+  });
+
+  const pickMedia = (format: "image" | "video") => {
+    onChange({ creativeFormat: format });
+    setMediaMenuOpen(false);
+    window.setTimeout(() => fileRef.current?.click(), 0);
+  };
+
+  const handleUpload = async (file: File | null) => {
+    if (!file || !businessId) {
+      if (!businessId) toast.error("Connect Meta Ads first");
+      return;
+    }
+    const kind = ad.creativeFormat === "video" ? "video" : "image";
+    const isVideo = kind === "video" || file.type.startsWith("video/");
+    try {
+      setUploading(true);
+      const result = await uploadMetaMedia(
+        businessId,
+        file,
+        isVideo ? "video" : "image"
+      );
+      if (isVideo) {
+        onChange({
+          creativeFormat: "video",
+          videoId: result.videoId || "",
+          imageHash: "",
+          imagePreviewUrl: "",
+          mediaLabel: file.name || "Video uploaded",
+        });
+      } else {
+        onChange({
+          creativeFormat: "image",
+          imageHash: result.imageHash || "",
+          imagePreviewUrl: result.url || "",
+          videoId: "",
+          mediaLabel: file.name || "Image uploaded",
+        });
+      }
+      toast.success(isVideo ? "Video uploaded to Meta" : "Image uploaded to Meta");
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { error?: string } } };
+      toast.error(err.response?.data?.error || "Media upload failed");
+    } finally {
+      setUploading(false);
+      if (fileRef.current) fileRef.current.value = "";
+    }
+  };
 
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
@@ -77,45 +155,6 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
         <MetaNotice tone="success">
           You’ve accepted Meta’s Lead Ads Terms for this Page.
         </MetaNotice>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <MetaField label="Instagram profile">
-            <select
-              className={metaSelectClass}
-              value={ad.instagramAccountId}
-              onChange={(e) => onChange({ instagramAccountId: e.target.value })}
-            >
-              <option value="ig_1">@yourbusiness</option>
-              <option value="">Don’t use Instagram</option>
-            </select>
-          </MetaField>
-          <MetaField label="Threads profile">
-            <select
-              className={metaSelectClass}
-              value={
-                ad.useInstagramForThreads
-                  ? "use_ig"
-                  : ad.threadsAccountId || ""
-              }
-              onChange={(e) => {
-                if (e.target.value === "use_ig") {
-                  onChange({
-                    useInstagramForThreads: true,
-                    threadsAccountId: "",
-                  });
-                } else {
-                  onChange({
-                    useInstagramForThreads: false,
-                    threadsAccountId: e.target.value,
-                  });
-                }
-              }}
-            >
-              <option value="use_ig">Use Instagram account</option>
-              <option value="threads_1">@yourbusiness</option>
-              <option value="">Don’t use Threads</option>
-            </select>
-          </MetaField>
-        </div>
       </MetaSection>
 
       <MetaSection
@@ -134,7 +173,6 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
                   placeholder="https://"
                 />
               </MetaField>
-              <MetaLinkButton>Build a URL parameter</MetaLinkButton>
               <MetaField
                 label="Display link"
                 hint="Shown on your ad instead of the full website URL."
@@ -153,7 +191,17 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
               <h3 className="text-[15px] font-bold text-[#050505]">
                 Instant form
               </h3>
-              <button type="button" className={metaBtnPrimary}>
+              <button
+                type="button"
+                className={metaBtnPrimary}
+                onClick={() => {
+                  if (!ad.facebookPageId) {
+                    toast.error("Select a Facebook Page first");
+                    return;
+                  }
+                  setCreateFormOpen(true);
+                }}
+              >
                 Create form
               </button>
             </div>
@@ -163,6 +211,8 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
               <input
                 className={`${metaInputClass} pl-9`}
                 placeholder="Search your forms"
+                value={formSearch}
+                onChange={(e) => setFormSearch(e.target.value)}
               />
             </div>
 
@@ -185,12 +235,13 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
             </div>
 
             <div className="mt-2 max-h-56 space-y-1 overflow-y-auto">
-              {visibleForms.length === 0 ? (
+              {filteredForms.length === 0 ? (
                 <p className="px-2 py-6 text-center text-[13px] text-[#65676B]">
-                  No {ad.formTab} forms yet.
+                  No {ad.formTab} forms yet. Create a form like in Meta Ads
+                  Manager.
                 </p>
               ) : (
-                visibleForms.map((form) => {
+                filteredForms.map((form) => {
                   const selected = ad.instantFormId === form.id;
                   return (
                     <button
@@ -237,37 +288,109 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
               </div>
             ) : null}
           </div>
-
-          <div className="border-t border-[#E4E6EB] pt-5">
-            <h3 className="text-[15px] font-bold text-[#050505]">
-              Quality filters
-            </h3>
-            <div className="mt-3 space-y-3">
-              <MetaToggle
-                checked={ad.requireSmsVerification}
-                onChange={(requireSmsVerification) =>
-                  onChange({ requireSmsVerification })
-                }
-                label="Require SMS verification to submit form"
-              />
-              <MetaToggle
-                checked={ad.requireWorkEmail}
-                onChange={(requireWorkEmail) =>
-                  onChange({ requireWorkEmail })
-                }
-                label="Require work email"
-              />
-            </div>
-          </div>
         </div>
       </MetaSection>
 
       <MetaSection title="Ad creative">
+        <p className="text-[13px] text-[#65676B]">
+          Select and optimize your ad text, media and enhancements.
+        </p>
+
+        <div className="relative">
+          <p className="mb-1.5 text-[13px] font-semibold text-[#65676B]">
+            Set up creative
+          </p>
+          <button
+            type="button"
+            className={`${metaInputClass} flex items-center justify-between text-left`}
+            onClick={() => setMediaMenuOpen((v) => !v)}
+          >
+            <span className="font-semibold">
+              {ad.creativeFormat === "video" ? "Video ad" : "Image ad"}
+            </span>
+            <Upload className="h-4 w-4 text-[#65676B]" />
+          </button>
+          {mediaMenuOpen ? (
+            <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-lg">
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("image")}
+              >
+                <ImageIcon className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">Image ad</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    Upload a still image from your computer
+                  </span>
+                </span>
+              </button>
+              <button
+                type="button"
+                className="flex w-full items-center gap-3 px-3 py-3 text-left hover:bg-[#F0F2F5]"
+                onClick={() => pickMedia("video")}
+              >
+                <Video className="h-5 w-5 text-[#65676B]" />
+                <span>
+                  <span className="block text-[14px] font-semibold">Video ad</span>
+                  <span className="block text-[12px] text-[#65676B]">
+                    Upload a video from your computer
+                  </span>
+                </span>
+              </button>
+            </div>
+          ) : null}
+          <input
+            ref={fileRef}
+            type="file"
+            className="hidden"
+            accept={
+              ad.creativeFormat === "video"
+                ? "video/*"
+                : "image/png,image/jpeg,image/jpg,image/webp"
+            }
+            onChange={(e) => void handleUpload(e.target.files?.[0] || null)}
+          />
+        </div>
+
         <MetaField label="Media">
-          <div className="flex h-28 items-center justify-center rounded-lg border border-dashed border-[#CED0D4] bg-[#F7F8FA] text-[13px] font-semibold text-[#65676B]">
-            {ad.mediaLabel}
+          <div className="overflow-hidden rounded-lg border border-dashed border-[#CED0D4] bg-[#F7F8FA]">
+            {ad.imagePreviewUrl ? (
+              <img
+                src={ad.imagePreviewUrl}
+                alt="Ad creative"
+                className="max-h-56 w-full object-contain"
+              />
+            ) : ad.videoId ? (
+              <div className="flex h-40 flex-col items-center justify-center gap-2 text-[13px] font-semibold text-[#050505]">
+                <Video className="h-8 w-8 text-[#1877F2]" />
+                Video uploaded · ID {ad.videoId}
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="flex h-36 w-full flex-col items-center justify-center gap-2 text-[13px] font-semibold text-[#65676B] hover:bg-[#F0F2F5]"
+                onClick={() => setMediaMenuOpen(true)}
+                disabled={uploading}
+              >
+                {uploading ? (
+                  <Loader2 className="h-6 w-6 animate-spin text-[#1877F2]" />
+                ) : (
+                  <Upload className="h-6 w-6" />
+                )}
+                {uploading
+                  ? "Uploading to Meta…"
+                  : ad.mediaLabel || "Choose the media to run with this ad."}
+              </button>
+            )}
           </div>
+          {(ad.imagePreviewUrl || ad.videoId) && (
+            <MetaLinkButton onClick={() => setMediaMenuOpen(true)}>
+              Replace media
+            </MetaLinkButton>
+          )}
         </MetaField>
+
         <MetaField label="Primary text">
           <textarea
             className={`${metaInputClass} h-24 resize-y py-2`}
@@ -304,6 +427,18 @@ export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
           </select>
         </MetaField>
       </MetaSection>
+
+      <AdsManagerCreateLeadFormModal
+        open={createFormOpen}
+        businessId={businessId}
+        pageId={ad.facebookPageId}
+        pageName={ad.facebookPageName}
+        onClose={() => setCreateFormOpen(false)}
+        onCreated={async (formId) => {
+          onChange({ instantFormId: formId, formTab: "active" });
+          await onFormsRefresh?.();
+        }}
+      />
     </div>
   );
 }

@@ -121,6 +121,10 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     headline: ad.headline,
     description: ad.description,
     callToAction: ad.callToAction,
+    imageHash: ad.imageHash || undefined,
+    imageUrl: ad.imagePreviewUrl || undefined,
+    videoId: ad.videoId || undefined,
+    creativeFormat: ad.creativeFormat === "video" ? "video" : "single",
   };
 }
 

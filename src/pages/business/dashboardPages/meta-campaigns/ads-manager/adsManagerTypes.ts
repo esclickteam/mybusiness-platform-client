@@ -106,6 +106,8 @@ export type AdSetDraft = {
   locationsExpanded: boolean;
 };
 
+export type AdCreativeFormat = "image" | "video";
+
 export type AdDraft = {
   id: string;
   name: string;
@@ -126,6 +128,10 @@ export type AdDraft = {
   description: string;
   callToAction: string;
   mediaLabel: string;
+  creativeFormat: AdCreativeFormat;
+  imageHash: string;
+  imagePreviewUrl: string;
+  videoId: string;
 };
 
 export type AdsManagerTreeNode = {

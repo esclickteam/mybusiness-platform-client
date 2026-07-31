@@ -550,8 +550,9 @@ export default function MetaAdsManagerPage() {
         </div>
       </div>
 
-      <div className="grid min-h-[720px] grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)_300px]">
-        <div className="min-h-[220px] lg:min-h-0">
+      {/* Meta-style: fixed-height columns — center scrolls; right insights stay put */}
+      <div className="grid min-h-[720px] grid-cols-1 lg:h-[calc(100vh-8.5rem)] lg:grid-cols-[240px_minmax(0,1fr)_320px] lg:overflow-hidden">
+        <div className="min-h-[220px] overflow-y-auto border-r border-[#CED0D4] lg:min-h-0">
           <MetaAdsManagerTree
             nodes={tree}
             selectedId={state.selectedId}
@@ -677,12 +678,26 @@ export default function MetaAdsManagerPage() {
               ad={selectedAd}
               forms={liveForms}
               pages={connectedPages}
+              businessId={businessId}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
+              onFormsRefresh={async () => {
+                const pageId =
+                  selectedAd.facebookPageId ||
+                  selectedAdSet?.facebookPageId ||
+                  connection?.selectedPage?.pageId;
+                if (!businessId || !pageId) return;
+                try {
+                  const formsRes = await listMetaLeadForms(businessId, pageId);
+                  setLeadForms(formsRes?.forms || []);
+                } catch {
+                  setLeadForms([]);
+                }
+              }}
             />
           ) : null}
         </main>
 
-        <aside className="overflow-y-auto bg-[#F7F8FA] px-3 py-4">
+        <aside className="overflow-y-auto bg-[#F7F8FA] px-3 py-4 lg:sticky lg:top-0 lg:max-h-full">
           {state.selectedLevel === "campaign" ? (
             <CampaignInsightsSidebar
               campaign={state.campaign}

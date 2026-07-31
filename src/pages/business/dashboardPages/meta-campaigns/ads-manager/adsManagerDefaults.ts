@@ -130,7 +130,11 @@ export function createDefaultAd(adSetName: string): AdDraft {
     headline: "Talk to our team",
     description: "Free consultation",
     callToAction: "LEARN_MORE",
-    mediaLabel: "Image · 1080×1080",
+    mediaLabel: "Choose media for this ad",
+    creativeFormat: "image",
+    imageHash: "",
+    imagePreviewUrl: "",
+    videoId: "",
   };
 }
 
