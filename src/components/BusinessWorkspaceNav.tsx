@@ -13,6 +13,7 @@ import {
   LayoutTemplate,
   Megaphone,
   MessageCircle,
+  CalendarClock,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 
@@ -173,6 +174,12 @@ export default function BusinessWorkspaceNav({
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
+    },
+    {
+      labelKey: "businessNav.socialSchedule",
+      fallback: "Schedule Posts & Stories",
+      to: `${basePath}/dashboard/social-schedule`,
+      icon: CalendarClock,
     },
     {
       labelKey: "businessNav.collaborations",

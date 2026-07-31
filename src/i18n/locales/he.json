@@ -418,7 +418,8 @@
     "expandSidebar": "הרחבת תפריט צד",
     "ariaLabel": "ניווט סביבת העבודה העסקית",
     "whatsapp": "שליחת הודעות וואטסאפ",
-    "metaCampaigns": "ניהול קמפיינים מטא"
+    "metaCampaigns": "ניהול קמפיינים מטא",
+    "socialSchedule": "תזמון פוסטים וסטוריז"
   },
   "layout": {
     "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",
@@ -5362,6 +5363,104 @@
       "mediaUpload": "העלאת המדיה נכשלה",
       "leadForms": "טעינת טפסי לידים נכשלה",
       "createLeadForm": "יצירת טופס לידים נכשלה"
+    }
+  },
+  "socialSchedule": {
+    "loading": "טוען תזמון…",
+    "shell": {
+      "badge": "תוכן אורגני",
+      "title": "תזמון פוסטים וסטוריז",
+      "subtitle": "תזמנו מראש פוסטים וסטוריז לפייסבוק ואינסטגרם — הם יעלו אוטומטית בזמן שנבחר.",
+      "channel": "פייסבוק + אינסטגרם"
+    },
+    "nav": {
+      "compose": "תזמון חדש",
+      "queue": "תורים מתוזמנים",
+      "bulk": "תזמון מרובה"
+    },
+    "platforms": {
+      "facebook": "פייסבוק",
+      "instagram": "אינסטגרם"
+    },
+    "contentTypes": {
+      "post": "פוסט",
+      "story": "סטורי"
+    },
+    "status": {
+      "draft": "טיוטה",
+      "scheduled": "מתוזמן",
+      "publishing": "בפרסום",
+      "published": "פורסם",
+      "failed": "נכשל",
+      "cancelled": "בוטל",
+      "all": "הכול"
+    },
+    "filters": {
+      "allPlatforms": "כל הפלטפורמות",
+      "allTypes": "פוסט וסטורי"
+    },
+    "compose": {
+      "title": "תזמון פוסט או סטורי",
+      "subtitle": "בחרו פלטפורמה, סוג תוכן, תאריך ושעה — והמערכת תפרסם אוטומטית.",
+      "platform": "פלטפורמה",
+      "contentType": "סוג תוכן",
+      "caption": "טקסט",
+      "captionPlaceholder": "מה בא לך לשתף?",
+      "media": "תמונה / סרטון",
+      "uploadMedia": "העלאת מדיה",
+      "removeMedia": "הסרת מדיה",
+      "mediaHint": "סטורי ואינסטגרם דורשים מדיה. בפייסבוק אפשר גם פוסט טקסט בלבד.",
+      "scheduledAt": "תאריך ושעה לפרסום",
+      "scheduleCta": "תזמון פרסום",
+      "publishNowCta": "פרסום עכשיו",
+      "summaryTitle": "סיכום",
+      "page": "עמוד",
+      "autoPublishHint": "התוכן נשמר במערכת ויפורסם אוטומטית בזמן שנבחר. אפשר לבטל בכל רגע מטאב התורים.",
+      "incomplete": "יש להשלים פלטפורמה, תוכן ותאריך תזמון",
+      "notConnectedTitle": "חשבון Meta לא מחובר",
+      "notConnectedHint": "חברו עמוד פייסבוק (וחשבון אינסטגרם עסקי אם רלוונטי) בהגדרות קמפיינים מטא, ואז חזרו לתזמן.",
+      "connectCta": "מעבר לחיבור Meta",
+      "instagramMissing": "לעמוד המחובר אין Instagram Business — חברו IG לעמוד בפייסבוק או בחרו עמוד אחר."
+    },
+    "queue": {
+      "title": "תורים מתוזמנים",
+      "subtitle": "צפייה, מעקב וביטול של פוסטים וסטוריז שתוזמנו מראש.",
+      "refresh": "רענון",
+      "empty": "אין פריטים מתוזמנים להצגה",
+      "showing": "{{count}} פריטים · {{scheduled}} ממתינים לפרסום",
+      "when": "מתי",
+      "noCaption": "(ללא טקסט)",
+      "cancel": "ביטול תזמון",
+      "cancelConfirm": "לבטל את התזמון? התוכן לא יפורסם."
+    },
+    "bulk": {
+      "title": "תזמון מרובה מראש",
+      "subtitle": "לדוגמה: 10 פוסטים, פעמיים בשבוע — עולים לבד אוטומטית.",
+      "count": "כמות",
+      "timesPerWeek": "פעמים בשבוע",
+      "startAt": "התחלה מתאריך",
+      "sharedCaption": "טקסט משותף (אופציונלי)",
+      "captionsList": "טקסטים נפרדים (שורה לכל פוסט)",
+      "captionsPlaceholder": "פוסט 1…\nפוסט 2…\nפוסט 3…",
+      "captionsHint": "אם יש שורות — כל שורה תשויך לתאריך לפי הסדר. אחרת ייעשה שימוש בטקסט המשותף.",
+      "scheduleCta": "תזמון {{count}} פריטים",
+      "previewTitle": "תצוגה מקדימה של הלוח",
+      "previewSubtitle": "{{count}} פריטים · {{timesPerWeek}} פעמים בשבוע"
+    },
+    "toasts": {
+      "scheduled": "התוכן תוזמן בהצלחה",
+      "published": "התוכן פורסם",
+      "cancelled": "התזמון בוטל",
+      "mediaUploaded": "המדיה הועלתה",
+      "bulkScheduled": "תוזמנו {{count}} פריטים"
+    },
+    "errors": {
+      "loadStatus": "טעינת סטטוס התזמון נכשלה",
+      "loadQueue": "טעינת התורים נכשלה",
+      "schedule": "תזמון התוכן נכשל",
+      "bulk": "תזמון מרובה נכשל",
+      "cancel": "ביטול התזמון נכשל",
+      "mediaUpload": "העלאת המדיה נכשלה"
     }
   }
 }

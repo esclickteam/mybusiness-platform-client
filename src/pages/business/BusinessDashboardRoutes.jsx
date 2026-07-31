@@ -135,6 +135,20 @@ const MetaCampaignsSettingsTab = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignsSettingsTab")
 );
 
+/* Facebook / Instagram organic scheduling */
+const SocialScheduleMain = lazy(() =>
+  import("./dashboardPages/social-schedule/SocialScheduleMain")
+);
+const SocialScheduleComposeTab = lazy(() =>
+  import("./dashboardPages/social-schedule/SocialScheduleComposeTab")
+);
+const SocialScheduleQueueTab = lazy(() =>
+  import("./dashboardPages/social-schedule/SocialScheduleQueueTab")
+);
+const SocialScheduleBulkTab = lazy(() =>
+  import("./dashboardPages/social-schedule/SocialScheduleBulkTab")
+);
+
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const WebsiteBuildingGuidePage = lazy(() =>
@@ -434,6 +448,15 @@ const BusinessDashboardRoutes = () => {
             <Route path="edit/:campaignId" element={<MetaCampaignEditorPage />} />
             <Route path="settings" element={<MetaCampaignsSettingsTab />} />
             <Route path="*" element={<Navigate to="overview" replace />} />
+          </Route>
+
+          {/* Facebook / Instagram post & story scheduling */}
+          <Route path="social-schedule" element={<SocialScheduleMain />}>
+            <Route index element={<Navigate to="compose" replace />} />
+            <Route path="compose" element={<SocialScheduleComposeTab />} />
+            <Route path="queue" element={<SocialScheduleQueueTab />} />
+            <Route path="bulk" element={<SocialScheduleBulkTab />} />
+            <Route path="*" element={<Navigate to="compose" replace />} />
           </Route>
 
           {/* CRM internal pages */}
