@@ -536,7 +536,7 @@ export default function AdsManagerCreateLeadFormModal({
                           WhatsApp in settings.
                         </div>
                         <Link
-                          to="../whatsapp"
+                          to="../whatsapp/settings"
                           className="inline-flex text-[13px] font-semibold text-[#1877F2] hover:underline"
                         >
                           Connect WhatsApp Business
