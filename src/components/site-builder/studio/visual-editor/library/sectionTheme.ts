@@ -159,11 +159,29 @@ function replaceThemeColor(value: unknown, theme: VisualSectionTheme) {
   return next;
 }
 
+export function shouldLockLibraryPalette(section?: {
+  lockPalette?: boolean;
+  category?: string;
+} | null) {
+  if (!section) return false;
+  if (section.lockPalette) return true;
+  return String(section.category || "").toLowerCase() === "booking";
+}
+
 export function themeLibraryNodeStyle(
   style: Record<string, any> | undefined,
   type: VisualInsertedElementType,
   theme: VisualSectionTheme,
+  options?: { lockPalette?: boolean },
 ) {
+  if (options?.lockPalette) {
+    const next = { ...(style || {}) };
+    if (type === "text" || type === "button" || type === "form-field") {
+      next.fontFamily = next.fontFamily || theme.fontFamily;
+    }
+    return next;
+  }
+
   const next = Object.fromEntries(
     Object.entries(style || {}).map(([key, value]) => [
       key,
@@ -181,6 +199,10 @@ export function themeLibraryNodeStyle(
 export function themeLibraryBackground(
   background: string | undefined,
   theme: VisualSectionTheme,
+  options?: { lockPalette?: boolean },
 ) {
+  if (options?.lockPalette) {
+    return String(background || "#ffffff");
+  }
   return String(replaceThemeColor(background || "#ffffff", theme));
 }

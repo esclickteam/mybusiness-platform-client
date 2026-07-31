@@ -11,15 +11,17 @@ import type {
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
 
-const ink = "#111827";
-const muted = "#6b7280";
+/** Colors outside the site-theme remap map — never become pink/primary. */
+const ink = "#0b1220";
+const muted = "#5c6570";
 const teal = "#0f766e";
-const slate = "#334155";
-const sand = "#f5f1e8";
-const forest = "#14532d";
-const navy = "#0b1f33";
+const slate = "#2f3a46";
+const sand = "#f3eee4";
+const forest = "#174a2c";
+const navy = "#0a1628";
+const charcoal = "#1c1917";
 
-const buttonDark = {
+const btnInk = {
   color: "#ffffff",
   backgroundColor: ink,
   borderRadius: "12px",
@@ -32,12 +34,14 @@ const buttonDark = {
   textDecoration: "none",
 };
 
-const buttonTeal = {
-  ...buttonDark,
-  backgroundColor: teal,
+const btnTeal = { ...btnInk, backgroundColor: teal };
+const btnForest = { ...btnInk, backgroundColor: forest };
+const btnLime = {
+  ...btnInk,
+  backgroundColor: "#b8e03a",
+  color: charcoal,
 };
 
-/** Live calendar mount — fills exactly the saved box position. */
 function bookingMount(
   key: string,
   layout: ReturnType<typeof absoluteLayout>,
@@ -50,8 +54,8 @@ function bookingMount(
       {
         backgroundColor: "#ffffff",
         borderRadius: "20px",
-        border: "1px solid #e5e7eb",
-        boxShadow: "0 16px 40px -24px rgba(15,23,42,0.35)",
+        border: "1px solid #d9dee5",
+        boxShadow: "0 18px 44px -28px rgba(11,18,32,0.45)",
         ...style,
       },
       layout,
@@ -59,10 +63,10 @@ function bookingMount(
     ),
     attributes: {
       "data-bizuply-block": "booking",
-      "data-bizuply-plugin": "booking",
       "data-bizuply-widget": "booking",
       "data-bizuply-booking-mount": "true",
       "data-bizuply-booking-variant": variant,
+      "data-bizuply-crm-calendar": "true",
     },
   };
 }
@@ -82,30 +86,30 @@ function booking(
     tab: "sections",
     category: "booking",
     title,
-    description: "יומן פגישות מחובר אוטומטית לתוסף יומן ותורים",
+    description: "מחובר אוטומטית ליומן, השירותים ושעות הפעילות מה-CRM",
     keywords: [
       "יומן",
       "פגישות",
       "תורים",
-      "booking",
+      "CRM",
       "calendar",
       "חודשי",
-      "קביעת תור",
+      "שירותים",
     ],
     previewLayout,
     backgroundColor,
     minHeight,
     thumbnail,
+    lockPalette: true,
     nodes,
   };
 }
 
-/** 1 — פיצול נקי + שבוע */
 const weekSplit = booking(
   "section-booking-showcase-calendar-split",
   "יומן פגישות — פיצול",
   "booking-showcase-calendar-split",
-  "#f8fafc",
+  "#f4f6f8",
   "640px",
   IMG.meeting,
   [
@@ -135,14 +139,14 @@ const weekSplit = booking(
     ),
     textNode(
       "copy",
-      "הלקוח בוחר שירות ותאריך — התור נכנס ישירות ליומן העסק.",
+      "הלקוח בוחר שירות ותאריך — התור נכנס ישירות ליומן העסק ב-CRM.",
       { color: muted, fontSize: "16px", lineHeight: "1.65" },
       absoluteLayout(48, 260, "380px", "70px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת תור",
-      buttonTeal,
+      btnTeal,
       absoluteLayout(48, 360, "160px", "48px", 22),
       "#booking",
     ),
@@ -154,7 +158,6 @@ const weekSplit = booking(
   ],
 );
 
-/** 2 — לוח חודשי מרכזי */
 const monthCentered = booking(
   "section-booking-showcase-month-centered",
   "יומן פגישות — לוח חודשי",
@@ -189,13 +192,13 @@ const monthCentered = booking(
     ),
     textNode(
       "copy",
-      "תצוגת חודש מלאה — מסונכרנת לזמינות האמיתית ביומן.",
+      "תצוגת חודש מלאה — מסונכרנת לשירותים ולשעות הפעילות מה-CRM.",
       {
         color: muted,
         fontSize: "16px",
         textAlign: "center",
       },
-      absoluteLayout(250, 135, "580px", "36px", 20),
+      absoluteLayout(230, 135, "620px", "36px", 20),
     ),
     bookingMount(
       "booking-mount",
@@ -205,7 +208,6 @@ const monthCentered = booking(
   ],
 );
 
-/** 3 — לוח חודשי כהה לייעוץ / עסקים */
 const monthDark = booking(
   "section-booking-showcase-month-dark",
   "יומן פגישות — חודשי כהה",
@@ -218,7 +220,7 @@ const monthDark = booking(
       "eyebrow",
       "CONSULTING · BOOKING",
       {
-        color: "#94a3b8",
+        color: "#9aa7b5",
         fontSize: "12px",
         fontWeight: "800",
         letterSpacing: "0.16em",
@@ -229,7 +231,7 @@ const monthDark = booking(
       "title",
       "פגישת ייעוץ\nבלוח החודש",
       {
-        color: "#ffffff",
+        color: "#f5f7fa",
         fontSize: "48px",
         fontWeight: "650",
         lineHeight: "1.05",
@@ -241,13 +243,13 @@ const monthDark = booking(
     textNode(
       "copy",
       "מתאים ליועצים, עורכי דין, מאמנים וקליניקות.",
-      { color: "#94a3b8", fontSize: "16px", lineHeight: "1.6" },
+      { color: "#9aa7b5", fontSize: "16px", lineHeight: "1.6" },
       absoluteLayout(56, 265, "360px", "60px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת פגישה",
-      { ...buttonDark, backgroundColor: "#e2e8f0", color: navy },
+      { ...btnInk, backgroundColor: "#e8edf2", color: navy },
       absoluteLayout(56, 350, "180px", "48px", 22),
       "#booking",
     ),
@@ -255,17 +257,15 @@ const monthDark = booking(
       "booking-mount",
       absoluteLayout(480, 50, "540px", "600px", 12),
       "month",
-      { backgroundColor: "#ffffff" },
     ),
   ],
 );
 
-/** 4 — שירותים + שבוע */
 const servicesWeek = booking(
   "section-booking-showcase-services-slots",
   "יומן פגישות — שירותים ושעות",
   "booking-showcase-services-slots",
-  "#f3f4f6",
+  "#eef1f4",
   "680px",
   IMG.medical,
   [
@@ -282,7 +282,7 @@ const servicesWeek = booking(
     ),
     textNode(
       "copy",
-      "השירותים והזמינות נמשכים אוטומטית מהיומן של העסק.",
+      "השירותים והזמינות נמשכים אוטומטית מהיומן ב-CRM.",
       { color: muted, fontSize: "16px" },
       absoluteLayout(48, 115, "460px", "40px", 20),
     ),
@@ -298,7 +298,7 @@ const servicesWeek = booking(
           {
             backgroundColor: "#ffffff",
             borderRadius: "16px",
-            border: index === 0 ? `2px solid ${teal}` : "1px solid #e5e7eb",
+            border: index === 0 ? `2px solid ${teal}` : "1px solid #d9dee5",
           },
           absoluteLayout(48, y, "400px", "84px", 10),
         ),
@@ -324,12 +324,11 @@ const servicesWeek = booking(
   ],
 );
 
-/** 5 — מינימל עסקי */
 const minimalBusiness = booking(
   "section-booking-showcase-minimal-cta",
   "יומן פגישות — מינימלי עסקי",
   "booking-showcase-minimal-cta",
-  "#eef2f7",
+  "#e8edf2",
   "560px",
   IMG.laptop,
   [
@@ -363,12 +362,11 @@ const minimalBusiness = booking(
   ],
 );
 
-/** 6 — ספא / וולנס ירוק (לא ורוד) */
 const wellnessGreen = booking(
   "section-booking-showcase-wellness-green",
   "יומן פגישות — וולנס",
   "booking-showcase-wellness-green",
-  "#ecfdf5",
+  "#e8f5ee",
   "660px",
   IMG.wellness,
   [
@@ -406,17 +404,16 @@ const wellnessGreen = booking(
       "booking-mount",
       absoluteLayout(480, 270, "520px", "340px", 12),
       "week",
-      { border: "1px solid #bbf7d0" },
+      { border: "1px solid #b7d8c4" },
     ),
   ],
 );
 
-/** 7 — לוח חודשי צדדי לקליניקה */
 const clinicMonth = booking(
   "section-booking-showcase-clinic-month",
   "יומן פגישות — קליניקה חודשי",
   "booking-showcase-clinic-month",
-  "#f8fafc",
+  "#f4f6f8",
   "720px",
   IMG.medical,
   [
@@ -466,7 +463,6 @@ const clinicMonth = booking(
   ],
 );
 
-/** 8 — כרטיס חול / אדריכלות */
 const sandCard = booking(
   "section-booking-showcase-compact-card",
   "יומן פגישות — כרטיס חול",
@@ -480,7 +476,7 @@ const sandCard = booking(
       {
         backgroundColor: "#ffffff",
         borderRadius: "28px",
-        border: "1px solid #e7e0d4",
+        border: "1px solid #ddd4c4",
       },
       absoluteLayout(70, 50, "940px", "500px", 5),
     ),
@@ -488,7 +484,7 @@ const sandCard = booking(
       "eyebrow",
       "STUDIO APPOINTMENTS",
       {
-        color: "#8a7f6d",
+        color: "#7d7263",
         fontSize: "12px",
         fontWeight: "800",
         letterSpacing: "0.14em",
@@ -499,7 +495,7 @@ const sandCard = booking(
       "title",
       "פגישה בסטודיו\nהשבוע",
       {
-        color: "#1c1915",
+        color: charcoal,
         fontSize: "42px",
         fontWeight: "700",
         lineHeight: "1.05",
@@ -510,13 +506,13 @@ const sandCard = booking(
     textNode(
       "copy",
       "עיצוב ניטרלי למותגים, סטודיות ומשרדים.",
-      { color: "#7a7166", fontSize: "15px", lineHeight: "1.6" },
+      { color: "#7d7263", fontSize: "15px", lineHeight: "1.6" },
       absoluteLayout(120, 290, "300px", "50px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת פגישה",
-      { ...buttonDark, backgroundColor: "#1c1915", borderRadius: "10px" },
+      { ...btnInk, backgroundColor: charcoal, borderRadius: "10px" },
       absoluteLayout(120, 370, "170px", "48px", 22),
       "#booking",
     ),
@@ -524,12 +520,11 @@ const sandCard = booking(
       "booking-mount",
       absoluteLayout(500, 90, "450px", "420px", 12),
       "week",
-      { border: "1px solid #e7e0d4", boxShadow: "none" },
+      { border: "1px solid #ddd4c4", boxShadow: "none" },
     ),
   ],
 );
 
-/** 9 — לוח חודשי מלא רוחב */
 const monthWide = booking(
   "section-booking-showcase-month-wide",
   "יומן פגישות — חודשי רחב",
@@ -551,9 +546,9 @@ const monthWide = booking(
     ),
     textNode(
       "copy",
-      "תצוגה רחבה לבחירת תאריך — מתחבר אוטומטית לתוסף היומן.",
+      "תצוגה רחבה לבחירת תאריך — מסונכרנת ליומן ולשירותים מה-CRM.",
       { color: muted, fontSize: "16px" },
-      absoluteLayout(48, 105, "620px", "36px", 20),
+      absoluteLayout(48, 105, "680px", "36px", 20),
     ),
     bookingMount(
       "booking-mount",
@@ -563,12 +558,11 @@ const monthWide = booking(
   ],
 );
 
-/** 10 — ספורט / כושר */
 const fitnessWeek = booking(
   "section-booking-showcase-fitness",
   "יומן פגישות — כושר ואימון",
   "booking-showcase-fitness",
-  "#0a0a0a",
+  charcoal,
   "640px",
   IMG.fitness,
   [
@@ -576,7 +570,7 @@ const fitnessWeek = booking(
       "eyebrow",
       "TRAINING SESSIONS",
       {
-        color: "#a3e635",
+        color: "#b8e03a",
         fontSize: "12px",
         fontWeight: "800",
         letterSpacing: "0.16em",
@@ -587,7 +581,7 @@ const fitnessWeek = booking(
       "title",
       "קבעו אימון\nבלוח הזמנים",
       {
-        color: "#ffffff",
+        color: "#f4f4f5",
         fontSize: "48px",
         fontWeight: "700",
         lineHeight: "1.05",
@@ -598,13 +592,13 @@ const fitnessWeek = booking(
     textNode(
       "copy",
       "למאמנים אישיים, סטודיו יוגה וחדרי כושר.",
-      { color: "#9ca3af", fontSize: "16px" },
+      { color: "#a1a1aa", fontSize: "16px" },
       absoluteLayout(48, 270, "360px", "50px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת אימון",
-      { ...buttonDark, backgroundColor: "#a3e635", color: "#0a0a0a" },
+      btnLime,
       absoluteLayout(48, 350, "170px", "48px", 22),
       "#booking",
     ),
@@ -612,6 +606,59 @@ const fitnessWeek = booking(
       "booking-mount",
       absoluteLayout(480, 48, "540px", "540px", 12),
       "week",
+    ),
+  ],
+);
+
+/** Extra monthly for legal / finance */
+const financeMonth = booking(
+  "section-booking-showcase-finance-month",
+  "יומן פגישות — משרדי / פיננסי",
+  "booking-showcase-finance-month",
+  "#f7f5f1",
+  "700px",
+  IMG.office,
+  [
+    textNode(
+      "eyebrow",
+      "OFFICE APPOINTMENTS",
+      {
+        color: "#6b645a",
+        fontSize: "12px",
+        fontWeight: "800",
+        letterSpacing: "0.14em",
+      },
+      absoluteLayout(48, 60, "300px", "24px", 20),
+    ),
+    textNode(
+      "title",
+      "תיאום פגישה\nמקצועית",
+      {
+        color: charcoal,
+        fontSize: "46px",
+        fontWeight: "700",
+        lineHeight: "1.05",
+        whiteSpace: "pre-line",
+      },
+      absoluteLayout(48, 100, "400px", "130px", 20),
+    ),
+    textNode(
+      "copy",
+      "למשרדי עורכי דין, רואי חשבון ויועצים עסקיים.",
+      { color: "#6b645a", fontSize: "16px", lineHeight: "1.6" },
+      absoluteLayout(48, 250, "380px", "60px", 20),
+    ),
+    buttonNode(
+      "cta",
+      "קביעת פגישה",
+      { ...btnInk, backgroundColor: charcoal },
+      absoluteLayout(48, 340, "180px", "48px", 22),
+      "#booking",
+    ),
+    bookingMount(
+      "booking-mount",
+      absoluteLayout(480, 48, "540px", "600px", 12),
+      "month",
     ),
   ],
 );
@@ -627,7 +674,8 @@ export const BOOKING_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   sandCard,
   monthWide,
   fitnessWeek,
+  financeMonth,
 ];
 
 export const DEFAULT_BOOKING_SECTION_ID =
-  "section-booking-showcase-calendar-split";
+  "section-booking-showcase-month-centered";

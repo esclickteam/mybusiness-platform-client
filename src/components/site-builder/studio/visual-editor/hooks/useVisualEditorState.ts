@@ -112,6 +112,7 @@ import {
 import type { VisualLibraryNodeTemplate } from "../library/visualLibraryTypes";
 import {
   resolveVisualSectionTheme,
+  shouldLockLibraryPalette,
   themeLibraryBackground,
   themeLibraryNodeStyle,
 } from "../library/sectionTheme";
@@ -2911,6 +2912,7 @@ export function useVisualEditorState({
       const root = canvasRef.current;
       if (!root) return "";
       const sectionTheme = resolveVisualSectionTheme(renderer.key, root);
+      const lockPalette = shouldLockLibraryPalette(template);
 
       const selectedNode = getSelectedDomNode(selection.selectedElement);
       const sectionNode = getClosestVisualSectionNode(root, selectedNode);
@@ -2942,6 +2944,7 @@ export function useVisualEditorState({
           backgroundColor: themeLibraryBackground(
             template.backgroundColor,
             sectionTheme,
+            { lockPalette },
           ),
           padding: "40px 24px",
         } as StylePatch);
@@ -2985,6 +2988,7 @@ export function useVisualEditorState({
                 nodeTemplate.style,
                 nodeTemplate.type,
                 sectionTheme,
+                { lockPalette },
               ) as StylePatch,
             );
           }
@@ -3053,6 +3057,7 @@ export function useVisualEditorState({
       });
 
       const sectionTheme = resolveVisualSectionTheme(renderer.key, root);
+      const lockPalette = shouldLockLibraryPalette(template);
       const keyToId: Record<string, string> = {};
       template.nodes.forEach((nodeTemplate) => {
         keyToId[nodeTemplate.key] = createVisualCustomId(
@@ -3086,6 +3091,7 @@ export function useVisualEditorState({
           backgroundColor: themeLibraryBackground(
             template.backgroundColor,
             sectionTheme,
+            { lockPalette },
           ),
           padding: "40px 24px",
         } as StylePatch);
@@ -3131,6 +3137,7 @@ export function useVisualEditorState({
                 nodeTemplate.style,
                 nodeTemplate.type,
                 sectionTheme,
+                { lockPalette },
               ) as StylePatch,
             );
           }

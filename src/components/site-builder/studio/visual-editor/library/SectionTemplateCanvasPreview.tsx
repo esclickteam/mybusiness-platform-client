@@ -12,10 +12,12 @@ import type {
 } from "./visualLibraryTypes";
 import { VISUAL_LIBRARY_IMAGES } from "./libraryAssets";
 import {
+  shouldLockLibraryPalette,
   themeLibraryBackground,
   themeLibraryNodeStyle,
   type VisualSectionTheme,
 } from "./sectionTheme";
+import BookingWidget from "../../../../site-plugins/booking/BookingWidget";
 
 const CANVAS_WIDTH = 1100;
 
@@ -25,9 +27,18 @@ function numericHeight(value: string | number | undefined) {
   return Number.isFinite(parsed) ? parsed : 520;
 }
 
+function isBookingMount(node: VisualLibraryNodeTemplate) {
+  const attrs = node.attributes || {};
+  return (
+    attrs["data-bizuply-booking-mount"] === "true" ||
+    attrs["data-bizuply-widget"] === "booking"
+  );
+}
+
 function nodeLayoutStyle(
   node: VisualLibraryNodeTemplate,
   theme?: VisualSectionTheme,
+  lockPalette = false,
 ): CSSProperties {
   const layout = node.layout || {};
   const x = Number(layout.translateX ?? layout.x ?? 0);
@@ -38,7 +49,7 @@ function nodeLayoutStyle(
 
   return {
     ...((theme
-      ? themeLibraryNodeStyle(node.style, node.type, theme)
+      ? themeLibraryNodeStyle(node.style, node.type, theme, { lockPalette })
       : node.style) as CSSProperties),
     position: (layout.position || "absolute") as CSSProperties["position"],
     left: layout.left ?? 0,
@@ -71,15 +82,30 @@ function NodePreview({
   children,
   theme,
   fallbackImage,
+  lockPalette = false,
 }: {
   node: VisualLibraryNodeTemplate;
   children?: React.ReactNode;
   theme?: VisualSectionTheme;
   fallbackImage: string;
+  lockPalette?: boolean;
 }) {
   const content = node.content || {};
-  const style = nodeLayoutStyle(node, theme);
+  const style = nodeLayoutStyle(node, theme, lockPalette);
   const text = String(content.text || node.label || "");
+
+  if (isBookingMount(node)) {
+    const variant =
+      String(node.attributes?.["data-bizuply-booking-variant"] || "") ===
+      "month"
+        ? "month"
+        : "week";
+    return (
+      <div style={{ ...style, overflow: "hidden", padding: 0 }}>
+        <BookingWidget preview editorMode variant={variant} />
+      </div>
+    );
+  }
 
   if (node.type === "image") {
     return (
@@ -241,11 +267,15 @@ export default function SectionTemplateCanvasPreview({
     return grouped;
   }, [section.nodes]);
 
+  const lockPalette = shouldLockLibraryPalette(section);
+  const effectiveTheme = lockPalette ? undefined : theme;
+
   const renderNode = (node: VisualLibraryNodeTemplate): React.ReactNode => (
     <NodePreview
       key={node.key}
       node={node}
-      theme={theme}
+      theme={effectiveTheme}
+      lockPalette={lockPalette}
       fallbackImage={VISUAL_LIBRARY_IMAGES.workspace}
     >
       {(childNodes.get(node.key) || []).map(renderNode)}
@@ -289,8 +319,10 @@ export default function SectionTemplateCanvasPreview({
           style={{
             width: CANVAS_WIDTH,
             height: canvasHeight,
-            backgroundColor: theme
-              ? themeLibraryBackground(section.backgroundColor, theme)
+            backgroundColor: effectiveTheme
+              ? themeLibraryBackground(section.backgroundColor, effectiveTheme, {
+                  lockPalette,
+                })
               : section.backgroundColor || "#ffffff",
             ...canvasStyle,
           }}

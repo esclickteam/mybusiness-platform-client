@@ -187,7 +187,11 @@ export default function VisualPluginsAddPanel({
       } else {
         editor?.addSection?.("after", undefined, action.sectionId);
       }
-      onAdded?.(`«${plugin.name}» נוסף לעמוד ומחובר ליומן`);
+      onAdded?.(
+        plugin.key === "booking"
+          ? `«${plugin.name}» נוסף — מחובר ליומן ה-CRM`
+          : `«${plugin.name}» נוסף לעמוד`,
+      );
       return;
     }
 

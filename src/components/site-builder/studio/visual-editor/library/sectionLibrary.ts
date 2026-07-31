@@ -1513,7 +1513,7 @@ function previewFamily(item: VisualLibrarySectionTemplate) {
 
 function curateSectionLibrary(
   items: VisualLibrarySectionTemplate[],
-  limitPerCategory = 10,
+  limitPerCategory = 12,
 ) {
   const selected: VisualLibrarySectionTemplate[] = [];
   const counts = new Map<string, number>();

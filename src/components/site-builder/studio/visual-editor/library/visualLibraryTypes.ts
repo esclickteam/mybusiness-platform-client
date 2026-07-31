@@ -85,6 +85,11 @@ export type VisualLibrarySectionTemplate = {
   thumbnail?: string;
   minHeight?: string | number;
   backgroundColor?: string;
+  /**
+   * Keep the section's authored colors — do not remap to the site brand palette.
+   * Used for booking calendars so titles don't become the site's pink/primary.
+   */
+  lockPalette?: boolean;
   nodes: VisualLibraryNodeTemplate[];
 };
 

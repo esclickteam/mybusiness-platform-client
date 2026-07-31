@@ -42,9 +42,9 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   booking: {
     pluginKey: "booking",
     kind: "section",
-    sectionId: "section-booking-showcase-calendar-split",
+    sectionId: "section-booking-showcase-month-centered",
     label: "יומן פגישות",
-    description: "מתחבר אוטומטית לתוסף יומן ותורים",
+    description: "מחובר אוטומטית ליומן, שירותים ושעות מה-CRM",
   },
   leads: {
     pluginKey: "leads",

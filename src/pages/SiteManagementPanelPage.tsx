@@ -184,9 +184,9 @@ export default function SiteManagementPanelPage() {
       } else if (bookingHint && enabled) {
         setActiveSection("booking");
         navigate(
-          `${editorHref}?addPlugin=booking&addSection=${encodeURIComponent(
+          `${editorHref}?addSection=${encodeURIComponent(
             bookingHint.sectionId ||
-              "section-booking-showcase-calendar-split",
+              "section-booking-showcase-month-centered",
           )}`,
         );
       }

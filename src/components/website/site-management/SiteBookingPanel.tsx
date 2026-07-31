@@ -52,15 +52,15 @@ export default function SiteBookingPanel({
       </SitePanelCard>
 
       <div className="rounded-2xl border border-dashed border-teal-200 bg-teal-50/40 p-4 text-sm leading-relaxed text-slate-600">
-        הגדירו שעות ושירותים כאן — ואז הוסיפו סקשן{" "}
+        הגדירו כאן שעות ושירותים — סקשן{" "}
         <strong>יומן פגישות</strong> בעורך (
         <Link
-          to={`${basePath}/website/sites/${siteId}/edit?addPlugin=booking&addSection=section-booking-showcase-month-centered`}
+          to={`${basePath}/website/sites/${siteId}/edit?addSection=section-booking-showcase-month-centered`}
           className="font-semibold text-teal-700 hover:underline"
         >
           פתיחה עם לוח חודשי
         </Link>
-        ). הסקשן מסתנכרן אוטומטית ליומן.
+        ) מתחבר אוטומטית ליומן ה-CRM, בלי תוסף נפרד.
       </div>
     </div>
   );
