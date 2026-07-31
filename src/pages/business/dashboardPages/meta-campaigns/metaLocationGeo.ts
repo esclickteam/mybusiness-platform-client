@@ -54,17 +54,17 @@ export async function geocodeLocation(
   }
 
   try {
-    const country = (location.countryCode || "").toUpperCase();
+    const country = (location.countryCode || "IL").toUpperCase();
     const url = new URL("https://nominatim.openstreetmap.org/search");
     url.searchParams.set("format", "json");
-    url.searchParams.set("limit", "1");
+    url.searchParams.set("limit", "3");
+    url.searchParams.set("addressdetails", "1");
     url.searchParams.set("q", q);
-    if (country) url.searchParams.set("countrycodes", country.toLowerCase());
+    url.searchParams.set("countrycodes", country.toLowerCase() || "il");
 
     const response = await fetch(url.toString(), {
       headers: {
         Accept: "application/json",
-        // Nominatim requires a valid identifying UA.
         "Accept-Language": "he,en",
       },
     });
@@ -72,9 +72,25 @@ export async function geocodeLocation(
       geoCache.set(key, null);
       return null;
     }
-    const rows = (await response.json()) as Array<{ lat?: string; lon?: string }>;
-    const lat = Number(rows?.[0]?.lat);
-    const lng = Number(rows?.[0]?.lon);
+    const rows = (await response.json()) as Array<{
+      lat?: string;
+      lon?: string;
+      type?: string;
+      class?: string;
+      importance?: number;
+    }>;
+    // Prefer city/town nodes so the radius circle centers on the place itself.
+    const ranked = [...(rows || [])].sort((a, b) => {
+      const score = (row: { type?: string; class?: string; importance?: number }) => {
+        const type = `${row.class || ""}:${row.type || ""}`;
+        if (/city|town|village|municipality|suburb/i.test(type)) return 3 + (row.importance || 0);
+        if (/administrative/i.test(type)) return 2 + (row.importance || 0);
+        return row.importance || 0;
+      };
+      return score(b) - score(a);
+    });
+    const lat = Number(ranked?.[0]?.lat);
+    const lng = Number(ranked?.[0]?.lon);
     if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
       geoCache.set(key, null);
       return null;

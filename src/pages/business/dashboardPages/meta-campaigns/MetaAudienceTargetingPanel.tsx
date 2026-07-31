@@ -10,7 +10,6 @@ import {
   X,
 } from "lucide-react";
 import {
-  browseMetaInterestCategories,
   searchMetaInterestSuggestions,
   searchMetaInterests,
   searchMetaLocations,
@@ -61,13 +60,13 @@ function formatAudienceSize(value?: number | null) {
   return String(value);
 }
 
-function mergeInterestLists(...lists: MetaInterestTarget[][]) {
-  const map = new Map<string, MetaInterestTarget>();
-  lists.flat().forEach((item) => {
-    if (!item?.id || map.has(item.id)) return;
-    map.set(item.id, item);
-  });
-  return Array.from(map.values());
+function looksLikeInterestMatch(item: MetaInterestTarget, q: string) {
+  const query = q.trim().toLowerCase();
+  if (!query) return false;
+  const name = String(item.name || "").toLowerCase();
+  const path = (item.path || []).join(" ").toLowerCase();
+  // Keep only results that actually relate to the typed query (Ads Manager feel).
+  return name.includes(query) || path.includes(query) || query.includes(name);
 }
 
 export default function MetaAudienceTargetingPanel({
@@ -105,8 +104,12 @@ export default function MetaAudienceTargetingPanel({
   const [radiusKm, setRadiusKm] = useState(25);
   const [locationError, setLocationError] = useState("");
   const [interestError, setInterestError] = useState("");
+  const [interestOpen, setInterestOpen] = useState(false);
+  const [locationOpen, setLocationOpen] = useState(false);
   const locationReq = useRef(0);
   const interestReq = useRef(0);
+  const interestBoxRef = useRef<HTMLDivElement | null>(null);
+  const locationBoxRef = useRef<HTMLDivElement | null>(null);
 
   const selectedLocationKeys = useMemo(
     () => new Set(locations.map(locationIdentity)),
@@ -117,12 +120,28 @@ export default function MetaAudienceTargetingPanel({
     [interests]
   );
 
+  // Close dropdowns on outside click — like Meta.
+  useEffect(() => {
+    const onDoc = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (interestBoxRef.current && !interestBoxRef.current.contains(target)) {
+        setInterestOpen(false);
+      }
+      if (locationBoxRef.current && !locationBoxRef.current.contains(target)) {
+        setLocationOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
   useEffect(() => {
     if (!businessId) return;
     const q = locationQuery.trim();
     if (q.length < 2) {
       setLocationResults([]);
       setLocationError("");
+      setLocationOpen(false);
       return;
     }
 
@@ -133,9 +152,7 @@ export default function MetaAudienceTargetingPanel({
         setLocationError("");
         const data = await searchMetaLocations(businessId, {
           q,
-          // Prefer Israel results first (like Meta default market here),
-          // but still allow worldwide if Meta returns them without filter.
-          countryCode: q.length <= 3 ? undefined : "IL",
+          countryCode: "IL",
           locationTypes:
             locationMode === "radius"
               ? ["city", "region", "zip"]
@@ -143,7 +160,6 @@ export default function MetaAudienceTargetingPanel({
         });
         if (reqId !== locationReq.current) return;
         let results = data.results || [];
-        // If Israel-filtered search is empty, retry worldwide from Meta.
         if (!results.length) {
           const worldwide = await searchMetaLocations(businessId, {
             q,
@@ -156,9 +172,11 @@ export default function MetaAudienceTargetingPanel({
           results = worldwide.results || [];
         }
         setLocationResults(results);
+        setLocationOpen(true);
       } catch (error: any) {
         if (reqId !== locationReq.current) return;
         setLocationResults([]);
+        setLocationOpen(false);
         setLocationError(
           error?.response?.data?.error ||
             error?.response?.data?.message ||
@@ -167,7 +185,7 @@ export default function MetaAudienceTargetingPanel({
       } finally {
         if (reqId === locationReq.current) setLocationBusy(false);
       }
-    }, 320);
+    }, 280);
 
     return () => window.clearTimeout(timer);
   }, [businessId, locationMode, locationQuery, t]);
@@ -175,51 +193,44 @@ export default function MetaAudienceTargetingPanel({
   useEffect(() => {
     if (!businessId) return;
     const q = interestQuery.trim();
-    const reqId = ++interestReq.current;
-
-    // Empty query → browse Meta interest categories (same source as Ads Manager browse).
+    // Meta style: closed until the user types a real query.
     if (q.length < 2) {
-      const timer = window.setTimeout(async () => {
-        try {
-          setInterestBusy(true);
-          setInterestError("");
-          const [he, en] = await Promise.all([
-            browseMetaInterestCategories(businessId, { locale: "he_IL" }),
-            browseMetaInterestCategories(businessId, { locale: "en_US" }).catch(
-              () => ({ results: [] as MetaInterestTarget[] })
-            ),
-          ]);
-          if (reqId !== interestReq.current) return;
-          setInterestResults(mergeInterestLists(he.results || [], en.results || []));
-        } catch (error: any) {
-          if (reqId !== interestReq.current) return;
-          setInterestResults([]);
-          setInterestError(
-            error?.response?.data?.error ||
-              error?.response?.data?.message ||
-              t("metaCampaigns.form.interestSearchError")
-          );
-        } finally {
-          if (reqId === interestReq.current) setInterestBusy(false);
-        }
-      }, 120);
-      return () => window.clearTimeout(timer);
+      setInterestResults([]);
+      setInterestError("");
+      setInterestOpen(false);
+      return;
     }
 
+    const reqId = ++interestReq.current;
     const timer = window.setTimeout(async () => {
       try {
         setInterestBusy(true);
         setInterestError("");
-        // Server expands each locale with Meta related suggestions (official IDs only).
-        const [he, en] = await Promise.all([
-          searchMetaInterests(businessId, { q, locale: "he_IL", limit: 50 }),
-          searchMetaInterests(businessId, { q, locale: "en_US", limit: 50 }),
-        ]);
+        // ONLY Meta adinterest autocomplete for the typed query.
+        const he = await searchMetaInterests(businessId, {
+          q,
+          locale: "he_IL",
+          limit: 25,
+        });
+        let rows = he.results || [];
+        if (!rows.length) {
+          const en = await searchMetaInterests(businessId, {
+            q,
+            locale: "en_US",
+            limit: 25,
+          });
+          rows = en.results || [];
+        }
+        // Guard against unrelated API noise.
+        const filtered = rows.filter((item) => looksLikeInterestMatch(item, q));
+        const finalRows = filtered.length ? filtered : rows;
         if (reqId !== interestReq.current) return;
-        setInterestResults(mergeInterestLists(he.results || [], en.results || []));
+        setInterestResults(finalRows);
+        setInterestOpen(finalRows.length > 0);
       } catch (error: any) {
         if (reqId !== interestReq.current) return;
         setInterestResults([]);
+        setInterestOpen(false);
         setInterestError(
           error?.response?.data?.error ||
             error?.response?.data?.message ||
@@ -228,11 +239,12 @@ export default function MetaAudienceTargetingPanel({
       } finally {
         if (reqId === interestReq.current) setInterestBusy(false);
       }
-    }, 320);
+    }, 280);
 
     return () => window.clearTimeout(timer);
   }, [businessId, interestQuery, t]);
 
+  // Suggestions ONLY after an interest was selected (Meta "Suggestions" row).
   useEffect(() => {
     if (!businessId || !interests.length) {
       setInterestSuggestions([]);
@@ -244,21 +256,13 @@ export default function MetaAudienceTargetingPanel({
       try {
         setSuggestionsBusy(true);
         const names = interests.map((item) => item.name).filter(Boolean);
-        const [he, en] = await Promise.all([
-          searchMetaInterestSuggestions(businessId, {
-            names,
-            locale: "he_IL",
-          }),
-          searchMetaInterestSuggestions(businessId, {
-            names,
-            locale: "en_US",
-          }).catch(() => ({ results: [] as MetaInterestTarget[] })),
-        ]);
+        const data = await searchMetaInterestSuggestions(businessId, {
+          names,
+          locale: "he_IL",
+        });
         if (cancelled) return;
         setInterestSuggestions(
-          mergeInterestLists(he.results || [], en.results || []).filter(
-            (item) => !selectedInterestIds.has(item.id)
-          )
+          (data.results || []).filter((item) => !selectedInterestIds.has(item.id))
         );
       } catch {
         if (!cancelled) setInterestSuggestions([]);
@@ -274,15 +278,15 @@ export default function MetaAudienceTargetingPanel({
     };
   }, [businessId, interests, selectedInterestIds]);
 
-  // Resolve lat/lng for selected Meta locations so the map can pin + draw radius.
+  // Geocode selected Meta places for map pins / radius circles.
   useEffect(() => {
     let cancelled = false;
     const missing = locations.some(
       (item) =>
         item.latitude == null ||
         item.longitude == null ||
-        !Number.isFinite(item.latitude) ||
-        !Number.isFinite(item.longitude)
+        !Number.isFinite(Number(item.latitude)) ||
+        !Number.isFinite(Number(item.longitude))
     );
     if (!missing) return;
 
@@ -305,6 +309,21 @@ export default function MetaAudienceTargetingPanel({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [locations.map((item) => `${item.key}:${item.name}`).join("|")]);
 
+  const setRadiusAndSync = (nextRadius: number) => {
+    const value = Math.min(80, Math.max(1, nextRadius || 25));
+    setRadiusKm(value);
+    // In radius mode, changing the slider updates all selected radius locations live.
+    if (locationMode === "radius") {
+      onLocationsChange(
+        locations.map((loc) =>
+          loc.type === "custom" || loc.radiusKm != null
+            ? { ...loc, radiusKm: value }
+            : loc
+        )
+      );
+    }
+  };
+
   const addLocation = async (item: MetaLocationTarget) => {
     const addressString = [
       item.name,
@@ -320,7 +339,6 @@ export default function MetaAudienceTargetingPanel({
       locationMode === "radius"
         ? {
             ...item,
-            // Meta radius targeting uses custom_locations (address or lat/lng).
             type: "custom",
             key: item.key || addressString,
             radiusKm,
@@ -340,10 +358,6 @@ export default function MetaAudienceTargetingPanel({
     const withoutDupes = locations.filter(
       (loc) => locationIdentity(loc) !== identity
     );
-
-    // When choosing cities/radius, keep country Israel as broad base only if still country-only.
-    // If user picks a city inside Israel, replace pure country IL with the more specific place
-    // (Meta-like: selecting Tel Aviv replaces "Israel" broad targeting with that city).
     const filtered =
       next.type !== "country"
         ? withoutDupes.filter(
@@ -354,6 +368,7 @@ export default function MetaAudienceTargetingPanel({
     onLocationsChange([...filtered, next]);
     setLocationQuery("");
     setLocationResults([]);
+    setLocationOpen(false);
   };
 
   const removeLocation = (item: MetaLocationTarget) => {
@@ -364,10 +379,12 @@ export default function MetaAudienceTargetingPanel({
   };
 
   const updateLocationRadius = (item: MetaLocationTarget, nextRadius: number) => {
+    const value = Math.min(80, Math.max(1, nextRadius || 25));
+    setRadiusKm(value);
     onLocationsChange(
       locations.map((loc) =>
         locationIdentity(loc) === locationIdentity(item)
-          ? { ...loc, radiusKm: nextRadius }
+          ? { ...loc, radiusKm: value }
           : loc
       )
     );
@@ -378,6 +395,7 @@ export default function MetaAudienceTargetingPanel({
     onInterestsChange([...interests, item]);
     setInterestQuery("");
     setInterestResults([]);
+    setInterestOpen(false);
   };
 
   const removeInterest = (id: string) => {
@@ -491,60 +509,74 @@ export default function MetaAudienceTargetingPanel({
               min={1}
               max={80}
               value={radiusKm}
-              onChange={(e) => setRadiusKm(Number(e.target.value) || 25)}
-              className="w-full"
+              onChange={(e) => setRadiusAndSync(Number(e.target.value) || 25)}
+              className="w-full accent-[#1877F2]"
             />
+            <span className="mt-1 block text-[11px] font-semibold text-slate-400">
+              העיגול הכחול במפה = האזור שנכלל ברדיוס ({radiusKm} ק״מ)
+            </span>
           </label>
         ) : null}
 
-        <div className="relative mb-3">
+        <div className="relative mb-3" ref={locationBoxRef}>
           <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             className={`${inputBase} ps-10`}
             value={locationQuery}
-            onChange={(e) => setLocationQuery(e.target.value)}
+            onChange={(e) => {
+              setLocationQuery(e.target.value);
+              setLocationOpen(e.target.value.trim().length >= 2);
+            }}
+            onFocus={() => {
+              if (locationResults.length) setLocationOpen(true);
+            }}
             placeholder={t("metaCampaigns.form.locationSearchPlaceholder")}
+            autoComplete="off"
           />
           {locationBusy ? (
             <Loader2 className="absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-slate-400" />
+          ) : null}
+
+          {locationOpen && locationResults.length ? (
+            <div className="absolute z-30 mt-1 max-h-56 w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+              {locationResults.map((item) => {
+                const selected = selectedLocationKeys.has(locationIdentity(item));
+                return (
+                  <button
+                    key={locationIdentity(item)}
+                    type="button"
+                    disabled={selected}
+                    onClick={() => addLocation(item)}
+                    className="flex w-full items-start justify-between gap-3 border-b border-slate-100 px-3 py-2.5 text-start last:border-b-0 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    <span>
+                      <span className="block text-sm font-black text-slate-900">
+                        {item.name}
+                      </span>
+                      <span className="block text-[11px] font-semibold text-slate-500">
+                        {[
+                          item.type,
+                          item.region,
+                          item.countryName || item.countryCode,
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                    </span>
+                    <span className="text-[11px] font-black text-[#1877F2]">
+                      {selected
+                        ? t("metaCampaigns.form.selected")
+                        : t("metaCampaigns.form.add")}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           ) : null}
         </div>
 
         {locationError ? (
           <p className="mb-2 text-xs font-semibold text-rose-600">{locationError}</p>
-        ) : null}
-
-        {locationResults.length ? (
-          <div className="mb-3 max-h-48 overflow-auto rounded-xl border border-slate-100 bg-slate-50">
-            {locationResults.map((item) => {
-              const selected = selectedLocationKeys.has(locationIdentity(item));
-              return (
-                <button
-                  key={locationIdentity(item)}
-                  type="button"
-                  disabled={selected}
-                  onClick={() => addLocation(item)}
-                  className="flex w-full items-start justify-between gap-3 border-b border-slate-100 px-3 py-2.5 text-start last:border-b-0 hover:bg-white disabled:opacity-50"
-                >
-                  <span>
-                    <span className="block text-sm font-black text-slate-900">
-                      {item.name}
-                    </span>
-                    <span className="block text-[11px] font-semibold text-slate-500">
-                      {[item.type, item.region, item.countryName || item.countryCode]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </span>
-                  </span>
-                  <span className="text-[11px] font-black text-[#1877F2]">
-                    {selected
-                      ? t("metaCampaigns.form.selected")
-                      : t("metaCampaigns.form.add")}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
         ) : null}
 
         <div className="mb-3 flex flex-wrap gap-2">
@@ -560,12 +592,12 @@ export default function MetaAudienceTargetingPanel({
                   ? ` · ${item.radiusKm}${t("metaCampaigns.form.kmShort")}`
                   : ""}
               </span>
-              {item.radiusKm ? (
+              {item.radiusKm != null || item.type === "custom" ? (
                 <input
                   type="number"
                   min={1}
                   max={80}
-                  value={item.radiusKm}
+                  value={item.radiusKm ?? radiusKm}
                   onChange={(e) =>
                     updateLocationRadius(item, Number(e.target.value) || 25)
                   }
@@ -587,6 +619,7 @@ export default function MetaAudienceTargetingPanel({
 
         <MetaLocationsMap
           locations={locations}
+          fallbackRadiusKm={locationMode === "radius" ? radiusKm : null}
           hint={t("metaCampaigns.form.locationsMapHint")}
         />
       </div>
@@ -603,16 +636,67 @@ export default function MetaAudienceTargetingPanel({
           </p>
         </div>
 
-        <div className="relative mb-3 mt-3">
+        <div className="relative mb-3 mt-3" ref={interestBoxRef}>
           <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <input
             className={`${inputBase} ps-10`}
             value={interestQuery}
-            onChange={(e) => setInterestQuery(e.target.value)}
+            onChange={(e) => {
+              setInterestQuery(e.target.value);
+              if (e.target.value.trim().length < 2) {
+                setInterestOpen(false);
+                setInterestResults([]);
+              }
+            }}
+            onFocus={() => {
+              if (interestResults.length && interestQuery.trim().length >= 2) {
+                setInterestOpen(true);
+              }
+            }}
             placeholder={t("metaCampaigns.form.interestSearchPlaceholder")}
+            autoComplete="off"
           />
           {interestBusy ? (
             <Loader2 className="absolute end-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-slate-400" />
+          ) : null}
+
+          {interestOpen && interestResults.length ? (
+            <div className="absolute z-30 mt-1 max-h-64 w-full overflow-auto rounded-xl border border-slate-200 bg-white shadow-xl">
+              {interestResults.map((item) => {
+                const selected = selectedInterestIds.has(item.id);
+                const size = formatAudienceSize(item.audienceSize);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    disabled={selected}
+                    onClick={() => addInterest(item)}
+                    className="flex w-full items-start justify-between gap-3 border-b border-slate-100 px-3 py-2.5 text-start last:border-b-0 hover:bg-slate-50 disabled:opacity-50"
+                  >
+                    <span>
+                      <span className="block text-sm font-black text-slate-900">
+                        {item.name}
+                      </span>
+                      <span className="block text-[11px] font-semibold text-slate-500">
+                        {[
+                          item.path?.slice(-2).join(" › "),
+                          size
+                            ? t("metaCampaigns.form.audienceSize", { size })
+                            : "",
+                        ]
+                          .filter(Boolean)
+                          .join(" · ")}
+                      </span>
+                    </span>
+                    <span className="text-[11px] font-black text-[#1877F2]">
+                      {selected
+                        ? t("metaCampaigns.form.selected")
+                        : t("metaCampaigns.form.add")}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           ) : null}
         </div>
 
@@ -620,43 +704,13 @@ export default function MetaAudienceTargetingPanel({
           <p className="mb-2 text-xs font-semibold text-rose-600">{interestError}</p>
         ) : null}
 
-        {interestResults.length ? (
-          <div className="mb-3 max-h-56 overflow-auto rounded-xl border border-slate-100 bg-slate-50">
-            {interestResults.map((item) => {
-              const selected = selectedInterestIds.has(item.id);
-              const size = formatAudienceSize(item.audienceSize);
-              return (
-                <button
-                  key={item.id}
-                  type="button"
-                  disabled={selected}
-                  onClick={() => addInterest(item)}
-                  className="flex w-full items-start justify-between gap-3 border-b border-slate-100 px-3 py-2.5 text-start last:border-b-0 hover:bg-white disabled:opacity-50"
-                >
-                  <span>
-                    <span className="block text-sm font-black text-slate-900">
-                      {item.name}
-                    </span>
-                    <span className="block text-[11px] font-semibold text-slate-500">
-                      {[
-                        item.path?.slice(-2).join(" › "),
-                        size
-                          ? t("metaCampaigns.form.audienceSize", { size })
-                          : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" · ")}
-                    </span>
-                  </span>
-                  <span className="text-[11px] font-black text-[#1877F2]">
-                    {selected
-                      ? t("metaCampaigns.form.selected")
-                      : t("metaCampaigns.form.add")}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        {!interestBusy &&
+        interestQuery.trim().length >= 2 &&
+        !interestResults.length &&
+        !interestError ? (
+          <p className="mb-2 text-xs font-semibold text-slate-400">
+            לא נמצאו תחומי עניין במטא ל־“{interestQuery.trim()}”
+          </p>
         ) : null}
 
         <div className="mb-3 flex flex-wrap gap-2">
@@ -684,7 +738,8 @@ export default function MetaAudienceTargetingPanel({
           )}
         </div>
 
-        {(suggestionsBusy || interestSuggestions.length > 0) && (
+        {interests.length > 0 &&
+        (suggestionsBusy || interestSuggestions.length > 0) ? (
           <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-3">
             <p className="mb-2 text-xs font-black text-slate-700">
               {t("metaCampaigns.form.interestSuggestionsTitle")}
@@ -703,14 +758,9 @@ export default function MetaAudienceTargetingPanel({
                   + {item.name}
                 </button>
               ))}
-              {!suggestionsBusy && !interestSuggestions.length ? (
-                <p className="text-[11px] font-semibold text-slate-400">
-                  {t("metaCampaigns.form.interestSuggestionsEmpty")}
-                </p>
-              ) : null}
             </div>
           </div>
-        )}
+        ) : null}
       </div>
 
       {!advantageAudience ? (
