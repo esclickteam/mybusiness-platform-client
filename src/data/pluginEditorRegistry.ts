@@ -32,6 +32,12 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "תפריט נגישות",
     description: "כפתור צף + תפריט נגישות מקצועי של BizUply — ללא UserWay",
   },
+  "smart-bot": {
+    pluginKey: "smart-bot",
+    kind: "overlay",
+    label: "בוט חכם צף",
+    description: "כפתור צף שפותח חלון שיחה — לא רכיב בעמוד",
+  },
   store: {
     pluginKey: "store",
     kind: "page",

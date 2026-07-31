@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Bot, GripVertical, Mail, MessageCircle, Phone, X } from "lucide-react";
+import { Bot, GripVertical, Mail, MessageCircle, Phone, Send, X } from "lucide-react";
 
 import {
   buildWhatsAppUrl,
@@ -31,19 +31,27 @@ export default function SmartBotWidget({
     [settingsProp]
   );
   const isEditor = mode === "editor";
-  const position = settings.triggerPosition || { x: 92, y: 82 };
+  const position = settings.triggerPosition || { x: 8, y: 82 };
 
   const [open, setOpen] = useState(false);
   const [showContact, setShowContact] = useState(false);
+  const [awaitingInput, setAwaitingInput] = useState<SmartBotTreeOption | null>(
+    null
+  );
+  const [inputValue, setInputValue] = useState("");
   const [nodeId, setNodeId] = useState(settings.startNodeId || "welcome");
   const [lines, setLines] = useState<ChatLine[]>([]);
   const [dragPos, setDragPos] = useState(position);
   const dragRef = useRef<{
+    pointerId: number;
     startX: number;
     startY: number;
     origX: number;
     origY: number;
+    moved: boolean;
   } | null>(null);
+  const dragPosRef = useRef(dragPos);
+  const suppressClickRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lineCounter = useRef(0);
 
@@ -53,6 +61,11 @@ export default function SmartBotWidget({
   );
 
   useEffect(() => {
+    dragPosRef.current = dragPos;
+  }, [dragPos]);
+
+  useEffect(() => {
+    if (dragRef.current) return;
     setDragPos(position);
   }, [position.x, position.y]);
 
@@ -62,7 +75,7 @@ export default function SmartBotWidget({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [lines, open, showContact, currentNode]);
+  }, [lines, open, showContact, awaitingInput, currentNode]);
 
   const pushLine = useCallback((role: "bot" | "user", text: string) => {
     lineCounter.current += 1;
@@ -75,6 +88,8 @@ export default function SmartBotWidget({
   const openBot = useCallback(() => {
     setOpen(true);
     setShowContact(false);
+    setAwaitingInput(null);
+    setInputValue("");
     const startId = settings.startNodeId || settings.nodes?.[0]?.id || "welcome";
     setNodeId(startId);
     const startNode = findSmartBotNode(settings, startId);
@@ -89,6 +104,8 @@ export default function SmartBotWidget({
   const closeBot = useCallback(() => {
     setOpen(false);
     setShowContact(false);
+    setAwaitingInput(null);
+    setInputValue("");
   }, []);
 
   useEffect(() => {
@@ -104,55 +121,142 @@ export default function SmartBotWidget({
     if (!isEditor) return;
     e.preventDefault();
     e.stopPropagation();
-    (e.target as HTMLElement).setPointerCapture?.(e.pointerId);
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     dragRef.current = {
+      pointerId: e.pointerId,
       startX: e.clientX,
       startY: e.clientY,
-      origX: dragPos.x,
-      origY: dragPos.y,
+      origX: dragPosRef.current.x,
+      origY: dragPosRef.current.y,
+      moved: false,
     };
   }
 
   function onPointerMove(e: React.PointerEvent) {
     if (!dragRef.current || !isEditor) return;
+    if (e.pointerId !== dragRef.current.pointerId) return;
     const vw = window.innerWidth || 1;
     const vh = window.innerHeight || 1;
     const dx = ((e.clientX - dragRef.current.startX) / vw) * 100;
     const dy = ((e.clientY - dragRef.current.startY) / vh) * 100;
-    setDragPos({
-      x: Math.min(96, Math.max(4, dragRef.current.origX + dx)),
+    if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
+      dragRef.current.moved = true;
+    }
+    // right/bottom positioning (RTL-friendly), invert X like benefits-wheel
+    const next = {
+      x: Math.min(96, Math.max(4, dragRef.current.origX - dx)),
       y: Math.min(96, Math.max(4, dragRef.current.origY + dy)),
-    });
+    };
+    dragPosRef.current = next;
+    setDragPos(next);
   }
 
-  function onPointerUp() {
+  function onPointerUp(e: React.PointerEvent) {
     if (!dragRef.current || !isEditor) return;
+    if (e.pointerId !== dragRef.current.pointerId) return;
+    const moved = dragRef.current.moved;
     dragRef.current = null;
-    onPositionChange?.(dragPos);
+    if (moved) {
+      suppressClickRef.current = true;
+      onPositionChange?.(dragPosRef.current);
+      e.preventDefault();
+      e.stopPropagation();
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    }
   }
 
   function handleOption(option: SmartBotTreeOption) {
-    if (isEditor) return;
     pushLine("user", option.label);
+    const action = option.action || (option.nextNodeId ? "next" : "reply");
 
-    if (option.action === "contact") {
+    if (action === "contact") {
       setShowContact(true);
+      setAwaitingInput(null);
       pushLine("bot", "בחרו איך ליצור קשר:");
       return;
     }
 
-    if (option.action === "open-link" && option.payload?.url) {
-      window.open(String(option.payload.url), "_blank", "noopener,noreferrer");
+    if (action === "open-link") {
+      const url = option.payload?.url;
+      if (url && !isEditor) {
+        window.open(String(url), "_blank", "noopener,noreferrer");
+      }
+      if (option.replyText) pushLine("bot", option.replyText);
       return;
     }
 
+    if (action === "end") {
+      pushLine(
+        "bot",
+        option.replyText || "תודה שפניתם אלינו! אנחנו כאן אם תצטרכו משהו נוסף."
+      );
+      setAwaitingInput(null);
+      return;
+    }
+
+    if (action === "ask-input") {
+      setAwaitingInput(option);
+      setShowContact(false);
+      pushLine(
+        "bot",
+        option.payload?.prompt ||
+          "כתבו לנו כאן את השאלה או הפרטים:"
+      );
+      return;
+    }
+
+    if (action === "reply") {
+      if (option.replyText) pushLine("bot", option.replyText);
+      if (option.nextNodeId) {
+        const next = findSmartBotNode(settings, option.nextNodeId);
+        if (next && next.id !== nodeId) {
+          setNodeId(next.id);
+          if (next.message && next.message !== option.replyText) {
+            pushLine("bot", next.message);
+          }
+        }
+      }
+      setAwaitingInput(null);
+      setShowContact(false);
+      return;
+    }
+
+    // next
     const nextId = option.nextNodeId;
-    if (!nextId) return;
+    if (!nextId) {
+      if (option.replyText) pushLine("bot", option.replyText);
+      return;
+    }
     const next = findSmartBotNode(settings, nextId);
     if (!next) return;
     setNodeId(next.id);
     setShowContact(false);
+    setAwaitingInput(null);
     pushLine("bot", next.message);
+  }
+
+  function submitManualInput() {
+    const text = inputValue.trim();
+    if (!text || !awaitingInput) return;
+    pushLine("user", text);
+    setInputValue("");
+    const option = awaitingInput;
+    setAwaitingInput(null);
+
+    pushLine(
+      "bot",
+      option.replyText || "תודה! קיבלנו את ההודעה ונחזור אליכם בהקדם."
+    );
+
+    if (option.nextNodeId) {
+      const next = findSmartBotNode(settings, option.nextNodeId);
+      if (next) {
+        setNodeId(next.id);
+        if (next.message) pushLine("bot", next.message);
+      }
+    }
   }
 
   if (settings.isActive === false) return null;
@@ -176,60 +280,58 @@ export default function SmartBotWidget({
     settings.contactEnabled !== false && Boolean(phone || whatsapp || email);
 
   const options =
-    showContact || !currentNode
-      ? []
-      : currentNode.options || [];
+    showContact || awaitingInput || !currentNode ? [] : currentNode.options || [];
 
   return (
     <div data-bizuply-smart-bot="true" dir="rtl">
-      {!open ? (
-        <div
-          className="fixed z-[99980]"
-          style={{
-            left: `${dragPos.x}%`,
-            top: `${dragPos.y}%`,
-            transform: "translate(-50%, -50%)",
-          }}
-        >
-          {isEditor ? (
-            <span
-              className="absolute -left-2 -top-2 flex h-6 w-6 cursor-grab items-center justify-center rounded-full bg-slate-900/80 text-white"
-              onPointerDown={onPointerDown}
-              onPointerMove={onPointerMove}
-              onPointerUp={onPointerUp}
-            >
-              <GripVertical size={12} />
-            </span>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={openBot}
-            aria-label={settings.triggerLabel || "צריכים עזרה?"}
-            className={`flex items-center gap-2 shadow-lg transition hover:scale-105 ${
-              showLabel && showIcon
-                ? "rounded-full px-4 py-3"
-                : showLabel
-                  ? "rounded-full px-4 py-3"
-                  : "h-14 w-14 justify-center rounded-full"
-            }`}
-            style={{ background: triggerColor, color: triggerTextColor }}
-          >
-            {showIcon ? <Bot size={22} /> : null}
-            {showLabel ? (
-              <span className="text-sm font-bold whitespace-nowrap">
-                {settings.triggerLabel || "צריכים עזרה?"}
-              </span>
-            ) : null}
-          </button>
-        </div>
-      ) : null}
+      <button
+        type="button"
+        onClick={() => {
+          if (suppressClickRef.current) return;
+          if (open) closeBot();
+          else openBot();
+        }}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        aria-label={settings.triggerLabel || "צריכים עזרה?"}
+        className={`fixed z-[99990] flex items-center gap-2 shadow-lg transition hover:scale-105 ${
+          isEditor ? "cursor-grab active:cursor-grabbing ring-2 ring-teal-400 ring-offset-2" : ""
+        } ${
+          showLabel
+            ? "rounded-full px-4 py-3"
+            : "h-14 w-14 justify-center rounded-full"
+        }`}
+        style={{
+          right: `${dragPos.x}%`,
+          bottom: `${100 - dragPos.y}%`,
+          transform: "translate(50%, 50%)",
+          background: triggerColor,
+          color: triggerTextColor,
+        }}
+      >
+        {isEditor ? <GripVertical size={14} className="opacity-80" /> : null}
+        {showIcon ? <Bot size={22} /> : null}
+        {showLabel ? (
+          <span className="text-sm font-bold whitespace-nowrap">
+            {settings.triggerLabel || "צריכים עזרה?"}
+          </span>
+        ) : null}
+      </button>
 
       {open ? (
-        <div className="fixed bottom-4 right-4 z-[99990] w-[min(100vw-1.5rem,380px)]">
+        <div
+          className="fixed z-[99995] w-[min(100vw-1.5rem,380px)]"
+          style={{
+            right: `max(0.75rem, calc(${dragPos.x}% - 8px))`,
+            bottom: `max(5.5rem, calc(${100 - dragPos.y}% + 36px))`,
+          }}
+        >
           <div
             className="overflow-hidden rounded-3xl border border-slate-200 shadow-2xl"
             style={{ background: windowBg }}
+            onPointerDown={(e) => e.stopPropagation()}
           >
             <header
               className="flex items-center justify-between gap-3 px-4 py-3 text-white"
@@ -244,7 +346,7 @@ export default function SmartBotWidget({
                     {settings.botName || "בוט חכם"}
                   </strong>
                   <span className="block text-[11px] font-semibold text-white/80">
-                    אונליין · עונה מיד
+                    {isEditor ? "תצוגה מקדימה בעורך" : "אונליין · עונה מיד"}
                   </span>
                 </div>
               </div>
@@ -286,7 +388,10 @@ export default function SmartBotWidget({
                 <div className="grid gap-2">
                   {phone ? (
                     <a
-                      href={`tel:${phone}`}
+                      href={isEditor ? undefined : `tel:${phone}`}
+                      onClick={(e) => {
+                        if (isEditor) e.preventDefault();
+                      }}
                       className="flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold text-white"
                       style={{ background: headerColor }}
                     >
@@ -296,12 +401,16 @@ export default function SmartBotWidget({
                   ) : null}
                   {whatsapp ? (
                     <a
-                      href={buildWhatsAppUrl(
-                        whatsapp,
-                        `שלום, פניתי דרך הבוט באתר`
-                      )}
+                      href={
+                        isEditor
+                          ? undefined
+                          : buildWhatsAppUrl(whatsapp, `שלום, פניתי דרך הבוט באתר`)
+                      }
                       target="_blank"
                       rel="noreferrer"
+                      onClick={(e) => {
+                        if (isEditor) e.preventDefault();
+                      }}
                       className="flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3 py-2.5 text-sm font-bold text-white"
                     >
                       <MessageCircle size={16} />
@@ -310,7 +419,10 @@ export default function SmartBotWidget({
                   ) : null}
                   {email ? (
                     <a
-                      href={`mailto:${email}`}
+                      href={isEditor ? undefined : `mailto:${email}`}
+                      onClick={(e) => {
+                        if (isEditor) e.preventDefault();
+                      }}
                       className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-700"
                     >
                       <Mail size={16} />
@@ -323,6 +435,28 @@ export default function SmartBotWidget({
                     className="text-xs font-semibold text-slate-500"
                   >
                     חזרה לשיחה
+                  </button>
+                </div>
+              ) : awaitingInput ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") submitManualInput();
+                    }}
+                    placeholder="כתבו תשובה כאן..."
+                    className="h-11 min-w-0 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
+                  />
+                  <button
+                    type="button"
+                    onClick={submitManualInput}
+                    className="grid h-11 w-11 place-items-center rounded-xl text-white"
+                    style={{ background: headerColor }}
+                    aria-label="שליחה"
+                  >
+                    <Send size={16} />
                   </button>
                 </div>
               ) : (
@@ -341,7 +475,6 @@ export default function SmartBotWidget({
                     <button
                       type="button"
                       onClick={() => {
-                        if (isEditor) return;
                         pushLine("user", settings.contactLabel || "צרו קשר");
                         setShowContact(true);
                         pushLine("bot", "בחרו איך ליצור קשר:");
