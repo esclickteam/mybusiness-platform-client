@@ -137,6 +137,71 @@ type StudioSitePageWithPortal = StudioSitePage & {
 const BIZUPLY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
+const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
+  process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
+
+function normalizeLinkedCustomDomain(value: string) {
+  const clean = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/^www\./, "")
+    .split("/")[0]
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/\.$/, "");
+
+  if (!clean) return "";
+  if (
+    clean === BIZUPLY_PUBLIC_SITE_DOMAIN ||
+    clean === BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN ||
+    clean === `www.${BIZUPLY_PUBLIC_SITE_DOMAIN}` ||
+    clean === `www.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}` ||
+    clean.endsWith(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`) ||
+    clean.endsWith(`.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}`)
+  ) {
+    return "";
+  }
+
+  return clean;
+}
+
+function resolvePublishedSiteDisplayUrl(options: {
+  customDomain?: string;
+  publicUrl?: string;
+  domainUrl?: string;
+  slug?: string;
+}) {
+  const linkedDomain = normalizeLinkedCustomDomain(
+    String(options.customDomain || ""),
+  );
+  if (linkedDomain) return `https://${linkedDomain}`;
+
+  const candidates = [
+    String(options.publicUrl || "").trim(),
+    String(options.domainUrl || "").trim(),
+  ];
+
+  for (const candidate of candidates) {
+    if (!candidate) continue;
+    const host = candidate
+      .replace(/^https?:\/\//i, "")
+      .split("/")[0]
+      .split(":")[0]
+      .toLowerCase();
+    if (
+      host &&
+      host !== BIZUPLY_PUBLIC_SITE_DOMAIN &&
+      host !== BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN
+    ) {
+      return candidate.startsWith("http") ? candidate : `https://${candidate}`;
+    }
+  }
+
+  const cleanSlug = normalizePublicBusinessSlug(String(options.slug || ""));
+  return cleanSlug ? buildPublicSiteUrl(cleanSlug) : "";
+}
+
 /** Opt-in only: localStorage.setItem("bizuply-studio-debug", "1") */
 function isStudioTemplateDebugEnabled() {
   try {
@@ -5007,9 +5072,9 @@ export default function WebsiteStudioPage({
         }
 
         setCustomDomain(
-          String(data.site?.domain?.domain || "")
-            .trim()
-            .toLowerCase(),
+          normalizeLinkedCustomDomain(
+            String(data.site?.domain?.domain || ""),
+          ),
         );
 
         setSiteSeoSettings(
@@ -5444,9 +5509,9 @@ export default function WebsiteStudioPage({
           setSiteName(String(data.site.name));
         }
         setCustomDomain(
-          String(data.site?.domain?.domain || "")
-            .trim()
-            .toLowerCase(),
+          normalizeLinkedCustomDomain(
+            String(data.site?.domain?.domain || ""),
+          ),
         );
         setSiteSeoSettings(
           normalizeSiteSeoSettings(
@@ -7688,8 +7753,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         domain: {
           slug: cleanSlug,
           published,
-          url: nextPublicUrl,
-          domain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+          url: normalizeLinkedCustomDomain(customDomain)
+            ? `https://${normalizeLinkedCustomDomain(customDomain)}`
+            : nextPublicUrl,
+          domain: normalizeLinkedCustomDomain(customDomain),
         },
         name: siteName,
         seoSettings: siteSeoSettings,
@@ -7844,13 +7911,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       );
 
       if (published) {
-        const finalPublishedUrl =
-          String(responseData?.site?.publicUrl || "").trim() ||
-          String(responseData?.site?.domain?.url || "").trim() ||
-          String(responseData?.publicUrl || "").trim() ||
-          String(responseData?.domain?.url || "").trim() ||
-          String(nextPublicUrl || "").trim() ||
-          buildPublicSiteUrl(cleanSlug);
+        const responseCustomDomain = normalizeLinkedCustomDomain(
+          String(
+            responseData?.site?.domain?.domain ||
+              responseData?.domain?.domain ||
+              customDomain ||
+              "",
+          ),
+        );
+        setCustomDomain(responseCustomDomain);
+
+        const finalPublishedUrl = resolvePublishedSiteDisplayUrl({
+          customDomain: responseCustomDomain,
+          publicUrl:
+            String(responseData?.site?.publicUrl || "").trim() ||
+            String(responseData?.publicUrl || "").trim() ||
+            String(nextPublicUrl || "").trim(),
+          domainUrl:
+            String(responseData?.site?.domain?.url || "").trim() ||
+            String(responseData?.domain?.url || "").trim(),
+          slug:
+            cleanSlug ||
+            getPublicSlugFromSavedSite(responseData?.site || responseData || {}),
+        });
 
         setPublishedSiteUrl(finalPublishedUrl);
         setPublishSuccessOpen(true);
@@ -7925,29 +8008,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
                   <div className="flex items-center gap-2 rounded-2xl border border-violet-100 bg-white p-3">
                     <a
-                      href={
-                        customDomain
-                          ? `https://${customDomain}`
-                          : publishedSiteUrl
-                      }
+                      href={publishedSiteUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="min-w-0 flex-1 truncate text-left text-sm font-black text-slate-800 underline decoration-violet-300 underline-offset-4"
                       dir="ltr"
                     >
-                      {customDomain
-                        ? `https://${customDomain}`
-                        : publishedSiteUrl}
+                      {publishedSiteUrl}
                     </a>
 
                     <button
                       type="button"
                       onClick={async () => {
-                        const url = customDomain
-                          ? `https://${customDomain}`
-                          : publishedSiteUrl;
                         try {
-                          await navigator.clipboard.writeText(url);
+                          await navigator.clipboard.writeText(publishedSiteUrl);
                           alert("הקישור הועתק");
                         } catch {
                           alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
@@ -7975,9 +8049,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     type="button"
                     onClick={() => {
                       window.open(
-                        customDomain
-                          ? `https://${customDomain}`
-                          : publishedSiteUrl,
+                        publishedSiteUrl,
                         "_blank",
                         "noopener,noreferrer",
                       );
@@ -7998,11 +8070,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   <button
                     type="button"
                     onClick={async () => {
-                      const url = customDomain
-                        ? `https://${customDomain}`
-                        : publishedSiteUrl;
                       try {
-                        await navigator.clipboard.writeText(url);
+                        await navigator.clipboard.writeText(publishedSiteUrl);
                         alert("הקישור הועתק");
                       } catch {
                         alert("לא הצלחנו להעתיק. אפשר להעתיק ידנית.");
@@ -8147,14 +8216,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           siteSlug={normalizePublicBusinessSlug(slug || publishSlugDraft)}
           initialCustomDomain={customDomain}
           onConnected={({ customDomain: nextDomain, publicUrl }) => {
-            const clean = String(nextDomain || "")
-              .trim()
-              .toLowerCase();
+            const clean = normalizeLinkedCustomDomain(
+              String(nextDomain || ""),
+            );
             setCustomDomain(clean);
             if (clean && publicUrl) {
               setPublishedSiteUrl(publicUrl);
-            } else if (!clean && publishSlugDraft) {
-              setPublishedSiteUrl(buildPublicSiteUrl(publishSlugDraft));
+            } else {
+              setPublishedSiteUrl(
+                resolvePublishedSiteDisplayUrl({
+                  customDomain: clean,
+                  publicUrl,
+                  slug: publishSlugDraft || slug,
+                }),
+              );
             }
           }}
         />

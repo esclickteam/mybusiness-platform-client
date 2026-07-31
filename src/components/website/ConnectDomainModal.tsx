@@ -20,7 +20,7 @@ const PUBLIC_SITE_DOMAIN =
   import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
 function normalizeDomain(value: string) {
-  return String(value || "")
+  const clean = String(value || "")
     .trim()
     .toLowerCase()
     .replace(/^https?:\/\//, "")
@@ -29,6 +29,17 @@ function normalizeDomain(value: string) {
     .split("?")[0]
     .split("#")[0]
     .replace(/\.$/, "");
+
+  if (!clean) return "";
+  if (
+    clean === PUBLIC_SITE_DOMAIN ||
+    clean === `www.${PUBLIC_SITE_DOMAIN}` ||
+    clean.endsWith(`.${PUBLIC_SITE_DOMAIN}`)
+  ) {
+    return "";
+  }
+
+  return clean;
 }
 
 export default function ConnectDomainModal({
