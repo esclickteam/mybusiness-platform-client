@@ -584,6 +584,29 @@ export async function searchMetaLocations(
   return data;
 }
 
+export async function estimateMetaAudienceReach(
+  businessId: string | undefined,
+  payload: {
+    locations?: MetaLocationTarget[];
+    countries?: string[];
+    ageMin?: number;
+    ageMax?: number;
+    genders?: number[];
+    locationsSummary?: string;
+  }
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    lower: number;
+    upper: number;
+    spectrum: number;
+    estimateReady?: boolean;
+    source?: string;
+    warning?: string;
+  }>("/meta-campaigns/targeting/reach-estimate", payload, withBusiness(businessId));
+  return data;
+}
+
 export async function geocodeMetaPlace(
   businessId: string | undefined,
   query: {

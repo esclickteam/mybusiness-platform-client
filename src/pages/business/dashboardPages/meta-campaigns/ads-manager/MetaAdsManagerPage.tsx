@@ -3,6 +3,7 @@ import { Link, useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
+  estimateMetaAudienceReach,
   getMetaCampaignsStatus,
   listMetaLeadForms,
   publishMetaCampaign,
@@ -48,6 +49,7 @@ export default function MetaAdsManagerPage() {
     patchCampaign,
     patchAdSet,
     patchAd,
+    setAudienceEstimate,
     applyCreateChoice,
     canPublish,
   } = ctrl;
@@ -56,6 +58,7 @@ export default function MetaAdsManagerPage() {
     null
   );
   const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
+  const [estimateLoading, setEstimateLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [publishResult, setPublishResult] =
@@ -179,6 +182,81 @@ export default function MetaAdsManagerPage() {
     selectedAdSet?.facebookPageId,
     selectedAd?.facebookPageId,
     connection?.selectedPage?.pageId,
+  ]);
+
+  // Live Meta reach estimate (Israel + ages → e.g. 3,800,000 - 4,500,000).
+  useEffect(() => {
+    if (!businessId || !selectedAdSet) return;
+    if (!connection?.connected && !connection?.isConnected) return;
+    if (!connection.selectedAdAccount) return;
+
+    const timer = window.setTimeout(async () => {
+      setEstimateLoading(true);
+      try {
+        const locations = (selectedAdSet.locations || []).filter(
+          (loc) => loc.include !== false
+        );
+        const countries = locations
+          .filter((loc) => loc.type === "country")
+          .map((loc) =>
+            String(loc.key || loc.countryCode || "").toUpperCase()
+          )
+          .filter(Boolean);
+        const genders =
+          selectedAdSet.gender === "male"
+            ? [1]
+            : selectedAdSet.gender === "female"
+              ? [2]
+              : [];
+
+        const data = await estimateMetaAudienceReach(businessId, {
+          locations: locations.map((loc) => ({
+            key: loc.key,
+            name: loc.name,
+            type: loc.type,
+            countryCode: loc.countryCode,
+            countryName: loc.countryName,
+            region: loc.region,
+            metaCityKey: loc.metaCityKey,
+            radiusKm:
+              loc.cityOnly || loc.radiusMiles == null
+                ? null
+                : loc.radiusKm ?? loc.radiusMiles,
+            distanceUnit: loc.distanceUnit || "mile",
+            latitude: loc.latitude,
+            longitude: loc.longitude,
+          })),
+          countries: countries.length ? countries : ["IL"],
+          ageMin: selectedAdSet.ageMin,
+          ageMax: selectedAdSet.ageMax >= 65 ? 65 : selectedAdSet.ageMax,
+          genders,
+          locationsSummary: selectedAdSet.locationsSummary,
+        });
+
+        setAudienceEstimate({
+          lower: Number(data.lower) || 0,
+          upper: Number(data.upper) || 0,
+          spectrum: Number(data.spectrum) || 0.5,
+        });
+      } catch {
+        // Keep last estimate; defaults already match Meta IL broad range.
+      } finally {
+        setEstimateLoading(false);
+      }
+    }, 400);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    businessId,
+    connection?.connected,
+    connection?.isConnected,
+    connection?.selectedAdAccount,
+    selectedAdSet?.locations,
+    selectedAdSet?.locationsSummary,
+    selectedAdSet?.ageMin,
+    selectedAdSet?.ageMax,
+    selectedAdSet?.gender,
+    setAudienceEstimate,
   ]);
 
   const crumbs = useMemo(() => {
@@ -599,6 +677,7 @@ export default function MetaAdsManagerPage() {
               ageMin={selectedAdSet.ageMin}
               ageMax={selectedAdSet.ageMax}
               gender={selectedAdSet.gender}
+              estimateLoading={estimateLoading}
             />
           ) : null}
           {state.selectedLevel === "ad" && selectedAd ? (

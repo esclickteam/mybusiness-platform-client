@@ -251,6 +251,13 @@ export function useAdsManagerState() {
     []
   );
 
+  const setAudienceEstimate = useCallback(
+    (audienceEstimate: AdsManagerState["audienceEstimate"]) => {
+      setState((prev) => ({ ...prev, audienceEstimate }));
+    },
+    []
+  );
+
   const canPublish =
     validation.campaign !== "error" &&
     validation.adset !== "error" &&
@@ -267,6 +274,7 @@ export function useAdsManagerState() {
     patchCampaign,
     patchAdSet,
     patchAd,
+    setAudienceEstimate,
     renameSelected,
     resetDraft,
     applyCreateChoice,
