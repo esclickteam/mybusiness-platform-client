@@ -490,10 +490,13 @@ export async function createMetaLeadForm(
     pageId?: string;
     name: string;
     questions?: MetaLeadFormQuestion[];
+    introTitle?: string;
+    introDescription?: string;
     privacyPolicyUrl?: string;
     thankYouTitle?: string;
     thankYouBody?: string;
     thankYouUrl?: string;
+    thankYouButtonText?: string;
   }
 ) {
   const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(
