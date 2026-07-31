@@ -26,17 +26,28 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
 
   const locations = (adSet.locations || [])
     .filter((loc) => loc.include !== false)
-    .map((loc) => ({
-      key: loc.key,
-      name: loc.name,
-      type: loc.type,
-      countryCode: loc.countryCode,
-      countryName: loc.countryName,
-      region: loc.region,
-      radiusKm: loc.radiusKm,
-      latitude: loc.latitude,
-      longitude: loc.longitude,
-    }));
+    .map((loc) => {
+      const isCity = /city|subcity|neighborhood/i.test(loc.type || "");
+      const cityOnly = Boolean(loc.cityOnly) || loc.radiusMiles == null;
+      const radiusMiles =
+        isCity && !cityOnly && loc.radiusMiles != null
+          ? loc.radiusMiles
+          : null;
+      return {
+        key: loc.key,
+        name: loc.name,
+        type: loc.type,
+        countryCode: loc.countryCode,
+        countryName: loc.countryName,
+        region: loc.region,
+        metaCityKey: loc.metaCityKey || (isCity ? loc.key : undefined),
+        // Meta API: city only = no radius; otherwise miles (10–50) like Ads Manager.
+        radiusKm: radiusMiles,
+        distanceUnit: radiusMiles != null ? "mile" : undefined,
+        latitude: loc.latitude,
+        longitude: loc.longitude,
+      };
+    });
 
   const countries = locations
     .filter((item) => item.type === "country")

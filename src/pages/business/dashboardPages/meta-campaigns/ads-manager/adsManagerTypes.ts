@@ -46,7 +46,19 @@ export type AdsManagerLocation = {
   countryCode?: string;
   countryName?: string;
   region?: string;
+  /** Meta city key for radius targeting. */
+  metaCityKey?: string;
+  /**
+   * City targeting mode (Meta):
+   * - true  → "Current city only" (no radius)
+   * - false → "Cities within radius"
+   */
+  cityOnly?: boolean;
+  /** Radius in miles when cityOnly is false (Meta UI: 10–50). */
+  radiusMiles?: number | null;
+  /** Kept for map / publish (km). Derived from radiusMiles when using miles. */
   radiusKm?: number | null;
+  distanceUnit?: "mile" | "kilometer";
   latitude?: number | null;
   longitude?: number | null;
   include?: boolean;

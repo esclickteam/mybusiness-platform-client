@@ -10,6 +10,10 @@ const ISRAEL_CENTER: GeoPoint = { latitude: 31.5, longitude: 34.85 };
 /** Reliable centers for common Israeli cities when geocode APIs are slow/blocked. */
 const ISRAEL_CITY_FALLBACKS: Array<{ match: RegExp; point: GeoPoint }> = [
   { match: /haifa|חיפה/i, point: { latitude: 32.794, longitude: 34.9896 } },
+  {
+    match: /qiryat[\s-]?atta|kiryat[\s-]?ata|קריית[\s-]?אתא/i,
+    point: { latitude: 32.8114, longitude: 35.1124 },
+  },
   { match: /tel[\s-]?aviv|תל[\s-]?אביב/i, point: { latitude: 32.0853, longitude: 34.7818 } },
   { match: /jerusalem|ירושלים/i, point: { latitude: 31.7683, longitude: 35.2137 } },
   { match: /beer[\s-]?sheva|be'er[\s-]?sheva|באר[\s-]?שבע/i, point: { latitude: 31.25297, longitude: 34.79146 } },

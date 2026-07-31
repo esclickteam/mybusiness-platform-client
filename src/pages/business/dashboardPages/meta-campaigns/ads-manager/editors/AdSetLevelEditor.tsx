@@ -3,17 +3,11 @@ import {
   ChevronDown,
   ChevronUp,
   Info,
-  MapPin,
   Search,
   TrendingUp,
 } from "lucide-react";
-import {
-  searchMetaLocations,
-  type MetaAdsPage,
-  type MetaLocationTarget,
-} from "../../../../../../api/metaCampaignsApi";
-import MetaLocationsMap from "../../MetaLocationsMap";
-import type { AdSetDraft, AdsManagerLocation } from "../adsManagerTypes";
+import type { MetaAdsPage } from "../../../../../../api/metaCampaignsApi";
+import type { AdSetDraft } from "../adsManagerTypes";
 import {
   MetaField,
   MetaLinkButton,
@@ -25,6 +19,7 @@ import {
   metaInputClass,
   metaSelectClass,
 } from "../metaAdsUi";
+import AdsManagerLocationsSection from "./AdsManagerLocationsSection";
 
 type Props = {
   adSet: AdSetDraft;
@@ -50,28 +45,6 @@ const PERFORMANCE_GOALS = [
   },
 ];
 
-function locationIdentity(loc: AdsManagerLocation | MetaLocationTarget) {
-  if (loc.type === "custom") {
-    return `custom:${(loc as MetaLocationTarget).addressString || loc.key}`;
-  }
-  return `${loc.type}:${loc.key}`;
-}
-
-function toAdsLocation(item: MetaLocationTarget): AdsManagerLocation {
-  return {
-    key: item.key,
-    name: item.name,
-    type: item.type,
-    countryCode: item.countryCode,
-    countryName: item.countryName,
-    region: item.region,
-    radiusKm: item.radiusKm,
-    latitude: item.latitude,
-    longitude: item.longitude,
-    include: true,
-  };
-}
-
 export default function AdSetLevelEditor({
   adSet,
   onChange,
@@ -82,14 +55,6 @@ export default function AdSetLevelEditor({
   const [pageQuery, setPageQuery] = useState("");
   const [pageMenuOpen, setPageMenuOpen] = useState(false);
   const [perfOpen, setPerfOpen] = useState(false);
-  const [locQuery, setLocQuery] = useState("");
-  const [locResults, setLocResults] = useState<MetaLocationTarget[]>([]);
-  const [locSearching, setLocSearching] = useState(false);
-  const [includeMode, setIncludeMode] = useState<"include" | "exclude">(
-    "include"
-  );
-  const [focusKey, setFocusKey] = useState<string | null>(null);
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pageMenuRef = useRef<HTMLDivElement | null>(null);
 
   const usesInstantForms = String(adSet.conversionLocation)
@@ -129,79 +94,6 @@ export default function AdSetLevelEditor({
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, []);
-
-  useEffect(() => {
-    if (searchTimer.current) clearTimeout(searchTimer.current);
-    const q = locQuery.trim();
-    if (q.length < 2 || !businessId) {
-      setLocResults([]);
-      return;
-    }
-    searchTimer.current = setTimeout(async () => {
-      setLocSearching(true);
-      try {
-        const data = await searchMetaLocations(businessId, {
-          q,
-          locationTypes: ["country", "region", "city", "zip"],
-          limit: 12,
-        });
-        setLocResults(data.results || []);
-      } catch {
-        setLocResults([]);
-      } finally {
-        setLocSearching(false);
-      }
-    }, 280);
-    return () => {
-      if (searchTimer.current) clearTimeout(searchTimer.current);
-    };
-  }, [locQuery, businessId]);
-
-  const addLocation = (item: MetaLocationTarget) => {
-    const next = toAdsLocation(item);
-    next.include = includeMode === "include";
-    const exists = adSet.locations.some(
-      (loc) => locationIdentity(loc) === locationIdentity(next)
-    );
-    if (exists) return;
-    const locations = [...adSet.locations, next];
-    onChange({
-      locations,
-      locationsSummary: locations
-        .filter((l) => l.include !== false)
-        .map((l) => l.name)
-        .join(", "),
-      locationsExpanded: true,
-    });
-    setFocusKey(locationIdentity(next));
-    setLocQuery("");
-    setLocResults([]);
-  };
-
-  const removeLocation = (identity: string) => {
-    const locations = adSet.locations.filter(
-      (loc) => locationIdentity(loc) !== identity
-    );
-    onChange({
-      locations,
-      locationsSummary: locations
-        .filter((l) => l.include !== false)
-        .map((l) => l.name)
-        .join(", "),
-    });
-  };
-
-  const mapLocations: MetaLocationTarget[] = adSet.locations.map((loc) => ({
-    key: loc.key,
-    name: loc.name,
-    type: loc.type,
-    countryCode: loc.countryCode,
-    countryName: loc.countryName,
-    region: loc.region,
-    radiusKm: loc.radiusKm,
-    latitude: loc.latitude,
-    longitude: loc.longitude,
-  }));
 
   const selectedPage =
     pages.find((p) => p.id === adSet.facebookPageId) ||
@@ -541,142 +433,23 @@ export default function AdSetLevelEditor({
           on.
         </p>
 
-        {/* Locations — Meta-style controls + map */}
-        <div className="overflow-hidden rounded-lg border border-[#CED0D4]">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between bg-[#E7F3FF] px-3 py-2.5 text-left"
-            onClick={() =>
-              onChange({ locationsExpanded: !adSet.locationsExpanded })
-            }
-          >
-            <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
-              Locations
-              <Info className="h-3.5 w-3.5 text-[#65676B]" />
-            </span>
-            {adSet.locationsExpanded ? (
-              <ChevronUp className="h-4 w-4 text-[#65676B]" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-[#65676B]" />
-            )}
-          </button>
-
-          {adSet.locationsExpanded ? (
-            <div className="space-y-3 bg-white px-3 py-3">
-              {adSet.locations.length ? (
-                <div className="flex flex-wrap gap-2">
-                  {adSet.locations.map((loc) => (
-                    <span
-                      key={locationIdentity(loc)}
-                      className="inline-flex items-center gap-1.5 rounded-md border border-[#CED0D4] bg-[#F7F8FA] px-2 py-1 text-[12px] font-semibold text-[#050505]"
-                    >
-                      <MapPin className="h-3 w-3 text-[#1877F2]" />
-                      {loc.include === false ? "Exclude · " : ""}
-                      {loc.name}
-                      <button
-                        type="button"
-                        className="ml-1 text-[#65676B] hover:text-[#FA383E]"
-                        onClick={() => removeLocation(locationIdentity(loc))}
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-[13px] text-[#65676B]">
-                  No locations selected yet.
-                </p>
-              )}
-
-              <div className="relative flex gap-2">
-                <select
-                  className={`${metaSelectClass} w-[110px] shrink-0`}
-                  value={includeMode}
-                  onChange={(e) =>
-                    setIncludeMode(e.target.value as "include" | "exclude")
-                  }
-                >
-                  <option value="include">Include</option>
-                  <option value="exclude">Exclude</option>
-                </select>
-                <div className="relative min-w-0 flex-1">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
-                  <input
-                    className={`${metaInputClass} pl-9`}
-                    placeholder="Search locations"
-                    value={locQuery}
-                    onChange={(e) => setLocQuery(e.target.value)}
-                  />
-                  {(locSearching || locResults.length > 0) && locQuery.trim() ? (
-                    <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-lg">
-                      {locSearching ? (
-                        <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                          Searching…
-                        </p>
-                      ) : (
-                        locResults.map((item) => (
-                          <button
-                            key={locationIdentity(item)}
-                            type="button"
-                            className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5]"
-                            onClick={() => addLocation(item)}
-                          >
-                            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
-                            <span>
-                              <span className="block text-[13px] font-semibold text-[#050505]">
-                                {item.name}
-                              </span>
-                              <span className="block text-[11px] text-[#65676B]">
-                                {item.type}
-                                {item.countryName
-                                  ? ` · ${item.countryName}`
-                                  : ""}
-                              </span>
-                            </span>
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  ) : null}
-                </div>
-              </div>
-
-              <p className="text-[12px] leading-snug text-[#65676B]">
-                You can type countries, regions, cities or postal codes. Selected
-                places appear on the map below.
-              </p>
-
-              <MetaLocationsMap
-                locations={mapLocations}
-                focusKey={focusKey}
-                onSelectLocation={setFocusKey}
-                hint="Drop pins reflect your selected locations from Meta targeting search."
-              />
-
-              <button
-                type="button"
-                className="text-[13px] font-semibold text-[#1877F2] hover:underline"
-                onClick={() => {
-                  // Quick add Israel if empty
-                  if (!adSet.locations.length) {
-                    addLocation({
-                      key: "IL",
-                      name: "Israel",
-                      type: "country",
-                      countryCode: "IL",
-                      countryName: "Israel",
-                      latitude: 31.5,
-                      longitude: 34.75,
-                    });
-                  }
-                }}
-              >
-                Add locations in bulk
-              </button>
-            </div>
-          ) : null}
-        </div>
+        <AdsManagerLocationsSection
+          locations={adSet.locations}
+          expanded={adSet.locationsExpanded}
+          businessId={businessId}
+          onExpandedChange={(locationsExpanded) =>
+            onChange({ locationsExpanded })
+          }
+          onLocationsChange={(locations) =>
+            onChange({
+              locations,
+              locationsSummary: locations
+                .filter((l) => l.include !== false)
+                .map((l) => l.name)
+                .join(", "),
+            })
+          }
+        />
 
         {/* Suggest an audience */}
         <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
