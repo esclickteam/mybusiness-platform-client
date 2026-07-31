@@ -4932,7 +4932,11 @@
       "requiredField": "שדה חובה",
       "previewTitle": "תצוגה מקדימה",
       "missingValues": "חסרים ערכים: {{vars}}",
-      "allValuesFilled": "כל המשתנים הנדרשים מולאו בבדיקה זו"
+      "allValuesFilled": "כל המשתנים הנדרשים מולאו בבדיקה זו",
+      "testAppointment": "בדיקה עם פגישה אמיתית",
+      "selectAppointment": "בחרו פגישה",
+      "selectAppointmentToTest": "Select an appointment to test this mapping.",
+      "noAppointments": "לא נמצאו פגישות קרובות לעסק זה."
     }
   },
   "metaCampaigns": {

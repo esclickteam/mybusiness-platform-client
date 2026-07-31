@@ -4943,7 +4943,11 @@
       "requiredField": "Required field",
       "previewTitle": "Preview",
       "missingValues": "Missing values: {{vars}}",
-      "allValuesFilled": "All required variables were filled in this test"
+      "allValuesFilled": "All required variables were filled in this test",
+      "testAppointment": "Test with real appointment",
+      "selectAppointment": "Select an appointment",
+      "selectAppointmentToTest": "Select an appointment to test this mapping.",
+      "noAppointments": "No upcoming appointments found for this business."
     }
   },
   "metaCampaigns": {

@@ -455,6 +455,17 @@ export async function saveWhatsAppTemplateVariableMappings(
   };
 }
 
+export type WhatsAppMappingAppointment = {
+  id: string;
+  date: string;
+  time: string;
+  serviceName?: string;
+  clientName?: string;
+  clientPhone?: string;
+  status?: string;
+  label: string;
+};
+
 export async function previewWhatsAppTemplateMappings(
   businessId: string,
   templateId: string,
@@ -479,7 +490,17 @@ export async function previewWhatsAppTemplateMappings(
     previewBody: string;
     previewHeader: string;
     mappingStatus: WhatsAppMappingStatus;
+    appointmentRequired?: boolean;
+    selectAppointmentMessage?: string;
+    timeZone?: string;
   };
+}
+
+export async function listWhatsAppMappingAppointments(businessId: string) {
+  const { data } = await API.get("/whatsapp/mapping-appointments", {
+    params: { businessId },
+  });
+  return (data?.appointments || []) as WhatsAppMappingAppointment[];
 }
 
 export async function getWhatsAppAccountHealth(businessId: string) {
