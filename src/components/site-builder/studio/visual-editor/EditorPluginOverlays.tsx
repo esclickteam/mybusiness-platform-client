@@ -12,7 +12,10 @@ import type { SmartSearchSettings } from "../../../site-plugins/smart-search/sma
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import type { AccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
-import { mergeSmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
+import {
+  mergeSmartBotSettings,
+  removeSmartBotPlaceholderMarkers,
+} from "../../../site-plugins/smart-bot/smartBotUtils";
 import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 
 type EditorPluginOverlaysProps = {
@@ -34,6 +37,25 @@ export default function EditorPluginOverlays({
   const [a11ySettings, setA11ySettings] = useState<AccessibilitySettings | null>(null);
   const [a11yEnabled, setA11yEnabled] = useState(false);
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
+
+  useEffect(() => {
+    // Remove obsolete dashed placeholder boxes left from older widget inserts.
+    const clean = () => {
+      removeSmartBotPlaceholderMarkers(document);
+      document.querySelectorAll("iframe").forEach((frame) => {
+        try {
+          if (frame.contentDocument) {
+            removeSmartBotPlaceholderMarkers(frame.contentDocument);
+          }
+        } catch {
+          // cross-origin iframe
+        }
+      });
+    };
+    clean();
+    const t = window.setTimeout(clean, 400);
+    return () => window.clearTimeout(t);
+  }, [refreshKey, botEnabled]);
 
   useEffect(() => {
     if (!siteId) return;
@@ -146,7 +168,11 @@ export default function EditorPluginOverlays({
   const handleBotPositionChange = useCallback(
     async (pos: { x: number; y: number }) => {
       if (!siteId || !botSettings) return;
-      const next = { ...botSettings, triggerPosition: pos };
+      const next = {
+        ...botSettings,
+        triggerPosition: pos,
+        positionAnchor: "right-bottom" as const,
+      };
       setBotSettings(next);
       try {
         await saveSitePluginSettings(siteId, "smart-bot", next);

@@ -18,11 +18,21 @@ import {
   mergeSmartBotSettings,
   newOptionId,
   newTreeNodeId,
+  type SmartBotOptionAction,
   type SmartBotSettings,
   type SmartBotTreeNode,
   type SmartBotTriggerStyle,
 } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { btnSecondary } from "../siteManagementUi";
+
+const OPTION_ACTIONS: Array<{ value: SmartBotOptionAction; label: string }> = [
+  { value: "next", label: "מעבר לשלב" },
+  { value: "reply", label: "תשובה ידנית (טקסט)" },
+  { value: "ask-input", label: "תשובה חופשית מהגולש" },
+  { value: "contact", label: "יצירת קשר" },
+  { value: "end", label: "סיום שיחה" },
+  { value: "open-link", label: "פתיחת קישור" },
+];
 
 function ColorField({
   label,
@@ -398,7 +408,7 @@ export default function SmartBotPanel(props: PluginPanelProps) {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-semibold text-slate-800">
-                    אפשרויות בחירה
+                    אפשרויות בחירה — ממציאים תשובות ומה קורה אחר כך
                   </span>
                   <button
                     type="button"
@@ -410,7 +420,8 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                           {
                             id: newOptionId(node),
                             label: "אפשרות חדשה",
-                            nextNodeId: nodes[0]?.id,
+                            action: "reply",
+                            replyText: "כאן כותבים את תשובת הבוט...",
                           },
                         ],
                       })
@@ -421,85 +432,175 @@ export default function SmartBotPanel(props: PluginPanelProps) {
                   </button>
                 </div>
 
-                {(node.options || []).map((option, optIndex) => (
-                  <div
-                    key={option.id}
-                    className="grid gap-2 rounded-lg border border-slate-200 bg-white p-3 sm:grid-cols-[1fr_1fr_1fr_auto]"
-                  >
-                    <TextInput
-                      value={option.label}
-                      onChange={(v) => {
-                        const options = [...(node.options || [])];
-                        options[optIndex] = { ...option, label: v };
-                        updateNode(node.id, { options });
-                      }}
-                      placeholder="טקסט הכפתור"
-                    />
-                    <select
-                      className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
-                      value={option.action || "next"}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        const options = [...(node.options || [])];
-                        if (value === "contact") {
-                          options[optIndex] = {
-                            ...option,
-                            action: "contact",
-                            nextNodeId: undefined,
-                          };
-                        } else {
-                          options[optIndex] = {
-                            ...option,
-                            action: undefined,
-                            nextNodeId: option.nextNodeId || nodes[0]?.id,
-                          };
-                        }
-                        updateNode(node.id, { options });
-                      }}
+                {(node.options || []).map((option, optIndex) => {
+                  const action = (option.action ||
+                    (option.nextNodeId ? "next" : "reply")) as SmartBotOptionAction;
+                  const patchOption = (patch: Partial<typeof option>) => {
+                    const options = [...(node.options || [])];
+                    options[optIndex] = { ...option, ...patch };
+                    updateNode(node.id, { options });
+                  };
+
+                  return (
+                    <div
+                      key={option.id}
+                      className="space-y-2 rounded-lg border border-slate-200 bg-white p-3"
                     >
-                      <option value="next">מעבר לשלב</option>
-                      <option value="contact">יצירת קשר</option>
-                    </select>
-                    {option.action === "contact" ? (
-                      <div className="flex h-11 items-center text-xs text-slate-500">
-                        פותח אפשרויות קשר
+                      <div className="flex items-start gap-2">
+                        <div className="min-w-0 flex-1 space-y-2">
+                          <Field label="טקסט הכפתור לגולש">
+                            <TextInput
+                              value={option.label}
+                              onChange={(v) => patchOption({ label: v })}
+                              placeholder="לדוגמה: מה המחיר?"
+                            />
+                          </Field>
+                          <Field label="מה קורה אחרי לחיצה">
+                            <select
+                              className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
+                              value={action}
+                              onChange={(e) => {
+                                const value = e.target.value as SmartBotOptionAction;
+                                patchOption({
+                                  action: value,
+                                  nextNodeId:
+                                    value === "next" || value === "reply" || value === "ask-input"
+                                      ? option.nextNodeId || nodes[0]?.id
+                                      : undefined,
+                                });
+                              }}
+                            >
+                              {OPTION_ACTIONS.map((item) => (
+                                <option key={item.value} value={item.value}>
+                                  {item.label}
+                                </option>
+                              ))}
+                            </select>
+                          </Field>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const options = (node.options || []).filter(
+                              (_, i) => i !== optIndex
+                            );
+                            updateNode(node.id, { options });
+                          }}
+                          className="grid h-11 w-11 shrink-0 place-items-center rounded-lg text-rose-600 hover:bg-rose-50"
+                          aria-label="מחק אפשרות"
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       </div>
-                    ) : (
-                      <select
-                        className="h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
-                        value={option.nextNodeId || ""}
-                        onChange={(e) => {
-                          const options = [...(node.options || [])];
-                          options[optIndex] = {
-                            ...option,
-                            nextNodeId: e.target.value,
-                            action: undefined,
-                          };
-                          updateNode(node.id, { options });
-                        }}
-                      >
-                        {nodes.map((target) => (
-                          <option key={target.id} value={target.id}>
-                            → {target.title || target.id}
-                          </option>
-                        ))}
-                      </select>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        const options = (node.options || []).filter(
-                          (_, i) => i !== optIndex
-                        );
-                        updateNode(node.id, { options });
-                      }}
-                      className="grid h-11 w-11 place-items-center rounded-lg text-rose-600 hover:bg-rose-50"
-                      aria-label="מחק אפשרות"
-                    >
-                      <Trash2 size={16} />
-                    </button>
-                  </div>
-                ))}
+
+                      {action === "reply" || action === "end" ? (
+                        <Field
+                          label={
+                            action === "end"
+                              ? "הודעת סיום (ידנית)"
+                              : "תשובת הבוט (ידנית)"
+                          }
+                        >
+                          <TextArea
+                            value={option.replyText || ""}
+                            onChange={(v) => patchOption({ replyText: v })}
+                            placeholder="כתבו כאן את התשובה שהבוט יציג..."
+                          />
+                        </Field>
+                      ) : null}
+
+                      {action === "ask-input" ? (
+                        <>
+                          <Field label="שאלה לגולש לפני הכתיבה">
+                            <TextInput
+                              value={option.payload?.prompt || ""}
+                              onChange={(v) =>
+                                patchOption({
+                                  payload: { ...(option.payload || {}), prompt: v },
+                                })
+                              }
+                              placeholder="כתבו לנו כאן את השאלה או הפרטים:"
+                            />
+                          </Field>
+                          <Field label="תשובת הבוט אחרי שהגולש כתב">
+                            <TextArea
+                              value={option.replyText || ""}
+                              onChange={(v) => patchOption({ replyText: v })}
+                              placeholder="תודה! קיבלנו את ההודעה..."
+                            />
+                          </Field>
+                        </>
+                      ) : null}
+
+                      {action === "open-link" ? (
+                        <Field label="כתובת קישור">
+                          <TextInput
+                            value={option.payload?.url || ""}
+                            onChange={(v) =>
+                              patchOption({
+                                payload: { ...(option.payload || {}), url: v },
+                              })
+                            }
+                            placeholder="https://..."
+                          />
+                        </Field>
+                      ) : null}
+
+                      {action === "contact" ? (
+                        <p className="text-xs text-slate-500">
+                          פותח את אפשרויות יצירת הקשר שהוגדרו למעלה
+                        </p>
+                      ) : null}
+
+                      {action === "next" ||
+                      action === "reply" ||
+                      action === "ask-input" ? (
+                        <Field label="ואז לעבור לשלב (אופציונלי)">
+                          <div className="flex flex-wrap gap-2">
+                            <select
+                              className="h-11 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-sm text-slate-800"
+                              value={option.nextNodeId || ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "__new__") {
+                                  const id = newTreeNodeId(nodes);
+                                  const created = {
+                                    id,
+                                    title: `שלב ${nodes.length + 1}`,
+                                    message: "הודעת הבוט בשלב החדש...",
+                                    options: [],
+                                  };
+                                  const nextNodes = nodes.map((n) => {
+                                    if (n.id !== node.id) return n;
+                                    const options = [...(n.options || [])];
+                                    options[optIndex] = {
+                                      ...option,
+                                      nextNodeId: id,
+                                    };
+                                    return { ...n, options };
+                                  });
+                                  setNodes([...nextNodes, created]);
+                                  return;
+                                }
+                                patchOption({
+                                  nextNodeId: value || undefined,
+                                });
+                              }}
+                            >
+                              <option value="">בלי מעבר לשלב</option>
+                              {nodes.map((target) => (
+                                <option key={target.id} value={target.id}>
+                                  → {target.title || target.id}
+                                </option>
+                              ))}
+                              <option value="__new__">+ צור שלב חדש</option>
+                            </select>
+                          </div>
+                        </Field>
+                      ) : null}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           ))}

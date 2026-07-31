@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 
 import BenefitsWheelWidget from "../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import SmartSearchWidget from "../../site-plugins/smart-search/SmartSearchWidget";
@@ -7,7 +7,10 @@ import AccessibilityWidget from "../../site-plugins/accessibility/AccessibilityW
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
 import { mergeAccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
-import { mergeSmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtils";
+import {
+  mergeSmartBotSettings,
+  removeSmartBotPlaceholderMarkers,
+} from "../../site-plugins/smart-bot/smartBotUtils";
 import type { BenefitsWheelSettings } from "../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtils";
@@ -61,6 +64,12 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showAccessibility = Boolean(accessibilitySettings?.isActive);
   const showSmartBot = Boolean(smartBotSettings?.isActive);
   const showStoreCheckout = Boolean(businessId);
+
+  useEffect(() => {
+    removeSmartBotPlaceholderMarkers(document);
+    const root = document.querySelector("[data-bizuply-public-render-root='true']");
+    if (root) removeSmartBotPlaceholderMarkers(root);
+  }, [siteId, showSmartBot]);
 
   if (
     !showWheel &&
