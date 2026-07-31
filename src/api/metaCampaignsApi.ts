@@ -490,6 +490,8 @@ export async function createMetaLeadForm(
     pageId?: string;
     name: string;
     questions?: MetaLeadFormQuestion[];
+    introTitle?: string;
+    introDescription?: string;
     privacyPolicyUrl?: string;
     thankYouTitle?: string;
     thankYouBody?: string;
