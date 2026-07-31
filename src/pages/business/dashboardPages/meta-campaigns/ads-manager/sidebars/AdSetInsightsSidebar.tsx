@@ -1,17 +1,33 @@
 import React from "react";
-import type { AdsManagerState } from "../adsManagerTypes";
+import type { AdsManagerGender, AdsManagerState } from "../adsManagerTypes";
 import { MetaSidebarCard } from "../metaAdsUi";
 
 type Props = {
   estimate: AdsManagerState["audienceEstimate"];
   locationsSummary: string;
   advantageAudience: boolean;
+  ageMin: number;
+  ageMax: number;
+  gender: AdsManagerGender;
 };
+
+function genderLabel(gender: AdsManagerGender) {
+  if (gender === "male") return "Men";
+  if (gender === "female") return "Women";
+  return "All genders";
+}
+
+function ageLabel(ageMin: number, ageMax: number) {
+  return `${ageMin} - ${ageMax >= 65 ? "65+" : ageMax}`;
+}
 
 export default function AdSetInsightsSidebar({
   estimate,
   locationsSummary,
   advantageAudience,
+  ageMin,
+  ageMax,
+  gender,
 }: Props) {
   const spectrumPct = Math.round(estimate.spectrum * 100);
   return (
@@ -20,7 +36,26 @@ export default function AdSetInsightsSidebar({
         <div className="space-y-3 text-[13px]">
           <div>
             <p className="font-semibold text-[#65676B]">Locations</p>
-            <p className="mt-0.5 font-bold text-[#050505]">{locationsSummary}</p>
+            <p className="mt-0.5 font-bold text-[#050505]">
+              {locationsSummary || "Not set"}
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-[#65676B]">Age</p>
+            <p className="mt-0.5 font-bold text-[#050505]">
+              {ageLabel(ageMin, ageMax)}
+              {advantageAudience ? (
+                <span className="ml-2 rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[10px] font-semibold text-[#65676B]">
+                  Suggestion
+                </span>
+              ) : null}
+            </p>
+          </div>
+          <div>
+            <p className="font-semibold text-[#65676B]">Gender</p>
+            <p className="mt-0.5 font-bold text-[#050505]">
+              {genderLabel(gender)}
+            </p>
           </div>
           <div>
             <p className="font-semibold text-[#65676B]">Audience type</p>

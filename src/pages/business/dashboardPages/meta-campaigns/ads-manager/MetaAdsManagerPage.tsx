@@ -494,6 +494,34 @@ export default function MetaAdsManagerPage() {
                   </dd>
                 </div>
                 <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">Locations</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAdSet?.locationsSummary || "Not set"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">Age</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAdSet
+                      ? `${selectedAdSet.ageMin} - ${
+                          selectedAdSet.ageMax >= 65
+                            ? "65+"
+                            : selectedAdSet.ageMax
+                        }`
+                      : "—"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
+                  <dt className="text-[#65676B]">Gender</dt>
+                  <dd className="font-semibold text-[#050505]">
+                    {selectedAdSet?.gender === "male"
+                      ? "Men"
+                      : selectedAdSet?.gender === "female"
+                        ? "Women"
+                        : "All genders"}
+                  </dd>
+                </div>
+                <div className="flex justify-between gap-4 border-b border-[#E4E6EB] pb-2">
                   <dt className="text-[#65676B]">Ad</dt>
                   <dd className="font-semibold text-[#050505]">
                     {selectedAd?.name}
@@ -568,6 +596,9 @@ export default function MetaAdsManagerPage() {
               estimate={state.audienceEstimate}
               locationsSummary={selectedAdSet.locationsSummary}
               advantageAudience={selectedAdSet.advantageAudience}
+              ageMin={selectedAdSet.ageMin}
+              ageMax={selectedAdSet.ageMax}
+              gender={selectedAdSet.gender}
             />
           ) : null}
           {state.selectedLevel === "ad" && selectedAd ? (

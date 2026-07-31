@@ -61,12 +61,10 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     adSet.facebookPageId ||
     "";
 
-  // Precise age/gender only apply on Meta when Advantage+ audience is off.
-  const preciseAudience =
-    adSet.gender !== "all" ||
-    adSet.furtherLimitReach ||
-    adSet.ageMin !== 18 ||
-    adSet.ageMax < 65;
+  // Meta: ages/gender under Advantage+ are suggestions unless "further limit" is on.
+  const advantageAudience = adSet.furtherLimitReach
+    ? false
+    : adSet.advantageAudience !== false;
 
   return {
     full: true,
@@ -106,7 +104,7 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     ageMin: adSet.ageMin,
     ageMax: adSet.ageMax >= 65 ? 65 : adSet.ageMax,
     genders: gendersForMeta(adSet.gender),
-    advantageAudience: preciseAudience ? false : adSet.advantageAudience,
+    advantageAudience,
     advantagePlus: campaign.advantagePlusLeads,
     advantagePlacements: adSet.advantagePlacements,
     conversionLocation: adSet.conversionLocation,

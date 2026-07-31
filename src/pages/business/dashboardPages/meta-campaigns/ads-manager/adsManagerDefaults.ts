@@ -94,6 +94,7 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     ageMax: 65,
     gender: "all",
     includeCustomAudiences: [],
+    /** Meta: show Age / Gender / Detailed targeting under Suggest an audience */
     suggestAudience: true,
     furtherLimitReach: false,
     advertiserId: "biz_main",
@@ -103,7 +104,7 @@ export function createDefaultAdSet(campaignName: string): AdSetDraft {
     showMoreBudget: false,
     showMoreAudience: false,
     showMorePlacements: false,
-    ageExpanded: true,
+    ageExpanded: false,
     locationsExpanded: true,
   };
 }

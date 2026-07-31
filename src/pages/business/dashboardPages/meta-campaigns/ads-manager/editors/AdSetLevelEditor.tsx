@@ -451,7 +451,7 @@ export default function AdSetLevelEditor({
           }
         />
 
-        {/* Suggest an audience */}
+        {/* Suggest an audience — Meta Advantage+ suggestions (age/gender) */}
         <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
           <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
             Suggest an audience
@@ -476,119 +476,135 @@ export default function AdSetLevelEditor({
           >
             {adSet.suggestAudience ? "Hide suggestions" : "Show suggestions"}
           </MetaLinkButton>
-        </div>
 
-        {/* Age */}
-        <div className="overflow-hidden rounded-lg border border-[#CED0D4]">
-          <button
-            type="button"
-            className={[
-              "flex w-full items-center justify-between px-3 py-2.5 text-left",
-              adSet.ageExpanded ? "bg-[#E7F3FF]" : "bg-white",
-            ].join(" ")}
-            onClick={() => onChange({ ageExpanded: !adSet.ageExpanded })}
-          >
-            <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
-              Age
-              <Info className="h-3.5 w-3.5 text-[#65676B]" />
-            </span>
-            {adSet.ageExpanded ? (
-              <ChevronUp className="h-4 w-4 text-[#65676B]" />
-            ) : (
-              <ChevronDown className="h-4 w-4 text-[#65676B]" />
-            )}
-          </button>
-          {adSet.ageExpanded ? (
-            <div className="grid grid-cols-2 gap-2 bg-white px-3 py-3">
-              <select
-                className={metaSelectClass}
-                value={adSet.ageMin}
-                onChange={(e) => {
-                  const ageMin = Number(e.target.value);
-                  onChange({
-                    ageMin,
-                    ageMax: Math.max(ageMin, adSet.ageMax),
-                  });
-                }}
-              >
-                {AGE_MIN_OPTIONS.map((age) => (
-                  <option key={age} value={age}>
-                    {age}
-                  </option>
-                ))}
-              </select>
-              <select
-                className={metaSelectClass}
-                value={adSet.ageMax}
-                onChange={(e) => {
-                  const ageMax = Number(e.target.value);
-                  onChange({
-                    ageMax,
-                    ageMin: Math.min(adSet.ageMin, ageMax),
-                  });
-                }}
-              >
-                {AGE_MAX_OPTIONS.map((age) => (
-                  <option key={age} value={age}>
-                    {age >= 65 ? "65+" : age}
-                  </option>
-                ))}
-              </select>
+          {adSet.suggestAudience ? (
+            <div className="mt-3 space-y-2 border-t border-[#E4E6EB] pt-3">
+              {/* Age — Meta: collapsed shows range; expanded = two fields + Your suggestion */}
+              <div className="overflow-hidden rounded-lg border border-[#CED0D4]">
+                <button
+                  type="button"
+                  className={[
+                    "flex w-full items-center justify-between px-3 py-2.5 text-left",
+                    adSet.ageExpanded ? "bg-[#E7F3FF]" : "bg-white",
+                  ].join(" ")}
+                  onClick={() => onChange({ ageExpanded: !adSet.ageExpanded })}
+                >
+                  <span className="flex flex-wrap items-center gap-2">
+                    <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
+                      Age
+                      <Info className="h-3.5 w-3.5 text-[#65676B]" />
+                    </span>
+                    {!adSet.furtherLimitReach ? (
+                      <span className="rounded-full bg-[#E4E6EB] px-2 py-0.5 text-[11px] font-semibold text-[#65676B]">
+                        Your suggestion
+                      </span>
+                    ) : null}
+                  </span>
+                  {adSet.ageExpanded ? (
+                    <ChevronUp className="h-4 w-4 text-[#65676B]" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4 text-[#65676B]" />
+                  )}
+                </button>
+                {adSet.ageExpanded ? (
+                  <div className="grid grid-cols-2 gap-2 bg-white px-3 py-3">
+                    <select
+                      className={metaSelectClass}
+                      value={adSet.ageMin}
+                      aria-label="Minimum age"
+                      onChange={(e) => {
+                        const ageMin = Number(e.target.value);
+                        onChange({
+                          ageMin,
+                          ageMax: Math.max(ageMin, adSet.ageMax),
+                        });
+                      }}
+                    >
+                      {AGE_MIN_OPTIONS.map((age) => (
+                        <option key={age} value={age}>
+                          {age}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className={metaSelectClass}
+                      value={adSet.ageMax}
+                      aria-label="Maximum age"
+                      onChange={(e) => {
+                        const ageMax = Number(e.target.value);
+                        onChange({
+                          ageMax,
+                          ageMin: Math.min(adSet.ageMin, ageMax),
+                        });
+                      }}
+                    >
+                      {AGE_MAX_OPTIONS.map((age) => (
+                        <option key={age} value={age}>
+                          {age >= 65 ? "65+" : age}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <p className="bg-white px-3 py-2 text-[14px] font-semibold text-[#050505]">
+                    {adSet.ageMin} -{" "}
+                    {adSet.ageMax >= 65 ? "65+" : adSet.ageMax}
+                  </p>
+                )}
+              </div>
+
+              {/* Gender */}
+              <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+                <p className="text-[15px] font-bold text-[#050505]">Gender</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {(
+                    [
+                      ["all", "All genders"],
+                      ["male", "Men"],
+                      ["female", "Women"],
+                    ] as const
+                  ).map(([value, label]) => (
+                    <button
+                      key={value}
+                      type="button"
+                      onClick={() => onChange({ gender: value })}
+                      className={[
+                        "rounded-full border px-3 py-1.5 text-[13px] font-semibold",
+                        adSet.gender === value
+                          ? "border-[#1877F2] bg-[#E7F3FF] text-[#1877F2]"
+                          : "border-[#CED0D4] bg-white text-[#050505] hover:bg-[#F0F2F5]",
+                      ].join(" ")}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+                <p className="text-[15px] font-bold text-[#050505]">
+                  Detailed targeting
+                </p>
+                <p className="mt-1 text-[14px] font-semibold text-[#050505]">
+                  All demographics, interests and behaviors
+                </p>
+              </div>
             </div>
-          ) : (
-            <p className="bg-white px-3 py-2 text-[14px] font-semibold text-[#050505]">
-              {adSet.ageMin} – {adSet.ageMax >= 65 ? "65+" : adSet.ageMax}
-            </p>
-          )}
-        </div>
-
-        {/* Gender */}
-        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-          <p className="text-[15px] font-bold text-[#050505]">Gender</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {(
-              [
-                ["all", "All genders"],
-                ["male", "Men"],
-                ["female", "Women"],
-              ] as const
-            ).map(([value, label]) => (
-              <button
-                key={value}
-                type="button"
-                onClick={() =>
-                  onChange({
-                    gender: value,
-                    // Precise gender requires Advantage+ audience off for Meta API.
-                    ...(value !== "all" ? { advantageAudience: false } : {}),
-                  })
-                }
-                className={[
-                  "rounded-full border px-3 py-1.5 text-[13px] font-semibold",
-                  adSet.gender === value
-                    ? "border-[#1877F2] bg-[#E7F3FF] text-[#1877F2]"
-                    : "border-[#CED0D4] bg-white text-[#050505] hover:bg-[#F0F2F5]",
-                ].join(" ")}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-          <p className="text-[15px] font-bold text-[#050505]">
-            Detailed targeting
-          </p>
-          <p className="mt-1 text-[14px] font-semibold text-[#050505]">
-            All demographics, interests and behaviors
-          </p>
+          ) : null}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E4E6EB] pt-3">
           <MetaToggle
             checked={adSet.furtherLimitReach}
-            onChange={(furtherLimitReach) => onChange({ furtherLimitReach })}
+            onChange={(furtherLimitReach) =>
+              onChange({
+                furtherLimitReach,
+                // Meta: further limit = hard constraints (not suggestions).
+                advantageAudience: furtherLimitReach
+                  ? false
+                  : adSet.advantageAudience,
+              })
+            }
             label="Further limit the reach of your ads"
           />
           <button type="button" className={metaBtnSecondary}>
