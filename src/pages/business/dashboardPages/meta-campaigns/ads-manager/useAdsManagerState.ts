@@ -41,22 +41,31 @@ export function getLevelValidation(state: AdsManagerState): {
       : "none";
 
   const adSet = state.adSets[0];
+  const usesInstantForms = String(adSet?.conversionLocation || "")
+    .toLowerCase()
+    .includes("instant");
+  const hasLocations = Boolean(
+    adSet?.locations?.length || adSet?.locationsSummary?.trim()
+  );
   const adset: ValidationSeverity = !adSet?.name.trim()
     ? "error"
-    : !adSet.locationsSummary.trim()
-      ? "warning"
-      : "none";
+    : usesInstantForms && !adSet.facebookPageId
+      ? "error"
+      : !hasLocations
+        ? "warning"
+        : "none";
 
   const ad = state.ads[0];
+  const pageId = ad?.facebookPageId || adSet?.facebookPageId;
   let adSeverity: ValidationSeverity = "none";
-  if (!ad?.name.trim() || !ad.facebookPageId) adSeverity = "error";
+  if (!ad?.name.trim() || !pageId || pageId === "page_1") adSeverity = "error";
   else if (
     state.campaign.objective === "OUTCOME_LEADS" &&
-    adSet?.conversionLocation === "Instant forms" &&
+    usesInstantForms &&
     !ad.instantFormId
   ) {
     adSeverity = "error";
-  } else if (!ad.websiteUrl.trim()) {
+  } else if (!ad.websiteUrl.trim() && !ad.instantFormId) {
     adSeverity = "warning";
   }
 

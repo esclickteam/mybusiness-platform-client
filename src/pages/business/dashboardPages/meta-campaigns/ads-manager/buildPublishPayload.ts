@@ -1,5 +1,11 @@
 import type { AdsManagerState } from "./adsManagerTypes";
 
+function gendersForMeta(gender: AdsManagerState["adSets"][0]["gender"]) {
+  if (gender === "male") return [1];
+  if (gender === "female") return [2];
+  return [];
+}
+
 /**
  * Maps Ads Manager draft state → Meta Marketing API publish payload.
  * Server validates and creates campaign → ad set → creative → ad for real.
@@ -14,6 +20,42 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
 
   const isLeads = campaign.objective === "OUTCOME_LEADS";
   const amount = Number(String(campaign.budgetAmount).replace(/,/g, ""));
+  const usesInstantForms = String(adSet.conversionLocation)
+    .toLowerCase()
+    .includes("instant");
+
+  const locations = (adSet.locations || [])
+    .filter((loc) => loc.include !== false)
+    .map((loc) => ({
+      key: loc.key,
+      name: loc.name,
+      type: loc.type,
+      countryCode: loc.countryCode,
+      countryName: loc.countryName,
+      region: loc.region,
+      radiusKm: loc.radiusKm,
+      latitude: loc.latitude,
+      longitude: loc.longitude,
+    }));
+
+  const countries = locations
+    .filter((item) => item.type === "country")
+    .map((item) =>
+      String(item.key || item.countryCode || "").toUpperCase()
+    )
+    .filter(Boolean);
+
+  const pageId =
+    ad.facebookPageId ||
+    adSet.facebookPageId ||
+    "";
+
+  // Precise age/gender only apply on Meta when Advantage+ audience is off.
+  const preciseAudience =
+    adSet.gender !== "all" ||
+    adSet.furtherLimitReach ||
+    adSet.ageMin !== 18 ||
+    adSet.ageMax < 65;
 
   return {
     full: true,
@@ -22,7 +64,7 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     objective: campaign.objective,
     status: "PAUSED",
     specialAdCategories: [],
-    pageId: ad.facebookPageId,
+    pageId,
     adSetName: adSet.name.trim(),
     adName: ad.name.trim(),
     creativeName: `${ad.name.trim()} – Creative`,
@@ -45,17 +87,21 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     endDateEnabled: adSet.endDateEnabled,
     endDate: adSet.endDate,
     endTime: adSet.endTime,
-    locationsSummary: adSet.locationsSummary,
-    countries: ["IL"],
-    advantageAudience: adSet.advantageAudience,
+    locationsSummary:
+      adSet.locationsSummary ||
+      locations.map((l) => l.name).join(", "),
+    locations,
+    countries: countries.length ? countries : ["IL"],
+    ageMin: adSet.ageMin,
+    ageMax: adSet.ageMax >= 65 ? 65 : adSet.ageMax,
+    genders: gendersForMeta(adSet.gender),
+    advantageAudience: preciseAudience ? false : adSet.advantageAudience,
     advantagePlus: campaign.advantagePlusLeads,
     advantagePlacements: adSet.advantagePlacements,
     conversionLocation: adSet.conversionLocation,
+    performanceGoal: adSet.performanceGoal,
     destinationType:
-      isLeads &&
-      String(adSet.conversionLocation).toLowerCase().includes("instant")
-        ? "ON_AD"
-        : "WEBSITE",
+      isLeads && usesInstantForms ? "ON_AD" : "WEBSITE",
     leadFormId: ad.instantFormId || undefined,
     formId: ad.instantFormId || undefined,
     websiteUrl: ad.websiteUrl,
@@ -74,23 +120,32 @@ export function validateAdsManagerClient(state: AdsManagerState): string[] {
   const campaign = state.campaign;
   const adSet = state.adSets[0];
   const ad = state.ads[0];
+  const usesInstantForms = String(adSet?.conversionLocation || "")
+    .toLowerCase()
+    .includes("instant");
 
   if (!campaign?.name.trim()) errors.push("Campaign name is required");
   if (!campaign?.objective) errors.push("Campaign objective is required");
   if (!campaign?.budgetAmount) errors.push("Budget is required");
   if (!adSet?.name.trim()) errors.push("Ad set name is required");
-  if (!adSet?.locationsSummary.trim()) errors.push("Locations are required");
+  if (!(adSet?.locations?.length || adSet?.locationsSummary?.trim())) {
+    errors.push("Locations are required");
+  }
   if (!adSet?.startDate) errors.push("Schedule start date is required");
   if (!ad?.name.trim()) errors.push("Ad name is required");
-  if (!ad?.facebookPageId) errors.push("Facebook Page is required");
+  const pageId = ad?.facebookPageId || adSet?.facebookPageId;
+  if (!pageId || pageId === "page_1" || pageId === "page_2") {
+    errors.push("Facebook Page is required");
+  }
+  if (usesInstantForms && !adSet?.facebookPageId && !ad?.facebookPageId) {
+    errors.push("Select a Facebook Page for Instant forms");
+  }
   if (!ad?.primaryText.trim() || !ad?.headline.trim()) {
     errors.push("Creative primary text and headline are required");
   }
   if (
     campaign?.objective === "OUTCOME_LEADS" &&
-    String(adSet?.conversionLocation || "")
-      .toLowerCase()
-      .includes("instant") &&
+    usesInstantForms &&
     !ad?.instantFormId
   ) {
     errors.push("Instant Form is required for Lead Ads");

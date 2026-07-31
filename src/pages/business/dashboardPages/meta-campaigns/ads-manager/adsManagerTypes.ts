@@ -37,11 +37,30 @@ export type CampaignDraft = {
   showMoreBudget: boolean;
 };
 
+export type AdsManagerGender = "all" | "male" | "female";
+
+export type AdsManagerLocation = {
+  key: string;
+  name: string;
+  type: string;
+  countryCode?: string;
+  countryName?: string;
+  region?: string;
+  radiusKm?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  include?: boolean;
+};
+
 export type AdSetDraft = {
   id: string;
   name: string;
   conversionLocation: string;
+  /** Facebook Page used for Instant forms / lead conversion */
+  facebookPageId: string;
+  facebookPageName: string;
   performanceGoal: string;
+  costPerResultGoal: string;
   dataset: string;
   conversionEvent: string;
   attributionModel: string;
@@ -57,6 +76,10 @@ export type AdSetDraft = {
   advantageAudience: boolean;
   savedAudienceId: string;
   locationsSummary: string;
+  locations: AdsManagerLocation[];
+  ageMin: number;
+  ageMax: number;
+  gender: AdsManagerGender;
   includeCustomAudiences: string[];
   suggestAudience: boolean;
   furtherLimitReach: boolean;
@@ -67,6 +90,8 @@ export type AdSetDraft = {
   showMoreBudget: boolean;
   showMoreAudience: boolean;
   showMorePlacements: boolean;
+  ageExpanded: boolean;
+  locationsExpanded: boolean;
 };
 
 export type AdDraft = {

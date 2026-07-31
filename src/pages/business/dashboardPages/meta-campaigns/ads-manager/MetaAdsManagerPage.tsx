@@ -113,23 +113,72 @@ export default function MetaAdsManagerPage() {
     return state.instantForms;
   }, [leadForms, state.instantForms]);
 
-  // Prefill page id from connected Meta page.
+  const connectedPages = connection?.pages || [];
+
+  // Prefill Facebook Page on Ad Set + Ad from connected Meta pages.
   useEffect(() => {
-    const pageId = connection?.selectedPage?.pageId;
-    if (!pageId || !selectedAd) return;
-    if (selectedAd.facebookPageId && selectedAd.facebookPageId !== "page_1") {
-      return;
+    const preferredId =
+      connection?.selectedPage?.pageId || connectedPages[0]?.id;
+    const preferredName =
+      connection?.selectedPage?.pageName ||
+      connectedPages.find((p) => p.id === preferredId)?.name ||
+      "";
+    if (!preferredId) return;
+
+    if (
+      selectedAdSet &&
+      (!selectedAdSet.facebookPageId ||
+        selectedAdSet.facebookPageId === "page_1")
+    ) {
+      patchAdSet(selectedAdSet.id, {
+        facebookPageId: preferredId,
+        facebookPageName: preferredName,
+      });
     }
-    patchAd(selectedAd.id, {
-      facebookPageId: pageId,
-      facebookPageName:
-        connection?.selectedPage?.pageName || "Facebook Page",
-    });
+
+    if (
+      selectedAd &&
+      (!selectedAd.facebookPageId || selectedAd.facebookPageId === "page_1")
+    ) {
+      patchAd(selectedAd.id, {
+        facebookPageId: preferredId,
+        facebookPageName: preferredName,
+      });
+    }
   }, [
     connection?.selectedPage?.pageId,
     connection?.selectedPage?.pageName,
+    connectedPages,
     selectedAd,
+    selectedAdSet,
     patchAd,
+    patchAdSet,
+  ]);
+
+  // Reload Instant Forms when the selected Facebook Page changes.
+  useEffect(() => {
+    const pageId =
+      selectedAdSet?.facebookPageId ||
+      selectedAd?.facebookPageId ||
+      connection?.selectedPage?.pageId;
+    if (!businessId || !pageId || pageId.startsWith("page_")) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const formsRes = await listMetaLeadForms(businessId, pageId);
+        if (!cancelled) setLeadForms(formsRes?.forms || []);
+      } catch {
+        if (!cancelled) setLeadForms([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    businessId,
+    selectedAdSet?.facebookPageId,
+    selectedAd?.facebookPageId,
+    connection?.selectedPage?.pageId,
   ]);
 
   const crumbs = useMemo(() => {
@@ -478,7 +527,19 @@ export default function MetaAdsManagerPage() {
           selectedAdSet ? (
             <AdSetLevelEditor
               adSet={selectedAdSet}
-              onChange={(patch) => patchAdSet(selectedAdSet.id, patch)}
+              businessId={businessId}
+              pages={connectedPages}
+              selectedPageId={connection?.selectedPage?.pageId}
+              onChange={(patch) => {
+                patchAdSet(selectedAdSet.id, patch);
+                if (patch.facebookPageId && selectedAd) {
+                  patchAd(selectedAd.id, {
+                    facebookPageId: patch.facebookPageId,
+                    facebookPageName:
+                      patch.facebookPageName || selectedAd.facebookPageName,
+                  });
+                }
+              }}
             />
           ) : null}
 
@@ -488,6 +549,7 @@ export default function MetaAdsManagerPage() {
             <AdLevelEditor
               ad={selectedAd}
               forms={liveForms}
+              pages={connectedPages}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
             />
           ) : null}

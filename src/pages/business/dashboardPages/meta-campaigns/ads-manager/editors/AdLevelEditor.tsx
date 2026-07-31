@@ -1,5 +1,6 @@
 import React from "react";
 import { Search } from "lucide-react";
+import type { MetaAdsPage } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import {
   MetaField,
@@ -16,10 +17,11 @@ import {
 type Props = {
   ad: AdDraft;
   forms: InstantFormItem[];
+  pages: MetaAdsPage[];
   onChange: (patch: Partial<AdDraft>) => void;
 };
 
-export default function AdLevelEditor({ ad, forms, onChange }: Props) {
+export default function AdLevelEditor({ ad, forms, pages, onChange }: Props) {
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
 
   return (
@@ -57,17 +59,19 @@ export default function AdLevelEditor({ ad, forms, onChange }: Props) {
             value={ad.facebookPageId}
             onChange={(e) => {
               const pageId = e.target.value;
+              const page = pages.find((p) => p.id === pageId);
               onChange({
                 facebookPageId: pageId,
-                facebookPageName:
-                  pageId === "page_1"
-                    ? "Your Business Page"
-                    : "Secondary Page",
+                facebookPageName: page?.name || "",
               });
             }}
           >
-            <option value="page_1">Your Business Page</option>
-            <option value="page_2">Secondary Page</option>
+            <option value="">Select a Facebook Page</option>
+            {pages.map((page) => (
+              <option key={page.id} value={page.id}>
+                {page.name}
+              </option>
+            ))}
           </select>
         </MetaField>
         <MetaNotice tone="success">

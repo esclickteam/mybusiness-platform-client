@@ -1,5 +1,19 @@
-import React from "react";
-import type { AdSetDraft } from "../adsManagerTypes";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Info,
+  MapPin,
+  Search,
+  TrendingUp,
+} from "lucide-react";
+import {
+  searchMetaLocations,
+  type MetaAdsPage,
+  type MetaLocationTarget,
+} from "../../../../../../api/metaCampaignsApi";
+import MetaLocationsMap from "../../MetaLocationsMap";
+import type { AdSetDraft, AdsManagerLocation } from "../adsManagerTypes";
 import {
   MetaField,
   MetaLinkButton,
@@ -15,9 +29,186 @@ import {
 type Props = {
   adSet: AdSetDraft;
   onChange: (patch: Partial<AdSetDraft>) => void;
+  businessId: string | null;
+  pages: MetaAdsPage[];
+  selectedPageId?: string;
 };
 
-export default function AdSetLevelEditor({ adSet, onChange }: Props) {
+const AGE_MIN_OPTIONS = Array.from({ length: 48 }, (_, i) => 18 + i); // 18..65
+const AGE_MAX_OPTIONS = [...AGE_MIN_OPTIONS, 65];
+
+const PERFORMANCE_GOALS = [
+  {
+    id: "Maximize number of leads",
+    description:
+      "We'll try to show your ads to the people most likely to share their contact information with you.",
+  },
+  {
+    id: "Maximize number of qualified leads",
+    description:
+      "We'll try to show your ads to the people most likely to convert after sharing their contact information with you.",
+  },
+];
+
+function locationIdentity(loc: AdsManagerLocation | MetaLocationTarget) {
+  if (loc.type === "custom") {
+    return `custom:${(loc as MetaLocationTarget).addressString || loc.key}`;
+  }
+  return `${loc.type}:${loc.key}`;
+}
+
+function toAdsLocation(item: MetaLocationTarget): AdsManagerLocation {
+  return {
+    key: item.key,
+    name: item.name,
+    type: item.type,
+    countryCode: item.countryCode,
+    countryName: item.countryName,
+    region: item.region,
+    radiusKm: item.radiusKm,
+    latitude: item.latitude,
+    longitude: item.longitude,
+    include: true,
+  };
+}
+
+export default function AdSetLevelEditor({
+  adSet,
+  onChange,
+  businessId,
+  pages,
+  selectedPageId,
+}: Props) {
+  const [pageQuery, setPageQuery] = useState("");
+  const [pageMenuOpen, setPageMenuOpen] = useState(false);
+  const [perfOpen, setPerfOpen] = useState(false);
+  const [locQuery, setLocQuery] = useState("");
+  const [locResults, setLocResults] = useState<MetaLocationTarget[]>([]);
+  const [locSearching, setLocSearching] = useState(false);
+  const [includeMode, setIncludeMode] = useState<"include" | "exclude">(
+    "include"
+  );
+  const [focusKey, setFocusKey] = useState<string | null>(null);
+  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const pageMenuRef = useRef<HTMLDivElement | null>(null);
+
+  const usesInstantForms = String(adSet.conversionLocation)
+    .toLowerCase()
+    .includes("instant");
+
+  const filteredPages = useMemo(() => {
+    const q = pageQuery.trim().toLowerCase();
+    if (!q) return pages;
+    return pages.filter(
+      (p) =>
+        p.name.toLowerCase().includes(q) ||
+        String(p.id).toLowerCase().includes(q)
+    );
+  }, [pages, pageQuery]);
+
+  // Prefill Facebook Page from connected account when Instant forms is selected.
+  useEffect(() => {
+    if (!usesInstantForms) return;
+    if (adSet.facebookPageId) return;
+    const preferred =
+      pages.find((p) => p.id === selectedPageId) || pages[0] || null;
+    if (!preferred) return;
+    onChange({
+      facebookPageId: preferred.id,
+      facebookPageName: preferred.name,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usesInstantForms, pages, selectedPageId, adSet.facebookPageId]);
+
+  useEffect(() => {
+    const onDoc = (e: MouseEvent) => {
+      if (!pageMenuRef.current?.contains(e.target as Node)) {
+        setPageMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, []);
+
+  useEffect(() => {
+    if (searchTimer.current) clearTimeout(searchTimer.current);
+    const q = locQuery.trim();
+    if (q.length < 2 || !businessId) {
+      setLocResults([]);
+      return;
+    }
+    searchTimer.current = setTimeout(async () => {
+      setLocSearching(true);
+      try {
+        const data = await searchMetaLocations(businessId, {
+          q,
+          locationTypes: ["country", "region", "city", "zip"],
+          limit: 12,
+        });
+        setLocResults(data.results || []);
+      } catch {
+        setLocResults([]);
+      } finally {
+        setLocSearching(false);
+      }
+    }, 280);
+    return () => {
+      if (searchTimer.current) clearTimeout(searchTimer.current);
+    };
+  }, [locQuery, businessId]);
+
+  const addLocation = (item: MetaLocationTarget) => {
+    const next = toAdsLocation(item);
+    next.include = includeMode === "include";
+    const exists = adSet.locations.some(
+      (loc) => locationIdentity(loc) === locationIdentity(next)
+    );
+    if (exists) return;
+    const locations = [...adSet.locations, next];
+    onChange({
+      locations,
+      locationsSummary: locations
+        .filter((l) => l.include !== false)
+        .map((l) => l.name)
+        .join(", "),
+      locationsExpanded: true,
+    });
+    setFocusKey(locationIdentity(next));
+    setLocQuery("");
+    setLocResults([]);
+  };
+
+  const removeLocation = (identity: string) => {
+    const locations = adSet.locations.filter(
+      (loc) => locationIdentity(loc) !== identity
+    );
+    onChange({
+      locations,
+      locationsSummary: locations
+        .filter((l) => l.include !== false)
+        .map((l) => l.name)
+        .join(", "),
+    });
+  };
+
+  const mapLocations: MetaLocationTarget[] = adSet.locations.map((loc) => ({
+    key: loc.key,
+    name: loc.name,
+    type: loc.type,
+    countryCode: loc.countryCode,
+    countryName: loc.countryName,
+    region: loc.region,
+    radiusKm: loc.radiusKm,
+    latitude: loc.latitude,
+    longitude: loc.longitude,
+  }));
+
+  const selectedPage =
+    pages.find((p) => p.id === adSet.facebookPageId) ||
+    (adSet.facebookPageId
+      ? { id: adSet.facebookPageId, name: adSet.facebookPageName || adSet.facebookPageId }
+      : null);
+
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
       <MetaSection
@@ -37,76 +228,240 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
         </MetaField>
       </MetaSection>
 
-      <MetaSection
-        title="Conversion"
-        status={adSet.conversionEvent ? "ok" : "warn"}
-      >
-        <div className="grid gap-4 sm:grid-cols-2">
-          <MetaField label="Conversion location">
-            <select
-              className={metaSelectClass}
-              value={adSet.conversionLocation}
-              onChange={(e) => onChange({ conversionLocation: e.target.value })}
+      <MetaSection title="Conversion" status="ok">
+        <div>
+          <p className="text-[15px] font-bold text-[#050505]">
+            Conversion location
+          </p>
+          <p className="mt-1 text-[13px] text-[#65676B]">
+            Choose where you want to generate leads.{" "}
+            <a
+              href="https://www.facebook.com/business/help"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#1877F2] hover:underline"
             >
-              <option>Instant forms</option>
-              <option>Website</option>
-              <option>Website and instant forms</option>
-              <option>Messenger</option>
-            </select>
-          </MetaField>
-          <MetaField label="Performance goal">
-            <select
-              className={metaSelectClass}
-              value={adSet.performanceGoal}
-              onChange={(e) => onChange({ performanceGoal: e.target.value })}
-            >
-              <option>Maximize number of leads</option>
-              <option>Maximize conversion value</option>
-              <option>Maximize number of conversions</option>
-            </select>
-          </MetaField>
-          <MetaField label="Dataset">
-            <select
-              className={metaSelectClass}
-              value={adSet.dataset}
-              onChange={(e) => onChange({ dataset: e.target.value })}
-            >
-              <option>BizUply Pixel</option>
-              <option>No dataset</option>
-            </select>
-          </MetaField>
-          <MetaField label="Conversion event">
-            <select
-              className={metaSelectClass}
-              value={adSet.conversionEvent}
-              onChange={(e) => onChange({ conversionEvent: e.target.value })}
-            >
-              <option value="">Select event</option>
-              <option value="Lead">Lead</option>
-              <option value="CompleteRegistration">Complete registration</option>
-              <option value="Contact">Contact</option>
-            </select>
-          </MetaField>
+              About conversion locations
+            </a>
+          </p>
+          <select
+            className={`${metaSelectClass} mt-2`}
+            value={adSet.conversionLocation}
+            onChange={(e) => onChange({ conversionLocation: e.target.value })}
+          >
+            <option>Instant forms</option>
+            <option>Website</option>
+            <option>Website and instant forms</option>
+            <option>Messenger</option>
+          </select>
         </div>
 
-        {!adSet.conversionEvent ? (
-          <MetaNotice tone="warning">
-            Set up a conversion event so Meta can optimize delivery for leads.
-            Without an event, delivery may be limited.
-          </MetaNotice>
+        {usesInstantForms ? (
+          <div ref={pageMenuRef} className="relative">
+            <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
+              Facebook Page
+              <Info className="h-3.5 w-3.5 text-[#8A8D91]" />
+            </p>
+            <p className="mt-1 text-[13px] text-[#65676B]">
+              Choose the Page you want to promote.
+            </p>
+            <button
+              type="button"
+              className={`${metaInputClass} mt-2 flex items-center justify-between gap-2 text-left`}
+              onClick={() => setPageMenuOpen((v) => !v)}
+            >
+              <span className="flex min-w-0 items-center gap-2">
+                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-[#E4E6EB] text-[11px] font-bold text-[#65676B]">
+                  {(selectedPage?.name || "?").slice(0, 1).toUpperCase()}
+                </span>
+                <span className="truncate font-semibold">
+                  {selectedPage?.name ||
+                    (pages.length
+                      ? "Select a Facebook Page"
+                      : "No Pages connected — open Meta connection")}
+                </span>
+              </span>
+              <ChevronDown className="h-4 w-4 shrink-0 text-[#65676B]" />
+            </button>
+
+            {pageMenuOpen ? (
+              <div className="absolute z-30 mt-1 w-full overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-lg">
+                <div className="relative border-b border-[#E4E6EB] p-2">
+                  <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
+                  <input
+                    className={`${metaInputClass} border-0 bg-[#F0F2F5] pl-9 shadow-none focus:shadow-none`}
+                    placeholder="Search by Page name or ID"
+                    value={pageQuery}
+                    onChange={(e) => setPageQuery(e.target.value)}
+                    autoFocus
+                  />
+                </div>
+                <div className="flex items-center justify-between px-3 py-2 text-[12px] font-bold text-[#65676B]">
+                  <span>Personal</span>
+                  <span>{filteredPages.length} Pages</span>
+                </div>
+                <div className="max-h-52 overflow-y-auto">
+                  {filteredPages.length === 0 ? (
+                    <p className="px-3 py-4 text-[13px] text-[#65676B]">
+                      No Pages found. Connect Meta and grant Page access in
+                      Settings.
+                    </p>
+                  ) : (
+                    filteredPages.map((page) => (
+                      <button
+                        key={page.id}
+                        type="button"
+                        className={[
+                          "flex w-full items-center gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5]",
+                          page.id === adSet.facebookPageId
+                            ? "bg-[#E7F3FF]"
+                            : "",
+                        ].join(" ")}
+                        onClick={() => {
+                          onChange({
+                            facebookPageId: page.id,
+                            facebookPageName: page.name,
+                          });
+                          setPageMenuOpen(false);
+                          setPageQuery("");
+                        }}
+                      >
+                        <span className="flex h-8 w-8 items-center justify-center rounded bg-[#E4E6EB] text-[12px] font-bold">
+                          {page.name.slice(0, 1).toUpperCase()}
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block truncate text-[14px] font-semibold text-[#050505]">
+                            {page.name}
+                          </span>
+                          <span className="block truncate text-[11px] text-[#65676B]" dir="ltr">
+                            ID {page.id}
+                          </span>
+                        </span>
+                      </button>
+                    ))
+                  )}
+                </div>
+                <a
+                  href="https://www.facebook.com/business/help"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="block border-t border-[#E4E6EB] px-3 py-2.5 text-[13px] font-semibold text-[#1877F2] hover:underline"
+                >
+                  Can&apos;t find a Page? Learn more
+                </a>
+              </div>
+            ) : null}
+          </div>
         ) : null}
 
-        <MetaField label="Attribution model">
-          <select
-            className={metaSelectClass}
-            value={adSet.attributionModel}
-            onChange={(e) => onChange({ attributionModel: e.target.value })}
+        <div className="relative">
+          <p className="text-[15px] font-bold text-[#050505]">
+            Performance goal
+          </p>
+          <p className="mt-1 text-[13px] text-[#65676B]">
+            How you measure success for your ads.{" "}
+            <a
+              href="https://www.facebook.com/business/help"
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-[#1877F2] hover:underline"
+            >
+              About performance goals
+            </a>
+          </p>
+          <button
+            type="button"
+            className={`${metaInputClass} mt-2 flex items-center justify-between text-left`}
+            onClick={() => setPerfOpen((v) => !v)}
           >
-            <option>7-day click, 1-day view</option>
-            <option>1-day click</option>
-            <option>7-day click</option>
-          </select>
-        </MetaField>
+            <span className="font-semibold">{adSet.performanceGoal}</span>
+            <ChevronDown className="h-4 w-4 text-[#65676B]" />
+          </button>
+          {perfOpen ? (
+            <div className="absolute z-20 mt-1 w-full overflow-hidden rounded-lg border border-[#CED0D4] bg-white shadow-lg">
+              {PERFORMANCE_GOALS.map((goal) => {
+                const selected = adSet.performanceGoal === goal.id;
+                return (
+                  <button
+                    key={goal.id}
+                    type="button"
+                    className={[
+                      "flex w-full gap-3 px-3 py-3 text-left",
+                      selected ? "bg-[#E7F3FF]" : "hover:bg-[#F0F2F5]",
+                    ].join(" ")}
+                    onClick={() => {
+                      onChange({ performanceGoal: goal.id });
+                      setPerfOpen(false);
+                    }}
+                  >
+                    <span
+                      className={[
+                        "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2",
+                        selected ? "border-[#1877F2]" : "border-[#8A8D91]",
+                      ].join(" ")}
+                    >
+                      {selected ? (
+                        <span className="h-2 w-2 rounded-full bg-[#1877F2]" />
+                      ) : null}
+                    </span>
+                    <span>
+                      <span className="block text-[14px] font-semibold text-[#050505]">
+                        {goal.id}
+                      </span>
+                      <span className="mt-0.5 block text-[12px] leading-snug text-[#65676B]">
+                        {goal.description}
+                      </span>
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+        </div>
+
+        <div>
+          <p className="text-[15px] font-bold text-[#050505]">
+            Cost per result goal
+          </p>
+          <p className="mt-1 text-[14px] font-semibold text-[#050505]">
+            {adSet.costPerResultGoal || "None"}
+          </p>
+        </div>
+
+        <div className="flex items-start gap-2 rounded-lg border border-[#A6D9B3] bg-[#E7F6EC] px-3 py-2.5 text-[13px] text-[#050505]">
+          <TrendingUp className="mt-0.5 h-4 w-4 shrink-0 text-[#31A24C]" />
+          <span>
+            You could get more conversions from preferred audiences when age,
+            gender and locations are set clearly.
+          </span>
+        </div>
+
+        {!usesInstantForms ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <MetaField label="Dataset">
+              <select
+                className={metaSelectClass}
+                value={adSet.dataset}
+                onChange={(e) => onChange({ dataset: e.target.value })}
+              >
+                <option>BizUply Pixel</option>
+                <option>No dataset</option>
+              </select>
+            </MetaField>
+            <MetaField label="Conversion event">
+              <select
+                className={metaSelectClass}
+                value={adSet.conversionEvent}
+                onChange={(e) => onChange({ conversionEvent: e.target.value })}
+              >
+                <option value="">Select event</option>
+                <option value="Lead">Lead</option>
+                <option value="CompleteRegistration">Complete registration</option>
+                <option value="Contact">Contact</option>
+              </select>
+            </MetaField>
+          </div>
+        ) : null}
 
         <MetaLinkButton
           onClick={() =>
@@ -115,21 +470,6 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
         >
           {adSet.showMoreConversion ? "Hide options" : "Show more options"}
         </MetaLinkButton>
-
-        {adSet.showMoreConversion ? (
-          <div className="rounded-lg border border-[#E4E6EB] bg-[#F7F8FA] px-3.5 py-3">
-            <p className="text-[15px] font-semibold text-[#050505]">
-              Value rules
-            </p>
-            <p className="mt-1 text-[13px] text-[#65676B]">
-              Adjust bid multipliers for audiences that are more or less
-              valuable to your business.
-            </p>
-            <button type="button" className={`${metaBtnSecondary} mt-3`}>
-              Create value rule set
-            </button>
-          </div>
-        ) : null}
       </MetaSection>
 
       <MetaSection title="Dynamic creative">
@@ -146,38 +486,6 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
           Budget strategy: Controlled at campaign level. This ad set will use
           the shared campaign budget.
         </MetaNotice>
-
-        <MetaToggle
-          checked={adSet.spendingLimitEnabled}
-          onChange={(spendingLimitEnabled) =>
-            onChange({ spendingLimitEnabled })
-          }
-          label="Ad set spending limits"
-          description="Optional min/max daily spend for this ad set."
-        />
-        {adSet.spendingLimitEnabled ? (
-          <div className="grid grid-cols-2 gap-3">
-            <MetaField label="Min spend">
-              <input
-                className={metaInputClass}
-                value={adSet.spendingLimitMin}
-                onChange={(e) =>
-                  onChange({ spendingLimitMin: e.target.value })
-                }
-              />
-            </MetaField>
-            <MetaField label="Max spend">
-              <input
-                className={metaInputClass}
-                value={adSet.spendingLimitMax}
-                onChange={(e) =>
-                  onChange({ spendingLimitMax: e.target.value })
-                }
-              />
-            </MetaField>
-          </div>
-        ) : null}
-
         <div className="grid gap-3 sm:grid-cols-2">
           <MetaField label="Start date">
             <input
@@ -196,7 +504,6 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
             />
           </MetaField>
         </div>
-
         <label className="flex items-center gap-2 text-[14px] font-semibold text-[#050505]">
           <input
             type="checkbox"
@@ -226,119 +533,295 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
             </MetaField>
           </div>
         ) : null}
-
-        <MetaLinkButton
-          onClick={() => onChange({ showMoreBudget: !adSet.showMoreBudget })}
-        >
-          {adSet.showMoreBudget ? "Hide settings" : "Show more settings"}
-        </MetaLinkButton>
       </MetaSection>
 
-      <MetaSection
-        title="Audience"
-        action={<MetaTag>Advantage+ on</MetaTag>}
-      >
-        <MetaField label="Use a saved audience">
-          <select
-            className={metaSelectClass}
-            value={adSet.savedAudienceId}
-            onChange={(e) => onChange({ savedAudienceId: e.target.value })}
-          >
-            <option value="">Don’t use a saved audience</option>
-            <option value="aud_il_25_45">Israel · 25–45</option>
-            <option value="aud_lookalike">Lookalike · Purchasers 1%</option>
-          </select>
-        </MetaField>
+      <MetaSection title="Audience" action={<MetaTag>Advantage+ on</MetaTag>}>
+        <p className="text-[13px] text-[#65676B]">
+          We won&apos;t reach people beyond these settings, even with Advantage+
+          on.
+        </p>
 
-        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-          <p className="text-[15px] font-bold text-[#050505]">Controls</p>
-          <div className="mt-3 space-y-3">
-            <MetaField label="Locations">
-              <input
-                className={metaInputClass}
-                value={adSet.locationsSummary}
-                onChange={(e) => onChange({ locationsSummary: e.target.value })}
-                placeholder="Search locations"
-              />
-            </MetaField>
-            <MetaLinkButton
-              onClick={() =>
-                onChange({ showMoreAudience: !adSet.showMoreAudience })
-              }
-            >
-              {adSet.showMoreAudience
-                ? "Hide more controls"
-                : "Show more controls"}
-            </MetaLinkButton>
-            {adSet.showMoreAudience ? (
-              <MetaField label="Age">
-                <select className={metaSelectClass} defaultValue="18-65">
-                  <option value="18-65">18 – 65+</option>
-                  <option value="25-45">25 – 45</option>
-                  <option value="18-34">18 – 34</option>
+        {/* Locations — Meta-style controls + map */}
+        <div className="overflow-hidden rounded-lg border border-[#CED0D4]">
+          <button
+            type="button"
+            className="flex w-full items-center justify-between bg-[#E7F3FF] px-3 py-2.5 text-left"
+            onClick={() =>
+              onChange({ locationsExpanded: !adSet.locationsExpanded })
+            }
+          >
+            <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
+              Locations
+              <Info className="h-3.5 w-3.5 text-[#65676B]" />
+            </span>
+            {adSet.locationsExpanded ? (
+              <ChevronUp className="h-4 w-4 text-[#65676B]" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-[#65676B]" />
+            )}
+          </button>
+
+          {adSet.locationsExpanded ? (
+            <div className="space-y-3 bg-white px-3 py-3">
+              {adSet.locations.length ? (
+                <div className="flex flex-wrap gap-2">
+                  {adSet.locations.map((loc) => (
+                    <span
+                      key={locationIdentity(loc)}
+                      className="inline-flex items-center gap-1.5 rounded-md border border-[#CED0D4] bg-[#F7F8FA] px-2 py-1 text-[12px] font-semibold text-[#050505]"
+                    >
+                      <MapPin className="h-3 w-3 text-[#1877F2]" />
+                      {loc.include === false ? "Exclude · " : ""}
+                      {loc.name}
+                      <button
+                        type="button"
+                        className="ml-1 text-[#65676B] hover:text-[#FA383E]"
+                        onClick={() => removeLocation(locationIdentity(loc))}
+                      >
+                        ×
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-[13px] text-[#65676B]">
+                  No locations selected yet.
+                </p>
+              )}
+
+              <div className="relative flex gap-2">
+                <select
+                  className={`${metaSelectClass} w-[110px] shrink-0`}
+                  value={includeMode}
+                  onChange={(e) =>
+                    setIncludeMode(e.target.value as "include" | "exclude")
+                  }
+                >
+                  <option value="include">Include</option>
+                  <option value="exclude">Exclude</option>
                 </select>
-              </MetaField>
-            ) : null}
+                <div className="relative min-w-0 flex-1">
+                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
+                  <input
+                    className={`${metaInputClass} pl-9`}
+                    placeholder="Search locations"
+                    value={locQuery}
+                    onChange={(e) => setLocQuery(e.target.value)}
+                  />
+                  {(locSearching || locResults.length > 0) && locQuery.trim() ? (
+                    <div className="absolute z-20 mt-1 max-h-56 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-lg">
+                      {locSearching ? (
+                        <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                          Searching…
+                        </p>
+                      ) : (
+                        locResults.map((item) => (
+                          <button
+                            key={locationIdentity(item)}
+                            type="button"
+                            className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5]"
+                            onClick={() => addLocation(item)}
+                          >
+                            <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
+                            <span>
+                              <span className="block text-[13px] font-semibold text-[#050505]">
+                                {item.name}
+                              </span>
+                              <span className="block text-[11px] text-[#65676B]">
+                                {item.type}
+                                {item.countryName
+                                  ? ` · ${item.countryName}`
+                                  : ""}
+                              </span>
+                            </span>
+                          </button>
+                        ))
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              </div>
+
+              <p className="text-[12px] leading-snug text-[#65676B]">
+                You can type countries, regions, cities or postal codes. Selected
+                places appear on the map below.
+              </p>
+
+              <MetaLocationsMap
+                locations={mapLocations}
+                focusKey={focusKey}
+                onSelectLocation={setFocusKey}
+                hint="Drop pins reflect your selected locations from Meta targeting search."
+              />
+
+              <button
+                type="button"
+                className="text-[13px] font-semibold text-[#1877F2] hover:underline"
+                onClick={() => {
+                  // Quick add Israel if empty
+                  if (!adSet.locations.length) {
+                    addLocation({
+                      key: "IL",
+                      name: "Israel",
+                      type: "country",
+                      countryCode: "IL",
+                      countryName: "Israel",
+                      latitude: 31.5,
+                      longitude: 34.75,
+                    });
+                  }
+                }}
+              >
+                Add locations in bulk
+              </button>
+            </div>
+          ) : null}
+        </div>
+
+        {/* Suggest an audience */}
+        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+          <p className="flex items-center gap-1 text-[15px] font-bold text-[#050505]">
+            Suggest an audience
+            <Info className="h-3.5 w-3.5 text-[#8A8D91]" />
+          </p>
+          <p className="mt-1 text-[13px] text-[#65676B]">
+            We&apos;ll reach people beyond these settings when it&apos;s likely
+            to improve performance.
+          </p>
+          <p className="mt-3 text-[13px] font-semibold text-[#65676B]">
+            Include these custom audiences
+          </p>
+          <p className="mt-0.5 text-[14px] font-semibold text-[#050505]">
+            {adSet.includeCustomAudiences.length
+              ? adSet.includeCustomAudiences.join(", ")
+              : "None"}
+          </p>
+          <MetaLinkButton
+            onClick={() =>
+              onChange({ suggestAudience: !adSet.suggestAudience })
+            }
+          >
+            {adSet.suggestAudience ? "Hide suggestions" : "Show suggestions"}
+          </MetaLinkButton>
+        </div>
+
+        {/* Age */}
+        <div className="overflow-hidden rounded-lg border border-[#CED0D4]">
+          <button
+            type="button"
+            className={[
+              "flex w-full items-center justify-between px-3 py-2.5 text-left",
+              adSet.ageExpanded ? "bg-[#E7F3FF]" : "bg-white",
+            ].join(" ")}
+            onClick={() => onChange({ ageExpanded: !adSet.ageExpanded })}
+          >
+            <span className="flex items-center gap-1.5 text-[15px] font-bold text-[#050505]">
+              Age
+              <Info className="h-3.5 w-3.5 text-[#65676B]" />
+            </span>
+            {adSet.ageExpanded ? (
+              <ChevronUp className="h-4 w-4 text-[#65676B]" />
+            ) : (
+              <ChevronDown className="h-4 w-4 text-[#65676B]" />
+            )}
+          </button>
+          {adSet.ageExpanded ? (
+            <div className="grid grid-cols-2 gap-2 bg-white px-3 py-3">
+              <select
+                className={metaSelectClass}
+                value={adSet.ageMin}
+                onChange={(e) => {
+                  const ageMin = Number(e.target.value);
+                  onChange({
+                    ageMin,
+                    ageMax: Math.max(ageMin, adSet.ageMax),
+                  });
+                }}
+              >
+                {AGE_MIN_OPTIONS.map((age) => (
+                  <option key={age} value={age}>
+                    {age}
+                  </option>
+                ))}
+              </select>
+              <select
+                className={metaSelectClass}
+                value={adSet.ageMax}
+                onChange={(e) => {
+                  const ageMax = Number(e.target.value);
+                  onChange({
+                    ageMax,
+                    ageMin: Math.min(adSet.ageMin, ageMax),
+                  });
+                }}
+              >
+                {AGE_MAX_OPTIONS.map((age) => (
+                  <option key={age} value={age}>
+                    {age >= 65 ? "65+" : age}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <p className="bg-white px-3 py-2 text-[14px] font-semibold text-[#050505]">
+              {adSet.ageMin} – {adSet.ageMax >= 65 ? "65+" : adSet.ageMax}
+            </p>
+          )}
+        </div>
+
+        {/* Gender */}
+        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+          <p className="text-[15px] font-bold text-[#050505]">Gender</p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {(
+              [
+                ["all", "All genders"],
+                ["male", "Men"],
+                ["female", "Women"],
+              ] as const
+            ).map(([value, label]) => (
+              <button
+                key={value}
+                type="button"
+                onClick={() =>
+                  onChange({
+                    gender: value,
+                    // Precise gender requires Advantage+ audience off for Meta API.
+                    ...(value !== "all" ? { advantageAudience: false } : {}),
+                  })
+                }
+                className={[
+                  "rounded-full border px-3 py-1.5 text-[13px] font-semibold",
+                  adSet.gender === value
+                    ? "border-[#1877F2] bg-[#E7F3FF] text-[#1877F2]"
+                    : "border-[#CED0D4] bg-white text-[#050505] hover:bg-[#F0F2F5]",
+                ].join(" ")}
+              >
+                {label}
+              </button>
+            ))}
           </div>
         </div>
 
-        <MetaToggle
-          checked={adSet.suggestAudience}
-          onChange={(suggestAudience) => onChange({ suggestAudience })}
-          label="Suggest an audience"
-          description="Get recommendations based on your Page and Pixel activity."
-        />
+        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
+          <p className="text-[15px] font-bold text-[#050505]">
+            Detailed targeting
+          </p>
+          <p className="mt-1 text-[14px] font-semibold text-[#050505]">
+            All demographics, interests and behaviors
+          </p>
+        </div>
 
-        <MetaField label="Include these custom audiences">
-          <input
-            className={metaInputClass}
-            placeholder="Search existing audiences"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                const value = (e.target as HTMLInputElement).value.trim();
-                if (!value) return;
-                onChange({
-                  includeCustomAudiences: [
-                    ...adSet.includeCustomAudiences,
-                    value,
-                  ],
-                });
-                (e.target as HTMLInputElement).value = "";
-              }
-            }}
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-[#E4E6EB] pt-3">
+          <MetaToggle
+            checked={adSet.furtherLimitReach}
+            onChange={(furtherLimitReach) => onChange({ furtherLimitReach })}
+            label="Further limit the reach of your ads"
           />
-        </MetaField>
-        {adSet.includeCustomAudiences.length ? (
-          <div className="flex flex-wrap gap-2">
-            {adSet.includeCustomAudiences.map((name) => (
-              <span
-                key={name}
-                className="rounded-full bg-[#E7F3FF] px-2.5 py-1 text-[12px] font-semibold text-[#1877F2]"
-              >
-                {name}
-              </span>
-            ))}
-          </div>
-        ) : null}
-
-        <div className="flex flex-wrap gap-2">
-          <button type="button" className={metaBtnSecondary}>
-            Create new
-          </button>
-          <button type="button" className={metaBtnSecondary}>
-            Show suggestions
-          </button>
           <button type="button" className={metaBtnSecondary}>
             Save audience
           </button>
         </div>
-
-        <MetaToggle
-          checked={adSet.furtherLimitReach}
-          onChange={(furtherLimitReach) => onChange({ furtherLimitReach })}
-          label="Further limit the reach of your ads"
-          description="Exclude custom audiences or apply detailed targeting expansions carefully."
-        />
       </MetaSection>
 
       <MetaSection title="Ad transparency">
@@ -361,44 +844,17 @@ export default function AdSetLevelEditor({ adSet, onChange }: Props) {
         />
       </MetaSection>
 
-      <MetaSection
-        title="Placements"
-        action={<MetaTag>Advantage+ on</MetaTag>}
-      >
+      <MetaSection title="Placements" action={<MetaTag>Advantage+ on</MetaTag>}>
         <p className="text-[13px] leading-snug text-[#65676B]">
           Your ads will show in the places most likely to get you results across
           Facebook, Instagram, Audience Network and Messenger.
         </p>
-        <div className="rounded-lg border border-[#E4E6EB] px-3.5 py-3">
-          <p className="text-[15px] font-semibold text-[#050505]">
-            Placement value rules
-          </p>
-          <p className="mt-1 text-[13px] text-[#65676B]">
-            Create rules to adjust bids by placement.
-          </p>
-          <button type="button" className={`${metaBtnSecondary} mt-3`}>
-            Create a rule set
-          </button>
-        </div>
-        <MetaLinkButton
-          onClick={() =>
-            onChange({ showMorePlacements: !adSet.showMorePlacements })
-          }
-        >
-          {adSet.showMorePlacements
-            ? "Hide settings"
-            : "Account controls · Show more settings"}
-        </MetaLinkButton>
-        {adSet.showMorePlacements ? (
-          <MetaToggle
-            checked={adSet.advantagePlacements}
-            onChange={(advantagePlacements) =>
-              onChange({ advantagePlacements })
-            }
-            label="Advantage+ placements"
-            description="Let Meta choose the best placements for your ads."
-          />
-        ) : null}
+        <MetaToggle
+          checked={adSet.advantagePlacements}
+          onChange={(advantagePlacements) => onChange({ advantagePlacements })}
+          label="Advantage+ placements"
+          description="Let Meta choose the best placements for your ads."
+        />
       </MetaSection>
     </div>
   );
