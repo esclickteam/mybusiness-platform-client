@@ -418,7 +418,8 @@
     "expandSidebar": "Expand sidebar",
     "ariaLabel": "Business workspace navigation",
     "whatsapp": "WhatsApp Messages",
-    "metaCampaigns": "Meta Campaign Management"
+    "metaCampaigns": "Meta Campaign Management",
+    "socialSchedule": "Schedule Posts & Stories"
   },
   "layout": {
     "adminImpersonationTitle": "Admin mode — business access",
@@ -5570,6 +5571,104 @@
       "mediaUpload": "Media upload failed",
       "leadForms": "Failed to load lead forms",
       "createLeadForm": "Failed to create lead form"
+    }
+  },
+  "socialSchedule": {
+    "loading": "Loading schedule…",
+    "shell": {
+      "badge": "Organic content",
+      "title": "Schedule posts & stories",
+      "subtitle": "Schedule Facebook and Instagram posts and stories in advance — they publish automatically at the chosen time.",
+      "channel": "Facebook + Instagram"
+    },
+    "nav": {
+      "compose": "New schedule",
+      "queue": "Scheduled queue",
+      "bulk": "Bulk schedule"
+    },
+    "platforms": {
+      "facebook": "Facebook",
+      "instagram": "Instagram"
+    },
+    "contentTypes": {
+      "post": "Post",
+      "story": "Story"
+    },
+    "status": {
+      "draft": "Draft",
+      "scheduled": "Scheduled",
+      "publishing": "Publishing",
+      "published": "Published",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "all": "All"
+    },
+    "filters": {
+      "allPlatforms": "All platforms",
+      "allTypes": "Posts & stories"
+    },
+    "compose": {
+      "title": "Schedule a post or story",
+      "subtitle": "Pick a platform, content type, date and time — the system publishes automatically.",
+      "platform": "Platform",
+      "contentType": "Content type",
+      "caption": "Caption",
+      "captionPlaceholder": "What's on your mind?",
+      "media": "Photo / video",
+      "uploadMedia": "Upload media",
+      "removeMedia": "Remove media",
+      "mediaHint": "Stories and Instagram require media. Facebook posts can be text-only.",
+      "scheduledAt": "Publish date & time",
+      "scheduleCta": "Schedule publish",
+      "publishNowCta": "Publish now",
+      "summaryTitle": "Summary",
+      "page": "Page",
+      "autoPublishHint": "Content is saved in the system and publishes automatically at the selected time. You can cancel anytime from the queue tab.",
+      "incomplete": "Complete platform, content, and schedule time",
+      "notConnectedTitle": "Meta account not connected",
+      "notConnectedHint": "Connect a Facebook Page (and Instagram Business if needed) in Meta campaign settings, then come back to schedule.",
+      "connectCta": "Go to Meta connection",
+      "instagramMissing": "The connected page has no Instagram Business account — link IG to the Page or choose another page."
+    },
+    "queue": {
+      "title": "Scheduled queue",
+      "subtitle": "View, track, and cancel posts and stories scheduled in advance.",
+      "refresh": "Refresh",
+      "empty": "No scheduled items to show",
+      "showing": "{{count}} items · {{scheduled}} waiting to publish",
+      "when": "When",
+      "noCaption": "(no caption)",
+      "cancel": "Cancel schedule",
+      "cancelConfirm": "Cancel this schedule? It will not be published."
+    },
+    "bulk": {
+      "title": "Bulk schedule in advance",
+      "subtitle": "Example: 10 posts, twice a week — they go live automatically.",
+      "count": "Count",
+      "timesPerWeek": "Times per week",
+      "startAt": "Start from",
+      "sharedCaption": "Shared caption (optional)",
+      "captionsList": "Separate captions (one line per post)",
+      "captionsPlaceholder": "Post 1…\nPost 2…\nPost 3…",
+      "captionsHint": "If lines are provided, each line maps to a date in order. Otherwise the shared caption is used.",
+      "scheduleCta": "Schedule {{count}} items",
+      "previewTitle": "Calendar preview",
+      "previewSubtitle": "{{count}} items · {{timesPerWeek}} times per week"
+    },
+    "toasts": {
+      "scheduled": "Content scheduled successfully",
+      "published": "Content published",
+      "cancelled": "Schedule cancelled",
+      "mediaUploaded": "Media uploaded",
+      "bulkScheduled": "Scheduled {{count}} items"
+    },
+    "errors": {
+      "loadStatus": "Failed to load schedule status",
+      "loadQueue": "Failed to load queue",
+      "schedule": "Failed to schedule content",
+      "bulk": "Bulk schedule failed",
+      "cancel": "Failed to cancel schedule",
+      "mediaUpload": "Media upload failed"
     }
   }
 }
