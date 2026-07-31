@@ -1,18 +1,20 @@
 import { createRoot, type Root } from "react-dom/client";
 import React from "react";
 
-import BookingWidget from "./BookingWidget";
+import BookingWidget, {
+  type BookingWidgetVariant,
+} from "./BookingWidget";
 
 const roots = new WeakMap<Element, Root>();
+const HOST_ATTR = "data-bizuply-booking-host";
 
 const BOOKING_MOUNT_SELECTOR = [
   '[data-bizuply-widget="booking"]',
   '[data-bizuply-booking-mount="true"]',
-  '[data-bizuply-block="booking"]:not(section):not([data-section-kind])',
 ].join(", ");
 
 export function buildBookingWidgetMarker(label = "יומן פגישות") {
-  return `<div data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-block="booking" data-bizuply-booking-mount="true" style="width:100%;height:100%;min-height:220px;direction:rtl;box-sizing:border-box"><div style="width:100%;height:100%;padding:20px 12px;text-align:center;border:2px dashed #7dd3fc;border-radius:16px;background:linear-gradient(135deg,#f0f9ff,#eff6ff);font-family:system-ui,sans-serif;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:11px;font-weight:700;color:#0284c7;margin-bottom:4px">תוסף Bizuply</div><div style="font-size:15px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:10px;color:#64748b;margin-top:4px">מתחבר אוטומטית ליומן ותורים</div></div></div>`;
+  return `<div data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-block="booking" data-bizuply-booking-mount="true" data-bizuply-booking-variant="month" style="width:100%;height:100%;min-height:280px;direction:rtl;box-sizing:border-box"></div>`;
 }
 
 export function pageHasBookingWidget(root: ParentNode | null | undefined) {
@@ -31,9 +33,64 @@ function hideBookingDemoChrome(mount: HTMLElement) {
     .querySelectorAll('[data-bizuply-booking-demo="true"]')
     .forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
-      node.style.display = "none";
+      // Keep layout geometry: collapse visually without removing from flow math of siblings.
+      node.style.visibility = "hidden";
+      node.style.pointerEvents = "none";
+      node.setAttribute("aria-hidden", "true");
       node.setAttribute("data-bizuply-booking-demo-hidden", "true");
     });
+}
+
+function ensureHost(mount: HTMLElement) {
+  let host = mount.querySelector<HTMLElement>(`[${HOST_ATTR}="true"]`);
+  if (!host) {
+    // Clear only non-visual-editor children; preserve positioned mount box itself.
+    Array.from(mount.childNodes).forEach((child) => {
+      if (!(child instanceof HTMLElement)) {
+        mount.removeChild(child);
+        return;
+      }
+      if (
+        child.getAttribute("data-visual-inserted") === "true" ||
+        child.getAttribute("data-visual-edit-id")
+      ) {
+        child.style.visibility = "hidden";
+        child.style.pointerEvents = "none";
+        return;
+      }
+      mount.removeChild(child);
+    });
+
+    host = mount.ownerDocument.createElement("div");
+    host.setAttribute(HOST_ATTR, "true");
+    host.setAttribute("data-bizuply-plugin-runtime", "true");
+    host.style.position = "absolute";
+    host.style.inset = "0";
+    host.style.width = "100%";
+    host.style.height = "100%";
+    host.style.boxSizing = "border-box";
+    host.style.overflow = "auto";
+    host.style.zIndex = "5";
+    mount.appendChild(host);
+  }
+
+  // Preserve the mount's saved absolute position/size — only ensure a positioning context.
+  const computed = window.getComputedStyle(mount);
+  if (computed.position === "static") {
+    mount.style.position = "relative";
+  }
+  mount.style.overflow = "hidden";
+
+  return host;
+}
+
+function readVariant(mount: HTMLElement): BookingWidgetVariant {
+  const raw = String(
+    mount.getAttribute("data-bizuply-booking-variant") || "",
+  )
+    .trim()
+    .toLowerCase();
+  return raw === "month" ? "month" : "week";
 }
 
 type MountOptions = {
@@ -53,7 +110,6 @@ export function mountBookingWidgets(
   nodes.forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
 
-    // Avoid mounting on outer section wrappers that only carry a marker.
     if (
       node.matches("section, [data-section-kind]") &&
       !node.getAttribute("data-bizuply-booking-mount") &&
@@ -63,20 +119,14 @@ export function mountBookingWidgets(
     }
 
     hideBookingDemoChrome(node);
+    const host = ensureHost(node);
+    const variant = readVariant(node);
 
-    node.style.width = "100%";
-    node.style.height = "100%";
-    node.style.minHeight = node.style.minHeight || "220px";
-    node.style.overflow = "auto";
-    node.style.zIndex = String(
-      Math.max(Number(node.style.zIndex || 0) || 0, 40),
-    );
-
-    let reactRoot = roots.get(node);
+    let reactRoot = roots.get(host);
     const needsFreshRoot =
       !reactRoot ||
-      !node.isConnected ||
-      node.getAttribute("data-bizuply-booking-mounted") !== "true";
+      !host.isConnected ||
+      host.getAttribute("data-bizuply-booking-mounted") !== "true";
 
     if (needsFreshRoot) {
       if (reactRoot) {
@@ -85,12 +135,11 @@ export function mountBookingWidgets(
         } catch {
           // stale root after DOM reset
         }
-        roots.delete(node);
+        roots.delete(host);
       }
-
-      node.innerHTML = "";
-      reactRoot = createRoot(node);
-      roots.set(node, reactRoot);
+      host.innerHTML = "";
+      reactRoot = createRoot(host);
+      roots.set(host, reactRoot);
     }
 
     reactRoot.render(
@@ -99,16 +148,17 @@ export function mountBookingWidgets(
         pluginEnabled: options.pluginEnabled,
         preview: options.preview,
         editorMode: options.editorMode,
+        variant,
       }),
     );
+    host.setAttribute("data-bizuply-booking-mounted", "true");
     node.setAttribute("data-bizuply-booking-mounted", "true");
-    node.setAttribute("data-bizuply-plugin-runtime", "true");
   });
 }
 
 export function unmountBookingWidgets(root: ParentNode | null | undefined) {
   if (!root) return;
-  root.querySelectorAll(BOOKING_MOUNT_SELECTOR).forEach((node) => {
+  root.querySelectorAll(`[${HOST_ATTR}="true"]`).forEach((node) => {
     const reactRoot = roots.get(node);
     if (reactRoot) {
       reactRoot.unmount();

@@ -884,6 +884,26 @@ export default function VisualAddLayersPanel({
       editor?.addSection?.("after", undefined, item.id);
     }
 
+    // Booking sections auto-bind to the calendar plugin.
+    if (item.category === "booking" && siteId) {
+      void (async () => {
+        try {
+          const { getSitePlugins, updateSitePlugins } = await import(
+            "../../../../api/sitePluginsApi"
+          );
+          const current = await getSitePlugins(siteId);
+          if (!current.enabledPlugins.includes("booking")) {
+            await updateSitePlugins(siteId, [
+              ...current.enabledPlugins,
+              "booking",
+            ]);
+          }
+        } catch {
+          // Section still works; sync hydrates when businessId is available.
+        }
+      })();
+    }
+
     setRecentSectionIds((current) => {
       const next = [item.id, ...current.filter((id) => id !== item.id)].slice(
         0,

@@ -183,17 +183,12 @@ export default function SiteManagementPanelPage() {
         }
       } else if (bookingHint && enabled) {
         setActiveSection("booking");
-        const go = window.confirm(
-          `${bookingHint.message || "להוסיף סקשן יומן פגישות?"}\n\nלחצו אישור לפתיחת העורך — הסקשן יתחבר אוטומטית ליומן.`
+        navigate(
+          `${editorHref}?addPlugin=booking&addSection=${encodeURIComponent(
+            bookingHint.sectionId ||
+              "section-booking-showcase-calendar-split",
+          )}`,
         );
-        if (go) {
-          navigate(
-            `${editorHref}?addPlugin=booking&addSection=${encodeURIComponent(
-              bookingHint.sectionId ||
-                "section-booking-showcase-calendar-split",
-            )}`,
-          );
-        }
       }
     } catch (err: any) {
       const serverError =

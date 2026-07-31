@@ -171,12 +171,23 @@ export default function VisualPluginsAddPanel({
     }
 
     if (action.kind === "section" && action.sectionId) {
+      if (siteId && !enabledPlugins.includes(plugin.key)) {
+        try {
+          const result = await updateSitePlugins(siteId, [
+            ...enabledPlugins,
+            plugin.key,
+          ]);
+          setEnabledPlugins(result.enabledPlugins);
+        } catch {
+          // still insert the section
+        }
+      }
       if (typeof editor?.addLibrarySection === "function") {
         editor.addLibrarySection(action.sectionId);
       } else {
         editor?.addSection?.("after", undefined, action.sectionId);
       }
-      onAdded?.(`«${plugin.name}» נוסף לעמוד`);
+      onAdded?.(`«${plugin.name}» נוסף לעמוד ומחובר ליומן`);
       return;
     }
 
