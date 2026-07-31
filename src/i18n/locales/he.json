@@ -4731,6 +4731,10 @@
       "messagesTitle": "Message log",
       "messagesSubtitle": "Real WhatsApp messages only — recipient, content, template, Meta Message ID, and delivery status.",
       "noMessages": "No messages yet",
+      "clearLogsAndSends": "ניקוי לוגים ושליחות",
+      "clearing": "מנקה…",
+      "confirmClear": "לנקות את כל הקמפיינים ולוגי ההודעות לעסק הזה? נמחקת רק היסטוריה מקומית ב-BizUply. הודעות בוואטסאפ לא יימחקו.",
+      "cleared": "הלוגים והשליחות נוקו",
       "template": "Template",
       "failureReason": "Failure reason",
       "direction": {
@@ -4839,6 +4843,7 @@
       "saveAutomation": "Failed to save automation",
       "deleteAutomation": "Failed to delete automation",
       "loadHistory": "Failed to load history",
+      "clearHistory": "ניקוי הלוגים והשליחות נכשל",
       "loadInbox": "Failed to load inbox",
       "replyFailed": "Failed to send reply",
       "clearConversation": "ניקוי השיחה נכשל",

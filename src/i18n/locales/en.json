@@ -4742,6 +4742,10 @@
       "messagesTitle": "Message log",
       "messagesSubtitle": "Real WhatsApp messages only — recipient, content, template, Meta Message ID, and delivery status.",
       "noMessages": "No messages yet",
+      "clearLogsAndSends": "Clear logs and sends",
+      "clearing": "Clearing…",
+      "confirmClear": "Clear all campaigns and message logs for this business? This only deletes local BizUply history. Messages on WhatsApp are not deleted.",
+      "cleared": "Logs and sends cleared",
       "template": "Template",
       "failureReason": "Failure reason",
       "direction": {
@@ -4850,6 +4854,7 @@
       "saveAutomation": "Failed to save automation",
       "deleteAutomation": "Failed to delete automation",
       "loadHistory": "Failed to load history",
+      "clearHistory": "Failed to clear logs and sends",
       "loadInbox": "Failed to load inbox",
       "replyFailed": "Failed to send reply",
       "clearConversation": "Failed to clear conversation",

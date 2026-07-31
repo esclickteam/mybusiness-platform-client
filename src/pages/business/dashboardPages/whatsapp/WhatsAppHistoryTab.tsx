@@ -2,14 +2,15 @@ import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
-import { Loader2 } from "lucide-react";
+import { Loader2, Trash2 } from "lucide-react";
 import {
+  clearWhatsAppSendHistory,
   listWhatsAppCampaigns,
   listWhatsAppLogs,
   type WhatsAppCampaign,
   type WhatsAppMessageLog,
 } from "../../../../api/whatsappApi";
-import { cardBase } from "../../../../styles/bizuplyUi";
+import { btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 
 type OutletCtx = { businessId: string | null };
 
@@ -31,36 +32,51 @@ export default function WhatsAppHistoryTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
+  const [clearing, setClearing] = useState(false);
   const [logs, setLogs] = useState<WhatsAppMessageLog[]>([]);
   const [campaigns, setCampaigns] = useState<WhatsAppCampaign[]>([]);
 
-  useEffect(() => {
+  const load = async () => {
     if (!businessId) return;
-    let cancelled = false;
+    setLoading(true);
+    try {
+      const [logRows, campaignRows] = await Promise.all([
+        listWhatsAppLogs(businessId, 80),
+        listWhatsAppCampaigns(businessId),
+      ]);
+      setLogs(logRows);
+      setCampaigns(campaignRows);
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error || t("whatsapp.errors.loadHistory")
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    (async () => {
-      try {
-        setLoading(true);
-        const [logRows, campaignRows] = await Promise.all([
-          listWhatsAppLogs(businessId, 80),
-          listWhatsAppCampaigns(businessId),
-        ]);
-        if (cancelled) return;
-        setLogs(logRows);
-        setCampaigns(campaignRows);
-      } catch (error: any) {
-        toast.error(
-          error?.response?.data?.error || t("whatsapp.errors.loadHistory")
-        );
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId]);
 
-    return () => {
-      cancelled = true;
-    };
-  }, [businessId, t]);
+  const handleClearHistory = async () => {
+    if (!businessId) return;
+    if (!window.confirm(t("whatsapp.history.confirmClear"))) return;
+    try {
+      setClearing(true);
+      await clearWhatsAppSendHistory(businessId);
+      setLogs([]);
+      setCampaigns([]);
+      toast.success(t("whatsapp.history.cleared"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error || t("whatsapp.errors.clearHistory")
+      );
+    } finally {
+      setClearing(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -75,6 +91,27 @@ export default function WhatsAppHistoryTab() {
 
   return (
     <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div />
+        <button
+          type="button"
+          className={btnSecondary}
+          disabled={clearing || (campaigns.length === 0 && logs.length === 0)}
+          onClick={() => {
+            void handleClearHistory();
+          }}
+        >
+          {clearing ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Trash2 className="h-4 w-4" />
+          )}
+          {clearing
+            ? t("whatsapp.history.clearing")
+            : t("whatsapp.history.clearLogsAndSends")}
+        </button>
+      </div>
+
       <section className={`${cardBase} p-4 sm:p-5`}>
         <h2 className="text-lg font-black text-slate-900">
           {t("whatsapp.history.campaignsTitle")}

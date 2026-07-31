@@ -749,6 +749,17 @@ export async function listWhatsAppLogs(businessId: string, limit = 50) {
   return (data?.logs || []) as WhatsAppMessageLog[];
 }
 
+export async function clearWhatsAppSendHistory(businessId: string) {
+  const { data } = await API.delete("/whatsapp/history", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    deletedLogs: number;
+    deletedCampaigns: number;
+  };
+}
+
 export async function listWhatsAppConversations(businessId: string) {
   const { data } = await API.get("/whatsapp/conversations", {
     params: { businessId },
