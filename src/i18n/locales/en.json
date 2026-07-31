@@ -5127,6 +5127,164 @@
       "settingsSubtitleNoBudget": "Connect Meta, pick an ad account and Page. Budget is set per campaign.",
       "metricsMetaParity": "Synced from Meta Ads Manager for the same date range."
     },
+    "wizard": {
+      "main": {
+        "campaign": {
+          "title": "Campaign",
+          "subtitle": "Objective, details, budget, and schedule",
+          "short": "Campaign"
+        },
+        "audience": {
+          "title": "Audience",
+          "subtitle": "Locations, demographics, interests, and placements",
+          "short": "Audience"
+        },
+        "ad": {
+          "title": "Ad",
+          "subtitle": "Lead form, media, and copy",
+          "short": "Ad"
+        }
+      },
+      "sub": {
+        "objective": {
+          "title": "Objective",
+          "hint": "Choose the business outcome"
+        },
+        "details": {
+          "title": "Details",
+          "hint": "Name, Page, status, and special categories"
+        },
+        "budget": {
+          "title": "Budget",
+          "hint": "Daily or lifetime budget"
+        },
+        "schedule": {
+          "title": "Schedule",
+          "hint": "Start and end dates"
+        },
+        "reviewCampaign": {
+          "title": "Campaign review",
+          "hint": "Quick checklist before audience"
+        },
+        "audienceMode": {
+          "title": "Audience type",
+          "hint": "Advantage+ or detailed targeting"
+        },
+        "locations": {
+          "title": "Locations",
+          "hint": "Countries, cities, or radius around a city"
+        },
+        "demographics": {
+          "title": "Demographics",
+          "hint": "Age and gender"
+        },
+        "interests": {
+          "title": "Interests",
+          "hint": "Meta interest targeting"
+        },
+        "placements": {
+          "title": "Placements",
+          "hint": "Facebook, Instagram, or Advantage+"
+        },
+        "savedAudiences": {
+          "title": "Saved audiences",
+          "hint": "Save and load audience presets"
+        },
+        "identity": {
+          "title": "Identity",
+          "hint": "Confirm the Facebook Page"
+        },
+        "leadFormSelect": {
+          "title": "Choose form",
+          "hint": "Existing form or create new"
+        },
+        "leadFormSetup": {
+          "title": "Form setup",
+          "hint": "Name and form type (volume / intent)"
+        },
+        "leadFormIntro": {
+          "title": "Form intro",
+          "hint": "Title and greeting"
+        },
+        "leadFormQuestions": {
+          "title": "Questions",
+          "hint": "Contact fields and custom questions"
+        },
+        "leadFormPrivacy": {
+          "title": "Privacy & thanks",
+          "hint": "Privacy URL and thank-you screen"
+        },
+        "creativeMedia": {
+          "title": "Media",
+          "hint": "Format and image or video upload"
+        },
+        "creativeCrop": {
+          "title": "Crop",
+          "hint": "Fit for placement formats"
+        },
+        "creativeText": {
+          "title": "Copy",
+          "hint": "Primary text, headline, description, and CTA"
+        },
+        "previewPublish": {
+          "title": "Preview & publish",
+          "hint": "Final check before creation"
+        }
+      },
+      "health": {
+        "title": "Audience health",
+        "scoreLabel": "Score",
+        "estimatedSize": "Estimated size: ~{{size}}",
+        "broadAdvantage": "Broad audience — Advantage+",
+        "broadGeneral": "Broad audience — add interests for precision",
+        "allGood": "Audience settings look good!",
+        "warnNoLocations": "No locations — select at least one area",
+        "warnNoInterests": "No interests — add some or enable Advantage+",
+        "warnInvalidAge": "Invalid age range (min 13, max ≥ min)",
+        "warnNoPlacements": "No placement selected — pick a platform or Advantage+"
+      },
+      "savedAudiences": {
+        "title": "Saved audiences",
+        "hint": "Save current audience settings and reuse them in future campaigns",
+        "save": "Save current audience",
+        "saveInline": "Save with name",
+        "namePrompt": "Name for saved audience:",
+        "namePlaceholder": "e.g. Leads Tel Aviv 25–45",
+        "confirmSave": "Save",
+        "empty": "No saved audiences yet",
+        "load": "Load",
+        "delete": "Delete",
+        "meta": "{{locations}} locations · {{interests}} interests · {{mode}}",
+        "modeAdvantage": "Advantage+",
+        "modeRegular": "Detailed"
+      },
+      "crop": {
+        "square": "Square 1:1",
+        "squareHint": "Facebook & Instagram feed",
+        "vertical": "Vertical 9:16",
+        "verticalHint": "Stories & Reels",
+        "horizontal": "Horizontal 1.91:1",
+        "horizontalHint": "Wide feed and other placements",
+        "noImage": "Upload an image to preview crops"
+      },
+      "formPreview": {
+        "platformFacebook": "Instant form — Facebook",
+        "platformInstagram": "Instant form — Instagram",
+        "sponsored": "Sponsored",
+        "pagePlaceholder": "Page name",
+        "introTitlePlaceholder": "Form title",
+        "introDescriptionPlaceholder": "Short intro text",
+        "noContactFields": "Select contact fields",
+        "questionPlaceholder": "Question",
+        "privacyIntro": "By submitting you agree to:",
+        "privacyLinkPlaceholder": "Privacy policy",
+        "thankYouTitlePlaceholder": "Thank you!",
+        "thankYouBodyPlaceholder": "We'll be in touch soon",
+        "continue": "Continue",
+        "submit": "Submit",
+        "done": "Done"
+      }
+    },
     "cta": {
       "learnMore": "Learn more",
       "signUp": "Sign up",

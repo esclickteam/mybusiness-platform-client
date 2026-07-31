@@ -28,8 +28,21 @@ export const DEFAULT_ISRAEL_LOCATION: MetaLocationTarget = {
   countryName: "Israel",
 };
 
+/**
+ * Optional `section` renders only one audience block for the wizard sub-steps.
+ * Omit or pass `"all"` for the full panel (default). Header shows for `"all"` and `"mode"` only.
+ */
+export type MetaAudienceSection =
+  | "all"
+  | "mode"
+  | "locations"
+  | "demographics"
+  | "interests";
+
 type Props = {
   businessId?: string | null;
+  /** When set, only the matching block is rendered (wizard sub-step gating). */
+  section?: MetaAudienceSection;
   advantageAudience: boolean;
   onAdvantageAudienceChange: (value: boolean) => void;
   locations: MetaLocationTarget[];
@@ -71,6 +84,7 @@ function looksLikeInterestMatch(item: MetaInterestTarget, q: string) {
 
 export default function MetaAudienceTargetingPanel({
   businessId,
+  section,
   advantageAudience,
   onAdvantageAudienceChange,
   locations,
@@ -87,6 +101,12 @@ export default function MetaAudienceTargetingPanel({
   onGenderChange,
 }: Props) {
   const { t } = useTranslation();
+  const showAll = !section || section === "all";
+  const showHeader = showAll || section === "mode";
+  const showMode = showAll || section === "mode";
+  const showLocations = showAll || section === "locations";
+  const showInterests = showAll || section === "interests";
+  const showDemographics = showAll || section === "demographics";
   const [locationQuery, setLocationQuery] = useState("");
   const [interestQuery, setInterestQuery] = useState("");
   const [locationResults, setLocationResults] = useState<MetaLocationTarget[]>(
@@ -473,20 +493,23 @@ export default function MetaAudienceTargetingPanel({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
-        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-          <Target className="h-5 w-5" />
+      {showHeader ? (
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
+            <Target className="h-5 w-5" />
+          </div>
+          <div>
+            <p className="text-lg font-black text-slate-900">
+              {t("metaCampaigns.form.audienceTitle")}
+            </p>
+            <p className="text-sm font-semibold text-slate-500">
+              {t("metaCampaigns.form.audienceHintMeta")}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="text-lg font-black text-slate-900">
-            {t("metaCampaigns.form.audienceTitle")}
-          </p>
-          <p className="text-sm font-semibold text-slate-500">
-            {t("metaCampaigns.form.audienceHintMeta")}
-          </p>
-        </div>
-      </div>
+      ) : null}
 
+      {showMode ? (
       <div className="grid gap-2 sm:grid-cols-2">
         <button
           type="button"
@@ -524,7 +547,9 @@ export default function MetaAudienceTargetingPanel({
           </span>
         </button>
       </div>
+      ) : null}
 
+      {showLocations ? (
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="mb-3 flex items-start justify-between gap-3">
           <div>
@@ -737,7 +762,9 @@ export default function MetaAudienceTargetingPanel({
           }
         />
       </div>
+      ) : null}
 
+      {showInterests ? (
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
         <div className="mb-1">
           <p className="text-sm font-black text-slate-900">
@@ -876,8 +903,9 @@ export default function MetaAudienceTargetingPanel({
           </div>
         ) : null}
       </div>
+      ) : null}
 
-      {!advantageAudience ? (
+      {showDemographics && !advantageAudience ? (
         <div className="grid grid-cols-2 gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-4">
           <label className="block">
             <span className="mb-1.5 block text-xs font-black text-slate-500">

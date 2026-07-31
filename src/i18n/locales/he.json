@@ -5116,6 +5116,164 @@
       "settingsSubtitleNoBudget": "חברו Meta, בחרו חשבון מודעות ועמוד. התקציב מוגדר לכל קמפיין בנפרד.",
       "metricsMetaParity": "הנתונים מסונכרנים מ-Meta Ads Manager לאותה תקופה."
     },
+    "wizard": {
+      "main": {
+        "campaign": {
+          "title": "קמפיין",
+          "subtitle": "מטרה, פרטים, תקציב ותזמון",
+          "short": "קמפיין"
+        },
+        "audience": {
+          "title": "קהל",
+          "subtitle": "מיקומים, דמוגרפיה, מיקודים ופלייסמנטים",
+          "short": "קהל"
+        },
+        "ad": {
+          "title": "מודעה",
+          "subtitle": "טופס לידים, מדיה וטקסטים",
+          "short": "מודעה"
+        }
+      },
+      "sub": {
+        "objective": {
+          "title": "מטרה",
+          "hint": "בחרו את תוצאת הקמפיין העסקית"
+        },
+        "details": {
+          "title": "פרטים",
+          "hint": "שם, עמוד, סטטוס וקטגוריות מיוחדות"
+        },
+        "budget": {
+          "title": "תקציב",
+          "hint": "תקציב יומי או כולל"
+        },
+        "schedule": {
+          "title": "תזמון",
+          "hint": "תאריכי התחלה וסיום"
+        },
+        "reviewCampaign": {
+          "title": "סיכום קמפיין",
+          "hint": "בדיקה מהירה לפני מעבר לקהל"
+        },
+        "audienceMode": {
+          "title": "סוג קהל",
+          "hint": "Advantage+ או קהל מפורט"
+        },
+        "locations": {
+          "title": "מיקומים",
+          "hint": "מדינות, ערים או רדיוס סביב עיר"
+        },
+        "demographics": {
+          "title": "דמוגרפיה",
+          "hint": "גיל ומגדר"
+        },
+        "interests": {
+          "title": "מיקודים",
+          "hint": "תחומי עניין ממטא"
+        },
+        "placements": {
+          "title": "פלייסמנטים",
+          "hint": "פייסבוק, אינסטגרם או Advantage+"
+        },
+        "savedAudiences": {
+          "title": "קהלים שמורים",
+          "hint": "שמירה וטעינה של הגדרות קהל"
+        },
+        "identity": {
+          "title": "זהות",
+          "hint": "אישור עמוד הפייסבוק"
+        },
+        "leadFormSelect": {
+          "title": "בחירת טופס",
+          "hint": "טופס קיים או יצירה חדשה"
+        },
+        "leadFormSetup": {
+          "title": "הגדרת טופס",
+          "hint": "שם וסוג טופס (נפח / כוונה)"
+        },
+        "leadFormIntro": {
+          "title": "פתיחת טופס",
+          "hint": "כותרת וברכה"
+        },
+        "leadFormQuestions": {
+          "title": "שאלות",
+          "hint": "שדות קשר ושאלות מותאמות"
+        },
+        "leadFormPrivacy": {
+          "title": "פרטיות ותודה",
+          "hint": "קישור מדיניות ומסך תודה"
+        },
+        "creativeMedia": {
+          "title": "מדיה",
+          "hint": "פורמט והעלאת תמונה או סרטון"
+        },
+        "creativeCrop": {
+          "title": "חיתוך",
+          "hint": "התאמה לפורמטי פלייסמנט"
+        },
+        "creativeText": {
+          "title": "טקסטים",
+          "hint": "טקסט ראשי, כותרת, תיאור וקריאה לפעולה"
+        },
+        "previewPublish": {
+          "title": "תצוגה ופרסום",
+          "hint": "בדיקה אחרונה לפני יצירה"
+        }
+      },
+      "health": {
+        "title": "בריאות הקהל",
+        "scoreLabel": "ציון",
+        "estimatedSize": "גודל משוער: ~{{size}}",
+        "broadAdvantage": "קהל רחב — Advantage+",
+        "broadGeneral": "קהל רחב — הוסיפו מיקודים לדיוק",
+        "allGood": "הגדרות הקהל נראות טוב!",
+        "warnNoLocations": "חסרים מיקומים — בחרו לפחות אזור אחד",
+        "warnNoInterests": "אין מיקודים — הוסיפו תחומי עניין או הפעילו Advantage+",
+        "warnInvalidAge": "טווח גילאים לא תקין (מינימום 13, מקסימום ≥ מינימום)",
+        "warnNoPlacements": "לא נבחר פלייסמנט — בחרו פלטפורמה או Advantage+"
+      },
+      "savedAudiences": {
+        "title": "קהלים שמורים",
+        "hint": "שמרו את הגדרות הקהל הנוכחיות וטענו אותן בקמפיינים הבאים",
+        "save": "שמירת קהל נוכחי",
+        "saveInline": "שמירה עם שם",
+        "namePrompt": "שם לקהל השמור:",
+        "namePlaceholder": "לדוגמה: לידים תל אביב 25–45",
+        "confirmSave": "שמירה",
+        "empty": "אין עדיין קהלים שמורים",
+        "load": "טעינה",
+        "delete": "מחיקה",
+        "meta": "{{locations}} מיקומים · {{interests}} מיקודים · {{mode}}",
+        "modeAdvantage": "Advantage+",
+        "modeRegular": "קהל רגיל"
+      },
+      "crop": {
+        "square": "ריבוע 1:1",
+        "squareHint": "פיד פייסבוק ואינסטגרם",
+        "vertical": "אנכי 9:16",
+        "verticalHint": "סטורי ורילס",
+        "horizontal": "אופקי 1.91:1",
+        "horizontalHint": "פיד רחב ומיקומים נוספים",
+        "noImage": "העלו תמונה כדי לראות חיתוך"
+      },
+      "formPreview": {
+        "platformFacebook": "טופס מיידי — פייסבוק",
+        "platformInstagram": "טופס מיידי — אינסטגרם",
+        "sponsored": "ממומן",
+        "pagePlaceholder": "שם העמוד",
+        "introTitlePlaceholder": "כותרת הטופס",
+        "introDescriptionPlaceholder": "טקסט פתיחה קצר",
+        "noContactFields": "בחרו שדות קשר",
+        "questionPlaceholder": "שאלה",
+        "privacyIntro": "בלחיצה על שליחה אתם מסכימים ל:",
+        "privacyLinkPlaceholder": "מדיניות פרטיות",
+        "thankYouTitlePlaceholder": "תודה!",
+        "thankYouBodyPlaceholder": "נחזור אליכם בהקדם",
+        "continue": "המשך",
+        "submit": "שליחה",
+        "done": "סיום"
+      }
+    },
     "cta": {
       "learnMore": "מידע נוסף",
       "signUp": "הרשמה",
