@@ -292,13 +292,11 @@ export default function WhatsAppComposeTab() {
       return;
     }
     if (selectedTemplate.metaStatus !== "APPROVED") {
-      toast.error("התבנית עדיין לא מאושרת על ידי מטא");
+      toast.error(t("whatsapp.compose.templateNotApproved"));
       return;
     }
     if (!mappingReady) {
-      toast.error(
-        "יש להגדיר את משתני התבנית לפני השליחה. עברו לטאב תבניות → הגדרת משתנים."
-      );
+      toast.error(t("whatsapp.compose.mappingRequiredToast"));
       return;
     }
     if (missingVariables.length) {
@@ -441,7 +439,7 @@ export default function WhatsAppComposeTab() {
 
             <label className="grid gap-1.5">
               <span className="text-xs font-black text-slate-600">
-                בחירת תבנית מאושרת ממטא
+                {t("whatsapp.compose.selectTemplate")}
               </span>
               <select
                 className={inputBase}

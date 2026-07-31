@@ -175,7 +175,8 @@ function wrapSelection(
   value: string,
   before: string,
   after: string,
-  onChange: (next: string) => void
+  onChange: (next: string) => void,
+  defaultSelectedText: string
 ) {
   if (!textarea) {
     onChange(`${value}${before}${after}`);
@@ -183,7 +184,7 @@ function wrapSelection(
   }
   const start = textarea.selectionStart ?? value.length;
   const end = textarea.selectionEnd ?? value.length;
-  const selected = value.slice(start, end) || "טקסט";
+  const selected = value.slice(start, end) || defaultSelectedText;
   const next =
     value.slice(0, start) + before + selected + after + value.slice(end);
   onChange(next.slice(0, BODY_MAX));
@@ -283,7 +284,10 @@ export default function WhatsAppTemplatesTab() {
         .join(" · ");
       toast.success(
         statusSummary
-          ? `סונכרנו ${result.synced ?? 0} תבניות מ-Meta. ${statusSummary}`
+          ? t("whatsapp.templates.syncedWithSummary", {
+              count: result.synced ?? 0,
+              summary: statusSummary,
+            })
           : t("whatsapp.templates.synced", {
               count: result.synced ?? 0,
             })
@@ -726,8 +730,13 @@ export default function WhatsAppTemplatesTab() {
                 className={btnSecondary}
                 title="Bold"
                 onClick={() =>
-                  wrapSelection(bodyRef.current, form.body, "*", "*", (next) =>
-                    setForm((prev) => ({ ...prev, body: next }))
+                  wrapSelection(
+                    bodyRef.current,
+                    form.body,
+                    "*",
+                    "*",
+                    (next) => setForm((prev) => ({ ...prev, body: next })),
+                    t("whatsapp.templates.defaultWrapText")
                   )
                 }
               >
@@ -738,8 +747,13 @@ export default function WhatsAppTemplatesTab() {
                 className={btnSecondary}
                 title="Italic"
                 onClick={() =>
-                  wrapSelection(bodyRef.current, form.body, "_", "_", (next) =>
-                    setForm((prev) => ({ ...prev, body: next }))
+                  wrapSelection(
+                    bodyRef.current,
+                    form.body,
+                    "_",
+                    "_",
+                    (next) => setForm((prev) => ({ ...prev, body: next })),
+                    t("whatsapp.templates.defaultWrapText")
                   )
                 }
               >
@@ -750,8 +764,13 @@ export default function WhatsAppTemplatesTab() {
                 className={btnSecondary}
                 title="Strikethrough"
                 onClick={() =>
-                  wrapSelection(bodyRef.current, form.body, "~", "~", (next) =>
-                    setForm((prev) => ({ ...prev, body: next }))
+                  wrapSelection(
+                    bodyRef.current,
+                    form.body,
+                    "~",
+                    "~",
+                    (next) => setForm((prev) => ({ ...prev, body: next })),
+                    t("whatsapp.templates.defaultWrapText")
                   )
                 }
               >
@@ -767,7 +786,8 @@ export default function WhatsAppTemplatesTab() {
                     form.body,
                     "```",
                     "```",
-                    (next) => setForm((prev) => ({ ...prev, body: next }))
+                    (next) => setForm((prev) => ({ ...prev, body: next })),
+                    t("whatsapp.templates.defaultWrapText")
                   )
                 }
               >

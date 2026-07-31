@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Loader2, Save, Eye, ArrowRight } from "lucide-react";
 import {
   getWhatsAppTemplateVariableMappings,
@@ -48,6 +49,7 @@ export default function WhatsAppVariableMappingScreen({
   onClose,
   onSaved,
 }: Props) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -85,7 +87,7 @@ export default function WhatsAppVariableMappingScreen({
             (err as { response?: { data?: { error?: string } } })?.response
               ?.data?.error ||
               (err as Error)?.message ||
-              "טעינת הגדרת המשתנים נכשלה"
+              t("whatsapp.mapping.loadFailed")
           );
         }
       } finally {
@@ -95,14 +97,26 @@ export default function WhatsAppVariableMappingScreen({
     return () => {
       cancelled = true;
     };
-  }, [businessId, template]);
+  }, [businessId, template, t]);
 
   const statusLabel = useMemo(() => {
-    if (mappingStatus === "ready") return "מוכנה לשליחה";
-    if (mappingStatus === "partial") return "הגדרת המשתנים לא הושלמה";
-    if (mappingStatus === "unmapped") return "המשתנים עדיין לא הוגדרו";
+    if (mappingStatus === "ready") {
+      return t("whatsapp.templates.mappingStatus.ready");
+    }
+    if (mappingStatus === "partial") {
+      return t("whatsapp.templates.mappingStatus.partial");
+    }
+    if (mappingStatus === "unmapped") {
+      return t("whatsapp.templates.mappingStatus.unmapped");
+    }
     return mappingStatus;
-  }, [mappingStatus]);
+  }, [mappingStatus, t]);
+
+  const componentLabel = (component: string) => {
+    if (component === "header") return t("whatsapp.mapping.componentHeader");
+    if (component === "button") return t("whatsapp.mapping.componentButton");
+    return t("whatsapp.mapping.componentBody");
+  };
 
   const updateRow = (index: number, patch: Partial<WhatsAppVariableMapping>) => {
     setMappings((prev) =>
@@ -140,7 +154,7 @@ export default function WhatsAppVariableMappingScreen({
         (err as { response?: { data?: { error?: string } } })?.response?.data
           ?.error ||
           (err as Error)?.message ||
-          "שמירת המיפוי נכשלה"
+          t("whatsapp.mapping.saveFailed")
       );
     } finally {
       setSaving(false);
@@ -154,7 +168,11 @@ export default function WhatsAppVariableMappingScreen({
       const data = await previewWhatsAppTemplateMappings(
         businessId,
         template._id,
-        { mappings, manualValues, name: "לקוח לדוגמה" }
+        {
+          mappings,
+          manualValues,
+          name: t("whatsapp.mapping.sampleClientName"),
+        }
       );
       setPreviewBody(data.previewBody || "");
       setPreviewHeader(data.previewHeader || "");
@@ -165,7 +183,7 @@ export default function WhatsAppVariableMappingScreen({
         (err as { response?: { data?: { error?: string } } })?.response?.data
           ?.error ||
           (err as Error)?.message ||
-          "בדיקת המיפוי נכשלה"
+          t("whatsapp.mapping.previewFailed")
       );
     } finally {
       setPreviewing(false);
@@ -174,17 +192,17 @@ export default function WhatsAppVariableMappingScreen({
 
   if (loading) {
     return (
-      <section className={`${cardBase} flex items-center gap-2 p-6`} dir="rtl">
+      <section className={`${cardBase} flex items-center gap-2 p-6`}>
         <Loader2 className="h-4 w-4 animate-spin text-emerald-600" />
         <span className="text-sm font-semibold text-slate-600">
-          טוען הגדרת משתנים…
+          {t("whatsapp.mapping.loading")}
         </span>
       </section>
     );
   }
 
   return (
-    <section className={`${cardBase} space-y-4 p-4 sm:p-5`} dir="rtl">
+    <section className={`${cardBase} space-y-4 p-4 sm:p-5`}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <button
@@ -193,13 +211,16 @@ export default function WhatsAppVariableMappingScreen({
             onClick={onClose}
           >
             <ArrowRight className="h-3.5 w-3.5" />
-            חזרה לתבניות
+            {t("whatsapp.mapping.backToTemplates")}
           </button>
           <h2 className="text-lg font-black text-slate-900">
-            הגדרת משתנים — {template.name}
+            {t("whatsapp.mapping.title", { name: template.name })}
           </h2>
           <p className="mt-1 text-sm font-semibold text-slate-500">
-            שפה: {template.language} · סטטוס: {statusLabel}
+            {t("whatsapp.mapping.metaLine", {
+              language: template.language,
+              status: statusLabel,
+            })}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -214,7 +235,7 @@ export default function WhatsAppVariableMappingScreen({
             ) : (
               <Eye className="h-3.5 w-3.5" />
             )}
-            בדיקת מיפוי
+            {t("whatsapp.mapping.previewMapping")}
           </button>
           <button
             type="button"
@@ -227,7 +248,7 @@ export default function WhatsAppVariableMappingScreen({
             ) : (
               <Save className="h-3.5 w-3.5" />
             )}
-            שמירת מיפוי
+            {t("whatsapp.mapping.saveMapping")}
           </button>
         </div>
       </div>
@@ -255,30 +276,26 @@ export default function WhatsAppVariableMappingScreen({
                   {`{{${row.variable}}}`}
                 </span>
                 <span className="text-xs font-bold text-slate-500">
-                  רכיב:{" "}
-                  {row.component === "header"
-                    ? "כותרת"
-                    : row.component === "button"
-                      ? "כפתור"
-                      : "גוף ההודעה"}
+                  {t("whatsapp.mapping.componentLabel")}{" "}
+                  {componentLabel(row.component || "body")}
                 </span>
               </div>
 
               <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                 <label className="block text-xs font-bold text-slate-600">
-                  שם ידידותי
+                  {t("whatsapp.mapping.friendlyName")}
                   <input
                     className={`${inputBase} mt-1`}
                     value={row.friendlyName || ""}
                     onChange={(e) =>
                       updateRow(index, { friendlyName: e.target.value })
                     }
-                    placeholder="לדוגמה: תאריך הפגישה"
+                    placeholder={t("whatsapp.mapping.friendlyNamePlaceholder")}
                   />
                 </label>
 
                 <label className="block text-xs font-bold text-slate-600">
-                  ערך לדוגמה
+                  {t("whatsapp.mapping.exampleValue")}
                   <input
                     className={`${inputBase} mt-1`}
                     value={row.exampleValue || ""}
@@ -289,7 +306,7 @@ export default function WhatsAppVariableMappingScreen({
                 </label>
 
                 <label className="block text-xs font-bold text-slate-600">
-                  מקור הנתון
+                  {t("whatsapp.mapping.dataSource")}
                   <select
                     className={`${inputBase} mt-1`}
                     value={row.source || ""}
@@ -301,7 +318,7 @@ export default function WhatsAppVariableMappingScreen({
                       })
                     }
                   >
-                    <option value="">בחרו מקור</option>
+                    <option value="">{t("whatsapp.mapping.selectSource")}</option>
                     {(catalog?.sources || []).map((src) => (
                       <option key={src.id} value={src.id}>
                         {src.label}
@@ -314,7 +331,7 @@ export default function WhatsAppVariableMappingScreen({
                 row.source !== "manual" &&
                 row.source !== "constant" ? (
                   <label className="block text-xs font-bold text-slate-600">
-                    שדה הנתון
+                    {t("whatsapp.mapping.dataField")}
                     <select
                       className={`${inputBase} mt-1`}
                       value={row.field || ""}
@@ -322,7 +339,7 @@ export default function WhatsAppVariableMappingScreen({
                         updateRow(index, { field: e.target.value })
                       }
                     >
-                      <option value="">בחרו שדה</option>
+                      <option value="">{t("whatsapp.mapping.selectField")}</option>
                       {fields.map((field) => (
                         <option key={field.id} value={field.id}>
                           {field.label}
@@ -334,7 +351,7 @@ export default function WhatsAppVariableMappingScreen({
 
                 {row.source === "constant" ? (
                   <label className="block text-xs font-bold text-slate-600">
-                    ערך קבוע
+                    {t("whatsapp.mapping.constantValue")}
                     <input
                       className={`${inputBase} mt-1`}
                       value={row.constantValue || ""}
@@ -347,7 +364,7 @@ export default function WhatsAppVariableMappingScreen({
 
                 {row.source === "manual" ? (
                   <label className="block text-xs font-bold text-slate-600">
-                    ערך ידני לבדיקה
+                    {t("whatsapp.mapping.manualTestValue")}
                     <input
                       className={`${inputBase} mt-1`}
                       value={manualValues[row.variable] || ""}
@@ -357,14 +374,14 @@ export default function WhatsAppVariableMappingScreen({
                           [row.variable]: e.target.value,
                         }))
                       }
-                      placeholder="יוזן בזמן השליחה"
+                      placeholder={t("whatsapp.mapping.manualTestPlaceholder")}
                     />
                   </label>
                 ) : null}
 
                 {formats.length ? (
                   <label className="block text-xs font-bold text-slate-600">
-                    פורמט
+                    {t("whatsapp.mapping.format")}
                     <select
                       className={`${inputBase} mt-1`}
                       value={row.format || ""}
@@ -372,7 +389,7 @@ export default function WhatsAppVariableMappingScreen({
                         updateRow(index, { format: e.target.value })
                       }
                     >
-                      <option value="">ללא</option>
+                      <option value="">{t("whatsapp.mapping.formatNone")}</option>
                       {formats.map((fmt) => (
                         <option key={fmt.id} value={fmt.id}>
                           {fmt.label}
@@ -383,7 +400,7 @@ export default function WhatsAppVariableMappingScreen({
                 ) : null}
 
                 <label className="block text-xs font-bold text-slate-600">
-                  ערך חלופי
+                  {t("whatsapp.mapping.fallbackValue")}
                   <input
                     className={`${inputBase} mt-1`}
                     value={row.fallbackValue || ""}
@@ -394,7 +411,7 @@ export default function WhatsAppVariableMappingScreen({
                 </label>
 
                 <label className="block text-xs font-bold text-slate-600">
-                  קידומת
+                  {t("whatsapp.mapping.prefix")}
                   <input
                     className={`${inputBase} mt-1`}
                     value={row.prefix || ""}
@@ -405,7 +422,7 @@ export default function WhatsAppVariableMappingScreen({
                 </label>
 
                 <label className="block text-xs font-bold text-slate-600">
-                  סיומת
+                  {t("whatsapp.mapping.suffix")}
                   <input
                     className={`${inputBase} mt-1`}
                     value={row.suffix || ""}
@@ -423,7 +440,7 @@ export default function WhatsAppVariableMappingScreen({
                       updateRow(index, { required: e.target.checked })
                     }
                   />
-                  שדה חובה
+                  {t("whatsapp.mapping.requiredField")}
                 </label>
               </div>
             </article>
@@ -433,7 +450,9 @@ export default function WhatsAppVariableMappingScreen({
 
       {(previewBody || previewHeader || missing.length > 0) && (
         <div className="rounded-xl border border-emerald-100 bg-emerald-50/40 p-4">
-          <h3 className="text-sm font-black text-slate-900">תצוגה מקדימה</h3>
+          <h3 className="text-sm font-black text-slate-900">
+            {t("whatsapp.mapping.previewTitle")}
+          </h3>
           {previewHeader ? (
             <p className="mt-2 text-sm font-bold text-slate-800">
               {previewHeader}
@@ -444,12 +463,13 @@ export default function WhatsAppVariableMappingScreen({
           </p>
           {missing.length ? (
             <p className="mt-2 text-xs font-bold text-amber-700">
-              חסרים ערכים:{" "}
-              {missing.map((v) => `{{${v}}}`).join(", ")}
+              {t("whatsapp.mapping.missingValues", {
+                vars: missing.map((v) => `{{${v}}}`).join(", "),
+              })}
             </p>
           ) : (
             <p className="mt-2 text-xs font-bold text-emerald-700">
-              כל המשתנים הנדרשים מולאו בבדיקה זו
+              {t("whatsapp.mapping.allValuesFilled")}
             </p>
           )}
         </div>
