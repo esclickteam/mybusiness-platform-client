@@ -164,8 +164,8 @@ export function shouldLockLibraryPalette(section?: {
   category?: string;
 } | null) {
   if (!section) return false;
-  if (section.lockPalette) return true;
-  return String(section.category || "").toLowerCase() === "booking";
+  // Booking sections keep editable colors; only honor an explicit lockPalette flag.
+  return Boolean(section.lockPalette);
 }
 
 export function themeLibraryNodeStyle(
