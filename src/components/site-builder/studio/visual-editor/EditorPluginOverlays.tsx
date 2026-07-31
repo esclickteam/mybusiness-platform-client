@@ -5,11 +5,14 @@ import { getMySite } from "../../../../api/mySitesApi";
 import { saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWheelWidget";
 import SmartSearchWidget from "../../../site-plugins/smart-search/SmartSearchWidget";
+import SmartBotWidget from "../../../site-plugins/smart-bot/SmartBotWidget";
 import AccessibilityWidget from "../../../site-plugins/accessibility/AccessibilityWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
+import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import type { AccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
+import { mergeSmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
 
 type EditorPluginOverlaysProps = {
@@ -26,6 +29,8 @@ export default function EditorPluginOverlays({
   const [wheelEnabled, setWheelEnabled] = useState(false);
   const [searchSettings, setSearchSettings] = useState<SmartSearchSettings | null>(null);
   const [searchEnabled, setSearchEnabled] = useState(false);
+  const [botSettings, setBotSettings] = useState<SmartBotSettings | null>(null);
+  const [botEnabled, setBotEnabled] = useState(false);
   const [a11ySettings, setA11ySettings] = useState<AccessibilitySettings | null>(null);
   const [a11yEnabled, setA11yEnabled] = useState(false);
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
@@ -43,12 +48,14 @@ export default function EditorPluginOverlays({
         ]);
         const wheelOn = plugins.enabledPlugins.includes("benefits-wheel");
         const searchOn = plugins.enabledPlugins.includes("smart-search");
+        const botOn = plugins.enabledPlugins.includes("smart-bot");
         const a11yOn = plugins.enabledPlugins.includes("accessibility");
 
         if (cancelled) return;
 
         setWheelEnabled(wheelOn);
         setSearchEnabled(searchOn);
+        setBotEnabled(botOn);
         setA11yEnabled(a11yOn);
         setPages(Array.isArray(site?.pages) ? site.pages : []);
 
@@ -72,6 +79,15 @@ export default function EditorPluginOverlays({
           }
         }
 
+        if (!botOn) {
+          setBotSettings(null);
+        } else {
+          const settings = await getSitePluginSettings(siteId, "smart-bot");
+          if (!cancelled) {
+            setBotSettings(mergeSmartBotSettings(settings as SmartBotSettings));
+          }
+        }
+
         if (!a11yOn) {
           setA11ySettings(null);
         } else {
@@ -86,6 +102,8 @@ export default function EditorPluginOverlays({
           setWheelSettings(null);
           setSearchEnabled(false);
           setSearchSettings(null);
+          setBotEnabled(false);
+          setBotSettings(null);
           setA11yEnabled(false);
           setA11ySettings(null);
         }
@@ -125,6 +143,20 @@ export default function EditorPluginOverlays({
     [siteId, searchSettings]
   );
 
+  const handleBotPositionChange = useCallback(
+    async (pos: { x: number; y: number }) => {
+      if (!siteId || !botSettings) return;
+      const next = { ...botSettings, triggerPosition: pos };
+      setBotSettings(next);
+      try {
+        await saveSitePluginSettings(siteId, "smart-bot", next);
+      } catch {
+        // local preview still updates
+      }
+    },
+    [siteId, botSettings]
+  );
+
   const handleDeactivate = useCallback(async () => {
     if (!siteId) return;
     try {
@@ -159,6 +191,14 @@ export default function EditorPluginOverlays({
           pages={pages}
           mode="editor"
           onPositionChange={handleSearchPositionChange}
+        />
+      ) : null}
+
+      {botEnabled && botSettings && botSettings.isActive !== false ? (
+        <SmartBotWidget
+          settings={botSettings}
+          mode="editor"
+          onPositionChange={handleBotPositionChange}
         />
       ) : null}
 

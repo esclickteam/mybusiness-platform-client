@@ -39,7 +39,7 @@ export type SitePanelSection =
   | "countdown"
   | "benefits-wheel"
   | "smart-search"
-  | "sales-agent"
+  | "smart-bot"
   | "service-finder"
   | "accessibility"
   | (string & {});
@@ -86,7 +86,8 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   countdown: "countdown",
   "benefits-wheel": "benefits-wheel",
   "smart-search": "smart-search",
-  "sales-agent": "sales-agent",
+  "smart-bot": "smart-bot",
+  "sales-agent": "smart-bot",
   "service-finder": "service-finder",
   accessibility: "accessibility",
 };
@@ -105,7 +106,7 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   countdown: "#A855F7",
   "benefits-wheel": "#D946EF",
   "smart-search": "#2563EB",
-  "sales-agent": "#4F46E5",
+  "smart-bot": "#0F766E",
   "service-finder": "#2563EB",
   accessibility: "#7C3AED",
 };
@@ -187,10 +188,10 @@ export const SECTION_META: Record<
     description: "כפתור חיפוש עם שורת חיפוש באתר",
     pluginKey: "smart-search",
   },
-  "sales-agent": {
-    label: "סוכן מכירות",
-    description: "בוט AI באתר",
-    pluginKey: "sales-agent",
+  "smart-bot": {
+    label: "בוט חכם",
+    description: "עצי שיחה, יצירת קשר וכפתור עזרה",
+    pluginKey: "smart-bot",
   },
   "service-finder": {
     label: "מצא שירות",
@@ -241,7 +242,7 @@ export function getPluginIcon(key: string) {
       return CircleDot;
     case "smart-search":
       return Search;
-    case "sales-agent":
+    case "smart-bot":
       return Bot;
     case "service-finder":
       return Compass;
