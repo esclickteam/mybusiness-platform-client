@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Check, Loader2, MessageCircle, X } from "lucide-react";
+import { Check, Loader2, MessageCircle, Settings, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createMetaLeadForm } from "../../../../../api/metaCampaignsApi";
@@ -13,6 +13,11 @@ import {
   validateLeadFormBuilder,
   type LeadFormCustomQuestionDraft,
 } from "../metaCampaignUtils";
+import AdsManagerFormSettingsModal, {
+  type FormSharing,
+  type FormTrackingParam,
+} from "./AdsManagerFormSettingsModal";
+import { isRtlLeadFormLocale } from "./metaLeadFormLocales";
 import { metaBtnPrimary, metaBtnSecondary, metaInputClass } from "./metaAdsUi";
 
 type AdditionalAction = "website" | "file" | "call" | "whatsapp";
@@ -109,6 +114,15 @@ export default function AdsManagerCreateLeadFormModal({
   const [previewPlatform, setPreviewPlatform] = useState<
     "facebook" | "instagram"
   >("facebook");
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [locale, setLocale] = useState("he_IL");
+  const [sharing, setSharing] = useState<FormSharing>("restricted");
+  const [contactFieldKeys, setContactFieldKeys] = useState<
+    Record<string, string>
+  >({});
+  const [trackingParameters, setTrackingParameters] = useState<
+    FormTrackingParam[]
+  >([]);
 
   useEffect(() => {
     if (!open || !businessId) return;
@@ -221,14 +235,24 @@ export default function AdsManagerCreateLeadFormModal({
       const questions = buildMetaLeadFormQuestionsPayload({
         contactTypes,
         customQuestions,
+        contactFieldKeys,
       });
       const result = await createMetaLeadForm(businessId, {
         pageId,
         name: name.trim(),
+        locale,
+        sharing,
         questions,
+        trackingParameters: trackingParameters.map((row) => ({
+          key: row.key.trim(),
+          value: row.value.trim(),
+        })),
         introTitle: introTitle.trim(),
         introDescription: introDescription.trim() || undefined,
         privacyPolicyUrl: privacyUrl.trim() || undefined,
+        privacyPolicyLinkText: isRtlLeadFormLocale(locale)
+          ? "מדיניות פרטיות"
+          : "Privacy Policy",
         thankYouTitle: thankYouTitle.trim(),
         thankYouBody: thankYouBody.trim() || undefined,
         thankYouButtonText: thankYouButton.trim() || undefined,
@@ -261,14 +285,24 @@ export default function AdsManagerCreateLeadFormModal({
       >
         <header className="flex items-center justify-between border-b border-[#CED0D4] px-4 py-3">
           <h2 className="text-[17px] font-bold text-[#050505]">Create form</h2>
-          <button
-            type="button"
-            className="rounded-md p-1.5 text-[#65676B] hover:bg-[#F0F2F5]"
-            onClick={onClose}
-            aria-label="Close"
-          >
-            <X className="h-5 w-5" />
-          </button>
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+              onClick={() => setSettingsOpen(true)}
+            >
+              <Settings className="h-4 w-4 text-[#65676B]" />
+              Settings
+            </button>
+            <button
+              type="button"
+              className="rounded-md p-1.5 text-[#65676B] hover:bg-[#F0F2F5]"
+              onClick={onClose}
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
         </header>
 
         <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[200px_minmax(0,1fr)_300px]">
@@ -615,16 +649,44 @@ export default function AdsManagerCreateLeadFormModal({
               introDescription={introDescription}
               contactFields={contactTypes}
               customQuestions={customQuestions}
-              privacyLinkText={privacyUrl ? "Privacy policy" : "Privacy"}
+              privacyLinkText={
+                privacyUrl
+                  ? isRtlLeadFormLocale(locale)
+                    ? "מדיניות פרטיות"
+                    : "Privacy policy"
+                  : isRtlLeadFormLocale(locale)
+                    ? "פרטיות"
+                    : "Privacy"
+              }
               thankYouTitle={thankYouTitle}
               thankYouBody={thankYouBody}
               thankYouButton={thankYouButton}
               screen={previewScreenForStep}
               platform={previewPlatform}
+              locale={locale}
               onPlatformChange={setPreviewPlatform}
             />
           </aside>
         </div>
+
+        <AdsManagerFormSettingsModal
+          open={settingsOpen}
+          locale={locale}
+          sharing={sharing}
+          contactTypes={contactTypes}
+          contactFieldKeys={contactFieldKeys}
+          customQuestions={customQuestions}
+          trackingParameters={trackingParameters}
+          onClose={() => setSettingsOpen(false)}
+          onDone={(next) => {
+            setLocale(next.locale);
+            setSharing(next.sharing);
+            setContactFieldKeys(next.contactFieldKeys);
+            setCustomQuestions(next.customQuestions);
+            setTrackingParameters(next.trackingParameters);
+            setSettingsOpen(false);
+          }}
+        />
 
         <footer className="flex items-center justify-between gap-3 border-t border-[#CED0D4] px-4 py-3">
           <button type="button" className={metaBtnSecondary} onClick={onClose}>

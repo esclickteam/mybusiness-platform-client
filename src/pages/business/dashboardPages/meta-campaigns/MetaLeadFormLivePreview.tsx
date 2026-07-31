@@ -1,12 +1,20 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Facebook, Instagram } from "lucide-react";
-import type { LeadFormCustomQuestionDraft } from "./metaCampaignUtils";
+import {
+  LEAD_FORM_CONTACT_FIELDS,
+  type LeadFormCustomQuestionDraft,
+} from "./metaCampaignUtils";
+import {
+  isRtlLeadFormLocale,
+  leadFormContactLabel,
+} from "./ads-manager/metaLeadFormLocales";
 
 type Props = {
   pageName: string;
   introTitle: string;
   introDescription: string;
+  /** Contact field types (FULL_NAME, PHONE, …) or pre-resolved labels */
   contactFields: string[];
   customQuestions: LeadFormCustomQuestionDraft[];
   privacyLinkText: string;
@@ -15,6 +23,8 @@ type Props = {
   thankYouButton: string;
   screen: "intro" | "questions" | "privacy" | "thanks";
   platform: "facebook" | "instagram";
+  /** Meta form locale — drives RTL and contact field labels */
+  locale?: string;
   onScreenChange?: (screen: "intro" | "questions" | "privacy" | "thanks") => void;
   onPlatformChange?: (platform: "facebook" | "instagram") => void;
 };
@@ -38,6 +48,7 @@ export default function MetaLeadFormLivePreview({
   thankYouButton,
   screen,
   platform,
+  locale = "he_IL",
   onScreenChange,
   onPlatformChange,
 }: Props) {
@@ -45,6 +56,24 @@ export default function MetaLeadFormLivePreview({
   const pageInitial = (pageName || "P").trim().slice(0, 1).toUpperCase() || "P";
   const isInstagram = platform === "instagram";
   const screenIndex = Math.max(0, SCREENS.indexOf(screen));
+  const previewDir = isRtlLeadFormLocale(locale) ? "rtl" : "ltr";
+
+  const resolvedContactLabels = useMemo(() => {
+    return (contactFields || []).map((field) => {
+      const upper = String(field || "").trim().toUpperCase();
+      const known = LEAD_FORM_CONTACT_FIELDS.some((item) => item.type === upper);
+      if (!known) return field;
+      return leadFormContactLabel(
+        upper,
+        locale,
+        LEAD_FORM_CONTACT_FIELDS as Array<{
+          type: string;
+          labelHe: string;
+          labelEn: string;
+        }>
+      );
+    });
+  }, [contactFields, locale]);
 
   const ctaLabel = useMemo(() => {
     if (screen === "thanks") {
@@ -57,7 +86,7 @@ export default function MetaLeadFormLivePreview({
   }, [screen, t, thankYouButton]);
 
   return (
-    <div className="mx-auto w-full max-w-[320px]" dir="rtl">
+    <div className="mx-auto w-full max-w-[320px]" dir={previewDir}>
       <div className="mb-3 flex gap-2">
         <button
           type="button"
@@ -142,8 +171,8 @@ export default function MetaLeadFormLivePreview({
                 <p className="text-sm font-black text-slate-900">
                   {t("metaCampaigns.wizard.formPreview.contactTitle")}
                 </p>
-                {(contactFields.length
-                  ? contactFields
+                {(resolvedContactLabels.length
+                  ? resolvedContactLabels
                   : [t("metaCampaigns.wizard.formPreview.noContactFields")]
                 ).map((label, index) => (
                   <label key={`contact-${index}`} className="block">

@@ -211,7 +211,23 @@ export type LeadFormCustomQuestionDraft = {
   label: string;
   answerType: LeadFormAnswerType;
   options: string[];
+  /** Export / CRM field key (Meta Instant Form `key`) */
+  key?: string;
+  /** Per-option export keys for multiple choice */
+  optionKeys?: string[];
 };
+
+/** Meta-style export key: spaces → underscores, keep Hebrew letters. */
+export function suggestLeadFieldKey(label: string, fallback: string) {
+  const base = String(label || "")
+    .trim()
+    .replace(/\s+/g, "_")
+    .replace(/[^\p{L}\p{N}_?\-]+/gu, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 100);
+  return base || fallback;
+}
 
 export function createLeadFormCustomQuestion(
   partial?: Partial<LeadFormCustomQuestionDraft>
@@ -223,6 +239,8 @@ export function createLeadFormCustomQuestion(
     label: partial?.label || "",
     answerType: partial?.answerType || "multiple_choice",
     options: partial?.options?.length ? [...partial.options] : ["", ""],
+    key: partial?.key,
+    optionKeys: partial?.optionKeys ? [...partial.optionKeys] : undefined,
   };
 }
 
@@ -235,32 +253,46 @@ export function defaultSelectedLeadContactTypes() {
 export function buildMetaLeadFormQuestionsPayload(input: {
   contactTypes: string[];
   customQuestions: LeadFormCustomQuestionDraft[];
+  contactFieldKeys?: Record<string, string>;
 }) {
   const contactQuestions = (input.contactTypes || [])
     .map((type) => String(type || "").trim().toUpperCase())
     .filter(Boolean)
-    .map((type) => ({ type }));
+    .map((type) => {
+      const key = String(input.contactFieldKeys?.[type] || "").trim();
+      return key ? { type, key } : { type };
+    });
 
   const customQuestions = (input.customQuestions || [])
     .map((question, index) => {
       const label = String(question.label || "").trim();
       if (!label) return null;
+      const fallbackKey = `question_${index + 1}`;
       const payload: {
         type: "CUSTOM";
         key: string;
         label: string;
         answerType: LeadFormAnswerType;
-        options?: string[];
+        options?: Array<string | { key: string; value: string }>;
       } = {
         type: "CUSTOM",
-        key: `question_${index + 1}`,
+        key: suggestLeadFieldKey(question.key || label, fallbackKey),
         label,
         answerType: question.answerType || "short_answer",
       };
       if (question.answerType === "multiple_choice") {
-        payload.options = (question.options || [])
-          .map((opt) => String(opt || "").trim())
-          .filter(Boolean);
+        const opts: Array<{ key: string; value: string }> = [];
+        (question.options || []).forEach((opt, optIndex) => {
+          const value = String(opt || "").trim();
+          if (!value) return;
+          const optFallback = `option_${optIndex + 1}`;
+          const optKeyRaw = String(question.optionKeys?.[optIndex] || "").trim();
+          opts.push({
+            key: suggestLeadFieldKey(optKeyRaw || value, optFallback),
+            value,
+          });
+        });
+        payload.options = opts;
       }
       return payload;
     })
@@ -269,7 +301,7 @@ export function buildMetaLeadFormQuestionsPayload(input: {
     key: string;
     label: string;
     answerType: LeadFormAnswerType;
-    options?: string[];
+    options?: Array<string | { key: string; value: string }>;
   }>;
 
   return [...contactQuestions, ...customQuestions];

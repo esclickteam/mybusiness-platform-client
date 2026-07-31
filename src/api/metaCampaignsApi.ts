@@ -543,9 +543,15 @@ export async function createMetaLeadForm(
     pageId?: string;
     name: string;
     questions?: MetaLeadFormQuestion[];
+    locale?: string;
+    /** Restricted = ad viewers only; Open = shareable */
+    sharing?: "restricted" | "open";
+    blockDisplayForNonTargetedViewer?: boolean;
+    trackingParameters?: Array<string | { key: string; value?: string }>;
     introTitle?: string;
     introDescription?: string;
     privacyPolicyUrl?: string;
+    privacyPolicyLinkText?: string;
     thankYouTitle?: string;
     thankYouBody?: string;
     thankYouUrl?: string;
