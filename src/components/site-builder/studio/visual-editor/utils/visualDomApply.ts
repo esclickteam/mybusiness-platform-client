@@ -2538,7 +2538,21 @@ function createInsertedSectionNode(
     "data-visual-inserted-section",
     "true",
   );
-  section.setAttribute("data-section-kind", "custom");
+  const libraryId = String(item.libraryId || "").toLowerCase();
+  let sectionKind = "custom";
+  if (libraryId.includes("booking")) sectionKind = "booking";
+  else if (libraryId.includes("commerce") || libraryId.includes("product"))
+    sectionKind = "commerce";
+  else if (libraryId.includes("events")) sectionKind = "events";
+  else if (libraryId.includes("contact")) sectionKind = "contact";
+  else if (libraryId.includes("services")) sectionKind = "services";
+  section.setAttribute("data-section-kind", sectionKind);
+  if (sectionKind === "booking") {
+    section.setAttribute("data-bizuply-plugin", "booking");
+  }
+  if (item.libraryId) {
+    section.setAttribute("data-section-library-id", String(item.libraryId));
+  }
   section.setAttribute(
     "data-section-title",
     item.label || "סקשן חדש",

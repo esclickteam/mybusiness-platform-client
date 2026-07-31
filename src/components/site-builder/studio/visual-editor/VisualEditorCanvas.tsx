@@ -20,6 +20,10 @@ import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
 import { mountCountdownWidgets, pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
+import {
+  mountBookingWidgets,
+  pageHasBookingWidget,
+} from "../../../site-plugins/booking/mountBookingWidgets";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -749,6 +753,20 @@ export default function VisualEditorCanvas({
 
   const editorAny = editor as any;
 
+  const mountEditorBookingPreview = useCallback(
+    (root: HTMLElement | null, pluginEnabled: boolean) => {
+      if (!root || !pageHasBookingWidget(root)) return;
+      mountBookingWidgets(root, {
+        businessId: String(editorAny.businessId || "").trim() || undefined,
+        pluginEnabled,
+        // Keep design mock in the editor; live slots hydrate on the public site.
+        preview: true,
+        editorMode: true,
+      });
+    },
+    [editorAny.businessId],
+  );
+
   const TemplateComponent = useMemo(() => {
     const renderer = editorAny.renderer as any;
 
@@ -1259,6 +1277,7 @@ export default function VisualEditorCanvas({
 
         const hasWidget = pageHasCountdownWidget(root);
         const pluginEnabled = plugins.enabledPlugins.includes("countdown");
+        const bookingEnabled = plugins.enabledPlugins.includes("booking");
 
         if (!hasWidget && !pluginEnabled) {
           countdownEditorMountRef.current.enabled = false;
@@ -1279,6 +1298,10 @@ export default function VisualEditorCanvas({
           mountEditorCountdownPreview(root);
         }
 
+        if (!cancelled) {
+          mountEditorBookingPreview(root, bookingEnabled);
+        }
+
       } catch {
         if (!cancelled && pageHasCountdownWidget(root)) {
           countdownEditorMountRef.current = {
@@ -1287,6 +1310,9 @@ export default function VisualEditorCanvas({
             stored: {},
           };
           mountEditorCountdownPreview(root);
+        }
+        if (!cancelled) {
+          mountEditorBookingPreview(root, false);
         }
       }
     })();
@@ -1303,6 +1329,7 @@ export default function VisualEditorCanvas({
     editorAny.activePageID,
     editorAny.data,
     mountEditorCountdownPreview,
+    mountEditorBookingPreview,
   ]);
 
   useEffect(() => {

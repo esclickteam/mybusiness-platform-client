@@ -52,14 +52,15 @@ export default function SiteBookingPanel({
       </SitePanelCard>
 
       <div className="rounded-2xl border border-dashed border-sky-200 bg-sky-50/40 p-4 text-sm leading-relaxed text-slate-600">
-        לאחר הגדרת שעות הפעילות והשירותים, ודאו שבעורך האתר (
+        לאחר הגדרת שעות הפעילות והשירותים, הוסיפו בעורך האתר סקשן{" "}
+        <strong>יומן פגישות</strong> (
         <Link
-          to={`${basePath}/website/sites/${siteId}/edit`}
-          className="font-semibold text-violet-600 hover:underline"
+          to={`${basePath}/website/sites/${siteId}/edit?addPlugin=booking&addSection=section-booking-showcase-calendar-split`}
+          className="font-semibold text-sky-700 hover:underline"
         >
-          פתיחה בעורך
+          פתיחה בעורך עם סקשן מוכן
         </Link>
-        ) קיים בלוק "תורים" — כך הלקוחות יוכלו להזמין תור.
+        ). הסקשן מתחבר אוטומטית לתוסף — בלי קישור ידני.
       </div>
     </div>
   );

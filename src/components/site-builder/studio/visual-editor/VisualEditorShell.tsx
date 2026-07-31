@@ -282,14 +282,19 @@ export default function VisualEditorShell({
     setActionError(editor.saveError);
   }, [editor.saveError]);
 
+  const autoAddedSectionRef = React.useRef("");
+
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const addPlugin = params.get("addPlugin");
     const addPage = params.get("addPage");
+    const addSection = params.get("addSection");
 
-    if (addPlugin || addPage) {
-      setPreferredAddTab(addPage ? "pages" : "plugins");
+    if (addPlugin || addPage || addSection) {
+      setPreferredAddTab(
+        addPage ? "pages" : addSection ? "sections" : "plugins",
+      );
       setSidePanelMode("add");
     }
 
@@ -301,7 +306,26 @@ export default function VisualEditorShell({
         }
       });
     }
-  }, [onAddLibraryPage]);
+
+    const addLibrarySection = (editor as any)?.addLibrarySection as
+      | ((id: string, placement?: "append") => void)
+      | undefined;
+    if (
+      addSection &&
+      typeof addLibrarySection === "function" &&
+      autoAddedSectionRef.current !== addSection
+    ) {
+      autoAddedSectionRef.current = addSection;
+      const timer = window.setTimeout(() => {
+        addLibrarySection(addSection, "append");
+        params.delete("addSection");
+        const next = params.toString();
+        const url = `${window.location.pathname}${next ? `?${next}` : ""}`;
+        window.history.replaceState({}, "", url);
+      }, 700);
+      return () => window.clearTimeout(timer);
+    }
+  }, [onAddLibraryPage, editor]);
 
   async function runAction(
     action: () => void | Promise<void> | Promise<any>,

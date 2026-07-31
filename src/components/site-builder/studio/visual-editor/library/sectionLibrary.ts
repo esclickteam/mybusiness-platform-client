@@ -37,6 +37,7 @@ import { PROMOTE_SHOWCASE_SECTIONS } from "./promoteShowcaseSections";
 import { CTA_SHOWCASE_SECTIONS } from "./ctaShowcaseSections";
 import { TESTIMONIALS_SHOWCASE_SECTIONS } from "./testimonialsShowcaseSections";
 import { EVENTS_SHOWCASE_SECTIONS } from "./eventsShowcaseSections";
+import { BOOKING_SHOWCASE_SECTIONS } from "./bookingShowcaseSections";
 import { BLOG_SHOWCASE_SECTIONS } from "./blogShowcaseSections";
 import { PRICING_SHOWCASE_SECTIONS } from "./pricingShowcaseSections";
 import { RESUME_SHOWCASE_SECTIONS } from "./resumeShowcaseSections";
@@ -1307,6 +1308,7 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...CTA_SHOWCASE_SECTIONS,
   ...TESTIMONIALS_SHOWCASE_SECTIONS,
   ...EVENTS_SHOWCASE_SECTIONS,
+  ...BOOKING_SHOWCASE_SECTIONS,
   ...BLOG_SHOWCASE_SECTIONS,
   ...PRICING_SHOWCASE_SECTIONS,
   ...RESUME_SHOWCASE_SECTIONS,
@@ -1334,6 +1336,7 @@ const CATEGORY_IMAGE_POOLS: Record<string, string[]> = {
   contact: [I.office, I.city, I.hospitality, I.meeting, I.workspace, I.architecture, I.cafe, I.legal],
   team: [I.team, I.portrait, I.hands, I.meeting, I.office, I.studio, I.education, I.cafe],
   events: [I.event, I.stage, I.hospitality, I.travel, I.city, I.food, I.cafe, I.nature],
+  booking: [I.meeting, I.office, I.workspace, I.hospitality, I.wellness, I.cafe, I.medical, I.laptop],
   blog: [I.writing, I.bookshelf, I.laptop, I.education, I.cafe, I.workspace, I.nature, I.hands],
   features: [I.tech, I.laptop, I.finance, I.product, I.workspace, I.abstract, I.studio, I.office],
   cta: [I.abstract, I.city, I.nature, I.product, I.tech, I.hospitality, I.studio, I.meeting],

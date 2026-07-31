@@ -162,6 +162,7 @@ export default function SiteManagementPanelPage() {
 
       const hints = result.editorHints || [];
       const storeHint = hints.find((h) => h.action === "add-products-page");
+      const bookingHint = hints.find((h) => h.action === "add-booking-section");
       if (storeHint && enabled) {
         // Never dump merchants into the blank Grapes page-builder for store setup.
         // Product CRUD lives in the store management panel; template shops sync alone.
@@ -179,6 +180,19 @@ export default function SiteManagementPanelPage() {
               `${editorHref}?addPlugin=store&addPage=${encodeURIComponent(storeHint.pageTemplateId || "page-products-01")}`
             );
           }
+        }
+      } else if (bookingHint && enabled) {
+        setActiveSection("booking");
+        const go = window.confirm(
+          `${bookingHint.message || "להוסיף סקשן יומן פגישות?"}\n\nלחצו אישור לפתיחת העורך — הסקשן יתחבר אוטומטית ליומן.`
+        );
+        if (go) {
+          navigate(
+            `${editorHref}?addPlugin=booking&addSection=${encodeURIComponent(
+              bookingHint.sectionId ||
+                "section-booking-showcase-calendar-split",
+            )}`,
+          );
         }
       }
     } catch (err: any) {
