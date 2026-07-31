@@ -1,7 +1,30 @@
 import API from "../api";
 
+export type WhatsAppRegistrationStatus =
+  | ""
+  | "required"
+  | "registered"
+  | "failed"
+  | "pending";
+
+export type WhatsAppReadiness =
+  | "disconnected"
+  | "ready"
+  | "registration_required"
+  | "registration_failed"
+  | "error";
+
 export type WhatsAppConnection = {
   connected: boolean;
+  readyToSend?: boolean;
+  readiness?: WhatsAppReadiness;
+  readinessLabel?: string;
+  registrationStatus?: WhatsAppRegistrationStatus;
+  phoneRegistered?: boolean;
+  phonePlatformStatus?: string;
+  codeVerificationStatus?: string;
+  registrationLastError?: string;
+  registeredAt?: string | null;
   status: "connected" | "disconnected" | "error";
   phoneNumberId: string;
   wabaId: string;
@@ -17,6 +40,15 @@ export type WhatsAppConnection = {
   connectedAt: string | null;
   signupReady?: boolean;
   embeddedSignup?: WhatsAppEmbeddedSignupConfig;
+  registration?: {
+    attempted?: boolean;
+    success?: boolean;
+    alreadyRegistered?: boolean;
+    statusBefore?: string;
+    statusAfter?: string;
+    metaResponse?: unknown;
+    route?: string;
+  };
 };
 
 export type WhatsAppEmbeddedSignupConfig = {
@@ -339,11 +371,23 @@ export async function completeWhatsAppEmbeddedSignup(
     phoneNumberId: string;
     wabaId: string;
     metaBusinessId?: string;
+    pin?: string;
   }
 ) {
   const { data } = await API.post("/whatsapp/embedded-signup/complete", {
     businessId,
     ...payload,
+  });
+  return data as { success: boolean } & WhatsAppConnection;
+}
+
+export async function registerWhatsAppPhone(
+  businessId: string,
+  pin: string
+) {
+  const { data } = await API.post("/whatsapp/connection/register", {
+    businessId,
+    pin,
   });
   return data as { success: boolean } & WhatsAppConnection;
 }

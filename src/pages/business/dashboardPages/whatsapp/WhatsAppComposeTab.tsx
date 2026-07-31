@@ -283,6 +283,10 @@ export default function WhatsAppComposeTab() {
       toast.error(t("whatsapp.compose.notConnected"));
       return;
     }
+    if (!connection?.readyToSend) {
+      toast.error(t("whatsapp.compose.registrationRequired"));
+      return;
+    }
     if (!templateId || !selectedTemplate) {
       toast.error(t("whatsapp.compose.noTemplatesYet"));
       return;
@@ -378,6 +382,28 @@ export default function WhatsAppComposeTab() {
                 <p>{t("whatsapp.compose.notConnectedTitle")}</p>
                 <p className="mt-1 font-medium text-amber-800">
                   {t("whatsapp.compose.notConnectedHint")}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              className={btnPrimary}
+              onClick={() => navigate("../settings")}
+            >
+              <PlugZap className="h-4 w-4" />
+              {t("whatsapp.compose.connectCta")}
+            </button>
+          </div>
+        )}
+
+        {connection?.connected && !connection?.readyToSend && (
+          <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+              <div>
+                <p>{t("whatsapp.compose.registrationRequired")}</p>
+                <p className="mt-1 font-medium text-amber-800">
+                  {t("whatsapp.compose.registrationRequiredHint")}
                 </p>
               </div>
             </div>
@@ -495,6 +521,20 @@ export default function WhatsAppComposeTab() {
               </span>
               <div
                 className={`${inputBase} min-h-[120px] whitespace-pre-wrap py-3 text-slate-700`}
+                dir={
+                  String(selectedTemplate?.language || "")
+                    .toLowerCase()
+                    .startsWith("en")
+                    ? "ltr"
+                    : undefined
+                }
+                style={
+                  String(selectedTemplate?.language || "")
+                    .toLowerCase()
+                    .startsWith("en")
+                    ? { textAlign: "left" }
+                    : undefined
+                }
               >
                 {body || t("whatsapp.compose.previewEmpty")}
               </div>
@@ -620,7 +660,23 @@ export default function WhatsAppComposeTab() {
             </h3>
           </div>
           <div className="bg-[#ECE5DD] p-4">
-            <div className="ms-auto max-w-[85%] rounded-2xl rounded-ee-md bg-[#DCF8C6] px-3 py-2 text-sm font-medium leading-relaxed text-slate-800 shadow-sm whitespace-pre-wrap">
+            <div
+              className="ms-auto max-w-[85%] rounded-2xl rounded-ee-md bg-[#DCF8C6] px-3 py-2 text-sm font-medium leading-relaxed text-slate-800 shadow-sm whitespace-pre-wrap"
+              dir={
+                String(selectedTemplate?.language || "")
+                  .toLowerCase()
+                  .startsWith("en")
+                  ? "ltr"
+                  : undefined
+              }
+              style={
+                String(selectedTemplate?.language || "")
+                  .toLowerCase()
+                  .startsWith("en")
+                  ? { textAlign: "left" }
+                  : undefined
+              }
+            >
               {previewBody || t("whatsapp.compose.previewEmpty")}
             </div>
           </div>
@@ -656,6 +712,7 @@ export default function WhatsAppComposeTab() {
             disabled={
               sending ||
               !connection?.connected ||
+              !connection?.readyToSend ||
               estimatedCount === 0 ||
               !templateId ||
               !consentConfirmed ||

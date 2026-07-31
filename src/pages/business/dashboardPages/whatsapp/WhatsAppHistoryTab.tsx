@@ -170,11 +170,43 @@ export default function WhatsAppHistoryTab() {
                   <p className="mt-1 text-xs font-semibold text-slate-500" dir="ltr">
                     {log.recipientPhone}
                   </p>
-                  <p className="mt-1 line-clamp-3 text-sm font-medium text-slate-600 whitespace-pre-wrap">
+                  <p
+                    className="mt-1 line-clamp-3 text-sm font-medium text-slate-600 whitespace-pre-wrap"
+                    dir={
+                      String(log.templateLanguage || "")
+                        .toLowerCase()
+                        .startsWith("en")
+                        ? "ltr"
+                        : undefined
+                    }
+                    style={
+                      String(log.templateLanguage || "")
+                        .toLowerCase()
+                        .startsWith("en")
+                        ? { textAlign: "left" }
+                        : undefined
+                    }
+                  >
                     {log.body || "—"}
                   </p>
                   {log.templateName && (
-                    <p className="mt-1 text-xs font-semibold text-slate-500">
+                    <p
+                      className="mt-1 text-xs font-semibold text-slate-500"
+                      dir={
+                        String(log.templateLanguage || "")
+                          .toLowerCase()
+                          .startsWith("en")
+                          ? "ltr"
+                          : undefined
+                      }
+                      style={
+                        String(log.templateLanguage || "")
+                          .toLowerCase()
+                          .startsWith("en")
+                          ? { textAlign: "left" }
+                          : undefined
+                      }
+                    >
                       {t("whatsapp.history.template")}: {log.templateName}
                       {log.templateLanguage ? ` (${log.templateLanguage})` : ""}
                     </p>

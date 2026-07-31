@@ -16,6 +16,7 @@ import {
   getWhatsAppEmbeddedSignupConfig,
   getWhatsAppStatus,
   listWhatsAppTemplates,
+  registerWhatsAppPhone,
   sendWhatsAppTest,
   type WhatsAppConnection,
   type WhatsAppTemplate,
@@ -36,12 +37,42 @@ type SessionAssets = {
   metaBusinessId?: string;
 };
 
+function readinessTone(connection: WhatsAppConnection | null) {
+  if (!connection?.connected) {
+    return {
+      box: "border-amber-200 bg-amber-50/70",
+      icon: "text-amber-600",
+      title: "text-amber-900",
+    };
+  }
+  if (connection.readyToSend) {
+    return {
+      box: "border-emerald-200 bg-emerald-50/70",
+      icon: "text-emerald-600",
+      title: "text-emerald-800",
+    };
+  }
+  if (connection.registrationStatus === "failed") {
+    return {
+      box: "border-rose-200 bg-rose-50/70",
+      icon: "text-rose-600",
+      title: "text-rose-800",
+    };
+  }
+  return {
+    box: "border-amber-200 bg-amber-50/70",
+    icon: "text-amber-600",
+    title: "text-amber-900",
+  };
+}
+
 export default function WhatsAppSettingsTab() {
   const { t } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [registering, setRegistering] = useState(false);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [approvedTemplates, setApprovedTemplates] = useState<WhatsAppTemplate[]>(
@@ -50,6 +81,7 @@ export default function WhatsAppSettingsTab() {
   const [testPhone, setTestPhone] = useState("");
   const [testTemplateId, setTestTemplateId] = useState("");
   const [testConsent, setTestConsent] = useState(false);
+  const [registerPin, setRegisterPin] = useState("");
   const [actionError, setActionError] = useState("");
   const [actionInfo, setActionInfo] = useState("");
   const sessionRef = useRef<SessionAssets | null>(null);
@@ -131,7 +163,6 @@ export default function WhatsAppSettingsTab() {
     try {
       setConnecting(true);
 
-      // Fresh config from server — clearer than relying on cached status only.
       const signup = await getWhatsAppEmbeddedSignupConfig(businessId);
       console.info("[whatsapp] Embedded Signup config", {
         ready: signup.ready,
@@ -181,7 +212,6 @@ export default function WhatsAppSettingsTab() {
         };
 
         try {
-          // Facebook SDK rejects async callbacks ("Expression is of type asyncfunction").
           FB.login(
             (response) => {
               console.info("[whatsapp] FB.login response", {
@@ -200,7 +230,6 @@ export default function WhatsAppSettingsTab() {
                   }
 
                   setActionInfo("Completing connection on server…");
-                  // Allow session postMessage to arrive.
                   await new Promise((r) => setTimeout(r, 600));
                   const assets = sessionRef.current;
                   if (!assets?.phoneNumberId || !assets?.wabaId) {
@@ -230,8 +259,13 @@ export default function WhatsAppSettingsTab() {
                   }
 
                   setConnection(status);
+                  setRegisterPin("");
                   setActionInfo("");
-                  toast.success(t("whatsapp.settings.connectedSuccess"));
+                  if (status.readyToSend) {
+                    toast.success(t("whatsapp.settings.connectedSuccess"));
+                  } else {
+                    toast.info(t("whatsapp.settings.registrationRequiredToast"));
+                  }
                   await load();
                   settleResolve();
                 } catch (error: any) {
@@ -280,6 +314,38 @@ export default function WhatsAppSettingsTab() {
     }
   };
 
+  const handleRegister = async () => {
+    if (!businessId) return;
+    const pin = registerPin.replace(/\D/g, "").slice(0, 6);
+    if (!/^\d{6}$/.test(pin)) {
+      toast.error(t("whatsapp.settings.pinRequired"));
+      return;
+    }
+    try {
+      setRegistering(true);
+      setActionError("");
+      const status = await registerWhatsAppPhone(businessId, pin);
+      setRegisterPin("");
+      setConnection(status);
+      if (status.readyToSend) {
+        toast.success(t("whatsapp.settings.registrationSuccess"));
+      } else {
+        toast.error(
+          status.registrationLastError || t("whatsapp.errors.registerFailed")
+        );
+      }
+      await load();
+    } catch (error: any) {
+      const msg =
+        error?.response?.data?.error || t("whatsapp.errors.registerFailed");
+      setActionError(msg);
+      toast.error(msg);
+      await load();
+    } finally {
+      setRegistering(false);
+    }
+  };
+
   const handleDisconnect = async () => {
     if (!businessId) return;
     if (!window.confirm(t("whatsapp.settings.confirmDisconnect"))) return;
@@ -288,6 +354,7 @@ export default function WhatsAppSettingsTab() {
       const status = await disconnectWhatsApp(businessId);
       setConnection(status);
       setApprovedTemplates([]);
+      setRegisterPin("");
       toast.success(t("whatsapp.settings.disconnected"));
     } catch (error: any) {
       toast.error(
@@ -309,6 +376,10 @@ export default function WhatsAppSettingsTab() {
     }
     if (!testConsent) {
       toast.error(t("whatsapp.settings.consentRequired"));
+      return;
+    }
+    if (!connection?.readyToSend) {
+      toast.error(t("whatsapp.settings.registrationRequired"));
       return;
     }
     try {
@@ -345,7 +416,31 @@ export default function WhatsAppSettingsTab() {
     );
   }
 
-  const connected = Boolean(connection?.connected);
+  const linked = Boolean(connection?.connected);
+  const readyToSend = Boolean(connection?.readyToSend);
+  const needsRegistration =
+    linked &&
+    !readyToSend &&
+    (connection?.registrationStatus === "required" ||
+      connection?.registrationStatus === "pending" ||
+      connection?.registrationStatus === "failed" ||
+      connection?.registrationStatus === "" ||
+      !connection?.phoneRegistered);
+  const tone = readinessTone(connection);
+  const statusTitle = readyToSend
+    ? t("whatsapp.settings.readyToSend")
+    : connection?.registrationStatus === "failed"
+      ? t("whatsapp.settings.registrationFailed")
+      : linked
+        ? t("whatsapp.settings.registrationRequired")
+        : t("whatsapp.settings.disconnectedStatus");
+  const statusHint = readyToSend
+    ? t("whatsapp.settings.connectedHint")
+    : connection?.registrationStatus === "failed"
+      ? t("whatsapp.settings.registrationFailedHint")
+      : linked
+        ? t("whatsapp.settings.registrationRequiredHint")
+        : t("whatsapp.settings.disconnectedHint");
 
   return (
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
@@ -357,7 +452,7 @@ export default function WhatsAppSettingsTab() {
           {t("whatsapp.settings.subtitle")}
         </p>
 
-        {!connected ? (
+        {!linked ? (
           <div className="mt-6 space-y-4">
             <p className="text-sm font-medium text-slate-600">
               {t("whatsapp.settings.connectIntro")}
@@ -403,11 +498,15 @@ export default function WhatsAppSettingsTab() {
           </div>
         ) : (
           <div className="mt-5 space-y-3">
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-3">
+            <div className={`rounded-xl border px-4 py-3 ${tone.box}`}>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                <p className="text-sm font-black text-emerald-800">
-                  {t("whatsapp.settings.connected")}
+                {readyToSend ? (
+                  <CheckCircle2 className={`h-5 w-5 ${tone.icon}`} />
+                ) : (
+                  <ShieldAlert className={`h-5 w-5 ${tone.icon}`} />
+                )}
+                <p className={`text-sm font-black ${tone.title}`}>
+                  {connection?.readinessLabel || statusTitle}
                 </p>
               </div>
               <dl className="mt-3 grid gap-2 text-sm">
@@ -443,6 +542,16 @@ export default function WhatsAppSettingsTab() {
                     {connection?.phoneNumberId || "—"}
                   </dd>
                 </div>
+                {connection?.phonePlatformStatus ? (
+                  <div className="flex flex-wrap justify-between gap-2">
+                    <dt className="font-semibold text-slate-500">
+                      Meta phone status
+                    </dt>
+                    <dd className="font-bold text-slate-900" dir="ltr">
+                      {connection.phonePlatformStatus}
+                    </dd>
+                  </div>
+                ) : null}
                 <div className="flex flex-wrap justify-between gap-2">
                   <dt className="font-semibold text-slate-500">
                     {t("whatsapp.settings.connectedAt")}
@@ -455,6 +564,47 @@ export default function WhatsAppSettingsTab() {
                 </div>
               </dl>
             </div>
+
+            {needsRegistration && (
+              <div className="rounded-xl border border-amber-200 bg-white px-4 py-3">
+                <label className="block text-sm font-black text-slate-900">
+                  {t("whatsapp.settings.pinLabel")}
+                </label>
+                <p className="mt-1 text-xs font-medium text-slate-500">
+                  {t("whatsapp.settings.pinHint")}
+                </p>
+                <input
+                  className={`${inputBase} mt-3 tracking-[0.35em]`}
+                  type="password"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={registerPin}
+                  onChange={(e) =>
+                    setRegisterPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  placeholder="••••••"
+                  dir="ltr"
+                />
+                <button
+                  type="button"
+                  className={`${btnPrimary} mt-3`}
+                  disabled={registering || registerPin.replace(/\D/g, "").length !== 6}
+                  onClick={() => {
+                    void handleRegister();
+                  }}
+                >
+                  {registering ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ShieldAlert className="h-4 w-4" />
+                  )}
+                  {registering
+                    ? t("whatsapp.settings.registering")
+                    : t("whatsapp.settings.registerCta")}
+                </button>
+              </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
               <button
@@ -483,9 +633,13 @@ export default function WhatsAppSettingsTab() {
           </div>
         )}
 
-        {connection?.lastError && (
+        {(connection?.registrationLastError ||
+          connection?.lastError ||
+          actionError) && (
           <p className="mt-4 rounded-xl border border-rose-100 bg-rose-50 px-3 py-2 text-xs font-semibold text-rose-700">
-            {connection.lastError}
+            {connection?.registrationLastError ||
+              connection?.lastError ||
+              actionError}
           </p>
         )}
       </section>
@@ -493,22 +647,16 @@ export default function WhatsAppSettingsTab() {
       <div className="space-y-4">
         <section className={`${cardBase} p-4 sm:p-5`}>
           <div className="flex items-center gap-2">
-            {connected ? (
+            {readyToSend ? (
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
             ) : (
               <ShieldAlert className="h-5 w-5 text-amber-600" />
             )}
             <h3 className="text-base font-black text-slate-900">
-              {connected
-                ? t("whatsapp.settings.connected")
-                : t("whatsapp.settings.disconnectedStatus")}
+              {statusTitle}
             </h3>
           </div>
-          <p className="mt-2 text-sm font-medium text-slate-500">
-            {connected
-              ? t("whatsapp.settings.connectedHint")
-              : t("whatsapp.settings.disconnectedHint")}
-          </p>
+          <p className="mt-2 text-sm font-medium text-slate-500">{statusHint}</p>
         </section>
 
         <section className={`${cardBase} p-4 sm:p-5`}>
@@ -521,7 +669,7 @@ export default function WhatsAppSettingsTab() {
           <select
             className={`${inputBase} mt-3`}
             value={testTemplateId}
-            disabled={!connected}
+            disabled={!readyToSend}
             onChange={(e) => setTestTemplateId(e.target.value)}
           >
             {approvedTemplates.length === 0 && (
@@ -538,7 +686,7 @@ export default function WhatsAppSettingsTab() {
           <input
             className={`${inputBase} mt-3`}
             value={testPhone}
-            disabled={!connected}
+            disabled={!readyToSend}
             onChange={(e) => setTestPhone(e.target.value)}
             placeholder="050-0000000"
           />
@@ -547,7 +695,7 @@ export default function WhatsAppSettingsTab() {
               type="checkbox"
               className="mt-0.5 accent-emerald-600"
               checked={testConsent}
-              disabled={!connected}
+              disabled={!readyToSend}
               onChange={(e) => setTestConsent(e.target.checked)}
             />
             <span>{t("whatsapp.settings.consentLabel")}</span>
@@ -557,7 +705,7 @@ export default function WhatsAppSettingsTab() {
             className={`${btnPrimary} mt-3 w-full`}
             disabled={
               testing ||
-              !connected ||
+              !readyToSend ||
               !testTemplateId ||
               !testConsent ||
               !testPhone.trim()
