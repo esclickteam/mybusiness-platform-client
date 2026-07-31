@@ -71,7 +71,9 @@ export function buildPublishPayloadFromAdsManager(state: AdsManagerState) {
     mode: "full",
     name: campaign.name.trim(),
     objective: campaign.objective,
-    status: "PAUSED",
+    // Activate immediately after publish — customer should not need to hit Play.
+    status: "ACTIVE",
+    activateAfterPublish: true,
     specialAdCategories: [],
     pageId,
     adSetName: adSet.name.trim(),
