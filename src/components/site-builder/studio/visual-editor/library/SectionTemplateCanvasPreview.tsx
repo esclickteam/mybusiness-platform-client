@@ -100,9 +100,41 @@ function NodePreview({
       "month"
         ? "month"
         : "week";
+    const attrs = node.attributes || {};
+    const nodeStyle = (node.style || {}) as Record<string, string>;
+    const theme = {
+      accent:
+        nodeStyle["--biz-booking-accent"] ||
+        attrs["data-bizuply-booking-accent"] ||
+        nodeStyle.color ||
+        undefined,
+      ink:
+        nodeStyle["--biz-booking-ink"] ||
+        attrs["data-bizuply-booking-ink"] ||
+        nodeStyle.color ||
+        undefined,
+      muted:
+        nodeStyle["--biz-booking-muted"] ||
+        attrs["data-bizuply-booking-muted"] ||
+        undefined,
+      surface:
+        nodeStyle["--biz-booking-surface"] ||
+        attrs["data-bizuply-booking-surface"] ||
+        nodeStyle.backgroundColor ||
+        undefined,
+      line:
+        nodeStyle["--biz-booking-line"] ||
+        attrs["data-bizuply-booking-line"] ||
+        nodeStyle.borderColor ||
+        undefined,
+      soft:
+        nodeStyle["--biz-booking-soft"] ||
+        attrs["data-bizuply-booking-soft"] ||
+        undefined,
+    };
     return (
       <div style={{ ...style, overflow: "hidden", padding: 0 }}>
-        <BookingWidget preview editorMode variant={variant} />
+        <BookingWidget preview editorMode variant={variant} theme={theme} />
       </div>
     );
   }

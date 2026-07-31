@@ -11,7 +11,7 @@ import type {
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
 
-/** Colors outside the site-theme remap map — never become pink/primary. */
+/** Colors outside the site-theme remap map — stay stable on insert, still editable after. */
 const ink = "#0b1220";
 const muted = "#5c6570";
 const teal = "#0f766e";
@@ -20,6 +20,8 @@ const sand = "#f3eee4";
 const forest = "#174a2c";
 const navy = "#0a1628";
 const charcoal = "#1c1917";
+const soft = "#f3f4f6";
+const line = "#d9dee5";
 
 const btnInk = {
   color: "#ffffff",
@@ -35,7 +37,6 @@ const btnInk = {
 };
 
 const btnTeal = { ...btnInk, backgroundColor: teal };
-const btnForest = { ...btnInk, backgroundColor: forest };
 const btnLime = {
   ...btnInk,
   backgroundColor: "#b8e03a",
@@ -45,21 +46,43 @@ const btnLime = {
 function bookingMount(
   key: string,
   layout: ReturnType<typeof absoluteLayout>,
-  variant: "week" | "month" = "week",
+  variant: "week" | "month" = "month",
   style: Record<string, any> = {},
+  theme: {
+    accent?: string;
+    ink?: string;
+    muted?: string;
+    surface?: string;
+    line?: string;
+    soft?: string;
+  } = {},
 ): VisualLibraryNodeTemplate {
+  const accent = theme.accent || teal;
+  const inkColor = theme.ink || ink;
+  const mutedColor = theme.muted || muted;
+  const surface = theme.surface || "#ffffff";
+  const lineColor = theme.line || line;
+  const softColor = theme.soft || soft;
+
   return {
     ...boxNode(
       key,
       {
-        backgroundColor: "#ffffff",
+        backgroundColor: surface,
+        color: inkColor,
         borderRadius: "20px",
-        border: "1px solid #d9dee5",
+        border: `1px solid ${lineColor}`,
         boxShadow: "0 18px 44px -28px rgba(11,18,32,0.45)",
+        ["--biz-booking-accent" as any]: accent,
+        ["--biz-booking-ink" as any]: inkColor,
+        ["--biz-booking-muted" as any]: mutedColor,
+        ["--biz-booking-surface" as any]: surface,
+        ["--biz-booking-line" as any]: lineColor,
+        ["--biz-booking-soft" as any]: softColor,
         ...style,
       },
       layout,
-      "יומן פגישות",
+      "יומן פגישות — שירותים ויומן",
     ),
     attributes: {
       "data-bizuply-block": "booking",
@@ -67,6 +90,12 @@ function bookingMount(
       "data-bizuply-booking-mount": "true",
       "data-bizuply-booking-variant": variant,
       "data-bizuply-crm-calendar": "true",
+      "data-bizuply-booking-accent": accent,
+      "data-bizuply-booking-ink": inkColor,
+      "data-bizuply-booking-muted": mutedColor,
+      "data-bizuply-booking-surface": surface,
+      "data-bizuply-booking-line": lineColor,
+      "data-bizuply-booking-soft": softColor,
     },
   };
 }
@@ -86,7 +115,8 @@ function booking(
     tab: "sections",
     category: "booking",
     title,
-    description: "מחובר אוטומטית ליומן, השירותים ושעות הפעילות מה-CRM",
+    description:
+      "שירותים בצד אחד ויומן בצד השני — מחובר ל-CRM, עם עריכת צבעים ועיצוב",
     keywords: [
       "יומן",
       "פגישות",
@@ -100,17 +130,17 @@ function booking(
     backgroundColor,
     minHeight,
     thumbnail,
-    lockPalette: true,
+    lockPalette: false,
     nodes,
   };
 }
 
 const weekSplit = booking(
   "section-booking-showcase-calendar-split",
-  "יומן פגישות — פיצול",
+  "יומן פגישות — שירותים ויומן",
   "booking-showcase-calendar-split",
   "#f4f6f8",
-  "640px",
+  "680px",
   IMG.meeting,
   [
     textNode(
@@ -122,48 +152,50 @@ const weekSplit = booking(
         fontWeight: "800",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(48, 70, "300px", "24px", 20),
+      absoluteLayout(48, 48, "300px", "24px", 20),
     ),
     textNode(
       "title",
       "הזמן שלכם\nמנוהל חכם",
       {
         color: ink,
-        fontSize: "48px",
+        fontSize: "44px",
         fontWeight: "700",
         lineHeight: "1.05",
         letterSpacing: "-0.04em",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(48, 110, "400px", "130px", 20),
+      absoluteLayout(48, 85, "340px", "120px", 20),
     ),
     textNode(
       "copy",
-      "הלקוח בוחר שירות ותאריך — התור נכנס ישירות ליומן העסק ב-CRM.",
+      "השירותים בצד אחד, היומן בצד השני — התור נכנס ישירות ל-CRM.",
       { color: muted, fontSize: "16px", lineHeight: "1.65" },
-      absoluteLayout(48, 260, "380px", "70px", 20),
+      absoluteLayout(48, 230, "340px", "70px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת תור",
       btnTeal,
-      absoluteLayout(48, 360, "160px", "48px", 22),
+      absoluteLayout(48, 320, "160px", "48px", 22),
       "#booking",
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(480, 48, "540px", "540px", 12),
+      absoluteLayout(420, 36, "620px", "600px", 12),
       "week",
+      {},
+      { accent: teal, ink },
     ),
   ],
 );
 
 const monthCentered = booking(
   "section-booking-showcase-month-centered",
-  "יומן פגישות — לוח חודשי",
+  "יומן פגישות — לוח חודשי מפוצל",
   "booking-showcase-month-centered",
   "#ffffff",
-  "760px",
+  "780px",
   IMG.office,
   [
     textNode(
@@ -176,33 +208,33 @@ const monthCentered = booking(
         letterSpacing: "0.16em",
         textAlign: "center",
       },
-      absoluteLayout(300, 36, "480px", "24px", 20),
+      absoluteLayout(300, 28, "480px", "24px", 20),
     ),
     textNode(
       "title",
-      "בחרו יום מהחודש וקבעו פגישה",
+      "שירותים בצד אחד · יומן בצד השני",
       {
         color: ink,
-        fontSize: "38px",
+        fontSize: "36px",
         fontWeight: "750",
         letterSpacing: "-0.03em",
         textAlign: "center",
       },
-      absoluteLayout(160, 70, "760px", "55px", 20),
+      absoluteLayout(140, 60, "800px", "50px", 20),
     ),
     textNode(
       "copy",
-      "תצוגת חודש מלאה — מסונכרנת לשירותים ולשעות הפעילות מה-CRM.",
+      "עברו בין חודשים, בחרו שירות ותאריך — הכל מסונכרן ל-CRM.",
       {
         color: muted,
         fontSize: "16px",
         textAlign: "center",
       },
-      absoluteLayout(230, 135, "620px", "36px", 20),
+      absoluteLayout(230, 120, "620px", "36px", 20),
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(200, 190, "680px", "520px", 12),
+      absoluteLayout(70, 175, "940px", "560px", 12),
       "month",
     ),
   ],
@@ -213,7 +245,7 @@ const monthDark = booking(
   "יומן פגישות — חודשי כהה",
   "booking-showcase-month-dark",
   navy,
-  "700px",
+  "720px",
   IMG.workspace,
   [
     textNode(
@@ -225,38 +257,46 @@ const monthDark = booking(
         fontWeight: "800",
         letterSpacing: "0.16em",
       },
-      absoluteLayout(56, 70, "280px", "24px", 20),
+      absoluteLayout(48, 56, "280px", "24px", 20),
     ),
     textNode(
       "title",
       "פגישת ייעוץ\nבלוח החודש",
       {
         color: "#f5f7fa",
-        fontSize: "48px",
+        fontSize: "44px",
         fontWeight: "650",
         lineHeight: "1.05",
         letterSpacing: "-0.04em",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(56, 110, "400px", "130px", 20),
+      absoluteLayout(48, 95, "340px", "120px", 20),
     ),
     textNode(
       "copy",
-      "מתאים ליועצים, עורכי דין, מאמנים וקליניקות.",
+      "שירותים ויומן זה לצד זה — ליועצים, עורכי דין ומאמנים.",
       { color: "#9aa7b5", fontSize: "16px", lineHeight: "1.6" },
-      absoluteLayout(56, 265, "360px", "60px", 20),
+      absoluteLayout(48, 240, "340px", "60px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת פגישה",
       { ...btnInk, backgroundColor: "#e8edf2", color: navy },
-      absoluteLayout(56, 350, "180px", "48px", 22),
+      absoluteLayout(48, 330, "180px", "48px", 22),
       "#booking",
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(480, 50, "540px", "600px", 12),
+      absoluteLayout(420, 40, "620px", "640px", 12),
       "month",
+      {},
+      {
+        accent: "#9aa7b5",
+        ink: navy,
+        surface: "#f8fafc",
+        line: "#d7dee7",
+        soft: "#eef2f6",
+      },
     ),
   ],
 );
@@ -266,7 +306,7 @@ const servicesWeek = booking(
   "יומן פגישות — שירותים ושעות",
   "booking-showcase-services-slots",
   "#eef1f4",
-  "680px",
+  "700px",
   IMG.medical,
   [
     textNode(
@@ -274,52 +314,24 @@ const servicesWeek = booking(
       "בחרו שירות וקבעו תור",
       {
         color: ink,
-        fontSize: "40px",
+        fontSize: "38px",
         fontWeight: "750",
         letterSpacing: "-0.03em",
       },
-      absoluteLayout(48, 48, "500px", "55px", 20),
+      absoluteLayout(48, 36, "980px", "50px", 20),
     ),
     textNode(
       "copy",
-      "השירותים והזמינות נמשכים אוטומטית מהיומן ב-CRM.",
+      "השירותים בצד ימין, היומן והשעות בצד שמאל — נמשכים אוטומטית מה-CRM.",
       { color: muted, fontSize: "16px" },
-      absoluteLayout(48, 115, "460px", "40px", 20),
+      absoluteLayout(48, 95, "980px", "36px", 20),
     ),
-    ...[
-      ["ייעוץ ראשוני", "30 דק׳"],
-      ["טיפול / מפגש", "60 דק׳"],
-      ["חבילת ליווי", "90 דק׳"],
-    ].flatMap(([title, meta], index) => {
-      const y = 180 + index * 100;
-      return [
-        boxNode(
-          `svc-${index}`,
-          {
-            backgroundColor: "#ffffff",
-            borderRadius: "16px",
-            border: index === 0 ? `2px solid ${teal}` : "1px solid #d9dee5",
-          },
-          absoluteLayout(48, y, "400px", "84px", 10),
-        ),
-        textNode(
-          `svc-title-${index}`,
-          title,
-          { color: ink, fontSize: "18px", fontWeight: "800" },
-          absoluteLayout(72, y + 18, "320px", "28px", 20),
-        ),
-        textNode(
-          `svc-meta-${index}`,
-          meta,
-          { color: muted, fontSize: "14px", fontWeight: "600" },
-          absoluteLayout(72, y + 48, "200px", "24px", 20),
-        ),
-      ];
-    }),
     bookingMount(
       "booking-mount",
-      absoluteLayout(500, 48, "520px", "580px", 12),
+      absoluteLayout(48, 150, "980px", "510px", 12),
       "week",
+      {},
+      { accent: teal, ink },
     ),
   ],
 );
@@ -329,7 +341,7 @@ const minimalBusiness = booking(
   "יומן פגישות — מינימלי עסקי",
   "booking-showcase-minimal-cta",
   "#e8edf2",
-  "560px",
+  "620px",
   IMG.laptop,
   [
     textNode(
@@ -337,26 +349,26 @@ const minimalBusiness = booking(
       "מוכנים לפגישה?",
       {
         color: ink,
-        fontSize: "42px",
+        fontSize: "40px",
         fontWeight: "750",
         letterSpacing: "-0.035em",
         textAlign: "center",
       },
-      absoluteLayout(200, 48, "680px", "55px", 20),
+      absoluteLayout(200, 36, "680px", "50px", 20),
     ),
     textNode(
       "copy",
-      "בחרו מועד פנוי מהיומן — בלי שיחות ובלי המתנה.",
+      "שירותים ויומן זה לצד זה — בלי שיחות ובלי המתנה.",
       {
         color: muted,
         fontSize: "16px",
         textAlign: "center",
       },
-      absoluteLayout(260, 115, "560px", "36px", 20),
+      absoluteLayout(260, 100, "560px", "36px", 20),
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(220, 170, "640px", "340px", 12),
+      absoluteLayout(80, 155, "920px", "420px", 12),
       "week",
     ),
   ],
@@ -367,14 +379,14 @@ const wellnessGreen = booking(
   "יומן פגישות — וולנס",
   "booking-showcase-wellness-green",
   "#e8f5ee",
-  "660px",
+  "700px",
   IMG.wellness,
   [
     imageNode(
       "photo",
       IMG.wellness,
       { borderRadius: "18px", objectFit: "cover" },
-      absoluteLayout(48, 60, "380px", "520px", 8),
+      absoluteLayout(40, 50, "280px", "600px", 8),
       "וולנס",
     ),
     textNode(
@@ -386,25 +398,31 @@ const wellnessGreen = booking(
         fontWeight: "800",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(480, 80, "280px", "24px", 20),
+      absoluteLayout(360, 50, "280px", "24px", 20),
     ),
     textNode(
       "title",
-      "שמרו מקום\nלטיפול הבא",
+      "שמרו מקום לטיפול הבא",
       {
         color: forest,
-        fontSize: "44px",
+        fontSize: "34px",
         fontWeight: "700",
-        lineHeight: "1.05",
-        whiteSpace: "pre-line",
+        lineHeight: "1.1",
       },
-      absoluteLayout(480, 120, "420px", "120px", 20),
+      absoluteLayout(360, 85, "680px", "50px", 20),
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(480, 270, "520px", "340px", 12),
+      absoluteLayout(360, 150, "680px", "500px", 12),
       "week",
-      { border: "1px solid #b7d8c4" },
+      { border: "1px solid #b7d8c4", boxShadow: "none" },
+      {
+        accent: forest,
+        ink: forest,
+        surface: "#ffffff",
+        line: "#b7d8c4",
+        soft: "#e8f5ee",
+      },
     ),
   ],
 );
@@ -414,7 +432,7 @@ const clinicMonth = booking(
   "יומן פגישות — קליניקה חודשי",
   "booking-showcase-clinic-month",
   "#f4f6f8",
-  "720px",
+  "740px",
   IMG.medical,
   [
     textNode(
@@ -426,25 +444,25 @@ const clinicMonth = booking(
         fontWeight: "800",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(48, 56, "260px", "24px", 20),
+      absoluteLayout(40, 48, "260px", "24px", 20),
     ),
     textNode(
       "title",
       "תאמו תור\nלחודש הקרוב",
       {
         color: ink,
-        fontSize: "46px",
+        fontSize: "42px",
         fontWeight: "700",
         lineHeight: "1.05",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(48, 100, "380px", "130px", 20),
+      absoluteLayout(40, 85, "300px", "120px", 20),
     ),
     textNode(
       "copy",
       "לוח חודשי ברור לקליניקות, מטפלים ונותני שירות.",
-      { color: muted, fontSize: "16px", lineHeight: "1.6" },
-      absoluteLayout(48, 250, "360px", "60px", 20),
+      { color: muted, fontSize: "15px", lineHeight: "1.6" },
+      absoluteLayout(40, 230, "300px", "60px", 20),
     ),
     ...["א׳–ה׳ 09:00–19:00", "ו׳ 09:00–13:00", "אישור תוך שעתיים"].map(
       (label, index) =>
@@ -452,13 +470,15 @@ const clinicMonth = booking(
           `meta-${index}`,
           label,
           { color: slate, fontSize: "14px", fontWeight: "700" },
-          absoluteLayout(48, 340 + index * 36, "320px", "28px", 20),
+          absoluteLayout(40, 320 + index * 36, "300px", "28px", 20),
         ),
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(460, 48, "560px", "620px", 12),
+      absoluteLayout(360, 36, "700px", "660px", 12),
       "month",
+      {},
+      { accent: teal, ink },
     ),
   ],
 );
@@ -468,7 +488,7 @@ const sandCard = booking(
   "יומן פגישות — כרטיס חול",
   "booking-showcase-compact-card",
   sand,
-  "600px",
+  "660px",
   IMG.architecture,
   [
     boxNode(
@@ -478,7 +498,7 @@ const sandCard = booking(
         borderRadius: "28px",
         border: "1px solid #ddd4c4",
       },
-      absoluteLayout(70, 50, "940px", "500px", 5),
+      absoluteLayout(40, 40, "1000px", "580px", 5),
     ),
     textNode(
       "eyebrow",
@@ -489,38 +509,45 @@ const sandCard = booking(
         fontWeight: "800",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(120, 100, "280px", "24px", 20),
+      absoluteLayout(80, 70, "280px", "24px", 20),
     ),
     textNode(
       "title",
       "פגישה בסטודיו\nהשבוע",
       {
         color: charcoal,
-        fontSize: "42px",
+        fontSize: "38px",
         fontWeight: "700",
         lineHeight: "1.05",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(120, 145, "340px", "120px", 20),
+      absoluteLayout(80, 110, "280px", "110px", 20),
     ),
     textNode(
       "copy",
-      "עיצוב ניטרלי למותגים, סטודיות ומשרדים.",
+      "שירותים ויומן זה לצד זה — עיצוב ניטרלי לסטודיות ומשרדים.",
       { color: "#7d7263", fontSize: "15px", lineHeight: "1.6" },
-      absoluteLayout(120, 290, "300px", "50px", 20),
+      absoluteLayout(80, 250, "280px", "70px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת פגישה",
       { ...btnInk, backgroundColor: charcoal, borderRadius: "10px" },
-      absoluteLayout(120, 370, "170px", "48px", 22),
+      absoluteLayout(80, 350, "170px", "48px", 22),
       "#booking",
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(500, 90, "450px", "420px", 12),
+      absoluteLayout(400, 70, "600px", "520px", 12),
       "week",
       { border: "1px solid #ddd4c4", boxShadow: "none" },
+      {
+        accent: charcoal,
+        ink: charcoal,
+        surface: "#ffffff",
+        line: "#ddd4c4",
+        soft: sand,
+      },
     ),
   ],
 );
@@ -530,7 +557,7 @@ const monthWide = booking(
   "יומן פגישות — חודשי רחב",
   "booking-showcase-month-wide",
   "#ffffff",
-  "780px",
+  "800px",
   IMG.city,
   [
     textNode(
@@ -538,21 +565,21 @@ const monthWide = booking(
       "היומן החודשי של העסק",
       {
         color: ink,
-        fontSize: "40px",
+        fontSize: "38px",
         fontWeight: "750",
         letterSpacing: "-0.03em",
       },
-      absoluteLayout(48, 40, "700px", "55px", 20),
+      absoluteLayout(48, 28, "700px", "50px", 20),
     ),
     textNode(
       "copy",
-      "תצוגה רחבה לבחירת תאריך — מסונכרנת ליומן ולשירותים מה-CRM.",
+      "שירותים בצד אחד, לוח חודשי עם חצים קדימה/אחורה בצד השני.",
       { color: muted, fontSize: "16px" },
-      absoluteLayout(48, 105, "680px", "36px", 20),
+      absoluteLayout(48, 90, "900px", "36px", 20),
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(48, 160, "980px", "560px", 12),
+      absoluteLayout(48, 145, "980px", "600px", 12),
       "month",
     ),
   ],
@@ -563,7 +590,7 @@ const fitnessWeek = booking(
   "יומן פגישות — כושר ואימון",
   "booking-showcase-fitness",
   charcoal,
-  "640px",
+  "700px",
   IMG.fitness,
   [
     textNode(
@@ -575,48 +602,55 @@ const fitnessWeek = booking(
         fontWeight: "800",
         letterSpacing: "0.16em",
       },
-      absoluteLayout(48, 70, "280px", "24px", 20),
+      absoluteLayout(40, 48, "280px", "24px", 20),
     ),
     textNode(
       "title",
       "קבעו אימון\nבלוח הזמנים",
       {
         color: "#f4f4f5",
-        fontSize: "48px",
+        fontSize: "42px",
         fontWeight: "700",
         lineHeight: "1.05",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(48, 115, "400px", "130px", 20),
+      absoluteLayout(40, 90, "300px", "120px", 20),
     ),
     textNode(
       "copy",
-      "למאמנים אישיים, סטודיו יוגה וחדרי כושר.",
+      "שירותי אימון בצד אחד, יומן שבועי בצד השני.",
       { color: "#a1a1aa", fontSize: "16px" },
-      absoluteLayout(48, 270, "360px", "50px", 20),
+      absoluteLayout(40, 240, "300px", "50px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת אימון",
       btnLime,
-      absoluteLayout(48, 350, "170px", "48px", 22),
+      absoluteLayout(40, 320, "170px", "48px", 22),
       "#booking",
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(480, 48, "540px", "540px", 12),
+      absoluteLayout(370, 40, "670px", "620px", 12),
       "week",
+      {},
+      {
+        accent: "#b8e03a",
+        ink: charcoal,
+        surface: "#ffffff",
+        line: "#e4e4e7",
+        soft: "#f4f4f5",
+      },
     ),
   ],
 );
 
-/** Extra monthly for legal / finance */
 const financeMonth = booking(
   "section-booking-showcase-finance-month",
   "יומן פגישות — משרדי / פיננסי",
   "booking-showcase-finance-month",
   "#f7f5f1",
-  "700px",
+  "720px",
   IMG.office,
   [
     textNode(
@@ -628,37 +662,45 @@ const financeMonth = booking(
         fontWeight: "800",
         letterSpacing: "0.14em",
       },
-      absoluteLayout(48, 60, "300px", "24px", 20),
+      absoluteLayout(40, 48, "300px", "24px", 20),
     ),
     textNode(
       "title",
       "תיאום פגישה\nמקצועית",
       {
         color: charcoal,
-        fontSize: "46px",
+        fontSize: "42px",
         fontWeight: "700",
         lineHeight: "1.05",
         whiteSpace: "pre-line",
       },
-      absoluteLayout(48, 100, "400px", "130px", 20),
+      absoluteLayout(40, 90, "300px", "120px", 20),
     ),
     textNode(
       "copy",
-      "למשרדי עורכי דין, רואי חשבון ויועצים עסקיים.",
+      "שירותים ויומן חודשי זה לצד זה — למשרדים ויועצים.",
       { color: "#6b645a", fontSize: "16px", lineHeight: "1.6" },
-      absoluteLayout(48, 250, "380px", "60px", 20),
+      absoluteLayout(40, 240, "300px", "60px", 20),
     ),
     buttonNode(
       "cta",
       "קביעת פגישה",
       { ...btnInk, backgroundColor: charcoal },
-      absoluteLayout(48, 340, "180px", "48px", 22),
+      absoluteLayout(40, 330, "180px", "48px", 22),
       "#booking",
     ),
     bookingMount(
       "booking-mount",
-      absoluteLayout(480, 48, "540px", "600px", 12),
+      absoluteLayout(370, 40, "670px", "640px", 12),
       "month",
+      {},
+      {
+        accent: charcoal,
+        ink: charcoal,
+        surface: "#ffffff",
+        line: "#ddd4c4",
+        soft: "#f7f5f1",
+      },
     ),
   ],
 );
