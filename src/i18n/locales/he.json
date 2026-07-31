@@ -5098,8 +5098,11 @@
     "form": {
       "back": "חזרה לסקירה",
       "createTitle": "יצירת קמפיין מטא",
+      "createSubtitleSteps": "שלב 1 קמפיין · שלב 2 קהל · שלב 3 מודעה וטופס — עם תצוגה מקדימה בזמן אמת.",
       "editTitle": "עריכת קמפיין מטא",
       "subtitle": "הגדירו מטרה, תקציב וסטטוס — ואז הפעילו כשמוכנים.",
+      "optional": "לא חובה",
+      "noEndDateHint": "הקמפיין ימשיך לרוץ בלי תאריך סיום, עד שתעצרו אותו ידנית.",
       "createStep1Subtitle": "בחרו מטרת קמפיין בדיוק כמו במנהל המודעות של מטא.",
       "createStep2Subtitle": "הגדירו שם קמפיין, עמוד פייסבוק וקטגוריות מיוחדות.",
       "createStep3Subtitle": "הגדירו תאריך התחלה וסיום, תקציב וקהל יעד בסיסי.",
@@ -5315,7 +5318,7 @@
         },
         "schedule": {
           "title": "תזמון",
-          "hint": "תאריכי התחלה וסיום"
+          "hint": "תאריך התחלה חובה · תאריך סיום לא חובה"
         },
         "reviewCampaign": {
           "title": "סיכום קמפיין",
@@ -5454,14 +5457,19 @@
         "introTitlePlaceholder": "כותרת הטופס",
         "introDescriptionPlaceholder": "טקסט פתיחה קצר",
         "noContactFields": "בחרו שדות קשר",
+        "contactTitle": "פרטים ליצירת קשר",
+        "answerPlaceholder": "הזינו תשובה",
         "questionPlaceholder": "שאלה",
-        "privacyIntro": "בלחיצה על שליחה אתם מסכימים ל:",
+        "privacyCheckTitle": "בדיקת פרטיות",
+        "privacyIntro": "בלחיצה על שליחה אתם מסכימים לשלוח את הפרטים אל {{page}}.",
         "privacyLinkPlaceholder": "מדיניות פרטיות",
         "thankYouTitlePlaceholder": "תודה!",
         "thankYouBodyPlaceholder": "נחזור אליכם בהקדם",
         "continue": "המשך",
         "submit": "שליחה",
         "done": "סיום",
+        "of": "מתוך",
+        "liveHint": "התצוגה משמאל מתעדכנת מיד תוך כדי הקלדה.",
         "privacyRequired": "נדרש קישור למדיניות פרטיות",
         "screen": {
           "intro": "פתיחה",
@@ -5469,6 +5477,13 @@
           "privacy": "פרטיות",
           "thanks": "תודה"
         }
+      },
+      "errors": {
+        "missingBusiness": "חסר מזהה עסק",
+        "missingIntroTitle": "חסר: כותרת פתיחה לטופס",
+        "missingThankYouTitle": "חסר: כותרת מסך תודה",
+        "invalidPrivacyUrl": "קישור מדיניות הפרטיות לא תקין. השתמשו בכתובת שמתחילה ב-https://",
+        "cannotContinue": "לא ניתן להמשיך"
       }
     },
     "cta": {

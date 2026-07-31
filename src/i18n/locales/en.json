@@ -5109,8 +5109,11 @@
     "form": {
       "back": "Back to overview",
       "createTitle": "Create Meta campaign",
+      "createSubtitleSteps": "Step 1 Campaign · Step 2 Audience · Step 3 Ad & form — with live preview.",
       "editTitle": "Edit Meta campaign",
       "subtitle": "Set objective, budget, and status — then activate when ready.",
+      "optional": "optional",
+      "noEndDateHint": "The campaign will keep running with no end date until you pause it manually.",
       "createStep1Subtitle": "Choose a campaign objective, just like in Meta Ads Manager.",
       "createStep2Subtitle": "Set campaign name, Facebook Page, and special ad categories.",
       "createStep3Subtitle": "Set start/end dates, budget, and basic audience.",
@@ -5326,7 +5329,7 @@
         },
         "schedule": {
           "title": "Schedule",
-          "hint": "Start and end dates"
+          "hint": "Start date required · end date optional"
         },
         "reviewCampaign": {
           "title": "Campaign review",
@@ -5465,14 +5468,19 @@
         "introTitlePlaceholder": "Form title",
         "introDescriptionPlaceholder": "Short intro text",
         "noContactFields": "Select contact fields",
+        "contactTitle": "Contact information",
+        "answerPlaceholder": "Enter your answer",
         "questionPlaceholder": "Question",
-        "privacyIntro": "By submitting you agree to:",
+        "privacyCheckTitle": "Privacy check",
+        "privacyIntro": "By clicking Submit, you agree to send your info to {{page}}.",
         "privacyLinkPlaceholder": "Privacy policy",
         "thankYouTitlePlaceholder": "Thank you!",
         "thankYouBodyPlaceholder": "We'll be in touch soon",
         "continue": "Continue",
         "submit": "Submit",
         "done": "Done",
+        "of": "of",
+        "liveHint": "The preview on the side updates instantly as you type.",
         "privacyRequired": "Privacy policy URL is required",
         "screen": {
           "intro": "Intro",
@@ -5480,6 +5488,13 @@
           "privacy": "Privacy",
           "thanks": "Thanks"
         }
+      },
+      "errors": {
+        "missingBusiness": "Missing business id",
+        "missingIntroTitle": "Missing: form intro title",
+        "missingThankYouTitle": "Missing: thank-you title",
+        "invalidPrivacyUrl": "Privacy policy URL is invalid. Use a link that starts with https://",
+        "cannotContinue": "Cannot continue"
       }
     },
     "cta": {

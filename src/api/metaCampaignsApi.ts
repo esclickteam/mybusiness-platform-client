@@ -531,6 +531,31 @@ export async function searchMetaLocations(
   return data;
 }
 
+export async function geocodeMetaPlace(
+  businessId: string | undefined,
+  query: {
+    q: string;
+    name?: string;
+    countryCode?: string;
+  }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    latitude?: number | null;
+    longitude?: number | null;
+    source?: string;
+    name?: string;
+  }>(
+    "/meta-campaigns/targeting/geocode",
+    withBusiness(businessId, {
+      q: query.q,
+      name: query.name,
+      countryCode: query.countryCode,
+    })
+  );
+  return data;
+}
+
 export async function searchMetaInterests(
   businessId: string | undefined,
   query: { q: string; locale?: string; limit?: number }

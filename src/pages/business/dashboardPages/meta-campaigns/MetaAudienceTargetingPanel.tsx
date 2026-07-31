@@ -317,7 +317,7 @@ export default function MetaAudienceTargetingPanel({
     if (!missing) return;
 
     (async () => {
-      const enriched = await enrichLocationsWithCoords(locations);
+      const enriched = await enrichLocationsWithCoords(locations, businessId);
       if (cancelled) return;
       const changed = enriched.some((item, index) => {
         const prev = locations[index];
@@ -377,11 +377,14 @@ export default function MetaAudienceTargetingPanel({
       .filter(Boolean)
       .join(", ");
 
-    const point = await geocodeLocation({
-      ...item,
-      addressString,
-      countryCode: item.countryCode || "IL",
-    });
+    const point = await geocodeLocation(
+      {
+        ...item,
+        addressString,
+        countryCode: item.countryCode || "IL",
+      },
+      businessId
+    );
 
     if (locationMode === "radius") {
       // Facebook style: one city + real radius around it.
@@ -404,6 +407,13 @@ export default function MetaAudienceTargetingPanel({
       setLocationQuery("");
       setLocationResults([]);
       setLocationOpen(false);
+      if (!point) {
+        setLocationError(
+          "העיר נבחרה, אבל לא הצלחנו לצייר את הרדיוס במפה. נסו עיר אחרת או רעננו."
+        );
+      } else {
+        setLocationError("");
+      }
       return;
     }
 
