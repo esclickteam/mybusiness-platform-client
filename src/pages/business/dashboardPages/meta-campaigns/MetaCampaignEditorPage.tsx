@@ -168,7 +168,7 @@ const EMPTY_FORM: FormState = {
   lifetimeBudget: "",
   specialAdCategories: [],
   startTime: defaultStartLocal(),
-  stopTime: defaultStopLocal(),
+  stopTime: "",
   pageId: "",
   locations: [{ ...DEFAULT_ISRAEL_LOCATION }],
   locationMode: "places",
@@ -268,6 +268,9 @@ export default function MetaCampaignEditorPage() {
   const [formPreviewScreen, setFormPreviewScreen] = useState<
     "intro" | "questions" | "privacy" | "thanks"
   >("intro");
+  const [formPreviewPlatform, setFormPreviewPlatform] = useState<
+    "facebook" | "instagram"
+  >("facebook");
   const [connection, setConnection] = useState<MetaAdsConnectionStatus | null>(
     null
   );
@@ -752,6 +755,12 @@ export default function MetaCampaignEditorPage() {
           return false;
         }
         return true;
+      case "lead-form-intro":
+        if (leadFormMode === "create" && !introTitle.trim()) {
+          toast.error(t("metaCampaigns.wizard.errors.missingIntroTitle"));
+          return false;
+        }
+        return true;
       case "lead-form-questions":
         if (leadFormMode === "create") {
           const validationError = validateLeadFormBuilder({
@@ -765,7 +774,27 @@ export default function MetaCampaignEditorPage() {
         }
         return true;
       case "lead-form-privacy":
-        // Privacy URL is optional in UI — Meta gets a safe default on the server.
+        if (leadFormMode === "create") {
+          if (!thankYouTitle.trim()) {
+            toast.error(t("metaCampaigns.wizard.errors.missingThankYouTitle"));
+            return false;
+          }
+          if (privacyPolicyUrl.trim()) {
+            const normalized = String(privacyPolicyUrl || "")
+              .trim()
+              .replace(/^\/+/, "");
+            const candidate = /^https?:\/\//i.test(normalized)
+              ? normalized
+              : `https://${normalized}`;
+            try {
+              // eslint-disable-next-line no-new
+              new URL(candidate);
+            } catch {
+              toast.error(t("metaCampaigns.wizard.errors.invalidPrivacyUrl"));
+              return false;
+            }
+          }
+        }
         return true;
       case "creative-text":
       case "preview-publish":
@@ -920,9 +949,35 @@ export default function MetaCampaignEditorPage() {
     selectedPreviewFormats.join("|"),
   ]);
 
+  const normalizePrivacyUrl = (raw: string) => {
+    let value = String(raw || "").trim();
+    if (!value) return "";
+    value = value.replace(/^\/+/, "");
+    if (!/^https?:\/\//i.test(value)) value = `https://${value}`;
+    try {
+      const parsed = new URL(value);
+      if (!/^https?:$/i.test(parsed.protocol)) return "";
+      return parsed.toString();
+    } catch {
+      return "";
+    }
+  };
+
   const createLeadFormQuick = async (): Promise<boolean> => {
-    if (!businessId || !form.pageId || !newFormName.trim()) {
+    if (!businessId) {
+      toast.error(t("metaCampaigns.wizard.errors.missingBusiness"));
+      return false;
+    }
+    if (!form.pageId) {
+      toast.error(t("metaCampaigns.form.pageRequired"));
+      return false;
+    }
+    if (!newFormName.trim()) {
       toast.error(t("metaCampaigns.form.leadFormNameRequired"));
+      return false;
+    }
+    if (!introTitle.trim()) {
+      toast.error(t("metaCampaigns.wizard.errors.missingIntroTitle"));
       return false;
     }
     const validationError = validateLeadFormBuilder({
@@ -931,6 +986,15 @@ export default function MetaCampaignEditorPage() {
     });
     if (validationError) {
       toast.error(t(`metaCampaigns.form.${validationError}`));
+      return false;
+    }
+    if (!thankYouTitle.trim()) {
+      toast.error(t("metaCampaigns.wizard.errors.missingThankYouTitle"));
+      return false;
+    }
+    const normalizedPrivacy = normalizePrivacyUrl(privacyPolicyUrl);
+    if (privacyPolicyUrl.trim() && !normalizedPrivacy) {
+      toast.error(t("metaCampaigns.wizard.errors.invalidPrivacyUrl"));
       return false;
     }
     try {
@@ -945,7 +1009,7 @@ export default function MetaCampaignEditorPage() {
         questions,
         introTitle: introTitle.trim() || undefined,
         introDescription: introDescription.trim() || undefined,
-        privacyPolicyUrl: privacyPolicyUrl.trim() || undefined,
+        privacyPolicyUrl: normalizedPrivacy || undefined,
         thankYouTitle: thankYouTitle.trim() || undefined,
         thankYouBody: thankYouBody.trim() || undefined,
         thankYouUrl: form.link || undefined,
@@ -955,18 +1019,15 @@ export default function MetaCampaignEditorPage() {
       if (result.form?.id) {
         updateField("leadFormId", result.form.id);
       }
-      setNewFormName("");
-      setLeadContactTypes(defaultSelectedLeadContactTypes());
-      setLeadCustomQuestions([]);
       setLeadFormMode("existing");
       toast.success(t("metaCampaigns.toasts.leadFormCreated"));
       return true;
     } catch (error: any) {
-      toast.error(
+      const message =
         error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.errors.createLeadForm")
-      );
+        error?.response?.data?.message ||
+        t("metaCampaigns.errors.createLeadForm");
+      toast.error(`${t("metaCampaigns.wizard.errors.cannotContinue")}: ${message}`);
       return false;
     } finally {
       setFormsBusy(false);
@@ -1318,16 +1379,17 @@ export default function MetaCampaignEditorPage() {
         introDescription={introDescription}
         contactFields={leadFormContactLabels}
         customQuestions={leadCustomQuestions}
-        privacyLinkText={t("metaCampaigns.wizard.formPreview.privacyLinkPlaceholder")}
+        privacyLinkText={
+          privacyPolicyUrl.trim() ||
+          t("metaCampaigns.wizard.formPreview.privacyLinkPlaceholder")
+        }
         thankYouTitle={thankYouTitle}
         thankYouBody={thankYouBody}
         thankYouButton={thankYouButton}
         screen={formPreviewScreen}
-        platform={
-          form.placementMode === "instagram"
-            ? "instagram"
-            : "facebook"
-        }
+        platform={formPreviewPlatform}
+        onScreenChange={setFormPreviewScreen}
+        onPlatformChange={setFormPreviewPlatform}
       />
     </aside>
   );
@@ -1474,8 +1536,8 @@ export default function MetaCampaignEditorPage() {
 
       case "schedule":
         return (
-          <div className="grid gap-4 sm:grid-cols-2">
-            <label className="block">
+          <div className="space-y-4">
+            <label className="block max-w-md">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
                 {t("metaCampaigns.form.startTime")} *
               </span>
@@ -1486,17 +1548,40 @@ export default function MetaCampaignEditorPage() {
                 onChange={(e) => updateField("startTime", e.target.value)}
               />
             </label>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.stopTime")}
-              </span>
+            <label className="flex items-center gap-2 text-sm font-black text-slate-700">
               <input
-                type="datetime-local"
-                className={inputBase}
-                value={form.stopTime}
-                onChange={(e) => updateField("stopTime", e.target.value)}
+                type="checkbox"
+                checked={!form.stopTime}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    updateField("stopTime", "");
+                  } else {
+                    updateField("stopTime", defaultStopLocal());
+                  }
+                }}
               />
+              {t("metaCampaigns.form.noEndDate")}
             </label>
+            {form.stopTime ? (
+              <label className="block max-w-md">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.form.stopTime")}{" "}
+                  <span className="font-semibold text-slate-400">
+                    ({t("metaCampaigns.form.optional")})
+                  </span>
+                </span>
+                <input
+                  type="datetime-local"
+                  className={inputBase}
+                  value={form.stopTime}
+                  onChange={(e) => updateField("stopTime", e.target.value)}
+                />
+              </label>
+            ) : (
+              <p className="rounded-xl border border-emerald-100 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700">
+                {t("metaCampaigns.form.noEndDateHint")}
+              </p>
+            )}
           </div>
         );
 
@@ -1755,12 +1840,18 @@ export default function MetaCampaignEditorPage() {
           <div className="space-y-4">
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.wizard.leadForm.introTitle")}
+                {t("metaCampaigns.wizard.leadForm.introTitle")} *
               </span>
               <input
                 className={inputBase}
                 value={introTitle}
-                onChange={(e) => setIntroTitle(e.target.value)}
+                onChange={(e) => {
+                  setFormPreviewScreen("intro");
+                  setIntroTitle(e.target.value);
+                }}
+                placeholder={t(
+                  "metaCampaigns.wizard.formPreview.introTitlePlaceholder"
+                )}
               />
             </label>
             <label className="block">
@@ -1770,9 +1861,18 @@ export default function MetaCampaignEditorPage() {
               <textarea
                 className={`${inputBase} min-h-[96px]`}
                 value={introDescription}
-                onChange={(e) => setIntroDescription(e.target.value)}
+                onChange={(e) => {
+                  setFormPreviewScreen("intro");
+                  setIntroDescription(e.target.value);
+                }}
+                placeholder={t(
+                  "metaCampaigns.wizard.formPreview.introDescriptionPlaceholder"
+                )}
               />
             </label>
+            <p className="text-xs font-semibold text-slate-500">
+              {t("metaCampaigns.wizard.formPreview.liveHint")}
+            </p>
           </div>
         );
 
@@ -1781,8 +1881,14 @@ export default function MetaCampaignEditorPage() {
           <LeadFormQuestionBuilder
             contactTypes={leadContactTypes}
             customQuestions={leadCustomQuestions}
-            onContactTypesChange={setLeadContactTypes}
-            onCustomQuestionsChange={setLeadCustomQuestions}
+            onContactTypesChange={(value) => {
+              setFormPreviewScreen("questions");
+              setLeadContactTypes(value);
+            }}
+            onCustomQuestionsChange={(value) => {
+              setFormPreviewScreen("questions");
+              setLeadCustomQuestions(value);
+            }}
             disabled={formsBusy}
           />
         );
@@ -1797,18 +1903,24 @@ export default function MetaCampaignEditorPage() {
               <input
                 className={inputBase}
                 value={privacyPolicyUrl}
-                onChange={(e) => setPrivacyPolicyUrl(e.target.value)}
-                placeholder="https://"
+                onChange={(e) => {
+                  setFormPreviewScreen("privacy");
+                  setPrivacyPolicyUrl(e.target.value);
+                }}
+                placeholder="https://example.com/privacy"
               />
             </label>
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.wizard.leadForm.thankYouTitle")}
+                {t("metaCampaigns.wizard.leadForm.thankYouTitle")} *
               </span>
               <input
                 className={inputBase}
                 value={thankYouTitle}
-                onChange={(e) => setThankYouTitle(e.target.value)}
+                onChange={(e) => {
+                  setFormPreviewScreen("thanks");
+                  setThankYouTitle(e.target.value);
+                }}
               />
             </label>
             <label className="block">
@@ -1818,7 +1930,10 @@ export default function MetaCampaignEditorPage() {
               <textarea
                 className={`${inputBase} min-h-[72px]`}
                 value={thankYouBody}
-                onChange={(e) => setThankYouBody(e.target.value)}
+                onChange={(e) => {
+                  setFormPreviewScreen("thanks");
+                  setThankYouBody(e.target.value);
+                }}
               />
             </label>
             <label className="block">
@@ -1828,7 +1943,10 @@ export default function MetaCampaignEditorPage() {
               <input
                 className={inputBase}
                 value={thankYouButton}
-                onChange={(e) => setThankYouButton(e.target.value)}
+                onChange={(e) => {
+                  setFormPreviewScreen("thanks");
+                  setThankYouButton(e.target.value);
+                }}
               />
             </label>
             <div className="flex flex-wrap gap-2">
@@ -2228,20 +2346,15 @@ export default function MetaCampaignEditorPage() {
             <h2 className="mt-1 text-2xl font-black text-slate-900">
               {isEdit
                 ? t("metaCampaigns.form.editTitle")
-                : t("metaCampaigns.form.createTitleWow")}
+                : t("metaCampaigns.form.createTitle")}
             </h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">
               {isEdit
                 ? t("metaCampaigns.form.subtitle")
-                : t("metaCampaigns.form.createWowSubtitle")}
+                : t("metaCampaigns.form.createSubtitleSteps")}
             </p>
           </div>
-          {!isEdit ? (
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/80 px-3 py-1.5 text-xs font-black text-slate-600 shadow-sm">
-              <Sparkles className="h-3.5 w-3.5 text-[#1877F2]" />
-              {t("metaCampaigns.form.simplerThanMeta")}
-            </div>
-          ) : (
+          {!isEdit ? null : (
             <div className="flex flex-wrap gap-2">
               <span
                 className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-black ${tone.bg} ${tone.text} ${tone.border}`}

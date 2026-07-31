@@ -171,9 +171,21 @@ export default function MetaLocationsMap({
     }
 
     window.setTimeout(() => map.invalidateSize(), 80);
+    window.setTimeout(() => map.invalidateSize(), 250);
+    window.setTimeout(() => map.invalidateSize(), 600);
   }, [points, focusKey, onSelectLocation]);
 
   const focusPoint = points.find((p) => p.identity === focusKey && p.radiusKm != null);
+  const selectedWithoutCoords =
+    locations.length > 0 &&
+    locations.some(
+      (item) =>
+        item.radiusKm != null &&
+        (item.latitude == null ||
+          item.longitude == null ||
+          !Number.isFinite(Number(item.latitude)) ||
+          !Number.isFinite(Number(item.longitude)))
+    );
 
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
@@ -182,6 +194,11 @@ export default function MetaLocationsMap({
         <p className="border-t border-slate-200 bg-[#1877F2]/5 px-3 py-2 text-[11px] font-black text-[#1877F2]">
           רדיוס אמיתי סביב {focusPoint.name}: {focusPoint.radiusKm} ק״מ — העיגול
           במפה בקנה מידה גאוגרפי
+        </p>
+      ) : null}
+      {selectedWithoutCoords ? (
+        <p className="border-t border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-black text-amber-700">
+          העיר נבחרה, אבל עדיין אין נקודה על המפה. מנסים לאתר קואורדינטות…
         </p>
       ) : null}
       {hint ? (
