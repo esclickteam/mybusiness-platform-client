@@ -14,7 +14,6 @@ import {
 import MetaLocationsMap from "../../MetaLocationsMap";
 import { geocodeLocation } from "../../metaLocationGeo";
 import type { AdsManagerLocation } from "../adsManagerTypes";
-import { metaInputClass, metaSelectClass } from "../metaAdsUi";
 
 type Props = {
   locations: AdsManagerLocation[];
@@ -90,7 +89,10 @@ export default function AdsManagerLocationsSection({
   const [focusKey, setFocusKey] = useState<string | null>(null);
   const [radiusMenuKey, setRadiusMenuKey] = useState<string | null>(null);
   const [reachMore, setReachMore] = useState(true);
+  const [includeOpen, setIncludeOpen] = useState(false);
+  const [browseOpen, setBrowseOpen] = useState(false);
   const boxRef = useRef<HTMLDivElement | null>(null);
+  const searchBarRef = useRef<HTMLDivElement | null>(null);
   const reqId = useRef(0);
 
   const selectedKeys = useMemo(
@@ -104,6 +106,10 @@ export default function AdsManagerLocationsSection({
       if (!boxRef.current?.contains(target)) {
         setOpen(false);
         setRadiusMenuKey(null);
+      }
+      if (!searchBarRef.current?.contains(target)) {
+        setIncludeOpen(false);
+        setBrowseOpen(false);
       }
     };
     document.addEventListener("mousedown", onDoc);
@@ -419,83 +425,155 @@ export default function AdsManagerLocationsSection({
             </p>
           )}
 
-          {/* Include + Search — Meta layout */}
-          <div className="flex gap-2">
-            <select
-              className={`${metaSelectClass} w-[108px] shrink-0`}
-              value={includeMode}
-              onChange={(e) =>
-                setIncludeMode(e.target.value as "include" | "exclude")
-              }
-            >
-              <option value="include">Include</option>
-              <option value="exclude">Exclude</option>
-            </select>
-            <div className="relative min-w-0 flex-1">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8A8D91]" />
-              <input
-                className={`${metaInputClass} pl-9`}
-                placeholder="Search locations"
-                value={query}
-                autoComplete="off"
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  if (e.target.value.trim().length >= 2) setOpen(true);
-                }}
-                onFocus={() => {
-                  if (results.length) setOpen(true);
-                }}
-              />
-              {busy ? (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold text-[#65676B]">
-                  …
-                </span>
-              ) : null}
+          {/* Meta-style single search bar: Include | 🔍 Search locations | Browse */}
+          <div className="relative w-full" ref={searchBarRef} dir="ltr">
+            <div className="flex h-10 w-full items-stretch overflow-hidden rounded-md border border-[#CED0D4] bg-white focus-within:border-[#1877F2] focus-within:shadow-[0_0_0_2px_rgba(24,119,242,0.2)]">
+              <div className="relative shrink-0 border-r border-[#CED0D4]">
+                <button
+                  type="button"
+                  className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                  onClick={() => {
+                    setIncludeOpen((v) => !v);
+                    setBrowseOpen(false);
+                  }}
+                >
+                  {includeMode === "include" ? "Include" : "Exclude"}
+                  <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
+                </button>
+                {includeOpen ? (
+                  <div className="absolute left-0 top-full z-50 mt-1 min-w-[120px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                    {(
+                      [
+                        ["include", "Include"],
+                        ["exclude", "Exclude"],
+                      ] as const
+                    ).map(([value, label]) => (
+                      <button
+                        key={value}
+                        type="button"
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] font-semibold hover:bg-[#F0F2F5]"
+                        onClick={() => {
+                          setIncludeMode(value);
+                          setIncludeOpen(false);
+                        }}
+                      >
+                        <span className="w-4">
+                          {includeMode === value ? (
+                            <Check className="h-3.5 w-3.5 text-[#1877F2]" />
+                          ) : null}
+                        </span>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
 
-              {open && (results.length > 0 || busy) ? (
-                <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl">
-                  {busy && !results.length ? (
-                    <p className="px-3 py-3 text-[13px] text-[#65676B]">
-                      Searching…
-                    </p>
-                  ) : (
-                    results.map((item) => {
-                      const id = locationIdentity(item);
-                      const selected = selectedKeys.has(id);
-                      return (
-                        <button
-                          key={id}
-                          type="button"
-                          disabled={selected}
-                          className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5] disabled:opacity-50"
-                          onMouseDown={(e) => e.preventDefault()}
-                          onClick={() => addLocation(item)}
-                        >
-                          <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
-                          <span className="min-w-0 flex-1">
-                            <span className="block truncate text-[13px] font-semibold text-[#050505]">
-                              {item.name}
-                            </span>
-                            <span className="block truncate text-[11px] text-[#65676B]">
-                              {[
-                                item.type,
-                                item.region,
-                                item.countryName || item.countryCode,
-                              ]
-                                .filter(Boolean)
-                                .join(" · ")}
-                            </span>
-                          </span>
-                          <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
-                            {selected ? "Added" : "Add"}
-                          </span>
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              ) : null}
+              <label className="relative flex min-w-0 flex-1 items-center">
+                <Search className="pointer-events-none absolute left-3 h-4 w-4 shrink-0 text-[#8A8D91]" />
+                <input
+                  className="h-full w-full border-0 bg-transparent py-0 pl-9 pr-3 text-[14px] text-[#050505] outline-none placeholder:text-[#8A8D91]"
+                  placeholder="Search locations"
+                  value={query}
+                  autoComplete="off"
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    if (e.target.value.trim().length >= 2) setOpen(true);
+                  }}
+                  onFocus={() => {
+                    setIncludeOpen(false);
+                    setBrowseOpen(false);
+                    if (results.length || query.trim().length >= 2) setOpen(true);
+                  }}
+                />
+                {busy ? (
+                  <span className="absolute right-3 text-[11px] font-semibold text-[#65676B]">
+                    …
+                  </span>
+                ) : null}
+              </label>
+
+              <div className="relative shrink-0 border-l border-[#CED0D4]">
+                <button
+                  type="button"
+                  className="flex h-full items-center gap-1 px-3 text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                  onClick={() => {
+                    setBrowseOpen((v) => !v);
+                    setIncludeOpen(false);
+                    setOpen(false);
+                  }}
+                >
+                  Browse
+                  <ChevronDown className="h-3.5 w-3.5 text-[#65676B]" />
+                </button>
+                {browseOpen ? (
+                  <div className="absolute right-0 top-full z-50 mt-1 min-w-[180px] overflow-hidden rounded-md border border-[#CED0D4] bg-white shadow-lg">
+                    {[
+                      { label: "Countries", q: "Israel" },
+                      { label: "Regions", q: "Haifa" },
+                      { label: "Cities", q: "Tel Aviv" },
+                    ].map((item) => (
+                      <button
+                        key={item.label}
+                        type="button"
+                        className="block w-full px-3 py-2.5 text-left text-[13px] font-semibold text-[#050505] hover:bg-[#F0F2F5]"
+                        onClick={() => {
+                          setQuery(item.q);
+                          setBrowseOpen(false);
+                          setOpen(true);
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
             </div>
+
+            {open && (results.length > 0 || busy) ? (
+              <div className="absolute z-50 mt-1 max-h-60 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl">
+                {busy && !results.length ? (
+                  <p className="px-3 py-3 text-[13px] text-[#65676B]">
+                    Searching…
+                  </p>
+                ) : (
+                  results.map((item) => {
+                    const id = locationIdentity(item);
+                    const selected = selectedKeys.has(id);
+                    return (
+                      <button
+                        key={id}
+                        type="button"
+                        disabled={selected}
+                        className="flex w-full items-start gap-2 px-3 py-2.5 text-left hover:bg-[#F0F2F5] disabled:opacity-50"
+                        onMouseDown={(e) => e.preventDefault()}
+                        onClick={() => addLocation(item)}
+                      >
+                        <MapPin className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#1877F2]" />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate text-[13px] font-semibold text-[#050505]">
+                            {item.name}
+                          </span>
+                          <span className="block truncate text-[11px] text-[#65676B]">
+                            {[
+                              item.type,
+                              item.region,
+                              item.countryName || item.countryCode,
+                            ]
+                              .filter(Boolean)
+                              .join(" · ")}
+                          </span>
+                        </span>
+                        <span className="shrink-0 text-[11px] font-bold text-[#1877F2]">
+                          {selected ? "Added" : "Add"}
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+            ) : null}
           </div>
 
           {error ? (
