@@ -27,7 +27,6 @@ import {
   Save,
   ShoppingBag,
   Sparkles,
-  Target,
   Trash2,
   Upload,
   Users,
@@ -46,7 +45,9 @@ import {
   type MetaAdPreview,
   type MetaAdsConnectionStatus,
   type MetaCampaign,
+  type MetaInterestTarget,
   type MetaLeadForm,
+  type MetaLocationTarget,
 } from "../../../../api/metaCampaignsApi";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
@@ -58,6 +59,9 @@ import {
 } from "../../../../styles/bizuplyUi";
 import AdPlacementPreview from "./AdPlacementPreview";
 import LeadFormQuestionBuilder from "./LeadFormQuestionBuilder";
+import MetaAudienceTargetingPanel, {
+  DEFAULT_ISRAEL_LOCATION,
+} from "./MetaAudienceTargetingPanel";
 import {
   buildMetaLeadFormQuestionsPayload,
   defaultSelectedLeadContactTypes,
@@ -92,7 +96,9 @@ type FormState = {
   startTime: string;
   stopTime: string;
   pageId: string;
-  countries: string;
+  locations: MetaLocationTarget[];
+  locationMode: "places" | "radius";
+  interests: MetaInterestTarget[];
   ageMin: string;
   ageMax: string;
   gender: "all" | "1" | "2";
@@ -149,7 +155,9 @@ const EMPTY_FORM: FormState = {
   startTime: defaultStartLocal(),
   stopTime: defaultStopLocal(),
   pageId: "",
-  countries: "IL",
+  locations: [{ ...DEFAULT_ISRAEL_LOCATION }],
+  locationMode: "places",
+  interests: [],
   ageMin: "18",
   ageMax: "65",
   gender: "all",
@@ -459,9 +467,13 @@ export default function MetaCampaignEditorPage() {
     const lifetimeBudget = form.lifetimeBudget
       ? Number(form.lifetimeBudget)
       : null;
-    const countries = form.countries
-      .split(/[,\s]+/)
-      .map((item) => item.trim().toUpperCase())
+    const locations =
+      form.locations?.length > 0
+        ? form.locations
+        : [{ ...DEFAULT_ISRAEL_LOCATION }];
+    const countries = locations
+      .filter((item) => item.type === "country")
+      .map((item) => String(item.key || item.countryCode || "").toUpperCase())
       .filter(Boolean);
 
     const facebookPositions = [
@@ -490,7 +502,9 @@ export default function MetaCampaignEditorPage() {
       stopTime: form.stopTime ? new Date(form.stopTime).toISOString() : null,
       pageId: form.pageId,
       leadFormId: isLeads ? form.leadFormId : undefined,
-      countries: countries.length ? countries : ["IL"],
+      locations,
+      interests: form.interests,
+      countries: countries.length ? countries : undefined,
       ageMin: form.ageMin ? Number(form.ageMin) : null,
       ageMax: form.ageMax ? Number(form.ageMax) : null,
       genders: form.gender === "all" ? [] : [Number(form.gender)],
@@ -557,6 +571,12 @@ export default function MetaCampaignEditorPage() {
         new Date(form.stopTime) <= new Date(form.startTime)
       ) {
         toast.error(t("metaCampaigns.form.endAfterStart"));
+        return false;
+      }
+    }
+    if (step === 4) {
+      if (!form.locations?.length) {
+        toast.error(t("metaCampaigns.form.locationsRequired"));
         return false;
       }
     }
@@ -1196,91 +1216,25 @@ export default function MetaCampaignEditorPage() {
       {!isEdit && createStep === 4 ? (
         <div className="grid gap-4 xl:grid-cols-2">
           <div className={`${cardBase} space-y-4 p-5`}>
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                <Target className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-lg font-black text-slate-900">
-                  {t("metaCampaigns.form.audienceTitle")}
-                </p>
-                <p className="text-sm font-semibold text-slate-500">
-                  {t("metaCampaigns.form.audienceHint")}
-                </p>
-              </div>
-            </div>
-            <label className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
-              <span>
-                <span className="block text-sm font-black text-slate-900">
-                  Advantage+ {t("metaCampaigns.form.audience")}
-                </span>
-                <span className="block text-xs font-semibold text-slate-500">
-                  {t("metaCampaigns.form.advantageAudienceHint")}
-                </span>
-              </span>
-              <input
-                type="checkbox"
-                checked={form.advantageAudience}
-                onChange={(e) => updateField("advantageAudience", e.target.checked)}
-                className="h-5 w-5"
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.countries")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.countries}
-                onChange={(e) => updateField("countries", e.target.value)}
-              />
-            </label>
-            {!form.advantageAudience ? (
-              <div className="grid grid-cols-2 gap-3">
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.ageMin")}
-                  </span>
-                  <input
-                    type="number"
-                    min="13"
-                    max="65"
-                    className={inputBase}
-                    value={form.ageMin}
-                    onChange={(e) => updateField("ageMin", e.target.value)}
-                  />
-                </label>
-                <label className="block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.ageMax")}
-                  </span>
-                  <input
-                    type="number"
-                    min="13"
-                    max="65"
-                    className={inputBase}
-                    value={form.ageMax}
-                    onChange={(e) => updateField("ageMax", e.target.value)}
-                  />
-                </label>
-                <label className="col-span-2 block">
-                  <span className="mb-1.5 block text-xs font-black text-slate-500">
-                    {t("metaCampaigns.form.gender")}
-                  </span>
-                  <select
-                    className={inputBase}
-                    value={form.gender}
-                    onChange={(e) =>
-                      updateField("gender", e.target.value as FormState["gender"])
-                    }
-                  >
-                    <option value="all">{t("metaCampaigns.form.genderAll")}</option>
-                    <option value="1">{t("metaCampaigns.form.genderMale")}</option>
-                    <option value="2">{t("metaCampaigns.form.genderFemale")}</option>
-                  </select>
-                </label>
-              </div>
-            ) : null}
+            <MetaAudienceTargetingPanel
+              businessId={businessId}
+              advantageAudience={form.advantageAudience}
+              onAdvantageAudienceChange={(value) =>
+                updateField("advantageAudience", value)
+              }
+              locations={form.locations}
+              onLocationsChange={(value) => updateField("locations", value)}
+              locationMode={form.locationMode}
+              onLocationModeChange={(value) => updateField("locationMode", value)}
+              interests={form.interests}
+              onInterestsChange={(value) => updateField("interests", value)}
+              ageMin={form.ageMin}
+              ageMax={form.ageMax}
+              gender={form.gender}
+              onAgeMinChange={(value) => updateField("ageMin", value)}
+              onAgeMaxChange={(value) => updateField("ageMax", value)}
+              onGenderChange={(value) => updateField("gender", value)}
+            />
           </div>
 
           <div className={`${cardBase} space-y-4 p-5`}>
