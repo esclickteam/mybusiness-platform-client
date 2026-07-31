@@ -206,7 +206,8 @@ export default function MetaBillingAccountCards({
                   Account review: {wabaBilling.accountReviewStatus}
                 </p>
               ) : null}
-              {wabaBilling.hasPaymentMethod === true ||
+              {wabaBilling.paymentMethodDisplay ||
+              wabaBilling.hasPaymentMethod === true ||
               wabaBilling.hasPrimaryFundingId === true ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700">
                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -216,8 +217,8 @@ export default function MetaBillingAccountCards({
                     : ""}
                 </p>
               ) : null}
-              {wabaBilling.hasPaymentMethod === false ||
-              (wabaBilling.hasPaymentMethod == null &&
+              {!wabaBilling.paymentMethodDisplay &&
+              (wabaBilling.hasPaymentMethod === false ||
                 wabaBilling.hasPrimaryFundingId === false) ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
@@ -225,11 +226,12 @@ export default function MetaBillingAccountCards({
                   blocked
                 </p>
               ) : null}
-              {wabaBilling.hasPaymentMethod == null &&
+              {!wabaBilling.paymentMethodDisplay &&
+              wabaBilling.hasPaymentMethod == null &&
               wabaBilling.hasPrimaryFundingId == null ? (
                 <p className="text-xs font-semibold text-slate-500">
-                  Payment method details unavailable with current permissions
-                  (account status still shown).
+                  Payment method not returned by Meta for this token yet — open
+                  WhatsApp Manager to confirm billing.
                 </p>
               ) : null}
               <p className="text-[11px] font-semibold leading-relaxed text-slate-500">
