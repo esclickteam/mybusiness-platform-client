@@ -752,5 +752,6 @@ export default function WhatsAppSettingsTab() {
         </section>
       </div>
     </div>
+    </div>
   );
 }
