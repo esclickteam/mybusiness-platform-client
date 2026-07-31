@@ -493,12 +493,58 @@ export async function previewWhatsAppTemplateMappings(
     appointmentRequired?: boolean;
     selectAppointmentMessage?: string;
     timeZone?: string;
+    appointmentId?: string | null;
+    appointment?: { id: string; date: string; time: string } | null;
   };
 }
 
-export async function listWhatsAppMappingAppointments(businessId: string) {
+export type WhatsAppSendPreviewState =
+  | "not_needed"
+  | "ready"
+  | "select"
+  | "none";
+
+export async function previewWhatsAppComposeTemplate(
+  businessId: string,
+  templateId: string,
+  payload: {
+    crmClientId?: string | null;
+    appointmentId?: string | null;
+    phone?: string;
+    name?: string;
+    manualValues?: Record<string, string>;
+  }
+) {
+  const { data } = await API.post(
+    `/whatsapp/templates/${templateId}/send-preview`,
+    { businessId, ...payload }
+  );
+  return data as {
+    success: boolean;
+    resolved: Record<string, string>;
+    missing: string[];
+    previewBody: string;
+    previewHeader: string;
+    mappingStatus: WhatsAppMappingStatus;
+    appointmentId?: string | null;
+    appointments: WhatsAppMappingAppointment[];
+    appointmentState: WhatsAppSendPreviewState;
+    selectAppointmentMessage?: string;
+    timeZone?: string;
+  };
+}
+
+export async function listWhatsAppMappingAppointments(
+  businessId: string,
+  opts?: { crmClientId?: string | null; phone?: string; limit?: number }
+) {
   const { data } = await API.get("/whatsapp/mapping-appointments", {
-    params: { businessId },
+    params: {
+      businessId,
+      crmClientId: opts?.crmClientId || undefined,
+      phone: opts?.phone || undefined,
+      limit: opts?.limit,
+    },
   });
   return (data?.appointments || []) as WhatsAppMappingAppointment[];
 }
@@ -687,6 +733,7 @@ export async function sendWhatsAppCampaign(
     mailingListId?: string;
     manualRecipients?: Array<{ name?: string; phone: string }>;
     variables?: Record<string, string>;
+    appointmentId?: string | null;
     consentConfirmed: boolean;
   }
 ) {

@@ -4554,7 +4554,12 @@
       "mappingNeededSuffix": "Variable mapping required",
       "mappingBanner": "This template is approved on Meta, but variables must be mapped before sending.",
       "goToMapping": "Go to variable mapping",
-      "manualValues": "Manual values for send"
+      "manualValues": "Manual values for send",
+      "selectAppointment": "Select appointment",
+      "noAppointmentForClient": "No appointment found for this client.",
+      "selectOneClientForPreview": "Select one client to preview appointment variables.",
+      "previewLoading": "Resolving preview…",
+      "previewFailed": "Failed to resolve send preview"
     },
     "templates": {
       "title": "Message templates",
@@ -4944,10 +4949,13 @@
       "previewTitle": "Preview",
       "missingValues": "Missing values: {{vars}}",
       "allValuesFilled": "All required variables were filled in this test",
+      "testClient": "Test with client",
+      "allClients": "All clients",
       "testAppointment": "Test with real appointment",
       "selectAppointment": "Select an appointment",
       "selectAppointmentToTest": "Select an appointment to test this mapping.",
-      "noAppointments": "No upcoming appointments found for this business."
+      "noAppointments": "No upcoming appointments found for this business.",
+      "noAppointmentsForClient": "No appointment found for this client."
     }
   },
   "metaCampaigns": {

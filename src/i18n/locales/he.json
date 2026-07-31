@@ -4543,7 +4543,12 @@
       "mappingNeededSuffix": "נדרשת הגדרת משתנים",
       "mappingBanner": "התבנית מאושרת במטא, אך יש להגדיר את המשתנים לפני השליחה.",
       "goToMapping": "מעבר להגדרת משתנים",
-      "manualValues": "ערכים ידניים לשליחה"
+      "manualValues": "ערכים ידניים לשליחה",
+      "selectAppointment": "בחרו פגישה",
+      "noAppointmentForClient": "No appointment found for this client.",
+      "selectOneClientForPreview": "בחרו לקוח אחד כדי לראות תצוגה מקדימה של משתני הפגישה.",
+      "previewLoading": "טוען תצוגה מקדימה…",
+      "previewFailed": "טעינת תצוגה מקדימה לשליחה נכשלה"
     },
     "templates": {
       "title": "Message templates",
@@ -4933,10 +4938,13 @@
       "previewTitle": "תצוגה מקדימה",
       "missingValues": "חסרים ערכים: {{vars}}",
       "allValuesFilled": "כל המשתנים הנדרשים מולאו בבדיקה זו",
+      "testClient": "בדיקה עם לקוח",
+      "allClients": "כל הלקוחות",
       "testAppointment": "בדיקה עם פגישה אמיתית",
       "selectAppointment": "בחרו פגישה",
       "selectAppointmentToTest": "Select an appointment to test this mapping.",
-      "noAppointments": "לא נמצאו פגישות קרובות לעסק זה."
+      "noAppointments": "לא נמצאו פגישות קרובות לעסק זה.",
+      "noAppointmentsForClient": "No appointment found for this client."
     }
   },
   "metaCampaigns": {

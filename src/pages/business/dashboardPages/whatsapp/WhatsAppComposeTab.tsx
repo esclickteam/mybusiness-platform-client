@@ -20,11 +20,14 @@ import {
   listWhatsAppLists,
   listWhatsAppRecipients,
   listWhatsAppTemplates,
+  previewWhatsAppComposeTemplate,
   sendWhatsAppCampaign,
   syncWhatsAppTemplates,
   type WhatsAppConnection,
   type WhatsAppMailingList,
+  type WhatsAppMappingAppointment,
   type WhatsAppRecipient,
+  type WhatsAppSendPreviewState,
   type WhatsAppTemplate,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
@@ -37,30 +40,6 @@ import {
 
 type OutletCtx = { businessId: string | null };
 type AudienceType = "selected_clients" | "mailing_list";
-
-function renderPreview(
-  body: string,
-  variables: Record<string, string>,
-  bindings: string[] = [],
-  fallbackName = ""
-) {
-  return String(body || "").replace(
-    /\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g,
-    (_, key) => {
-      if (/^\d+$/.test(key)) {
-        const idx = Number(key) - 1;
-        const bound = bindings[idx];
-        if (bound && variables[bound]) return variables[bound];
-        if (variables[key]) return variables[key];
-        if (key === "1" && (variables.name || fallbackName)) {
-          return variables.name || fallbackName;
-        }
-        return `{{${key}}}`;
-      }
-      return variables[key] || `{{${key}}}`;
-    }
-  );
-}
 
 export default function WhatsAppComposeTab() {
   const { t } = useTranslation();
@@ -86,6 +65,16 @@ export default function WhatsAppComposeTab() {
     {}
   );
   const [consentConfirmed, setConsentConfirmed] = useState(false);
+  const [previewBody, setPreviewBody] = useState("");
+  const [previewMissing, setPreviewMissing] = useState<string[]>([]);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [appointmentId, setAppointmentId] = useState("");
+  const [appointments, setAppointments] = useState<WhatsAppMappingAppointment[]>(
+    []
+  );
+  const [appointmentState, setAppointmentState] =
+    useState<WhatsAppSendPreviewState>("not_needed");
+  const [appointmentMessage, setAppointmentMessage] = useState("");
 
   useEffect(() => {
     if (!businessId) return;
@@ -164,7 +153,6 @@ export default function WhatsAppComposeTab() {
   );
 
   const body = selectedTemplate?.body || "";
-  const variableKeys = selectedTemplate?.variables || [];
   const mappings: WhatsAppVariableMapping[] =
     selectedTemplate?.variableMappings || [];
   const manualMappings = mappings.filter((m) => m.source === "manual");
@@ -181,20 +169,21 @@ export default function WhatsAppComposeTab() {
       setVariableValues({});
       return;
     }
+    // Only seed manual mapping fields — never Meta example values for mapped vars.
     const next: Record<string, string> = {};
     const manuals = (selectedTemplate.variableMappings || []).filter(
       (m) => m.source === "manual"
     );
-    if (manuals.length) {
-      for (const row of manuals) {
-        next[row.variable] = row.exampleValue || "";
-      }
-    } else {
-      for (const key of selectedTemplate.variables || []) {
-        next[key] = selectedTemplate.exampleValues?.[key] || "";
-      }
+    for (const row of manuals) {
+      next[row.variable] = "";
     }
     setVariableValues(next);
+    setAppointmentId("");
+    setAppointments([]);
+    setAppointmentState("not_needed");
+    setAppointmentMessage("");
+    setPreviewBody("");
+    setPreviewMissing([]);
   }, [selectedTemplate?._id]);
 
   const selectedRecipient = useMemo(() => {
@@ -204,49 +193,105 @@ export default function WhatsAppComposeTab() {
     return recipients.find((r) => r.id === selectedClientIds[0]) || null;
   }, [audienceType, selectedClientIds, recipients]);
 
-  const previewBody = useMemo(() => {
-    const vars = {
-      ...variableValues,
-      name: selectedRecipient?.name || variableValues["1"] || "",
+  const needsAppointment = useMemo(
+    () => mappings.some((m) => m.source === "appointment" && m.field),
+    [mappings]
+  );
+
+  useEffect(() => {
+    if (!businessId || !selectedTemplate || !mappingReady) {
+      setPreviewBody("");
+      setPreviewMissing([]);
+      return;
+    }
+
+    // Multi-recipient: show template body without resolved client/appointment values.
+    if (audienceType !== "selected_clients" || selectedClientIds.length !== 1) {
+      setPreviewBody(selectedTemplate.body || "");
+      setPreviewMissing([]);
+      setAppointments([]);
+      setAppointmentState(needsAppointment ? "select" : "not_needed");
+      setAppointmentMessage(
+        needsAppointment && selectedClientIds.length !== 1
+          ? t("whatsapp.compose.selectOneClientForPreview")
+          : ""
+      );
+      return;
+    }
+
+    let cancelled = false;
+    const run = async () => {
+      setPreviewLoading(true);
+      try {
+        const data = await previewWhatsAppComposeTemplate(
+          businessId,
+          selectedTemplate._id,
+          {
+            crmClientId: selectedRecipient?.id || null,
+            phone: selectedRecipient?.phone || "",
+            name: selectedRecipient?.name || "",
+            appointmentId: appointmentId || null,
+            manualValues: variableValues,
+          }
+        );
+        if (cancelled) return;
+        setPreviewBody(data.previewBody || "");
+        setPreviewMissing(data.missing || []);
+        setAppointments(data.appointments || []);
+        setAppointmentState(data.appointmentState || "not_needed");
+        setAppointmentMessage(data.selectAppointmentMessage || "");
+        if (
+          data.appointmentId &&
+          data.appointmentState === "ready" &&
+          data.appointmentId !== appointmentId
+        ) {
+          setAppointmentId(String(data.appointmentId));
+        }
+      } catch (error: unknown) {
+        if (!cancelled) {
+          setPreviewBody("");
+          setPreviewMissing([]);
+          setAppointmentMessage(
+            (error as { response?: { data?: { error?: string } } })?.response
+              ?.data?.error || t("whatsapp.compose.previewFailed")
+          );
+        }
+      } finally {
+        if (!cancelled) setPreviewLoading(false);
+      }
     };
-    return renderPreview(
-      body,
-      vars,
-      selectedTemplate?.variableBindings || [],
-      selectedRecipient?.name || ""
-    );
-  }, [body, variableValues, selectedTemplate, selectedRecipient]);
+    void run();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    businessId,
+    selectedTemplate?._id,
+    mappingReady,
+    audienceType,
+    selectedClientIds,
+    selectedRecipient?.id,
+    selectedRecipient?.phone,
+    selectedRecipient?.name,
+    appointmentId,
+    variableValues,
+    needsAppointment,
+    t,
+  ]);
 
   const missingVariables = useMemo(() => {
-    if (manualMappings.length) {
-      return manualMappings
-        .filter((m) => m.required !== false)
-        .map((m) => m.variable)
-        .filter((key) => !variableValues[key]?.trim());
-    }
-    return variableKeys.filter((key) => {
-      if (variableValues[key]?.trim()) return false;
-      const idx = Number(key) - 1;
-      const binding = selectedTemplate?.variableBindings?.[idx];
-      if (
-        (binding === "name" || key === "1") &&
-        selectedRecipient?.name
-      ) {
-        return false;
-      }
-      // Mapped non-manual fields resolve on the server per recipient.
+    const manualMissing = manualMappings
+      .filter((m) => m.required !== false)
+      .map((m) => m.variable)
+      .filter((key) => !variableValues[key]?.trim());
+
+    const resolvedMissing = previewMissing.filter((key) => {
       const mapped = mappings.find((m) => m.variable === key);
-      if (mapped && mapped.source && mapped.source !== "manual") return false;
-      return true;
+      return mapped?.source !== "manual";
     });
-  }, [
-    variableKeys,
-    variableValues,
-    selectedTemplate,
-    selectedRecipient,
-    manualMappings,
-    mappings,
-  ]);
+
+    return Array.from(new Set([...manualMissing, ...resolvedMissing]));
+  }, [manualMappings, variableValues, previewMissing, mappings]);
 
   const filteredRecipients = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -272,9 +317,15 @@ export default function WhatsAppComposeTab() {
   }, [audienceType, selectedClientIds.length, lists, mailingListId]);
 
   const toggleClient = (id: string) => {
-    setSelectedClientIds((prev) =>
-      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
-    );
+    setSelectedClientIds((prev) => {
+      const next = prev.includes(id)
+        ? prev.filter((x) => x !== id)
+        : [...prev, id];
+      return next;
+    });
+    setAppointmentId("");
+    setAppointments([]);
+    setAppointmentMessage("");
   };
 
   const handleSend = async () => {
@@ -331,6 +382,8 @@ export default function WhatsAppComposeTab() {
         mailingListId:
           audienceType === "mailing_list" ? mailingListId : undefined,
         variables: variableValues,
+        appointmentId:
+          selectedClientIds.length === 1 ? appointmentId || null : null,
         consentConfirmed: true,
       });
 
@@ -502,17 +555,48 @@ export default function WhatsAppComposeTab() {
                           [row.variable]: e.target.value,
                         }))
                       }
-                      placeholder={
-                        row.exampleValue ||
-                        t("whatsapp.compose.variablePlaceholder", {
-                          n: row.variable,
-                        })
-                      }
+                      placeholder={t("whatsapp.compose.variablePlaceholder", {
+                        n: row.variable,
+                      })}
                     />
                   </label>
                 ))}
               </div>
             )}
+
+            {needsAppointment &&
+            audienceType === "selected_clients" &&
+            selectedClientIds.length === 1 ? (
+              <div className="grid gap-2 rounded-xl border border-sky-200 bg-sky-50/60 p-3">
+                <label className="grid gap-1">
+                  <span className="text-xs font-black text-slate-600">
+                    {t("whatsapp.compose.selectAppointment")}
+                  </span>
+                  <select
+                    className={inputBase}
+                    value={appointmentId}
+                    onChange={(e) => setAppointmentId(e.target.value)}
+                    disabled={appointmentState === "none"}
+                  >
+                    <option value="">
+                      {appointmentState === "none"
+                        ? t("whatsapp.compose.noAppointmentForClient")
+                        : t("whatsapp.compose.selectAppointment")}
+                    </option>
+                    {appointments.map((appt) => (
+                      <option key={appt.id} value={appt.id}>
+                        {appt.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                {appointmentMessage ? (
+                  <p className="text-xs font-semibold text-amber-800">
+                    {appointmentMessage}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
 
             <div className="grid gap-1.5">
               <span className="text-xs font-black text-slate-600">
@@ -676,8 +760,15 @@ export default function WhatsAppComposeTab() {
                   : undefined
               }
             >
-              {previewBody || t("whatsapp.compose.previewEmpty")}
+              {previewLoading
+                ? t("whatsapp.compose.previewLoading")
+                : previewBody || t("whatsapp.compose.previewEmpty")}
             </div>
+            {appointmentMessage && !previewLoading ? (
+              <p className="mt-3 text-xs font-semibold text-amber-800">
+                {appointmentMessage}
+              </p>
+            ) : null}
           </div>
         </section>
 
@@ -716,7 +807,11 @@ export default function WhatsAppComposeTab() {
               !templateId ||
               !consentConfirmed ||
               !mappingReady ||
-              missingVariables.length > 0
+              missingVariables.length > 0 ||
+              (needsAppointment &&
+                selectedClientIds.length === 1 &&
+                (appointmentState === "none" ||
+                  (appointmentState === "select" && !appointmentId)))
             }
             onClick={handleSend}
             className={`${btnPrimary} mt-4 w-full`}

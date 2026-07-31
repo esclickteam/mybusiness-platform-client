@@ -4,11 +4,13 @@ import { Loader2, Save, Eye, ArrowRight } from "lucide-react";
 import {
   getWhatsAppTemplateVariableMappings,
   listWhatsAppMappingAppointments,
+  listWhatsAppRecipients,
   previewWhatsAppTemplateMappings,
   saveWhatsAppTemplateVariableMappings,
   type WhatsAppMappingAppointment,
   type WhatsAppMappingCatalog,
   type WhatsAppMappingStatus,
+  type WhatsAppRecipient,
   type WhatsAppTemplate,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
@@ -67,6 +69,8 @@ export default function WhatsAppVariableMappingScreen({
   const [appointments, setAppointments] = useState<WhatsAppMappingAppointment[]>(
     []
   );
+  const [clients, setClients] = useState<WhatsAppRecipient[]>([]);
+  const [testClientId, setTestClientId] = useState("");
   const [appointmentId, setAppointmentId] = useState("");
   const [selectAppointmentMessage, setSelectAppointmentMessage] = useState("");
 
@@ -76,9 +80,9 @@ export default function WhatsAppVariableMappingScreen({
       setLoading(true);
       setError("");
       try {
-        const [data, appts] = await Promise.all([
+        const [data, people] = await Promise.all([
           getWhatsAppTemplateVariableMappings(businessId, template._id),
-          listWhatsAppMappingAppointments(businessId).catch(() => []),
+          listWhatsAppRecipients(businessId).catch(() => []),
         ]);
         if (cancelled) return;
         setCatalog(data.catalog);
@@ -88,7 +92,7 @@ export default function WhatsAppVariableMappingScreen({
             : (data.variables || []).map((v) => emptyRow(v, template))
         );
         setMappingStatus(data.mappingStatus);
-        setAppointments(appts);
+        setClients(people);
       } catch (err: unknown) {
         if (!cancelled) {
           setError(
@@ -111,6 +115,30 @@ export default function WhatsAppVariableMappingScreen({
     () => mappings.some((row) => row.source === "appointment"),
     [mappings]
   );
+
+  useEffect(() => {
+    if (!needsAppointmentPicker || !businessId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const selected = clients.find((c) => c.id === testClientId);
+        const appts = await listWhatsAppMappingAppointments(businessId, {
+          crmClientId: testClientId || null,
+          phone: selected?.phone || "",
+        });
+        if (cancelled) return;
+        setAppointments(appts);
+        setAppointmentId((prev) =>
+          prev && appts.some((a) => a.id === prev) ? prev : ""
+        );
+      } catch {
+        if (!cancelled) setAppointments([]);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, needsAppointmentPicker, testClientId, clients]);
 
   const statusLabel = useMemo(() => {
     if (mappingStatus === "ready") {
@@ -192,6 +220,7 @@ export default function WhatsAppVariableMappingScreen({
         );
         return;
       }
+      const selectedClient = clients.find((c) => c.id === testClientId);
       const data = await previewWhatsAppTemplateMappings(
         businessId,
         template._id,
@@ -199,13 +228,19 @@ export default function WhatsAppVariableMappingScreen({
           mappings,
           manualValues,
           appointmentId: appointmentId || null,
-          name: t("whatsapp.mapping.sampleClientName"),
+          crmClientId: testClientId || null,
+          phone: selectedClient?.phone || "",
+          name:
+            selectedClient?.name || t("whatsapp.mapping.sampleClientName"),
         }
       );
       setPreviewBody(data.previewBody || "");
       setPreviewHeader(data.previewHeader || "");
       setMissing(data.missing || []);
       setMappingStatus(data.mappingStatus);
+      if (data.appointmentId) {
+        setAppointmentId(String(data.appointmentId));
+      }
       if (data.appointmentRequired || data.selectAppointmentMessage) {
         setSelectAppointmentMessage(
           data.selectAppointmentMessage ||
@@ -223,6 +258,13 @@ export default function WhatsAppVariableMappingScreen({
       setPreviewing(false);
     }
   };
+
+  // Auto-refresh preview when a real appointment is selected.
+  useEffect(() => {
+    if (!needsAppointmentPicker || !appointmentId || loading) return;
+    void handlePreview();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional: refresh on appointment pick
+  }, [appointmentId]);
 
   if (loading) {
     return (
@@ -294,7 +336,30 @@ export default function WhatsAppVariableMappingScreen({
       ) : null}
 
       {needsAppointmentPicker ? (
-        <div className="rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-3">
+        <div className="space-y-3 rounded-xl border border-sky-200 bg-sky-50/70 px-3 py-3">
+          <label className="block text-xs font-bold text-slate-700">
+            {t("whatsapp.mapping.testClient")}
+            <select
+              className={`${inputBase} mt-1 bg-white`}
+              value={testClientId}
+              onChange={(e) => {
+                setTestClientId(e.target.value);
+                setAppointmentId("");
+                setPreviewBody("");
+                setPreviewHeader("");
+                setMissing([]);
+                setSelectAppointmentMessage("");
+              }}
+            >
+              <option value="">{t("whatsapp.mapping.allClients")}</option>
+              {clients.map((client) => (
+                <option key={client.id} value={client.id}>
+                  {client.name}
+                  {client.phone ? ` · ${client.phone}` : ""}
+                </option>
+              ))}
+            </select>
+          </label>
           <label className="block text-xs font-bold text-slate-700">
             {t("whatsapp.mapping.testAppointment")}
             <select
@@ -314,7 +379,9 @@ export default function WhatsAppVariableMappingScreen({
           </label>
           {!appointments.length ? (
             <p className="mt-2 text-xs font-semibold text-amber-800">
-              {t("whatsapp.mapping.noAppointments")}
+              {testClientId
+                ? t("whatsapp.mapping.noAppointmentsForClient")
+                : t("whatsapp.mapping.noAppointments")}
             </p>
           ) : null}
           {selectAppointmentMessage ? (
