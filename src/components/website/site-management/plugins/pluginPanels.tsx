@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import {
   Accessibility,
-  Bot,
   Compass,
   Flame,
   FormInput,
@@ -19,6 +18,7 @@ import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
 import SmartSearchPanel from "./SmartSearchPanel";
+import SmartBotPanel from "./SmartBotPanel";
 import {
   bool,
   Field,
@@ -298,46 +298,6 @@ export const SiteJourneyRecordingPanel = makePanel(
   )
 );
 
-export const SiteSalesAgentPanel = makePanel(
-  "sales-agent",
-  Bot,
-  "#4F46E5",
-  "סוכן מכירות AI",
-  "בוט חכם שמוכר, עונה ואוסף לידים באתר.",
-  ({ settings, updateField }) => (
-    <>
-      <Field label="שם הבוט">
-        <TextInput
-          value={str(settings.botName, "נציג המכירות")}
-          onChange={(v) => updateField("botName", v)}
-        />
-      </Field>
-      <Field label="הודעת פתיחה">
-        <TextArea
-          value={str(settings.welcomeMessage)}
-          onChange={(v) => updateField("welcomeMessage", v)}
-        />
-      </Field>
-      <Field label="סגנון (friendly / professional)">
-        <TextInput
-          value={str(settings.tone, "friendly")}
-          onChange={(v) => updateField("tone", v)}
-        />
-      </Field>
-      <Toggle
-        label="הצעת מוצרים"
-        checked={bool(settings.suggestProducts, true)}
-        onChange={(v) => updateField("suggestProducts", v)}
-      />
-      <Toggle
-        label="איסוף ליד בסיום שיחה"
-        checked={bool(settings.collectLead, true)}
-        onChange={(v) => updateField("collectLead", v)}
-      />
-    </>
-  )
-);
-
 export const SiteServiceFinderPanel = makePanel(
   "service-finder",
   Compass,
@@ -483,7 +443,7 @@ export const PLUGIN_PANEL_MAP: Partial<
   countdown: SiteCountdownPanel,
   "benefits-wheel": SiteBenefitsWheelPanel,
   "smart-search": SmartSearchPanel,
-  "sales-agent": SiteSalesAgentPanel,
+  "smart-bot": SmartBotPanel,
   "service-finder": SiteServiceFinderPanel,
   accessibility: SiteAccessibilityPanel,
 };

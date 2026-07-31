@@ -75,12 +75,6 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     sectionId: "section-stats-showcase-timeline",
     label: "ציר זמן",
   },
-  "masonry-gallery": {
-    pluginKey: "masonry-gallery",
-    kind: "section",
-    sectionId: "section-portfolio-showcase-dark-masonry",
-    label: "גלריית Masonry",
-  },
   tabs: {
     pluginKey: "tabs",
     kind: "section",
