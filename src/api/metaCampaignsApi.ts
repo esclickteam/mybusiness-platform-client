@@ -164,6 +164,31 @@ export type MetaCarouselCard = {
   picture?: string;
 };
 
+export type MetaLocationTarget = {
+  key: string;
+  name: string;
+  type: string;
+  countryCode?: string;
+  countryName?: string;
+  region?: string;
+  regionId?: string;
+  radiusKm?: number | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  addressString?: string;
+  distanceUnit?: string;
+};
+
+export type MetaInterestTarget = {
+  id: string;
+  name: string;
+  audienceSize?: number | null;
+  audienceSizeLower?: number | null;
+  path?: string[];
+  topic?: string;
+  description?: string;
+};
+
 export type MetaCampaignPayload = {
   name: string;
   objective?: string;
@@ -179,6 +204,9 @@ export type MetaCampaignPayload = {
   mode?: "full" | "campaign";
   pageId?: string;
   countries?: string[];
+  locations?: MetaLocationTarget[];
+  interests?: MetaInterestTarget[];
+  geoLocations?: Record<string, unknown>;
   ageMin?: number | null;
   ageMax?: number | null;
   genders?: number[];
@@ -470,6 +498,65 @@ export async function createMetaLeadForm(
     "/meta-campaigns/lead-forms",
     { ...payload, businessId },
     withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function searchMetaLocations(
+  businessId: string | undefined,
+  query: {
+    q: string;
+    locationTypes?: string[];
+    countryCode?: string;
+    limit?: number;
+  }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaLocationTarget[];
+  }>(
+    "/meta-campaigns/targeting/locations",
+    withBusiness(businessId, {
+      q: query.q,
+      locationTypes: query.locationTypes?.join(","),
+      countryCode: query.countryCode,
+      limit: query.limit,
+    })
+  );
+  return data;
+}
+
+export async function searchMetaInterests(
+  businessId: string | undefined,
+  query: { q: string; locale?: string; limit?: number }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaInterestTarget[];
+  }>(
+    "/meta-campaigns/targeting/interests",
+    withBusiness(businessId, {
+      q: query.q,
+      locale: query.locale,
+      limit: query.limit,
+    })
+  );
+  return data;
+}
+
+export async function searchMetaInterestSuggestions(
+  businessId: string | undefined,
+  query: { names: string[]; locale?: string }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaInterestTarget[];
+  }>(
+    "/meta-campaigns/targeting/interest-suggestions",
+    withBusiness(businessId, {
+      interest_list: query.names.join(","),
+      locale: query.locale,
+    })
   );
   return data;
 }
