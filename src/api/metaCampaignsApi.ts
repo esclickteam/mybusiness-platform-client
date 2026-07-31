@@ -108,6 +108,18 @@ export type MetaLeadForm = {
   createdTime?: string | null;
   privacyPolicyUrl?: string;
   questions?: MetaLeadFormQuestion[];
+  contextCard?: {
+    title?: string;
+    content?: string;
+    style?: string;
+  };
+  thankYouPage?: {
+    title?: string;
+    body?: string;
+    buttonText?: string;
+    buttonType?: string;
+    websiteUrl?: string;
+  };
 };
 
 export type MetaAdsConnectionStatus = {

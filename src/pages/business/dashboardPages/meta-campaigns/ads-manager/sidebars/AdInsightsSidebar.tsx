@@ -1,7 +1,9 @@
 import React, { useMemo, useState } from "react";
 import { AlertTriangle, Eye, MonitorSmartphone, Smartphone } from "lucide-react";
+import type { MetaLeadForm } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdPlacementPreview from "../../AdPlacementPreview";
+import InstantFormFlowPreview from "../InstantFormFlowPreview";
 import { metaCtaLabel } from "../metaAdCtas";
 import {
   MetaSidebarCard,
@@ -12,14 +14,29 @@ import {
 type Props = {
   ad: AdDraft;
   forms: InstantFormItem[];
+  selectedLeadForm: MetaLeadForm | null;
   score: number;
 };
 
-export default function AdInsightsSidebar({ ad, forms, score }: Props) {
+export default function AdInsightsSidebar({
+  ad,
+  forms,
+  selectedLeadForm,
+  score,
+}: Props) {
   const [previewOn, setPreviewOn] = useState(true);
   const [tab, setTab] = useState<"ad" | "destination">("ad");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
-  const selectedForm = forms.find((f) => f.id === ad.instantFormId);
+  const selectedFormMeta = forms.find((f) => f.id === ad.instantFormId);
+  const formForPreview =
+    selectedLeadForm ||
+    (selectedFormMeta
+      ? ({
+          id: selectedFormMeta.id,
+          name: selectedFormMeta.name,
+          questions: [],
+        } as MetaLeadForm)
+      : null);
 
   const ctaLabel = metaCtaLabel(ad.callToAction) || "Sign up";
   const issues = useMemo(() => {
@@ -159,59 +176,48 @@ export default function AdInsightsSidebar({ ad, forms, score }: Props) {
             </div>
 
             {tab === "ad" ? (
-              <div className={device === "mobile" ? "mx-auto max-w-[280px]" : ""}>
-                <p className="mb-2 text-[12px] font-bold text-[#65676B]">
-                  Facebook Feed
-                </p>
-                <AdPlacementPreview
-                  adFormat="DESKTOP_FEED_STANDARD"
+              <div
+                className={[
+                  "space-y-4",
+                  device === "mobile" ? "mx-auto max-w-[280px]" : "",
+                ].join(" ")}
+              >
+                <div>
+                  <p className="mb-2 text-[12px] font-bold text-[#65676B]">
+                    Facebook Feed
+                  </p>
+                  <AdPlacementPreview
+                    adFormat="DESKTOP_FEED_STANDARD"
+                    pageName={ad.facebookPageName || "Your Page"}
+                    primaryText={ad.primaryText}
+                    headline={ad.headline}
+                    description={ad.description}
+                    ctaLabel={ctaLabel}
+                    imageUrl={ad.imagePreviewUrl}
+                    displayLink={ad.displayLink}
+                    link={ad.websiteUrl}
+                    creativeFormat={
+                      ad.creativeFormat === "video" ? "video" : "single"
+                    }
+                  />
+                </div>
+
+                {/* Meta-style Instant Form preview under ad image + text */}
+                <InstantFormFlowPreview
+                  form={formForPreview}
                   pageName={ad.facebookPageName || "Your Page"}
-                  primaryText={ad.primaryText}
-                  headline={ad.headline}
-                  description={ad.description}
-                  ctaLabel={ctaLabel}
-                  imageUrl={ad.imagePreviewUrl}
-                  displayLink={ad.displayLink}
-                  link={ad.websiteUrl}
-                  creativeFormat={
-                    ad.creativeFormat === "video" ? "video" : "single"
-                  }
+                  fallbackHeadline={ad.headline}
                 />
               </div>
             ) : (
-              <div className="mx-auto max-w-[280px] overflow-hidden rounded-[1.6rem] border-[6px] border-[#1C1E21] bg-white shadow-lg">
-                <div className="border-b border-[#E4E6EB] px-3 py-2 text-center text-[12px] font-bold text-[#050505]">
-                  {selectedForm?.name || "Instant form"}
-                </div>
-                {ad.imagePreviewUrl ? (
-                  <img
-                    src={ad.imagePreviewUrl}
-                    alt=""
-                    className="h-36 w-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-36 items-center justify-center bg-[#F0F2F5] text-[12px] font-semibold text-[#65676B]">
-                    FORM
-                  </div>
-                )}
-                <div className="space-y-2.5 px-3 py-3">
-                  <p className="text-[14px] font-bold text-[#050505]">
-                    {ad.headline || "Headline"}
-                  </p>
-                  <p className="text-[12px] text-[#65676B]">
-                    {selectedForm
-                      ? `${selectedForm.customQuestions} custom questions`
-                      : "Select a form to preview"}
-                  </p>
-                </div>
-                <div className="border-t border-[#E4E6EB] px-3 py-2.5">
-                  <button
-                    type="button"
-                    className="flex h-9 w-full items-center justify-center rounded-md bg-[#1877F2] text-[14px] font-bold text-white"
-                  >
-                    {ctaLabel}
-                  </button>
-                </div>
+              <div
+                className={device === "mobile" ? "mx-auto max-w-[280px]" : ""}
+              >
+                <InstantFormFlowPreview
+                  form={formForPreview}
+                  pageName={ad.facebookPageName || "Your Page"}
+                  fallbackHeadline={ad.headline}
+                />
               </div>
             )}
           </>

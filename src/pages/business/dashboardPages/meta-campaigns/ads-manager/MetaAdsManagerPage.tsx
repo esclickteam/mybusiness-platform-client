@@ -720,6 +720,10 @@ export default function MetaAdsManagerPage() {
             <AdInsightsSidebar
               ad={selectedAd}
               forms={liveForms}
+              selectedLeadForm={
+                leadForms.find((f) => f.id === selectedAd.instantFormId) ||
+                null
+              }
               score={state.campaignScore}
             />
           ) : null}
