@@ -17,6 +17,8 @@ import {
   type MetaLocationTarget,
 } from "../../../../api/metaCampaignsApi";
 import { inputBase } from "../../../../styles/bizuplyUi";
+import MetaLocationsMap from "./MetaLocationsMap";
+import { enrichLocationsWithCoords, geocodeLocation } from "./metaLocationGeo";
 
 export const DEFAULT_ISRAEL_LOCATION: MetaLocationTarget = {
   key: "IL",
@@ -46,7 +48,7 @@ type Props = {
 
 function locationIdentity(item: MetaLocationTarget) {
   if (item.type === "custom") {
-    return `custom:${item.addressString || item.key}:${item.radiusKm || ""}`;
+    return `custom:${item.addressString || item.key}`;
   }
   return `${item.type}:${item.key}`;
 }
@@ -58,31 +60,13 @@ function formatAudienceSize(value?: number | null) {
   return String(value);
 }
 
-function buildMapEmbed(locations: MetaLocationTarget[]) {
-  const withCoords = locations.find(
-    (item) =>
-      item.latitude != null &&
-      item.longitude != null &&
-      Number.isFinite(item.latitude) &&
-      Number.isFinite(item.longitude)
-  );
-
-  if (withCoords?.latitude != null && withCoords?.longitude != null) {
-    const lat = withCoords.latitude;
-    const lng = withCoords.longitude;
-    const radiusKm = withCoords.radiusKm || 25;
-    const delta = Math.max(0.08, radiusKm / 111);
-    const bbox = [
-      lng - delta,
-      lat - delta,
-      lng + delta,
-      lat + delta,
-    ].join("%2C");
-    return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${lat}%2C${lng}`;
-  }
-
-  // Default: Israel overview (display only; targeting keys still come from Meta).
-  return "https://www.openstreetmap.org/export/embed.html?bbox=34.1%2C29.4%2C35.95%2C33.5&layer=mapnik&marker=31.5%2C34.85";
+function mergeInterestLists(...lists: MetaInterestTarget[][]) {
+  const map = new Map<string, MetaInterestTarget>();
+  lists.flat().forEach((item) => {
+    if (!item?.id || map.has(item.id)) return;
+    map.set(item.id, item);
+  });
+  return Array.from(map.values());
 }
 
 export default function MetaAudienceTargetingPanel({
@@ -201,9 +185,19 @@ export default function MetaAudienceTargetingPanel({
       try {
         setInterestBusy(true);
         setInterestError("");
-        const data = await searchMetaInterests(businessId, { q, locale: "he_IL" });
+        // Pull from Meta in Hebrew + English, then related suggestions for the query.
+        const [he, en, related] = await Promise.all([
+          searchMetaInterests(businessId, { q, locale: "he_IL", limit: 40 }),
+          searchMetaInterests(businessId, { q, locale: "en_US", limit: 40 }),
+          searchMetaInterestSuggestions(businessId, {
+            names: [q],
+            locale: "he_IL",
+          }).catch(() => ({ results: [] as MetaInterestTarget[] })),
+        ]);
         if (reqId !== interestReq.current) return;
-        setInterestResults(data.results || []);
+        setInterestResults(
+          mergeInterestLists(he.results || [], en.results || [], related.results || [])
+        );
       } catch (error: any) {
         if (reqId !== interestReq.current) return;
         setInterestResults([]);
@@ -231,13 +225,21 @@ export default function MetaAudienceTargetingPanel({
       try {
         setSuggestionsBusy(true);
         const names = interests.map((item) => item.name).filter(Boolean);
-        const data = await searchMetaInterestSuggestions(businessId, {
-          names,
-          locale: "he_IL",
-        });
+        const [he, en] = await Promise.all([
+          searchMetaInterestSuggestions(businessId, {
+            names,
+            locale: "he_IL",
+          }),
+          searchMetaInterestSuggestions(businessId, {
+            names,
+            locale: "en_US",
+          }).catch(() => ({ results: [] as MetaInterestTarget[] })),
+        ]);
         if (cancelled) return;
         setInterestSuggestions(
-          (data.results || []).filter((item) => !selectedInterestIds.has(item.id))
+          mergeInterestLists(he.results || [], en.results || []).filter(
+            (item) => !selectedInterestIds.has(item.id)
+          )
         );
       } catch {
         if (!cancelled) setInterestSuggestions([]);
@@ -253,7 +255,38 @@ export default function MetaAudienceTargetingPanel({
     };
   }, [businessId, interests, selectedInterestIds]);
 
-  const addLocation = (item: MetaLocationTarget) => {
+  // Resolve lat/lng for selected Meta locations so the map can pin + draw radius.
+  useEffect(() => {
+    let cancelled = false;
+    const missing = locations.some(
+      (item) =>
+        item.latitude == null ||
+        item.longitude == null ||
+        !Number.isFinite(item.latitude) ||
+        !Number.isFinite(item.longitude)
+    );
+    if (!missing) return;
+
+    (async () => {
+      const enriched = await enrichLocationsWithCoords(locations);
+      if (cancelled) return;
+      const changed = enriched.some((item, index) => {
+        const prev = locations[index];
+        return (
+          prev &&
+          (prev.latitude !== item.latitude || prev.longitude !== item.longitude)
+        );
+      });
+      if (changed) onLocationsChange(enriched);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locations.map((item) => `${item.key}:${item.name}`).join("|")]);
+
+  const addLocation = async (item: MetaLocationTarget) => {
     const addressString = [
       item.name,
       item.region,
@@ -261,6 +294,8 @@ export default function MetaAudienceTargetingPanel({
     ]
       .filter(Boolean)
       .join(", ");
+
+    const point = await geocodeLocation({ ...item, addressString });
 
     const next: MetaLocationTarget =
       locationMode === "radius"
@@ -271,8 +306,16 @@ export default function MetaAudienceTargetingPanel({
             key: item.key || addressString,
             radiusKm,
             addressString,
+            latitude: point?.latitude ?? item.latitude ?? null,
+            longitude: point?.longitude ?? item.longitude ?? null,
           }
-        : { ...item, radiusKm: undefined, addressString: undefined };
+        : {
+            ...item,
+            radiusKm: undefined,
+            addressString: undefined,
+            latitude: point?.latitude ?? item.latitude ?? null,
+            longitude: point?.longitude ?? item.longitude ?? null,
+          };
 
     const identity = locationIdentity(next);
     const withoutDupes = locations.filter(
@@ -321,8 +364,6 @@ export default function MetaAudienceTargetingPanel({
   const removeInterest = (id: string) => {
     onInterestsChange(interests.filter((item) => item.id !== id));
   };
-
-  const mapSrc = useMemo(() => buildMapEmbed(locations), [locations]);
 
   return (
     <div className="space-y-4">
@@ -525,17 +566,10 @@ export default function MetaAudienceTargetingPanel({
           ))}
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-          <iframe
-            title={t("metaCampaigns.form.locationsMap")}
-            src={mapSrc}
-            className="h-56 w-full border-0"
-            loading="lazy"
-          />
-          <p className="px-3 py-2 text-[11px] font-semibold text-slate-500">
-            {t("metaCampaigns.form.locationsMapHint")}
-          </p>
-        </div>
+        <MetaLocationsMap
+          locations={locations}
+          hint={t("metaCampaigns.form.locationsMapHint")}
+        />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4">
