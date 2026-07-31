@@ -10,6 +10,7 @@ import {
   X,
 } from "lucide-react";
 import {
+  browseMetaInterestCategories,
   searchMetaInterestSuggestions,
   searchMetaInterests,
   searchMetaLocations,
@@ -174,30 +175,48 @@ export default function MetaAudienceTargetingPanel({
   useEffect(() => {
     if (!businessId) return;
     const q = interestQuery.trim();
+    const reqId = ++interestReq.current;
+
+    // Empty query → browse Meta interest categories (same source as Ads Manager browse).
     if (q.length < 2) {
-      setInterestResults([]);
-      setInterestError("");
-      return;
+      const timer = window.setTimeout(async () => {
+        try {
+          setInterestBusy(true);
+          setInterestError("");
+          const [he, en] = await Promise.all([
+            browseMetaInterestCategories(businessId, { locale: "he_IL" }),
+            browseMetaInterestCategories(businessId, { locale: "en_US" }).catch(
+              () => ({ results: [] as MetaInterestTarget[] })
+            ),
+          ]);
+          if (reqId !== interestReq.current) return;
+          setInterestResults(mergeInterestLists(he.results || [], en.results || []));
+        } catch (error: any) {
+          if (reqId !== interestReq.current) return;
+          setInterestResults([]);
+          setInterestError(
+            error?.response?.data?.error ||
+              error?.response?.data?.message ||
+              t("metaCampaigns.form.interestSearchError")
+          );
+        } finally {
+          if (reqId === interestReq.current) setInterestBusy(false);
+        }
+      }, 120);
+      return () => window.clearTimeout(timer);
     }
 
-    const reqId = ++interestReq.current;
     const timer = window.setTimeout(async () => {
       try {
         setInterestBusy(true);
         setInterestError("");
-        // Pull from Meta in Hebrew + English, then related suggestions for the query.
-        const [he, en, related] = await Promise.all([
-          searchMetaInterests(businessId, { q, locale: "he_IL", limit: 40 }),
-          searchMetaInterests(businessId, { q, locale: "en_US", limit: 40 }),
-          searchMetaInterestSuggestions(businessId, {
-            names: [q],
-            locale: "he_IL",
-          }).catch(() => ({ results: [] as MetaInterestTarget[] })),
+        // Server expands each locale with Meta related suggestions (official IDs only).
+        const [he, en] = await Promise.all([
+          searchMetaInterests(businessId, { q, locale: "he_IL", limit: 50 }),
+          searchMetaInterests(businessId, { q, locale: "en_US", limit: 50 }),
         ]);
         if (reqId !== interestReq.current) return;
-        setInterestResults(
-          mergeInterestLists(he.results || [], en.results || [], related.results || [])
-        );
+        setInterestResults(mergeInterestLists(he.results || [], en.results || []));
       } catch (error: any) {
         if (reqId !== interestReq.current) return;
         setInterestResults([]);
