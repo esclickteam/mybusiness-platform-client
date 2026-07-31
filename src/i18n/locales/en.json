@@ -5065,7 +5065,10 @@
       "deleted": "Deleted",
       "draft": "Draft",
       "pending_review": "Pending review",
-      "in_process": "In process",
+      "in_process": "Processing",
+      "adset_paused": "Ad set paused",
+      "disapproved": "Disapproved",
+      "rejected": "Rejected",
       "with_issues": "With issues",
       "campaign_paused": "Campaign paused"
     },

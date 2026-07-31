@@ -45,12 +45,28 @@ export function statusTone(status: string) {
       dot: "bg-amber-500",
     };
   }
-  if (value === "DRAFT" || value === "PENDING_REVIEW" || value === "IN_PROCESS") {
+  if (value === "IN_PROCESS") {
+    return {
+      bg: "bg-emerald-50",
+      text: "text-emerald-700",
+      border: "border-emerald-100",
+      dot: "bg-emerald-300",
+    };
+  }
+  if (value === "DRAFT" || value === "PENDING_REVIEW") {
     return {
       bg: "bg-slate-100",
       text: "text-slate-600",
       border: "border-slate-200",
       dot: "bg-slate-400",
+    };
+  }
+  if (value === "DISAPPROVED" || value === "REJECTED" || value === "WITH_ISSUES") {
+    return {
+      bg: "bg-rose-50",
+      text: "text-rose-700",
+      border: "border-rose-100",
+      dot: "bg-rose-500",
     };
   }
   return {

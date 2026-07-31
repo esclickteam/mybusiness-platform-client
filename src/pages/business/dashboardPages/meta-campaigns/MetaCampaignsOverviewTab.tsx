@@ -218,11 +218,11 @@ export default function MetaCampaignsOverviewTab() {
 
   const toggleStatus = async (campaign: MetaCampaign) => {
     if (!businessId) return;
-    const next =
-      String(campaign.effectiveStatus || campaign.status).toUpperCase() ===
-      "ACTIVE"
-        ? "PAUSED"
-        : "ACTIVE";
+    // Toggle uses configured campaign on/off, not Delivery (Processing/Active).
+    const configured = String(
+      campaign.configuredStatus || campaign.status || ""
+    ).toUpperCase();
+    const next = configured === "ACTIVE" ? "PAUSED" : "ACTIVE";
     try {
       setBusyId(campaign.id);
       await setMetaCampaignStatus(businessId, campaign.id, next);
@@ -516,12 +516,14 @@ export default function MetaCampaignsOverviewTab() {
                 <tbody>
                   {campaigns.length ? (
                     campaigns.map((campaign) => {
-                      const tone = statusTone(
-                        campaign.effectiveStatus || campaign.status
-                      );
-                      const isActive =
+                      const deliveryStatus =
+                        campaign.deliveryStatus ||
+                        campaign.effectiveStatus ||
+                        campaign.status;
+                      const tone = statusTone(deliveryStatus);
+                      const isConfiguredActive =
                         String(
-                          campaign.effectiveStatus || campaign.status
+                          campaign.configuredStatus || campaign.status || ""
                         ).toUpperCase() === "ACTIVE";
                       return (
                         <tr
@@ -579,14 +581,11 @@ export default function MetaCampaignsOverviewTab() {
                                 className={`h-1.5 w-1.5 rounded-full ${tone.dot}`}
                               />
                               {t(
-                                `metaCampaigns.status.${String(
-                                  campaign.effectiveStatus || campaign.status
-                                )
+                                `metaCampaigns.status.${String(deliveryStatus)
                                   .toLowerCase()
                                   .replace(/[^a-z_]/g, "")}`,
                                 {
-                                  defaultValue:
-                                    campaign.effectiveStatus || campaign.status,
+                                  defaultValue: deliveryStatus,
                                 }
                               )}
                             </span>
@@ -666,7 +665,7 @@ export default function MetaCampaignsOverviewTab() {
                               <button
                                 type="button"
                                 title={
-                                  isActive
+                                  isConfiguredActive
                                     ? t("metaCampaigns.actions.pause")
                                     : t("metaCampaigns.actions.activate")
                                 }
@@ -676,7 +675,7 @@ export default function MetaCampaignsOverviewTab() {
                               >
                                 {busyId === campaign.id ? (
                                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                                ) : isActive ? (
+                                ) : isConfiguredActive ? (
                                   <Pause className="h-3.5 w-3.5" />
                                 ) : (
                                   <Play className="h-3.5 w-3.5" />

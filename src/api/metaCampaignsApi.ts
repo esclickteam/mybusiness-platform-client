@@ -41,8 +41,13 @@ export type MetaCampaignMetrics = {
 export type MetaCampaign = {
   id: string;
   name: string;
+  /** Configured on/off (campaign.status) — use for activate/pause toggle */
   status: string;
+  configuredStatus?: string;
+  /** Ads Manager Delivery (prefer ad effective_status) */
   effectiveStatus: string;
+  deliveryStatus?: string;
+  campaignEffectiveStatus?: string;
   objective: string;
   dailyBudget: number;
   lifetimeBudget: number;

@@ -5056,7 +5056,10 @@
       "pending_review": "ממתין לבדיקה",
       "in_process": "בתהליך",
       "with_issues": "עם בעיות",
-      "campaign_paused": "קמפיין מושהה"
+      "campaign_paused": "קמפיין מושהה",
+      "adset_paused": "מערך מודעות מושהה",
+      "disapproved": "נדחה",
+      "rejected": "נדחה"
     },
     "objectives": {
       "leads": "לידים",

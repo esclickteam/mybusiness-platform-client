@@ -6,6 +6,7 @@ import { metaBtnPrimary, metaBtnSecondary } from "./metaAdsUi";
 const STATUS_LABELS: Record<string, string> = {
   SUBMITTED: "Submitted to Meta",
   PENDING_REVIEW: "Pending review",
+  IN_PROCESS: "Processing",
   ACTIVE: "Active",
   PAUSED: "Paused",
   REJECTED: "Rejected",
