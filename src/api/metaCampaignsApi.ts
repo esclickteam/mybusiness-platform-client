@@ -560,3 +560,17 @@ export async function searchMetaInterestSuggestions(
   );
   return data;
 }
+
+export async function browseMetaInterestCategories(
+  businessId: string | undefined,
+  query?: { locale?: string }
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    results: MetaInterestTarget[];
+  }>(
+    "/meta-campaigns/targeting/interest-browse",
+    withBusiness(businessId, { locale: query?.locale })
+  );
+  return data;
+}

@@ -87,6 +87,56 @@ export const SEGMENT_OPTIONS = [
   { value: "engagement", labelKey: "metaCampaigns.segments.engagement" },
 ] as const;
 
+/** Meta generatepreviews ad_format values used in the create wizard. */
+export const META_PREVIEW_FORMATS = [
+  "MOBILE_FEED_STANDARD",
+  "DESKTOP_FEED_STANDARD",
+  "FACEBOOK_STORY_MOBILE",
+  "FACEBOOK_REELS_MOBILE",
+  "INSTAGRAM_STANDARD",
+  "INSTAGRAM_STORY",
+  "INSTAGRAM_REELS",
+] as const;
+
+export type MetaPreviewFormat = (typeof META_PREVIEW_FORMATS)[number];
+
+/** Map selected placements (step 4) → Meta official preview formats. */
+export function resolvePreviewFormatsForPlacements(input: {
+  placementMode: "advantage" | "facebook" | "instagram" | "both" | string;
+  facebookFeed?: boolean;
+  facebookStory?: boolean;
+  facebookReels?: boolean;
+  instagramFeed?: boolean;
+  instagramStory?: boolean;
+  instagramReels?: boolean;
+}): MetaPreviewFormat[] {
+  const mode = String(input.placementMode || "both").toLowerCase();
+  const formats: MetaPreviewFormat[] = [];
+
+  const useFacebook =
+    mode === "advantage" || mode === "both" || mode === "facebook";
+  const useInstagram =
+    mode === "advantage" || mode === "both" || mode === "instagram";
+
+  const fbFeed = mode === "advantage" ? true : Boolean(input.facebookFeed);
+  const fbStory = mode === "advantage" ? true : Boolean(input.facebookStory);
+  const fbReels = mode === "advantage" ? true : Boolean(input.facebookReels);
+  const igFeed = mode === "advantage" ? true : Boolean(input.instagramFeed);
+  const igStory = mode === "advantage" ? true : Boolean(input.instagramStory);
+  const igReels = mode === "advantage" ? true : Boolean(input.instagramReels);
+
+  if (useFacebook && fbFeed) {
+    formats.push("MOBILE_FEED_STANDARD", "DESKTOP_FEED_STANDARD");
+  }
+  if (useFacebook && fbStory) formats.push("FACEBOOK_STORY_MOBILE");
+  if (useFacebook && fbReels) formats.push("FACEBOOK_REELS_MOBILE");
+  if (useInstagram && igFeed) formats.push("INSTAGRAM_STANDARD");
+  if (useInstagram && igStory) formats.push("INSTAGRAM_STORY");
+  if (useInstagram && igReels) formats.push("INSTAGRAM_REELS");
+
+  return formats.length ? formats : ["MOBILE_FEED_STANDARD", "INSTAGRAM_STANDARD"];
+}
+
 export const OBJECTIVE_OPTIONS = [
   {
     value: "OUTCOME_AWARENESS",

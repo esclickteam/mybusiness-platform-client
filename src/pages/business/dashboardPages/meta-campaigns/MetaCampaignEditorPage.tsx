@@ -68,11 +68,14 @@ import {
   formatCurrency,
   formatNumber,
   LEAD_FORM_CONTACT_FIELDS,
+  META_PREVIEW_FORMATS,
   OBJECTIVE_OPTIONS,
   resolveAdAccountId,
+  resolvePreviewFormatsForPlacements,
   statusTone,
   validateLeadFormBuilder,
   type LeadFormCustomQuestionDraft,
+  type MetaPreviewFormat,
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
@@ -106,6 +109,7 @@ type FormState = {
   placementMode: "advantage" | "facebook" | "instagram" | "both";
   facebookFeed: boolean;
   facebookStory: boolean;
+  facebookReels: boolean;
   instagramFeed: boolean;
   instagramStory: boolean;
   instagramReels: boolean;
@@ -165,6 +169,7 @@ const EMPTY_FORM: FormState = {
   placementMode: "both",
   facebookFeed: true,
   facebookStory: true,
+  facebookReels: true,
   instagramFeed: true,
   instagramStory: true,
   instagramReels: true,
@@ -195,14 +200,7 @@ const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
   OUTCOME_SALES: ShoppingBag,
 };
 
-const ALL_PREVIEW_FORMATS = [
-  "MOBILE_FEED_STANDARD",
-  "DESKTOP_FEED_STANDARD",
-  "FACEBOOK_STORY_MOBILE",
-  "INSTAGRAM_STANDARD",
-  "INSTAGRAM_STORY",
-  "INSTAGRAM_REELS",
-];
+const ALL_PREVIEW_FORMATS: MetaPreviewFormat[] = [...META_PREVIEW_FORMATS];
 
 function toInputDate(value?: string | null) {
   if (!value) return "";
@@ -326,9 +324,30 @@ export default function MetaCampaignEditorPage() {
     ];
   }, [connection?.callToActions, isHe, t]);
 
+  const selectedPreviewFormats = useMemo(
+    () =>
+      resolvePreviewFormatsForPlacements({
+        placementMode: form.placementMode,
+        facebookFeed: form.facebookFeed,
+        facebookStory: form.facebookStory,
+        facebookReels: form.facebookReels,
+        instagramFeed: form.instagramFeed,
+        instagramStory: form.instagramStory,
+        instagramReels: form.instagramReels,
+      }),
+    [
+      form.placementMode,
+      form.facebookFeed,
+      form.facebookStory,
+      form.facebookReels,
+      form.instagramFeed,
+      form.instagramStory,
+      form.instagramReels,
+    ]
+  );
+
   const previewFormats = useMemo(() => {
-    // Prefer the placements users actually care about (feed / story / reels).
-    return ALL_PREVIEW_FORMATS.map((value) => {
+    return selectedPreviewFormats.map((value) => {
       const fromApi = (connection?.previewFormats || []).find(
         (item) => item.value === value
       );
@@ -341,7 +360,13 @@ export default function MetaCampaignEditorPage() {
           : t(`metaCampaigns.preview.formats.${value}`, { defaultValue: value }),
       };
     });
-  }, [connection?.previewFormats, isHe, t]);
+  }, [connection?.previewFormats, isHe, selectedPreviewFormats, t]);
+
+  useEffect(() => {
+    if (!selectedPreviewFormats.includes(activePreview as MetaPreviewFormat)) {
+      setActivePreview(selectedPreviewFormats[0] || ALL_PREVIEW_FORMATS[0]);
+    }
+  }, [selectedPreviewFormats, activePreview]);
 
   const selectedForm = leadForms.find((item) => item.id === form.leadFormId);
   const selectedPageName =
@@ -479,6 +504,7 @@ export default function MetaCampaignEditorPage() {
     const facebookPositions = [
       form.facebookFeed ? "feed" : "",
       form.facebookStory ? "story" : "",
+      form.facebookReels ? "facebook_reels" : "",
     ].filter(Boolean);
     const instagramPositions = [
       form.instagramFeed ? "stream" : "",
@@ -653,21 +679,27 @@ export default function MetaCampaignEditorPage() {
     }
   };
 
-  const loadPreviews = async () => {
+  const loadPreviews = async (formats?: string[]) => {
     if (!businessId) return;
     if (!form.pageId || !form.primaryText.trim() || !form.headline.trim()) {
       return;
     }
+    const requested = (formats?.length ? formats : selectedPreviewFormats).filter(
+      Boolean
+    );
+    if (!requested.length) return;
+
     try {
       setPreviewBusy(true);
       const payload = buildFullPayload();
+      // Active placement first so Meta's iframe for the selected spot loads ASAP.
+      const ordered = [
+        activePreview,
+        ...requested.filter((item) => item !== activePreview),
+      ];
       const result = await previewMetaAd(businessId, {
         ...payload,
-        // Prefer formats that Meta returns reliably; story formats often blank.
-        adFormats: [
-          activePreview,
-          ...ALL_PREVIEW_FORMATS.filter((item) => item !== activePreview),
-        ],
+        adFormats: ordered,
       });
       const rows = result.previews?.length
         ? result.previews
@@ -675,14 +707,12 @@ export default function MetaCampaignEditorPage() {
           ? [result.preview]
           : [];
       setPreviews(rows);
+      const activeOk = rows.find((row) => row.adFormat === activePreview)?.body;
       const firstOk = rows.find((row) => row.body)?.adFormat;
-      if (firstOk && !rows.find((row) => row.adFormat === activePreview)?.body) {
+      if (!activeOk && firstOk) {
         setActivePreview(firstOk);
       }
-      const errors = rows
-        .filter((row) => !row.body && row.error)
-        .map((row) => row.error);
-      if (!rows.some((row) => row.body) && errors.length) {
+      if (!rows.some((row) => row.body)) {
         toast.info(t("metaCampaigns.preview.metaUnavailable"));
       }
     } catch (error: any) {
@@ -698,10 +728,10 @@ export default function MetaCampaignEditorPage() {
 
   useEffect(() => {
     if (!isEdit && createStep === 7) {
-      loadPreviews();
+      loadPreviews(selectedPreviewFormats);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createStep]);
+  }, [createStep, selectedPreviewFormats.join("|")]);
 
   const createLeadFormQuick = async () => {
     if (!businessId || !form.pageId || !newFormName.trim()) {
@@ -1301,6 +1331,14 @@ export default function MetaCampaignEditorPage() {
                       />
                       {t("metaCampaigns.form.posFacebookStory")}
                     </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={form.facebookReels}
+                        onChange={(e) => updateField("facebookReels", e.target.checked)}
+                      />
+                      {t("metaCampaigns.form.posFacebookReels")}
+                    </label>
                   </>
                 )}
                 {(form.placementMode === "instagram" ||
@@ -1751,7 +1789,18 @@ export default function MetaCampaignEditorPage() {
                 <button
                   key={item.value}
                   type="button"
-                  onClick={() => setActivePreview(item.value)}
+                  onClick={() => {
+                    setActivePreview(item.value);
+                    const existing = previews.find(
+                      (row) => row.adFormat === item.value && row.body
+                    );
+                    if (!existing) {
+                      void loadPreviews([
+                        item.value,
+                        ...selectedPreviewFormats.filter((f) => f !== item.value),
+                      ]);
+                    }
+                  }}
                   className={[
                     "rounded-full border px-3 py-1.5 text-xs font-black",
                     activePreview === item.value
@@ -1765,32 +1814,32 @@ export default function MetaCampaignEditorPage() {
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-gradient-to-b from-slate-50 to-white p-4 sm:p-6">
-              <p className="mb-4 text-center text-xs font-black uppercase tracking-wide text-slate-400">
-                {t("metaCampaigns.preview.yourPost")}
+              <p className="mb-2 text-center text-xs font-black uppercase tracking-wide text-[#1877F2]">
+                {t("metaCampaigns.preview.metaOfficial")}
               </p>
-              {placementPreview}
-            </div>
-
-            {activePreviewHtml ? (
-              <div className="space-y-2">
-                <p className="text-sm font-black text-slate-900">
-                  {t("metaCampaigns.preview.metaOfficial")}
-                </p>
+              <p className="mb-4 text-center text-xs font-semibold text-slate-500">
+                {previewFormats.find((item) => item.value === activePreview)?.label ||
+                  activePreview}
+              </p>
+              {activePreviewHtml ? (
                 <div
-                  className="overflow-auto rounded-2xl border border-slate-200 bg-white p-2"
+                  className="mx-auto max-w-[420px] overflow-auto rounded-2xl border border-slate-200 bg-white p-2 shadow-sm"
                   dangerouslySetInnerHTML={{ __html: activePreviewHtml }}
                 />
-              </div>
-            ) : previewBusy ? (
-              <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-4 text-sm font-semibold text-slate-500">
-                <Loader2 className="h-4 w-4 animate-spin" />
-                {t("metaCampaigns.preview.loading")}
-              </div>
-            ) : (
-              <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-center text-xs font-semibold text-slate-500">
-                {t("metaCampaigns.preview.localIsPrimary")}
-              </p>
-            )}
+              ) : previewBusy ? (
+                <div className="flex items-center justify-center gap-2 rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-10 text-sm font-semibold text-slate-500">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("metaCampaigns.preview.loading")}
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 px-3 py-3 text-center text-xs font-semibold text-slate-500">
+                    {t("metaCampaigns.preview.localIsPrimary")}
+                  </p>
+                  {placementPreview}
+                </div>
+              )}
+            </div>
 
             <dl className="grid gap-2 rounded-xl border border-slate-100 p-3 text-xs sm:grid-cols-2">
               <div>
@@ -1831,7 +1880,14 @@ export default function MetaCampaignEditorPage() {
                 {previewFormats.find((item) => item.value === activePreview)
                   ?.label || activePreview}
               </p>
-              {placementPreview}
+              {activePreviewHtml ? (
+                <div
+                  className="overflow-auto rounded-xl border border-slate-200 bg-white p-1"
+                  dangerouslySetInnerHTML={{ __html: activePreviewHtml }}
+                />
+              ) : (
+                placementPreview
+              )}
             </div>
           </aside>
         </div>
