@@ -1771,16 +1771,18 @@ function applyPublicVisualData(root, visualData, pathname, site) {
   }
 
   const publicBusinessId = safeString(site?.businessId || site?.business?._id);
-  if (
-    enabledPlugins.includes("booking") ||
+  const hasBookingMount = Boolean(
     root.querySelector(
       '[data-bizuply-widget="booking"], [data-bizuply-booking-mount="true"]',
-    )
-  ) {
+    ),
+  );
+  if (enabledPlugins.includes("booking") || hasBookingMount) {
+    // Section mounts auto-bind to the business calendar whenever businessId exists.
+    const live = Boolean(publicBusinessId);
     mountBookingWidgets(root, {
       businessId: publicBusinessId,
-      pluginEnabled: enabledPlugins.includes("booking"),
-      preview: !enabledPlugins.includes("booking"),
+      pluginEnabled: live,
+      preview: !live,
     });
   }
 

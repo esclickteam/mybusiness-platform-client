@@ -756,11 +756,12 @@ export default function VisualEditorCanvas({
   const mountEditorBookingPreview = useCallback(
     (root: HTMLElement | null, pluginEnabled: boolean) => {
       if (!root || !pageHasBookingWidget(root)) return;
+      const businessId = String(editorAny.businessId || "").trim() || undefined;
+      const live = Boolean(businessId);
       mountBookingWidgets(root, {
-        businessId: String(editorAny.businessId || "").trim() || undefined,
-        pluginEnabled,
-        // Keep design mock in the editor; live slots hydrate on the public site.
-        preview: true,
+        businessId,
+        pluginEnabled: pluginEnabled || live,
+        preview: !live,
         editorMode: true,
       });
     },

@@ -51,16 +51,16 @@ export default function SiteBookingPanel({
         <WorkHoursTab variant="settings" />
       </SitePanelCard>
 
-      <div className="rounded-2xl border border-dashed border-sky-200 bg-sky-50/40 p-4 text-sm leading-relaxed text-slate-600">
-        לאחר הגדרת שעות הפעילות והשירותים, הוסיפו בעורך האתר סקשן{" "}
-        <strong>יומן פגישות</strong> (
+      <div className="rounded-2xl border border-dashed border-teal-200 bg-teal-50/40 p-4 text-sm leading-relaxed text-slate-600">
+        הגדירו שעות ושירותים כאן — ואז הוסיפו סקשן{" "}
+        <strong>יומן פגישות</strong> בעורך (
         <Link
-          to={`${basePath}/website/sites/${siteId}/edit?addPlugin=booking&addSection=section-booking-showcase-calendar-split`}
-          className="font-semibold text-sky-700 hover:underline"
+          to={`${basePath}/website/sites/${siteId}/edit?addPlugin=booking&addSection=section-booking-showcase-month-centered`}
+          className="font-semibold text-teal-700 hover:underline"
         >
-          פתיחה בעורך עם סקשן מוכן
+          פתיחה עם לוח חודשי
         </Link>
-        ). הסקשן מתחבר אוטומטית לתוסף — בלי קישור ידני.
+        ). הסקשן מסתנכרן אוטומטית ליומן.
       </div>
     </div>
   );
