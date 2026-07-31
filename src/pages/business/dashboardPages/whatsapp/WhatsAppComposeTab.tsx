@@ -21,6 +21,7 @@ import {
   listWhatsAppRecipients,
   listWhatsAppTemplates,
   sendWhatsAppCampaign,
+  syncWhatsAppTemplates,
   type WhatsAppConnection,
   type WhatsAppMailingList,
   type WhatsAppRecipient,
@@ -91,26 +92,58 @@ export default function WhatsAppComposeTab() {
     let cancelled = false;
     const preselected = searchParams.get("templateId") || "";
 
+    const pickApproved = (rows: WhatsAppTemplate[]) =>
+      rows.filter(
+        (tpl) =>
+          tpl.source === "meta" &&
+          String(tpl.metaStatus || "").toUpperCase() === "APPROVED" &&
+          tpl.status !== "archived"
+      );
+
     (async () => {
       try {
         setLoading(true);
-        const [status, tpls, ls, people] = await Promise.all([
+        const [status, listed, ls, people] = await Promise.all([
           getWhatsAppStatus(businessId),
-          listWhatsAppTemplates(businessId, { readyOnly: true }),
+          listWhatsAppTemplates(businessId, { approvedOnly: true }),
           listWhatsAppLists(businessId),
           listWhatsAppRecipients(businessId),
         ]);
         if (cancelled) return;
+
         setConnection(status);
-        setTemplates(tpls);
         setLists(ls);
         setRecipients(people);
-        if (preselected && tpls.some((tpl) => tpl._id === preselected)) {
-          setTemplateId(preselected);
-        } else if (tpls[0]?._id) {
-          setTemplateId(tpls[0]._id);
-        }
         if (ls[0]?._id) setMailingListId(ls[0]._id);
+
+        let approved = pickApproved(listed);
+
+        // Refresh from Meta so newly approved templates appear here.
+        if (status?.connected) {
+          try {
+            const synced = await syncWhatsAppTemplates(businessId);
+            const syncedApproved = pickApproved(synced.templates || []);
+            if (syncedApproved.length) {
+              approved = syncedApproved;
+            } else {
+              approved = pickApproved(
+                await listWhatsAppTemplates(businessId, { approvedOnly: true })
+              );
+            }
+          } catch {
+            // Keep listed templates if sync fails.
+          }
+        }
+
+        if (cancelled) return;
+        setTemplates(approved);
+        if (preselected && approved.some((tpl) => tpl._id === preselected)) {
+          setTemplateId(preselected);
+        } else if (approved[0]?._id) {
+          setTemplateId(approved[0]._id);
+        } else {
+          setTemplateId("");
+        }
       } catch (error: any) {
         toast.error(
           error?.response?.data?.error || t("whatsapp.errors.loadCompose")
@@ -135,6 +168,13 @@ export default function WhatsAppComposeTab() {
   const mappings: WhatsAppVariableMapping[] =
     selectedTemplate?.variableMappings || [];
   const manualMappings = mappings.filter((m) => m.source === "manual");
+  const mappingReady = useMemo(() => {
+    if (!selectedTemplate) return false;
+    if (selectedTemplate.mappingReady) return true;
+    if (selectedTemplate.mappingStatus === "ready") return true;
+    const vars = selectedTemplate.variables || [];
+    return vars.length === 0;
+  }, [selectedTemplate]);
 
   useEffect(() => {
     if (!selectedTemplate) {
@@ -248,7 +288,13 @@ export default function WhatsAppComposeTab() {
       return;
     }
     if (selectedTemplate.metaStatus !== "APPROVED") {
-      toast.error(t("whatsapp.compose.templateNotApproved"));
+      toast.error("התבנית עדיין לא מאושרת על ידי מטא");
+      return;
+    }
+    if (!mappingReady) {
+      toast.error(
+        "יש להגדיר את משתני התבנית לפני השליחה. עברו לטאב תבניות → הגדרת משתנים."
+      );
       return;
     }
     if (missingVariables.length) {
@@ -369,7 +415,7 @@ export default function WhatsAppComposeTab() {
 
             <label className="grid gap-1.5">
               <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.compose.selectTemplate")}
+                בחירת תבנית מאושרת ממטא
               </span>
               <select
                 className={inputBase}
@@ -378,16 +424,38 @@ export default function WhatsAppComposeTab() {
               >
                 {templates.length === 0 && (
                   <option value="">
-                    {t("whatsapp.compose.noTemplatesYet")}
+                    עדיין אין תבניות מאושרות ממטא. לחצו על ניהול/סנכרון תבניות.
                   </option>
                 )}
-                {templates.map((tpl) => (
-                  <option key={tpl._id} value={tpl._id}>
-                    {tpl.name} · {tpl.language} · מוכנה לשליחה
-                  </option>
-                ))}
+                {templates.map((tpl) => {
+                  const ready =
+                    tpl.mappingReady ||
+                    tpl.mappingStatus === "ready" ||
+                    !(tpl.variables || []).length;
+                  const metaLabel =
+                    tpl.metaStatusLabelHe || "פעילה - מאושרת במטא";
+                  return (
+                    <option key={tpl._id} value={tpl._id}>
+                      {tpl.name} · {tpl.language} · {metaLabel}
+                      {ready ? " · מוכנה לשליחה" : " · נדרשת הגדרת משתנים"}
+                    </option>
+                  );
+                })}
               </select>
             </label>
+
+            {selectedTemplate && !mappingReady ? (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-sm font-semibold text-amber-800">
+                התבנית מאושרת במטא, אך יש להגדיר את המשתנים לפני השליחה.{" "}
+                <button
+                  type="button"
+                  className="font-black text-emerald-700 underline"
+                  onClick={() => navigate("../templates")}
+                >
+                  מעבר להגדרת משתנים
+                </button>
+              </div>
+            ) : null}
 
             {manualMappings.length > 0 && (
               <div className="grid gap-2 rounded-xl border border-slate-200 p-3">
@@ -591,6 +659,7 @@ export default function WhatsAppComposeTab() {
               estimatedCount === 0 ||
               !templateId ||
               !consentConfirmed ||
+              !mappingReady ||
               missingVariables.length > 0
             }
             onClick={handleSend}
