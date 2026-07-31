@@ -66,7 +66,10 @@ import {
 } from "./library/sectionCategories";
 import SectionTemplateCanvasPreview from "./library/SectionTemplateCanvasPreview";
 import PageLibraryCardPreview from "./library/PageLibraryCardPreview";
-import { resolveVisualSectionTheme } from "./library/sectionTheme";
+import {
+  resolveVisualSectionTheme,
+  shouldLockLibraryPalette,
+} from "./library/sectionTheme";
 import {
   PAGE_LIBRARY,
   PAGE_LIBRARY_NAV,
@@ -884,26 +887,6 @@ export default function VisualAddLayersPanel({
       editor?.addSection?.("after", undefined, item.id);
     }
 
-    // Booking sections auto-bind to the calendar plugin.
-    if (item.category === "booking" && siteId) {
-      void (async () => {
-        try {
-          const { getSitePlugins, updateSitePlugins } = await import(
-            "../../../../api/sitePluginsApi"
-          );
-          const current = await getSitePlugins(siteId);
-          if (!current.enabledPlugins.includes("booking")) {
-            await updateSitePlugins(siteId, [
-              ...current.enabledPlugins,
-              "booking",
-            ]);
-          }
-        } catch {
-          // Section still works; sync hydrates when businessId is available.
-        }
-      })();
-    }
-
     setRecentSectionIds((current) => {
       const next = [item.id, ...current.filter((id) => id !== item.id)].slice(
         0,
@@ -912,7 +895,11 @@ export default function VisualAddLayersPanel({
       storeSectionIds("bizuply-recent-sections", next);
       return next;
     });
-    setLastAddedTitle(`״${item.title}״ נוסף לעמוד`);
+    setLastAddedTitle(
+      item.category === "booking"
+        ? `״${item.title}״ נוסף ומחובר ליומן ה-CRM`
+        : `״${item.title}״ נוסף לעמוד`,
+    );
     setPreviewSection(null);
   };
 
@@ -1528,7 +1515,11 @@ export default function VisualAddLayersPanel({
                                 <div className="h-full overflow-hidden border border-black/5 bg-white shadow-[0_2px_8px_rgba(15,23,42,0.08)]">
                                   <SectionTemplateCanvasPreview
                                     section={item}
-                                    theme={sectionTheme}
+                                    theme={
+                                      shouldLockLibraryPalette(item)
+                                        ? undefined
+                                        : sectionTheme
+                                    }
                                   />
                                 </div>
 
@@ -2082,7 +2073,11 @@ export default function VisualAddLayersPanel({
             >
               <SectionTemplateCanvasPreview
                 section={previewSection}
-                theme={sectionTheme}
+                theme={
+                  shouldLockLibraryPalette(previewSection)
+                    ? undefined
+                    : sectionTheme
+                }
               />
             </div>
           </div>

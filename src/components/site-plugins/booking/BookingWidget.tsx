@@ -89,8 +89,10 @@ function DemoCalendar({ variant }: { variant: BookingWidgetVariant }) {
         <div>
           <p style={styles.eyebrow}>יומן פגישות</p>
           <h3 style={styles.title}>בחרו תאריך ושעה</h3>
+          <p style={styles.copy}>
+            מחובר אוטומטית לשירותים ולשעות הפעילות מה-CRM.
+          </p>
         </div>
-        <span style={styles.badge}>תצוגה מקדימה</span>
       </div>
 
       {variant === "month" ? (

@@ -35,7 +35,7 @@ const sectionCategoryMeta: SectionCategoryMeta[] = [
   { key: "reviews", label: "ביקורות", icon: "★", description: "ביקורות, דירוגים, כוכבים וטופס ביקורת" },
   { key: "clients", label: "לקוחות", icon: "◫", description: "לוגואים, לקוחות, מותגים ושותפים" },
   { key: "store", label: "חנות", icon: "₪", description: "מוצרים, מחיר, כפתור רכישה, קולקציות ו־Ecommerce" },
-  { key: "booking", label: "יומן פגישות", icon: "☷", description: "יומן פגישות ותורים — מתחבר אוטומטית לתוסף יומן ותורים" },
+  { key: "booking", label: "יומן פגישות", icon: "☷", description: "יומן פגישות — מחובר אוטומטית ליומן, שירותים ושעות מה-CRM" },
   { key: "bookings", label: "יומן פגישות", icon: "☷", description: "תמיכה בשם הישן bookings" },
   { key: "events", label: "אירועים", icon: "◇", description: "אירועים, לו״ז, הרצאות, סדנאות והרשמה" },
   { key: "club", label: "מועדון לקוחות", icon: "♛", description: "VIP, קופונים, הטבות והרשמת לקוחות" },

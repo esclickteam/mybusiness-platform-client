@@ -14,7 +14,7 @@ const BOOKING_MOUNT_SELECTOR = [
 ].join(", ");
 
 export function buildBookingWidgetMarker(label = "יומן פגישות") {
-  return `<div data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-block="booking" data-bizuply-booking-mount="true" data-bizuply-booking-variant="month" style="width:100%;height:100%;min-height:280px;direction:rtl;box-sizing:border-box"></div>`;
+  return `<div data-bizuply-widget="booking" data-bizuply-block="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" style="width:100%;height:100%;min-height:280px;direction:rtl;box-sizing:border-box" title="${label}"></div>`;
 }
 
 export function pageHasBookingWidget(root: ParentNode | null | undefined) {
