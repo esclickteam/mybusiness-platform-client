@@ -5057,7 +5057,7 @@
       "locationSearchPlaceholder": "Search a city, region or country (e.g. Tel Aviv)…",
       "locationSearchError": "Could not search locations in Meta",
       "locationsMap": "Locations map",
-      "locationsMapHint": "Map is for visualization. Geo targeting is sent to Meta using the official selected keys.",
+      "locationsMapHint": "Blue pin = selected place. Circle = radius in km. Targeting itself is sent to Meta with the official keys.",
       "radiusKm": "Radius: {{km}} km",
       "radiusEdit": "Edit radius in km",
       "kmShort": " km",
