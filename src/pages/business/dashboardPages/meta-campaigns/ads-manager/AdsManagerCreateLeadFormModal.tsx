@@ -1,7 +1,9 @@
-import React, { useMemo, useState } from "react";
-import { Check, Loader2, X } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Check, Loader2, MessageCircle, X } from "lucide-react";
+import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createMetaLeadForm } from "../../../../../api/metaCampaignsApi";
+import { getWhatsAppStatus } from "../../../../../api/whatsappApi";
 import LeadFormQuestionBuilder from "../LeadFormQuestionBuilder";
 import MetaLeadFormLivePreview from "../MetaLeadFormLivePreview";
 import {
@@ -12,6 +14,35 @@ import {
   type LeadFormCustomQuestionDraft,
 } from "../metaCampaignUtils";
 import { metaBtnPrimary, metaBtnSecondary, metaInputClass } from "./metaAdsUi";
+
+type AdditionalAction = "website" | "file" | "call" | "whatsapp";
+
+const ADDITIONAL_ACTIONS: Array<{
+  id: AdditionalAction;
+  title: string;
+  description: string;
+}> = [
+  {
+    id: "website",
+    title: "Go to website",
+    description: "Share a URL for people to visit your website.",
+  },
+  {
+    id: "file",
+    title: "View file",
+    description: "Share gated content such as a PDF, JPEG or PNG file.",
+  },
+  {
+    id: "call",
+    title: "Call business",
+    description: "Allow people to call your business instantly.",
+  },
+  {
+    id: "whatsapp",
+    title: "Chat on WhatsApp",
+    description: "Let people message you on WhatsApp.",
+  },
+];
 
 type Step = "type" | "intro" | "questions" | "privacy" | "ending";
 
@@ -58,7 +89,17 @@ export default function AdsManagerCreateLeadFormModal({
   const [thankYouBody, setThankYouBody] = useState(
     "Your information was submitted. We’ll be in touch soon."
   );
-  const [thankYouButton, setThankYouButton] = useState("Done");
+  const [thankYouButton, setThankYouButton] = useState(
+    "שלחו הודעה לקבלת הצעת מחיר"
+  );
+  const [additionalAction, setAdditionalAction] =
+    useState<AdditionalAction>("website");
+  const [thankYouLink, setThankYouLink] = useState("");
+  const [callPhone, setCallPhone] = useState("");
+  const [whatsappPhone, setWhatsappPhone] = useState("");
+  const [whatsappDisplay, setWhatsappDisplay] = useState("");
+  const [whatsappConnected, setWhatsappConnected] = useState(false);
+  const [whatsappLoading, setWhatsappLoading] = useState(false);
   const [contactTypes, setContactTypes] = useState<string[]>(() =>
     defaultSelectedLeadContactTypes()
   );
@@ -68,6 +109,42 @@ export default function AdsManagerCreateLeadFormModal({
   const [previewPlatform, setPreviewPlatform] = useState<
     "facebook" | "instagram"
   >("facebook");
+
+  useEffect(() => {
+    if (!open || !businessId) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        setWhatsappLoading(true);
+        const status = await getWhatsAppStatus(businessId);
+        if (cancelled) return;
+        const connected = Boolean(status.connected || status.readyToSend);
+        setWhatsappConnected(connected);
+        const display =
+          status.displayPhoneNumber || status.verifiedName || "";
+        setWhatsappDisplay(display);
+        if (connected && status.displayPhoneNumber) {
+          setWhatsappPhone((prev) => prev || status.displayPhoneNumber);
+        }
+      } catch {
+        if (!cancelled) {
+          setWhatsappConnected(false);
+          setWhatsappDisplay("");
+        }
+      } finally {
+        if (!cancelled) setWhatsappLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [open, businessId]);
+
+  useEffect(() => {
+    if (additionalAction === "whatsapp" && !thankYouButton.trim()) {
+      setThankYouButton("שלחו הודעה לקבלת הצעת מחיר");
+    }
+  }, [additionalAction, thankYouButton]);
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
@@ -120,6 +197,24 @@ export default function AdsManagerCreateLeadFormModal({
       setStep("ending");
       return;
     }
+    if (additionalAction === "whatsapp" && !whatsappPhone.replace(/\D/g, "")) {
+      toast.error("Connect or enter a WhatsApp number");
+      setStep("ending");
+      return;
+    }
+    if (
+      (additionalAction === "website" || additionalAction === "file") &&
+      !thankYouLink.trim()
+    ) {
+      toast.error("Add a link for the additional action");
+      setStep("ending");
+      return;
+    }
+    if (additionalAction === "call" && !callPhone.replace(/\D/g, "")) {
+      toast.error("Add a phone number for Call business");
+      setStep("ending");
+      return;
+    }
 
     try {
       setBusy(true);
@@ -137,6 +232,10 @@ export default function AdsManagerCreateLeadFormModal({
         thankYouTitle: thankYouTitle.trim(),
         thankYouBody: thankYouBody.trim() || undefined,
         thankYouButtonText: thankYouButton.trim() || undefined,
+        thankYouUrl: thankYouLink.trim() || undefined,
+        additionalAction,
+        whatsappPhone: whatsappPhone.trim() || undefined,
+        callPhone: callPhone.trim() || undefined,
       });
       const formId = result.form?.id;
       if (!formId) {
@@ -339,7 +438,7 @@ export default function AdsManagerCreateLeadFormModal({
             ) : null}
 
             {step === "ending" ? (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <p className="text-[15px] font-bold text-[#050505]">Ending</p>
                 <MetaFieldLike label="Headline">
                   <input
@@ -355,12 +454,151 @@ export default function AdsManagerCreateLeadFormModal({
                     onChange={(e) => setThankYouBody(e.target.value)}
                   />
                 </MetaFieldLike>
-                <MetaFieldLike label="Button text">
-                  <input
-                    className={metaInputClass}
-                    value={thankYouButton}
-                    onChange={(e) => setThankYouButton(e.target.value)}
-                  />
+
+                <div>
+                  <p className="mb-2 text-[15px] font-bold text-[#050505]">
+                    Additional action
+                  </p>
+                  <div className="space-y-2">
+                    {ADDITIONAL_ACTIONS.map((action) => (
+                      <label
+                        key={action.id}
+                        className={[
+                          "flex cursor-pointer gap-3 rounded-lg border px-3 py-3",
+                          additionalAction === action.id
+                            ? "border-[#1877F2] bg-[#E7F3FF]"
+                            : "border-[#CED0D4] hover:bg-[#F7F8FA]",
+                        ].join(" ")}
+                      >
+                        <span
+                          className={[
+                            "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2",
+                            additionalAction === action.id
+                              ? "border-[#1877F2]"
+                              : "border-[#8A8D91]",
+                          ].join(" ")}
+                        >
+                          {additionalAction === action.id ? (
+                            <span className="h-2 w-2 rounded-full bg-[#1877F2]" />
+                          ) : null}
+                        </span>
+                        <input
+                          type="radio"
+                          className="sr-only"
+                          checked={additionalAction === action.id}
+                          onChange={() => setAdditionalAction(action.id)}
+                        />
+                        <span>
+                          <span className="block text-[14px] font-bold text-[#050505]">
+                            {action.title}
+                          </span>
+                          <span className="mt-0.5 block text-[12px] text-[#65676B]">
+                            {action.description}
+                          </span>
+                        </span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                {additionalAction === "whatsapp" ? (
+                  <div className="rounded-lg border border-[#CED0D4] bg-[#F7F8FA] p-3">
+                    <p className="text-[15px] font-bold text-[#050505]">
+                      Add WhatsApp Business App Account
+                    </p>
+                    <p className="mt-1 text-[12px] text-[#65676B]">
+                      Choose where you want to chat with people who tap on your
+                      ad.
+                    </p>
+                    {whatsappLoading ? (
+                      <p className="mt-3 text-[13px] text-[#65676B]">
+                        Loading WhatsApp connection…
+                      </p>
+                    ) : whatsappConnected ? (
+                      <div className="mt-3 flex items-center gap-3 rounded-lg border border-[#A6D9B3] bg-[#E7F6EC] px-3 py-2.5">
+                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#25D366] text-white">
+                          <MessageCircle className="h-5 w-5" />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-[14px] font-bold text-[#050505]">
+                            WhatsApp
+                          </span>
+                          <span className="block truncate text-[12px] text-[#65676B]" dir="ltr">
+                            {whatsappDisplay || whatsappPhone}
+                          </span>
+                        </span>
+                        <Check className="ml-auto h-4 w-4 text-[#31A24C]" />
+                      </div>
+                    ) : (
+                      <div className="mt-3 space-y-2">
+                        <div className="rounded-lg border border-[#F5D78E] bg-[#FFF8E5] px-3 py-2 text-[12px] text-[#050505]">
+                          WhatsApp is not connected yet. Enter a number or connect
+                          WhatsApp in settings.
+                        </div>
+                        <Link
+                          to="../whatsapp"
+                          className="inline-flex text-[13px] font-semibold text-[#1877F2] hover:underline"
+                        >
+                          Connect WhatsApp Business
+                        </Link>
+                      </div>
+                    )}
+                    <MetaFieldLike label="WhatsApp number">
+                      <input
+                        className={metaInputClass}
+                        dir="ltr"
+                        value={whatsappPhone}
+                        onChange={(e) => setWhatsappPhone(e.target.value)}
+                        placeholder="+9725..."
+                      />
+                    </MetaFieldLike>
+                  </div>
+                ) : null}
+
+                {additionalAction === "call" ? (
+                  <MetaFieldLike label="Business phone">
+                    <input
+                      className={metaInputClass}
+                      dir="ltr"
+                      value={callPhone}
+                      onChange={(e) => setCallPhone(e.target.value)}
+                      placeholder="+9725..."
+                    />
+                  </MetaFieldLike>
+                ) : null}
+
+                {additionalAction === "website" ||
+                additionalAction === "file" ? (
+                  <MetaFieldLike
+                    label="Link"
+                    hint={
+                      additionalAction === "file"
+                        ? "Direct link to a PDF, JPEG or PNG file."
+                        : "Website people visit after submitting."
+                    }
+                  >
+                    <input
+                      className={metaInputClass}
+                      dir="ltr"
+                      value={thankYouLink}
+                      onChange={(e) => setThankYouLink(e.target.value)}
+                      placeholder="https://"
+                    />
+                  </MetaFieldLike>
+                ) : null}
+
+                <MetaFieldLike label="Call to action">
+                  <div className="relative">
+                    <input
+                      className={metaInputClass}
+                      value={thankYouButton}
+                      maxLength={60}
+                      onChange={(e) => setThankYouButton(e.target.value)}
+                    />
+                    <span className="pointer-events-none absolute bottom-2 right-3 text-[11px] font-semibold text-[#8A8D91]">
+                      {thankYouButton.length}/60
+                    </span>
+                  </div>
                 </MetaFieldLike>
               </div>
             ) : null}

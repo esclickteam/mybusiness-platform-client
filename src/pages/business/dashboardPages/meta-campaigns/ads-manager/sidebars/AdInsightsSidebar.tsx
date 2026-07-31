@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { AlertTriangle, Eye, MonitorSmartphone, Smartphone } from "lucide-react";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdPlacementPreview from "../../AdPlacementPreview";
+import { metaCtaLabel } from "../metaAdCtas";
 import {
   MetaSidebarCard,
   MetaToggle,
@@ -14,20 +15,13 @@ type Props = {
   score: number;
 };
 
-const CTA_LABELS: Record<string, string> = {
-  LEARN_MORE: "Learn more",
-  SIGN_UP: "Sign up",
-  GET_QUOTE: "Get quote",
-  APPLY_NOW: "Apply now",
-};
-
 export default function AdInsightsSidebar({ ad, forms, score }: Props) {
   const [previewOn, setPreviewOn] = useState(true);
   const [tab, setTab] = useState<"ad" | "destination">("ad");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
   const selectedForm = forms.find((f) => f.id === ad.instantFormId);
 
-  const ctaLabel = CTA_LABELS[ad.callToAction] || "Sign up";
+  const ctaLabel = metaCtaLabel(ad.callToAction) || "Sign up";
   const issues = useMemo(() => {
     const list: string[] = [];
     if (!ad.imagePreviewUrl && !ad.videoId) list.push("Add image or video");

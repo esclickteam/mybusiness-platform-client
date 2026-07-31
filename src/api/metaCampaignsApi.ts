@@ -550,6 +550,10 @@ export async function createMetaLeadForm(
     thankYouBody?: string;
     thankYouUrl?: string;
     thankYouButtonText?: string;
+    /** Meta Instant Form thank-you additional action */
+    additionalAction?: "website" | "file" | "call" | "whatsapp";
+    whatsappPhone?: string;
+    callPhone?: string;
   }
 ) {
   const { data } = await API.post<{ success: boolean; form: MetaLeadForm }>(
