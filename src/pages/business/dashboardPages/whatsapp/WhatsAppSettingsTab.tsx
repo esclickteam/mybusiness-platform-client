@@ -98,7 +98,7 @@ export default function WhatsAppSettingsTab() {
     setLoading(true);
     try {
       const [status, metaStatus] = await Promise.all([
-        getWhatsAppStatus(businessId),
+        getWhatsAppStatus(businessId, { enrichPayment: true }),
         getMetaCampaignsStatus(businessId).catch(() => null),
       ]);
       setConnection(status);

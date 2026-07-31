@@ -107,6 +107,8 @@ export default function WhatsAppComposeTab() {
     (async () => {
       try {
         setLoading(true);
+        // Fast path: local DB lists + status without CreditCard resolve.
+        // Template sync from Meta runs after the UI is interactive.
         const [status, listed, ls, people] = await Promise.all([
           getWhatsAppStatus(businessId),
           listWhatsAppTemplates(businessId, { approvedOnly: true }),
@@ -121,25 +123,6 @@ export default function WhatsAppComposeTab() {
         if (ls[0]?._id) setMailingListId(ls[0]._id);
 
         let approved = pickApproved(listed);
-
-        // Refresh from Meta so newly approved templates appear here.
-        if (status?.connected) {
-          try {
-            const synced = await syncWhatsAppTemplates(businessId);
-            const syncedApproved = pickApproved(synced.templates || []);
-            if (syncedApproved.length) {
-              approved = syncedApproved;
-            } else {
-              approved = pickApproved(
-                await listWhatsAppTemplates(businessId, { approvedOnly: true })
-              );
-            }
-          } catch {
-            // Keep listed templates if sync fails.
-          }
-        }
-
-        if (cancelled) return;
         setTemplates(approved);
         if (preselected && approved.some((tpl) => tpl._id === preselected)) {
           setTemplateId(preselected);
@@ -148,11 +131,38 @@ export default function WhatsAppComposeTab() {
         } else {
           setTemplateId("");
         }
+        if (!cancelled) setLoading(false);
+
+        // Background refresh so newly approved Meta templates appear without
+        // blocking the compose screen.
+        if (status?.connected) {
+          try {
+            const synced = await syncWhatsAppTemplates(businessId);
+            if (cancelled) return;
+            const syncedApproved = pickApproved(synced.templates || []);
+            if (syncedApproved.length) {
+              setTemplates(syncedApproved);
+              setTemplateId((current) => {
+                if (current && syncedApproved.some((tpl) => tpl._id === current)) {
+                  return current;
+                }
+                if (
+                  preselected &&
+                  syncedApproved.some((tpl) => tpl._id === preselected)
+                ) {
+                  return preselected;
+                }
+                return syncedApproved[0]?._id || "";
+              });
+            }
+          } catch {
+            // Keep listed templates if sync fails.
+          }
+        }
       } catch (error: any) {
         toast.error(
           error?.response?.data?.error || t("whatsapp.errors.loadCompose")
         );
-      } finally {
         if (!cancelled) setLoading(false);
       }
     })();

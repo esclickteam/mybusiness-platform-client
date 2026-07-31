@@ -66,7 +66,7 @@ export default function MetaCampaignsSettingsTab() {
       }
       const [data, wa] = await Promise.all([
         getMetaCampaignsStatus(businessId),
-        getWhatsAppStatus(businessId).catch(() => null),
+        getWhatsAppStatus(businessId, { enrichPayment: true }).catch(() => null),
       ]);
       setStatus(data);
       setWabaBilling(wa?.wabaBillingHealth || null);

@@ -379,8 +379,17 @@ export type WhatsAppOverview = {
   recentLogs: WhatsAppMessageLog[];
 };
 
-function withBusiness(businessId?: string) {
-  return businessId ? { params: { businessId } } : undefined;
+function withBusiness(
+  businessId?: string,
+  extraParams?: Record<string, string | number | boolean | undefined>
+) {
+  if (!businessId && !extraParams) return undefined;
+  return {
+    params: {
+      ...(businessId ? { businessId } : {}),
+      ...(extraParams || {}),
+    },
+  };
 }
 
 export async function getWhatsAppOverview(businessId: string) {
@@ -391,8 +400,14 @@ export async function getWhatsAppOverview(businessId: string) {
   return data as { success: boolean } & WhatsAppOverview;
 }
 
-export async function getWhatsAppStatus(businessId: string) {
-  const { data } = await API.get("/whatsapp/status", withBusiness(businessId));
+export async function getWhatsAppStatus(
+  businessId: string,
+  opts?: { enrichPayment?: boolean }
+) {
+  const { data } = await API.get(
+    "/whatsapp/status",
+    withBusiness(businessId, opts?.enrichPayment ? { enrichPayment: 1 } : undefined)
+  );
   return data as { success: boolean } & WhatsAppConnection;
 }
 
