@@ -22,6 +22,7 @@ export const SECTION_LIBRARY_NAV: Array<{
   { id: "cta", label: "קריאה לפעולה" },
   { id: "testimonials", label: "ביקורות ואמון" },
   { id: "events", label: "אירועים" },
+  { id: "booking", label: "יומן פגישות" },
   { id: "blog", label: "בלוג ותוכן" },
   { id: "pricing", label: "תמחור" },
   { id: "resume", label: "קורות חיים" },

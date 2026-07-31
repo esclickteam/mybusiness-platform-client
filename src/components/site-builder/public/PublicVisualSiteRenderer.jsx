@@ -26,6 +26,7 @@ import {
 import PublicSitePluginOverlays from "./PublicSitePluginOverlays";
 import { mergeCountdownSettings } from "./countdownPublicUtils";
 import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
+import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import {
   applyAllVisualDataToDom,
@@ -1769,9 +1770,23 @@ function applyPublicVisualData(root, visualData, pathname, site) {
     );
   }
 
+  const publicBusinessId = safeString(site?.businessId || site?.business?._id);
+  if (
+    enabledPlugins.includes("booking") ||
+    root.querySelector(
+      '[data-bizuply-widget="booking"], [data-bizuply-booking-mount="true"]',
+    )
+  ) {
+    mountBookingWidgets(root, {
+      businessId: publicBusinessId,
+      pluginEnabled: enabledPlugins.includes("booking"),
+      preview: !enabledPlugins.includes("booking"),
+    });
+  }
+
   mountPublicLeadForms(root, {
     slug: safeString(site?.slug),
-    businessId: safeString(site?.businessId || site?.business?._id),
+    businessId: publicBusinessId,
     host:
       typeof window !== "undefined" ? safeString(window.location.host) : "",
     pagePath: normalizePublicPath(pathname || getCurrentPathname()),

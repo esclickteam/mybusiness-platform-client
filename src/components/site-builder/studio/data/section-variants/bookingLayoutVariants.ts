@@ -115,7 +115,7 @@ function timeSlot(time: string, active = false, disabled = false) {
 
 function calendarMock() {
   return `
-<div class="${softCardClass}" data-bizuply-block="booking" data-editable-card="true">
+<div class="${softCardClass}" data-bizuply-block="booking" data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-editable-card="true">
   <div class="mb-7 flex items-center justify-between gap-4">
     <div>
       <p class="text-xs font-black uppercase tracking-[0.18em] text-[var(--biz-primary,#7C3AED)]" data-editable-text="true">

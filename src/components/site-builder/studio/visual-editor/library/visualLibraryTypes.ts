@@ -43,6 +43,7 @@ export type VisualLibraryCategory =
   | "features"
   | "promote"
   | "events"
+  | "booking"
   | "resume";
 
 export type VisualLibraryNodeTemplate = {
