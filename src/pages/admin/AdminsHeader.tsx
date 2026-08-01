@@ -11,8 +11,10 @@ const NAV_ITEMS = [
   { path: "/admin/customers", label: "לקוחות" },
   { path: "/admin/early-access", label: "הרשמה מוקדמת" },
   { path: "/admin/users", label: "משתמשים" },
+  { path: "/admin/create-user", label: "יצירת משתמש" },
   { path: "/admin/businesses", label: "עסקים" },
   { path: "/admin/affiliates", label: "שותפים" },
+  { path: "/admin/marketers", label: "משווקים" },
   { path: "/admin/withdrawals", label: "משיכות" },
   { path: "/admin/support-chat", label: "צ'אט תמיכה" },
 ] as const;

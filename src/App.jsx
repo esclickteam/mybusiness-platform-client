@@ -111,13 +111,18 @@ const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
+const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const MarketerDashboardPage = lazy(() =>
+  import("./pages/marketer/MarketerDashboardPage")
+);
 
 const AffiliatePage = lazy(() =>
   import("./pages/business/dashboardPages/AffiliatePage")
@@ -1062,6 +1067,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/create-user"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminCreateUser />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/businesses"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1107,6 +1121,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/marketers"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminMarketers />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/support-chat"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1134,6 +1157,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["affiliate"]}>
                               <AffiliateDashboardPage />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/marketer/dashboard/*"
+                          element={
+                            <ProtectedRoute roles={["marketer"]}>
+                              <MarketerDashboardPage />
                             </ProtectedRoute>
                           }
                         />

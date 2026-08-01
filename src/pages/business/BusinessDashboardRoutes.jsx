@@ -10,6 +10,11 @@ import BusinessDashboardLayout from "./BusinessDashboardLayout";
 import { lazyWithPreload } from "../../utils/lazyWithPreload";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import LazyRouteBoundary from "../../components/LazyRouteBoundary";
+import {
+  getDefaultDashboardPath,
+  isDashboardPathAllowed,
+  normalizeEnabledModules,
+} from "../../utils/moduleAccess";
 
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
@@ -217,7 +222,17 @@ function WebsiteStudioRoute({ businessId }) {
 }
 
 /** Restore last in-session dashboard page when landing on bare /dashboard */
-function DashboardIndexRedirect({ businessId }) {
+function DashboardIndexRedirect({ businessId, enabledModules }) {
+  const limited = normalizeEnabledModules(enabledModules);
+  if (limited) {
+    const defaultPath = getDefaultDashboardPath(businessId, limited);
+    const marker = `/business/${businessId}/dashboard/`;
+    const relative = defaultPath.startsWith(marker)
+      ? defaultPath.slice(marker.length)
+      : "crm";
+    return <Navigate to={relative} replace />;
+  }
+
   const saved = getLastDashboardRoute(businessId);
 
   if (saved) {
@@ -234,6 +249,21 @@ function DashboardIndexRedirect({ businessId }) {
   return <Navigate to="dashboard" replace />;
 }
 
+function ModuleAccessGuard({ businessId, enabledModules, children }) {
+  const location = useLocation();
+  const limited = normalizeEnabledModules(enabledModules);
+
+  if (
+    limited &&
+    !isDashboardPathAllowed(location.pathname, limited)
+  ) {
+    const fallback = getDefaultDashboardPath(businessId, limited);
+    return <Navigate to={fallback} replace />;
+  }
+
+  return children;
+}
+
 const BusinessDashboardRoutes = () => {
   const { user } = useAuth();
   const { businessId: urlBusinessId } = useParams();
@@ -242,6 +272,7 @@ const BusinessDashboardRoutes = () => {
   const queryClient = useQueryClient();
   const lastBusinessRedirectRef = useRef("");
   const isAdmin = user?.role === "admin";
+  const enabledModules = user?.enabledModules || null;
 
   // Admin uses URL tenant; business owners use their own businessId
   const businessId =
@@ -311,9 +342,18 @@ const BusinessDashboardRoutes = () => {
   return (
     <LazyRouteBoundary>
       <Suspense fallback={<BizuplyLoader fullScreen label="Loading dashboard..." />}>
+        <ModuleAccessGuard businessId={businessId} enabledModules={enabledModules}>
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
-          <Route index element={<DashboardIndexRedirect businessId={businessId} />} />
+          <Route
+            index
+            element={
+              <DashboardIndexRedirect
+                businessId={businessId}
+                enabledModules={enabledModules}
+              />
+            }
+          />
 
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="dashboard/profile" element={<BusinessProfilePage />} />
@@ -505,9 +545,22 @@ const BusinessDashboardRoutes = () => {
 
           <Route path="help-center" element={<HelpCenter />} />
 
-          <Route path="*" element={<Navigate to="dashboard" replace />} />
+          <Route
+            path="*"
+            element={
+              <Navigate
+                to={
+                  normalizeEnabledModules(enabledModules)
+                    ? "crm"
+                    : "dashboard"
+                }
+                replace
+              />
+            }
+          />
         </Route>
       </Routes>
+        </ModuleAccessGuard>
     </Suspense>
     </LazyRouteBoundary>
   );

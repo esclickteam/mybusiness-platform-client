@@ -424,10 +424,14 @@
   "layout": {
     "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",
     "adminImpersonationText": "אתם פועלים עם הרשאות מלאות בעסק {{name}}. כל הפעולות נשמרות בעסק זה.",
+    "marketerImpersonationTitle": "מצב משווק — כניסה ללקוח",
+    "marketerImpersonationText": "אתם מנהלים את חשבון הלקוח {{name}}. פתוחים ניהול קמפיינים ו-CRM.",
     "backToAdmin": "חזרה לפאנל אדמין",
+    "backToMarketer": "חזרה ללוח המשווק",
     "returning": "חוזר...",
     "adminBarTitle": "מצב אדמין — צפייה וניהול בעסק",
-    "exitImpersonationError": "לא ניתן לחזור לפאנל האדמין כרגע"
+    "exitImpersonationError": "לא ניתן לחזור לפאנל האדמין כרגע",
+    "exitMarketerImpersonationError": "לא ניתן לחזור ללוח המשווק כרגע"
   },
   "overview": {
     "greeting": "שלום, {{name}}!",

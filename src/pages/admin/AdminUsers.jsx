@@ -14,6 +14,7 @@ const ROLE_LABELS = {
   manager: "מנהל",
   business: "עסק",
   affiliate: "שותף",
+  marketer: "משווק קמפיינים",
   customer: "לקוח",
   worker: "עובד",
 };
@@ -28,6 +29,7 @@ const ROLE_FILTERS = [
   ["customer", "לקוחות"],
   ["business", "עסקים"],
   ["affiliate", "שותפים"],
+  ["marketer", "משווקים"],
   ["worker", "עובדים"],
   ["manager", "מנהלים"],
   ["admin", "מנהלי מערכת"],
@@ -208,6 +210,13 @@ function AdminUsers() {
             </div>
 
             <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <button
+                type="button"
+                onClick={() => navigate("/admin/create-user")}
+                className="rounded-2xl bg-[#7C4DFF] px-4 py-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0]"
+              >
+                יצירת משתמש
+              </button>
               <input
                 type="search"
                 value={search}

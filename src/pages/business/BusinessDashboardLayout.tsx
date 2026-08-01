@@ -56,6 +56,9 @@ type AuthUser = {
   earlyBirdUsed?: boolean;
   earlyBirdModalSeenAt?: string | null;
   earlyBirdExpiresAt?: string | Date | null;
+
+  impersonatorRole?: "admin" | "marketer" | string | null;
+  enabledModules?: string[] | null;
 };
 
 type AuthContextValue = {
@@ -462,18 +465,39 @@ export default function BusinessDashboardLayout() {
     });
   };
 
+  const impersonatorRole =
+    user?.impersonatorRole ||
+    (typeof localStorage !== "undefined"
+      ? localStorage.getItem("impersonatorRole")
+      : null) ||
+    "admin";
+  const isMarketerImpersonation = impersonatorRole === "marketer";
+
   const handleExitImpersonation = async () => {
     if (exitingImpersonation) return;
     setExitingImpersonation(true);
 
     try {
-      const { data } = await API.post("/admin/exit-impersonation");
+      const endpoint = isMarketerImpersonation
+        ? "/marketer/exit-impersonation"
+        : "/admin/exit-impersonation";
+      const { data } = await API.post(endpoint);
       loginWithToken?.(data.user, data.token, { skipRedirect: true });
       localStorage.removeItem("impersonatedBy");
-      navigate("/admin/dashboard", { replace: true });
+      localStorage.removeItem("impersonatorRole");
+      const redirectTo =
+        data.user?.redirectUrl ||
+        (isMarketerImpersonation ? "/marketer/dashboard" : "/admin/dashboard");
+      navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error("Exit impersonation failed:", err);
-      alert(t("layout.exitImpersonationError"));
+      alert(
+        t(
+          isMarketerImpersonation
+            ? "layout.exitMarketerImpersonationError"
+            : "layout.exitImpersonationError"
+        )
+      );
     } finally {
       setExitingImpersonation(false);
     }
@@ -494,12 +518,21 @@ export default function BusinessDashboardLayout() {
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
               <div className="text-start">
                 <strong className="block text-sm font-black">
-                  {t("layout.adminImpersonationTitle")}
+                  {t(
+                    isMarketerImpersonation
+                      ? "layout.marketerImpersonationTitle"
+                      : "layout.adminImpersonationTitle"
+                  )}
                 </strong>
                 <span className="block text-xs font-bold text-amber-900/70">
-                  {t("layout.adminImpersonationText", {
-                    name: user?.businessName || user?.name || "",
-                  })}
+                  {t(
+                    isMarketerImpersonation
+                      ? "layout.marketerImpersonationText"
+                      : "layout.adminImpersonationText",
+                    {
+                      name: user?.businessName || user?.name || "",
+                    }
+                  )}
                 </span>
               </div>
 
@@ -511,7 +544,11 @@ export default function BusinessDashboardLayout() {
               >
                 {exitingImpersonation
                   ? t("layout.returning")
-                  : t("layout.backToAdmin")}
+                  : t(
+                      isMarketerImpersonation
+                        ? "layout.backToMarketer"
+                        : "layout.backToAdmin"
+                    )}
               </button>
             </div>
           ) : null}

@@ -151,6 +151,7 @@ function clearLocalAuth({ clearDashboardRoute = false } = {}) {
   localStorage.removeItem("businessDetails");
   localStorage.removeItem("dashboardStats");
   localStorage.removeItem("impersonatedBy");
+  localStorage.removeItem("impersonatorRole");
 
   if (clearDashboardRoute) {
     clearLastDashboardRoute();
@@ -274,20 +275,41 @@ export function AuthProvider({ children }) {
 
       if (payload.impersonatedBy) {
         localStorage.setItem("impersonatedBy", payload.impersonatedBy);
+        if (payload.impersonatorRole) {
+          localStorage.setItem("impersonatorRole", payload.impersonatorRole);
+        } else if (userFromServer?.impersonatorRole) {
+          localStorage.setItem(
+            "impersonatorRole",
+            userFromServer.impersonatorRole
+          );
+        }
       } else {
         localStorage.removeItem("impersonatedBy");
+        localStorage.removeItem("impersonatorRole");
       }
     } catch {
       localStorage.removeItem("impersonatedBy");
+      localStorage.removeItem("impersonatorRole");
     }
 
     const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
     if (skipRedirect || isImpersonating) return;
 
+    if (normalizedUser.role === "marketer") {
+      navigate("/marketer/dashboard", { replace: true });
+      return;
+    }
+
     if (normalizedUser.role === "business" && normalizedUser.businessId) {
+      const limitedModules = Array.isArray(normalizedUser.enabledModules)
+        ? normalizedUser.enabledModules
+        : null;
+      const fallback = limitedModules?.includes("crm")
+        ? `/business/${normalizedUser.businessId}/dashboard/crm`
+        : undefined;
       navigate(
-        resolveBusinessDashboardPath(normalizedUser.businessId),
+        resolveBusinessDashboardPath(normalizedUser.businessId, fallback),
         { replace: true }
       );
       return;
@@ -357,12 +379,27 @@ export function AuthProvider({ children }) {
           return { user: normalizedUser, redirectUrl: "/admin/dashboard" };
         }
 
+        if (normalizedUser.role === "marketer" && !isImpersonating) {
+          navigate("/marketer/dashboard", { replace: true });
+          setLoading(false);
+          return { user: normalizedUser, redirectUrl: "/marketer/dashboard" };
+        }
+
         if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
           sessionStorage.setItem("justRegistered", "true");
 
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
+            const limitedModules = Array.isArray(normalizedUser.enabledModules)
+              ? normalizedUser.enabledModules
+              : null;
+            const fallback = limitedModules?.includes("crm")
+              ? `/business/${normalizedUser.businessId}/dashboard/crm`
+              : undefined;
             navigate(
-              resolveBusinessDashboardPath(normalizedUser.businessId),
+              resolveBusinessDashboardPath(
+                normalizedUser.businessId,
+                fallback
+              ),
               { replace: true }
             );
           } else {
@@ -374,7 +411,9 @@ export function AuthProvider({ children }) {
       const safeRedirectUrl =
         normalizedUser.role === "admin"
           ? "/admin/dashboard"
-          : redirectUrl;
+          : normalizedUser.role === "marketer"
+            ? "/marketer/dashboard"
+            : redirectUrl;
 
       setLoading(false);
       return { user: normalizedUser, redirectUrl: safeRedirectUrl };
