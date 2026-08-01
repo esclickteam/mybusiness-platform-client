@@ -931,7 +931,7 @@ function ServiceRequestCard({
 
       <form
         className="servora-request-form"
-        onSubmit={(event) => event.preventDefault()}
+        data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="servora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
       >
         <input
           name="name"
@@ -941,7 +941,7 @@ function ServiceRequestCard({
           data-editable="input"
           dir="rtl"
           {...visualProps(`${scope}.nameInput`, "box", "שדה שם")}
-        />
+         data-bizuply-form-field-id="name" autoComplete="name" />
 
         <input
           name="phone"
@@ -951,7 +951,7 @@ function ServiceRequestCard({
           data-editable="input"
           dir="rtl"
           {...visualProps(`${scope}.phoneInput`, "box", "שדה טלפון")}
-        />
+         data-bizuply-form-field-id="phone" autoComplete="tel" />
 
         <select
           name="service"

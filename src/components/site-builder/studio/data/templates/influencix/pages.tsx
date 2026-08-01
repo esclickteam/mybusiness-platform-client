@@ -692,14 +692,14 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="scale" className="rounded-[1rem_3rem_1rem_3rem] border border-current/10 bg-[var(--bg)]/60 p-5 md:p-8">
-          <form className="grid gap-3">
-            <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="influencix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <div className="grid gap-3 md:grid-cols-2">
-              <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
-              <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="חברה / תחום" />
+              <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
             </div>
-            <textarea className="min-h-32 rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?" />
-            <button type="button" className="rounded-2xl bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+            <textarea className="min-h-32 rounded-2xl border border-current/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <button type="submit" className="rounded-2xl bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>

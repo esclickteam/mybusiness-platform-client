@@ -304,14 +304,14 @@ function StartForm({ data, openModal }: { data: Record<string, any>; openModal: 
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pulsefit-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון" />
+              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מטרה: חיטוב / כוח / כושר" />
-            <textarea className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מה חייב להשתנות ב-90 הימים הקרובים?" />
-            <button type="button" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black">{getValue(data, "contactButton")}</button>
+            <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מטרה: חיטוב / כוח / כושר"  name="other" data-bizuply-form-field-id="other" />
+            <textarea className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מה חייב להשתנות ב-90 הימים הקרובים?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>
@@ -346,10 +346,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border-2 border-[var(--p)] bg-black p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
         <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-black uppercase text-black">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pulsefit-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-black uppercase text-black">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

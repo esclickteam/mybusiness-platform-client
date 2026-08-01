@@ -444,11 +444,11 @@ function NoodleReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
       <div className="mx-auto max-w-xl text-center">
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 leading-8" style={{ color: "#8b6b5a" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#b91c1c", background: "#ffffff" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="שם מלא" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="טלפון" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="תאריך" />
-          <button type="button" onClick={onCta} className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#b91c1c", color: "#b91c1cText" }}>{v(data, "cta")}</button>
+        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#b91c1c", background: "#ffffff" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pastafora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(44,24,16,0.12)", color: "#2c1810" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
+          <button type="submit" className="rounded-full px-6 py-4 text-sm font-bold" style={{ background: "#b91c1c", color: "#b91c1cText" }}>{v(data, "cta")}</button>
         </form>
         <p className="mt-6 text-sm" style={{ color: "#8b6b5a" }}>{v(data, "phone")} · {v(data, "email")}</p>
       </div>

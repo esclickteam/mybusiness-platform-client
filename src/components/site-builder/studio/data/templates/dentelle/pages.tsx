@@ -367,17 +367,17 @@ function Appointment({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={140}>
-          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10">
+          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="dentelle-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div>
               <h3 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{getValue(data, "contactText")}</h3>
               <div className="mt-8 grid gap-4">
-                <input className="de-field px-4 py-4" placeholder="שם מלא" />
-                <input className="de-field px-4 py-4" placeholder="טלפון" />
-                <input className="de-field px-4 py-4" placeholder="טיפול שמעניין אתכם" />
-                <textarea className="de-field min-h-[130px] px-4 py-4" placeholder="מה חשוב לנו לדעת לפני השיחה?" />
+                <input className="de-field px-4 py-4" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+                <input className="de-field px-4 py-4" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+                <input className="de-field px-4 py-4" placeholder="טיפול שמעניין אתכם"  name="other" data-bizuply-form-field-id="other" />
+                <textarea className="de-field min-h-[130px] px-4 py-4" placeholder="מה חשוב לנו לדעת לפני השיחה?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               </div>
             </div>
-            <button type="button" className="mt-6 bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
+            <button type="submit" className="mt-6 bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
               {getValue(data, "contactButton")}
             </button>
           </form>

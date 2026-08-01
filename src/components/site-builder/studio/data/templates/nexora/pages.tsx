@@ -234,21 +234,21 @@ function BookingModal({
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {getValue(data, "contactText")}
           </p>
-          <form className="mt-7 grid gap-4">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nexora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="אימייל עבודה"
-            />
+             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="שם החברה"
-            />
+             name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <button
-              type="button"
+              type="submit"
               className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-7 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition hover:-translate-y-0.5"
             >
               {getValue(data, "contactButton")}
@@ -644,26 +644,26 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8">
+        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="אימייל עבודה"
-            />
+             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="שם החברה"
-            />
+             name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <textarea
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="ספרו לנו על הצוות שלכם"
-            />
+             name="message" data-bizuply-form-field-id="message"></textarea>
             <button
-              type="button"
+              type="submit"
               onClick={openBooking}
               className="rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-7 py-4 text-base font-semibold text-white shadow-lg shadow-indigo-500/30 transition duration-300 hover:-translate-y-0.5"
             >

@@ -175,14 +175,14 @@ function KeyoraBluePanelContact({ data, onCta }: { data: Record<string, any>; on
             <p>{v(data, "address")}</p>
           </div>
         </aside>
-        <form className="grid gap-4 p-8 lg:p-12" onSubmit={(e) => e.preventDefault()}>
+        <form className="grid gap-4 p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="keyora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="שם מלא" />
-            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="טלפון" />
+            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           </div>
-          <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="עיר, תקציב, מספר חדרים" />
-          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="מה צריך לקרות כדי שתגידו כן?" />
-          <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-black" style={{ background: "#0f1b2d", color: "#ffffff" }}>{v(data, "cta")}</button>
+          <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="עיר, תקציב, מספר חדרים" name="other" data-bizuply-form-field-id="other" />
+          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="מה צריך לקרות כדי שתגידו כן?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+          <button type="submit" className="tpl-sweep px-7 py-4 text-sm font-black" style={{ background: "#0f1b2d", color: "#ffffff" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

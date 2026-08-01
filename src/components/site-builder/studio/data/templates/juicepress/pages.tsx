@@ -437,12 +437,12 @@ function CitrusReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
           <p className="mt-4 leading-8" style={{ color: "#78716c" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#78716c" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="שם מלא" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="טלפון" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="תאריך" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="מספר סועדים" />
-          <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="מספר סועדים" name="guests" data-bizuply-form-field-id="guests" />
+          <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

@@ -244,25 +244,25 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="aurelia-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="שם מלא"
-              />
+               name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="טלפון"
-              />
+               name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                   placeholder="תאריך"
-                />
+                 name="date" data-bizuply-form-field-id="date" />
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                   placeholder="שעה"
-                />
+                 name="other" data-bizuply-form-field-id="other" />
               </div>
               <select className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition focus:border-[#c9a24b]">
                 <option>מספר סועדים</option>
@@ -274,9 +274,9 @@ function BookingModal({
               <textarea
                 className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="בקשות מיוחדות"
-              />
+               name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               <button
-                type="button"
+                type="submit"
                 className="rounded-full bg-[#c9a24b] px-7 py-4 text-base font-semibold text-[#14100d] shadow-lg shadow-[#c9a24b]/20 transition hover:-translate-y-0.5 hover:bg-[#d8b45f]"
               >
                 {getValue(data, "contactButton")}
@@ -640,26 +640,26 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7">
+        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="aurelia-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="טלפון"
-            />
+             name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="מספר סועדים"
-            />
+             name="guests" data-bizuply-form-field-id="guests" />
             <textarea
               className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="בקשות מיוחדות"
-            />
+             name="other" data-bizuply-form-field-id="other"></textarea>
             <button
-              type="button"
+              type="submit"
               className="rounded-full bg-[#c9a24b] px-7 py-4 text-base font-semibold text-[#14100d] shadow-lg shadow-[#c9a24b]/20 transition duration-300 hover:-translate-y-0.5 hover:bg-[#d8b45f]"
             >
               {getValue(data, "contactButton")}

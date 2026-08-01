@@ -222,21 +222,21 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-bold text-white">בואו נפתח לכם את Fluxora.</h3>
           <p className="mt-3 text-sm leading-6 text-slate-400">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="fluxora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="אימייל עבודה"
-            />
+             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="שם החברה / הצוות"
-            />
+             name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <button
-              type="button"
+              type="submit"
               className="rounded-full bg-[#3dffa8] px-7 py-4 text-base font-bold text-[#07110c]"
             >
               {getValue(data, "contactButton")}

@@ -703,24 +703,18 @@ function ConsultationModal({
 
           <form
             className="p-6 lg:p-10"
-            onSubmit={(event) => {
-              event.preventDefault();
-              onClose();
-            }}
+            data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="justora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
           >
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="שם מלא"
-              />
+                placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="טלפון"
-              />
+                placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input
                 className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
-                placeholder="אימייל"
-              />
+                placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
               <select className="rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]">
                 <option>תחום משפטי</option>
                 <option>דיני משפחה</option>
@@ -731,7 +725,7 @@ function ConsultationModal({
               <textarea
                 className="min-h-32 rounded-2xl border border-[#2b1b1d]/10 bg-white/85 px-5 py-4 text-right outline-none transition focus:border-[#b45c3a]"
                 placeholder="כמה מילים על המקרה"
-              />
+               name="other" data-bizuply-form-field-id="other"></textarea>
 
               <button
                 type="submit"
@@ -1752,28 +1746,22 @@ function ContactSection({
 
         <form
           className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7"
-          onSubmit={(event) => {
-            event.preventDefault();
-            openConsultation();
-          }}
+          data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="justora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
         >
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="שם מלא"
-            />
+              placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="טלפון"
-            />
+              placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
-              placeholder="אימייל"
-            />
+              placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
               className="min-h-36 rounded-2xl border border-[#2b1b1d]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b45c3a]"
               placeholder="מה תרצו לשאול?"
-            />
+             name="other" data-bizuply-form-field-id="other"></textarea>
 
             <button
               type="submit"

@@ -382,14 +382,14 @@ function DemoForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא" />
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             </div>
-            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="חברה ותפקיד" />
-            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?" />
-            <button type="button" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
+            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="חברה ותפקיד"  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
+            <button type="submit" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>
           </form>

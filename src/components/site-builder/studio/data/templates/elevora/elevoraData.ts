@@ -481,22 +481,22 @@ function createElevoraEditorHtml(page: ElevoraPageId) {
         </div>
 
         <div class="elevora-form-card">
-          <form class="elevora-form">
+          <form class="elevora-form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div class="elevora-field">
               <label>שם מלא</label>
-              <input type="text" placeholder="השם שלך" />
+              <input type="text" placeholder="השם שלך"  name="name" data-bizuply-form-field-id="name" autoComplete="name" />
             </div>
             <div class="elevora-field">
               <label>טלפון</label>
-              <input type="tel" placeholder="050-0000000" />
+              <input type="tel" placeholder="050-0000000"  name="other" data-bizuply-form-field-id="other" />
             </div>
             <div class="elevora-field">
               <label>אימייל</label>
-              <input type="email" placeholder="name@email.com" />
+              <input type="email" placeholder="name@email.com"  name="email" data-bizuply-form-field-id="email" autoComplete="email" />
             </div>
             <div class="elevora-field">
               <label>איך אפשר לעזור?</label>
-              <textarea placeholder="ספרו לנו בקצרה על העסק והמטרה שלכם"></textarea>
+              <textarea placeholder="ספרו לנו בקצרה על העסק והמטרה שלכם" name="message" data-bizuply-form-field-id="message"></textarea>
             </div>
             <button type="submit" class="elevora-btn elevora-btn-primary">שליחת פנייה</button>
           </form>

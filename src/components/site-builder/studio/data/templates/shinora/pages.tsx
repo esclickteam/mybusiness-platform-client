@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { shinoraDefaultData, type ShinoraTemplateData } from "./defaultData";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
+import { useStorePluginCatalog } from "../shared/useStorePluginCatalog";
 
 export const shinoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -28,6 +29,7 @@ type ShinoraPagesProps = {
   mode?: "preview" | "editor" | "published" | string;
   onNavigate?: (pageId: string) => void;
   onPageChange?: (pageId: string) => void;
+  businessId?: string;
 };
 
 const cx = (...classes: Array<string | false | null | undefined>) =>
@@ -1475,13 +1477,47 @@ function PricingSection({ data }: { data: any }) {
   );
 }
 
-function ProductsSection({ data }: { data: any }) {
+function ProductsSection({
+  data,
+  businessId,
+}: {
+  data: any;
+  businessId?: string;
+}) {
+  const demoProducts = Array.isArray(data.products)
+    ? data.products.map((product: any) => ({
+        name: String(product.name || ""),
+        price: Number(String(product.price || "").replace(/[^\d.]/g, "")) || 0,
+        image: String(product.image || ""),
+        shortDescription: "Premium care",
+        category: "טיפוח",
+      }))
+    : [];
+
+  const { products } = useStorePluginCatalog({
+    businessId,
+    demoProducts,
+    enabled: true,
+  });
+
+  const displayProducts =
+    products.length > 0
+      ? products.map((product) => ({
+          name: product.name,
+          price: `₪${Math.round(product.price)}`,
+          image: product.image,
+        }))
+      : Array.isArray(data.products)
+        ? data.products
+        : [];
+
   return (
     <section
       className="bg-[#fff8f2] py-12 md:py-24"
       dir="rtl"
       data-template-section-id="shop"
       data-section-kind="shop"
+      data-bizuply-block="store"
       data-visual-editable="true"
       data-visual-edit-id="shop.section"
       data-visual-edit-type="section"
@@ -1503,9 +1539,9 @@ function ProductsSection({ data }: { data: any }) {
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
-          {data.products.map((product: any, index: number) => (
+          {displayProducts.map((product: any, index: number) => (
             <Reveal
-              key={product.name}
+              key={`${product.name}-${index}`}
               delay={
                 index === 1 ? "delay-100" : index === 2 ? "delay-200" : "delay-0"
               }
@@ -1513,7 +1549,7 @@ function ProductsSection({ data }: { data: any }) {
               <article
                 className="group overflow-hidden rounded-[42px] border border-[#ead7c8] bg-white/75 shadow-[0_20px_70px_rgba(56,31,22,0.08)] transition hover:-translate-y-2"
                 data-visual-editable="true"
-                data-visual-edit-id={`shop.${index}.card`}
+                data-visual-edit-id={`products.${index}.card`}
                 data-visual-edit-type="box"
                 data-visual-edit-label={`מוצר ${index + 1}`}
               >
@@ -1523,7 +1559,7 @@ function ProductsSection({ data }: { data: any }) {
                     alt={product.name}
                     className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                     data-visual-editable="true"
-                    data-visual-edit-id={`shop.${index}.image`}
+                    data-visual-edit-id={`products.${index}.image`}
                     data-visual-edit-type="image"
                     data-visual-edit-label={`תמונת מוצר ${index + 1}`}
                   />
@@ -1534,7 +1570,7 @@ function ProductsSection({ data }: { data: any }) {
                     <h3
                       className="text-2xl font-black text-[#241612]"
                       data-visual-editable="true"
-                      data-visual-edit-id={`shop.${index}.name`}
+                      data-visual-edit-id={`products.${index}.name`}
                       data-visual-edit-type="text"
                       data-visual-edit-label={`שם מוצר ${index + 1}`}
                     >
@@ -1548,7 +1584,7 @@ function ProductsSection({ data }: { data: any }) {
                   <div
                     className="rounded-full bg-[#241612] px-4 py-2 text-sm font-black text-white"
                     data-visual-editable="true"
-                    data-visual-edit-id={`shop.${index}.price`}
+                    data-visual-edit-id={`products.${index}.price`}
                     data-visual-edit-type="text"
                     data-visual-edit-label={`מחיר מוצר ${index + 1}`}
                   >
@@ -2024,7 +2060,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                   title="חנות"
                   text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
                 />
-                <ProductsSection data={data} />
+                <ProductsSection data={data} businessId={props.businessId} />
               </>
             ),
           },

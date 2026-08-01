@@ -1554,14 +1554,14 @@ function FaqNewsletter({
             {data.newsletterText}
           </p>
 
-          <form className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="novastra-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               type="email"
               placeholder={data.newsletterPlaceholder}
               className="min-h-[52px] flex-1 rounded-full border border-zinc-300 bg-[#fbf7ef] px-5 text-sm font-semibold outline-none transition focus:border-zinc-950"
             />
             <button
-              type="button"
+              type="submit"
               className="min-h-[52px] rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:bg-zinc-800"
             >
               {data.newsletterButton}

@@ -550,18 +550,18 @@ function ContactIntake({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12">
+        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון" />
-            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="אימייל" />
-            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-white/12 bg-black px-4 py-4 text-right text-white outline-none md:col-span-2" placeholder="מה המטרה שלכם: כוח, ירידה באחוזי שומן, חזרה למסלול או בניית שגרה?"  name="other" data-bizuply-form-field-id="other"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-white/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#aaaaaa]">
               דף יצירת קשר נבנה כמו מסך המרה קשוח: מעט הסחות, הרבה בהירות, והזמנה ברורה לשיעור ניסיון.
             </TemplateText>
-            <button type="button" className="border border-[#ff2d2d] bg-[#ff2d2d] px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black">
+            <button type="submit" className="border border-[#ff2d2d] bg-[#ff2d2d] px-6 py-4 text-sm font-black uppercase tracking-[0.22em] text-black">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>
           </div>

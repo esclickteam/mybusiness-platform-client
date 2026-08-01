@@ -970,8 +970,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
 
         <form
           dir="rtl"
-          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8"
-        >
+          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nadlanist-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             ["שם", "השם שלך"],
             ["אימייל", "hello@email.com"],
@@ -996,11 +995,11 @@ function ContactPage({ data }: { data: NadlanistData }) {
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
-            />
+             name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
 
           <button
-            type="button"
+            type="submit"
             className="mt-6 w-full rounded-full bg-[#c9a85f] px-6 py-4 text-xs font-black uppercase tracking-[0.18em] text-[#071426] transition hover:bg-white"
           >
             {data.contact.button} ←

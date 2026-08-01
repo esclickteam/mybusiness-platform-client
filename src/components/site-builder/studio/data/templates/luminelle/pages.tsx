@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { CrmBookingMount } from "../shared/CrmBookingMount";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { luminelleDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -390,20 +391,39 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
             </p>
           </div>
         </div>
+        <CrmBookingMount className="mb-6 min-h-[420px] w-full border border-white/12 bg-[#211c25] p-3" accent="#c4b5a0" />
         <form
           className="grid gap-4 border border-white/12 bg-[#211c25] p-6 md:grid-cols-2 md:p-8"
-          onSubmit={(event) => {
-            event.preventDefault();
-            openModal();
-          }}
+          data-bizuply-block="lead-form"
+          data-bizuply-crm-lead="true"
+          data-bizuply-form-builder="true"
+          data-bizuply-form-id="luminelle-booking"
+          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
         >
-          <input className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]" placeholder={getValue(data, "bookingNameLabel")} />
-          <input className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]" placeholder={getValue(data, "bookingPhoneLabel")} />
           <input
+            name="name"
+            data-bizuply-form-field-id="name"
+            autoComplete="name"
+            className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]"
+            placeholder={getValue(data, "bookingNameLabel")}
+          />
+          <input
+            name="phone"
+            type="tel"
+            data-bizuply-form-field-id="phone"
+            autoComplete="tel"
+            className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]"
+            placeholder={getValue(data, "bookingPhoneLabel")}
+          />
+          <input
+            name="service"
+            data-bizuply-form-field-id="service"
             className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)] md:col-span-2"
             placeholder={getValue(data, "bookingServiceLabel")}
           />
           <textarea
+            name="message"
+            data-bizuply-form-field-id="message"
             className="l-input min-h-[150px] resize-none !border-white/14 !bg-transparent !text-[var(--l-surface)] md:col-span-2"
             placeholder={getValue(data, "bookingMessageLabel")}
           />
@@ -452,10 +472,30 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <p className="l-kicker">{getValue(data, "heroEyebrow")}</p>
         <h3 className="l-display mt-4 text-3xl font-bold leading-tight">{getValue(data, "contactTitle")}</h3>
         <p className="mt-4 text-sm leading-7 text-[var(--l-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3">
-          <input className="l-input" placeholder={getValue(data, "bookingNameLabel")} />
-          <input className="l-input" placeholder={getValue(data, "bookingPhoneLabel")} />
-          <button type="button" className="l-button mt-2 w-full">
+        <form
+          className="mt-7 grid gap-3"
+          data-bizuply-block="lead-form"
+          data-bizuply-crm-lead="true"
+          data-bizuply-form-builder="true"
+          data-bizuply-form-id="luminelle-contact"
+          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+        >
+          <input
+            name="name"
+            data-bizuply-form-field-id="name"
+            autoComplete="name"
+            className="l-input"
+            placeholder={getValue(data, "bookingNameLabel")}
+          />
+          <input
+            name="phone"
+            type="tel"
+            data-bizuply-form-field-id="phone"
+            autoComplete="tel"
+            className="l-input"
+            placeholder={getValue(data, "bookingPhoneLabel")}
+          />
+          <button type="submit" className="l-button mt-2 w-full">
             {getValue(data, "contactButton")}
           </button>
         </form>

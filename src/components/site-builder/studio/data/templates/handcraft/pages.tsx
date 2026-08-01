@@ -526,12 +526,12 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         </p>
         <h3 className="mt-4 text-3xl font-extrabold leading-tight">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3">
-          <input className="h-input px-5 py-4 text-right" placeholder="שם מלא" />
-          <input className="h-input px-5 py-4 text-right" placeholder="טלפון" />
-          <input className="h-input px-5 py-4 text-right" placeholder="מה התקלה?" />
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="handcraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="h-input px-5 py-4 text-right" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="h-input px-5 py-4 text-right" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="h-input px-5 py-4 text-right" placeholder="מה התקלה?"  name="other" data-bizuply-form-field-id="other" />
           <button
-            type="button"
+            type="submit"
             className="mt-2 bg-[var(--h-primary)] px-7 py-4 text-sm font-extrabold uppercase tracking-[0.2em] text-white transition hover:bg-[var(--h-accent)] hover:text-[var(--h-dark)]"
           >
             {getValue(data, "contactButton")}

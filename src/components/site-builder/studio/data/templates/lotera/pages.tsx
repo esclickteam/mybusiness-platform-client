@@ -168,13 +168,13 @@ function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta
             <span>{v(data, "address")}</span>
           </div>
         </div>
-        <form className="grid gap-5 md:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="אזור מבוקש" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="תקציב" />
-          <textarea className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="מה חשוב לכם לראות מהחלון?" />
-          <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-bold md:col-span-2" style={{ background: "#5eb4ff", color: "#041018" }}>{v(data, "cta")}</button>
+        <form className="grid gap-5 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="lotera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="אזור מבוקש" name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="תקציב" name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="מה חשוב לכם לראות מהחלון?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+          <button type="submit" className="tpl-sweep px-7 py-4 text-sm font-bold md:col-span-2" style={{ background: "#5eb4ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

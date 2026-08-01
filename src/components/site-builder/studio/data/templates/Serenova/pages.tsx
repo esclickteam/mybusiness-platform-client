@@ -297,20 +297,20 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="serenova-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="שם מלא"
-              />
+               name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="טלפון"
-              />
+               name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input
                 className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="אימייל"
-              />
+               name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
               <select className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]">
                 <option>מה מעניין אותך?</option>
                 <option>טיפול אישי</option>
@@ -321,10 +321,10 @@ function BookingModal({
               <textarea
                 className="min-h-28 rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
                 placeholder="כמה מילים על הצורך"
-              />
+               name="other" data-bizuply-form-field-id="other"></textarea>
 
               <button
-                type="button"
+                type="submit"
                 className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition hover:-translate-y-0.5"
               >
                 {getValue(data, "contactButton")}
@@ -1189,27 +1189,27 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7">
+        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="serenova-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="טלפון"
-            />
+             name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="אימייל"
-            />
+             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
               className="min-h-36 rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
               placeholder="מה תרצו לשאול?"
-            />
+             name="other" data-bizuply-form-field-id="other"></textarea>
 
             <button
-              type="button"
+              type="submit"
               className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition duration-300 hover:-translate-y-0.5"
             >
               {getValue(data, "contactButton")}
