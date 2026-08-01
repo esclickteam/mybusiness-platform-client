@@ -34,6 +34,7 @@ export function CrmBookingMount({
         minHeight,
         background: "transparent",
         width: "100%",
+        maxWidth: 720,
       }}
       title="יומן פגישות מה-CRM"
       aria-label="יומן פגישות מה-CRM"

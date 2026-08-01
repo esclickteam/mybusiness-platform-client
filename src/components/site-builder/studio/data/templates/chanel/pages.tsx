@@ -2269,12 +2269,14 @@ function JournalSection({ data }: SharedProps) {
           scope="journalHeading"
         />
 
-        <div className="mt-14 grid grid-cols-1 gap-8 md:grid-cols-3">
-          {safeArray(data.journal).map((item, index) => (
+        <div className="mt-14 grid grid-cols-1 gap-8 lg:grid-cols-12">
+          {safeArray(data.journal).map((item, index) => {
+            const featured = index === 0;
+            return (
             <article
               key={`journal-${index}`}
               data-revealed="false"
-              className={`${REVEAL_CLASS} group`}
+              className={`${REVEAL_CLASS} group ${featured ? "lg:col-span-12" : "lg:col-span-6"}`}
               style={{ transitionDelay: `${index * 90}ms` }}
               {...visualProps(
                 `journal.${index}.card`,
@@ -2282,17 +2284,21 @@ function JournalSection({ data }: SharedProps) {
                 `פוסט ${index + 1}`,
               )}
             >
-              <a href={item.href} className="block" data-editable="link">
-                <div className="aspect-[4/3] overflow-hidden">
+              <a
+                href={item.href}
+                className={`block ${featured ? "lg:grid lg:grid-cols-2 lg:items-center lg:gap-10" : ""}`}
+                data-editable="link"
+              >
+                <div className={`journal-card-media relative overflow-hidden ${featured ? "aspect-[16/10] lg:aspect-[4/3]" : "aspect-[4/3]"}`}>
                   <MediaElement
                     value={item.image}
                     fallback={chanelDefaultData.journal[index]?.image}
                     field={`journal.${index}.image`}
                     alt={item.title}
-                    className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                 </div>
-                <div className="mt-5">
+                <div className={featured ? "mt-5 lg:mt-0" : "mt-5"}>
                   <span
                     className="text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/40"
                     data-editable="text"
@@ -2305,7 +2311,7 @@ function JournalSection({ data }: SharedProps) {
                     {item.date}
                   </span>
                   <h3
-                    className="mt-2 text-lg font-light tracking-wide"
+                    className={`mt-2 font-light tracking-wide ${featured ? "text-2xl sm:text-3xl" : "text-lg"}`}
                     data-editable="text"
                     {...visualProps(
                       `journal.${index}.title`,
@@ -2329,7 +2335,8 @@ function JournalSection({ data }: SharedProps) {
                 </div>
               </a>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
