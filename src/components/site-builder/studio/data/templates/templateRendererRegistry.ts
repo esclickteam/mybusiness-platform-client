@@ -776,6 +776,11 @@ import { nailoraEditorCss } from "./nailora/editorCss";
 import { nailoraSchema } from "./nailora/schema";
 import { nailoraDefaultData } from "./nailora/defaultData";
 
+import LunellePages, { lunellePages } from "./lunelle/pages";
+import { lunelleEditorCss } from "./lunelle/editorCss";
+import { lunelleSchema } from "./lunelle/schema";
+import { lunelleDefaultData } from "./lunelle/defaultData";
+
 import BlushlabPages, { blushlabPages } from "./blushlab/pages";
 import { blushlabEditorCss } from "./blushlab/editorCss";
 import { blushlabSchema } from "./blushlab/schema";
@@ -1062,7 +1067,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Spalcio /
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
   Nadlanist / Novastra / Domora / Serenova / Justora / Shinora / Cyclora / Chanel יעבדו עם:
   editorMode: "visual-react"
@@ -3039,6 +3044,17 @@ export const studioTemplateRendererRegistry: Record<
     schema: nailoraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: nailoraDefaultData as unknown as Record<string, any>,
     editorCss: nailoraEditorCss,
+  }),
+
+  lunelle: createRenderer({
+    key: "lunelle",
+    name: "Lunelle",
+    Component: LunellePages,
+    pages: lunellePages,
+    editorMode: "visual-react",
+    schema: lunelleSchema as unknown as StudioTemplateRenderer["schema"],
+    defaultData: lunelleDefaultData as unknown as Record<string, any>,
+    editorCss: lunelleEditorCss,
   }),
 
   blushlab: createRenderer({

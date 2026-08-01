@@ -206,9 +206,8 @@ function ContactSection({
       className="bg-[var(--bg)] px-5 py-24"
     >
       <div className="mx-auto grid max-w-7xl items-stretch gap-8 lg:grid-cols-[1fr_.8fr]">
-        <Reveal>
-          <ContactForm data={data} formId={formId} titleKey={titleKey} />
-        </Reveal>
+        {/* No Reveal around the form — opacity animation must never hide lead fields. */}
+        <ContactForm data={data} formId={formId} titleKey={titleKey} />
         <div className="lunelle-contact-media relative z-0 min-h-[360px] overflow-hidden rounded-[40px] bg-[#f1d7dc] shadow-[0_25px_80px_rgba(42,23,28,.12)] lg:min-h-[620px]">
           <img
             src={getValue(data, "contactImage")}

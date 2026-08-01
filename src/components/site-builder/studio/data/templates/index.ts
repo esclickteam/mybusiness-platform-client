@@ -177,6 +177,7 @@ import { vineriaTemplate } from "./vineria/meta";
 import { streetbiteTemplate } from "./streetbite/meta";
 import { velvetineTemplate } from "./velvetine/meta";
 import { nailoraTemplate } from "./nailora/meta";
+import { lunelleTemplate } from "./lunelle/meta";
 import { blushlabTemplate } from "./blushlab/meta";
 import { silkbarTemplate } from "./silkbar/meta";
 import { lashoraTemplate } from "./lashora/meta";
@@ -392,6 +393,7 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   streetbiteTemplate,
   velvetineTemplate,
   nailoraTemplate,
+  lunelleTemplate,
   blushlabTemplate,
   silkbarTemplate,
   lashoraTemplate,
