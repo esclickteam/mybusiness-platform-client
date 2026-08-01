@@ -1,6 +1,9 @@
 /**
  * Host-aware sitemap.xml / robots.txt for customer sites.
  * Matcher is intentionally tiny so the SPA homepage is never touched.
+ *
+ * This is a Vite SPA on Vercel Routing Middleware (not Next.js), so we use
+ * the standard Request/Response APIs — not request.nextUrl / NextResponse.
  */
 
 const PUBLIC_SITE_DOMAIN =
@@ -37,17 +40,29 @@ function isCustomerSiteHost(host) {
   return true;
 }
 
-export default async function middleware(request) {
-  const host = getHost(request);
-  const isRobots = request.nextUrl.pathname === "/robots.txt";
+/** Vercel rewrite without depending on next/server. */
+function rewrite(destinationUrl) {
+  return new Response(null, {
+    headers: {
+      "x-middleware-rewrite": destinationUrl.toString(),
+    },
+  });
+}
 
+export default async function middleware(request) {
+  const url = new URL(request.url);
+  const host = getHost(request);
+  const isRobots = url.pathname === "/robots.txt";
+
+  // Marketing site: serve the static files generated into /public
   if (!isCustomerSiteHost(host)) {
     const marketingPath = isRobots
       ? "/marketing-robots.txt"
       : "/marketing-sitemap.xml";
-    return fetch(new URL(marketingPath, request.url));
+    return rewrite(new URL(marketingPath, request.url));
   }
 
+  // Customer custom-domain / subdomain sites: proxy from API by host
   const endpoint = isRobots ? "robots.txt" : "sitemap.xml";
   const apiUrl =
     `https://api.bizuply.com/api/site-builder/public/by-host/${endpoint}` +
