@@ -3,6 +3,10 @@ import type {
   BizuplyFormField,
   BizuplyFormFieldType,
 } from "../../FormBuilderModal";
+import {
+  DEFAULT_FORM_COLORS,
+  normalizeFormColors,
+} from "../../FormBuilderModal";
 
 import {
   FORM_BUILDER_KEY,
@@ -16,6 +20,28 @@ export type FormContext = {
   formNode: HTMLFormElement | null;
   containerNode: HTMLElement | null;
 };
+
+/** Booking calendar widgets must never be rewritten by the contact form builder. */
+export function isBookingWidgetForm(
+  formNode: HTMLElement | null | undefined,
+): boolean {
+  if (!formNode) return false;
+
+  if (
+    formNode.getAttribute("data-bizuply-booking-live") === "true" ||
+    formNode.getAttribute("data-bizuply-widget") === "booking" ||
+    formNode.getAttribute("data-bizuply-booking-mount") === "true" ||
+    formNode.getAttribute("data-bizuply-block") === "booking"
+  ) {
+    return true;
+  }
+
+  return Boolean(
+    formNode.closest(
+      '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"], [data-bizuply-booking-host="true"], [data-bizuply-block="booking"], [data-section-kind="booking"]',
+    ),
+  );
+}
 
 export function resolveFormContext(
   node: HTMLElement | null,
@@ -112,18 +138,25 @@ export function findFormNodeByElementId(
 
   const safeId = safeCssSelectorValue(elementId);
 
-  return (
+  const candidates = [
     root.querySelector<HTMLFormElement>(
       `form[data-visual-edit-id="${safeId}"]`,
-    ) ||
+    ),
     root.querySelector<HTMLFormElement>(
       `[data-visual-edit-id="${safeId}"] form`,
-    ) ||
+    ),
     root.querySelector<HTMLFormElement>(
       `[data-template-section-id="${safeId}"] form`,
-    ) ||
-    null
-  );
+    ),
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate && !isBookingWidgetForm(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 export function collectFormConfigFromDom(
@@ -224,16 +257,32 @@ export function applyFormBuilderConfigForElement(
 ) {
   if (!root || !elementId) return;
 
+  // Never hydrate form-builder config into booking calendar mounts.
+  const safeId = safeCssSelectorValue(elementId);
+  const targetContainer = root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"], [data-template-section-id="${safeId}"]`,
+  );
+  if (
+    targetContainer &&
+    (isBookingWidgetForm(targetContainer) ||
+      targetContainer.getAttribute("data-section-kind") === "booking" ||
+      targetContainer.querySelector(
+        '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"]',
+      ))
+  ) {
+    return;
+  }
+
   let formNode = findFormNodeByElementId(root, elementId);
 
   if (!formNode) {
-    const safeId = safeCssSelectorValue(elementId);
-    const container = root.querySelector<HTMLElement>(
-      `[data-visual-edit-id="${safeId}"], [data-template-section-id="${safeId}"]`,
-    );
+    const container = targetContainer;
 
-    if (container) {
-      formNode = container.querySelector("form");
+    if (container && !isBookingWidgetForm(container)) {
+      const nestedForms = Array.from(
+        container.querySelectorAll<HTMLFormElement>("form"),
+      ).filter((node) => !isBookingWidgetForm(node));
+      formNode = nestedForms[0] || null;
 
       if (!formNode) {
         formNode = document.createElement("form");
@@ -243,7 +292,7 @@ export function applyFormBuilderConfigForElement(
     }
   }
 
-  if (!formNode) return;
+  if (!formNode || isBookingWidgetForm(formNode)) return;
 
   if (!formNode.getAttribute("data-visual-edit-id")) {
     formNode.setAttribute("data-visual-edit-id", elementId);
@@ -275,6 +324,7 @@ export function createDefaultFormBuilderConfig(): BizuplyFormConfig {
     title: "טופס יצירת קשר",
     submitText: "שליחת הודעה",
     successMessage: "ההודעה נשלחה בהצלחה",
+    colors: { ...DEFAULT_FORM_COLORS },
     fields: [
       {
         id: "name",
@@ -320,6 +370,7 @@ export function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
     title: String(source.title || fallback.title),
     submitText: String(source.submitText || fallback.submitText),
     successMessage: String(source.successMessage || fallback.successMessage),
+    colors: normalizeFormColors(source.colors),
     fields: Array.isArray(source.fields)
       ? source.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
@@ -442,16 +493,20 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     `data-visual-edit-label="${label}"`,
   ].join(" ");
 
+  const controlStyle =
+    "background:var(--biz-form-field-bg,#fff);border-color:var(--biz-form-field-border,#e2e8f0);color:var(--biz-form-field-text,#0f172a)";
+
   const inputClass =
-    "peer h-14 w-full rounded-2xl border border-slate-200 bg-white px-4 pr-12 text-right text-[15px] font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100";
+    "peer h-14 w-full rounded-2xl border px-4 pr-12 text-right text-[15px] font-semibold outline-none transition";
 
   const textareaClass =
-    "peer min-h-[148px] w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-4 pr-12 text-right text-[15px] font-semibold leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100";
+    "peer min-h-[148px] w-full resize-y rounded-2xl border px-4 py-4 pr-12 text-right text-[15px] font-semibold leading-7 outline-none transition";
 
   const labelHtml = `
     <label
       for="${name}"
-      class="mb-2.5 flex items-center gap-1.5 text-sm font-black text-slate-700"
+      class="mb-2.5 flex items-center gap-1.5 text-sm font-black"
+      style="color:var(--biz-form-label,#334155)"
       data-visual-editable="true"
       data-visual-edit-id="${visualId}.label"
       data-visual-edit-type="text"
@@ -464,7 +519,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   `;
 
   const iconHtml = `
-    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 transition peer-focus:text-violet-600">
+    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 transition" style="color:var(--biz-form-accent,#0f766e)">
       ${icon}
     </span>
   `;
@@ -473,8 +528,8 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     return `
       ${labelHtml}
       <div class="relative">
-        <textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${textareaClass}"></textarea>
-        <span class="pointer-events-none absolute right-4 top-4 text-slate-400 transition peer-focus:text-violet-600">
+        <textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${textareaClass}" style="${controlStyle}"></textarea>
+        <span class="pointer-events-none absolute right-4 top-4 transition" style="color:var(--biz-form-accent,#0f766e)">
           ${icon}
         </span>
       </div>
@@ -496,12 +551,12 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     return `
       ${labelHtml}
       <div class="relative">
-        <select id="${name}" name="${name}"${required} ${fieldAttrs} class="${inputClass} appearance-none">
+        <select id="${name}" name="${name}"${required} ${fieldAttrs} class="${inputClass} appearance-none" style="${controlStyle}">
           <option value="" selected disabled>${placeholder || "בחרו אפשרות"}</option>
           ${options}
         </select>
         ${iconHtml}
-        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
+        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2" style="color:var(--biz-form-accent,#0f766e)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 10 5 5 5-5"/></svg>
         </span>
       </div>
@@ -510,14 +565,14 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
 
   if (field.type === "checkbox") {
     return `
-      <label class="group flex min-h-[62px] cursor-pointer items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white px-5 transition hover:border-violet-300 hover:bg-violet-50/40">
+      <label class="group flex min-h-[62px] cursor-pointer items-center justify-between gap-4 rounded-2xl border px-5 transition" style="${controlStyle}">
         <span class="flex items-center gap-3">
-          <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-50 text-violet-600">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl" style="background:color-mix(in srgb, var(--biz-form-accent,#0f766e) 12%, white);color:var(--biz-form-accent,#0f766e)">
             ${icon}
           </span>
-          <span class="text-sm font-black text-slate-700">${label} ${requiredMark}</span>
+          <span class="text-sm font-black" style="color:var(--biz-form-label,#334155)">${label} ${requiredMark}</span>
         </span>
-        <input id="${name}" name="${name}" type="checkbox"${required} ${fieldAttrs} class="h-5 w-5 rounded-md border-slate-300 text-violet-600 focus:ring-violet-200" />
+        <input id="${name}" name="${name}" type="checkbox"${required} ${fieldAttrs} class="h-5 w-5 rounded-md" style="accent-color:var(--biz-form-accent,#0f766e)" />
       </label>
     `;
   }
@@ -525,17 +580,17 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   if (field.type === "file") {
     return `
       ${labelHtml}
-      <label class="flex min-h-[92px] cursor-pointer items-center justify-between gap-4 rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 px-5 transition hover:border-violet-400 hover:bg-violet-50/60">
+      <label class="flex min-h-[92px] cursor-pointer items-center justify-between gap-4 rounded-2xl border border-dashed px-5 transition" style="${controlStyle}">
         <span class="flex items-center gap-3">
-          <span class="flex h-11 w-11 items-center justify-center rounded-2xl bg-white text-violet-600 shadow-sm ring-1 ring-slate-200">
+          <span class="flex h-11 w-11 items-center justify-center rounded-2xl shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">
             ${icon}
           </span>
           <span>
-            <span class="block text-sm font-black text-slate-800">${label}</span>
-            <span class="mt-1 block text-xs font-semibold text-slate-400">לחצו לבחירת קובץ</span>
+            <span class="block text-sm font-black" style="color:var(--biz-form-title,#1e293b)">${label}</span>
+            <span class="mt-1 block text-xs font-semibold" style="color:var(--biz-form-subtitle,#64748b)">לחצו לבחירת קובץ</span>
           </span>
         </span>
-        <span class="rounded-xl bg-white px-4 py-2 text-xs font-black text-violet-700 shadow-sm ring-1 ring-violet-100">העלאה</span>
+        <span class="rounded-xl px-4 py-2 text-xs font-black shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">העלאה</span>
         <input id="${name}" name="${name}" type="file"${required} ${fieldAttrs} class="sr-only" />
       </label>
     `;
@@ -553,7 +608,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   return `
     ${labelHtml}
     <div class="relative">
-      <input id="${name}" name="${name}" type="${htmlType}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${inputClass}" />
+      <input id="${name}" name="${name}" type="${htmlType}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${inputClass}" style="${controlStyle}" />
       ${iconHtml}
     </div>
   `;
@@ -596,29 +651,31 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
     .join("");
 
   const emptyState = `
-    <div class="md:col-span-2 rounded-3xl border-2 border-dashed border-violet-200 bg-violet-50/50 px-6 py-14 text-center">
-      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-violet-600 shadow-sm ring-1 ring-violet-100">
+    <div class="md:col-span-2 rounded-3xl border-2 border-dashed px-6 py-14 text-center" style="border-color:color-mix(in srgb, var(--biz-form-accent,#0f766e) 35%, white);background:color-mix(in srgb, var(--biz-form-accent,#0f766e) 8%, white)">
+      <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl shadow-sm" style="background:var(--biz-form-field-bg,#fff);color:var(--biz-form-accent,#0f766e)">
         ${getFieldIconSvg("text")}
       </div>
-      <p class="mt-4 text-base font-black text-slate-800">הטופס עדיין ריק</p>
-      <p class="mt-1 text-sm font-semibold text-slate-400">הוסיפו שדות מתוך עורך הטופס</p>
+      <p class="mt-4 text-base font-black" style="color:var(--biz-form-title,#1e293b)">הטופס עדיין ריק</p>
+      <p class="mt-1 text-sm font-semibold" style="color:var(--biz-form-subtitle,#64748b)">הוסיפו שדות מתוך עורך הטופס</p>
     </div>
   `;
 
   return `
     <div class="mb-2 w-full shrink-0" data-bizuply-form-header="true">
       <div
-        class="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700"
+        class="inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black"
+        style="border-color:color-mix(in srgb, var(--biz-form-accent,#0f766e) 25%, white);background:color-mix(in srgb, var(--biz-form-accent,#0f766e) 10%, white);color:var(--biz-form-accent,#0f766e)"
         data-visual-editable="true"
         data-visual-edit-id="form.badge"
         data-visual-edit-type="text"
         data-visual-edit-label="תגית טופס"
       >
-        <span class="h-2 w-2 rounded-full bg-violet-500" data-visual-ignore-select="true"></span>
+        <span class="h-2 w-2 rounded-full" style="background:var(--biz-form-accent,#0f766e)" data-visual-ignore-select="true"></span>
         נשמח לשמוע מכם
       </div>
       <h2
-        class="mt-4 text-3xl font-black tracking-tight text-slate-800 md:text-4xl"
+        class="mt-4 text-3xl font-black tracking-tight md:text-4xl"
+        style="color:var(--biz-form-title,#1e293b)"
         data-bizuply-form-title="true"
         data-visual-editable="true"
         data-visual-edit-id="form.title"
@@ -628,7 +685,8 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         ${title}
       </h2>
       <p
-        class="mt-2 max-w-2xl text-sm font-semibold leading-7 text-slate-500"
+        class="mt-2 max-w-2xl text-sm font-semibold leading-7"
+        style="color:var(--biz-form-subtitle,#64748b)"
         data-visual-editable="true"
         data-visual-edit-id="form.subtitle"
         data-visual-edit-type="text"
@@ -652,7 +710,8 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
         data-visual-edit-id="form.submit"
         data-visual-edit-type="button"
         data-visual-edit-label="${submitText}"
-        class="group inline-flex h-14 w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-center text-base font-black text-slate-800 shadow-[0_12px_32px_rgba(79,70,229,0.18)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_40px_rgba(79,70,229,0.24)] focus:outline-none focus:ring-4 focus:ring-violet-200 sm:h-16 sm:text-lg"
+        class="group inline-flex h-14 w-full items-center justify-center gap-3 rounded-2xl border px-6 text-center text-base font-black shadow-[0_12px_32px_rgba(15,23,42,0.14)] transition hover:-translate-y-0.5 sm:h-16 sm:text-lg"
+        style="background:var(--biz-form-button-bg,#0f172a);color:var(--biz-form-button-text,#fff);border-color:var(--biz-form-button-border,#0f172a)"
       >
         <span data-visual-ignore-select="true">${submitText}</span>
         <svg class="transition group-hover:-translate-x-1" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-visual-ignore-select="true">
@@ -668,6 +727,7 @@ export function applyFormBuilderConfigToFormNode(
   form: BizuplyFormConfig,
 ) {
   if (!formNode) return;
+  if (isBookingWidgetForm(formNode)) return;
 
   const safeForm = normalizeFormBuilderConfig(form);
 
@@ -698,8 +758,6 @@ export function applyFormBuilderConfigToFormNode(
     "gap-6",
     "rounded-[32px]",
     "border",
-    "border-white/80",
-    "bg-white/95",
     "p-6",
     "shadow-[0_28px_90px_rgba(15,23,42,0.14)]",
     "backdrop-blur",
@@ -710,14 +768,31 @@ export function applyFormBuilderConfigToFormNode(
   formNode.classList.remove("overflow-hidden");
   formNode.classList.remove("grid");
   formNode.classList.remove("flex-row");
+  formNode.classList.remove("border-white/80");
+  formNode.classList.remove("bg-white/95");
 
   requiredClasses.forEach((className) => {
     formNode.classList.add(className);
   });
 
+  const colors = normalizeFormColors(safeForm.colors);
   formNode.style.display = "flex";
   formNode.style.flexDirection = "column";
   formNode.style.gap = "1.5rem";
+  formNode.style.background = colors.formBg;
+  formNode.style.borderColor = colors.formBorder;
+  formNode.style.setProperty("--biz-form-bg", colors.formBg);
+  formNode.style.setProperty("--biz-form-border", colors.formBorder);
+  formNode.style.setProperty("--biz-form-title", colors.titleColor);
+  formNode.style.setProperty("--biz-form-subtitle", colors.subtitleColor);
+  formNode.style.setProperty("--biz-form-label", colors.labelColor);
+  formNode.style.setProperty("--biz-form-field-bg", colors.fieldBg);
+  formNode.style.setProperty("--biz-form-field-border", colors.fieldBorder);
+  formNode.style.setProperty("--biz-form-field-text", colors.fieldText);
+  formNode.style.setProperty("--biz-form-button-bg", colors.buttonBg);
+  formNode.style.setProperty("--biz-form-button-text", colors.buttonText);
+  formNode.style.setProperty("--biz-form-button-border", colors.buttonBorder);
+  formNode.style.setProperty("--biz-form-accent", colors.accent);
 
   formNode.innerHTML = buildFormBuilderDomHtml(safeForm);
 
@@ -769,10 +844,24 @@ export function applySavedFormBuildersToDom(
   const fallbackForm = data?.[FORM_BUILDER_KEY];
 
   if (fallbackForm && Object.keys(byElement).length === 0) {
-    applyFormBuilderConfigToFormNode(
-      root.querySelector<HTMLFormElement>("form"),
-      normalizeFormBuilderConfig(fallbackForm),
-    );
+    // Only hydrate real form-builder nodes — never the first <form> on the page
+    // (booking calendar widgets also render a <form> and were being overwritten).
+    const fallbackTarget =
+      root.querySelector<HTMLFormElement>(
+        'form[data-bizuply-form-builder="true"]',
+      ) ||
+      root.querySelector<HTMLFormElement>("form[data-bizuply-form-id]") ||
+      Array.from(root.querySelectorAll<HTMLFormElement>("form")).find(
+        (node) => !isBookingWidgetForm(node),
+      ) ||
+      null;
+
+    if (fallbackTarget) {
+      applyFormBuilderConfigToFormNode(
+        fallbackTarget,
+        normalizeFormBuilderConfig(fallbackForm),
+      );
+    }
   }
 }
 

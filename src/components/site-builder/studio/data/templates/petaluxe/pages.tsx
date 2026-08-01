@@ -34,56 +34,20 @@ function getValue(data: Record<string, any>, key: string) {
 }
 
 function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; compact?: boolean; bold?: boolean; neon?: boolean }) {
-  const [selectedDay, setSelectedDay] = useState(12);
-  const [selectedTime, setSelectedTime] = useState("10:30");
-  const weekDays = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
-  const times = ["09:00", "10:00", "10:30", "11:30", "13:00", "14:30", "16:00", "17:30", "19:00"];
-  const cells = Array.from({ length: 35 }, (_, i) => (i < 31 ? i + 1 : null));
-  const dayPills = [10, 11, 12, 13, 14, 15, 16];
-  const cellCls = bold ? "border-2 border-[var(--dark)]" : neon ? "border border-[var(--p)]/50" : "border border-[var(--p)]/20";
-  const activeCls = "bg-[var(--p)] text-[var(--dark)]";
+  // Live CRM mount — services + working hours sync from the business calendar.
   return (
-    <div className="mt-6" dir="rtl">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-bold">יולי 2026</p>
-        <div className="flex gap-2 overflow-x-auto">
-          {dayPills.map((d) => (
-            <button key={d} type="button" onClick={() => setSelectedDay(d)}
-              className={"shrink-0 px-3 py-1.5 text-sm font-bold transition " + (pill ? "rounded-full " : "") + (selectedDay === d ? activeCls : cellCls)}>
-              {d}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={"grid grid-cols-7 gap-1 text-center text-xs " + (compact ? "mx-auto max-w-sm" : "")}>
-        {weekDays.map((w) => (
-          <div key={w} className="py-2 font-bold text-[var(--muted)]">{w}</div>
-        ))}
-        {cells.map((d, i) => (
-          <button
-            key={i}
-            type="button"
-            disabled={d == null}
-            onClick={() => d != null && setSelectedDay(d)}
-            className={"aspect-square text-sm transition " + (d == null ? "opacity-0" : cellCls) + " " + (d === selectedDay ? activeCls + " t-pulse" : "hover:border-[var(--p)]")}
-          >
-            {d}
-          </button>
-        ))}
-      </div>
-      <div className="mt-6">
-        <p className="mb-3 text-sm font-bold">שעות פנויות · יום {selectedDay}</p>
-        <div className="flex flex-wrap gap-2">
-          {times.map((tm) => (
-            <button key={tm} type="button" onClick={() => setSelectedTime(tm)}
-              className={"px-3 py-2 text-sm font-semibold transition " + (pill ? "rounded-full " : "") + (selectedTime === tm ? activeCls + " t-glow" : cellCls)}>
-              {tm}
-            </button>
-          ))}
-        </div>
-        <p className="mt-4 text-xs text-[var(--muted)]">נבחר: {selectedDay}/7 · {selectedTime}</p>
-      </div>
-    </div>
+    <div
+      className="mt-6 min-h-[420px] w-full overflow-hidden rounded-2xl"
+      dir="rtl"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="month"
+      data-bizuply-block="booking"
+      data-bizuply-booking-frame="true"
+      style={{ position: "relative", minHeight: 420 }}
+      aria-label="יומן פגישות מה-CRM"
+    />
   );
 }
 
