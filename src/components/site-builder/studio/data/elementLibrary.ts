@@ -791,7 +791,7 @@ export const studioElements: StudioElement[] = [
     "בחירת שעה פנויה",
     "◷",
     "bookings",
-    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><h2 class="${h2} text-center">בחרו שעה פנויה</h2><div class="mx-auto mt-10 max-w-3xl rounded-[2.5rem] bg-white p-8 shadow-[0_28px_100px_rgba(15,23,42,.10)]"><div class="grid gap-4 sm:grid-cols-3"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">16:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">18:00</button></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><h2 class="${h2} text-center">בחרו שעה פנויה</h2><div class="relative mx-auto mt-10 min-h-[420px] max-w-3xl overflow-hidden rounded-[2.5rem] bg-white p-4 shadow-[0_28px_100px_rgba(15,23,42,.10)]" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" data-bizuply-booking-frame="true" style="min-height:420px"></div></section>`
   ),
 
   element(
@@ -800,7 +800,7 @@ export const studioElements: StudioElement[] = [
     "תיאום תורים בעיצוב כהה",
     "◷",
     "bookings",
-    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,.22)]"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_34px_120px_rgba(15,23,42,.22)]"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה מה-CRM.</p></div><div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-white p-3" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" data-bizuply-booking-frame="true" style="min-height:420px"></div></div></div></section>`
   ),
 
   element(
@@ -809,7 +809,7 @@ export const studioElements: StudioElement[] = [
     "תצוגת יומן מקצועית",
     "◷",
     "bookings",
-    `<section class="${section}" data-section-kind="booking"><div class="grid gap-8 lg:grid-cols-[.9fr_1.1fr]"><div><p class="${pill}">תיאום תורים</p><h2 class="${h2}">בחירת תאריך ושעה</h2><p class="${text}">בלוק תצוגה ליומן שמתחבר בהמשך לזמינות העסק.</p></div><div class="${card}"><div class="grid grid-cols-7 gap-2 text-center text-xs font-black text-slate-400"><span>א</span><span>ב</span><span>ג</span><span>ד</span><span>ה</span><span>ו</span><span>ש</span></div><div class="mt-4 grid grid-cols-7 gap-2">${Array.from({ length: 35 }, (_, i) => `<button class="aspect-square rounded-2xl bg-slate-50 text-sm font-black text-slate-600">${i + 1}</button>`).join("")}</div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="grid gap-8 lg:grid-cols-[.9fr_1.1fr]"><div><p class="${pill}">תיאום תורים</p><h2 class="${h2}">בחירת תאריך ושעה</h2><p class="${text}">מסונכרן לשירותים ולשעות הפעילות מה-CRM.</p></div><div class="${card} relative min-h-[420px] overflow-hidden" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" data-bizuply-booking-frame="true" style="min-height:420px"></div></div></section>`
   ),
 
   /* =====================================================
@@ -831,7 +831,7 @@ export const studioElements: StudioElement[] = [
     "בלוק תורים חכם",
     "◷",
     "bizuply",
-    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה.</p></div><div class="rounded-[2rem] bg-white p-6"><div class="grid gap-3 sm:grid-cols-2"><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">09:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">10:30</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">12:00</button><button class="rounded-2xl bg-violet-50 px-5 py-4 text-sm font-black text-violet-700">14:00</button></div></div></div></div></section>`
+    `<section class="${section}" data-section-kind="booking" data-bizuply-block="booking"><div class="rounded-[3rem] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"><div class="grid items-center gap-10 lg:grid-cols-2"><div><p class="mb-4 inline-flex rounded-full bg-white/10 px-5 py-2 text-xs font-black text-black">מחובר ליומן</p><h2 class="${h2} text-white">קובעים תור ישירות מהאתר</h2><p class="${text} text-white/70">בחירת שירות, תאריך ושעה פנויה מה-CRM.</p></div><div class="relative min-h-[420px] overflow-hidden rounded-[2rem] bg-white p-3" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" data-bizuply-booking-frame="true" style="min-height:420px"></div></div></div></section>`
   ),
 
   element(

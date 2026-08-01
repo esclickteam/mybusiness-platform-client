@@ -115,8 +115,8 @@ function timeSlot(time: string, active = false, disabled = false) {
 
 function calendarMock() {
   return `
-<div class="${softCardClass}" data-bizuply-block="booking" data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-booking-variant="month" data-editable-card="true">
-  <div class="mb-7 flex items-center justify-between gap-4">
+<div class="${softCardClass} relative min-h-[420px] overflow-hidden" data-bizuply-block="booking" data-bizuply-plugin="booking" data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-variant="month" data-bizuply-booking-frame="true" data-editable-card="true" style="min-height:420px">
+  <div class="mb-7 flex items-center justify-between gap-4" data-bizuply-booking-demo="true">
     <div>
       <p class="text-xs font-black uppercase tracking-[0.18em] text-[var(--biz-primary,#7C3AED)]" data-editable-text="true">
         Booking Calendar
@@ -132,7 +132,7 @@ function calendarMock() {
     </div>
   </div>
 
-  <div class="grid grid-cols-4 gap-3 sm:grid-cols-7">
+  <div class="grid grid-cols-4 gap-3 sm:grid-cols-7" data-bizuply-booking-demo="true">
     ${datePill("א׳", "12")}
     ${datePill("ב׳", "13", true)}
     ${datePill("ג׳", "14")}
@@ -142,7 +142,7 @@ function calendarMock() {
     ${datePill("ש׳", "18")}
   </div>
 
-  <div class="mt-7 grid gap-3 sm:grid-cols-3">
+  <div class="mt-7 grid gap-3 sm:grid-cols-3" data-bizuply-booking-demo="true">
     ${timeSlot("09:00")}
     ${timeSlot("10:30", true)}
     ${timeSlot("12:00")}

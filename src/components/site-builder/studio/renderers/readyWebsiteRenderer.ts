@@ -914,29 +914,19 @@ function renderAboutSplit(block: ReadyWebsiteBlock, preset: DesignPreset) {
 }
 
 function renderBooking(block: ReadyWebsiteBlock, preset: DesignPreset) {
-  const days = Array.from(
-    { length: 14 },
-    (_, index) =>
-      `<button type="button" class="h-11 rounded-full text-sm font-black ${[1, 4, 8, 11].includes(index) ? preset.button : `${preset.soft} ${preset.text}`}">${index + 1}</button>`
-  ).join("");
-
-  const times = ["09:00", "10:30", "12:00", "14:30", "17:00", "19:00"];
-
+  // Live CRM calendar mount — services + working hours sync from the business CRM.
   const calendar = `
     <div
-      class="rounded-[38px] ${preset.surface} p-7 shadow-2xl shadow-slate-200/40 ring-1 ${preset.ring}"
-      data-bizuply-widget="booking-calendar"
-      data-api="/api/businesses/{{businessId}}/availability"
-      data-services-api="/api/businesses/{{businessId}}/services"
-      data-appointments-api="/api/businesses/{{businessId}}/appointments"
-    >
-      <h3 class="text-3xl font-black tracking-[-0.05em] ${preset.text}">בחרו תאריך ושעה</h3>
-      <div class="mt-6 grid grid-cols-7 gap-2">${days}</div>
-      <div class="mt-5 flex flex-wrap gap-2">
-        ${times.map((time) => `<button type="button" class="h-11 rounded-full ${preset.soft} px-5 text-sm font-black ${preset.text}">${time}</button>`).join("")}
-      </div>
-      <a href="#" class="mt-6 inline-flex h-14 w-full items-center justify-center rounded-full text-base font-black transition ${preset.button}">אישור תור</a>
-    </div>
+      class="relative min-h-[480px] rounded-[38px] ${preset.surface} p-3 shadow-2xl shadow-slate-200/40 ring-1 ${preset.ring} overflow-hidden"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="month"
+      data-bizuply-block="booking"
+      data-bizuply-booking-frame="true"
+      style="min-height:480px"
+      title="יומן פגישות מה-CRM"
+    ></div>
   `;
 
   if (block.variant.includes("wide")) {
