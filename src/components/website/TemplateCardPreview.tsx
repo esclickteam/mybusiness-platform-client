@@ -1,10 +1,8 @@
-import React, { Component, useEffect, useRef, useState } from "react";
+import React, { Component, useEffect, useMemo, useRef, useState } from "react";
 
 import {
+  getStudioTemplateRenderer,
   hasStudioTemplateRenderer,
-  loadStudioTemplateRenderer,
-  prefetchStudioTemplateRenderer,
-  type StudioTemplateRenderer,
 } from "../site-builder/studio/data/templates/templateRendererRegistry";
 import {
   prioritizeGalleryPreview,
@@ -75,7 +73,6 @@ function LivePlaceholder({ title }: { title?: string }) {
 /**
  * Gallery card — live template canvas only (no stock cover photos).
  * Mounts when in viewport / eager / hover via the shared scheduler.
- * Loads one template chunk on demand (not the full registry).
  */
 export default function TemplateCardPreview({
   templateKey,
@@ -95,9 +92,12 @@ export default function TemplateCardPreview({
   const [scrolling, setScrolling] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [hovering, setHovering] = useState(false);
-  const [renderer, setRenderer] = useState<StudioTemplateRenderer | null>(null);
 
-  const canLive = Boolean(key && hasStudioTemplateRenderer(key));
+  const renderer = useMemo(
+    () => (key ? getStudioTemplateRenderer(key) : null),
+    [key],
+  );
+  const canLive = Boolean(renderer?.Component);
 
   useEffect(() => {
     const frame = frameRef.current;
@@ -127,6 +127,7 @@ export default function TemplateCardPreview({
       ([entry]) => {
         setInView(entry.isIntersecting || entry.intersectionRatio > 0);
       },
+      // One row ahead — enough to feel instant, not so wide that slots jam.
       { rootMargin: "480px 0px", threshold: 0.01 },
     );
 
@@ -134,17 +135,10 @@ export default function TemplateCardPreview({
     return () => observer.disconnect();
   }, []);
 
-  // Prefetch chunk when card enters viewport / hover — before mount slot opens.
-  useEffect(() => {
-    if (!key || !canLive) return;
-    if (inView || hovering || eager) {
-      prefetchStudioTemplateRenderer(key);
-    }
-  }, [canLive, eager, hovering, inView, key]);
-
   useEffect(() => {
     if (!key || !canLive || mountFailed) return;
 
+    // eager only boosts first-paint priority — never hold a slot after scroll-away.
     const wantsLive = inView || hovering || pinned;
 
     if (!wantsLive) {
@@ -154,6 +148,7 @@ export default function TemplateCardPreview({
       return;
     }
 
+    // Visible / hovered cards always take a slot (evict oldest off-screen mounts).
     if (hovering || pinned || inView) {
       prioritizeGalleryPreview(key);
     }
@@ -174,23 +169,7 @@ export default function TemplateCardPreview({
   }, [canLive, eager, hovering, inView, key, mountFailed, pinned]);
 
   useEffect(() => {
-    if (!active || !key) return;
-    let cancelled = false;
-    loadStudioTemplateRenderer(key).then((next) => {
-      if (cancelled) return;
-      if (!next?.Component) {
-        setMountFailed(true);
-        return;
-      }
-      setRenderer(next);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [active, key]);
-
-  useEffect(() => {
-    if (!active || !renderer?.Component) return;
+    if (!active) return;
     const node = contentRef.current;
     if (!node) return;
 
@@ -221,15 +200,13 @@ export default function TemplateCardPreview({
       window.cancelAnimationFrame(raf);
       window.clearTimeout(timer);
     };
-  }, [active, key, renderer]);
+  }, [active, key]);
 
   const scale = Math.max(frameWidth / DESIGN_WIDTH, 0.04);
   const pageHeight = Math.max(contentHeight, DESIGN_HEIGHT * 0.7);
   const scaledPageHeight = pageHeight * scale;
   const maxScroll = Math.max(0, scaledPageHeight - frameHeight);
-  const shouldMount = Boolean(
-    canLive && active && renderer?.Component && !mountFailed,
-  );
+  const shouldMount = Boolean(canLive && active && !mountFailed);
   const isScrolling = scrolling || pinned;
 
   const homePage = renderer?.pages?.[0];
@@ -246,10 +223,7 @@ export default function TemplateCardPreview({
 
   const beginHover = () => {
     setHovering(true);
-    if (key) {
-      prioritizeGalleryPreview(key);
-      prefetchStudioTemplateRenderer(key);
-    }
+    if (key) prioritizeGalleryPreview(key);
     setScrolling(true);
   };
 
@@ -273,60 +247,86 @@ export default function TemplateCardPreview({
         if (window.matchMedia("(hover: hover) and (pointer: fine)").matches) {
           return;
         }
+        event.preventDefault();
+        event.stopPropagation();
+        prioritizeGalleryPreview(key);
         setPinned((value) => !value);
+        setHovering(true);
         setScrolling(true);
       }}
     >
-      {!liveReady || mountFailed ? <LivePlaceholder title={title} /> : null}
+      {!shouldMount || !liveReady ? <LivePlaceholder title={title} /> : null}
 
       {shouldMount && Component ? (
         <PreviewErrorBoundary
           fallback={<LivePlaceholder title={title} />}
           onError={() => setMountFailed(true)}
         >
-          <div
-            className="absolute inset-0 origin-top-left will-change-transform"
-            style={{
-              width: DESIGN_WIDTH,
-              transform: `scale(${scale})`,
-              transition: isScrolling
-                ? `transform ${scrollDuration}s linear`
-                : "transform 0.45s ease",
-              transformOrigin: "top left",
-            }}
-          >
+          <>
+            {renderer?.editorCss ? (
+              <style
+                dangerouslySetInnerHTML={{ __html: String(renderer.editorCss) }}
+              />
+            ) : null}
+
+            <style>{`
+              [data-template-card-live="${key}"] [data-reveal],
+              [data-template-card-live="${key}"] [data-animate],
+              [data-template-card-live="${key}"] [data-motion],
+              [data-template-card-live="${key}"] .bizuply-reveal-up,
+              [data-template-card-live="${key}"] [class*="opacity-0"] {
+                opacity: 1 !important;
+                visibility: visible !important;
+                transform: none !important;
+                filter: none !important;
+              }
+              [data-template-card-live="${key}"] *,
+              [data-template-card-live="${key}"] *::before,
+              [data-template-card-live="${key}"] *::after {
+                animation: none !important;
+                transition: none !important;
+              }
+            `}</style>
+
             <div
-              ref={contentRef}
-              className="pointer-events-none"
+              className={`pointer-events-none absolute left-1/2 top-0 will-change-transform ${
+                liveReady ? "opacity-100" : "opacity-0"
+              }`}
               style={{
                 width: DESIGN_WIDTH,
-                minHeight: DESIGN_HEIGHT,
-                transform: isScrolling
-                  ? `translateY(-${maxScroll / scale}px)`
-                  : "translateY(0)",
-                transition: isScrolling
-                  ? `transform ${scrollDuration}s linear`
-                  : "transform 0.9s ease",
+                height: pageHeight,
+                transform: `translateX(-50%) translateY(${
+                  isScrolling ? -maxScroll : 0
+                }px) scale(${scale})`,
+                transformOrigin: "top center",
+                transition: `transform ${scrollDuration}s cubic-bezier(0.22, 0.61, 0.36, 1)`,
               }}
             >
-              <Component
-                mode="preview"
-                viewMode="preview"
-                runtimeMode="preview"
-                initialPage={pageId}
-                initialPageId={pageId}
-                activePageId={pageId}
-                currentPageId={pageId}
-                pageId={pageId}
-                page={pageId}
-                initialSlug={pageSlug}
-                data={data}
-                templateData={data}
-                isPublic={false}
-                isStudioStatic
-              />
+              <div
+                ref={contentRef}
+                data-template-card-live={key}
+                data-template-id={key}
+                dir="rtl"
+                className="w-full bg-white"
+              >
+                <Component
+                  initialPage={pageId}
+                  initialPageId={pageId}
+                  activePageId={pageId}
+                  currentPageId={pageId}
+                  pageId={pageId}
+                  initialSlug={pageSlug}
+                  activePageSlug={pageSlug}
+                  currentPageSlug={pageSlug}
+                  pageSlug={pageSlug}
+                  mode="preview"
+                  data={data}
+                  templateData={data}
+                  isStudioStatic
+                />
+              </div>
             </div>
-          </div>
+          </>
         </PreviewErrorBoundary>
       ) : null}
     </div>

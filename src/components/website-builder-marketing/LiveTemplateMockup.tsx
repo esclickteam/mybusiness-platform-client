@@ -5,10 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import {
-  loadStudioTemplateRenderer,
-  type StudioTemplateRenderer,
-} from "../site-builder/studio/data/templates/templateRendererRegistry";
+import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
 
 const DESIGN_WIDTH = 1440;
 /** Tall enough to show header + full hero, not a mid-cut crop */
@@ -53,18 +50,11 @@ export default function LiveTemplateMockup({
 }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(640);
-  const [renderer, setRenderer] = useState<StudioTemplateRenderer | null>(null);
 
-  useEffect(() => {
-    if (!mountLive) return;
-    let cancelled = false;
-    loadStudioTemplateRenderer(templateId).then((next) => {
-      if (!cancelled) setRenderer(next);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [mountLive, templateId]);
+  const renderer = useMemo(
+    () => getStudioTemplateRenderer(templateId),
+    [templateId],
+  );
 
   useEffect(() => {
     const el = frameRef.current;
