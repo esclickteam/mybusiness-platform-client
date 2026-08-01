@@ -1773,11 +1773,18 @@ function applyPublicVisualData(root, visualData, pathname, site) {
   const publicBusinessId = safeString(site?.businessId || site?.business?._id);
   const hasBookingMount = Boolean(
     root.querySelector(
-      '[data-bizuply-widget="booking"], [data-bizuply-booking-mount="true"]',
+      [
+        '[data-bizuply-widget="booking"]',
+        '[data-bizuply-booking-mount="true"]',
+        '[data-section-kind="booking"]',
+        '[data-template-section-type="booking"]',
+        '[data-bizuply-block="booking"]',
+        '[data-bizuply-widget="booking-calendar"]',
+      ].join(", "),
     ),
   );
+  // Template booking/calendar sections sync CRM services + hours even without a plugin flag.
   if (enabledPlugins.includes("booking") || hasBookingMount) {
-    // Section mounts auto-bind to the business calendar whenever businessId exists.
     const live = Boolean(publicBusinessId);
     mountBookingWidgets(root, {
       businessId: publicBusinessId,
