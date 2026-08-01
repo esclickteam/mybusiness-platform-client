@@ -10,6 +10,8 @@
  * Tailwind utilities only so mobile-first patterns stay intact.
  */
 
+import { TEMPLATE_MEDIA_FILL_CSS } from "./templateMediaFillCss";
+
 const ROOTS = [
   "[data-template-id]",
   ".bizuply-public-mini-site",
@@ -168,10 +170,10 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
     body: "max-width: 100% !important;",
   },
   {
-    // Collapse tall section shells on mobile — but never strip media min-heights
-    // or product/hero images lose their box and appear clipped/misplaced.
+    // Only collapse tall SECTION shells on mobile — never media wrappers,
+    // aspect boxes, or image cards (those need their height to stay intact).
     selector:
-      "[class*='min-h-[4']:not(img):not(video), [class*='min-h-[5']:not(img):not(video), [class*='min-h-[6']:not(img):not(video), [class*='min-h-[7']:not(img):not(video), [class*='min-h-[8']:not(img):not(video), [class*='min-h-[9']:not(img):not(video)",
+      "section[class*='min-h-[4'], section[class*='min-h-[5'], section[class*='min-h-[6'], section[class*='min-h-[7'], section[class*='min-h-[8'], section[class*='min-h-[9'], header[class*='min-h-[4'], header[class*='min-h-[5'], header[class*='min-h-[6'], header[class*='min-h-[7'], header[class*='min-h-[8'], header[class*='min-h-[9'], footer[class*='min-h-[4'], footer[class*='min-h-[5'], footer[class*='min-h-[6'], footer[class*='min-h-[7'], footer[class*='min-h-[8'], footer[class*='min-h-[9'], main[class*='min-h-[4'], main[class*='min-h-[5'], main[class*='min-h-[6'], main[class*='min-h-[7'], main[class*='min-h-[8'], main[class*='min-h-[9']",
     body: "min-height: 0 !important;",
   },
   {
@@ -291,55 +293,8 @@ height: auto;
 `,
 )}
 
-/* Fill media must occupy the full positioned / aspect box */
-${rule(
-  underRoots(
-    [
-      "img.h-full",
-      "video.h-full",
-      "img[class~='h-full']",
-      "video[class~='h-full']",
-      "img[class*=' h-full']",
-      "video[class*=' h-full']",
-      "img[class*=':h-full']",
-      "video[class*=':h-full']",
-      "img.absolute.inset-0",
-      "video.absolute.inset-0",
-      "img[class~='absolute'][class~='inset-0']",
-      "video[class~='absolute'][class~='inset-0']",
-      ".store-media:not(img):not(video) > img",
-      ".store-media:not(img):not(video) > video",
-      "[data-media-replaceable='true'] > img.h-full",
-      "[data-editable-image-card='true'] > img.h-full",
-      "[data-velmora-safe-image-box='true'] > img",
-      "[data-velmora-hard-image='true'] > img",
-      "[data-velmora-fan-card='true'] > img",
-    ].join(", "),
-  ),
-  `
-height: 100% !important;
-max-height: none;
-`,
-)}
-
-${rule(
-  underRoots(
-    [
-      "img.absolute.inset-0",
-      "video.absolute.inset-0",
-      "img[class~='absolute'][class~='inset-0']",
-      "video[class~='absolute'][class~='inset-0']",
-      ".store-media:not(img):not(video) > img",
-      ".store-media:not(img):not(video) > video",
-    ].join(", "),
-  ),
-  `
-width: 100%;
-max-width: none;
-object-fit: cover;
-object-position: center;
-`,
-)}
+/* Hard fill rules for product/media boxes (also injected into store runtimes) */
+${TEMPLATE_MEDIA_FILL_CSS}
 
 ${rule(
   underRoots("iframe"),

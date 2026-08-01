@@ -6,6 +6,10 @@ import {
   resolveRichStoreLayout,
   type RichStoreLayoutId,
 } from "./richStoreLayouts";
+import {
+  FILL_MEDIA_IMG_STYLE,
+  TEMPLATE_MEDIA_FILL_CSS,
+} from "./templateMediaFillCss";
 import { useTemplatePageNavigation } from "./useTemplatePageNavigation";
 import {
   formatStorePrice,
@@ -676,12 +680,14 @@ function StoreImage({
   src,
   alt,
   className,
+  fill = false,
   fallbackLabel: _fallbackLabel,
   fallbackClassName: _fallbackClassName,
 }: {
   src?: string;
   alt: string;
   className?: string;
+  fill?: boolean;
   fallbackLabel?: string;
   fallbackClassName?: string;
 }) {
@@ -697,6 +703,7 @@ function StoreImage({
       src={!resolved || failed ? SAFE_IMAGE_FALLBACK : resolved}
       alt={alt}
       className={className}
+      style={fill ? FILL_MEDIA_IMG_STYLE : undefined}
       onError={(event) => {
         const el = event.currentTarget;
         if (el.dataset.fallback === "1") return;
@@ -785,16 +792,21 @@ function ProductCard({
           className,
         )}
       >
-        <button type="button" onClick={onOpen} className="relative block text-start">
-          <StoreImage
-            src={product.image}
-            alt={product.name}
-            fallbackLabel={product.name}
+        <button type="button" onClick={onOpen} className="relative block w-full overflow-hidden text-start">
+          <div
             className={cx(
-              "store-media w-full object-cover transition duration-700 group-hover:scale-105",
+              "store-media relative w-full overflow-hidden bg-[var(--bg-soft)]",
               skin.media,
             )}
-          />
+          >
+            <StoreImage
+              src={product.image}
+              alt={product.name}
+              fallbackLabel={product.name}
+              fill
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            />
+          </div>
           {product.badge ? (
             <span className="absolute start-4 top-4 bg-[var(--p)] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--on-p)]">
               {product.badge}
@@ -1272,6 +1284,7 @@ export default function RichStoreSiteRuntime({
           }
           alt={cat.name}
           fallbackLabel={cat.name}
+          fill
           className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
@@ -2422,7 +2435,11 @@ export default function RichStoreSiteRuntime({
         skin.page,
       )}
     >
-      <style dangerouslySetInnerHTML={{ __html: editorCss }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `${TEMPLATE_MEDIA_FILL_CSS}\n${editorCss || ""}`,
+        }}
+      />
       <VisualPageStack activePageId={currentPage || "home"} pages={stackPages} />
       <div className="sr-only" aria-live="polite">
         עמוד נוכחי: {pageLabel(activePage)}

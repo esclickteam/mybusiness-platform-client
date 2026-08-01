@@ -140,6 +140,31 @@ body {
   display: block;
 }
 
+/* Fill/cover media must ignore the global max-width clamp */
+.bizuply-public-mini-site .store-media:not(img):not(video) > img,
+.bizuply-public-mini-site .store-media:not(img):not(video) > video,
+.bizuply-public-mini-site img.absolute.inset-0,
+.bizuply-public-mini-site img[class~="absolute"][class~="inset-0"],
+.bizuply-public-mini-site [data-media-replaceable="true"] > img.absolute,
+.bizuply-public-mini-site [data-media-replaceable="true"] > img[class~="absolute"],
+.bizuply-public-mini-site [data-editable-image-card="true"] > div > img.absolute,
+.bizuply-public-mini-site [data-editable-image-card="true"] > div > img[class~="absolute"] {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+.bizuply-public-mini-site .store-media:not(img):not(video) {
+  position: relative !important;
+  overflow: hidden !important;
+}
+
 [data-bizuply-published-html="true"],
 [data-bizuply-template-fallback="true"] {
   display: block !important;

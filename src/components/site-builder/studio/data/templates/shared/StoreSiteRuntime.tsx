@@ -3,6 +3,10 @@ import React, { useEffect, useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { Reveal } from "./Reveal";
 import { resolveStoreLayout, type StoreLayoutId } from "./storeLayouts";
+import {
+  FILL_MEDIA_IMG_STYLE,
+  TEMPLATE_MEDIA_FILL_CSS,
+} from "./templateMediaFillCss";
 import { useTemplatePageNavigation } from "./useTemplatePageNavigation";
 import {
   formatStorePrice,
@@ -96,12 +100,14 @@ function StoreImage({
   src,
   alt,
   className,
+  fill = false,
   fallbackLabel: _fallbackLabel,
   fallbackClassName: _fallbackClassName,
 }: {
   src?: string;
   alt: string;
   className?: string;
+  fill?: boolean;
   fallbackLabel?: string;
   fallbackClassName?: string;
 }) {
@@ -117,6 +123,7 @@ function StoreImage({
       src={!resolved || failed ? SAFE_IMAGE_FALLBACK : resolved}
       alt={alt}
       className={className}
+      style={fill ? FILL_MEDIA_IMG_STYLE : undefined}
       onError={(event) => {
         const el = event.currentTarget;
         if (el.dataset.fallback === "1") return;
@@ -186,8 +193,8 @@ function ProductCard({
           className,
         )}
       >
-        <button type="button" onClick={onOpen} className="relative block overflow-hidden text-start">
-          <div className={cx("store-media relative overflow-hidden bg-[var(--bg-soft)]", productMediaClassByLayout[layout])}>
+        <button type="button" onClick={onOpen} className="relative block w-full overflow-hidden text-start">
+          <div className={cx("store-media relative w-full overflow-hidden bg-[var(--bg-soft)]", productMediaClassByLayout[layout])}>
             <img
               src={
                 product.image && !imageFailed
@@ -196,6 +203,7 @@ function ProductCard({
               }
               alt={product.name}
               className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+              style={FILL_MEDIA_IMG_STYLE}
               onError={(event) => {
                 const el = event.currentTarget;
                 if (el.dataset.fallback === "1") return;
@@ -583,6 +591,7 @@ export default function StoreSiteRuntime({
           src={cat.image || fallbackCategoryImages[index % fallbackCategoryImages.length] || g("heroImage") || SAFE_IMAGE_FALLBACK}
           alt={cat.name}
           fallbackLabel={cat.name}
+          fill
           className={cx("absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110", imageClassName)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
@@ -622,7 +631,14 @@ export default function StoreSiteRuntime({
         {loading ? (
           <p className="mt-10 text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
         ) : (
-          <div className={cx("mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4", railClassName)}>
+          <div
+            className={cx(
+              railClassName?.includes("flex")
+                ? "mt-12 gap-5"
+                : "mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4",
+              railClassName,
+            )}
+          >
             {productsToShow.map((product, index) => (
               <ProductCard
                 key={product.id}
@@ -1600,7 +1616,11 @@ export default function StoreSiteRuntime({
       data-store-plugin="true"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]"
     >
-      <style dangerouslySetInnerHTML={{ __html: editorCss }} />
+      <style
+        dangerouslySetInnerHTML={{
+          __html: `${TEMPLATE_MEDIA_FILL_CSS}\n${editorCss || ""}`,
+        }}
+      />
       <VisualPageStack activePageId={currentPage || "home"} pages={stackPages} />
     </div>
   );
