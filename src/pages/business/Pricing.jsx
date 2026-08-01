@@ -1,5 +1,5 @@
-import React, { useMemo, useState, startTransition, useCallback } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState, startTransition, useCallback } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
@@ -98,8 +98,14 @@ export default function Plans() {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
   const isHe = (i18n.language || "he").startsWith("he");
+
+  useEffect(() => {
+    const ref = searchParams.get("ref");
+    if (ref) localStorage.setItem("affiliate_referral", ref);
+  }, [searchParams]);
 
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
@@ -133,6 +139,13 @@ export default function Plans() {
     const planKey = plan.checkoutPlan || plan.type;
     const params = new URLSearchParams({ plan: planKey });
     if (wantsWebsiteAddon) params.set("websiteAddon", "1");
+    const ref =
+      new URLSearchParams(window.location.search).get("ref") ||
+      localStorage.getItem("affiliate_referral");
+    if (ref) {
+      params.set("ref", ref);
+      localStorage.setItem("affiliate_referral", ref);
+    }
     navigate(`/register?${params.toString()}`);
   };
 

@@ -202,7 +202,7 @@ export default function CollaborationsProductPage() {
               title="חברו שותפים רלוונטיים — ותנו לצמיחה לרוץ בשני כיוונים"
               text="בונים פרופיל שיתוף, מגלים עסקים משלימים, שולחים הצעה ומנהלים הכל בשוק ובצ׳אט. אפשר גם לחבר נציג אנושי שינהל את התהליך בשבילכם."
               primaryLabel="הירשמו עכשיו"
-              primaryTo="/register"
+              primaryTo="/pricing"
             />
           </div>
         </div>

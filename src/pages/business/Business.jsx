@@ -43,7 +43,7 @@ function BusinessJoin() {
 
           <div className="mt-9 flex flex-col gap-4 sm:flex-row">
             <Link
-              to="/register"
+              to="/pricing"
               className="group inline-flex items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-8 py-4 text-base font-black text-slate-800 shadow-xl shadow-slate-900/20 transition hover:-translate-y-0.5 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
             >
               הירשמו עכשיו
@@ -233,7 +233,7 @@ function BusinessJoin() {
 
             <div className="mt-8">
               <Link
-                to="/register"
+                to="/pricing"
                 className="inline-flex items-center justify-center rounded-2xl bg-white px-9 py-4 text-base font-black text-slate-800 shadow-xl transition hover:-translate-y-0.5 hover:bg-amber-100"
               >
                 הירשמו עכשיו

@@ -104,7 +104,7 @@ export default function Header() {
                 <Link to="/login" className="site-header__signin">
                   {t("common.login")}
                 </Link>
-                <Link to="/register" className="site-header__cta">
+                <Link to="/pricing" className="site-header__cta">
                   {t("nav.cta")}
                 </Link>
               </>

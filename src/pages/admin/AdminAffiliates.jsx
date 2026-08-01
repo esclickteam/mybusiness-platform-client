@@ -53,7 +53,7 @@ function AdminAffiliates() {
 
         setAffiliateLinks({
           login: `${window.location.origin}/affiliate/login`,
-          referral: `${window.location.origin}/register?ref=${affiliateId}`,
+          referral: `${window.location.origin}/pricing?ref=${affiliateId}`,
         });
 
         setForm({

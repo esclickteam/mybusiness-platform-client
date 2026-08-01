@@ -273,7 +273,7 @@ export default function CrmProductPage() {
               title="סדרו את צינור הלידים — ואל תפספסו אף פנייה"
               text="מחברים את מקורות הלידים, עובדים בסטטוסים ובמשימות, וממשיכים לתיק לקוח וליומן תורים. הכל באפליקציית Meta שעברה App Review."
               primaryLabel="הירשמו עכשיו"
-              primaryTo="/register"
+              primaryTo="/pricing"
             />
           </div>
         </div>

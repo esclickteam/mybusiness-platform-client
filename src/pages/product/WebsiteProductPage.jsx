@@ -187,7 +187,7 @@ export default function WebsiteProductPage() {
               title="האתר הבא שלכם מתחיל מתבנית — ונגמר בפניות"
               text="בוחרים תבנית, עורכים אותה בעורך הוויזואלי, מוסיפים תוספים ומפרסמים. הפניות מהאתר מחכות לכם בצינור הלידים ב־CRM."
               primaryLabel="הירשמו עכשיו"
-              primaryTo="/register"
+              primaryTo="/pricing"
             />
           </div>
         </div>
