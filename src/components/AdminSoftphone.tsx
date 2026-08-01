@@ -384,6 +384,25 @@ async function waitForPendingTelnyxCall(timeoutMs = 10000) {
   return pendingIncomingTelnyxCall;
 }
 
+/** After park→bridge, INVITE may be auto-answered by the notification handler. */
+async function waitForInboundTelnyxMedia(timeoutMs = 20000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (telnyxCall) {
+      return { call: telnyxCall, alreadyAnswered: true };
+    }
+    if (pendingIncomingTelnyxCall) {
+      return { call: pendingIncomingTelnyxCall, alreadyAnswered: false };
+    }
+    await sleep(200);
+  }
+  if (telnyxCall) return { call: telnyxCall, alreadyAnswered: true };
+  if (pendingIncomingTelnyxCall) {
+    return { call: pendingIncomingTelnyxCall, alreadyAnswered: false };
+  }
+  return null;
+}
+
 async function showIncomingCallNotification(opts: {
   fromNumber: string;
   contactName?: string;
@@ -419,7 +438,7 @@ async function showIncomingCallNotification(opts: {
       requireInteraction: true,
       vibrate: [300, 120, 300, 120, 300],
       actions: [
-        { action: "answer", title: "ענה" },
+        { action: "answer", title: "ענה לשיחה" },
         { action: "reject", title: "דחה" },
       ],
       data: {
@@ -550,7 +569,6 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         Boolean(call.options?.remoteCallerNumber);
 
       if (isInbound && (state === "ringing" || state === "new")) {
-        userAcceptedIncoming = false;
         pendingIncomingTelnyxCall = call;
         const from =
           call.options?.remoteCallerNumber ||
@@ -558,6 +576,38 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
           notification?.callerNumber ||
           "שיחה נכנסת";
         const callSid = call.id || call.options?.callID || null;
+
+        // User already tapped ענה (park→bridge flow): answer WebRTC immediately.
+        // Never auto-answer otherwise.
+        if (userAcceptedIncoming) {
+          telnyxCall = call;
+          pendingIncomingTelnyxCall = null;
+          const media = getTelnyxCallMediaOptions();
+          Promise.resolve(call.answer?.(media))
+            .then(() => {
+              try {
+                call.unmuteAudio?.();
+              } catch {
+                /* ignore */
+              }
+              return attachTelnyxRemoteAudio(call);
+            })
+            .then(() => {
+              patchActiveSoftphoneCall({
+                status: "in-progress",
+                muted: false,
+                speakerOn: true,
+                error: null,
+              });
+            })
+            .catch((err: any) => {
+              patchActiveSoftphoneCall({
+                status: "failed",
+                error: err?.message || "לא הצלחנו לחבר את השמע",
+              });
+            });
+          return;
+        }
 
         presentIncomingSoftphoneCall({
           phone: from,
@@ -855,38 +905,76 @@ export default function AdminSoftphone({
         return;
       }
 
-      if (telnyxClient) {
-        try {
-          telnyxClient.enableMicrophone?.();
-        } catch {
-          /* ignore */
+      // Ensure WebRTC is registered BEFORE bridging the parked PSTN leg.
+      try {
+        const auth = await fetchSoftphoneAuth();
+        if (auth.provider === "telnyx") {
+          voipProvider = "telnyx";
+          const client = await ensureTelnyxClient(auth);
+          try {
+            client.enableMicrophone?.();
+          } catch {
+            /* ignore */
+          }
+          try {
+            const remote = ensureRemoteAudioElement();
+            if (remote) client.remoteElement = remote;
+          } catch {
+            /* ignore */
+          }
         }
+      } catch (err: any) {
+        userAcceptedIncoming = false;
+        patchActiveSoftphoneCall({
+          status: "incoming",
+          error: err?.message || "לא הצלחנו לחבר את הסופטפון",
+        });
+        return;
+      }
+
+      // Park→bridge: tell server to transfer PSTN to WebRTC now that we're online.
+      const parkedCallSid = String(current.callSid || "").trim();
+      if (parkedCallSid && !pendingIncomingTelnyxCall && !pendingIncomingTwilioCall) {
         try {
-          const remote = ensureRemoteAudioElement();
-          if (remote) telnyxClient.remoteElement = remote;
-        } catch {
-          /* ignore */
+          await API.post("/admin/softphone/bridge-inbound", {
+            callSid: parkedCallSid,
+            callControlId: parkedCallSid,
+          });
+        } catch (err: any) {
+          userAcceptedIncoming = false;
+          patchActiveSoftphoneCall({
+            status: "incoming",
+            error:
+              err?.response?.data?.message ||
+              "לא הצלחנו לחבר את השיחה. נסו שוב.",
+          });
+          return;
         }
       }
 
-      // Socket/push UI can appear before the WebRTC INVITE — wait briefly.
-      let inbound =
-        pendingIncomingTelnyxCall || (await waitForPendingTelnyxCall(10000));
+      // Wait for WebRTC INVITE after bridge (handler may already answer it).
+      const inboundMedia =
+        (pendingIncomingTelnyxCall || telnyxCall
+          ? {
+              call: telnyxCall || pendingIncomingTelnyxCall,
+              alreadyAnswered: Boolean(telnyxCall),
+            }
+          : null) || (await waitForInboundTelnyxMedia(20000));
 
-      if (inbound) {
+      if (inboundMedia?.call) {
+        const inbound = inboundMedia.call;
         telnyxCall = inbound;
         pendingIncomingTelnyxCall = null;
         const callState = String(inbound.state || "").toLowerCase();
         const media = getTelnyxCallMediaOptions();
 
-        // Only answer while ringing — re-answering an active call breaks audio.
         if (
+          !inboundMedia.alreadyAnswered &&
           typeof inbound.answer === "function" &&
-          (!callState ||
-            callState === "ringing" ||
-            callState === "new" ||
-            callState === "requesting" ||
-            callState === "early")
+          callState !== "active" &&
+          callState !== "answered" &&
+          callState !== "hangup" &&
+          callState !== "done"
         ) {
           await Promise.resolve(inbound.answer(media));
         }
@@ -906,7 +994,7 @@ export default function AdminSoftphone({
         patchActiveSoftphoneCall({
           status: "incoming",
           error:
-            "השיחה עדיין לא הגיעה לסופטפון. השאירו את האפליקציה פתוחה ונסו שוב לענות.",
+            "השיחה לא התחברה לסופטפון. בדקו חיבור לאינטרנט ונסו שוב לענות.",
         });
         return;
       }
@@ -934,6 +1022,13 @@ export default function AdminSoftphone({
 
   const rejectIncoming = useCallback(async () => {
     const current = getAdminSoftphoneState().activeCall;
+    const callSid = String(current?.callSid || "").trim();
+    if (callSid) {
+      void API.post("/admin/softphone/reject-inbound", {
+        callSid,
+        callControlId: callSid,
+      }).catch(() => {});
+    }
     try {
       pendingIncomingTelnyxCall?.hangup?.();
     } catch {
@@ -946,6 +1041,7 @@ export default function AdminSoftphone({
     }
     pendingIncomingTelnyxCall = null;
     pendingIncomingTwilioCall = null;
+    userAcceptedIncoming = false;
     await endCall("canceled");
     if (!current) requestSoftphoneReject();
   }, [endCall]);
@@ -1264,6 +1360,7 @@ export default function AdminSoftphone({
     if (!socket) return;
 
     const onIncoming = (payload: any) => {
+      // Parked PSTN waiting for agent — show UI only (no WebRTC yet, no auto-answer).
       presentIncomingSoftphoneCall({
         phone: payload?.fromNumber || "שיחה נכנסת",
         contactName: payload?.contactName || "שיחה נכנסת",
@@ -1271,6 +1368,7 @@ export default function AdminSoftphone({
         logId: payload?.callId || null,
         mode: payload?.mode === "voip" ? "voip" : "device",
       });
+      setSoftphoneOpen(true);
     };
 
     socket.emit("joinRoom", "admin-support");

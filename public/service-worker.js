@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when softphone notification behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-softphone-v4";
+const SW_VERSION = "bizuply-sw-softphone-v5";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -106,10 +106,11 @@ self.addEventListener("push", (event) => {
       )
     : targetUrl;
 
-  // WhatsApp-style: Answer / Decline on the lock-screen notification.
+  // WhatsApp-style action buttons on the notification itself (Android/Chrome).
+  // iOS Web Push may only support tapping the notification body.
   const actions = isSoftphone
     ? [
-        { action: "answer", title: "ענה" },
+        { action: "answer", title: "ענה לשיחה" },
         { action: "reject", title: "דחה" },
       ]
     : Array.isArray(data.actions)
