@@ -654,6 +654,7 @@ export default function App() {
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isAdminRoute = location.pathname.startsWith("/admin");
+  const isStaffRoute = location.pathname.startsWith("/staff");
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -662,7 +663,7 @@ export default function App() {
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
-    location.pathname.startsWith("/staff") ||
+    isStaffRoute ||
     location.pathname.startsWith("/client") ||
     location.pathname.includes("/messages");
 
@@ -702,9 +703,13 @@ export default function App() {
   return (
     <NotificationsProvider>
       <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "en"}>
-        {!isBusinessChatRoute && !isEarlyAccessLanding && !isAdminRoute && (
-          <Header />
-        )}
+        {!isBusinessChatRoute &&
+          !isEarlyAccessLanding &&
+          !isAdminRoute &&
+          !isStaffRoute && <Header />}
+
+        {/* Staff: top header + softphone (same behavior as admin) */}
+        {isStaffRoute ? <StaffSoftphoneHost /> : null}
 
         <ScrollToTop />
 
@@ -1204,13 +1209,11 @@ export default function App() {
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
 
-      {/* Staff softphone toolbar — survives staff page changes */}
-      <StaffSoftphoneHost />
-
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
         !isBusinessChatRoute &&
-        !location.pathname.startsWith("/admin") &&
+        !isAdminRoute &&
+        !isStaffRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
