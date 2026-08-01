@@ -33,7 +33,10 @@ import {
   normalizeSiteSeoSettings,
 } from "./utils/pageSeoUtils";
 
-import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
+import {
+  getStudioTemplateRenderer,
+  loadStudioTemplateRenderer,
+} from "./data/templates/templateRendererRegistry";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
 
@@ -1065,19 +1068,18 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
       /templates/chanel/preview
       כדי שהתבנית תיכנס ל-React renderer ולא ל-GrapesJS סטטי.
     */
-    const renderer = getStudioTemplateRenderer(templateFromUrl);
-
-    if (renderer?.Component) {
+    // Lightweight seed from URL — Component loads async via loadStudioTemplateRenderer.
+    if (templateFromUrl) {
       const fallbackSeed = {
         id: templateFromUrl,
         key: templateFromUrl,
         rendererKey: templateFromUrl,
         renderMode: "registry",
         editorMode: "renderer",
-        name: renderer.name || templateFromUrl,
+        name: templateFromUrl,
         category: "business",
         description: "",
-        heroTitle: renderer.name || templateFromUrl,
+        heroTitle: templateFromUrl,
         heroSubtitle: "",
         palette: {},
         colors: {},
@@ -1092,16 +1094,14 @@ function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
         },
       } as unknown as ReadyWebsiteTemplateSeed;
 
-      studioDebug("readTemplateSeedFromStorage:success-from-url-renderer", {
+      studioDebug("readTemplateSeedFromStorage:success-from-url-seed", {
         templateFromUrl,
-        rendererKey: renderer.key,
-        rendererName: renderer.name,
       });
 
       return fallbackSeed;
     }
 
-    studioWarn("readTemplateSeedFromStorage:no-renderer-found", {
+    studioWarn("readTemplateSeedFromStorage:no-template-from-url", {
       templateFromUrl,
     });
 
@@ -1821,6 +1821,47 @@ function createPagesFromRegisteredRenderer(
   const renderer = getTemplateRendererBySeed(seed);
   const templateId = getTemplateIdFromSeed(seed);
   const htmlMode: TemplatePageHtmlMode = options.htmlMode || "all";
+  const seedPages =
+    (Array.isArray((seed as any).pages) && (seed as any).pages) ||
+    (Array.isArray((seed as any).editor?.pages) &&
+      (seed as any).editor.pages) ||
+    [];
+
+  // Shell listing can use seed pages without the heavy Component chunk.
+  if (htmlMode === "none" && !renderer?.Component && seedPages.length) {
+    const now = new Date().toISOString();
+    const pages = seedPages.map((page: any, index: number) => {
+      const pageId = String(page.id || `page-${index + 1}`);
+      const isHome = pageId === "home" || page.slug === "/" || index === 0;
+      const cleanSlug = isHome
+        ? ""
+        : String(page.slug || pageId).replace(/^\//, "").replace(/\/$/, "");
+      return {
+        id: pageId,
+        title: String(page.label || page.name || page.title || pageId),
+        slug: cleanSlug,
+        type: (isHome
+          ? "home"
+          : pageId === "shop"
+            ? "store"
+            : "blank") as StudioSitePageType,
+        isHome,
+        html: "",
+        css: "",
+        createdAt: now,
+        updatedAt: now,
+        clientPortal: createDefaultClientPortalConfig(),
+      };
+    });
+    return {
+      slug:
+        normalizeBusinessSlug(getSeedRendererKey(seed) || seed.name || "template") ||
+        "template",
+      activePageId:
+        pages.find((page) => page.isHome)?.id || pages[0]?.id || "home",
+      pages,
+    };
+  }
 
   if (!renderer?.Component) {
     studioWarn("createPagesFromRegisteredRenderer:no-renderer", {
@@ -1838,14 +1879,16 @@ function createPagesFromRegisteredRenderer(
   const rendererPages =
     Array.isArray(renderer.pages) && renderer.pages.length
       ? renderer.pages
-      : [
-          {
-            id: "home",
-            name: seed.name || "Home",
-            slug: "/",
-            sections: ["header", "hero", "footer"],
-          },
-        ];
+      : seedPages.length
+        ? seedPages
+        : [
+            {
+              id: "home",
+              name: seed.name || "Home",
+              slug: "/",
+              sections: ["header", "hero", "footer"],
+            },
+          ];
 
   studioDebug("createPagesFromRegisteredRenderer:pages-source", {
     templateId,
@@ -4807,16 +4850,56 @@ export default function WebsiteStudioPage({
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
-  const selectedTemplateRenderer = useMemo(() => {
-    if (!selectedTemplateSeed) return null;
+  const [selectedTemplateRenderer, setSelectedTemplateRenderer] =
+    useState<ReturnType<typeof getStudioTemplateRenderer>>(() =>
+      selectedTemplateSeed
+        ? getTemplateRendererBySeed(selectedTemplateSeed)
+        : null,
+    );
+  const [templateRendererLoading, setTemplateRendererLoading] = useState(
+    () =>
+      Boolean(
+        selectedTemplateSeed &&
+          shouldUseTemplateRenderer(selectedTemplateSeed) &&
+          !getTemplateRendererBySeed(selectedTemplateSeed),
+      ),
+  );
 
-    return getTemplateRendererBySeed(selectedTemplateSeed);
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!selectedTemplateSeed || !shouldUseTemplateRenderer(selectedTemplateSeed)) {
+      setSelectedTemplateRenderer(null);
+      setTemplateRendererLoading(false);
+      return undefined;
+    }
+
+    const key =
+      getSeedRendererKey(selectedTemplateSeed) ||
+      normalizeStudioTemplateKey(selectedTemplateSeed.id);
+    const cached = getTemplateRendererBySeed(selectedTemplateSeed);
+    if (cached?.Component) {
+      setSelectedTemplateRenderer(cached);
+      setTemplateRendererLoading(false);
+      return undefined;
+    }
+
+    setTemplateRendererLoading(true);
+    loadStudioTemplateRenderer(key).then((next) => {
+      if (cancelled) return;
+      setSelectedTemplateRenderer(next);
+      setTemplateRendererLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
   }, [selectedTemplateSeed]);
 
   const isVisualReactTemplate = Boolean(
-    selectedTemplateRenderer?.Component &&
-      selectedTemplateSeed &&
-      shouldUseTemplateRenderer(selectedTemplateSeed),
+    selectedTemplateSeed &&
+      shouldUseTemplateRenderer(selectedTemplateSeed) &&
+      (selectedTemplateRenderer?.Component || templateRendererLoading),
   );
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
@@ -5408,37 +5491,53 @@ export default function WebsiteStudioPage({
     }
 
     const editor = editorRef.current;
-    const builtTemplate = createPagesFromTemplateSeed(selectedTemplateSeed);
-    const pageToLoad =
-      builtTemplate.pages.find(
-        (page) => page.id === builtTemplate.activePageId,
-      ) || builtTemplate.pages[0];
+    let cancelled = false;
 
-    studioDebug("templateLoadEffect:loading-template", {
-      templateId: getTemplateIdFromSeed(selectedTemplateSeed),
-      templateName: selectedTemplateSeed.name,
-      slug: builtTemplate.slug,
-      activePageId: builtTemplate.activePageId,
-      pagesCount: builtTemplate.pages.length,
-      pageToLoadId: pageToLoad?.id,
-      pageToLoadHtmlLength: String(pageToLoad?.html || "").length,
-      pageToLoadCssLength: String(pageToLoad?.css || "").length,
-    });
+    (async () => {
+      if (shouldUseTemplateRenderer(selectedTemplateSeed)) {
+        await loadStudioTemplateRenderer(
+          getSeedRendererKey(selectedTemplateSeed) ||
+            normalizeStudioTemplateKey(selectedTemplateSeed.id),
+        );
+      }
+      if (cancelled || !editorRef.current) return;
 
-    loadedFromServerRef.current = true;
-    setLoadingSite(false);
-    setSlug(builtTemplate.slug);
-    setPages(builtTemplate.pages);
-    setActivePageId(builtTemplate.activePageId);
-    setActivePanel("pages");
-    setActivePalette(null);
+      const builtTemplate = createPagesFromTemplateSeed(selectedTemplateSeed);
+      const pageToLoad =
+        builtTemplate.pages.find(
+          (page) => page.id === builtTemplate.activePageId,
+        ) || builtTemplate.pages[0];
 
-    if (pageToLoad) {
-      loadPageIntoEditor(editor, pageToLoad, { forceHtml: true });
-      syncSections(editor);
-    } else {
-      studioWarn("templateLoadEffect:no-page-to-load");
-    }
+      studioDebug("templateLoadEffect:loading-template", {
+        templateId: getTemplateIdFromSeed(selectedTemplateSeed),
+        templateName: selectedTemplateSeed.name,
+        slug: builtTemplate.slug,
+        activePageId: builtTemplate.activePageId,
+        pagesCount: builtTemplate.pages.length,
+        pageToLoadId: pageToLoad?.id,
+        pageToLoadHtmlLength: String(pageToLoad?.html || "").length,
+        pageToLoadCssLength: String(pageToLoad?.css || "").length,
+      });
+
+      loadedFromServerRef.current = true;
+      setLoadingSite(false);
+      setSlug(builtTemplate.slug);
+      setPages(builtTemplate.pages);
+      setActivePageId(builtTemplate.activePageId);
+      setActivePanel("pages");
+      setActivePalette(null);
+
+      if (pageToLoad) {
+        loadPageIntoEditor(editor, pageToLoad, { forceHtml: true });
+        syncSections(editor);
+      } else {
+        studioWarn("templateLoadEffect:no-page-to-load");
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
   }, [ready, selectedTemplateSeed, isVisualReactTemplate]);
 
   useEffect(() => {
@@ -7965,6 +8064,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   };
 
+  if (
+    isVisualReactTemplate &&
+    (templateRendererLoading || !selectedTemplateRenderer)
+  ) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label="טוען את התבנית..."
+      />
+    );
+  }
+
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
       <BizuplyLoader
@@ -8238,7 +8349,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   siteId={siteId}
   renderer={selectedTemplateRenderer}
   businessId={businessId}
-  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
+  key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}`}
   initialData={{
     ...mergeVisualRootData(
       selectedTemplateRenderer.defaultData as Record<string, any>,

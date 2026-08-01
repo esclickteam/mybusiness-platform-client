@@ -1,7 +1,4 @@
-import {
-  getStudioTemplateById,
-  getStudioTemplateSeedById,
-} from "../components/site-builder/studio/data/templates";
+import { getTemplateCatalogEntry } from "../components/site-builder/studio/data/templates/templateCatalog";
 
 function firstHttpUrl(...values: unknown[]) {
   for (const value of values) {
@@ -12,8 +9,8 @@ function firstHttpUrl(...values: unknown[]) {
 }
 
 /**
- * Instant cover image for template/site cards (Webflow-style marketplace).
- * Prefer seed/meta stills so the grid paints immediately without iframes.
+ * Instant cover image for template/site cards.
+ * Uses the light catalog — never pulls the full template registry.
  */
 export function getTemplateCoverUrl(
   templateKey: string | null | undefined,
@@ -21,35 +18,6 @@ export function getTemplateCoverUrl(
   const key = String(templateKey || "").trim().toLowerCase();
   if (!key) return "";
 
-  const definition = getStudioTemplateById(key) as
-    | {
-        previewImage?: string;
-        image?: string;
-        seed?: Record<string, any>;
-        renderer?: { defaultData?: Record<string, any> };
-      }
-    | undefined;
-
-  const seed = (getStudioTemplateSeedById(key) || definition?.seed || {}) as
-    | Record<string, any>
-    | undefined;
-
-  const defaultData = (definition?.renderer?.defaultData ||
-    seed?.defaultData ||
-    {}) as Record<string, any>;
-
-  return (
-    firstHttpUrl(
-      seed?.image,
-      seed?.previewImage,
-      definition?.previewImage,
-      definition?.image,
-      definition?.seed?.image,
-      definition?.seed?.previewImage,
-      defaultData?.heroImage,
-      defaultData?.image,
-      defaultData?.coverImage,
-      defaultData?.previewImage,
-    ) || ""
-  );
+  const entry = getTemplateCatalogEntry(key);
+  return firstHttpUrl(entry?.previewImage, entry?.image);
 }

@@ -1,26 +1,45 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import {
+  loadStudioTemplateRenderer,
+  type StudioTemplateRenderer,
+} from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
 /**
  * Standalone live render of a studio template's homepage for gallery card
- * iframes. Uses the real React template + app Tailwind so the thumbnail
- * matches Webflow-style marketplace previews (actual site UX, not a screenshot).
+ * iframes. Loads only the requested template chunk.
  */
 export default function EmbedTemplatePreviewPage() {
   const { templateKey = "" } = useParams<{ templateKey: string }>();
+  const [renderer, setRenderer] = useState<StudioTemplateRenderer | null>(null);
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateKey),
-    [templateKey],
-  );
+  useEffect(() => {
+    let cancelled = false;
+    const key = String(templateKey || "")
+      .trim()
+      .toLowerCase();
+    if (!key) {
+      setRenderer(null);
+      return undefined;
+    }
+
+    loadStudioTemplateRenderer(key).then((next) => {
+      if (!cancelled) setRenderer(next);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [templateKey]);
 
   if (!renderer?.Component) {
     return <div style={{ minHeight: "100vh", background: "#fff" }} />;
   }
 
-  const Component = renderer.Component as React.ComponentType<Record<string, unknown>>;
+  const Component = renderer.Component as React.ComponentType<
+    Record<string, unknown>
+  >;
   const data = (renderer.defaultData || {}) as Record<string, unknown>;
   const homePage = renderer.pages?.[0];
   const pageId = homePage?.id || "home";
@@ -41,7 +60,6 @@ export default function EmbedTemplatePreviewPage() {
         <style dangerouslySetInnerHTML={{ __html: String(renderer.editorCss) }} />
       ) : null}
 
-      {/* Force entrance/reveal states open so the card never shows a blank hero */}
       <style>{`
         [data-template-card-embed="true"] [data-reveal],
         [data-template-card-embed="true"] [data-animate],

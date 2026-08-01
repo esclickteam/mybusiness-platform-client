@@ -10,8 +10,9 @@ import { useTranslation } from "react-i18next";
 import API from "../api";
 import { createMySite } from "../api/mySitesApi";
 import {
-  getStudioTemplateSeedById,
-} from "../components/site-builder/studio/data/templates";
+  loadStudioTemplateRenderer,
+  prefetchStudioTemplateRenderer,
+} from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import {
   buildClientAiSitePlan,
   materializeAiSitePlan,
@@ -217,7 +218,12 @@ export default function AiSiteWizardPage() {
       });
 
       const hostKey = built.hostTemplateKey;
-      const localSeed = getStudioTemplateSeedById(hostKey) as any;
+      prefetchStudioTemplateRenderer(hostKey);
+      const hostRenderer = await loadStudioTemplateRenderer(hostKey);
+      const localSeed = {
+        defaultData: hostRenderer?.defaultData || {},
+        pages: hostRenderer?.pages || [],
+      } as any;
 
       const templateForEditor = {
         ...(localSeed || {}),
@@ -231,7 +237,6 @@ export default function AiSiteWizardPage() {
         aiPlan: plan,
         aiFallback: usedLocalFallback,
         palette: {
-          ...(localSeed?.palette || {}),
           ...(plan.palette || {}),
         },
       };

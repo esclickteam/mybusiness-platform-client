@@ -59,6 +59,21 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: path.resolve(__dirname, "index.html"),
+      output: {
+        manualChunks(id) {
+          // Keep each website template in its own async chunk so public sites
+          // and the gallery never download the full ~200-template graph.
+          if (id.includes("/site-builder/studio/data/templates/")) {
+            const match = id.match(
+              /\/site-builder\/studio\/data\/templates\/([^/]+)\//,
+            );
+            if (match?.[1] && match[1] !== "shared") {
+              return `tpl-${match[1].toLowerCase()}`;
+            }
+          }
+          return undefined;
+        },
+      },
     },
 
     commonjsOptions: {

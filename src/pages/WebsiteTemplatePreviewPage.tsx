@@ -1,9 +1,13 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, LayoutTemplate, Wand2 } from "lucide-react";
 
-import { getStudioTemplateById } from "../components/site-builder/studio/data/templates";
-import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { getTemplateCatalogEntry } from "../components/site-builder/studio/data/templates/templateCatalog";
+import {
+  loadStudioTemplateRenderer,
+  prefetchStudioTemplateRenderer,
+  type StudioTemplateRenderer,
+} from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
 export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
@@ -17,20 +21,38 @@ export default function WebsiteTemplatePreviewPage() {
 
   const cleanTemplateId = String(templateId || "").trim().toLowerCase();
   const template = cleanTemplateId
-    ? getStudioTemplateById(cleanTemplateId)
-    : undefined;
+    ? getTemplateCatalogEntry(cleanTemplateId)
+    : null;
 
-  const renderer = useMemo(
-    () => (cleanTemplateId ? getStudioTemplateRenderer(cleanTemplateId) : null),
-    [cleanTemplateId],
-  );
+  const [renderer, setRenderer] = useState<StudioTemplateRenderer | null>(null);
+  const [loading, setLoading] = useState(Boolean(cleanTemplateId));
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!cleanTemplateId) {
+      setRenderer(null);
+      setLoading(false);
+      return undefined;
+    }
+
+    setLoading(true);
+    prefetchStudioTemplateRenderer(cleanTemplateId);
+    loadStudioTemplateRenderer(cleanTemplateId).then((next) => {
+      if (cancelled) return;
+      setRenderer(next);
+      setLoading(false);
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [cleanTemplateId]);
 
   const homePage = renderer?.pages?.[0];
   const homePageId = homePage?.id || "home";
   const [previewPageId, setPreviewPageId] = useState(homePageId);
 
-  // Reset to home when switching templates
-  React.useEffect(() => {
+  useEffect(() => {
     setPreviewPageId(homePageId);
   }, [cleanTemplateId, homePageId]);
 
@@ -53,6 +75,7 @@ export default function WebsiteTemplatePreviewPage() {
     const id = String(template?.id || renderer?.key || "").trim();
     localStorage.setItem("bizuply-selected-template-id", id);
     localStorage.setItem("bizuply-selected-template-key", id);
+    prefetchStudioTemplateRenderer(id);
 
     navigate(`${basePath}/dashboard/website?template=${id}`);
   }
@@ -78,6 +101,14 @@ export default function WebsiteTemplatePreviewPage() {
           שימוש בתבנית
         </button>
       </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <main className="fixed inset-0 z-[9999] flex items-center justify-center bg-white">
+        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
+      </main>
     );
   }
 
@@ -111,8 +142,6 @@ export default function WebsiteTemplatePreviewPage() {
     );
   }
 
-  // Prefer live renderer (same path as gallery cards / embed) so every site
-  // preview looks and behaves like a real homepage.
   if (renderer?.Component) {
     const Component = renderer.Component as React.ComponentType<
       Record<string, unknown>
@@ -123,7 +152,6 @@ export default function WebsiteTemplatePreviewPage() {
     const key = String(renderer.key || cleanTemplateId).toLowerCase();
     const background =
       (data as any)?.backgroundColor ||
-      (template as any)?.seed?.palette?.background ||
       "#0b1020";
 
     return (
@@ -155,7 +183,6 @@ export default function WebsiteTemplatePreviewPage() {
             mode="preview"
             data={data}
             templateData={data}
-            /* Shared template preview — demo catalog only, never this business's store */
             isStudioStatic
             onPageChange={(nextPageId: string) => {
               const next = String(nextPageId || "").trim();
@@ -163,39 +190,6 @@ export default function WebsiteTemplatePreviewPage() {
               setPreviewPageId(next);
             }}
           />
-        </div>
-      </main>
-    );
-  }
-
-  const previewValue =
-    (template as any).Preview ||
-    (template as any).PreviewComponent ||
-    (template as any).preview ||
-    (template as any).component ||
-    (template as any).Component;
-
-  if (React.isValidElement(previewValue)) {
-    return (
-      <main className="fixed inset-0 z-[9999] overflow-x-hidden overflow-y-auto bg-[#07100e]">
-        <PreviewActions />
-        <div className="min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible">
-          {previewValue}
-        </div>
-      </main>
-    );
-  }
-
-  if (typeof previewValue === "function") {
-    const PreviewComponent = previewValue as React.ComponentType<{
-      onUseTemplate?: () => void;
-    }>;
-
-    return (
-      <main className="fixed inset-0 z-[9999] overflow-x-hidden overflow-y-auto bg-[#07100e]">
-        <PreviewActions />
-        <div className="min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible">
-          <PreviewComponent onUseTemplate={handleUseTemplate} />
         </div>
       </main>
     );
