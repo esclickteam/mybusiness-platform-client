@@ -376,11 +376,11 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="mt-4 leading-8" style={{ color: "#a8959a" }}>{v(data, "contactText")}</p>
           <p className="mt-6 text-sm" style={{ color: "#a8959a" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="שם מלא" />
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="טלפון" />
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="תאריך מועדף" />
-          <button type="button" onClick={onCta} className="mt-2 px-6 py-3 text-sm font-semibold tracking-wider" style={{ background: "#9b2335", color: "#f5ebe0" }}>{v(data, "cta")}</button>
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vineria-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="תאריך מועדף" name="date" data-bizuply-form-field-id="date" />
+          <button type="submit" className="mt-2 px-6 py-3 text-sm font-semibold tracking-wider" style={{ background: "#9b2335", color: "#f5ebe0" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>

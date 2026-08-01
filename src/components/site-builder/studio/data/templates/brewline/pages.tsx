@@ -317,12 +317,12 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10">
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="שם מלא" />
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="טלפון" />
-            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="אירוע / כמות אורחים" />
-            <textarea className="min-h-[140px] border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="ספרו לנו על הקייטרינג או הביקור שתרצו" />
-            <button type="button" className="bg-[var(--espresso)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--clay)]">
+          <form className="grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="brewline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="אירוע / כמות אורחים"  name="guests" data-bizuply-form-field-id="guests" />
+            <textarea className="min-h-[140px] border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="ספרו לנו על הקייטרינג או הביקור שתרצו"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <button type="submit" className="bg-[var(--espresso)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--clay)]">
               {getValue(data, "contactButton")}
             </button>
           </form>

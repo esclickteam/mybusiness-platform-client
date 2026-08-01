@@ -334,12 +334,12 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={100}>
-          <form className="grid gap-3 border border-white/15 bg-[var(--bg)] p-4">
-            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="שם מלא" />
-            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="טלפון" />
-            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="חברה / תחום" />
-            <textarea className={`min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="במה נוכל לעזור?" />
-            <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+          <form className="grid gap-3 border border-white/15 bg-[var(--bg)] p-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="closora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className={`border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
+            <textarea className={`min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none`} placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>

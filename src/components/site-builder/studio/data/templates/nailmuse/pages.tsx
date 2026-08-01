@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nailmuseDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
+import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { nailmuseEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
 
@@ -27,6 +28,7 @@ type NailmusePagesProps = {
   initialPageId?: string;
   activePageId?: string;
   currentPageId?: string;
+  businessId?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -332,8 +334,9 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
 }
 
 export default function NailmusePages(props: NailmusePagesProps) {
-  const { initialPage = "home", mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode, page, pageId, initialPageId, activePageId, currentPageId } = props;
-  const mergedData = useMemo(() => ({ ...nailmuseDefaultData, ...(data ?? {}) }), [data]);
+  const {  initialPage = "home", mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode, page, pageId, initialPageId, activePageId, currentPageId, businessId } = props;
+  const baseData = useMemo(() => ({ ...nailmuseDefaultData, ...(data ?? {}) }), [data]);
+  const mergedData = useCrmBookingServiceData(baseData, businessId);
   const { currentPage, goTo } = useTemplatePageNavigation(
     { page, pageId, initialPage, initialPageId, activePageId, currentPageId, onPageChange, isPublic, viewMode, runtimeMode },
     { allowedPages, fallbackPage: "home" },

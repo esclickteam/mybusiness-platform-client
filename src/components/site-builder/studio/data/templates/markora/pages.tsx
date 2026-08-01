@@ -272,12 +272,12 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
     <section id="contact" data-template-section-type="contact" className="bg-[var(--surface)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl border border-white/10 lg:grid-cols-2">
         <Reveal className="bg-[var(--bg)] p-8 lg:p-12" delayMs={170} variant="left">
-          <form className="grid gap-4">
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="שם מלא" />
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="טלפון" />
-            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="אימייל" />
-            <textarea className="min-h-36 border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="מה אתם רוצים לשווק?" />
-            <button type="button" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black text-white transition hover:bg-white hover:text-[var(--bg)]">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="markora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-36 border border-white/15 bg-transparent px-5 py-4 text-right outline-none transition focus:border-[var(--p)]" placeholder="מה אתם רוצים לשווק?"  name="other" data-bizuply-form-field-id="other"></textarea>
+            <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black text-white transition hover:bg-white hover:text-[var(--bg)]">
               {getValue(data, "contactButton")}
             </button>
           </form>
@@ -326,10 +326,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         </button>
         <p className="text-sm font-black uppercase tracking-[0.35em] text-[var(--p)]">{getValue(data, "brandName")}</p>
         <h3 className="t-display mt-3 text-2xl sm:text-4xl font-black leading-none">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="markora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/15 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

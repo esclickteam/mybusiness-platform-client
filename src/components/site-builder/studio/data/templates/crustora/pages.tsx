@@ -378,11 +378,11 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="text-center text-xs font-black tracking-[0.3em]">ORDER TICKET</p>
           <h2 className="tpl-display mt-3 text-center text-3xl font-black">{v(data, "contactTitle")}</h2>
           <p className="mt-3 text-center text-sm" style={{ color: "#8b6b52" }}>{v(data, "contactText")}</p>
-          <form className="mt-6 grid gap-3" onSubmit={(e) => e.preventDefault()}>
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="שם" />
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="כתובת" />
-            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="טלפון" />
-            <button type="button" onClick={onCta} className="mt-2 px-6 py-3 text-sm font-bold" style={{ background: "#c1121f", color: "#ffffff" }}>{v(data, "cta")}</button>
+          <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="crustora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="כתובת" name="other" data-bizuply-form-field-id="other" />
+            <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <button type="submit" className="mt-2 px-6 py-3 text-sm font-bold" style={{ background: "#c1121f", color: "#ffffff" }}>{v(data, "cta")}</button>
           </form>
           <p className="mt-4 text-center text-xs" style={{ color: "#8b6b52" }}>{v(data, "address")}</p>
         </div>

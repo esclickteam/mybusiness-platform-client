@@ -64,12 +64,12 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
-      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="שם מלא" />
-      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="טלפון" />
-      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="אימייל" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="מה אתם מחפשים?" />
-      <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#3dffd4", color: "#041824" }}>{v(data, "cta")}</button>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="coraline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(232,244,255,0.14)", color: "#e8f4ff" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+      <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#3dffd4", color: "#041824" }}>{v(data, "cta")}</button>
     </form>
   );
 }

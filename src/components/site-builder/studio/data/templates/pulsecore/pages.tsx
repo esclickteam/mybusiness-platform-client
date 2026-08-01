@@ -788,36 +788,33 @@ function ContactLeadForm() {
   return (
     <form
       className="grid gap-4 rounded-[40px] bg-white p-8 lg:p-12"
-      onSubmit={(event) => {
-        event.preventDefault();
-        setSent(true);
-      }}
+      data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pulsecore-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
     >
       <input
         name="name"
         required
         placeholder="שם מלא"
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-      />
+       data-bizuply-form-field-id="name" type="text" autoComplete="name" />
 
       <input
         name="phone"
         required
         placeholder="טלפון"
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-      />
+       data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
 
       <input
         name="goal"
         placeholder="מטרה עיקרית"
         className="h-14 rounded-2xl border border-black/10 px-5 text-sm font-bold outline-none"
-      />
+       data-bizuply-form-field-id="other" />
 
       <textarea
         name="notes"
         placeholder="מה חשוב לנו לדעת?"
         className="min-h-36 rounded-2xl border border-black/10 p-5 text-sm font-bold outline-none"
-      />
+       data-bizuply-form-field-id="other_2"></textarea>
 
       <button
         type="submit"

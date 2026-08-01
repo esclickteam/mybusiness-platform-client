@@ -390,28 +390,30 @@ export function BookingSection({ data }: { data: WantravelSeed }) {
 
             <form
               className="wan-form"
-              onSubmit={(event) => {
-                event.preventDefault();
-              }}
+              data-bizuply-block="lead-form"
+              data-bizuply-crm-lead="true"
+              data-bizuply-form-builder="true"
+              data-bizuply-form-id="wantravel-contact"
+              data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
             >
               <label>
                 <span>שם מלא</span>
-                <input type="text" placeholder="השם שלך" />
+                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder="השם שלך" />
               </label>
 
               <label>
                 <span>טלפון</span>
-                <input type="tel" placeholder="050-0000000" />
+                <input type="tel" name="phone" data-bizuply-form-field-id="phone" autoComplete="tel" placeholder="050-0000000" />
               </label>
 
               <label>
                 <span>יעד מבוקש</span>
-                <input type="text" placeholder="למשל: יוון / איטליה / באלי" />
+                <input type="text" name="destination" data-bizuply-form-field-id="destination" placeholder="למשל: יוון / איטליה / באלי" />
               </label>
 
               <label>
                 <span>הודעה</span>
-                <textarea placeholder="ספרו בקצרה מה אתם מחפשים" />
+                <textarea name="message" data-bizuply-form-field-id="message" placeholder="ספרו בקצרה מה אתם מחפשים" />
               </label>
 
               <button type="submit">{data.booking.button}</button>

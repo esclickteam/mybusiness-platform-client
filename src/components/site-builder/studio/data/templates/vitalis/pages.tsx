@@ -214,15 +214,15 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">נשמח לקבל אתכם.</h3>
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="טלפון"
-            />
+             name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]">
               <option>סוג הטיפול</option>
               <option>בדיקה כללית</option>
@@ -232,7 +232,7 @@ function BookingModal({
               <option>טיפול חירום</option>
             </select>
             <button
-              type="button"
+              type="submit"
               className="rounded-full bg-gradient-to-r from-[#0ea5a4] to-[#0891b2] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#0891b2]/25 transition hover:-translate-y-0.5"
             >
               {getValue(data, "contactButton")}
@@ -603,26 +603,26 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8">
+        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="שם מלא"
-            />
+             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="טלפון"
-            />
+             name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="אימייל"
-            />
+             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
               className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="במה נוכל לעזור?"
-            />
+             name="message" data-bizuply-form-field-id="message"></textarea>
             <button
-              type="button"
+              type="submit"
               onClick={openBooking}
               className="rounded-full bg-gradient-to-r from-[#0ea5a4] to-[#0891b2] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#0891b2]/25 transition duration-300 hover:-translate-y-0.5"
             >

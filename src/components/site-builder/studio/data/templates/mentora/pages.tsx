@@ -453,11 +453,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
         <h2 className="t-display text-2xl sm:text-4xl font-bold">{getValue(data,"contactTitle")}</h2>
         <p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p>
       </Reveal>
-      <form className="mx-auto mt-10 grid max-w-xl gap-3">
-        <input className="border border-[var(--p)]/30 bg-[var(--surface)] px-5 py-4 outline-none" placeholder="שם" />
-        <input className="border border-[var(--p)]/30 bg-[var(--surface)] px-5 py-4 outline-none" placeholder="טלפון" />
+      <form className="mx-auto mt-10 grid max-w-xl gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="mentora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <input className="border border-[var(--p)]/30 bg-[var(--surface)] px-5 py-4 outline-none" placeholder="שם"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+        <input className="border border-[var(--p)]/30 bg-[var(--surface)] px-5 py-4 outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
         <select className="border border-[var(--p)]/30 bg-[var(--surface)] px-5 py-4 outline-none"><option>בחרו מסלול</option><option>קריירה</option><option>יזמות</option></select>
-        <button type="button" onClick={openModal} className="bg-[var(--p)] py-4 font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button>
+        <button type="submit" onClick={openModal} className="bg-[var(--p)] py-4 font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button>
       </form>
     </section>
   );
@@ -483,10 +483,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="mentora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

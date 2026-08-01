@@ -1089,32 +1089,32 @@ export default function VelmoraHome({
           </Reveal>
 
           <Reveal delay={180}>
-            <form className="grid gap-3">
+            <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="velmora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <div className="grid gap-3 md:grid-cols-2">
                 <input
                   placeholder="שם מלא"
                   className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
-                />
+                 name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
 
                 <input
                   placeholder="טלפון"
                   className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
-                />
+                 name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               </div>
 
               <input
                 placeholder="אימייל"
                 className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
-              />
+               name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
 
               <textarea
                 placeholder="הודעה"
                 rows={5}
                 className="resize-none border border-black/10 bg-white p-4 text-sm outline-none transition focus:border-black"
-              />
+               name="message" data-bizuply-form-field-id="message"></textarea>
 
               <button
-                type="button"
+                type="submit"
                 className="h-11 w-40 bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
                 {getStringValue(contact, "buttonText", "שליחה")}

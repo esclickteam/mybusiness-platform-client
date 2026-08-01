@@ -1021,7 +1021,7 @@ function ContactPage({ data }: SharedProps) {
             <div className="elevora-form-card elevora-reveal elevora-delay-2">
               <form
                 className="elevora-form"
-                onSubmit={(event) => event.preventDefault()}
+                data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
               >
                 <div className="elevora-field">
                   <label htmlFor="elevora-name">שם מלא</label>
@@ -1031,7 +1031,7 @@ function ContactPage({ data }: SharedProps) {
                     type="text"
                     placeholder="השם שלך"
                     data-editable="input"
-                  />
+                   data-bizuply-form-field-id="name" autoComplete="name" />
                 </div>
 
                 <div className="elevora-field">
@@ -1042,7 +1042,7 @@ function ContactPage({ data }: SharedProps) {
                     type="tel"
                     placeholder="050-0000000"
                     data-editable="input"
-                  />
+                   data-bizuply-form-field-id="other" />
                 </div>
 
                 <div className="elevora-field">
@@ -1053,7 +1053,7 @@ function ContactPage({ data }: SharedProps) {
                     type="email"
                     placeholder="name@email.com"
                     data-editable="input"
-                  />
+                   data-bizuply-form-field-id="email" autoComplete="email" />
                 </div>
 
                 <div className="elevora-field">
@@ -1063,7 +1063,7 @@ function ContactPage({ data }: SharedProps) {
                     name="message"
                     placeholder="ספרו לנו בקצרה על העסק והמטרה שלכם"
                     data-editable="textarea"
-                  />
+                   data-bizuply-form-field-id="message"></textarea>
                 </div>
 
                 <button

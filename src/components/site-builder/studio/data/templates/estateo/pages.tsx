@@ -139,11 +139,11 @@ function EstateoInvitationContact({ data, onCta }: { data: Record<string, any>; 
         <p className="text-xs font-semibold tracking-[0.34em]" style={{ color: "#d4af6a" }}>INVITATION</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold leading-tight md:text-7xl">{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-8" style={{ color: "#a89880" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-5" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="שם מלא" />
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טלפון פרטי" />
-          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טווח רכישה" />
-          <button type="button" onClick={onCta} className="tpl-sweep mt-4 px-7 py-4 text-sm font-bold" style={{ background: "#d4af6a", color: "#100e0c" }}>{v(data, "cta")}</button>
+        <form className="mt-10 grid gap-5" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="estateo-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טלפון פרטי" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טווח רכישה" name="other" data-bizuply-form-field-id="other" />
+          <button type="submit" className="tpl-sweep mt-4 px-7 py-4 text-sm font-bold" style={{ background: "#d4af6a", color: "#100e0c" }}>{v(data, "cta")}</button>
         </form>
         <div className="mt-10 text-sm leading-7" style={{ color: "#a89880" }}>{v(data, "email")} · {v(data, "phone")}</div>
       </div>
