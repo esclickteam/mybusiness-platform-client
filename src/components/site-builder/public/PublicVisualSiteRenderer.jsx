@@ -4,17 +4,12 @@ import React, {
   useLayoutEffect,
   useMemo,
   useRef,
-  useState,
 } from "react";
 import { Helmet } from "react-helmet-async";
 
-import {
-  getStudioTemplateRenderer,
-  loadStudioTemplateRenderer,
-} from "../studio/data/templates/templateRendererRegistry";
+import { getStudioTemplateRenderer } from "../studio/data/templates/templateRendererRegistry";
 import { resolvePageSeoMeta } from "../studio/utils/pageSeoUtils";
 import { VisualLibraryPageProvider } from "../runtime/visualLibraryPage";
-import { VisualPageStackKeepAliveProvider } from "../runtime/VisualPageStack";
 
 import { buildVisualRuntimeCss } from "../studio/visual-editor/utils/visualCssRuntime";
 import {
@@ -2143,40 +2138,10 @@ export default function PublicVisualSiteRenderer({
     [site, activePage],
   );
 
-  // Load only the active template chunk (not the full ~200-template registry).
-  const [renderer, setRenderer] = useState(() =>
-    templateKey ? getStudioTemplateRenderer(templateKey) : null,
+  const renderer = useMemo(
+    () => getStudioTemplateRenderer(templateKey),
+    [templateKey],
   );
-  const [rendererLoading, setRendererLoading] = useState(() =>
-    Boolean(templateKey && !getStudioTemplateRenderer(templateKey)),
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    if (!templateKey) {
-      setRenderer(null);
-      setRendererLoading(false);
-      return undefined;
-    }
-
-    const cached = getStudioTemplateRenderer(templateKey);
-    if (cached) {
-      setRenderer(cached);
-      setRendererLoading(false);
-      return undefined;
-    }
-
-    setRendererLoading(true);
-    loadStudioTemplateRenderer(templateKey).then((next) => {
-      if (cancelled) return;
-      setRenderer(next);
-      setRendererLoading(false);
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [templateKey]);
 
   const visualData = useMemo(() => {
     const raw = readTemplateData(site, activePage, templateData);
@@ -2667,18 +2632,6 @@ export default function PublicVisualSiteRenderer({
     אם נשמר בעבר snapshot ריק/פגום, לא מציגים דף לבן.
     מרנדרים את התבנית שנבחרה ומחילים עליה את כל נתוני העריכה השמורים.
   */
-  if (rendererLoading && !TemplateComponent && !hasSavedHtml) {
-    return (
-      <div
-        className="flex min-h-screen items-center justify-center bg-white"
-        dir="rtl"
-        aria-busy="true"
-      >
-        <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
-      </div>
-    );
-  }
-
   if (TemplateComponent) {
     return (
       <div
@@ -2720,30 +2673,27 @@ export default function PublicVisualSiteRenderer({
             publicRevision/pageId ב-key גרמו ל-remount מלא בכל רענון —
             וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
             דרך props + applyPublicVisualData, בלי להרוס את העץ.
-            Public sites mount only the active page (keepAlive=false).
           */}
-          <VisualPageStackKeepAliveProvider keepAlive={false}>
-            <VisualLibraryPageProvider pageId={pageId} data={visualData}>
-              <TemplateComponent
-                key={templateKey || "template"}
-                mode="preview"
-                viewMode="public"
-                runtimeMode="public"
-                initialPage={pageId}
-                initialPageId={pageId}
-                activePageId={pageId}
-                currentPageId={pageId}
-                pageId={pageId}
-                page={pageId}
-                data={visualData}
-                templateData={visualData}
-                businessId={publicBusinessId}
-                isPublic
-                isStudioStatic={false}
-                onPageChange={handleTemplatePageChange}
-              />
-            </VisualLibraryPageProvider>
-          </VisualPageStackKeepAliveProvider>
+          <VisualLibraryPageProvider pageId={pageId} data={visualData}>
+            <TemplateComponent
+              key={templateKey || "template"}
+              mode="preview"
+              viewMode="public"
+              runtimeMode="public"
+              initialPage={pageId}
+              initialPageId={pageId}
+              activePageId={pageId}
+              currentPageId={pageId}
+              pageId={pageId}
+              page={pageId}
+              data={visualData}
+              templateData={visualData}
+              businessId={publicBusinessId}
+              isPublic
+              isStudioStatic={false}
+              onPageChange={handleTemplatePageChange}
+            />
+          </VisualLibraryPageProvider>
         </div>
 
         {customCode.enabled !== false ? (
