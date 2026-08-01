@@ -22,6 +22,7 @@ const PublicVisualSiteRenderer = lazy(() =>
 
 import { useAuth } from "./context/AuthContext";
 import { LoginSkeleton } from "./components/LoginSkeleton";
+import { LoginFormSkeleton } from "./components/auth/LoginFormSkeleton";
 const AdminWithdrawalsPage = lazy(() =>
   import("./pages/admin/AdminWithdrawalsPage")
 );
@@ -710,7 +711,16 @@ export default function App() {
     );
   }
 
-  if (loading) return <LoginSkeleton />;
+  if (loading) {
+    // The /login route has its own layout-matched skeleton to avoid a large
+    // layout shift when this app-level auth check resolves and the real
+    // page mounts. Every other route keeps the original full-screen loader.
+    return location.pathname === "/login" ? (
+      <LoginFormSkeleton />
+    ) : (
+      <LoginSkeleton />
+    );
+  }
 
   return (
     <NotificationsProvider>
@@ -751,7 +761,19 @@ export default function App() {
             >
               <AiProvider>
                 <AnimatePresence mode="wait">
-                  <Suspense fallback={<PageLoader />}>
+                  <Suspense
+                    fallback={
+                      // /login gets a layout-matched skeleton instead of the
+                      // generic full-screen loader to avoid a large CLS hit
+                      // once its lazy chunk finishes loading. All other
+                      // routes keep the original PageLoader unchanged.
+                      location.pathname === "/login" ? (
+                        <LoginFormSkeleton />
+                      ) : (
+                        <PageLoader />
+                      )
+                    }
+                  >
                     <motion.div
                       key={location.pathname}
                       initial={{ opacity: 0, y: 10 }}

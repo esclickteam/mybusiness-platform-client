@@ -5,8 +5,8 @@ import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
-import BizuplyLoader from "../components/ui/BizuplyLoader";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
+import { LoginFormSkeleton } from "../components/auth/LoginFormSkeleton";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -31,10 +31,6 @@ type LoginResponse = {
 type ApiError = {
   message?: string;
 };
-
-export function LoginSkeleton() {
-  return <BizuplyLoader fullScreen label="טוען..." />;
-}
 
 export default function Login() {
   const { login, error: authError } = useAuth();
@@ -158,7 +154,7 @@ export default function Login() {
   };
 
   if (!dashPreloadDone || loading) {
-    return <LoginSkeleton />;
+    return <LoginFormSkeleton />;
   }
 
   return (
