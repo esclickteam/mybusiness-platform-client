@@ -178,8 +178,7 @@ const nailoraInspiredEffectsCss = `
   .lunelle-template-root [data-section-kind="service-card"],
   .lunelle-template-root [data-section-kind="gallery-image"],
   .lunelle-template-root [data-section-kind="testimonials"] article,
-  .lunelle-template-root [data-section-kind="prices"] .grid,
-  .lunelle-template-root form {
+  .lunelle-template-root [data-section-kind="prices"] .grid {
     transition:
       transform 550ms cubic-bezier(.16,1,.3,1),
       box-shadow 550ms cubic-bezier(.16,1,.3,1),
@@ -191,10 +190,52 @@ const nailoraInspiredEffectsCss = `
   .lunelle-template-root .lunelle-card:hover,
   .lunelle-template-root [data-section-kind="service-card"]:hover,
   .lunelle-template-root [data-section-kind="gallery-image"]:hover,
-  .lunelle-template-root [data-section-kind="testimonials"] article:hover,
-  .lunelle-template-root form:hover {
+  .lunelle-template-root [data-section-kind="testimonials"] article:hover {
     transform: translateY(-10px);
     box-shadow: 0 32px 95px rgba(42, 23, 28, .15);
+  }
+
+  /* Contact forms must stay clickable — no lift/shine/fade that fights the fields. */
+  .lunelle-template-root .lunelle-contact-form,
+  .lunelle-template-root .lunelle-contact-form:hover,
+  .lunelle-template-root form[data-bizuply-block="lead-form"],
+  .lunelle-template-root form[data-bizuply-crm-lead="true"] {
+    opacity: 1 !important;
+    filter: none !important;
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .lunelle-template-root .lunelle-contact-media {
+    position: relative;
+    z-index: 0;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .lunelle-template-root .lunelle-contact-media img {
+    transform: none !important;
+    animation: none !important;
+  }
+
+  .lunelle-template-root .lunelle-gallery-tile {
+    position: relative;
+    min-height: 240px;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  .lunelle-template-root .lunelle-gallery-tile img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lunelle-template-root .lunelle-booking-frame {
+    background: #ffffff !important;
+    overflow: hidden;
   }
 
   .lunelle-template-root img {
@@ -406,7 +447,6 @@ function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) 
       [
         "section",
         "article",
-        "form",
         "[data-section-kind]",
         "[data-section-kind='service-card']",
         "[data-section-kind='gallery-image']",
@@ -415,6 +455,17 @@ function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) 
     );
 
     revealTargets.forEach((element) => {
+      // Lead forms must never start at opacity:0 — that hides the fields while
+      // the sibling contact image stays visible and looks like a blocking photo.
+      if (
+        element.matches(
+          "form, .lunelle-contact-form, [data-bizuply-block='lead-form'], [data-bizuply-crm-lead='true']",
+        )
+      ) {
+        element.classList.remove("lunelle-auto-reveal");
+        element.classList.add("lunelle-is-visible");
+        return;
+      }
       element.classList.add("lunelle-auto-reveal");
     });
 
@@ -424,19 +475,25 @@ function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) 
         "[data-section-kind='service-card']",
         "[data-section-kind='gallery-image']",
         "[data-section-kind='testimonials'] article",
-        "form",
       ].join(","),
     );
 
     cards.forEach((card) => {
+      if (
+        card.matches(
+          "form, .lunelle-contact-form, [data-bizuply-block='lead-form'], [data-bizuply-crm-lead='true']",
+        )
+      ) {
+        return;
+      }
       card.classList.add("lunelle-shine");
     });
 
+    // Never float/parallax contact media — scaled transforms steal clicks from the lead form.
     const floatingItems = root.querySelectorAll<HTMLElement>(
       [
-        '[data-section-kind="hero"] img',
-        '[data-section-kind="about"] img',
-        '[data-section-kind="contact"] img',
+        '[data-section-kind="hero"] .lunelle-hero-main img',
+        '[data-section-kind="about"] .lunelle-card img',
         ".lunelle-float",
       ].join(","),
     );
@@ -447,16 +504,46 @@ function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) 
 
     const parallaxImages = root.querySelectorAll<HTMLImageElement>(
       [
-        '[data-section-kind="hero"] img',
-        '[data-section-kind="about"] img',
-        '[data-section-kind="contact"] img',
+        '[data-section-kind="hero"] .lunelle-hero-main img',
+        '[data-section-kind="about"] .lunelle-card img',
       ].join(","),
     );
 
     parallaxImages.forEach((image) => {
       image.classList.add("lunelle-parallax-image");
-      image.closest("div")?.classList.add("lunelle-image-glow");
+      image.closest(".lunelle-card, .lunelle-hero-main")?.classList.add(
+        "lunelle-image-glow",
+      );
     });
+
+    root
+      .querySelectorAll<HTMLElement>(
+        ".lunelle-contact-form, form[data-bizuply-crm-lead='true'], form[data-bizuply-block='lead-form']",
+      )
+      .forEach((form) => {
+        form.classList.remove("lunelle-shine", "lunelle-soft-float");
+        form.classList.add("lunelle-contact-form");
+        form.style.position = "relative";
+        form.style.zIndex = "10";
+      });
+
+    root
+      .querySelectorAll<HTMLElement>(".lunelle-contact-media")
+      .forEach((media) => {
+        media.style.zIndex = "0";
+        media.style.overflow = "hidden";
+        media
+          .querySelectorAll<HTMLElement>("img")
+          .forEach((image) => {
+            image.classList.remove(
+              "lunelle-soft-float",
+              "lunelle-parallax-image",
+              "lunelle-image-hover",
+            );
+            image.style.transform = "none";
+            image.style.animation = "none";
+          });
+      });
 
     const buttons = root.querySelectorAll<HTMLElement>(
       'a[data-editable-link="true"], button',
@@ -639,26 +726,43 @@ export default function LunellePages({
 
     function handleClick(event: MouseEvent) {
       const target = event.target as HTMLElement | null;
-      const link = target?.closest<HTMLAnchorElement>('a[href^="#"]');
+      const link = target?.closest<HTMLAnchorElement>(
+        "a[href], [data-bizuply-page-id]",
+      );
 
       if (!link || !stack?.contains(link)) return;
 
+      const pageAttr = link.getAttribute("data-bizuply-page-id") || "";
       const href = link.getAttribute("href") || "";
-      const nextPage = normalizePageInput(href);
+      const nextPage = normalizePageInput(pageAttr || href);
+
+      // In-page section anchors on the current home canvas (#booking etc.)
+      // should keep native/public scroll behavior when they are not page jumps.
+      if (!pageAttr && href.startsWith("#")) {
+        const sectionOnly =
+          typeof document !== "undefined"
+            ? document.querySelector(href)
+            : null;
+        if (sectionOnly && activePage === "home") {
+          return;
+        }
+      }
 
       if (!nextPage) return;
 
       event.preventDefault();
+      event.stopPropagation();
       setActivePage(nextPage);
       onPageChange?.(nextPage);
     }
 
-    stack.addEventListener("click", handleClick);
+    // Capture so editor SPA wins before the host scrolls hash links away.
+    stack.addEventListener("click", handleClick, true);
 
     return () => {
-      stack.removeEventListener("click", handleClick);
+      stack.removeEventListener("click", handleClick, true);
     };
-  }, [isStudioStatic, onPageChange]);
+  }, [isStudioStatic, onPageChange, activePage]);
 
   return (
     <main

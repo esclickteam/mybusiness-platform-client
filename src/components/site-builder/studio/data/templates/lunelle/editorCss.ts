@@ -182,8 +182,7 @@ export const lunelleEditorCss = `
 [data-template-id="lunelle"] .lunelle-card,
 [data-template-id="lunelle"] [data-section-kind="service-card"],
 [data-template-id="lunelle"] [data-section-kind="gallery-image"],
-[data-template-id="lunelle"] [data-section-kind="testimonials"] article,
-[data-template-id="lunelle"] form {
+[data-template-id="lunelle"] [data-section-kind="testimonials"] article {
   transition:
     transform 520ms cubic-bezier(.16,1,.3,1),
     box-shadow 520ms cubic-bezier(.16,1,.3,1),
@@ -195,10 +194,78 @@ export const lunelleEditorCss = `
 [data-template-id="lunelle"] .lunelle-card:hover,
 [data-template-id="lunelle"] [data-section-kind="service-card"]:hover,
 [data-template-id="lunelle"] [data-section-kind="gallery-image"]:hover,
-[data-template-id="lunelle"] [data-section-kind="testimonials"] article:hover,
-[data-template-id="lunelle"] form:hover {
+[data-template-id="lunelle"] [data-section-kind="testimonials"] article:hover {
   transform: translateY(-10px);
   box-shadow: 0 32px 95px rgba(42, 23, 28, .15);
+}
+
+/* Contact: form stays above media; media never floats over inputs */
+[data-template-id="lunelle"] .lunelle-contact-form,
+[data-template-id="lunelle"] form[data-bizuply-block="lead-form"],
+[data-template-id="lunelle"] form[data-bizuply-crm-lead="true"] {
+  position: relative;
+  z-index: 10;
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  will-change: auto;
+}
+
+[data-template-id="lunelle"] .lunelle-contact-form:hover,
+[data-template-id="lunelle"] form[data-bizuply-block="lead-form"]:hover,
+[data-template-id="lunelle"] form[data-bizuply-crm-lead="true"]:hover {
+  transform: none !important;
+  box-shadow: 0 25px 80px rgba(42, 23, 28, .08);
+}
+
+[data-template-id="lunelle"] .lunelle-contact-media {
+  position: relative;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 360px;
+}
+
+[data-template-id="lunelle"] .lunelle-contact-media img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: none !important;
+  animation: none !important;
+  max-width: none;
+}
+
+/* Gallery mosaic: every tile fills its grid area edge-to-edge */
+[data-template-id="lunelle"] .lunelle-gallery-grid {
+  display: grid;
+}
+
+[data-template-id="lunelle"] .lunelle-gallery-tile,
+[data-template-id="lunelle"] [data-section-kind="gallery-image"] {
+  position: relative;
+  height: 100%;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+[data-template-id="lunelle"] .lunelle-gallery-tile img,
+[data-template-id="lunelle"] [data-section-kind="gallery-image"] img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+/* Booking calendar must keep a solid white surface on the dark section */
+[data-template-id="lunelle"] .lunelle-booking-frame,
+[data-template-id="lunelle"] [data-bizuply-booking-frame="true"],
+[data-template-id="lunelle"] [data-bizuply-booking-mount="true"] {
+  background: #ffffff !important;
+  overflow: hidden;
 }
 
 /* =========================
@@ -574,9 +641,14 @@ export const lunelleEditorCss = `
   [data-template-id="lunelle"] .lunelle-card:hover,
   [data-template-id="lunelle"] [data-section-kind="service-card"]:hover,
   [data-template-id="lunelle"] [data-section-kind="gallery-image"]:hover,
-  [data-template-id="lunelle"] [data-section-kind="testimonials"] article:hover,
-  [data-template-id="lunelle"] form:hover {
+  [data-template-id="lunelle"] [data-section-kind="testimonials"] article:hover {
     transform: translateY(-5px);
+  }
+
+  [data-template-id="lunelle"] .lunelle-contact-form:hover,
+  [data-template-id="lunelle"] form[data-bizuply-block="lead-form"]:hover,
+  [data-template-id="lunelle"] form[data-bizuply-crm-lead="true"]:hover {
+    transform: none !important;
   }
 }
 

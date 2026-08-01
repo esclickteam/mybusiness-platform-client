@@ -118,21 +118,21 @@ function navHtml() {
   return `
 <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" data-section-title="Header" class="sticky top-0 z-50 border-b border-[#2a171c]/10 bg-[#fff7f1]/90 px-5 py-5 backdrop-blur-2xl">
   <div class="mx-auto flex max-w-7xl items-center justify-between gap-5">
-    <a data-gjs-type="text" data-editable-link="true" href="#home" class="text-2xl font-black tracking-[-0.05em] text-[#2a171c]">
+    <a data-gjs-type="text" data-editable-link="true" href="/" data-bizuply-page-id="home" class="text-2xl font-black tracking-[-0.05em] text-[#2a171c]">
       Lunelle Studio
     </a>
 
     <nav class="hidden items-center gap-8 text-sm font-bold text-[#2a171c]/60 lg:flex">
-      <a data-editable-link="true" href="#home">בית</a>
-      <a data-editable-link="true" href="#services">שירותים</a>
-      <a data-editable-link="true" href="#shop">חנות</a>
-      <a data-editable-link="true" href="#gallery">גלריה</a>
-      <a data-editable-link="true" href="#prices">מחירים</a>
-      <a data-editable-link="true" href="#booking">קביעת תור</a>
-      <a data-editable-link="true" href="#contact">צור קשר</a>
+      <a data-editable-link="true" href="/" data-bizuply-page-id="home">בית</a>
+      <a data-editable-link="true" href="/services" data-bizuply-page-id="services">שירותים</a>
+      <a data-editable-link="true" href="/shop" data-bizuply-page-id="shop">חנות</a>
+      <a data-editable-link="true" href="/gallery" data-bizuply-page-id="gallery">גלריה</a>
+      <a data-editable-link="true" href="/prices" data-bizuply-page-id="prices">מחירים</a>
+      <a data-editable-link="true" href="/booking" data-bizuply-page-id="booking">קביעת תור</a>
+      <a data-editable-link="true" href="/contact" data-bizuply-page-id="contact">צור קשר</a>
     </nav>
 
-    <a data-editable-link="true" href="#booking" class="lunelle-btn-primary rounded-full bg-[#2a171c] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.16)]">
+    <a data-editable-link="true" href="/booking" data-bizuply-page-id="booking" class="lunelle-btn-primary rounded-full bg-[#2a171c] px-7 py-3 text-sm font-black text-white shadow-[0_18px_40px_rgba(42,23,28,.16)]">
       קביעת תור
     </a>
   </div>
@@ -154,12 +154,12 @@ function footerHtml() {
     <div>
       <p data-gjs-type="text" class="font-black">ניווט</p>
       <div class="mt-4 grid gap-3 text-sm text-white/60">
-        <a data-editable-link="true" href="#services">שירותים</a>
-        <a data-editable-link="true" href="#shop">חנות</a>
-        <a data-editable-link="true" href="#gallery">גלריה</a>
-        <a data-editable-link="true" href="#prices">מחירים</a>
-        <a data-editable-link="true" href="#booking">קביעת תור</a>
-        <a data-editable-link="true" href="#contact">צור קשר</a>
+        <a data-editable-link="true" href="/services" data-bizuply-page-id="services">שירותים</a>
+        <a data-editable-link="true" href="/shop" data-bizuply-page-id="shop">חנות</a>
+        <a data-editable-link="true" href="/gallery" data-bizuply-page-id="gallery">גלריה</a>
+        <a data-editable-link="true" href="/prices" data-bizuply-page-id="prices">מחירים</a>
+        <a data-editable-link="true" href="/booking" data-bizuply-page-id="booking">קביעת תור</a>
+        <a data-editable-link="true" href="/contact" data-bizuply-page-id="contact">צור קשר</a>
       </div>
     </div>
 
@@ -230,16 +230,24 @@ function storeProductsHtml() {
     .join("\n");
 }
 
+function galleryTileSpanClass(index: number) {
+  // Pack 8 tiles into a 4-col bento without holes on desktop:
+  // [0 tall] [1] [2] [3 tall]
+  // [0 tall] [4] [5] [3 tall]
+  // [6 wide -------] [7 wide -------]
+  if (index === 0 || index === 3) return "md:row-span-2";
+  if (index === 6 || index === 7) return "md:col-span-2";
+  return "";
+}
+
 function galleryHtml() {
   return lunelleGallery
     .map(
       (image, index) => `
-<div data-section-kind="gallery-image" data-section-title="Gallery ${index + 1}" class="lunelle-card lunelle-shine overflow-hidden rounded-[34px] bg-[#f0d8dc] ${
-        index % 3 === 0 ? "md:row-span-2" : ""
-      }">
+<div data-section-kind="gallery-image" data-section-title="Gallery ${index + 1}" class="lunelle-gallery-tile lunelle-card lunelle-shine relative h-full min-h-[240px] overflow-hidden rounded-[34px] bg-[#f0d8dc] ${galleryTileSpanClass(index)}">
   <img data-gjs-type="image" ${visualImageAttrs(`gallery.${index}.image`, `Gallery ${index + 1}`)} src="${image}" alt="Lunelle gallery ${
         index + 1
-      }" class="lunelle-image-hover h-full min-h-[260px] w-full object-cover" />
+      }" class="lunelle-image-hover absolute inset-0 h-full w-full object-cover" />
 </div>`,
     )
     .join("\n");
@@ -459,7 +467,7 @@ ${marqueeHtml()}
       </p>
     </div>
 
-    <div class="mt-12 grid auto-rows-[280px] gap-5 md:grid-cols-4">
+    <div class="lunelle-gallery-grid mt-12 grid auto-rows-[240px] grid-cols-2 gap-4 md:auto-rows-[280px] md:grid-cols-4 md:gap-5">
       ${galleryHtml()}
     </div>
   </div>
@@ -549,15 +557,20 @@ ${marqueeHtml()}
     </div>
 
     <div
-      class="lunelle-card min-h-[420px] rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]"
+      class="lunelle-booking-frame lunelle-card min-h-[420px] overflow-hidden rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]"
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
       data-bizuply-booking-chrome="embedded"
+      data-bizuply-booking-surface="#ffffff"
+      data-bizuply-booking-ink="#2a171c"
+      data-bizuply-booking-soft="#fff7f1"
+      data-bizuply-booking-line="rgba(42,23,28,0.12)"
+      data-bizuply-booking-accent="#8a4f5f"
       data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
-      style="min-height:420px;position:relative;background:transparent"
+      style="min-height:420px;position:relative;background:#ffffff"
       title="יומן פגישות מה-CRM"
       aria-label="יומן פגישות מה-CRM"
     ></div>
@@ -565,9 +578,9 @@ ${marqueeHtml()}
 </section>
 
 <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-[#fff7f1] px-5 py-24">
-  <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_.8fr]">
+  <div class="mx-auto grid max-w-7xl items-stretch gap-8 lg:grid-cols-[1fr_.8fr]">
     <form
-      class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
+      class="lunelle-contact-form lunelle-card relative z-10 rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
       data-bizuply-block="lead-form"
       data-bizuply-form-id="lunelle-contact"
       data-bizuply-crm-lead="true"
@@ -611,7 +624,9 @@ ${marqueeHtml()}
       </div>
     </form>
 
-    <img data-gjs-type="image" ${visualImageAttrs("contact.image", "Lunelle studio")} src="${lunelleImages.studio}" alt="Lunelle studio" class="lunelle-image-hover h-full min-h-[620px] rounded-[40px] object-cover shadow-[0_25px_80px_rgba(42,23,28,.12)]" />
+    <div class="lunelle-contact-media relative z-0 min-h-[360px] overflow-hidden rounded-[40px] bg-[#f1d7dc] shadow-[0_25px_80px_rgba(42,23,28,.12)] lg:min-h-[620px]">
+      <img data-gjs-type="image" ${visualImageAttrs("contact.image", "Lunelle studio")} src="${lunelleImages.studio}" alt="Lunelle studio" class="absolute inset-0 h-full w-full object-cover" />
+    </div>
   </div>
 </section>
 `);
@@ -661,15 +676,20 @@ export function createLunelleBookingPageHtml() {
       <p data-gjs-type="text" class="mt-6 text-lg leading-8 text-white/60">בחירת שירות, תאריך ושעה פנויה — הכל מסונכרן ליומן העסק.</p>
     </aside>
     <div
-      class="lunelle-card min-h-[480px] rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c]"
+      class="lunelle-booking-frame lunelle-card min-h-[480px] overflow-hidden rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c]"
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
       data-bizuply-booking-chrome="embedded"
+      data-bizuply-booking-surface="#ffffff"
+      data-bizuply-booking-ink="#2a171c"
+      data-bizuply-booking-soft="#fff7f1"
+      data-bizuply-booking-line="rgba(42,23,28,0.12)"
+      data-bizuply-booking-accent="#8a4f5f"
       data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
-      style="min-height:480px;position:relative;background:transparent"
+      style="min-height:480px;position:relative;background:#ffffff"
       title="יומן פגישות מה-CRM"
     ></div>
   </div>
@@ -677,12 +697,46 @@ export function createLunelleBookingPageHtml() {
 `);
 }
 
+export function createLunelleGalleryPageHtml() {
+  return pageShell(`
+<section data-section-kind="gallery" data-section-title="גלריה" class="bg-white px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="max-w-3xl">
+      <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">גלריה</p>
+      <h1 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">עבודות אחרונות.</h1>
+      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">צבעים רכים, גימור נקי, פרנץ׳ עדין, כרום ועיצובי נייל ארט קטנים.</p>
+    </div>
+    <div class="lunelle-gallery-grid mt-12 grid auto-rows-[240px] grid-cols-2 gap-4 md:auto-rows-[280px] md:grid-cols-4 md:gap-5">
+      ${galleryHtml()}
+    </div>
+  </div>
+</section>
+`);
+}
+
+export function createLunellePricesPageHtml() {
+  return pageShell(`
+<section data-section-kind="prices" data-section-title="מחירון" class="bg-[#fff1e7] px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="mx-auto max-w-3xl text-center">
+      <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">מחירים</p>
+      <h1 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">מחירים ברורים ונעימים לעין.</h1>
+      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">בחרי את הטיפול שמתאים לך, ואפשר גם לשלב כמה טיפולים באותו תור.</p>
+    </div>
+    <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      ${pricesHtml()}
+    </div>
+  </div>
+</section>
+`);
+}
+
 export function createLunelleContactPageHtml() {
   return pageShell(`
-<section data-section-kind="contact" data-section-title="צור קשר" class="px-5 py-24">
-  <div class="mx-auto grid max-w-3xl">
+<section data-section-kind="contact" data-section-title="צור קשר" class="bg-[#fff7f1] px-5 py-24">
+  <div class="mx-auto grid max-w-7xl items-stretch gap-8 lg:grid-cols-[1fr_.8fr]">
     <form
-      class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
+      class="lunelle-contact-form lunelle-card relative z-10 rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
       data-bizuply-block="lead-form"
       data-bizuply-form-id="lunelle-contact-page"
       data-bizuply-crm-lead="true"
@@ -700,6 +754,9 @@ export function createLunelleContactPageHtml() {
       <textarea name="message" data-bizuply-form-field-id="message" placeholder="הודעה" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
       <button type="submit" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white">שליחת הודעה</button>
     </form>
+    <div class="lunelle-contact-media relative z-0 min-h-[360px] overflow-hidden rounded-[40px] bg-[#f1d7dc] shadow-[0_25px_80px_rgba(42,23,28,.12)] lg:min-h-[560px]">
+      <img data-gjs-type="image" ${visualImageAttrs("contact.page.image", "Lunelle studio")} src="${lunelleImages.studio}" alt="Lunelle studio" class="absolute inset-0 h-full w-full object-cover" />
+    </div>
   </div>
 </section>
 `);
@@ -793,12 +850,7 @@ export const lunelleEditorPages = [
     slug: "/gallery",
     title: "גלריה",
     type: "gallery",
-    html: createLunelleSimplePageHtml(
-      "גלריית עבודות",
-      "גלריה",
-      "עבודות אחרונות, צבעים רכים, פרנץ׳, כרום ועיצובים עדינים.",
-      "gallery",
-    ),
+    html: createLunelleGalleryPageHtml(),
     css: lunelleEditorCss,
   },
   {
@@ -806,12 +858,7 @@ export const lunelleEditorPages = [
     slug: "/prices",
     title: "מחירים",
     type: "pricing",
-    html: createLunelleSimplePageHtml(
-      "מחירון",
-      "מחירים",
-      "מחירים ברורים לכל טיפול עם אפשרות להוספת עיצוב אישי.",
-      "prices",
-    ),
+    html: createLunellePricesPageHtml(),
     css: lunelleEditorCss,
   },
   {
