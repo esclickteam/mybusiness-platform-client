@@ -20,7 +20,7 @@ export default function ChatButton({
     <section className="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
       {/* EDIT / ACTION */}
       <div className="order-2 overflow-hidden rounded-[2rem] border border-slate-200/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)] xl:order-1">
-        <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-white sm:px-8">
+        <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-slate-800 sm:px-8">
           <div className="pointer-events-none absolute -right-20 -top-20 h-56 w-56 rounded-full bg-violet-500/30 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-20 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -34,7 +34,7 @@ export default function ChatButton({
               Messages Center
             </h1>
 
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-white/65">
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
               Manage customer conversations, reply faster, and keep all client
               messages organized in one professional inbox.
             </p>
@@ -69,7 +69,7 @@ export default function ChatButton({
                     "hover:-translate-y-0.5 active:translate-y-0",
                     isActive
                       ? "bg-violet-700 text-white shadow-violet-500/25"
-                      : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-violet-200/20 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100",
+                      : "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-black shadow-violet-200/20 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100",
                   ].join(" ")
                 }
               >

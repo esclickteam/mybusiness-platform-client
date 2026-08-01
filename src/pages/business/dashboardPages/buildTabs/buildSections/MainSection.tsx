@@ -449,7 +449,7 @@ export default function MainSection({
                 href={normalizedWebsiteUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
               >
                 {t("businessProfile.contact.websiteCta")}
               </a>
@@ -629,7 +629,7 @@ export default function MainSection({
                     href={normalizedWebsiteUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
+                    className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5"
                   >
                     {t("businessProfile.contact.websiteCta")}
                   </a>
@@ -985,7 +985,7 @@ export default function MainSection({
                   type="button"
                   onClick={handleSave}
                   disabled={isSaving}
-                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                  className="flex h-[56px] flex-1 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/25 transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                 >
                   {isSaving
                     ? t("businessProfile.mainSection.saving")
