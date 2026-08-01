@@ -250,7 +250,7 @@ export default function AgentsProductPage() {
               title="חברו נציגים שמביאים תוצאות — בלי לאבד שליטה"
               text="טיפול בלידים, תיאום פגישות וניהול שיתופים מתוך BizUply. כל פעילות מתועדת, כל סטטוס גלוי, והעומס יורד מהיום הראשון."
               primaryLabel="הירשמו עכשיו"
-              primaryTo="/register"
+              primaryTo="/pricing"
             />
           </div>
         </div>

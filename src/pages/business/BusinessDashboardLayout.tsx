@@ -191,7 +191,6 @@ export default function BusinessDashboardLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(() =>
     getInitialSidebarCollapsed()
   );
-  const [timeLeft, setTimeLeft] = useState<string>("");
   const [exitingImpersonation, setExitingImpersonation] = useState(false);
 
   const sidebarWidth =
@@ -253,39 +252,6 @@ export default function BusinessDashboardLayout() {
       );
     };
   }, [navigate, businessId]);
-
-  const DAY = 1000 * 60 * 60 * 24;
-
-  const daysSinceTrialStart = user?.trialStartedAt
-    ? Math.floor(
-        (Date.now() - new Date(user.trialStartedAt).getTime()) / DAY
-      )
-    : 0;
-
-  const isAfterDay4 = daysSinceTrialStart >= 4;
-  const earlyBirdUsed = Boolean(user?.earlyBirdUsed);
-
-  const hasActiveSubscription =
-    user?.subscriptionPlan === "monthly" ||
-    user?.subscriptionPlan === "yearly";
-
-  const hasPaid =
-    user?.hasPaid === true ||
-    user?.paymentStatus === "paid" ||
-    user?.paymentStatus === "active" ||
-    hasActiveSubscription;
-
-  const isTrialActive = Boolean(
-    user?.subscriptionPlan === "trial" &&
-      user?.trialEndsAt &&
-      new Date(user.trialEndsAt).getTime() > Date.now()
-  );
-
-  const canUpgrade = Boolean(isTrialActive && !hasPaid && !earlyBirdUsed);
-
-  const canShowEarlyBird = Boolean(
-    canUpgrade && user?.isEarlyBirdActive && isAfterDay4
-  );
 
   /* ============================
      Unread Messages
@@ -375,60 +341,6 @@ export default function BusinessDashboardLayout() {
       document.documentElement.style.overflow = previousHtmlOverflow;
     };
   }, [isWebsiteFullScreen]);
-
-  /* ============================
-     Early Bird Countdown
-  ============================ */
-
-  useEffect(() => {
-    if (!user?.isEarlyBirdActive || !user?.earlyBirdExpiresAt) return;
-
-    const updateTimer = () => {
-      const now = Date.now();
-      const end = new Date(user.earlyBirdExpiresAt as string | Date).getTime();
-      const diff = end - now;
-
-      if (diff <= 0) {
-        setTimeLeft("");
-        return;
-      }
-
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-
-      setTimeLeft(`${hours} hours ${minutes} minutes`);
-    };
-
-    updateTimer();
-
-    const interval = window.setInterval(updateTimer, 60000);
-
-    return () => {
-      window.clearInterval(interval);
-    };
-  }, [user?.isEarlyBirdActive, user?.earlyBirdExpiresAt]);
-
-  /* ============================
-     Upgrade
-  ============================ */
-
-  const handleEarlyBirdUpgrade = async () => {
-    if (!user?.userId) return;
-    if (earlyBirdUsed || hasPaid) return;
-
-    try {
-      const res = await API.post("/stripe/create-checkout-session", {
-        userId: user.userId,
-        plan: "monthly",
-      });
-
-      if (res.data?.url) {
-        window.location.href = res.data.url;
-      }
-    } catch (err) {
-      console.error("Early Bird checkout error:", err);
-    }
-  };
 
   /* ============================
      Logout
@@ -750,90 +662,7 @@ export default function BusinessDashboardLayout() {
                     </span>
                   )}
                 </div>
-
-                {!isMobile && isTrialActive && !hasPaid && (
-                  <div
-                    className="
-                      flex items-center gap-2 rounded-full border
-                      border-violet-100 bg-violet-50 px-3 py-1.5
-                      text-sm font-semibold text-violet-700
-                    "
-                  >
-                    <span>⏳</span>
-
-                    {user?.isTrialEndingToday ? (
-                      <strong>Trial ends today</strong>
-                    ) : (
-                      <span>
-                        Trial ends in{" "}
-                        <strong>{user?.trialDaysLeft || 0} days</strong>
-                      </span>
-                    )}
-
-                    {canUpgrade && !canShowEarlyBird && (
-                      <button
-                        type="button"
-                        onClick={() => navigate("/pricing")}
-                        className="
-                          ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-1.5
-                          text-xs font-black text-black shadow-sm transition
-                          hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
-                        "
-                      >
-                        Upgrade
-                      </button>
-                    )}
-                  </div>
-                )}
               </div>
-
-              {!isMobile && canShowEarlyBird && (
-                <div className="mx-4 hidden min-w-0 flex-1 justify-center xl:flex">
-                  <div
-                    className="
-                      flex max-w-3xl items-center gap-3 rounded-full border
-                      border-violet-100 bg-gradient-to-r from-violet-50
-                      via-white to-fuchsia-50 px-4 py-2 text-sm
-                      shadow-[0_10px_30px_rgba(109,40,217,0.10)]
-                    "
-                  >
-                    {timeLeft && (
-                      <div className="shrink-0 text-xs font-bold text-slate-600">
-                        ⏳ Ends in{" "}
-                        <strong className="text-violet-700">{timeLeft}</strong>
-                      </div>
-                    )}
-
-                    <div className="min-w-0 truncate text-slate-700">
-                      <span className="ml-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-2.5 py-1 text-xs font-black text-black">
-                        🎁 Early Bird
-                      </span>
-
-                      <span>
-                        Save <strong>₪30</strong> today — first month only{" "}
-                        <span className="font-black text-violet-700">
-                          ₪119
-                        </span>{" "}
-                        <span className="text-slate-400 line-through">
-                          ₪149
-                        </span>
-                      </span>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={handleEarlyBirdUpgrade}
-                      className="
-                        shrink-0 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2
-                        text-xs font-black text-black shadow-sm
-                        transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100
-                      "
-                    >
-                      Upgrade
-                    </button>
-                  </div>
-                </div>
-              )}
 
               <div className="flex shrink-0 items-center gap-3">
                 <div className="relative">

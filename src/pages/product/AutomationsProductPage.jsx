@@ -245,7 +245,7 @@ export default function AutomationsProductPage() {
               title="הפעילו תהליכים ששומרים על כל פנייה בתנועה"
               text="תזכורות, פולואפים והתראות שמחוברים ל־CRM — כדי שתתמקדו בלקוחות, והמערכת תשמור שהמשך לא יישכח."
               primaryLabel="הירשמו עכשיו"
-              primaryTo="/register"
+              primaryTo="/pricing"
             />
           </div>
         </div>

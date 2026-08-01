@@ -143,7 +143,7 @@ const AffiliatePage = () => {
   // ----------------------------------------------------
 
   const affiliateLink = referralCode
-    ? `${window.location.origin}/register?ref=${referralCode}`
+    ? `${window.location.origin}/pricing?ref=${referralCode}`
     : "";
 
   // ----------------------------------------------------

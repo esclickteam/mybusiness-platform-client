@@ -85,7 +85,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
         <div className="site-mobile__footer">
           {!user ? (
             <>
-              <Link to="/register" onClick={onClose} className="site-mobile__cta">
+              <Link to="/pricing" onClick={onClose} className="site-mobile__cta">
                 {t("nav.cta")}
               </Link>
               <Link to="/login" onClick={onClose} className="site-mobile__cta site-mobile__cta--ghost">

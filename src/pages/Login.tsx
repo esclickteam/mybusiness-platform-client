@@ -275,7 +275,7 @@ export default function Login() {
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">
             אין חשבון?{" "}
             <Link
-              to="/register"
+              to="/pricing"
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
               הירשמו עכשיו

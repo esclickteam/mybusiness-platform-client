@@ -5,7 +5,6 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import API from "../api";
-import { useAuth } from "../context/AuthContext";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import {
   detectPhoneCountry,
@@ -82,7 +81,6 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const { login } = useAuth();
   const [searchParams] = useSearchParams();
 
   const selectedPlan = parsePlan(searchParams.get("plan"));
@@ -91,6 +89,18 @@ export default function Register() {
     (selectedPlan === "monthly" || selectedPlan === "yearly");
   const checkoutCancelled = searchParams.get("checkout") === "cancel";
   const isPaidSignupFlow = Boolean(selectedPlan);
+
+  // No free trial signup — guests must pick a package first.
+  useEffect(() => {
+    if (selectedPlan) return;
+
+    const params = new URLSearchParams();
+    const ref =
+      searchParams.get("ref") || localStorage.getItem("affiliate_referral");
+    if (ref) params.set("ref", ref);
+    const qs = params.toString();
+    navigate(qs ? `/pricing?${qs}` : "/pricing", { replace: true });
+  }, [navigate, searchParams, selectedPlan]);
 
   useEffect(() => {
     const refFromUrl = searchParams.get("ref");
@@ -106,6 +116,10 @@ export default function Register() {
       setFormData((prev) => ({ ...prev, referralCode: refFromStorage }));
     }
   }, [searchParams]);
+
+  if (!selectedPlan) {
+    return null;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -191,40 +205,8 @@ export default function Register() {
         return;
       }
 
-      // Legacy free/trial register (no plan selected)
-      await API.post(
-        "/auth/register",
-        {
-          name: name.trim(),
-          email: email.trim().toLowerCase(),
-          phone: phone.trim(),
-          password,
-          userType: "business",
-          businessName: businessName.trim(),
-          referralCode:
-            referralCode ||
-            localStorage.getItem("affiliate_referral") ||
-            undefined,
-        },
-        { withCredentials: true }
-      );
-
-      localStorage.removeItem("affiliate_referral");
-
-      const { user } = await login(email.trim().toLowerCase(), password, {
-        skipRedirect: true,
-      });
-
-      if (!user) {
-        setError("ההרשמה הצליחה, אך ההתחברות נכשלה. נסו להתחבר ידנית.");
-        return;
-      }
-
-      if (window.fbq) {
-        window.fbq("track", "CompleteRegistration");
-      }
-
-      navigate("/dashboard");
+      // Free/trial signup is disabled — send users to packages.
+      navigate("/pricing", { replace: true });
     } catch (err) {
       const apiError = err as ApiError;
       console.error(

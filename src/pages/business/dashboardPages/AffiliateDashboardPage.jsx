@@ -35,7 +35,7 @@ export default function AffiliateDashboardPage() {
 
   const inviteLink = useMemo(() => {
     if (!user?.affiliateId) return "";
-    return `${window.location.origin}/register?ref=${encodeURIComponent(
+    return `${window.location.origin}/pricing?ref=${encodeURIComponent(
       user.affiliateId
     )}`;
   }, [user?.affiliateId]);
