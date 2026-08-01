@@ -83,7 +83,7 @@ function productShopifyCard(
   data-bizuply-block="product-card"
   data-editable-card="true"
 >
-  <div class="relative overflow-hidden rounded-[28px] bg-slate-50" data-media-replaceable="true">
+  <div class="relative h-[310px] overflow-hidden rounded-[28px] bg-slate-50" data-media-replaceable="true">
     <span
       class="absolute right-4 top-4 z-10 rounded-full bg-white/90 px-4 py-2 text-xs font-black text-slate-800 shadow-lg"
       data-editable-text="true"
@@ -94,7 +94,7 @@ function productShopifyCard(
     <img
       src="${imageUrl}"
       alt=""
-      class="h-[310px] w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+      class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
       data-editable-image="true"
     />
 
@@ -146,7 +146,7 @@ function productLuxuryCard(
   data-bizuply-block="product-card"
   data-editable-card="true"
 >
-  <div class="relative overflow-hidden bg-slate-100" data-media-replaceable="true">
+  <div class="relative h-[390px] overflow-hidden bg-slate-100" data-media-replaceable="true">
     ${
       oldPrice
         ? `<span class="absolute right-5 top-5 z-10 rounded-full bg-rose-500 px-4 py-2 text-xs font-black text-black shadow-xl" data-editable-text="true">מבצע</span>`
@@ -156,7 +156,7 @@ function productLuxuryCard(
     <img
       src="${imageUrl}"
       alt=""
-      class="h-[390px] w-full object-cover transition duration-500 group-hover:scale-[1.04]"
+      class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.04]"
       data-editable-image="true"
     />
   </div>
@@ -288,11 +288,11 @@ function storeTrustItem(title: string, text: string, icon = "✓") {
 
 function lookbookImage(src: string, title: string, height = "h-[520px]") {
   return `
-<div class="group relative overflow-hidden rounded-[38px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.14)]" data-editable-card="true" data-media-replaceable="true">
+<div class="group relative ${height} overflow-hidden rounded-[38px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-[0_30px_100px_rgba(15,23,42,0.14)]" data-editable-card="true" data-media-replaceable="true">
   <img
     src="${src}"
     alt=""
-    class="${height} w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.04]"
+    class="absolute inset-0 h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.04]"
     data-editable-image="true"
   />
 

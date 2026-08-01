@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { noodlixDefaultData } from "./defaultData";
 import { noodlixEditorCss } from "./editorCss";
@@ -30,20 +30,34 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
+  const [navOpen, setNavOpen] = useState(false);
+  const go = (id: string) => { setNavOpen(false); goTo(id); };
   const nav = noodlixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="fixed inset-x-0 top-4 z-50 px-4">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-full border px-5 py-3 shadow-lg"
         style={{ background: "#18201cdd", borderColor: "rgba(238,246,241,0.12)", backdropFilter: "blur(16px)" }}>
-        <button type="button" onClick={() => goTo("home")} className="tpl-display text-lg font-bold">{v(data, "brandName")}</button>
+        <button type="button" onClick={() => go("home")} className="tpl-display text-lg font-bold">{v(data, "brandName")}</button>
         <nav className="hidden items-center gap-5 lg:flex">
           {nav.map(([id, label]) => (
-            <button key={id} type="button" onClick={() => goTo(id)} className="text-sm font-semibold"
+            <button key={id} type="button" onClick={() => go(id)} className="text-sm font-semibold"
               style={{ color: currentPage === id ? "#3dd6c6" : "#8aa89a" }}>{label}</button>
           ))}
         </nav>
-        <button type="button" onClick={onCta} className="rounded-full px-4 py-2 text-xs font-bold" style={{ background: "#3dd6c6", color: "#0a1210" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" onClick={() => { setNavOpen(false); onCta(); }} className="rounded-full px-4 py-2 text-xs font-bold" style={{ background: "#3dd6c6", color: "#0a1210" }}>{v(data, "heroPrimary")}</button>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(0,0,0,0.12)" }}>
+          <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
+        </button>
       </div>
+      {navOpen ? (
+        <nav className="border-t px-5 py-4 lg:hidden" style={{ borderColor: "rgba(0,0,0,0.08)", background: "var(--surface, #fff)" }}>
+          <div className="mx-auto grid max-w-7xl gap-2">
+            {nav.map(([id, label]) => (
+              <button key={`m-${id}`} type="button" onClick={() => go(id)} className="rounded-xl px-4 py-3 text-right text-sm font-semibold">{label}</button>
+            ))}
+          </div>
+        </nav>
+      ) : null}
     </header>
   );
 }
@@ -133,8 +147,8 @@ function PageHero({ data, title, pageId }: { data: Record<string, any>; title: s
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
           {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
-            <div key={i} className="tpl-float aspect-square overflow-hidden border" style={{ borderColor: "rgba(238,246,241,0.12)", animationDelay: `${i * 0.25}s` }}>
-              <img src={src} alt="" className="h-full w-full object-cover" />
+            <div key={i} className="journal-card-media tpl-float relative aspect-square overflow-hidden border" style={{ borderColor: "rgba(238,246,241,0.12)", animationDelay: `${i * 0.25}s` }}>
+              <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
             </div>
           ))}
         </div>
@@ -319,19 +333,35 @@ function VisitBlock({ data }: { data: Record<string, any> }) {
 }
 
 function Insights({ data }: { data: Record<string, any> }) {
-  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`) }));
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`), tag: i === 1 ? "מדריך" : i === 2 ? "סיפור" : "טיפים" }));
+  const [featured, ...rest] = posts;
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(238,246,241,0.12)" }}>
       <div className="mx-auto max-w-7xl">
         <SectionKicker label={v(data, "insightsKicker")} />
         <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "insightsTitle")}</h2>
-        <div className="mt-10 grid gap-5 md:grid-cols-3">
-          {posts.map((post, i) => (
-            <Reveal key={post.title} delayMs={i * 90} variant="up">
-              <article className="overflow-hidden border rounded-[2rem]" style={{ borderColor: "rgba(238,246,241,0.12)", background: "#18201c" }}>
-                <img src={post.image} alt="" className="aspect-[16/10] w-full object-cover" />
-                <div className="p-5">
-                  <h3 className="text-lg font-bold">{post.title}</h3>
+        <div className="mt-10 grid gap-5 lg:grid-cols-12">
+          <Reveal delayMs={0} variant="up" className="lg:col-span-12">
+            <article className="overflow-hidden border rounded-[2rem] group lg:grid lg:grid-cols-2" style={{ borderColor: "rgba(238,246,241,0.12)", background: "#18201c" }}>
+              <div className="journal-card-media relative aspect-[16/10] overflow-hidden lg:aspect-auto lg:min-h-[22rem]">
+                <img src={featured.image} alt={featured.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+              </div>
+              <div className="flex flex-col justify-center p-6 text-right sm:p-8 lg:p-10">
+                <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{featured.tag}</p>
+                <h3 className="tpl-display mt-3 text-2xl font-bold leading-tight sm:text-3xl md:text-4xl">{featured.title}</h3>
+                <p className="mt-3 text-base leading-7" style={{ color: "#8aa89a" }}>{featured.text}</p>
+              </div>
+            </article>
+          </Reveal>
+          {rest.map((post, i) => (
+            <Reveal key={post.title} delayMs={(i + 1) * 90} variant="up" className="lg:col-span-6">
+              <article className="overflow-hidden border rounded-[2rem] group h-full" style={{ borderColor: "rgba(238,246,241,0.12)", background: "#18201c" }}>
+                <div className="journal-card-media relative aspect-[16/10] overflow-hidden">
+                  <img src={post.image} alt={post.title} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
+                </div>
+                <div className="p-5 text-right sm:p-6">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: "var(--p, #f4a261)" }}>{post.tag}</p>
+                  <h3 className="mt-3 text-xl font-bold sm:text-2xl">{post.title}</h3>
                   <p className="mt-3 text-sm leading-7" style={{ color: "#8aa89a" }}>{post.text}</p>
                 </div>
               </article>
@@ -464,6 +494,38 @@ function HomePage({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id:
   );
 }
 
+function JournalPage({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`) }));
+  return (
+    <>
+      <section className="journal-hero relative isolate min-h-[72vh] overflow-hidden">
+        <div className="journal-media absolute inset-0">
+          <img src={posts[0]?.image || v(data, "gallery2Image") || v(data, "heroImage")} alt="" className="absolute inset-0 h-full w-full object-cover" />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/45 to-black/20" />
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+          <SectionKicker label={v(data, "insightsKicker")} />
+          <h1 className="tpl-display mt-4 max-w-4xl text-4xl font-bold leading-tight sm:text-5xl md:text-7xl">{v(data, "insightsTitle")}</h1>
+          <p className="mt-5 max-w-2xl text-base leading-8 text-white/85 sm:text-lg">{v(data, "pageHeroText")}</p>
+        </div>
+      </section>
+      <Insights data={data} />
+      <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(0,0,0,0.08)" }}>
+        <div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-3">
+          {[v(data, "gallery1Image"), v(data, "gallery2Image"), v(data, "gallery3Image")].map((src, i) => (
+            <div key={i} className="journal-card-media relative aspect-[4/5] overflow-hidden">
+              <img src={src} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            </div>
+          ))}
+        </div>
+      </section>
+      <CTABand data={data} onCta={onCta} />
+      <ContactBlock data={data} onCta={onCta} />
+      <Footer data={data} />
+    </>
+  );
+}
+
 function InnerPage({ data, pageId, title, onCta }: { data: Record<string, any>; pageId: string; title: string; onCta: () => void }) {
   return (
     <>
@@ -489,7 +551,9 @@ export default function NoodlixPages({
   };
   for (const pg of noodlixPages) {
     if (pg.id === "home") continue;
-    pageContent[pg.id] = (
+    pageContent[pg.id] = pg.id === "journal"
+      ? <JournalPage data={merged} onCta={() => goTo("contact")} />
+      : (
       <InnerPage data={merged} pageId={pg.id} title={pg.label} onCta={() => goTo("contact")} />
     );
   }

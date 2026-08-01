@@ -1463,26 +1463,28 @@ function Journal({ data }: { data: NovastraData }) {
           </p>
         </div>
 
-        <div className="grid gap-5 lg:grid-cols-3">
-          {data.articles.map((article, index) => (
+        <div className="grid gap-5 lg:grid-cols-12">
+          {data.articles.map((article, index) => {
+            const featured = index === 0;
+            return (
             <article
               key={`${article.title}-${index}`}
-              className="group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fbf7ef] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10"
+              className={`group overflow-hidden rounded-[2rem] border border-zinc-200 bg-[#fbf7ef] p-3 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-zinc-950/10 ${featured ? "lg:col-span-12 lg:grid lg:grid-cols-2 lg:gap-3" : "lg:col-span-6"}`}
             >
-              <div className="aspect-[1.1] overflow-hidden rounded-[1.5rem] bg-zinc-100">
+              <div className={`journal-card-media relative overflow-hidden rounded-[1.5rem] bg-zinc-100 ${featured ? "aspect-[16/10] lg:aspect-auto lg:min-h-[22rem]" : "aspect-[1.1]"}`}>
                 <img
                   src={article.image}
                   alt=""
                   {...mediaProps(`articles.${index}.image`, article.title)}
-                  className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                  className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
                 />
               </div>
 
-              <div className="p-4">
+              <div className={`flex flex-col justify-center ${featured ? "p-5 sm:p-7" : "p-4"}`}>
                 <p className="text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
                   {article.tag} · {article.date}
                 </p>
-                <h3 className="mt-3 text-2xl font-black uppercase leading-tight tracking-[-0.05em]">
+                <h3 className={`mt-3 font-black uppercase leading-tight tracking-[-0.05em] ${featured ? "text-3xl sm:text-4xl" : "text-2xl"}`}>
                   {article.title}
                 </h3>
                 <p className="mt-3 text-sm leading-7 text-zinc-600">
@@ -1490,7 +1492,8 @@ function Journal({ data }: { data: NovastraData }) {
                 </p>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
       </div>
     </section>
@@ -1762,11 +1765,19 @@ function JournalPage({ data }: { data: NovastraData }) {
     <>
       <section
         {...sectionProps("journalHero", "Journal hero")}
-        className="bg-[#fbf7ef] px-4 py-20 text-zinc-950 sm:px-6 lg:px-8"
+        className="journal-hero relative isolate min-h-[72vh] overflow-hidden bg-[#fbf7ef] text-white"
       >
-        <div className="mx-auto max-w-[1480px]">
-          <SectionEyebrow>{data.journalEyebrow}</SectionEyebrow>
-          <h1 className="max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
+        <div className="journal-media absolute inset-0">
+          <img
+            src={data.articles?.[0]?.image || data.heroImages?.[0]?.src}
+            alt=""
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
+        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/55 to-zinc-950/25" />
+        <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-[1480px] flex-col justify-end px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+          <SectionEyebrow dark>{data.journalEyebrow}</SectionEyebrow>
+          <h1 className="mt-4 max-w-4xl text-5xl font-black uppercase leading-[0.86] tracking-[-0.075em] sm:text-7xl md:text-8xl">
             {data.journalPageTitle}
           </h1>
         </div>

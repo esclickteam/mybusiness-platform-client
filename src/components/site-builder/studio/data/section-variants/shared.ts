@@ -549,12 +549,14 @@ export function imageBlock(
   data-media-replaceable="true"
   data-radius-editable="true"
 >
-  <img
-    src="${src}"
-    alt=""
-    class="${height} h-full w-full [border-radius:var(--biz-image-radius,28px)] object-cover"
-    data-editable-image="true"
-  />
+  <div class="relative ${height} w-full overflow-hidden [border-radius:var(--biz-image-radius,28px)]">
+    <img
+      src="${src}"
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+      data-editable-image="true"
+    />
+  </div>
 </div>
 `;
 }
@@ -572,12 +574,14 @@ export function shapedImageBlock(
   data-bizuply-shape="${shape}"
   data-radius-editable="true"
 >
-  <img
-    src="${src}"
-    alt=""
-    class="${height} h-full w-full ${token(shape, "mediaInner")} object-cover"
-    data-editable-image="true"
-  />
+  <div class="relative ${height} w-full overflow-hidden ${token(shape, "mediaInner")}">
+    <img
+      src="${src}"
+      alt=""
+      class="absolute inset-0 h-full w-full object-cover"
+      data-editable-image="true"
+    />
+  </div>
 </div>
 `;
 }

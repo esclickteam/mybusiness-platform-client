@@ -786,15 +786,14 @@ function ProductCard({
         )}
       >
         <button type="button" onClick={onOpen} className="relative block text-start">
-          <StoreImage
-            src={product.image}
-            alt={product.name}
-            fallbackLabel={product.name}
-            className={cx(
-              "store-media w-full object-cover transition duration-700 group-hover:scale-105",
-              skin.media,
-            )}
-          />
+          <div className={cx("store-media relative w-full overflow-hidden", skin.media)}>
+            <StoreImage
+              src={product.image}
+              alt={product.name}
+              fallbackLabel={product.name}
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+            />
+          </div>
           {product.badge ? (
             <span className="absolute start-4 top-4 bg-[var(--p)] px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--on-p)]">
               {product.badge}
@@ -895,7 +894,7 @@ export default function RichStoreSiteRuntime({
     String(getValue(mergedData, RICH_DEFAULTS, key) || "");
 
   const allowedPages = pageItems.map((p) => p.id);
-  const { currentPage, goTo: goToPage } = useTemplatePageNavigation(navProps, {
+  const { currentPage, goTo: navigatePage } = useTemplatePageNavigation(navProps, {
     allowedPages,
     fallbackPage: "home",
   });
@@ -915,6 +914,12 @@ export default function RichStoreSiteRuntime({
   const [cart, setCart] = useState<RichStoreCartItem[]>([]);
   const [qty, setQty] = useState(1);
   const [stockMessage, setStockMessage] = useState("");
+  const [navOpen, setNavOpen] = useState(false);
+
+  const goToPage = (pageId: string) => {
+    setNavOpen(false);
+    navigatePage(pageId);
+  };
 
   useEffect(() => {
     if (!selectedProductId && products[0]) {
@@ -1127,6 +1132,10 @@ export default function RichStoreSiteRuntime({
     DEFAULT_PAGES.find((page) => page.id === id)?.label ||
     id;
 
+  const navItems = pageItems
+    .filter((item) => item.id !== "product" && item.id !== "cart")
+    .slice(0, 8);
+
   const Header = (
     <header
       {...sectionProps("header", "header", "כותרת")}
@@ -1150,24 +1159,21 @@ export default function RichStoreSiteRuntime({
           </div>
         </button>
         <nav className="hidden items-center gap-4 xl:flex">
-          {pageItems
-            .filter((item) => item.id !== "product" && item.id !== "cart")
-            .slice(0, 8)
-            .map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => goToPage(item.id)}
-                className={cx(
-                  "text-[11px] font-black uppercase tracking-[0.16em] transition",
-                  currentPage === item.id
-                    ? "text-[var(--p)]"
-                    : "opacity-70 hover:opacity-100",
-                )}
-              >
-                {item.label}
-              </button>
-            ))}
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => goToPage(item.id)}
+              className={cx(
+                "text-[11px] font-black uppercase tracking-[0.16em] transition",
+                currentPage === item.id
+                  ? "text-[var(--p)]"
+                  : "opacity-70 hover:opacity-100",
+              )}
+            >
+              {item.label}
+            </button>
+          ))}
         </nav>
         <div className="flex items-center gap-2">
           <button
@@ -1192,8 +1198,42 @@ export default function RichStoreSiteRuntime({
               </span>
             ) : null}
           </button>
+          <button
+            type="button"
+            aria-expanded={navOpen}
+            aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"}
+            onClick={() => setNavOpen((open) => !open)}
+            className={cx("inline-flex h-10 w-10 items-center justify-center xl:hidden", skin.outlineButton)}
+          >
+            <span className="flex w-4 flex-col gap-1">
+              <span className={cx("h-0.5 bg-current transition", navOpen && "translate-y-1.5 rotate-45")} />
+              <span className={cx("h-0.5 bg-current transition", navOpen && "opacity-0")} />
+              <span className={cx("h-0.5 bg-current transition", navOpen && "-translate-y-1.5 -rotate-45")} />
+            </span>
+          </button>
         </div>
       </div>
+      {navOpen ? (
+        <nav className="border-t border-[var(--line)] bg-[var(--surface)] px-5 py-4 xl:hidden">
+          <div className="mx-auto grid max-w-7xl gap-2">
+            {navItems.map((item) => (
+              <button
+                key={`mobile-${item.id}`}
+                type="button"
+                onClick={() => goToPage(item.id)}
+                className={cx(
+                  "rounded-lg px-4 py-3 text-right text-sm font-black transition",
+                  currentPage === item.id
+                    ? "bg-[var(--p)] text-[var(--on-p)]"
+                    : "bg-[var(--bg-soft)]",
+                )}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+        </nav>
+      ) : null}
     </header>
   );
 
@@ -1272,7 +1312,7 @@ export default function RichStoreSiteRuntime({
           }
           alt={cat.name}
           fallbackLabel={cat.name}
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5 text-white">
@@ -1423,49 +1463,92 @@ export default function RichStoreSiteRuntime({
     </section>
   );
 
+  const journalPosts = [
+    { title: g("journalOneTitle"), text: g("journalOneText"), image: g("lookOne"), tag: "מדריך" },
+    { title: g("journalTwoTitle"), text: g("journalTwoText"), image: g("lookTwo"), tag: "סיפור" },
+    { title: g("journalThreeTitle"), text: g("journalThreeText"), image: g("lookThree"), tag: "טיפים" },
+  ];
+
   const JournalSection = ({
     id,
     className,
+    showHeading = true,
   }: {
     id: string;
     className?: string;
+    showHeading?: boolean;
   }) => (
     <section
       {...sectionProps(id, "journal", "מגזין")}
       className={cx("px-5 py-20 lg:px-8", className)}
     >
       <div className="mx-auto max-w-7xl">
-        <SectionHeading
-          eyebrow={g("journalEyebrow")}
-          title={g("journalTitle")}
-          text={g("journalText")}
-          skin={skin}
-        />
-        <div className="mt-12 grid gap-5 md:grid-cols-3">
-          {[
-            [g("journalOneTitle"), g("journalOneText"), g("lookOne")],
-            [g("journalTwoTitle"), g("journalTwoText"), g("lookTwo")],
-            [g("journalThreeTitle"), g("journalThreeText"), g("lookThree")],
-          ].map(([title, text, image], index) => (
-            <Reveal key={title} delayMs={index * 80}>
-              <article className={cx("overflow-hidden border", skin.card)}>
-                <StoreImage
-                  src={image}
-                  alt=""
-                  fallbackLabel={title}
-                  className={cx("w-full object-cover", skin.media)}
-                />
-                <div className="p-5 text-right">
-                  <h3 className={cx("store-display text-xl font-black", skin.title)}>
-                    {title}
-                  </h3>
-                  <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-                    {text}
-                  </p>
-                </div>
-              </article>
-            </Reveal>
-          ))}
+        {showHeading ? (
+          <SectionHeading
+            eyebrow={g("journalEyebrow")}
+            title={g("journalTitle")}
+            text={g("journalText")}
+            skin={skin}
+          />
+        ) : null}
+        <div className={cx("grid gap-5 lg:grid-cols-12", showHeading ? "mt-12" : "mt-0")}>
+          {journalPosts.map((post, index) => {
+            const featured = index === 0;
+            return (
+              <Reveal
+                key={`${id}-${post.title}`}
+                delayMs={index * 80}
+                className={featured ? "lg:col-span-12" : "lg:col-span-6"}
+              >
+                <article
+                  className={cx(
+                    "group overflow-hidden border",
+                    skin.card,
+                    featured && "lg:grid lg:grid-cols-2",
+                  )}
+                >
+                  <div
+                    className={cx(
+                      "journal-card-media relative overflow-hidden bg-[var(--bg-soft)]",
+                      featured ? "aspect-[16/10] lg:aspect-auto lg:min-h-[22rem]" : "aspect-[16/10]",
+                    )}
+                  >
+                    <StoreImage
+                      src={post.image}
+                      alt={post.title}
+                      fallbackLabel={post.title}
+                      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className={cx("flex flex-col justify-center text-right", featured ? "p-6 sm:p-8 lg:p-10" : "p-5 sm:p-6")}>
+                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--p)]">
+                      {post.tag}
+                    </p>
+                    <h3
+                      className={cx(
+                        "store-display mt-3 font-black leading-tight",
+                        featured ? "text-2xl sm:text-3xl md:text-4xl" : "text-xl sm:text-2xl",
+                        skin.title,
+                      )}
+                    >
+                      {post.title}
+                    </h3>
+                    <p className={cx("mt-3 leading-7 text-[var(--muted)]", featured ? "text-base" : "text-sm")}>
+                      {post.text}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => goToPage("journal")}
+                      className="mt-5 inline-flex w-fit items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--p)] transition group-hover:gap-3"
+                    >
+                      להמשך קריאה
+                      <span aria-hidden="true">←</span>
+                    </button>
+                  </div>
+                </article>
+              </Reveal>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -2305,16 +2388,86 @@ export default function RichStoreSiteRuntime({
       return (
         <div>
           {Header}
-          <section {...sectionProps("journal-rich-hero", "hero", "מגזין")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto max-w-7xl"><SectionHeading eyebrow={g("journalEyebrow")} title={g("journalTitle")} text={g("journalText")} skin={skin} giant /></div></section>
-          <JournalSection id="journal-rich-featured" className={skin.alt} />
-          <JournalSection id="journal-rich-grid" />
-          <SimpleInfoSection id="journal-rich-tips" kind="journal" label="טיפים" title={g("journalOneTitle")} text={g("journalOneText")} className={skin.alt} />
-          <ProductRail id="journal-rich-editor-picks" label="בחירות מערכת" title={g("productsTitle")} productsToShow={showcase.slice(0, 4)} />
-          <section {...sectionProps("journal-rich-categories", "categories", "מדורי תוכן")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
-          <GalleryTriptych id="journal-rich-behind-scenes" label="מאחורי הקלעים" />
-          <SimpleInfoSection id="journal-rich-interview" kind="journal" label="ראיון" title={g("journalTwoTitle")} text={g("journalTwoText")} className={skin.alt} />
-          <ValuesSection id="journal-rich-guides" />
-          <NewsletterSection id="journal-rich-newsletter" className={skin.alt} />
+          <section
+            {...sectionProps("journal-rich-hero", "hero", "מגזין")}
+            className="journal-hero relative isolate min-h-[72vh] overflow-hidden"
+          >
+            <div className="journal-media absolute inset-0">
+              <StoreImage
+                src={g("lookOne") || g("heroImage")}
+                alt={g("journalTitle")}
+                fallbackLabel={g("journalTitle")}
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/20" />
+            <div className="relative z-10 mx-auto flex min-h-[72vh] max-w-7xl flex-col justify-end px-5 py-16 text-right text-white lg:px-8 lg:py-24">
+              <p className="text-xs font-black uppercase tracking-[0.3em] text-white/75">
+                {g("journalEyebrow")}
+              </p>
+              <h1 className={cx("store-display mt-4 max-w-4xl text-4xl font-black leading-tight sm:text-5xl md:text-7xl", skin.title)}>
+                {g("journalTitle")}
+              </h1>
+              <p className="mt-5 max-w-2xl text-base leading-8 text-white/80 sm:text-lg">
+                {g("journalText")}
+              </p>
+            </div>
+          </section>
+          <section
+            {...sectionProps("journal-rich-spotlight", "journal", "כתבה ראשית")}
+            className={cx("px-5 py-16 lg:px-8 lg:py-24", skin.alt)}
+          >
+            <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-2 lg:items-center">
+              <Reveal variant="right">
+                <div className="journal-media relative aspect-[4/3] overflow-hidden border bg-[var(--bg-soft)] sm:aspect-[16/10] lg:min-h-[28rem] lg:aspect-auto">
+                  <StoreImage
+                    src={g("lookOne")}
+                    alt={g("journalOneTitle")}
+                    fallbackLabel={g("journalOneTitle")}
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                </div>
+              </Reveal>
+              <Reveal variant="left" className="text-right">
+                <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">כתבה ראשית</p>
+                <h2 className={cx("store-display mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-5xl", skin.title)}>
+                  {g("journalOneTitle")}
+                </h2>
+                <p className="mt-5 text-base leading-8 text-[var(--muted)]">{g("journalOneText")}</p>
+                <div className="mt-8 grid gap-4 sm:grid-cols-2">
+                  {[g("lookTwo"), g("lookThree")].map((image, index) => (
+                    <div
+                      key={image || index}
+                      className="journal-card-media relative aspect-[16/10] overflow-hidden border bg-[var(--bg-soft)]"
+                    >
+                      <StoreImage
+                        src={image}
+                        alt=""
+                        fallbackLabel={g("journalTitle")}
+                        className="absolute inset-0 h-full w-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
+          </section>
+          <JournalSection id="journal-rich-featured" showHeading={false} />
+          <ProductRail id="journal-rich-editor-picks" label="בחירות מערכת" title={g("productsTitle")} productsToShow={showcase.slice(0, 4)} className={skin.alt} />
+          <section {...sectionProps("journal-rich-categories", "categories", "מדורי תוכן")} className="px-5 py-20 lg:px-8">
+            <div className="mx-auto max-w-7xl">
+              <SectionHeading eyebrow="מדורים" title="נושאים לקריאה" skin={skin} />
+              <div className="mt-10 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+                {categoryTiles.slice(0, 4).map((cat, index) => (
+                  <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />
+                ))}
+              </div>
+            </div>
+          </section>
+          <GalleryTriptych id="journal-rich-behind-scenes" label="מאחורי הקלעים" className={skin.alt} />
+          <SimpleInfoSection id="journal-rich-interview" kind="journal" label="ראיון" title={g("journalTwoTitle")} text={g("journalTwoText")} />
+          <ValuesSection id="journal-rich-guides" className={skin.alt} />
+          <NewsletterSection id="journal-rich-newsletter" />
           {Footer}
         </div>
       );
