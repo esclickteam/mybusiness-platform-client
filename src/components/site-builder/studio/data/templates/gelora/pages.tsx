@@ -34,18 +34,19 @@ function getValue(data: Record<string, any>, key: string) {
 }
 
 function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; compact?: boolean; bold?: boolean; neon?: boolean }) {
-  // Live CRM mount — services + working hours sync from the business calendar.
+  // Live CRM mount — syncs services/hours only; embedded chrome keeps template design.
   return (
     <div
-      className="mt-6 min-h-[420px] w-full overflow-hidden rounded-2xl"
+      className="mt-6 min-h-[420px] w-full"
       dir="rtl"
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
+      data-bizuply-booking-chrome="embedded"
       data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
-      style={{ position: "relative", minHeight: 420 }}
+      style={{ position: "relative", minHeight: 420, background: "transparent" }}
       aria-label="יומן פגישות מה-CRM"
     />
   );
