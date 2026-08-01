@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import API from "../../api";
+import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { setAdminActiveBusinessId } from "../../utils/adminTenant";
@@ -305,8 +306,22 @@ function AdminUsers() {
                           <td className="px-4 py-4">
                             {rowUser.username || "—"}
                           </td>
-                          <td className="px-4 py-4" dir="ltr">
-                            {rowUser.phone || "—"}
+                          <td className="px-4 py-4">
+                            {rowUser.phone ? (
+                              <div className="flex items-center justify-start gap-2">
+                                <span dir="ltr" className="text-sm font-bold text-slate-700">
+                                  {rowUser.phone}
+                                </span>
+                                <AdminDialButton
+                                  phone={rowUser.phone}
+                                  name={rowUser.name || rowUser.username}
+                                  source="user"
+                                  refId={rowUser._id}
+                                />
+                              </div>
+                            ) : (
+                              "—"
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <span className="inline-flex rounded-full bg-purple-50 px-3 py-1 text-xs font-black text-purple-900">

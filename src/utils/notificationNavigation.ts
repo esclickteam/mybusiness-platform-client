@@ -197,9 +197,60 @@ export function registerServiceWorkerNotificationBridge() {
   if (typeof window === "undefined") return () => {};
 
   const handleMessage = (event: MessageEvent) => {
-    const data = event.data as { type?: string; url?: string } | null;
+    const data = event.data as {
+      type?: string;
+      url?: string;
+      fromNumber?: string;
+      contactName?: string;
+      callSid?: string;
+      callId?: string;
+    } | null;
 
-    if (data?.type !== "NOTIFICATION_NAVIGATE" || !data.url) return;
+    if (!data?.type) return;
+
+    if (data.type === "SOFTPHONE_ANSWER") {
+      const path = data.url
+        ? data.url.startsWith("http")
+          ? `${new URL(data.url).pathname}${new URL(data.url).search}${new URL(data.url).hash}`
+          : data.url
+        : "/admin/dashboard?softphone=answer";
+
+      stashPendingNotificationUrl(path);
+
+      window.dispatchEvent(
+        new CustomEvent("bizuply:softphone-answer", {
+          detail: {
+            url: path,
+            fromNumber: data.fromNumber || "",
+            contactName: data.contactName || "",
+            callSid: data.callSid || "",
+            callId: data.callId || "",
+          },
+        })
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("bizuply:notification-navigate", {
+          detail: { url: path },
+        })
+      );
+      return;
+    }
+
+    if (data.type === "SOFTPHONE_REJECT") {
+      window.dispatchEvent(
+        new CustomEvent("bizuply:softphone-reject", {
+          detail: {
+            fromNumber: data.fromNumber || "",
+            callSid: data.callSid || "",
+            callId: data.callId || "",
+          },
+        })
+      );
+      return;
+    }
+
+    if (data.type !== "NOTIFICATION_NAVIGATE" || !data.url) return;
 
     const path = data.url.startsWith("http")
       ? `${new URL(data.url).pathname}${new URL(data.url).search}${new URL(data.url).hash}`

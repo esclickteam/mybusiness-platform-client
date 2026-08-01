@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageCircle } from "lucide-react";
 
+import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 
@@ -636,7 +638,19 @@ function AdminEarlyAccess() {
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {phone}
+                            {phone && phone !== "לא צוין" ? (
+                              <div className="flex items-center justify-start gap-2">
+                                <span>{phone}</span>
+                                <AdminDialButton
+                                  phone={phone}
+                                  name={fullName}
+                                  source="early-access"
+                                  refId={id}
+                                />
+                              </div>
+                            ) : (
+                              phone
+                            )}
                           </td>
 
                           <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
@@ -679,6 +693,17 @@ function AdminEarlyAccess() {
 
                           <td className="px-5 py-4 text-right">
                             <div className="flex flex-wrap justify-start gap-2">
+                              {phone && phone !== "לא צוין" ? (
+                                <AdminDialButton
+                                  phone={phone}
+                                  name={fullName}
+                                  source="early-access"
+                                  refId={id}
+                                  size="md"
+                                  label="חייג"
+                                />
+                              ) : null}
+
                               {whatsappPhone ? (
                                 <button
                                   type="button"
@@ -689,8 +714,9 @@ function AdminEarlyAccess() {
                                       "noopener,noreferrer",
                                     )
                                   }
-                                  className="rounded-full bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200"
+                                  className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200 transition hover:-translate-y-0.5"
                                 >
+                                  <MessageCircle className="h-3.5 w-3.5" />
                                   וואטסאפ
                                 </button>
                               ) : null}
