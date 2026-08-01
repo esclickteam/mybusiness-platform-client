@@ -7,6 +7,7 @@ import {
   subscribeAdminSoftphone,
   toggleSoftphoneOpen,
 } from "../utils/adminSoftphoneStore";
+import { ensureMicrophoneAccess } from "../utils/softphoneMicrophone";
 
 /** Header trigger only — the softphone UI lives in AdminSoftphoneHost. */
 export default function AdminSoftphoneLauncher() {
@@ -27,7 +28,11 @@ export default function AdminSoftphoneLauncher() {
     <button
       type="button"
       data-softphone-launcher="true"
-      onClick={() => toggleSoftphoneOpen()}
+      onClick={() => {
+        toggleSoftphoneOpen();
+        // Request mic once on open so Answer later won't re-prompt.
+        void ensureMicrophoneAccess().catch(() => {});
+      }}
       aria-label="סופטפון"
       className={[
         "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",

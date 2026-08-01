@@ -55,6 +55,7 @@ import {
   type SoftphoneMode,
 } from "../utils/adminSoftphoneStore";
 import { startHoldMusic, stopHoldMusic } from "../utils/softphoneHoldMusic";
+import { ensureMicrophoneAccess } from "../utils/softphoneMicrophone";
 
 type SoftphoneTab = "dial" | "contacts" | "history";
 
@@ -308,24 +309,6 @@ function getTelnyxCallMediaOptions() {
     video: false,
     ...(remoteElement ? { remoteElement } : {}),
   };
-}
-
-async function ensureMicrophoneAccess() {
-  if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
-    return;
-  }
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false,
-  });
-  // Permission granted — Telnyx answer() will acquire its own tracks.
-  stream.getTracks().forEach((track) => {
-    try {
-      track.stop();
-    } catch {
-      /* ignore */
-    }
-  });
 }
 
 async function attachTelnyxRemoteAudio(call: any) {
@@ -1587,7 +1570,11 @@ export default function AdminSoftphone({
         <button
           type="button"
           data-softphone-launcher="true"
-          onClick={() => toggleSoftphoneOpen()}
+          onClick={() => {
+            toggleSoftphoneOpen();
+            // Warm mic permission once when opening (not every Answer).
+            void ensureMicrophoneAccess().catch(() => {});
+          }}
           aria-label="סופטפון"
           className={[
             "relative inline-flex items-center justify-center border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
@@ -1660,6 +1647,13 @@ export default function AdminSoftphone({
             style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
           >
             <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
+            {error?.includes("מיקרופון") ? (
+              <div className="mx-3 mt-2 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-bold text-amber-800">
+                מיקרופון חסום. בהגדרות האתר bizuply.com בחרו{" "}
+                <span className="font-black">מיקרופון → אפשר</span> (זה לא
+                בהגדרות התראות).
+              </div>
+            ) : null}
             <div className="relative shrink-0 overflow-hidden border-b border-white/10 px-4 pb-4 pt-4 text-white">
               <div
                 className={[
