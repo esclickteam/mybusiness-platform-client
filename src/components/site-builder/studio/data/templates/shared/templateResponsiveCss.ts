@@ -168,9 +168,24 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
     body: "max-width: 100% !important;",
   },
   {
+    // Collapse tall section shells on mobile — but never strip media/hero/journal
+    // min-heights or photos lose their plane and look nothing like desktop.
     selector:
-      "[class*='min-h-[4'], [class*='min-h-[5'], [class*='min-h-[6'], [class*='min-h-[7'], [class*='min-h-[8'], [class*='min-h-[9']",
+      "[class*='min-h-[4']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero']), [class*='min-h-[5']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero']), [class*='min-h-[6']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero']), [class*='min-h-[7']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero']), [class*='min-h-[8']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero']), [class*='min-h-[9']:not(img):not(video):not(.journal-hero):not(.journal-media):not([data-template-section-type='hero']):not([data-section-kind='hero'])",
     body: "min-height: 0 !important;",
+  },
+  {
+    // Keep journal article images readable on phones (same visual weight as desktop).
+    selector: ".journal-media, .journal-card-media",
+    body: "display: block !important; width: 100% !important; max-width: 100% !important;",
+  },
+  {
+    selector: ".journal-media img, .journal-card-media img, .journal-hero img",
+    body: "display: block !important; width: 100% !important; height: 100% !important; max-height: none !important; object-fit: cover !important; object-position: center !important;",
+  },
+  {
+    selector: ".journal-hero",
+    body: "min-height: min(72vh, 36rem) !important;",
   },
   {
     selector: "section, header, footer, main, article",
@@ -271,10 +286,81 @@ max-width: 100%;
 `,
 )}
 
+/*
+  Intrinsic height ONLY for unconstrained flow media.
+  A blanket height:auto on every img overrides Tailwind fill/fixed
+  heights (h-full, h-48, h-[310px], absolute inset fills) and leaves empty
+  colored bands inside product/media boxes across all templates.
+*/
 ${rule(
-  underRoots("img, video"),
+  underRoots(
+    [
+      'img:not([class*=" h-"]):not([class^="h-"]):not([class*=":h-"]):not(.absolute):not([class~="absolute"]):not([class*=":absolute"])',
+      'video:not([class*=" h-"]):not([class^="h-"]):not([class*=":h-"]):not(.absolute):not([class~="absolute"]):not([class*=":absolute"])',
+    ].join(", "),
+  ),
   `
 height: auto;
+`,
+)}
+
+/* Fill media must occupy the full positioned / aspect box */
+${rule(
+  underRoots(
+    [
+      "img.h-full",
+      "video.h-full",
+      "img[class~='h-full']",
+      "video[class~='h-full']",
+      "img[class*=' h-full']",
+      "video[class*=' h-full']",
+      "img[class*=':h-full']",
+      "video[class*=':h-full']",
+      "img.absolute.inset-0",
+      "video.absolute.inset-0",
+      "img[class~='absolute'][class~='inset-0']",
+      "video[class~='absolute'][class~='inset-0']",
+      ".store-media:not(img):not(video) > img",
+      ".store-media:not(img):not(video) > video",
+      ".journal-media > img",
+      ".journal-media > video",
+      ".journal-card-media > img",
+      ".journal-card-media > video",
+      ".journal-hero > img",
+      ".journal-hero img.absolute",
+      "[data-media-replaceable='true'] > img.h-full",
+      "[data-editable-image-card='true'] > img.h-full",
+      "[data-velmora-safe-image-box='true'] > img",
+      "[data-velmora-hard-image='true'] > img",
+      "[data-velmora-fan-card='true'] > img",
+    ].join(", "),
+  ),
+  `
+height: 100% !important;
+max-height: none;
+`,
+)}
+
+${rule(
+  underRoots(
+    [
+      "img.absolute.inset-0",
+      "video.absolute.inset-0",
+      "img[class~='absolute'][class~='inset-0']",
+      "video[class~='absolute'][class~='inset-0']",
+      ".store-media:not(img):not(video) > img",
+      ".store-media:not(img):not(video) > video",
+      ".journal-media > img",
+      ".journal-media > video",
+      ".journal-card-media > img",
+      ".journal-card-media > video",
+    ].join(", "),
+  ),
+  `
+width: 100%;
+max-width: none;
+object-fit: cover;
+object-position: center;
 `,
 )}
 
