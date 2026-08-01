@@ -168,8 +168,10 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
     body: "max-width: 100% !important;",
   },
   {
+    // Collapse tall section shells on mobile — but never strip media min-heights
+    // or product/hero images lose their box and appear clipped/misplaced.
     selector:
-      "[class*='min-h-[4'], [class*='min-h-[5'], [class*='min-h-[6'], [class*='min-h-[7'], [class*='min-h-[8'], [class*='min-h-[9']",
+      "[class*='min-h-[4']:not(img):not(video), [class*='min-h-[5']:not(img):not(video), [class*='min-h-[6']:not(img):not(video), [class*='min-h-[7']:not(img):not(video), [class*='min-h-[8']:not(img):not(video), [class*='min-h-[9']:not(img):not(video)",
     body: "min-height: 0 !important;",
   },
   {
@@ -271,10 +273,71 @@ max-width: 100%;
 `,
 )}
 
+/*
+  Intrinsic height ONLY for unconstrained flow media.
+  A blanket height:auto on every img overrides Tailwind fill/fixed
+  heights (h-full, h-48, h-[310px], absolute inset fills) and leaves empty
+  colored bands inside product/media boxes across all templates.
+*/
 ${rule(
-  underRoots("img, video"),
+  underRoots(
+    [
+      'img:not([class*=" h-"]):not([class^="h-"]):not([class*=":h-"]):not(.absolute):not([class~="absolute"]):not([class*=":absolute"])',
+      'video:not([class*=" h-"]):not([class^="h-"]):not([class*=":h-"]):not(.absolute):not([class~="absolute"]):not([class*=":absolute"])',
+    ].join(", "),
+  ),
   `
 height: auto;
+`,
+)}
+
+/* Fill media must occupy the full positioned / aspect box */
+${rule(
+  underRoots(
+    [
+      "img.h-full",
+      "video.h-full",
+      "img[class~='h-full']",
+      "video[class~='h-full']",
+      "img[class*=' h-full']",
+      "video[class*=' h-full']",
+      "img[class*=':h-full']",
+      "video[class*=':h-full']",
+      "img.absolute.inset-0",
+      "video.absolute.inset-0",
+      "img[class~='absolute'][class~='inset-0']",
+      "video[class~='absolute'][class~='inset-0']",
+      ".store-media:not(img):not(video) > img",
+      ".store-media:not(img):not(video) > video",
+      "[data-media-replaceable='true'] > img.h-full",
+      "[data-editable-image-card='true'] > img.h-full",
+      "[data-velmora-safe-image-box='true'] > img",
+      "[data-velmora-hard-image='true'] > img",
+      "[data-velmora-fan-card='true'] > img",
+    ].join(", "),
+  ),
+  `
+height: 100% !important;
+max-height: none;
+`,
+)}
+
+${rule(
+  underRoots(
+    [
+      "img.absolute.inset-0",
+      "video.absolute.inset-0",
+      "img[class~='absolute'][class~='inset-0']",
+      "video[class~='absolute'][class~='inset-0']",
+      ".store-media:not(img):not(video) > img",
+      ".store-media:not(img):not(video) > video",
+    ].join(", "),
+  ),
+  `
+width: 100%;
+max-width: none;
+object-fit: cover;
+object-position: center;
 `,
 )}
 

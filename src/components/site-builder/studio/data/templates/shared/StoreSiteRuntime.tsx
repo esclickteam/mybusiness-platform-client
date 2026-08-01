@@ -187,7 +187,7 @@ function ProductCard({
         )}
       >
         <button type="button" onClick={onOpen} className="relative block overflow-hidden text-start">
-          <div className={cx("store-media overflow-hidden bg-[var(--bg-soft)]", productMediaClassByLayout[layout])}>
+          <div className={cx("store-media relative overflow-hidden bg-[var(--bg-soft)]", productMediaClassByLayout[layout])}>
             <img
               src={
                 product.image && !imageFailed
@@ -195,7 +195,7 @@ function ProductCard({
                   : SAFE_IMAGE_FALLBACK
               }
               alt={product.name}
-              className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+              className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
               onError={(event) => {
                 const el = event.currentTarget;
                 if (el.dataset.fallback === "1") return;
@@ -583,7 +583,7 @@ export default function StoreSiteRuntime({
           src={cat.image || fallbackCategoryImages[index % fallbackCategoryImages.length] || g("heroImage") || SAFE_IMAGE_FALLBACK}
           alt={cat.name}
           fallbackLabel={cat.name}
-          className={cx("h-full w-full object-cover transition duration-700 group-hover:scale-110", imageClassName)}
+          className={cx("absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110", imageClassName)}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
         <div className={cx("absolute inset-x-0 bottom-0 p-5 text-white", labelClassName)}>

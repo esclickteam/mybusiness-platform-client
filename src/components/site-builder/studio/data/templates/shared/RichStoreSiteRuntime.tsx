@@ -1272,7 +1272,7 @@ export default function RichStoreSiteRuntime({
           }
           alt={cat.name}
           fallbackLabel={cat.name}
-          className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+          className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 p-5 text-white">
