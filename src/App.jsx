@@ -7,6 +7,7 @@ import { getTextDirection } from "./i18n/localeUtils";
 import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
 import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
+import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -1188,6 +1189,9 @@ export default function App() {
       </div>
 
       {!user && !isEarlyAccessLanding && <PreLoginBot />}
+
+      {/* Admin softphone — survives page changes + business impersonation */}
+      <AdminSoftphoneHost />
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&

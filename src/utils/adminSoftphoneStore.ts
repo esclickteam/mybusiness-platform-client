@@ -31,6 +31,7 @@ export type SoftphoneActiveCall = {
   status: SoftphoneCallStatus;
   startedAt: number;
   muted: boolean;
+  held?: boolean;
   speakerOn?: boolean;
   callSid?: string | null;
   error?: string | null;
@@ -167,6 +168,7 @@ export function presentIncomingSoftphoneCall(input: {
       status: "incoming",
       startedAt: Date.now(),
       muted: false,
+      held: false,
       speakerOn: true,
       callSid: input.callSid || null,
       error: null,

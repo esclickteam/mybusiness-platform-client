@@ -14,11 +14,13 @@ import {
   Loader2,
   Mic,
   MicOff,
+  Pause,
   Phone,
   PhoneCall,
   PhoneIncoming,
   PhoneMissed,
   PhoneOff,
+  Play,
   Search,
   Volume2,
   VolumeX,
@@ -52,6 +54,7 @@ import {
   toggleSoftphoneOpen,
   type SoftphoneMode,
 } from "../utils/adminSoftphoneStore";
+import { startHoldMusic, stopHoldMusic } from "../utils/softphoneHoldMusic";
 
 type SoftphoneTab = "dial" | "contacts" | "history";
 
@@ -204,6 +207,8 @@ function ActionButton({
 let twilioDevice: any = null;
 let twilioCall: any = null;
 let pendingIncomingTwilioCall: any = null;
+let twilioIncomingBound = false;
+let mutedBeforeHold = false;
 
 async function ensureTwilioDevice(token: string) {
   const mod = await import("@twilio/voice-sdk");
@@ -235,13 +240,22 @@ function hangupTwilioCall() {
   twilioCall = null;
 }
 
-export default function AdminSoftphone() {
+type SoftphoneLauncher = "hidden" | "fab" | "inline";
+
+export default function AdminSoftphone({
+  launcher = "inline",
+}: {
+  launcher?: SoftphoneLauncher;
+}) {
   const { open, activeCall, pendingDial, answerRequestId, rejectRequestId } =
     useSoftphoneState();
   const { socket } = useAuth() as { socket: any };
   const location = useLocation();
   const navigate = useNavigate();
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const endCallRef = useRef<(finalStatus?: string) => Promise<void>>(
+    async () => {}
+  );
 
   const [tab, setTab] = useState<SoftphoneTab>("dial");
   const [digits, setDigits] = useState("");
@@ -282,7 +296,9 @@ export default function AdminSoftphone() {
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest?.("[data-softphone-launcher]")) return;
+      if (!rootRef.current?.contains(target as Node)) {
         setSoftphoneOpen(false);
       }
     };
@@ -341,6 +357,8 @@ export default function AdminSoftphone() {
   const endCall = useCallback(
     async (finalStatus?: string) => {
       const current = getAdminSoftphoneState().activeCall;
+      stopHoldMusic();
+      mutedBeforeHold = false;
       hangupTwilioCall();
 
       if (current?.logId) {
@@ -371,6 +389,10 @@ export default function AdminSoftphone() {
     },
     [loadCalls]
   );
+
+  useEffect(() => {
+    endCallRef.current = endCall;
+  }, [endCall]);
 
   const acceptIncoming = useCallback(async () => {
     const current = getAdminSoftphoneState().activeCall;
@@ -466,6 +488,7 @@ export default function AdminSoftphone() {
           status: "connecting",
           startedAt: Date.now(),
           muted: false,
+          held: false,
           speakerOn: true,
           error: null,
         });
@@ -685,7 +708,8 @@ export default function AdminSoftphone() {
     };
   }, [socket]);
 
-  // Keep Twilio device registered for inbound when VoIP ready
+  // Keep Twilio device registered for inbound when VoIP ready.
+  // Intentionally does NOT hang up on unmount — calls survive navigation.
   useEffect(() => {
     let cancelled = false;
 
@@ -697,29 +721,32 @@ export default function AdminSoftphone() {
         if (cancelled) return;
         const device = await ensureTwilioDevice(tokenRes.data.token);
 
-        device.on("incoming", (call: any) => {
-          pendingIncomingTwilioCall = call;
-          const from =
-            call?.parameters?.From ||
-            call?.parameters?.from ||
-            "שיחה נכנסת";
-          presentIncomingSoftphoneCall({
-            phone: from,
-            contactName: "שיחה נכנסת",
-            callSid: call?.parameters?.CallSid || null,
-            mode: "voip",
-          });
+        if (!twilioIncomingBound) {
+          twilioIncomingBound = true;
+          device.on("incoming", (call: any) => {
+            pendingIncomingTwilioCall = call;
+            const from =
+              call?.parameters?.From ||
+              call?.parameters?.from ||
+              "שיחה נכנסת";
+            presentIncomingSoftphoneCall({
+              phone: from,
+              contactName: "שיחה נכנסת",
+              callSid: call?.parameters?.CallSid || null,
+              mode: "voip",
+            });
 
-          call.on("cancel", () => {
-            if (pendingIncomingTwilioCall === call) {
-              pendingIncomingTwilioCall = null;
-            }
-            const current = getAdminSoftphoneState().activeCall;
-            if (current?.status === "incoming") {
-              void endCall("no-answer");
-            }
+            call.on("cancel", () => {
+              if (pendingIncomingTwilioCall === call) {
+                pendingIncomingTwilioCall = null;
+              }
+              const current = getAdminSoftphoneState().activeCall;
+              if (current?.status === "incoming") {
+                void endCallRef.current("no-answer");
+              }
+            });
           });
-        });
+        }
       } catch {
         /* device mode */
       }
@@ -728,7 +755,7 @@ export default function AdminSoftphone() {
     return () => {
       cancelled = true;
     };
-  }, [loadStatus, endCall]);
+  }, [loadStatus]);
 
   useEffect(() => {
     if (!open) return;
@@ -752,7 +779,7 @@ export default function AdminSoftphone() {
 
   const toggleMute = useCallback(() => {
     const current = getAdminSoftphoneState().activeCall;
-    if (!current) return;
+    if (!current || current.held) return;
     const next = !current.muted;
     try {
       if (current.mode === "voip" && twilioCall) twilioCall.mute(next);
@@ -760,6 +787,34 @@ export default function AdminSoftphone() {
       /* ignore */
     }
     patchActiveSoftphoneCall({ muted: next });
+  }, []);
+
+  const toggleHold = useCallback(() => {
+    const current = getAdminSoftphoneState().activeCall;
+    if (!current || current.status !== "in-progress") return;
+
+    const nextHeld = !current.held;
+    if (nextHeld) {
+      mutedBeforeHold = Boolean(current.muted);
+      try {
+        if (current.mode === "voip" && twilioCall) twilioCall.mute(true);
+      } catch {
+        /* ignore */
+      }
+      startHoldMusic();
+      patchActiveSoftphoneCall({ held: true, muted: true });
+      return;
+    }
+
+    stopHoldMusic();
+    const restoreMuted = mutedBeforeHold;
+    mutedBeforeHold = false;
+    try {
+      if (current.mode === "voip" && twilioCall) twilioCall.mute(restoreMuted);
+    } catch {
+      /* ignore */
+    }
+    patchActiveSoftphoneCall({ held: false, muted: restoreMuted });
   }, []);
 
   const toggleSpeaker = useCallback(() => {
@@ -799,40 +854,63 @@ export default function AdminSoftphone() {
     );
   const isIncoming = activeCall?.status === "incoming";
 
+  const showLauncher = launcher !== "hidden";
+  const fabLauncher = launcher === "fab";
+
   return (
-    <div className="inline-flex" ref={rootRef}>
-      <button
-        type="button"
-        onClick={() => toggleSoftphoneOpen()}
-        aria-label="סופטפון"
-        className={[
-          "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
-          isIncoming
-            ? "border-emerald-300 bg-gradient-to-br from-emerald-50 to-white text-emerald-600"
-            : inCall
-              ? "border-teal-300 bg-gradient-to-br from-teal-50 to-white text-teal-600"
-              : open
-                ? "border-violet-300 bg-gradient-to-br from-[#F3EEFF] to-white text-[#7C4DFF]"
-                : "border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:text-[#7C4DFF]",
-        ].join(" ")}
-      >
-        {isIncoming ? (
-          <motion.span
-            animate={{ rotate: [0, -12, 12, -8, 8, 0], scale: [1, 1.08, 1] }}
-            transition={{ duration: 1.1, repeat: Infinity }}
-            className="inline-flex"
-          >
-            <PhoneIncoming className="h-5 w-5" strokeWidth={2.2} />
-          </motion.span>
-        ) : inCall ? (
-          <PhoneCall className="h-5 w-5" strokeWidth={2.2} />
-        ) : (
-          <Phone className="h-5 w-5" strokeWidth={2.2} />
-        )}
-        {(inCall || isIncoming) && (
-          <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-emerald-500 ring-2 ring-white" />
-        )}
-      </button>
+    <div
+      className={fabLauncher ? "inline-flex flex-col items-end" : "inline-flex"}
+      ref={rootRef}
+    >
+      {showLauncher ? (
+        <button
+          type="button"
+          data-softphone-launcher="true"
+          onClick={() => toggleSoftphoneOpen()}
+          aria-label="סופטפון"
+          className={[
+            "relative inline-flex items-center justify-center border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+            fabLauncher
+              ? "h-14 w-14 rounded-full shadow-lg shadow-teal-500/25 sm:h-16 sm:w-16"
+              : "h-11 w-11 rounded-2xl sm:h-12 sm:w-12",
+            isIncoming
+              ? "border-emerald-300 bg-gradient-to-br from-emerald-50 to-white text-emerald-600"
+              : inCall
+                ? "border-teal-300 bg-gradient-to-br from-teal-50 to-white text-teal-600"
+                : open
+                  ? "border-violet-300 bg-gradient-to-br from-[#F3EEFF] to-white text-[#7C4DFF]"
+                  : fabLauncher
+                    ? "border-teal-200 bg-gradient-to-br from-white to-teal-50 text-teal-700"
+                    : "border-slate-200 bg-white text-slate-500 hover:border-violet-200 hover:text-[#7C4DFF]",
+          ].join(" ")}
+        >
+          {isIncoming ? (
+            <motion.span
+              animate={{ rotate: [0, -12, 12, -8, 8, 0], scale: [1, 1.08, 1] }}
+              transition={{ duration: 1.1, repeat: Infinity }}
+              className="inline-flex"
+            >
+              <PhoneIncoming
+                className={fabLauncher ? "h-6 w-6" : "h-5 w-5"}
+                strokeWidth={2.2}
+              />
+            </motion.span>
+          ) : inCall ? (
+            <PhoneCall
+              className={fabLauncher ? "h-6 w-6" : "h-5 w-5"}
+              strokeWidth={2.2}
+            />
+          ) : (
+            <Phone
+              className={fabLauncher ? "h-6 w-6" : "h-5 w-5"}
+              strokeWidth={2.2}
+            />
+          )}
+          {(inCall || isIncoming) && (
+            <span className="absolute -right-1 -top-1 h-3 w-3 animate-pulse rounded-full bg-emerald-500 ring-2 ring-white" />
+          )}
+        </button>
+      ) : null}
 
       <AnimatePresence>
         {open && (
@@ -1014,8 +1092,15 @@ export default function AdminSoftphone() {
                         ? "מתחבר..."
                         : activeCall?.status === "ringing"
                           ? "מצלצל..."
-                          : formatCallDuration(elapsedSec)}
+                          : activeCall?.held
+                            ? "בהמתנה"
+                            : formatCallDuration(elapsedSec)}
                     </p>
+                    {activeCall?.held ? (
+                      <p className="mt-2 text-xs font-bold text-amber-600">
+                        נגן המתנה פעיל · המיקרופון מושתק
+                      </p>
+                    ) : null}
                     {activeCall?.error ? (
                       <p className="mt-3 text-xs font-bold text-rose-600">
                         {activeCall.error}
@@ -1023,18 +1108,34 @@ export default function AdminSoftphone() {
                     ) : null}
                   </div>
 
-                  <div className="flex w-full flex-wrap items-end justify-center gap-5 pb-1">
+                  <div className="flex w-full flex-wrap items-end justify-center gap-4 pb-1 sm:gap-5">
                     <ActionButton
                       label={activeCall?.muted ? "השמע" : "השתק"}
                       tone="amber"
                       active={Boolean(activeCall?.muted)}
-                      disabled={activeCall?.mode !== "voip"}
+                      disabled={
+                        activeCall?.mode !== "voip" || Boolean(activeCall?.held)
+                      }
                       onClick={toggleMute}
                     >
                       {activeCall?.muted ? (
                         <MicOff className="h-5 w-5" />
                       ) : (
                         <Mic className="h-5 w-5" />
+                      )}
+                    </ActionButton>
+
+                    <ActionButton
+                      label={activeCall?.held ? "המשך" : "המתנה"}
+                      tone="amber"
+                      active={Boolean(activeCall?.held)}
+                      disabled={activeCall?.status !== "in-progress"}
+                      onClick={toggleHold}
+                    >
+                      {activeCall?.held ? (
+                        <Play className="h-5 w-5" />
+                      ) : (
+                        <Pause className="h-5 w-5" />
                       )}
                     </ActionButton>
 
