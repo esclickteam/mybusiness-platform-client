@@ -266,24 +266,125 @@ function ensureRemoteAudioElement() {
   audio.id = "bizuply-softphone-remote-audio";
   audio.autoplay = true;
   audio.setAttribute("playsinline", "true");
-  audio.style.display = "none";
+  // Keep in DOM (not display:none) — some browsers block playback otherwise.
+  audio.style.cssText =
+    "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;bottom:0;";
   document.body.appendChild(audio);
   remoteAudioEl = audio;
   return audio;
+}
+
+function getTelnyxCallMediaOptions() {
+  const remoteElement = ensureRemoteAudioElement();
+  return {
+    audio: true,
+    video: false,
+    ...(remoteElement ? { remoteElement } : {}),
+  };
 }
 
 async function attachTelnyxRemoteAudio(call: any) {
   const audio = ensureRemoteAudioElement();
   if (!audio || !call) return;
   try {
-    if (call.remoteStream instanceof MediaStream) {
-      audio.srcObject = call.remoteStream;
+    const stream =
+      call.remoteStream instanceof MediaStream
+        ? call.remoteStream
+        : call.remoteStream?.stream instanceof MediaStream
+          ? call.remoteStream.stream
+          : null;
+
+    if (stream) {
+      audio.srcObject = stream;
     }
+
     audio.muted = false;
     audio.volume = 1;
+    audio.autoplay = true;
     await audio.play().catch(() => {});
+
+    // Retry once — remote tracks sometimes arrive a moment after answer.
+    window.setTimeout(() => {
+      try {
+        const later =
+          call.remoteStream instanceof MediaStream ? call.remoteStream : null;
+        if (later && audio.srcObject !== later) {
+          audio.srcObject = later;
+        }
+        void audio.play().catch(() => {});
+      } catch {
+        /* ignore */
+      }
+    }, 400);
   } catch {
     /* ignore */
+  }
+}
+
+async function showIncomingCallNotification(opts: {
+  fromNumber: string;
+  contactName?: string;
+  callSid?: string | null;
+  callId?: string | null;
+}) {
+  if (typeof window === "undefined" || typeof Notification === "undefined") {
+    return;
+  }
+
+  try {
+    if (Notification.permission === "default") {
+      await Notification.requestPermission().catch(() => "denied");
+    }
+    if (Notification.permission !== "granted") return;
+
+    const from = opts.fromNumber || "שיחה נכנסת";
+    const title = "שיחה נכנסת";
+    const body = opts.contactName
+      ? `${opts.contactName} · ${from}`
+      : from;
+    const tag = opts.callSid
+      ? `softphone-${opts.callSid}`
+      : `softphone-in-${String(opts.fromNumber || "call").replace(/\D/g, "")}`;
+
+    const reg = await navigator.serviceWorker?.ready?.catch?.(() => null);
+    const payload = {
+      body,
+      icon: "/android-chrome-192x192.png",
+      badge: "/favicon-v2.png",
+      tag,
+      renotify: true,
+      requireInteraction: true,
+      vibrate: [300, 120, 300, 120, 300],
+      actions: [
+        { action: "answer", title: "ענה" },
+        { action: "dismiss", title: "דחה" },
+      ],
+      data: {
+        url: `/admin/dashboard?softphone=answer&from=${encodeURIComponent(from)}`,
+        kind: "softphone-incoming",
+        softphoneAction: "answer",
+        fromNumber: from,
+        contactName: opts.contactName || "",
+        callSid: opts.callSid || "",
+        callId: opts.callId || "",
+      },
+      dir: "rtl" as const,
+      lang: "he",
+    };
+
+    if (reg?.showNotification) {
+      await reg.showNotification(`BizUply · ${title}`, payload);
+      return;
+    }
+
+    // Fallback without action buttons
+    new Notification(`BizUply · ${title}`, {
+      body,
+      tag,
+      requireInteraction: true,
+    });
+  } catch {
+    /* ignore notification failures */
   }
 }
 
@@ -381,21 +482,54 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
           call.options?.callerNumber ||
           notification?.callerNumber ||
           "שיחה נכנסת";
+        const callSid = call.id || call.options?.callID || null;
+
         presentIncomingSoftphoneCall({
           phone: from,
           contactName: "שיחה נכנסת",
-          callSid: call.id || call.options?.callID || null,
+          callSid,
           mode: "voip",
+        });
+        setSoftphoneOpen(true);
+        void showIncomingCallNotification({
+          fromNumber: from,
+          contactName: "שיחה נכנסת",
+          callSid,
         });
       }
 
       if (
-        ["hangup", "destroy", "purge", "done"].includes(state) &&
-        pendingIncomingTelnyxCall === call
+        (telnyxCall === call || pendingIncomingTelnyxCall === call) &&
+        (state === "active" || state === "answered")
       ) {
-        pendingIncomingTelnyxCall = null;
+        telnyxCall = call;
+        void attachTelnyxRemoteAudio(call);
         const current = getAdminSoftphoneState().activeCall;
-        if (current?.status === "incoming") {
+        if (current && current.status !== "in-progress") {
+          patchActiveSoftphoneCall({
+            status: "in-progress",
+            startedAt: current.startedAt || Date.now(),
+          });
+        }
+      }
+
+      if (
+        ["hangup", "destroy", "purge", "done"].includes(state) &&
+        (pendingIncomingTelnyxCall === call || telnyxCall === call)
+      ) {
+        if (pendingIncomingTelnyxCall === call) {
+          pendingIncomingTelnyxCall = null;
+        }
+        if (telnyxCall === call) {
+          telnyxCall = null;
+        }
+        const current = getAdminSoftphoneState().activeCall;
+        if (
+          current &&
+          ["incoming", "ringing", "connecting", "in-progress"].includes(
+            current.status
+          )
+        ) {
           clearActiveSoftphoneCall();
         }
       }
@@ -623,14 +757,28 @@ export default function AdminSoftphone({
       if (pendingIncomingTelnyxCall) {
         telnyxCall = pendingIncomingTelnyxCall;
         pendingIncomingTelnyxCall = null;
-        await telnyxCall.answer?.();
-        void attachTelnyxRemoteAudio(telnyxCall);
+        const media = getTelnyxCallMediaOptions();
+        if (typeof telnyxCall.answer === "function") {
+          await Promise.resolve(telnyxCall.answer(media));
+        }
+        // Keep mic unmuted after answer
+        try {
+          telnyxCall.unmuteAudio?.();
+        } catch {
+          /* ignore */
+        }
+        await attachTelnyxRemoteAudio(telnyxCall);
       } else if (pendingIncomingTwilioCall) {
         twilioCall = pendingIncomingTwilioCall;
         pendingIncomingTwilioCall = null;
         await twilioCall.accept();
       }
-      patchActiveSoftphoneCall({ status: "in-progress", startedAt: Date.now() });
+      patchActiveSoftphoneCall({
+        status: "in-progress",
+        startedAt: Date.now(),
+        muted: false,
+        speakerOn: true,
+      });
       if (current.logId) {
         await API.patch(`/admin/softphone/calls/${current.logId}`, {
           status: "in-progress",
@@ -744,15 +892,13 @@ export default function AdminSoftphone({
         if (provider === "telnyx") {
           const client = await ensureTelnyxClient(auth);
 
-          const call = client.newCall({
-            destinationNumber: phone,
-            callerNumber,
-            audio: true,
-            video: false,
-            remoteElement: ensureRemoteAudioElement() || undefined,
-          });
-          telnyxCall = call;
-          void attachTelnyxRemoteAudio(call);
+              const call = client.newCall({
+                destinationNumber: phone,
+                callerNumber,
+                ...getTelnyxCallMediaOptions(),
+              });
+              telnyxCall = call;
+              void attachTelnyxRemoteAudio(call);
 
           call.on?.("state", (nextState: string) => {
             const state = String(nextState || "").toLowerCase();
@@ -988,6 +1134,12 @@ export default function AdminSoftphone({
         voipProvider = provider;
 
         if (provider === "telnyx") {
+          if (
+            typeof Notification !== "undefined" &&
+            Notification.permission === "default"
+          ) {
+            void Notification.requestPermission().catch(() => {});
+          }
           await ensureTelnyxClient(auth);
           return;
         }
