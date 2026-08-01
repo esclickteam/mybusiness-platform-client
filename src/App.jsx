@@ -8,6 +8,7 @@ import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
 import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
 import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
+import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -98,6 +99,7 @@ const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
 
 const StaffDashboard = lazy(() => import("./pages/staff/StaffDashboard"));
+const StaffCreateUser = lazy(() => import("./pages/staff/StaffCreateUser"));
 const WorkSession = lazy(() => import("./pages/staff/WorkSession"));
 const PhoneProfile = lazy(() => import("./pages/staff/PhoneProfile"));
 const MyTasks = lazy(() => import("./pages/staff/MyTasks"));
@@ -951,6 +953,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/staff/create-user"
+                          element={
+                            <ProtectedRoute roles={["worker"]}>
+                              <StaffCreateUser />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/staff/session"
                           element={
                             <ProtectedRoute roles={["worker"]}>
@@ -1192,6 +1203,9 @@ export default function App() {
 
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
+
+      {/* Staff softphone toolbar — survives staff page changes */}
+      <StaffSoftphoneHost />
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
