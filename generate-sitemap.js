@@ -1,5 +1,8 @@
-const fs = require('fs');
-const path = require('path');
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const BASE_URL = 'https://bizuply.com';
 
@@ -14,6 +17,15 @@ const staticPages = [
   { url: 'how-it-works', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 }, // How It Works
   { url: 'join', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },      // Join
   { url: 'search', lastmod: '2025-07-09', changefreq: 'daily', priority: 0.9 },      // Search
+  { url: 'pricing', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.9 },   // Pricing
+  { url: 'features', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.7 },  // Features
+  { url: 'solutions', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.7 }, // Solutions
+  { url: 'crm', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 },       // CRM product page
+  { url: 'collaborations', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 }, // Collaborations product page
+  { url: 'website-builder', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 }, // Website builder product page
+  { url: 'automations', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 }, // Automations product page
+  { url: 'agents', lastmod: '2026-08-01', changefreq: 'monthly', priority: 0.6 },    // AI agents product page
+  { url: 'accessibility', lastmod: '2026-08-01', changefreq: 'yearly', priority: 0.4 }, // Accessibility statement
 ];
 
 function createUrlXml({ url, lastmod, changefreq, priority }) {

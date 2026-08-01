@@ -20,11 +20,15 @@ export default function Home() {
 
         <meta name="description" content={t("seo.homeDescription")} />
 
+        <link rel="canonical" href="https://bizuply.com/" />
+
         <meta property="og:title" content={t("seo.homeTitle")} />
 
         <meta property="og:description" content={t("seo.homeDescription")} />
 
         <meta property="og:type" content="website" />
+
+        <meta property="og:url" content="https://bizuply.com/" />
       </Helmet>
 
       <HeroSection />

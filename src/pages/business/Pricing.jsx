@@ -422,6 +422,7 @@ export default function Plans() {
       <Helmet>
         <title>{t("pricing.seoTitle")}</title>
         <meta name="description" content={t("pricing.seoDescription")} />
+        <link rel="canonical" href="https://bizuply.com/pricing" />
       </Helmet>
 
       <ScrollProgress />

@@ -1,4 +1,12 @@
 User-agent: *
 Allow: /
+Disallow: /business/
+Disallow: /admin
+Disallow: /staff
+Disallow: /client/
+Disallow: /manager/
+Disallow: /marketer/
+Disallow: /affiliate/dashboard
+Disallow: /api/
 
 Sitemap: https://bizuply.com/sitemap.xml
