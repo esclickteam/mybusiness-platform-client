@@ -2,6 +2,7 @@ import React from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lunelleEditorCss } from "./editorCss";
 import { lunelleEditorPages } from "./lunelleData";
+import { useLunelleIntegrationMounts } from "./lunelleIntegrations";
 
 export type LunellePageId =
   | "home"
@@ -9,6 +10,7 @@ export type LunellePageId =
   | "services"
   | "gallery"
   | "prices"
+  | "shop"
   | "booking"
   | "contact";
 
@@ -16,6 +18,7 @@ export const lunellePages = [
   { id: "home", label: "בית", slug: "/" },
   { id: "about", label: "אודות", slug: "/about" },
   { id: "services", label: "שירותים", slug: "/services" },
+  { id: "shop", label: "חנות", slug: "/shop" },
   { id: "gallery", label: "גלריה", slug: "/gallery" },
   { id: "prices", label: "מחירים", slug: "/prices" },
   { id: "booking", label: "קביעת תור", slug: "/booking" },
@@ -31,6 +34,10 @@ type Props = {
   currentPageId?: LunellePageId | string;
   onPageChange?: (pageId: string) => void;
   isStudioStatic?: boolean;
+  businessId?: string;
+  isPublic?: boolean;
+  data?: Record<string, any>;
+  templateData?: Record<string, any>;
 };
 
 const pageAliases: Record<string, LunellePageId> = {
@@ -57,6 +64,11 @@ const pageAliases: Record<string, LunellePageId> = {
   "#prices": "prices",
   pricing: "prices",
   מחירים: "prices",
+
+  shop: "shop",
+  "#shop": "shop",
+  store: "shop",
+  חנות: "shop",
 
   booking: "booking",
   "#booking": "booking",
@@ -544,14 +556,24 @@ function useLunellePageEffects(rootRef: React.RefObject<HTMLDivElement | null>) 
 function LunellePageRoot({
   pageId,
   html,
+  businessId,
+  isStudioStatic = false,
 }: {
   pageId: LunellePageId;
   html: string;
+  businessId?: string;
+  isStudioStatic?: boolean;
 }) {
   const rootRef = React.useRef<HTMLDivElement | null>(null);
   const trimmedHtml = html.trim();
 
   useLunellePageEffects(rootRef);
+  useLunelleIntegrationMounts(rootRef, {
+    businessId,
+    isStudioStatic,
+    pageId,
+    html: trimmedHtml,
+  });
 
   if (!trimmedHtml) {
     return <LunelleEmptyState />;
@@ -576,6 +598,7 @@ export default function LunellePages({
   currentPageId,
   onPageChange,
   isStudioStatic = false,
+  businessId,
 }: Props = {}) {
   const safeInitialPage = React.useMemo(
     () =>
@@ -656,6 +679,8 @@ export default function LunellePages({
               <LunellePageRoot
                 pageId={page.id as LunellePageId}
                 html={typeof page.html === "string" ? page.html : ""}
+                businessId={businessId}
+                isStudioStatic={isStudioStatic}
               />
             ),
           }))}
