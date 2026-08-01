@@ -17,10 +17,6 @@ import { pulsecoreEditorCss } from "./pulsecore/editorCss";
 import { pulsecoreSeed } from "./pulsecore/pulsecoreData";
 
 
-import LunellePages, { lunellePages } from "./lunelle/pages";
-import { lunelleEditorCss } from "./lunelle/editorCss";
-import { lunelleSeed } from "./lunelle/lunelleData";
-
 import SpalcioPages, { spalcioPages } from "./spalcio/pages";
 import { spalcioEditorCss } from "./spalcio/spalcioEditorCss";
 import { spalcioData } from "./spalcio/spalcioData";
@@ -1066,7 +1062,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Lunelle / Spalcio /
+  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
   Nadlanist / Novastra / Domora / Serenova / Justora / Shinora / Cyclora / Chanel יעבדו עם:
   editorMode: "visual-react"
@@ -1199,16 +1195,6 @@ export const studioTemplateRendererRegistry: Record<
     editorMode: "visual-react",
     defaultData: pulsecoreSeed as unknown as Record<string, any>,
     editorCss: pulsecoreEditorCss,
-  }),
-
-  lunelle: createRenderer({
-    key: "lunelle",
-    name: "Lunelle",
-    Component: LunellePages,
-    pages: lunellePages,
-    editorMode: "visual-react",
-    defaultData: lunelleSeed as unknown as Record<string, any>,
-    editorCss: lunelleEditorCss,
   }),
 
   spalcio: createRenderer({
