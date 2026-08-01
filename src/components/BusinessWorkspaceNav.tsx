@@ -16,6 +16,11 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
+import { useAuth } from "../context/AuthContext";
+import {
+  isModuleEnabled,
+  normalizeEnabledModules,
+} from "../utils/moduleAccess";
 
 /* =========================
    Types
@@ -46,6 +51,7 @@ type NavItemConfig = {
   to: string;
   icon: React.ElementType;
   exact?: boolean;
+  moduleKey?: string | null;
 };
 
 /* =========================
@@ -145,8 +151,12 @@ export default function BusinessWorkspaceNav({
 }: BusinessWorkspaceNavProps) {
   const { businessId } = useParams<{ businessId: string }>();
   const { t: tI18n, i18n } = useTranslation();
+  const { user } = useAuth() as {
+    user?: { enabledModules?: string[] | null } | null;
+  };
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
+  const enabledModules = normalizeEnabledModules(user?.enabledModules);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -156,48 +166,56 @@ export default function BusinessWorkspaceNav({
       fallback: "Dashboard",
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
+      moduleKey: "dashboard",
     },
     {
       labelKey: "businessNav.crmSystem",
       fallback: "CRM System",
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
+      moduleKey: "crm",
     },
     {
       labelKey: "businessNav.whatsapp",
       fallback: "WhatsApp Messages",
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
+      moduleKey: "whatsapp",
     },
     {
       labelKey: "businessNav.metaCampaigns",
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
+      moduleKey: "meta-campaigns",
     },
     {
       labelKey: "businessNav.socialSchedule",
       fallback: "Schedule Posts & Stories",
       to: `${basePath}/dashboard/social-schedule`,
       icon: CalendarClock,
+      moduleKey: "social-schedule",
     },
     {
       labelKey: "businessNav.collaborations",
       fallback: "Collaborations",
       to: `${basePath}/dashboard/collab`,
       icon: Handshake,
+      moduleKey: "collab",
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
       fallback: "BizUply Advisor",
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
+      moduleKey: "BizUply",
     },
     {
       labelKey: "businessNav.editBusinessPage",
       fallback: "Edit Business Page",
       to: `${basePath}/dashboard/build`,
       icon: PencilLine,
+      moduleKey: "build",
     },
     {
       labelKey: "businessNav.viewPublicProfile",
@@ -205,26 +223,37 @@ export default function BusinessWorkspaceNav({
       to: basePath,
       icon: UserRound,
       exact: true,
+      // Hide public profile for limited marketer-client accounts
+      moduleKey: enabledModules ? "__hidden__" : null,
     },
     {
       labelKey: "businessNav.buildWebsite",
       fallback: "Build Website",
       to: `${basePath}/dashboard/website`,
       icon: LayoutTemplate,
+      moduleKey: "website",
     },
     {
       labelKey: "businessNav.billing",
       fallback: "Billing & Subscription",
       to: `${basePath}/dashboard/billing`,
       icon: CreditCard,
+      moduleKey: "billing",
     },
     {
       labelKey: "businessNav.helpCenter",
       fallback: "Help Center",
       to: `${basePath}/dashboard/help-center`,
       icon: HelpCircle,
+      moduleKey: enabledModules ? "__hidden__" : null,
     },
   ];
+
+  const visibleItems = items.filter((item) => {
+    if (!item.moduleKey) return true;
+    if (item.moduleKey === "__hidden__") return false;
+    return isModuleEnabled(enabledModules, item.moduleKey);
+  });
 
   return (
     <nav
@@ -239,7 +268,7 @@ export default function BusinessWorkspaceNav({
       <div
         className={`space-y-0.5 overflow-hidden ${collapsed ? "px-1.5 py-1" : "px-2 py-1"}`}
       >
-        {items.map((item) => (
+        {visibleItems.map((item) => (
           <NavItem
             key={item.to}
             label={translate(t, item.labelKey, item.fallback)}

@@ -424,10 +424,14 @@
   "layout": {
     "adminImpersonationTitle": "Admin mode — business access",
     "adminImpersonationText": "You are acting with full permissions in {{name}}. All actions are saved to this business.",
+    "marketerImpersonationTitle": "Marketer mode — client access",
+    "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
     "backToAdmin": "Back to admin panel",
+    "backToMarketer": "Back to marketer dashboard",
     "returning": "Returning...",
     "adminBarTitle": "Admin mode — viewing and managing business",
-    "exitImpersonationError": "Could not return to the admin panel right now"
+    "exitImpersonationError": "Could not return to the admin panel right now",
+    "exitMarketerImpersonationError": "Could not return to the marketer dashboard right now"
   },
   "overview": {
     "greeting": "Hello, {{name}}!",

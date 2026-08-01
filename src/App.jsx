@@ -117,7 +117,11 @@ const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
+const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const MarketerDashboardPage = lazy(() =>
+  import("./pages/marketer/MarketerDashboardPage")
+);
 
 const AffiliatePage = lazy(() =>
   import("./pages/business/dashboardPages/AffiliatePage")
@@ -1107,6 +1111,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/marketers"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminMarketers />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/support-chat"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1134,6 +1147,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["affiliate"]}>
                               <AffiliateDashboardPage />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/marketer/dashboard/*"
+                          element={
+                            <ProtectedRoute roles={["marketer"]}>
+                              <MarketerDashboardPage />
                             </ProtectedRoute>
                           }
                         />

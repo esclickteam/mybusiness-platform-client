@@ -13,6 +13,7 @@ const ROLE_LABELS = {
   manager: "מנהל",
   business: "עסק",
   affiliate: "שותף",
+  marketer: "משווק קמפיינים",
   customer: "לקוח",
   worker: "עובד",
 };
@@ -27,6 +28,7 @@ const ROLE_FILTERS = [
   ["customer", "לקוחות"],
   ["business", "עסקים"],
   ["affiliate", "שותפים"],
+  ["marketer", "משווקים"],
   ["worker", "עובדים"],
   ["manager", "מנהלים"],
   ["admin", "מנהלי מערכת"],
