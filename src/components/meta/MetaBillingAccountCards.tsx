@@ -11,6 +11,9 @@ type Props = {
   /** Relative paths for connect CTAs when disconnected */
   adsSettingsPath?: string;
   whatsappSettingsPath?: string;
+  /** Meta Ads connection page should not show WhatsApp billing. */
+  showWaba?: boolean;
+  showAdAccount?: boolean;
   className?: string;
 };
 
@@ -82,16 +85,30 @@ export default function MetaBillingAccountCards({
   wabaBilling,
   adsSettingsPath = "../meta-campaigns/settings",
   whatsappSettingsPath = "../whatsapp/settings",
+  showWaba = true,
+  showAdAccount = true,
   className = "",
 }: Props) {
+  const showBoth = showAdAccount && showWaba;
+  const gridClass = showBoth
+    ? "grid gap-3 lg:grid-cols-2"
+    : "grid gap-3 grid-cols-1";
+
   return (
     <div className={["space-y-3", className].join(" ")}>
-      <p className="text-xs font-semibold text-slate-500">
-        Ad spend and WhatsApp message fees are billed separately by Meta. These
-        cards never share a payment method.
-      </p>
+      {showBoth ? (
+        <p className="text-xs font-semibold text-slate-500">
+          Ad spend and WhatsApp message fees are billed separately by Meta.
+          These cards never share a payment method.
+        </p>
+      ) : showAdAccount ? (
+        <p className="text-xs font-semibold text-slate-500">
+          Ad spend is billed by Meta on the selected Ad Account payment method.
+        </p>
+      ) : null}
 
-      <div className="grid gap-3 lg:grid-cols-2">
+      <div className={gridClass}>
+        {showAdAccount ? (
         <BillingCardShell
           title="Meta Ad Account"
           subtitle="Facebook / Instagram campaign spend"
@@ -145,7 +162,9 @@ export default function MetaBillingAccountCards({
                 </p>
               ) : null}
               <p className="text-[11px] font-semibold leading-relaxed text-slate-500">
-                {adAccountBilling.billingSeparationNote}
+                {showWaba
+                  ? adAccountBilling.billingSeparationNote
+                  : "Ad spend is billed by Meta on this Ad Account payment method."}
               </p>
               {(adAccountBilling.issues || []).map((issue) => (
                 <p
@@ -169,7 +188,9 @@ export default function MetaBillingAccountCards({
             </div>
           )}
         </BillingCardShell>
+        ) : null}
 
+        {showWaba ? (
         <BillingCardShell
           title="WhatsApp Business Account"
           subtitle="Cloud API message fees (WABA)"
@@ -282,6 +303,7 @@ export default function MetaBillingAccountCards({
             </div>
           )}
         </BillingCardShell>
+        ) : null}
       </div>
     </div>
   );

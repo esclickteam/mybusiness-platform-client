@@ -19,10 +19,6 @@ import {
   selectMetaAdsPage,
   type MetaAdsConnectionStatus,
 } from "../../../../api/metaCampaignsApi";
-import {
-  getWhatsAppStatus,
-  type WhatsAppWabaBillingHealth,
-} from "../../../../api/whatsappApi";
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
@@ -53,8 +49,6 @@ export default function MetaCampaignsSettingsTab() {
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<MetaAdsConnectionStatus | null>(null);
-  const [wabaBilling, setWabaBilling] =
-    useState<WhatsAppWabaBillingHealth | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState("");
   const [selectedPageId, setSelectedPageId] = useState("");
 
@@ -65,12 +59,8 @@ export default function MetaCampaignsSettingsTab() {
       if (isAdminUser(user) && businessId) {
         setAdminActiveBusinessId(businessId);
       }
-      const [data, wa] = await Promise.all([
-        getMetaCampaignsStatus(businessId),
-        getWhatsAppStatus(businessId, { enrichPayment: true }).catch(() => null),
-      ]);
+      const data = await getMetaCampaignsStatus(businessId);
       setStatus(data);
-      setWabaBilling(wa?.wabaBillingHealth || null);
       setSelectedAccountId(data.selectedAdAccount?.id || "");
       setSelectedPageId(data.selectedPage?.pageId || "");
     } catch (error: any) {
@@ -316,9 +306,8 @@ export default function MetaCampaignsSettingsTab() {
 
       <MetaBillingAccountCards
         adAccountBilling={status?.adAccountBillingHealth || null}
-        wabaBilling={wabaBilling}
         adsSettingsPath="."
-        whatsappSettingsPath="../whatsapp/settings"
+        showWaba={false}
       />
 
       {isLinked ? (
