@@ -237,6 +237,35 @@ export function registerServiceWorkerNotificationBridge() {
       return;
     }
 
+    if (data.type === "SOFTPHONE_OPEN_INCOMING") {
+      const path = data.url
+        ? data.url.startsWith("http")
+          ? `${new URL(data.url).pathname}${new URL(data.url).search}${new URL(data.url).hash}`
+          : data.url
+        : "/admin/dashboard?softphone=incoming";
+
+      stashPendingNotificationUrl(path);
+
+      window.dispatchEvent(
+        new CustomEvent("bizuply:softphone-open-incoming", {
+          detail: {
+            url: path,
+            fromNumber: data.fromNumber || "",
+            contactName: data.contactName || "",
+            callSid: data.callSid || "",
+            callId: data.callId || "",
+          },
+        })
+      );
+
+      window.dispatchEvent(
+        new CustomEvent("bizuply:notification-navigate", {
+          detail: { url: path },
+        })
+      );
+      return;
+    }
+
     if (data.type === "SOFTPHONE_REJECT") {
       window.dispatchEvent(
         new CustomEvent("bizuply:softphone-reject", {

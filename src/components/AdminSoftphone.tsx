@@ -360,9 +360,9 @@ async function showIncomingCallNotification(opts: {
         { action: "dismiss", title: "דחה" },
       ],
       data: {
-        url: `/admin/dashboard?softphone=answer&from=${encodeURIComponent(from)}`,
+        url: `/admin/dashboard?softphone=incoming&from=${encodeURIComponent(from)}`,
         kind: "softphone-incoming",
-        softphoneAction: "answer",
+        softphoneAction: "open",
         fromNumber: from,
         contactName: opts.contactName || "",
         callSid: opts.callSid || "",
@@ -1021,11 +1021,13 @@ export default function AdminSoftphone({
     void rejectIncoming();
   }, [rejectRequestId, rejectIncoming]);
 
-  // Deep link ?softphone=answer from PWA
+  // Deep link from PWA notification:
+  // softphone=incoming → show Answer/Decline UI only
+  // softphone=answer → answer the call
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const softphone = params.get("softphone");
-    if (softphone !== "answer") return;
+    if (softphone !== "answer" && softphone !== "incoming") return;
 
     const key = location.search;
     if (handledQueryRef.current === key) return;
@@ -1049,7 +1051,12 @@ export default function AdminSoftphone({
       }
     }
 
-    requestSoftphoneAnswer();
+    setSoftphoneOpen(true);
+
+    // Auto-answer ONLY when the notification Answer action was used.
+    if (softphone === "answer") {
+      requestSoftphoneAnswer();
+    }
 
     params.delete("softphone");
     params.delete("from");
@@ -1068,28 +1075,42 @@ export default function AdminSoftphone({
 
   // Custom events from SW bridge
   useEffect(() => {
+    const presentFromDetail = (detail: any) => {
+      if (!detail?.fromNumber) return;
+      const current = getAdminSoftphoneState().activeCall;
+      if (!current || current.status !== "incoming") {
+        presentIncomingSoftphoneCall({
+          phone: detail.fromNumber,
+          contactName: detail.contactName || "שיחה נכנסת",
+          callSid: detail.callSid || null,
+          logId: detail.callId || null,
+          mode: status.voipReady ? "voip" : "device",
+        });
+      }
+      setSoftphoneOpen(true);
+    };
+
     const onAnswer = (event: Event) => {
       const detail = (event as CustomEvent).detail || {};
-      if (detail.fromNumber) {
-        const current = getAdminSoftphoneState().activeCall;
-        if (!current || current.status !== "incoming") {
-          presentIncomingSoftphoneCall({
-            phone: detail.fromNumber,
-            contactName: detail.contactName || "שיחה נכנסת",
-            callSid: detail.callSid || null,
-            logId: detail.callId || null,
-            mode: status.voipReady ? "voip" : "device",
-          });
-        }
-      }
+      presentFromDetail(detail);
       requestSoftphoneAnswer();
+    };
+    const onOpenIncoming = (event: Event) => {
+      const detail = (event as CustomEvent).detail || {};
+      presentFromDetail(detail);
+      // Do NOT answer — user chooses ענה/דחה in the softphone UI.
     };
     const onReject = () => requestSoftphoneReject();
 
     window.addEventListener("bizuply:softphone-answer", onAnswer);
+    window.addEventListener("bizuply:softphone-open-incoming", onOpenIncoming);
     window.addEventListener("bizuply:softphone-reject", onReject);
     return () => {
       window.removeEventListener("bizuply:softphone-answer", onAnswer);
+      window.removeEventListener(
+        "bizuply:softphone-open-incoming",
+        onOpenIncoming
+      );
       window.removeEventListener("bizuply:softphone-reject", onReject);
     };
   }, [status.voipReady]);

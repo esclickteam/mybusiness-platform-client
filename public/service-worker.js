@@ -122,12 +122,14 @@ self.addEventListener("pushsubscriptionchange", (event) => {
   );
 });
 
-// Click / action on a notification → focus app; softphone Answer opens dialer
+// Click / action on a notification → focus app.
+// Softphone: only the "ענה" action answers; body click only opens the incoming UI.
 self.addEventListener("notificationclick", (event) => {
   const action = event.action || "";
   const noteData = (event.notification && event.notification.data) || {};
+  const isSoftphone = noteData.kind === "softphone-incoming";
 
-  if (action === "dismiss") {
+  if (action === "dismiss" || action === "reject") {
     event.notification.close();
     event.waitUntil(
       postToClients({
@@ -142,13 +144,16 @@ self.addEventListener("notificationclick", (event) => {
 
   event.notification.close();
 
-  const isSoftphoneAnswer =
-    action === "answer" ||
-    noteData.kind === "softphone-incoming" ||
-    noteData.softphoneAction === "answer";
+  // ONLY the explicit Answer button answers the call.
+  const isSoftphoneAnswer = isSoftphone && action === "answer";
+  // Body / notification click: open softphone incoming screen, do NOT answer.
+  const isSoftphoneOpen = isSoftphone && !isSoftphoneAnswer;
 
   let absoluteUrl = new URL(
-    noteData.url || (isSoftphoneAnswer ? "/admin/dashboard?softphone=answer" : "/"),
+    noteData.url ||
+      (isSoftphone
+        ? `/admin/dashboard?softphone=${isSoftphoneAnswer ? "answer" : "incoming"}`
+        : "/"),
     self.location.origin
   );
 
@@ -156,8 +161,11 @@ self.addEventListener("notificationclick", (event) => {
     absoluteUrl.searchParams.set("leadId", String(noteData.leadId));
   }
 
-  if (isSoftphoneAnswer) {
-    absoluteUrl.searchParams.set("softphone", "answer");
+  if (isSoftphoneAnswer || isSoftphoneOpen) {
+    absoluteUrl.searchParams.set(
+      "softphone",
+      isSoftphoneAnswer ? "answer" : "incoming"
+    );
     if (noteData.fromNumber) {
       absoluteUrl.searchParams.set("from", String(noteData.fromNumber));
     }
@@ -178,19 +186,31 @@ self.addEventListener("notificationclick", (event) => {
     self.clients
       .matchAll({ type: "window", includeUncontrolled: true })
       .then(async (clientList) => {
-        const softphoneMessage = isSoftphoneAnswer
-          ? {
-              type: "SOFTPHONE_ANSWER",
-              url: pathUrl,
-              fromNumber: noteData.fromNumber || "",
-              contactName: noteData.contactName || "",
-              callSid: noteData.callSid || "",
-              callId: noteData.callId || "",
-            }
-          : {
-              type: "NOTIFICATION_NAVIGATE",
-              url: pathUrl,
-            };
+        let softphoneMessage;
+        if (isSoftphoneAnswer) {
+          softphoneMessage = {
+            type: "SOFTPHONE_ANSWER",
+            url: pathUrl,
+            fromNumber: noteData.fromNumber || "",
+            contactName: noteData.contactName || "",
+            callSid: noteData.callSid || "",
+            callId: noteData.callId || "",
+          };
+        } else if (isSoftphoneOpen) {
+          softphoneMessage = {
+            type: "SOFTPHONE_OPEN_INCOMING",
+            url: pathUrl,
+            fromNumber: noteData.fromNumber || "",
+            contactName: noteData.contactName || "",
+            callSid: noteData.callSid || "",
+            callId: noteData.callId || "",
+          };
+        } else {
+          softphoneMessage = {
+            type: "NOTIFICATION_NAVIGATE",
+            url: pathUrl,
+          };
+        }
 
         if (clientList.length > 0) {
           for (const client of clientList) {
