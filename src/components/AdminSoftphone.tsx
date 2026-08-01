@@ -1049,6 +1049,52 @@ export default function AdminSoftphone({
     setError("");
   }, []);
 
+  // Physical keyboard dialing while softphone dial pad is open.
+  useEffect(() => {
+    if (!open || tab !== "dial") return;
+    if (activeCall) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const tag = String(target?.tagName || "").toLowerCase();
+      const inDigitsField = Boolean(
+        target?.closest?.("[data-softphone-digits]")
+      );
+      // Don't steal typing from other fields (e.g. contact name).
+      if (tag === "textarea") return;
+      if (tag === "input" && !inDigitsField) return;
+
+      const key = event.key;
+      if (/^[0-9*#]$/.test(key)) {
+        event.preventDefault();
+        appendDigit(key);
+        return;
+      }
+      if (key === "+") {
+        event.preventDefault();
+        setDigits((prev) => {
+          if (prev.includes("+") || prev.length >= 18) return prev;
+          return prev ? prev : "+";
+        });
+        setError("");
+        return;
+      }
+      if (key === "Backspace") {
+        event.preventDefault();
+        setDigits((prev) => prev.slice(0, -1));
+        setError("");
+        return;
+      }
+      if (key === "Enter") {
+        event.preventDefault();
+        void startCall();
+      }
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open, tab, activeCall, appendDigit, startCall]);
+
   const toggleMute = useCallback(() => {
     const current = getAdminSoftphoneState().activeCall;
     if (!current || current.held) return;
@@ -1433,14 +1479,23 @@ export default function AdminSoftphone({
                       placeholder="שם איש קשר (אופציונלי)"
                       className="mb-2 w-full border-0 bg-transparent text-sm font-bold text-slate-700 outline-none placeholder:text-slate-300"
                     />
-                    <div className="flex items-center gap-2">
+                    <div
+                      className="flex items-center gap-2"
+                      data-softphone-digits="true"
+                      dir="ltr"
+                    >
                       <input
                         value={digits}
                         onChange={(e) =>
-                          setDigits(e.target.value.replace(/[^\d+*#]/g, ""))
+                          setDigits(
+                            e.target.value.replace(/[^\d+*#]/g, "").slice(0, 18)
+                          )
                         }
                         placeholder="הזינו מספר לחיוג"
                         dir="ltr"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        autoFocus
                         className="w-full border-0 bg-transparent text-center text-3xl font-black tracking-wide text-slate-900 outline-none placeholder:text-slate-300"
                       />
                       {digits ? (
@@ -1466,7 +1521,10 @@ export default function AdminSoftphone({
                     </p>
                   )}
 
-                  <div className="grid flex-1 grid-cols-3 content-center gap-2 px-1 sm:gap-2.5">
+                  <div
+                    className="grid flex-1 grid-cols-3 content-center gap-2 px-1 sm:gap-2.5"
+                    dir="ltr"
+                  >
                     {KEYPAD.map((key) => (
                       <button
                         key={key.digit}
