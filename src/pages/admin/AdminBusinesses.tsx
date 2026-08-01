@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import API from "../../api";
+import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
@@ -236,8 +237,22 @@ function AdminBusinesses() {
                             {biz.owner?.email || ""}
                           </div>
                         </td>
-                        <td className="px-4 py-4" dir="ltr">
-                          {biz.phone || biz.owner?.phone || "—"}
+                        <td className="px-4 py-4">
+                          {biz.phone || biz.owner?.phone ? (
+                            <div className="flex items-center justify-start gap-2">
+                              <span dir="ltr" className="text-sm font-bold text-slate-700">
+                                {biz.phone || biz.owner?.phone}
+                              </span>
+                              <AdminDialButton
+                                phone={biz.phone || biz.owner?.phone}
+                                name={biz.businessName || biz.owner?.name}
+                                source="business"
+                                refId={biz._id}
+                              />
+                            </div>
+                          ) : (
+                            "—"
+                          )}
                         </td>
                         <td className="px-4 py-4">{biz.city || "—"}</td>
                         <td className="px-4 py-4">

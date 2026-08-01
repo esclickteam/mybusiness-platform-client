@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Crown, Settings } from "lucide-react";
 
 import AdminNotifications from "../../components/AdminNotifications";
+import AdminSoftphone from "../../components/AdminSoftphone";
 import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
@@ -158,6 +159,8 @@ function AdminHeader() {
           >
             <Settings className="h-5 w-5" strokeWidth={2.2} />
           </button>
+
+          <AdminSoftphone />
 
           <AdminNotifications />
 

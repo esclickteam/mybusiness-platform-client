@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import API from "../../api";
+import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
@@ -557,8 +558,22 @@ function AdminCustomers() {
                               {customer.owner?.email || ""}
                             </div>
                           </td>
-                          <td className="px-4 py-4" dir="ltr">
-                            {customer.phone || "—"}
+                          <td className="px-4 py-4">
+                            {customer.phone ? (
+                              <div className="flex items-center justify-start gap-2">
+                                <span dir="ltr" className="text-sm font-bold text-slate-700">
+                                  {customer.phone}
+                                </span>
+                                <AdminDialButton
+                                  phone={customer.phone}
+                                  name={customer.businessName || customer.owner?.name}
+                                  source="customer"
+                                  refId={customer._id}
+                                />
+                              </div>
+                            ) : (
+                              "—"
+                            )}
                           </td>
                           <td className="px-4 py-4">
                             <span
