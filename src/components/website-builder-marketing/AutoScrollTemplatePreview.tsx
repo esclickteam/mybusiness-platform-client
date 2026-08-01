@@ -7,7 +7,10 @@ import React, {
   useState,
 } from "react";
 import { VisualPageStackKeepAliveProvider } from "../site-builder/runtime/VisualPageStack";
-import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
+import {
+  loadStudioTemplateRenderer,
+  type StudioTemplateRenderer,
+} from "../site-builder/studio/data/templates/templateRendererRegistry";
 import {
   reportPreviewVisibility,
   subscribePreviewMount,
@@ -100,11 +103,17 @@ export default function AutoScrollTemplatePreview({
   } | null>(null);
   const scrollingRef = useRef(false);
   const [reducedMotion, setReducedMotion] = useState(false);
+  const [renderer, setRenderer] = useState<StudioTemplateRenderer | null>(null);
 
-  const renderer = useMemo(
-    () => getStudioTemplateRenderer(templateId),
-    [templateId],
-  );
+  useEffect(() => {
+    let cancelled = false;
+    loadStudioTemplateRenderer(templateId).then((next) => {
+      if (!cancelled) setRenderer(next);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [templateId]);
 
   const pages = useMemo(() => {
     const all = renderer?.pages || [];

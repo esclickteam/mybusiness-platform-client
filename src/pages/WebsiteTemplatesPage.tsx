@@ -20,9 +20,10 @@ import {
 } from "lucide-react";
 
 import {
-  studioTemplateDefinitions,
-  getStudioTemplateSeedById,
-} from "../components/site-builder/studio/data/templates";
+  templateCatalog,
+  type TemplateCatalogEntry,
+} from "../components/site-builder/studio/data/templates/templateCatalog";
+import { prefetchStudioTemplateRenderers } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
 import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview, {
@@ -272,100 +273,47 @@ function getTemplateSearchText(template: WebsiteTemplate) {
     .toLowerCase();
 }
 
-function mapDefinitionToGalleryTemplate(
-  definition: any,
-  index: number
+function mapCatalogToGalleryTemplate(
+  entry: TemplateCatalogEntry,
+  index: number,
 ): WebsiteTemplate {
-  const seed = (definition?.seed ||
-    getStudioTemplateSeedById(definition?.id || definition?.key) ||
-    {}) as any;
-
-  // Some templates store content as seed.defaultData; others (chanel/cyclora)
-  // set seed = defaultData itself.
-  const defaultData =
-    (definition?.defaultData as Record<string, any> | undefined) ||
-    (seed?.defaultData as Record<string, any> | undefined) ||
-    (seed?.data as Record<string, any> | undefined) ||
-    (seed?.hero || seed?.heroImage || seed?.brand || seed?.images
-      ? (seed as Record<string, any>)
-      : {}) ||
-    {};
-
-  const pickUrl = (...candidates: unknown[]) => {
-    for (const value of candidates) {
-      const src = String(value || "").trim();
-      if (/^https?:\/\//i.test(src) || src.startsWith("/")) return src;
-    }
-    return "";
-  };
-
-  const image = pickUrl(
-    definition?.previewImage,
-    definition?.image,
-    definition?.thumbnailUrl,
-    seed?.previewImage,
-    seed?.image,
-    defaultData.previewImage,
-    defaultData.previewImageUrl,
-    defaultData.thumbnailUrl,
-    defaultData.heroImage,
-    defaultData.image,
-    defaultData.coverImage,
-    defaultData.hero?.image,
-    defaultData.hero?.backgroundImage,
-    defaultData.home?.hero?.image,
-    defaultData.images?.hero,
-    Array.isArray(defaultData.images?.hero)
-      ? defaultData.images.hero[0]
-      : "",
-    Array.isArray(defaultData.products) ? defaultData.products[0]?.image : "",
-    Array.isArray(defaultData.gallery) ? defaultData.gallery[0] : "",
-  );
-
   const badge =
-    definition?.badge ||
-    (definition?.priceLabel === "Premium" ? "Premium" : "") ||
+    entry.badge ||
+    (entry.priceLabel === "Premium" ? "Premium" : "") ||
     "";
+  const image = String(entry.previewImage || entry.image || "").trim();
 
   return {
-    key: String(definition?.id || definition?.key || "").toLowerCase(),
-    name: definition?.name || definition?.id || "Website template",
-    category: definition?.category || seed.category || "business",
-    categoryLabel:
-      definition?.categoryLabel || seed.categoryLabel || definition?.category,
-    description: definition?.description || seed.description || "",
-    niche: seed.niche,
-    layout: seed.layout,
+    key: String(entry.id || "").toLowerCase(),
+    name: entry.name || entry.id || "Website template",
+    category: entry.category || "business",
+    categoryLabel: entry.categoryLabel || entry.category,
+    description: entry.description || "",
     image,
-    heroTitle: seed.heroTitle || defaultData.heroTitle || definition?.name,
-    heroSubtitle:
-      seed.heroSubtitle || defaultData.heroSubtitle || definition?.description,
+    heroTitle: entry.name,
+    heroSubtitle: entry.description || "",
     isNew: badge === "חדש" || badge === "NEW",
     badge,
     thumbnailUrl: image,
     previewImageUrl: image,
-    palette: seed.palette,
     order: index + 1,
   };
 }
 
 /**
- * Merge the templates coming from Mongo with the in-app studio template
- * definitions, so every locally-registered template shows up in the gallery
- * even if it hasn't been synced to Mongo yet. Server data (edited names,
- * uploaded images, etc.) takes precedence when it exists and is not empty.
+ * Merge the templates coming from Mongo with the light local catalog,
+ * so every registered template shows up even before Mongo sync.
+ * Server data takes precedence when present.
  */
 function mergeWithLocalTemplates(
   serverTemplates: WebsiteTemplate[]
 ): WebsiteTemplate[] {
   const byKey = new Map<string, WebsiteTemplate>();
 
-  studioTemplateDefinitions.forEach((definition, index) => {
-    const key = normalizeText(
-      (definition as any)?.id || (definition as any)?.key
-    );
+  templateCatalog.forEach((entry, index) => {
+    const key = normalizeText(entry.id);
     if (!key) return;
-    byKey.set(key, mapDefinitionToGalleryTemplate(definition, index));
+    byKey.set(key, mapCatalogToGalleryTemplate(entry, index));
   });
 
   serverTemplates.forEach((template) => {
@@ -413,10 +361,13 @@ async function fetchWebsiteTemplates() {
 }
 
 function normalizeTemplateForMongo(template: any, index: number) {
-  const seed = getStudioTemplateSeedById(template.id);
+  const catalog = templateCatalog.find(
+    (entry) => entry.id === String(template.id || "").toLowerCase(),
+  );
 
   const image =
-    seed?.image ||
+    catalog?.image ||
+    catalog?.previewImage ||
     template.image ||
     template.previewImage ||
     template.previewImageUrl ||
@@ -425,20 +376,21 @@ function normalizeTemplateForMongo(template: any, index: number) {
     "";
 
   return {
-    key: template.id || seed?.id,
-    id: template.id || seed?.id,
+    key: template.id || catalog?.id,
+    id: template.id || catalog?.id,
 
-    name: template.name || seed?.name || template.id,
+    name: template.name || catalog?.name || template.id,
 
-    category: template.category || seed?.category || "business",
+    category: template.category || catalog?.category || "business",
 
     categoryLabel:
       template.categoryLabel ||
       template.category ||
-      seed?.category ||
+      catalog?.categoryLabel ||
+      catalog?.category ||
       "Website template",
 
-    description: template.description || seed?.description || "",
+    description: template.description || catalog?.description || "",
 
     niche: seed?.niche || template.category || "business",
 
@@ -451,18 +403,17 @@ function normalizeTemplateForMongo(template: any, index: number) {
     previewImageUrl: image,
 
     heroTitle:
-      seed?.heroTitle ||
       template.heroTitle ||
       template.name ||
+      catalog?.name ||
       i18n.t("websiteTemplates.defaultHeroTitle"),
 
     heroSubtitle:
-      seed?.heroSubtitle ||
       template.description ||
-      seed?.description ||
+      catalog?.description ||
       i18n.t("websiteTemplates.defaultHeroSubtitle"),
 
-    palette: seed?.palette || {
+    palette: {
       primary: "#111827",
       secondary: "#4B5563",
       accent: "#2563EB",
@@ -473,13 +424,13 @@ function normalizeTemplateForMongo(template: any, index: number) {
       dark: "#020617",
     },
 
-    blocks: seed?.blocks || [],
+    blocks: [],
 
     tags: [
       template.category,
       template.categoryLabel,
       template.author,
-      seed?.niche,
+      catalog?.category,
     ].filter(Boolean),
 
     isActive: true,
@@ -497,7 +448,7 @@ function normalizeTemplateForMongo(template: any, index: number) {
 }
 
 async function syncExistingWebsiteTemplatesToMongo() {
-  const templates = studioTemplateDefinitions.map((template, index) =>
+  const templates = templateCatalog.map((template, index) =>
     normalizeTemplateForMongo(template, index)
   );
 
@@ -665,10 +616,15 @@ export default function WebsiteTemplatesPage() {
   // Warm live previews for the first viewport rows as soon as the list is ready.
   useEffect(() => {
     if (!visibleTemplates.length) return;
-    prefetchGalleryPreviewKeys(
-      visibleTemplates.slice(0, GALLERY_PRELOAD_LIVE).map((item) => item.key),
-      { limit: GALLERY_PRELOAD_LIVE, priority: true },
-    );
+    const keys = visibleTemplates
+      .slice(0, GALLERY_PRELOAD_LIVE)
+      .map((item) => item.key);
+    prefetchGalleryPreviewKeys(keys, {
+      limit: GALLERY_PRELOAD_LIVE,
+      priority: true,
+    });
+    // Also prefetch the first few template JS chunks so live mounts feel instant.
+    prefetchStudioTemplateRenderers(keys.slice(0, 6));
   }, [visibleTemplates]);
 
   // Prefetch the next chunk of card shells in idle time (before user scrolls).
@@ -775,11 +731,14 @@ export default function WebsiteTemplatesPage() {
     .trim()
     .toLowerCase();
 
-  const localSeed = getStudioTemplateSeedById(cleanTemplateKey);
-  const localSeedAny = (localSeed || {}) as any;
+  // Prefetch the single template chunk before navigating to the editor.
+  prefetchStudioTemplateRenderers([cleanTemplateKey]);
+
+  const catalogEntry = templateCatalog.find(
+    (entry) => entry.id === cleanTemplateKey,
+  );
 
   const templateForEditor = {
-    ...localSeedAny,
     ...selectedTemplate,
 
     id: cleanTemplateKey,
@@ -789,40 +748,33 @@ export default function WebsiteTemplatesPage() {
     renderMode: "registry",
     editorMode: "renderer",
 
-    name: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
-    category: selectedTemplate.category || localSeed?.category || "business",
-    description: selectedTemplate.description || localSeed?.description || "",
+    name: selectedTemplate.name || catalogEntry?.name || cleanTemplateKey,
+    category:
+      selectedTemplate.category || catalogEntry?.category || "business",
+    description:
+      selectedTemplate.description || catalogEntry?.description || "",
 
     heroTitle:
-      localSeedAny.heroTitle ||
       selectedTemplate.heroTitle ||
       selectedTemplate.name ||
+      catalogEntry?.name ||
       t("websiteTemplates.defaultHeroTitle"),
 
     heroSubtitle:
-      localSeedAny.heroSubtitle ||
       selectedTemplate.heroSubtitle ||
       selectedTemplate.description ||
-      localSeed?.description ||
+      catalogEntry?.description ||
       t("websiteTemplates.defaultHeroSubtitle"),
 
-    palette: localSeed?.palette || selectedTemplate.palette || {},
+    palette: selectedTemplate.palette || {},
 
-    fonts:
-      localSeedAny.fonts ||
-      selectedTemplate.fonts ||
-      {},
+    fonts: selectedTemplate.fonts || {},
 
-    layoutSettings:
-      localSeedAny.layoutSettings ||
-      selectedTemplate.layoutSettings ||
-      {},
+    layoutSettings: selectedTemplate.layoutSettings || {},
 
-    blocks: Array.isArray(localSeed?.blocks)
-      ? localSeed.blocks
-      : Array.isArray(selectedTemplate.blocks)
-        ? selectedTemplate.blocks
-        : [],
+    blocks: Array.isArray(selectedTemplate.blocks)
+      ? selectedTemplate.blocks
+      : [],
   };
 
   localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
@@ -839,9 +791,13 @@ export default function WebsiteTemplatesPage() {
 
     const site = await createMySite({
       businessId,
-      name: selectedTemplate.name || localSeed?.name || t("websiteTemplates.defaultSiteName"),
+      name:
+        selectedTemplate.name ||
+        catalogEntry?.name ||
+        t("websiteTemplates.defaultSiteName"),
       templateKey: cleanTemplateKey,
-      templateName: selectedTemplate.name || localSeed?.name || cleanTemplateKey,
+      templateName:
+        selectedTemplate.name || catalogEntry?.name || cleanTemplateKey,
     });
 
     if (site?._id) {

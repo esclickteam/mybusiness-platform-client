@@ -1,0 +1,2038 @@
+[
+  {
+    "id": "adion",
+    "folder": "adion",
+    "name": "Adion",
+    "category": "תיק עבודות",
+    "categoryLabel": "",
+    "description": "תבנית פרימיום לסטודיו צילום ווידאו, עם פתיחה קולנועית, טיפוגרפיה גדולה, כרטיסי תמונה, עבודות נבחרות וקריאה לפעולה חזקה."
+  },
+  {
+    "id": "adspire",
+    "folder": "adspire",
+    "name": "Adspire",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות פרסום: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "advisora",
+    "folder": "advisora",
+    "name": "Advisora",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה לייעוץ עסקי: הירו סמכותי, שירותי ייעוץ, תהליך עבודה, מקרי בוחן וטופס שיחה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "arbora",
+    "folder": "arbora",
+    "name": "Arbora",
+    "category": "service",
+    "categoryLabel": "נוף וגינון",
+    "description": "תבנית אדריכלות נוף וגינון בעברית: צילום בוטני מלא, קווים ישרים, זית ואבן — פריסה עריכתית בלי כרטיסים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "archora",
+    "folder": "archora",
+    "name": "Archora",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום אדריכלות עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "atelierx",
+    "folder": "atelierx",
+    "name": "Atelier X",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום בוטיק אופנה עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "audiolux",
+    "folder": "audiolux",
+    "name": "Audiolux",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות אודיו קולנועית: אוזניות, רמקולים ומערכות — 11 עמודים עשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "aurayoga",
+    "folder": "aurayoga",
+    "name": "Aurayoga",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום יוגה וולנס עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "aurelia",
+    "folder": "aurelia",
+    "name": "Aurelia",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית מסעדת שף פרימיום עם הירו כהה ואלגנטי, סיפור המסעדה, תפריט עונתי, חוויית סועד, גלריה, ביקורות והזמנת שולחן.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "autovolt",
+    "folder": "autovolt",
+    "name": "Autovolt",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום דיטיילינג רכב עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "axispoint",
+    "folder": "axispoint",
+    "name": "Axispoint",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית diagonal: הירo מפוצל אלכסוני, כרטיסים על grid skewed וטופס קשר על פanel זווית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "azureline",
+    "folder": "azureline",
+    "name": "Azureline",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית שכירת יאכטות: הירו מינימלי עם קו אופק ripple, נקודות מסלול, מפרטי כלי שייט ופס הזמנה — אפקט ripple-expand.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "babynest",
+    "folder": "babynest",
+    "name": "Babynest",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות תינוקות וילדים מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "bagora",
+    "folder": "bagora",
+    "name": "Bagora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות תיקים ואקססוריז: 11 עמודים, סטודיו רצועות, וקטלוג מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "bakora",
+    "folder": "bakora",
+    "name": "Bakora",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית מאפייה: שכבות בצק כמו למינציה, מדפי מאפים אופקיים, אדים עדינים וטופס הזמנה בסגנון תג מחיר — חמימות של תנור בבוקר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "bladehaus",
+    "folder": "bladehaus",
+    "name": "Bladehaus",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה למספרה: הירו חד, מחירון שירותים, צוות ספרים, שעות וטופס תור.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "blockwise",
+    "folder": "blockwise",
+    "name": "Blockwise",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית בrutalist: בלוקים מוערמים עם stagger climb, אינדקס נכסים ממוספר ופס קשר טיפוגרפי נועז.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "blushlab",
+    "folder": "blushlab",
+    "name": "Blushlab",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו איפור מודרני: לוקים, צוות מאפרות, חבילות כלה ותיאום תורים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "booknook",
+    "folder": "booknook",
+    "name": "Booknook",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות ספרים ומכתבים מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "brandforge",
+    "folder": "brandforge",
+    "name": "Brandforge",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות מיתוג: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "brewline",
+    "folder": "brewline",
+    "name": "Brewline",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום בית קפה עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "brewora",
+    "folder": "brewora",
+    "name": "Brewora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות קפה ספיישלטי עשירה: 11 עמודים, 10 סקשנים בכל עמוד, קטלוג מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "bridaluxe",
+    "folder": "bridaluxe",
+    "name": "Bridaluxe",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "איפור כלות יוקרתי: ניסיון, יום אירוע, מלוות ותיק טאצ׳־אפ.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "brokeria",
+    "folder": "brokeria",
+    "name": "Brokeria",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית קולנועית: הירו מסך מלא, טיקר נכסים נגלל, כרטיסי נכס עם זום, צוות סוכנים וסטטיסטיקות מונפשות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "browline",
+    "folder": "browline",
+    "name": "Browline",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "עיצוב גבות: מיפוי, פינצטה, צבע ולמינציה למראה מסודר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "brunchhaus",
+    "folder": "brunchhaus",
+    "name": "Brunchhaus",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית בראנץ׳ שמשית: הירו עם קרני שמש מסתובבות, גלריית פולארויד מסובבת, לוח סוף-שבוע כרשת וטופס גלויה — תנועה קלילה ושמחה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "burgerhaus",
+    "folder": "burgerhaus",
+    "name": "Burgerhaus",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית בורגר: שכבות סמאש, לחמנייה זהובה וטופס הזמנה כבד — גריל אמריקאי ישיר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "campusly",
+    "folder": "campusly",
+    "name": "Campusly",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "שיעורים פרטיים אקדמיים: הירו ספרייה, טבלת מקצועות ולוח סמסטר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "chromabar",
+    "folder": "chromabar",
+    "name": "Chromabar",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "בר צבע לשיער: בליאז׳, גוונים, תיקוני צבע וברק.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "cinder",
+    "folder": "cinder",
+    "name": "Cinder",
+    "category": "food",
+    "categoryLabel": "קפה ואוכל",
+    "description": "תבנית בית קלייה וקפה בעברית: טיפוגרפיה ענקית, רצועות צילום חדות, תפריט כרשימה טיפוגרפית — בלי כרטיסים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "citadel",
+    "folder": "citadel",
+    "name": "Citadel",
+    "category": "technology",
+    "categoryLabel": "סייבר ואבטחה",
+    "description": "תבנית סייבר: אסתטיקת טרמינל, ירוק מטריקס, 6 עמודים עם אנימציות סריקה וכניסות.",
+    "badge": "פרימיום",
+    "priceLabel": "פרימיום"
+  },
+  {
+    "id": "clearskin",
+    "folder": "clearskin",
+    "name": "Clearskin",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "קליניקה לאקנה וקוסמטיקה רפואית: אבחון, סדרות ומעקב.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "closora",
+    "folder": "closora",
+    "name": "Closora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות מכירות: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "clothora",
+    "folder": "clothora",
+    "name": "Clothora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות בגדים עשירה: 11 עמודים, 10 סקשנים בכל עמוד, קטלוג מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "codehaus",
+    "folder": "codehaus",
+    "name": "Codehaus",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "בוטקמפ תכנות בסגנון טרמינל: הירו עם שורות מוקלדות, קורסי קוד וטיימליין.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "contentra",
+    "folder": "contentra",
+    "name": "Contentra",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות תוכן: 8 עמודים, תנועה, אפקטים ועיצוב editorial magazine.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "coraline",
+    "folder": "coraline",
+    "name": "Coraline",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית בית ספר לצלילה: הירו תת-ימי עם בועות צפות, כרטיסי זכוכית, ציר עומק וטופס טבילה — אפקט shimmer ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "cosmella",
+    "folder": "cosmella",
+    "name": "Cosmella",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "קוסמטיקאית בוטיק: אבחון עור, ניקוי עמוק, לחות ושגרת בית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "craftora",
+    "folder": "craftora",
+    "name": "Craftora",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "סדנאות אמנות: הירו קולאז׳ עיתונאי, רשימת סדנאות אסימטרית ואטלייה.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "crisisdesk",
+    "folder": "crisisdesk",
+    "name": "CrisisDesk",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות תקשורת משברים: 8 עמודים, תנועה, אפקטים ועיצוב newsroom alert.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "crustora",
+    "folder": "crustora",
+    "name": "Crustora",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית פיצרייה: הירו באלכסון עם פיצה מסתובבת, תפריט כבלוקי משולשים, רצועת חום תנור וטופס כרטיס הזמנה — אבק קמח ואנימציית stretch.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "denimlab",
+    "folder": "denimlab",
+    "name": "Denimlab",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות דנים וסטרית: 11 עמודים עשירים עם קטלוג חי מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "dentelle",
+    "folder": "dentelle",
+    "name": "Dentelle",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום רפואת שיניים עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "dermara",
+    "folder": "dermara",
+    "name": "Dermara",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "קליניקת עור נקייה: אבחונים, פרוטוקולים, צוות קוסמטיקאיות ויומן תורים.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "dessertlab",
+    "folder": "dessertlab",
+    "name": "Dessertlab",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית פטיסרי: גבישי סוכר, קינוחים גיאומטריים וטופס הזמנה אלגנטי — מעבדת מתיקות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "dimsumix",
+    "folder": "dimsumix",
+    "name": "Dimsumix",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית דימ סאם: סלי במבוק מאודים, ענני קיטור וטופס הזמנה עגול — סעודת בוקר אסייתית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "domora",
+    "folder": "domora",
+    "name": "Domora",
+    "category": "Real Estate",
+    "categoryLabel": "",
+    "description": "A clean premium real estate template inspired by modern luxury residence layouts, with rounded navigation, strong visuals, properties, articles, testimonials and FAQ."
+  },
+  {
+    "id": "driftwood",
+    "folder": "driftwood",
+    "name": "Driftwood",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית מסעדה על החול: הירו אורgani עם driftwood צף, תפריט scroll, סיפור שף חופף וטופס הזמנה — grain drift animation.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "dunewave",
+    "folder": "dunewave",
+    "name": "Dunewave",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית ריזורט על דיונות: הירו פרallax עם גלי חול SVG, כרטיסי וילות אופקיים, סטטיסטיקות חול ושקיעה — תנועה איטית וקולנועית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "dwellist",
+    "folder": "dwellist",
+    "name": "Dwellist",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית תוכנית קומה: הירו מפוצל עם SVG מונפש, כרטיסי חדרים, השוואת נכסים ומחשבון משכנתא דקורטיבי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "emberplate",
+    "folder": "emberplate",
+    "name": "Emberplate",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית גריל וסטייקים: הירו עם ניצוצות אש עולים, תפריט כציר בשר אנכי, שבבי שעות זוהרים וטופס הזמנה עם פעימת גחלים — תנועה חמה וקולנועית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "estateo",
+    "folder": "estateo",
+    "name": "Estateo",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית פרסטיז׳ שחורה-זהב עם כותרת מותג ממורכזת, כרזת הירו אסימטרית, שורות אחוזה מלאות מסך ומניפסט מוזהב.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "eventide",
+    "folder": "eventide",
+    "name": "Eventide",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות אירועים: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "fernora",
+    "folder": "fernora",
+    "name": "Fernora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "משתלה דיגיטלית: צמחי בית, עציצים וכלי גינון — 11 עמודים עשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "florique",
+    "folder": "florique",
+    "name": "Florique",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום עיצוב פרחים עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "fluxora",
+    "folder": "fluxora",
+    "name": "Fluxora",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "תבנית מקצועית בעברית לפלטפורמת ידע ופיד למפתחים: הירו עם כרטיסי פיד, קהילה, יכולות, תמחור, ביקורות וטופס הדגמה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "formara",
+    "folder": "formara",
+    "name": "Formara",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה לסטודיו עיצוב פנים: הירו אדריכלי, פרויקטים, תהליך עיצוב וטופס ייעוץ.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "formella",
+    "folder": "formella",
+    "name": "Formella",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו טיפולי גוף: עיצוב, ניקוז, חבילות מסלול ויומן תורים מקצועי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "fortiva",
+    "folder": "fortiva",
+    "name": "Fortiva",
+    "category": "business",
+    "categoryLabel": "עסקים ושירותים",
+    "description": "תבנית פרימיום למשרד עורכי דין וייעוץ פיננסי עם הירו אלגנטי, ערכים, תחומי עיסוק, תהליך עבודה, הצלחות, צוות וטופס פנייה.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "framehaus",
+    "folder": "framehaus",
+    "name": "Framehaus",
+    "category": "portfolio",
+    "categoryLabel": "פורטפolio וצילום",
+    "description": "תבנית סטודיו צילום: פריימים מלבניים א-symmetric, שחור-לבן, 5 עמודים עשירים בסקשנים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "franchora",
+    "folder": "franchora",
+    "name": "Franchora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות פיתוח זכיינות: 8 עמודים, תנועה, אפקטים ועיצוב system map multi-location.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "gelatix",
+    "folder": "gelatix",
+    "name": "Gelatix",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית ג׳לאטו: טפטופי המסה, כדורים צפים וטופס הזמנה מתוק — קרירות איטלקית רכה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "gelora",
+    "folder": "gelora",
+    "name": "Gelora",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו לק ג׳ל מדויק: צבעים עונתיים, תיקונים מהירים ותורים נוחים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "gleamora",
+    "folder": "gleamora",
+    "name": "Gleamora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות תכשיטים יוקרתית: 11 עמודים, ויטרינות, וקטלוג מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "glintica",
+    "folder": "glintica",
+    "name": "Glintica",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה למאפרת: הירו זוהר, שירותי איפור, גלריה, חבילות כלות וטופס הזמנה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "glowhaus",
+    "folder": "glowhaus",
+    "name": "Glowhaus",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "טרקלין יופי אורבני: חבילות זוהר, צוות רב־תחומי וחוויית תורים סלון.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "glowlab",
+    "folder": "glowlab",
+    "name": "Glowlab",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות קוסמטיקה ויופי מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "greenbite",
+    "folder": "greenbite",
+    "name": "Greenbite",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות מזון אורגני מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "gridline",
+    "folder": "gridline",
+    "name": "Gridline",
+    "category": "architecture",
+    "categoryLabel": "אדריכלות ובנייה",
+    "description": "תבנית אדריכלות בראוטליסטית: רשת גריד גלויה, פינות ישרות, 6 עמודים וסקשנים עם כניסות תנועה.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "groomora",
+    "folder": "groomora",
+    "name": "Groomora",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "טיפוח גברים: עור, זקן, גבות ושגרת טיפול קצרה ומדויקת.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "growthly",
+    "folder": "growthly",
+    "name": "Growthly",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות שיווק: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "handcraft",
+    "folder": "handcraft",
+    "name": "Handcraft",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה עברי לשירותי בית: אינסטלציה, חשמל ושיפוצים בעיצוב תעשייתי חד עם צילום מלא, גריד טיפוגרפי, מחירון, אזורי שירות וקריאה דחופה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "homara",
+    "folder": "homara",
+    "name": "Homara",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית משפחתית חמה עם תמונת הירו עגולה יחידה, בתים בזיג-זג, רשימת שכונות טיפוגרפית, טלפון ענק ופוטר רך.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "homecraft",
+    "folder": "homecraft",
+    "name": "Homecraft",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות בית ועיצוב מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "horizon",
+    "folder": "horizon",
+    "name": "Horizon",
+    "category": "realestate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית נדל״ן פנורמית: פאנלים אופקיים רחבים, חול-פחם, 6 עמודים מורכבים.",
+    "badge": "Premium",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "horizonix",
+    "folder": "horizonix",
+    "name": "Horizonix",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית סיורי צילום: הירo panorama carousel עם 3 פאנלים, גaleria zoom, חבילות טיול וטופס lens — pan-slide animation.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "ido",
+    "folder": "ido",
+    "name": "IDO",
+    "category": "beauty",
+    "categoryLabel": "",
+    "description": "תבנית פרימיום לקוסמטיקה ותיאום תורים עם Hero דרמטי, תמונה נפתחת לצדדים, טיפולים, גלריה וטופס תור."
+  },
+  {
+    "id": "influencix",
+    "folder": "influencix",
+    "name": "Influencix",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות משפיענים: 8 עמודים, תנועה, אפקטים ועיצוב creator spotlight.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "insightix",
+    "folder": "insightix",
+    "name": "Insightix",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות מחקר שוק: 8 עמודים, תנועה, אפקטים ועיצוב charts insight cards.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "insureva",
+    "folder": "insureva",
+    "name": "Insureva",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות ביטוח: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "jewelis",
+    "folder": "jewelis",
+    "name": "Jewelis",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות תכשיטים ושעונים מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "juicepress",
+    "folder": "juicepress",
+    "name": "Juicepress",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית מיצים: פרצי הדרים, בקבוקים זוהרים וטופס הזמנה רענן — בר מיצים אנרגטי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "justora",
+    "folder": "justora",
+    "name": "Justora",
+    "category": "business",
+    "categoryLabel": "עורכי דין",
+    "description": "תבנית פרימיום למשרדי עורכי דין עם הירו סמכותי, תחומי התמחות, בדיקת תיק, צוות, תיקים, המלצות, מאמרים וטופס ייעוץ.",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "keyora",
+    "folder": "keyora",
+    "name": "Keyora",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית ברוקראז׳ מודרנית עם הירו טיפוגרפי, חיפוש ללא תמונה, שורות נכסים ממוספרות, תהליך 01/02/03 וטופס עם פאנל כחול.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "kickora",
+    "folder": "kickora",
+    "name": "Kickora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות סניקרס וסטריט: דרופים, קולקציות ואביזרים — 11 עמודים עם אנרגיית רחוב.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "kidwise",
+    "folder": "kidwise",
+    "name": "Kidwise",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "חינוך לילדים: הירו שובב עם צורות רכות, מסלול צבעוני ומורים חברותיים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "kinetic",
+    "folder": "kinetic",
+    "name": "Kinetic",
+    "category": "fitness",
+    "categoryLabel": "כושר וספורט",
+    "description": "תבנית כושר Kinetic: פסים אדומים-שחורים, תנועה אגרסיבית, 5 עמודים עם סקשנים רבים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "landmark",
+    "folder": "landmark",
+    "name": "Landmark",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית עיר: סילhouette עם נקודות map pin, כרטיסי מדריך אזורים ושורות נכסים עם תגי מיקום.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "lashatelier",
+    "folder": "lashatelier",
+    "name": "Lashatelier",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "אטלייה לריסים: קלאסיק, ווליום, מילוי ומיפוי עין.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "lashora",
+    "folder": "lashora",
+    "name": "Lashora",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו ריסים וגבות: הארכות, למינציה, מיפוי גבות ויומן תורים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "launchora",
+    "folder": "launchora",
+    "name": "Launchora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות השקות מוצר: 8 עמודים, תנועה, אפקטים ועיצוב countdown ignition.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "lectora",
+    "folder": "lectora",
+    "name": "Lectora",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "פלטפורמת קורסים קולנועית: הירו מלא, מארקי של קורסים, סילבוס ממוספר ומנטורים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "ledger",
+    "folder": "ledger",
+    "name": "Ledger",
+    "category": "finance",
+    "categoryLabel": "פיננסים וחשבונאות",
+    "description": "תבנית פיננסית: גריד טבלאי, ירוק-קרם, 5 עמודים עם סקשנים מובנים וברורים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "lenscraft",
+    "folder": "lenscraft",
+    "name": "Lenscraft",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה לסטודיו צילום: הירו ויזואלי, גלריות, חבילות צילום וטופס הזמנה.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "lexhaven",
+    "folder": "lexhaven",
+    "name": "Lexhaven",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה למשרד עו״ד: הירו רציני, תחומי התמחות, צוות, אמינות וטופס ייעוץ.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "linenhaus",
+    "folder": "linenhaus",
+    "name": "Linenhaus",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות טקסטיל לבית: מצעים, מגבות ווילונות — 11 עמודים עשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "lobbyhaus",
+    "folder": "lobbyhaus",
+    "name": "Lobbyhaus",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות ממשל ולובינג: 8 עמודים, תנועה, אפקטים ועיצוב institutional formal.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "lotera",
+    "folder": "lotera",
+    "name": "Lotera",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית חוף יוקרתית עם הירו קולנועי, דוק זכוכית, מסילת נכסים אופקית, סיפור מים חופף וטופס כהה מלא רוחב.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "loungora",
+    "folder": "loungora",
+    "name": "Loungora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות הלבשת בית ולאונג׳: 11 עמודים רגועים עם קטלוג מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "lumenware",
+    "folder": "lumenware",
+    "name": "Lumenware",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות אלקטרוניקה וגאדג׳טים מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "luminelle",
+    "folder": "luminelle",
+    "name": "Luminelle",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה אלגנטי לסלון יופי בוטיק: טיפולים, לפני/אחרי, מוצרי פרימיום, צוות, חבילות, FAQ וטופס תור בשפה editorial נקייה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "lunelle",
+    "folder": "lunelle",
+    "name": "Lunelle",
+    "category": "beauty",
+    "categoryLabel": "ביוטי",
+    "description": "תבנית מקורית מלאה לבונת ציפורניים, מניקור, פדיקור, לק ג׳ל, גלריה, מחירון וקביעת תורים.",
+    "priceLabel": "חינם"
+  },
+  {
+    "id": "markora",
+    "folder": "markora",
+    "name": "Markora",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה לסוכנות שיווק: הירו נועז, שירותי מדיה, קמפיינים, תוצאות וטופס בריף.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "masterly",
+    "folder": "masterly",
+    "name": "Masterly",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "מאסטרקלאס יוקרתי: הירו מותג־דומיננטי, כיתות מודגשות ומאסטרים באור זרקור.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "mediavault",
+    "folder": "mediavault",
+    "name": "Mediavault",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות מדיה: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "mentora",
+    "folder": "mentora",
+    "name": "Mentora",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "אתר מנטורשיפ: הירו מפוצל דביק, מסלולי ליווי, תהליך מעגלי ומנטורים.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "meridian",
+    "folder": "meridian",
+    "name": "Meridian",
+    "category": "business",
+    "categoryLabel": "אירוח ומלונאות",
+    "description": "תבנית בוטיק מלון בעברית: הירו צילום מלא, פסים אופקיים חדים, טיפוגרפיה סריף, בלי כרטיסיות מעוגלות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "mezzaline",
+    "folder": "mezzaline",
+    "name": "Mezzaline",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית מזטה ים-תיכונית: הירו מוזאיקה של ארבעה צילומים עם זיתים צפים, מסילת מנות משותפות, פס ציטוט קלף וטופס שולחן גן — תנועה בוטנית רכה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "microarch",
+    "folder": "microarch",
+    "name": "Microarch",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "מיקרובליידינג טבעי: שערה-שערה, התאמת פיגמנט וביקורת החלמה.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "mirage",
+    "folder": "mirage",
+    "name": "Mirage",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית ריזורט מדבר-ים: הירו עם heat shimmer, כרטיסי oasis, פסי טמפרטורה וטופס mirage — אפקט wobble ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "monolith",
+    "folder": "monolith",
+    "name": "Monolith",
+    "category": "business",
+    "categoryLabel": "עסקים וייעוץ",
+    "description": "תבנית קorporativ מונולитית: עמודים אנכיים, זהב על נייבי, 6 עמודים מורכבים ללא כרטיסיות מעוגלות.",
+    "badge": "Premium",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "nadlanist",
+    "folder": "nadlanist",
+    "name": "Nadlanist",
+    "category": "Real Estate",
+    "categoryLabel": "",
+    "description": "A premium real estate agent template with cinematic styling, private pricing, property cards, advisory sections and strong contact CTAs."
+  },
+  {
+    "id": "nailmuse",
+    "folder": "nailmuse",
+    "name": "Nailmuse",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "נייל ארט יצירתי: איורים, כרום, תלת־ממד וקולקציות עונתיות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "nailora",
+    "folder": "nailora",
+    "name": "Nailora",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סלון ציפורניים צבעוני: גריד טיפוליים, לפני/אחרי ויומן תורים אינטראקטיבי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "narrativa",
+    "folder": "narrativa",
+    "name": "Narrativa",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות יחסי ציבור: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "nestiq",
+    "folder": "nestiq",
+    "name": "Nestiq",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית counters: הירo עם סטטיסטיקות מונפשות, כרטיסי נכס עם badges ו-FAQ ויזואלי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "nestora",
+    "folder": "nestora",
+    "name": "Nestora",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית בוטיק שקטה: הירו ציטוט גדול עם נכס מוביל, שלושה נכסים בלבד בערימה מרווחת, גישה כמכתב אישי וטופס קטן לצד פתק.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "nestware",
+    "folder": "nestware",
+    "name": "Nestware",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות מוצרי בית: ארגון, דקור וכלים — 11 עמודים עם 10 סקשנים בכל אחד.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "neuralis",
+    "folder": "neuralis",
+    "name": "Neuralis",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום AI וטכנולוגיה עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "nexora",
+    "folder": "nexora",
+    "name": "Nexora",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "תבנית דף נחיתה ל-SaaS / הייטק עם הירו מוצר, לוגואים, גריד יכולות, תהליך, תמחור, ביקורות, שאלות נפוצות וטופס דמו.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "noodlix",
+    "folder": "noodlix",
+    "name": "Noodlix",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית ראמן ואסיה: הירו עם קיטור עולה סביב קערה, תפריט רדיאלי עגול, שלבי הכנה במקלות אכילה וטופס עגול — אפקטי steam וריחוף.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "noteline",
+    "folder": "noteline",
+    "name": "Noteline",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "בית ספר למוזיקה: הירו עם גלי קול, טרקליסט קורסים וקו מנחים על הבמה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "novastra",
+    "folder": "novastra",
+    "name": "Novastra",
+    "category": "ecommerce",
+    "categoryLabel": "חנויות / אופנה",
+    "description": "תבנית אופנה / מסחר אלקטרוני פרימיום עם הירו קולאז׳, מגה־מניו, באנרים זזים, רשת מוצרים, ביקורות, יומן, FAQ וניוזלטר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "numeris",
+    "folder": "numeris",
+    "name": "Numeris",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה להנהלת חשבונות: הירו נקי, שירותי כספים, שקיפות, חבילות וטופס הצטרפות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "openhaus",
+    "folder": "openhaus",
+    "name": "Openhaus",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית carousel 3D: הירו עם פאנלים מסתובבים, לוח open house וגלריית masonry.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "panora",
+    "folder": "panora",
+    "name": "Panora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות כלי מטבח בסגנון ספר מתכונים: סירים, סכינים ואביזרים — 11 עמודים עשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "parcel",
+    "folder": "parcel",
+    "name": "Parcel",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית קרקעות ומגרשים בגישת סקר: מספר ענק על רשת מפה, תמונת חלקה משובצת, מפרטי מגרשים בסגנון מגזין והערות תכנון כשולי מסמך.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "partnerly",
+    "folder": "partnerly",
+    "name": "Partnerly",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות שותפויות ואפיליאציה: 8 עמודים, תנועה, אפקטים ועיצוב network nodes.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "pastafora",
+    "folder": "pastafora",
+    "name": "Pastafora",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית פסטה: מערבולות נודלס, רטבים עשירים וטופס הזמנה איטלקי — טרטוריה חמה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "pawhaus",
+    "folder": "pawhaus",
+    "name": "Pawhaus",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום טיפול בחיות עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "peelora",
+    "folder": "peelora",
+    "name": "Peelora",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "טיפולי פנים ופילינג: חידוש מרקם, פיגמנטציה וזוהר מדורג.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "permanova",
+    "folder": "permanova",
+    "name": "Permanova",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו PMU: שפתיים, אייליינר, גבות ותהליך החלמה ברור.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "petaluxe",
+    "folder": "petaluxe",
+    "name": "Petaluxe",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "יופי לכלות: ניסיונות, לוקים, צוות כלה ויומן חזרות ותורים.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "petora",
+    "folder": "petora",
+    "name": "Petora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות ציוד לחיות מחמד מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "pharmora",
+    "folder": "pharmora",
+    "name": "Pharmora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות פארם וטיפוח: ויטמינים, טיפוח ועזרה ראשונה — 11 עמודים מלאים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "pitchora",
+    "folder": "pitchora",
+    "name": "Pitchora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות פיץ' ויחסי משקיעים: 8 עמודים, תנועה, אפקטים ועיצוב dark pitch-deck slides.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "plantora",
+    "folder": "plantora",
+    "name": "Plantora",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית טבעונית: שורשים צומחים, ירק חי וטופס הזמנה ירוק — מטבח צמחי אלגנטי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "playora",
+    "folder": "playora",
+    "name": "Playora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות צעצועים ארקיידית: משחקים, דמויות ויצירה — 11 עמודים צבעוניים ועשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "podcastix",
+    "folder": "podcastix",
+    "name": "Podcastix",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות פודקאסט ואודיו: 8 עמודים, תנועה, אפקטים ועיצוב waveform mic.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "pokeline",
+    "folder": "pokeline",
+    "name": "Pokeline",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית פוקה: קערות במסלול עיגול, מרכיבים צבעוניים וטופס הזמנה קליל — רעננות פסיפית.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "polyglota",
+    "folder": "polyglota",
+    "name": "Polyglota",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "בית ספר לשפות: הירו ממורכז, מארקי שפות, מסלול זיגזג ומורים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "primeview",
+    "folder": "primeview",
+    "name": "Primeview",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית compare slider: הירo מפוצל עם ידית CSS, תצוגת before/after ופסי value proposition.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "prism",
+    "folder": "prism",
+    "name": "Prism",
+    "category": "creative",
+    "categoryLabel": "קריאייטיב ועיצוב",
+    "description": "תבנית סוכנות עיצוב בauhaus: בלוקי צבע מלבניים, 6 עמודים, טיפוגרפיה נועזת ותנועה.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "productix",
+    "folder": "productix",
+    "name": "Productix",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות שיווק מוצר: 8 עמודים, תנועה, אפקטים ועיצוב roadmap product ui.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "propnex",
+    "folder": "propnex",
+    "name": "Propnex",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית בento אסימטרי: הירו מעורב תמונה/טקסט, תצוגת נכסים בento, מארקי שכונות ותהליך עם אנימציית קו.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "pulsefit",
+    "folder": "pulsefit",
+    "name": "Pulsefit",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה למאמן כושר: הירו אנרגטי, תוכניות אימון, תוצאות, מחירון וטופס התחלה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "reelhaus",
+    "folder": "reelhaus",
+    "name": "Reelhaus",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות וידאו: 8 עמודים, תנועה, אפקטים ועיצוב filmstrip cinema.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "rivara",
+    "folder": "rivara",
+    "name": "Rivara",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית נדל״ן טבעית ליד מים: הירו עם שלושה פסי נוף אופקיים, נכסים כשורות צילום רחבות, רצועת טבע מרובעת ופאנל קשר רגוע בגוון טורקיז.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "saltforge",
+    "folder": "saltforge",
+    "name": "Saltforge",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית בוטיק מלח ומלאכה: הירo gritty עם grain sweep, masonry מוצרים, שלבי craft וטופס wholesale — forge-spark animation.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "savory",
+    "folder": "savory",
+    "name": "Savory",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה למסעדת שף יוקרתית: הירו צילומי, תפריט טיפוגרפי, סיפור השף, גלריה, ביקורות, אירועים והזמנות — עיצוב שחור-ענבר.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "scentora",
+    "folder": "scentora",
+    "name": "Scentora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות נרות וריחות יוקרתית: נרות, דיפיוזרים ומארזים — 11 עמודים רכים ועשירים.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "seabloom",
+    "folder": "seabloom",
+    "name": "Seabloom",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית סpa טרופי: הירו עם עלי כותרת נופלים, קרוסלת טיפולים, גן סיפור וטופס הזמנה — petal-fall animation.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "seafoodix",
+    "folder": "seafoodix",
+    "name": "Seafoodix",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית פירות ים: גלי קצף, צדפות וטופס הזמנה ימי — רעננות חוף כחולה-ירוקה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "seora",
+    "folder": "seora",
+    "name": "Seora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות SEO: 8 עמודים, תנועה, אפקטים ועיצוב data dashboard serp.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "serenova",
+    "folder": "Serenova",
+    "name": "Serenova",
+    "category": "business",
+    "categoryLabel": "שירותים מקצועיים",
+    "description": "תבנית פרימיום רגועה לקליניקות, מטפלים, יועצים וקואצ׳רים עם אפקטים רכים, אזורי שירותים, מחירון, גלריה, מאמרים וטופס יצירת קשר.",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "shawarmia",
+    "folder": "shawarmia",
+    "name": "Shawarmia",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית שווארמה: שיפוד מסתובב, פיתות חמות וטופס הזמנה מהיר — רחוב מזרחי עם קצב.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "shinora",
+    "folder": "shinora",
+    "name": "Shinora",
+    "category": "business",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "signet",
+    "folder": "signet",
+    "name": "Signet",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית stamp: הירo עם אנימציית חותמת, 4 שלבי תהליך עם stamp reveal ונכס spotlight.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "silkbar",
+    "folder": "silkbar",
+    "name": "Silkbar",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "מספרת בוטיק: חיתוכים עיתונאיים, צבע, צוות ספרים ויומן תורים.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "skillforge",
+    "folder": "skillforge",
+    "name": "Skillforge",
+    "category": "education",
+    "categoryLabel": "חינוך וקורסים",
+    "description": "כישורי קריירה בסגנון תעשייתי: טיפוגרפיה נועזת, לוחות מתכת ותהליך חישול.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "skyhold",
+    "folder": "skyhold",
+    "name": "Skyhold",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית מגדל: הירו אנכי עם מעלית קומות מונפשת, כרטיסי penthouse מוערמים וסטטיסטיקות skyline.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "skylara",
+    "folder": "skylara",
+    "name": "Skylara",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית מגדלים בחצות וציאן: הירו מגדל אנכי עם סימוני קומות, רשימת דירות מטפסת, שורות שירותים בקווי מתאר ורצועת קו רקיע מלאה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "smokepit",
+    "folder": "smokepit",
+    "name": "Smokepit",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית ברביקיו: עמודות עשן, בשר מעושן וטופס הזמנה כהה — בור כפרי לוהט.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "sneakhaus",
+    "folder": "sneakhaus",
+    "name": "Sneakhaus",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות סניקרס ותרבות רחוב: 11 עמודים עשירים עם מוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "socialux",
+    "folder": "socialux",
+    "name": "Socialux",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות סושיאל: 8 עמודים, תנועה, אפקטים ועיצוב kinetic feed grid.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "solenne",
+    "folder": "solenne",
+    "name": "Solenne",
+    "category": "service",
+    "categoryLabel": "אירועים וחתונות",
+    "description": "תבנית הפקת חתונות ואירועים בעברית: שנהב ודיו, סריף אלגנטי, גלריה מלבנית חדה ופריסה אווירית בלי כרטיסיות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "soleora",
+    "folder": "soleora",
+    "name": "Soleora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות נעליים מלאה: 11 עמודים, קטגוריות, סינון וחיבור לתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "soundline",
+    "folder": "soundline",
+    "name": "Soundline",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה מקצועי לתחום בית ספר למוזיקה עם תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "spajade",
+    "folder": "spajade",
+    "name": "Spajade",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "ספא ועיסוי פנים: ניקוז, גוואשה, הרגעה וטקסי זוהר.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "spalcio",
+    "folder": "spalcio",
+    "name": "Spalcio",
+    "category": "business",
+    "categoryLabel": "עסקים ושירותים",
+    "description": "תבנית אתר עסקי נקייה, מקצועית ומודרנית לסוכנויות, יועצים, נותני שירותים ועסקים שרוצים נוכחות יוקרתית וברורה.",
+    "badge": "חדש",
+    "priceLabel": "Included"
+  },
+  {
+    "id": "spiceforge",
+    "folder": "spiceforge",
+    "name": "Spiceforge",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית מטבח הודי: הירו עם חלקיקי תבלין נופלים, גלגל תבלינים רדיאלי, שלבי מתכון בספירלה וטופס כצלחת תאלי — צבעוניות חמה ותנועת spice-fall.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "sportifya",
+    "folder": "sportifya",
+    "name": "Sportifya",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות ספורט וכושר מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "steelworks",
+    "folder": "steelworks",
+    "name": "Steelworks",
+    "category": "industry",
+    "categoryLabel": "תעשייה וייצור",
+    "description": "תבנית תעשייתית: פסים אופקיים, כתום-פלדה, 6 עמודים עם מקטעי תנועה וכניסות.",
+    "badge": "Premium",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "streetbite",
+    "folder": "streetbite",
+    "name": "Streetbite",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית אוכל רחוב: הירו עם משאית נעה וניאון מהבהב, ערימת כרטיסי לילה, סיכות מפה קופצות וטופס בסגנון צ׳אט SMS — אנרגיה עירונית ותנועה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "studiora",
+    "folder": "studiora",
+    "name": "Studiora",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "תבנית סטודיו קריאייטיב / סוכנות עם הירו טיפוגרפי נועז, טקסט רץ, שירותים, תיק עבודות, סטטיסטיקות, ביקורות וטופס בריף.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "sugarose",
+    "folder": "sugarose",
+    "name": "Sugarose",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "הסרת שיער בסוכר ושעווה: טכניקה עדינה, סטריליות וקצב מהיר.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "summitops",
+    "folder": "summitops",
+    "name": "Summitops",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות ייעוץ עסקי: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "sunrift",
+    "folder": "sunrift",
+    "name": "Sunrift",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית מועדון חוף: הירו split עם shimmer זהוב, מארקי DJ, כרטיסי קוקטיילים וטופס הזמנת שולחן — אנרגיה שקיעה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "sushisen",
+    "folder": "sushisen",
+    "name": "Sushisen",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית סושי: הירו כמסוע נע עם ניגירי, מסילת מנות snap, מוני ספירה עם פעימת וואסבי וטופס לכה שחורה עם קו זהב — מינימליזם יפני עם תנועה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "tacoflare",
+    "folder": "tacoflare",
+    "name": "Tacoflare",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית טאקוס: נייר צלופן מרפרף, מדף טאקו אופקי, צבעי צ׳ילי וטופס הזמנה בסגנון פתק שוק — אנרגיה רחוב לוהטת.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "talentix",
+    "folder": "talentix",
+    "name": "Talentix",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות גיוס: 8 עמודים, תנועה, אפקטים ועיצוב ייחודי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "tapasora",
+    "folder": "tapasora",
+    "name": "Tapasora",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית בר טאפס לילי: הירו עם צלחות קטנות עולות במפל, רשת בנטו, מארקי שוק לילה, בקבוקי יין עם אנימציית מזיגה וטופס כחשבון בר — ניאון וריצוד.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "tidehaus",
+    "folder": "tidehaus",
+    "name": "Tidehaus",
+    "category": "travel",
+    "categoryLabel": "תיירות וחוף",
+    "description": "תבנית חנות גלישה: הירו עם קו גאות נע, מסילת גלשנים אופקית, גרף גובה גלים ובר שעווה — תנועת board-tilt.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "tipcraft",
+    "folder": "tipcraft",
+    "name": "Tipcraft",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "בונת ציפורניים מקצועית: מבנה אנטומי, מילוי, תיקונים וגלריית עבודות.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "toolhaus",
+    "folder": "toolhaus",
+    "name": "Toolhaus",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות כלי עבודה ו-DIY מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "trailhaus",
+    "folder": "trailhaus",
+    "name": "Trailhaus",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות outdoor מלאה: ציוד שטח, אוהלים ותרמילים — 11 עמודים עם 10 סקשנים בכל אחד.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "urbanix",
+    "folder": "urbanix",
+    "name": "Urbanix",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית עירונית ברוטליסטית עם פס ליים אנכי, טיפוגרפיה ענקית, מרקיז שכונות, מחירון טיפוגרפי, עמודות רובעים וטופס כהה.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "uxforge",
+    "folder": "uxforge",
+    "name": "UXForge",
+    "category": "portfolio",
+    "categoryLabel": "פורטפוליו וסוכנות",
+    "description": "אתר מלא לסוכנות UX/UI: 8 עמודים, תנועה, אפקטים ועיצוב wireframe craft.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "vaulture",
+    "folder": "vaulture",
+    "name": "Vaulture",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית יוקרה כהה: הירו עם זהב, אנימציית curtain wipe, כרטיסי כספת וקרוסלת המלצות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "velmora",
+    "folder": "velmora",
+    "name": "Velmora",
+    "category": "store",
+    "categoryLabel": "קמעונאות / מסחר אלקטרוני",
+    "description": "תבנית בוטיק יוקרתית בעברית לחנות בגדים, מותג לייףסטייל או נותני שירות שרוצים אתר נקי ואלגנטי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "velvetine",
+    "folder": "velvetine",
+    "name": "Velvetine",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "ספא לילות קטיפה: הירו דרמטי, טקסי טיפול, גלריה וחבילות פרימיום.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "verdant",
+    "folder": "verdant",
+    "name": "Verdant",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה יוקרתי לנדל״ן: הירו קולנועי, נכסים נבחרים, סוכנים, סיורים וירטואליים ועיצוב קרם-זהב עריכתי.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "vertex",
+    "folder": "vertex",
+    "name": "Vertex",
+    "category": "technology",
+    "categoryLabel": "טכנולוגיה",
+    "description": "תבנית טכנולוגיה גיאומטרית: קווים אלכסוניים, ניאון ירוק, 6 עמודים עם אנימציות כניסה חדות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "vespera",
+    "folder": "vespera",
+    "name": "Vespera",
+    "category": "portfolio",
+    "categoryLabel": "תרבות ואמנות",
+    "description": "תבנית אולם תרבות והופעות בעברית: קומפוזיציה פוסטרית, יין עמוק ועצם, פריסה אסימטרית חדה בלי כרטיסיות.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "villaire",
+    "folder": "villaire",
+    "name": "Villaire",
+    "category": "real-estate",
+    "categoryLabel": "נדל״ן",
+    "description": "תבנית וילות יוקרתית בשחור ושמפניה: כותרת קולנועית ממורכזת, תמונת 21:9, וילה מרכזית ענקית, רשימת וילות בשורות דקות ועקרונות אדריכלות אלגנטיים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "vineria",
+    "folder": "vineria",
+    "name": "Vineria",
+    "category": "food",
+    "categoryLabel": "אוכל ומסעדות",
+    "description": "תבנית בר יין: הירו עם שכבות מרתף פרלקס, ציר טעימות אנכי, תגי פקק צפים וטופס הזמנה אלגנטי — תנועת עומק ופקקים מרחפים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "vinora",
+    "folder": "vinora",
+    "name": "Vinora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות יינות ומרתף: 11 עמודים עשירים, קולקציות יקבים ומוצרים מתוסף החנות.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "virello",
+    "folder": "Virello",
+    "name": "Virello",
+    "category": "agency",
+    "categoryLabel": "",
+    "description": "תבנית סטודיו דיגיטלית צבעונית ומודרנית בסגנון Virello עם טיפוגרפיה ענקית, תמונות צפות, תנועה עדינה, שירותים, פרויקטים, צוות, תהליך, FAQ ובלוג."
+  },
+  {
+    "id": "vitalcare",
+    "folder": "vitalcare",
+    "name": "Vitalcare",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה פרימיום למרפאה רב-תחומית: הירו צילום מלא, התמחויות, נתוני אמון, רופאים, ביטוחים, המלצות, FAQ וטופס תור בגווני טורקיז עמוק ומינט.",
+    "badge": "Premium",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "vitalis",
+    "folder": "vitalis",
+    "name": "Vitalis",
+    "category": "medical",
+    "categoryLabel": "רפואה ובריאות",
+    "description": "תבנית פרימיום למרפאת שיניים ובריאות עם הירו נקי, סרגל אמון, טיפולים, מסלול טיפול, צוות רפואי, ביקורות וקביעת תור.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "vitara",
+    "folder": "vitara",
+    "name": "Vitara",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות ויטמינים ותוספי תזונה: 11 עמודים עם גריד נקי וקטלוג חי.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "vowline",
+    "folder": "vowline",
+    "name": "Vowline",
+    "category": "landing",
+    "categoryLabel": "דפי נחיתה",
+    "description": "דף נחיתה לתכנון חתונות: הירו רומנטי-מודרני, חבילות, תהליך, גלריה וטופס ייעוץ.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "watchora",
+    "folder": "watchora",
+    "name": "Watchora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות שעונים: קלאסיקה, ספורט וסמארט — 11 עמודים עם ויטרינה עשירה.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  },
+  {
+    "id": "waxelle",
+    "folder": "waxelle",
+    "name": "Waxelle",
+    "category": "beauty",
+    "categoryLabel": "יופי וטיפוח",
+    "description": "סטודיו שעווה נקי וידידותי: מחירון ברור, מדריך משך, ומערכת תורים.",
+    "badge": "חדש",
+    "priceLabel": "כלול"
+  },
+  {
+    "id": "wheelora",
+    "folder": "wheelora",
+    "name": "Wheelora",
+    "category": "store",
+    "categoryLabel": "חנויות ומסחר",
+    "description": "חנות אופניים מלאה: כביש, שטח ואביזרי רכיבה — 11 עמודים עם תוכן עשיר.",
+    "badge": "חדש",
+    "priceLabel": "Premium"
+  }
+]
