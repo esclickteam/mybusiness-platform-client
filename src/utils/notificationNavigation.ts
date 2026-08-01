@@ -208,25 +208,24 @@ export function registerServiceWorkerNotificationBridge() {
 
     if (!data?.type) return;
 
-    // Legacy answer messages now open the incoming screen only (no auto-answer).
+    // WhatsApp-style: notification Answer → open app and connect the call.
     if (data.type === "SOFTPHONE_ANSWER") {
       const path = data.url
         ? data.url.startsWith("http")
           ? `${new URL(data.url).pathname}${new URL(data.url).search}${new URL(data.url).hash}`
           : data.url
-        : "/admin/dashboard?softphone=incoming";
+        : "/admin/dashboard?softphone=answer";
 
-      const safePath = path.replace(
-        /([?&])softphone=answer\b/i,
-        "$1softphone=incoming"
-      );
+      const answerPath = /[?&]softphone=/i.test(path)
+        ? path.replace(/([?&])softphone=[^&]*/i, "$1softphone=answer")
+        : `${path}${path.includes("?") ? "&" : "?"}softphone=answer`;
 
-      stashPendingNotificationUrl(safePath);
+      stashPendingNotificationUrl(answerPath);
 
       window.dispatchEvent(
-        new CustomEvent("bizuply:softphone-open-incoming", {
+        new CustomEvent("bizuply:softphone-answer", {
           detail: {
-            url: safePath,
+            url: answerPath,
             fromNumber: data.fromNumber || "",
             contactName: data.contactName || "",
             callSid: data.callSid || "",
@@ -237,7 +236,7 @@ export function registerServiceWorkerNotificationBridge() {
 
       window.dispatchEvent(
         new CustomEvent("bizuply:notification-navigate", {
-          detail: { url: safePath },
+          detail: { url: answerPath },
         })
       );
       return;
