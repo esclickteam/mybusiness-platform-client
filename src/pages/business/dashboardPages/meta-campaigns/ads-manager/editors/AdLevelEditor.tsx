@@ -32,6 +32,8 @@ import {
 type Props = {
   ad: AdDraft;
   forms: InstantFormItem[];
+  formsLoading?: boolean;
+  formsError?: string;
   pages: MetaAdsPage[];
   businessId: string | null;
   onChange: (patch: Partial<AdDraft>) => void;
@@ -41,6 +43,8 @@ type Props = {
 export default function AdLevelEditor({
   ad,
   forms,
+  formsLoading = false,
+  formsError = "",
   pages,
   businessId,
   onChange,
@@ -249,10 +253,35 @@ export default function AdLevelEditor({
             </div>
 
             <div className="mt-2 max-h-56 space-y-1 overflow-y-auto">
-              {filteredForms.length === 0 ? (
+              {formsLoading ? (
+                <p className="inline-flex w-full items-center justify-center gap-2 px-2 py-6 text-[13px] font-semibold text-[#65676B]">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Loading Instant Forms from Meta…
+                </p>
+              ) : formsError ? (
+                <div className="space-y-2 px-2 py-4 text-center">
+                  <p className="text-[13px] font-semibold text-[#D97706]">
+                    {formsError}
+                  </p>
+                  <p className="text-[12px] text-[#65676B]">
+                    Select the same Facebook Page as in Meta Ads Manager, then
+                    refresh.
+                  </p>
+                  {onFormsRefresh ? (
+                    <button
+                      type="button"
+                      className={metaBtnSecondary}
+                      onClick={() => onFormsRefresh()}
+                    >
+                      Refresh forms
+                    </button>
+                  ) : null}
+                </div>
+              ) : filteredForms.length === 0 ? (
                 <p className="px-2 py-6 text-center text-[13px] text-[#65676B]">
-                  No {ad.formTab} forms yet. Create a form like in Meta Ads
-                  Manager.
+                  {!ad.facebookPageId
+                    ? "Select a Facebook Page in the Ad set to load Instant Forms from Meta."
+                    : `No ${ad.formTab} Instant Forms on this Page in Meta. Create one or check the Archived tab.`}
                 </p>
               ) : (
                 filteredForms.map((form) => {
@@ -274,8 +303,10 @@ export default function AdLevelEditor({
                           {form.name}
                         </span>
                         <span className="block text-[12px] text-[#65676B]">
-                          {form.customQuestions} custom questions · Updated{" "}
-                          {form.updatedAt}
+                          Created on {form.updatedAt || "—"}
+                          {form.customQuestions
+                            ? ` · ${form.customQuestions} custom questions`
+                            : ""}
                         </span>
                       </span>
                       <span

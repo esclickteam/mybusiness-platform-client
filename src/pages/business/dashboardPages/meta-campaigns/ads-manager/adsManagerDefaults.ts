@@ -6,36 +6,8 @@ import type {
   InstantFormItem,
 } from "./adsManagerTypes";
 
-export const MOCK_INSTANT_FORMS: InstantFormItem[] = [
-  {
-    id: "form_leads_main",
-    name: "Business inquiry form",
-    status: "active",
-    customQuestions: 3,
-    updatedAt: "2026-07-28",
-  },
-  {
-    id: "form_demo_request",
-    name: "Book a demo",
-    status: "active",
-    customQuestions: 5,
-    updatedAt: "2026-07-20",
-  },
-  {
-    id: "form_newsletter",
-    name: "Newsletter signup",
-    status: "active",
-    customQuestions: 1,
-    updatedAt: "2026-07-12",
-  },
-  {
-    id: "form_old_promo",
-    name: "Summer promo 2025",
-    status: "archived",
-    customQuestions: 2,
-    updatedAt: "2025-08-01",
-  },
-];
+/** Instant forms must come from Meta (`/lead-forms`) — never seed mock forms. */
+export const EMPTY_INSTANT_FORMS: InstantFormItem[] = [];
 
 export function createDefaultCampaign(): CampaignDraft {
   return {
@@ -151,7 +123,7 @@ export function createDefaultAdsManagerState(): AdsManagerState {
     campaign,
     adSets: [adSet],
     ads: [ad],
-    instantForms: MOCK_INSTANT_FORMS,
+    instantForms: EMPTY_INSTANT_FORMS,
     // Meta Ads Manager Israel (country) broad estimate baseline.
     audienceEstimate: {
       lower: 3_800_000,

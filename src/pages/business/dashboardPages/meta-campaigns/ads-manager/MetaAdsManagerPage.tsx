@@ -58,6 +58,8 @@ export default function MetaAdsManagerPage() {
     null
   );
   const [leadForms, setLeadForms] = useState<MetaLeadForm[]>([]);
+  const [formsLoading, setFormsLoading] = useState(false);
+  const [formsError, setFormsError] = useState("");
   const [estimateLoading, setEstimateLoading] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [syncing, setSyncing] = useState(false);
@@ -68,6 +70,31 @@ export default function MetaAdsManagerPage() {
   const [createChooserOpen, setCreateChooserOpen] = useState(true);
   const [campaignStarted, setCampaignStarted] = useState(false);
 
+  const loadLeadForms = async (pageId?: string | null) => {
+    if (!businessId || !pageId || pageId.startsWith("page_")) {
+      setLeadForms([]);
+      setFormsError("");
+      return;
+    }
+    setFormsLoading(true);
+    setFormsError("");
+    try {
+      const formsRes = await listMetaLeadForms(businessId, pageId);
+      setLeadForms(formsRes?.forms || []);
+    } catch (error: any) {
+      setLeadForms([]);
+      const message =
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        error?.message ||
+        "Failed to load Instant Forms from Meta";
+      setFormsError(message);
+      toast.error(message);
+    } finally {
+      setFormsLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (!businessId) return;
     let cancelled = false;
@@ -76,17 +103,6 @@ export default function MetaAdsManagerPage() {
         const status = await getMetaCampaignsStatus(businessId);
         if (cancelled) return;
         setConnection(status);
-        if (status.connected || status.isConnected) {
-          try {
-            const formsRes = await listMetaLeadForms(
-              businessId,
-              status.selectedPage?.pageId
-            );
-            if (!cancelled) setLeadForms(formsRes?.forms || []);
-          } catch {
-            if (!cancelled) setLeadForms([]);
-          }
-        }
       } catch {
         if (!cancelled) setConnection(null);
       }
@@ -96,25 +112,29 @@ export default function MetaAdsManagerPage() {
     };
   }, [businessId]);
 
+  /** Only real Meta Instant Forms — never fall back to local mock names. */
   const liveForms = useMemo(() => {
-    if (leadForms.length) {
-      return leadForms.map((form) => ({
+    return leadForms.map((form) => {
+      const statusUpper = String(form.status || "").toUpperCase();
+      return {
         id: form.id,
         name: form.name,
         status:
-          String(form.status || "").toUpperCase() === "ARCHIVED"
+          statusUpper === "ARCHIVED" || statusUpper === "DELETED"
             ? ("archived" as const)
             : ("active" as const),
         customQuestions: Array.isArray(form.questions)
-          ? form.questions.length
+          ? form.questions.filter((q) => {
+              const type = String(q.type || "").toUpperCase();
+              return type === "CUSTOM" || type === "SHORT_ANSWER" || type === "MULTIPLE_CHOICE";
+            }).length
           : 0,
         updatedAt: form.createdTime
           ? String(form.createdTime).slice(0, 10)
           : "",
-      }));
-    }
-    return state.instantForms;
-  }, [leadForms, state.instantForms]);
+      };
+    });
+  }, [leadForms]);
 
   const connectedPages = connection?.pages || [];
 
@@ -164,19 +184,8 @@ export default function MetaAdsManagerPage() {
       selectedAdSet?.facebookPageId ||
       selectedAd?.facebookPageId ||
       connection?.selectedPage?.pageId;
-    if (!businessId || !pageId || pageId.startsWith("page_")) return;
-    let cancelled = false;
-    (async () => {
-      try {
-        const formsRes = await listMetaLeadForms(businessId, pageId);
-        if (!cancelled) setLeadForms(formsRes?.forms || []);
-      } catch {
-        if (!cancelled) setLeadForms([]);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
+    loadLeadForms(pageId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     businessId,
     selectedAdSet?.facebookPageId,
@@ -709,6 +718,8 @@ export default function MetaAdsManagerPage() {
             <AdLevelEditor
               ad={selectedAd}
               forms={liveForms}
+              formsLoading={formsLoading}
+              formsError={formsError}
               pages={connectedPages}
               businessId={businessId}
               onChange={(patch) => patchAd(selectedAd.id, patch)}
@@ -717,13 +728,7 @@ export default function MetaAdsManagerPage() {
                   selectedAd.facebookPageId ||
                   selectedAdSet?.facebookPageId ||
                   connection?.selectedPage?.pageId;
-                if (!businessId || !pageId) return;
-                try {
-                  const formsRes = await listMetaLeadForms(businessId, pageId);
-                  setLeadForms(formsRes?.forms || []);
-                } catch {
-                  setLeadForms([]);
-                }
+                await loadLeadForms(pageId);
               }}
             />
           ) : null}
