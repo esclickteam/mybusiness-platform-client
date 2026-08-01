@@ -1,10 +1,12 @@
 export const lunelleEditorCss = `
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap");
+
 [data-template-id="lunelle"],
-[data-template-id="lunelle"] * {
+[data-template-id="lunelle"] *,
+[data-template-id="lunelle-preview"],
+[data-template-id="lunelle-preview"] * {
   box-sizing: border-box;
 }
-
-@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap");
 
 [data-template-id="lunelle"],
 [data-template-id="lunelle-preview"] {

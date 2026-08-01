@@ -159,13 +159,7 @@ export function LunelleCrmServicesGrid({
   return <ServiceCards services={services} />;
 }
 
-function StoreProductCard({
-  product,
-  index,
-}: {
-  product: StoreCatalogProduct;
-  index: number;
-}) {
+function StoreProductCard({ product }: { product: StoreCatalogProduct }) {
   return (
     <article className="overflow-hidden rounded-[34px] border border-[#2a171c]/10 bg-white shadow-[0_22px_70px_rgba(42,23,28,.08)]">
       <div className="overflow-hidden bg-[#f1d7dc]">
@@ -228,11 +222,7 @@ export function LunelleStoreGrid({
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {products.map((product, index) => (
-        <StoreProductCard
-          key={product.id || index}
-          product={product}
-          index={index}
-        />
+        <StoreProductCard key={product.id || index} product={product} />
       ))}
     </div>
   );
