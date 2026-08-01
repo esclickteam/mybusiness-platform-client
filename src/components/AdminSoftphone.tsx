@@ -270,10 +270,35 @@ function ensureRemoteAudioElement() {
   audio.setAttribute("playsinline", "true");
   // Keep in DOM (not display:none) — some browsers block playback otherwise.
   audio.style.cssText =
-    "position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;bottom:0;";
+    "position:fixed;width:1px;height:1px;opacity:0.01;pointer-events:none;left:0;bottom:0;z-index:-1;";
   document.body.appendChild(audio);
   remoteAudioEl = audio;
   return audio;
+}
+
+function unwrapMediaStream(value: any): MediaStream | null {
+  if (!value) return null;
+  if (value instanceof MediaStream) return value;
+  if (value.stream instanceof MediaStream) return value.stream;
+  return null;
+}
+
+function getRemoteStreamFromCall(call: any): MediaStream | null {
+  const direct = unwrapMediaStream(call?.remoteStream);
+  if (direct) return direct;
+
+  try {
+    const pc: RTCPeerConnection | undefined = call?.peerConnection;
+    if (!pc?.getReceivers) return null;
+    const tracks = pc
+      .getReceivers()
+      .map((r) => r.track)
+      .filter((t): t is MediaStreamTrack => Boolean(t && t.kind === "audio"));
+    if (tracks.length) return new MediaStream(tracks);
+  } catch {
+    /* ignore */
+  }
+  return null;
 }
 
 function getTelnyxCallMediaOptions() {
@@ -285,42 +310,78 @@ function getTelnyxCallMediaOptions() {
   };
 }
 
+async function ensureMicrophoneAccess() {
+  if (typeof navigator === "undefined" || !navigator.mediaDevices?.getUserMedia) {
+    return;
+  }
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false,
+  });
+  // Permission granted — Telnyx answer() will acquire its own tracks.
+  stream.getTracks().forEach((track) => {
+    try {
+      track.stop();
+    } catch {
+      /* ignore */
+    }
+  });
+}
+
 async function attachTelnyxRemoteAudio(call: any) {
   const audio = ensureRemoteAudioElement();
   if (!audio || !call) return;
-  try {
-    const stream =
-      call.remoteStream instanceof MediaStream
-        ? call.remoteStream
-        : call.remoteStream?.stream instanceof MediaStream
-          ? call.remoteStream.stream
-          : null;
 
-    if (stream) {
-      audio.srcObject = stream;
-    }
-
+  const applyStream = async (stream: MediaStream | null) => {
+    if (!stream) return false;
+    audio.srcObject = stream;
     audio.muted = false;
     audio.volume = 1;
     audio.autoplay = true;
-    await audio.play().catch(() => {});
+    try {
+      await audio.play();
+    } catch {
+      /* autoplay may need a later retry */
+    }
+    return true;
+  };
 
-    // Retry once — remote tracks sometimes arrive a moment after answer.
-    window.setTimeout(() => {
-      try {
-        const later =
-          call.remoteStream instanceof MediaStream ? call.remoteStream : null;
-        if (later && audio.srcObject !== later) {
-          audio.srcObject = later;
-        }
-        void audio.play().catch(() => {});
-      } catch {
-        /* ignore */
-      }
-    }, 400);
+  try {
+    await applyStream(getRemoteStreamFromCall(call));
+
+    const pc: RTCPeerConnection | undefined = call?.peerConnection;
+    if (pc && !(pc as any).__bizuplyTrackBound) {
+      (pc as any).__bizuplyTrackBound = true;
+      pc.addEventListener("track", (event) => {
+        const stream =
+          event.streams?.[0] ||
+          (event.track ? new MediaStream([event.track]) : null);
+        void applyStream(stream);
+      });
+    }
+
+    // Remote tracks often arrive shortly after answer — retry a few times.
+    [250, 800, 1600, 3000].forEach((delay) => {
+      window.setTimeout(() => {
+        void applyStream(getRemoteStreamFromCall(call));
+      }, delay);
+    });
   } catch {
     /* ignore */
   }
+}
+
+function sleep(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+async function waitForPendingTelnyxCall(timeoutMs = 10000) {
+  const started = Date.now();
+  while (Date.now() - started < timeoutMs) {
+    if (pendingIncomingTelnyxCall) return pendingIncomingTelnyxCall;
+    await sleep(200);
+  }
+  return pendingIncomingTelnyxCall;
 }
 
 async function showIncomingCallNotification(opts: {
@@ -358,11 +419,11 @@ async function showIncomingCallNotification(opts: {
       requireInteraction: true,
       vibrate: [300, 120, 300, 120, 300],
       actions: [
-        { action: "open", title: "פתח" },
-        { action: "dismiss", title: "דחה" },
+        { action: "answer", title: "ענה" },
+        { action: "reject", title: "דחה" },
       ],
       data: {
-        url: `/admin/dashboard?softphone=incoming&from=${encodeURIComponent(from)}`,
+        url: `/admin/dashboard?softphone=incoming&from=${encodeURIComponent(from)}&name=${encodeURIComponent(opts.contactName || "")}&callSid=${encodeURIComponent(opts.callSid || "")}&callId=${encodeURIComponent(opts.callId || "")}`,
         kind: "softphone-incoming",
         softphoneAction: "open",
         fromNumber: from,
@@ -447,6 +508,17 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
     client.on?.("telnyx.ready", () => {
       window.clearTimeout(timeout);
       telnyxReady = true;
+      try {
+        client.enableMicrophone?.();
+      } catch {
+        /* ignore */
+      }
+      try {
+        const remote = ensureRemoteAudioElement();
+        if (remote) client.remoteElement = remote;
+      } catch {
+        /* ignore */
+      }
       resolve();
     });
 
@@ -758,7 +830,6 @@ export default function AdminSoftphone({
   const acceptIncoming = useCallback(async () => {
     const current = getAdminSoftphoneState().activeCall;
     // Only answer when the softphone already shows an incoming call.
-    // Never queue another answer request here (that caused mobile auto-answer).
     if (!current || current.status !== "incoming") {
       setSoftphoneOpen(true);
       return;
@@ -766,36 +837,92 @@ export default function AdminSoftphone({
 
     try {
       userAcceptedIncoming = true;
-      if (pendingIncomingTelnyxCall) {
-        telnyxCall = pendingIncomingTelnyxCall;
-        pendingIncomingTelnyxCall = null;
-        const media = getTelnyxCallMediaOptions();
-        if (typeof telnyxCall.answer === "function") {
-          await Promise.resolve(telnyxCall.answer(media));
-        }
+      setSoftphoneOpen(true);
+      patchActiveSoftphoneCall({
+        error: null,
+        status: "connecting",
+      });
+
+      // User gesture → unlock mic before Telnyx answer() (critical for two-way audio).
+      try {
+        await ensureMicrophoneAccess();
+      } catch {
+        userAcceptedIncoming = false;
+        patchActiveSoftphoneCall({
+          status: "incoming",
+          error: "יש לאשר גישה למיקרופון כדי לענות לשיחה",
+        });
+        return;
+      }
+
+      if (telnyxClient) {
         try {
-          telnyxCall.unmuteAudio?.();
+          telnyxClient.enableMicrophone?.();
         } catch {
           /* ignore */
         }
-        await attachTelnyxRemoteAudio(telnyxCall);
+        try {
+          const remote = ensureRemoteAudioElement();
+          if (remote) telnyxClient.remoteElement = remote;
+        } catch {
+          /* ignore */
+        }
+      }
+
+      // Socket/push UI can appear before the WebRTC INVITE — wait briefly.
+      let inbound =
+        pendingIncomingTelnyxCall || (await waitForPendingTelnyxCall(10000));
+
+      if (inbound) {
+        telnyxCall = inbound;
+        pendingIncomingTelnyxCall = null;
+        const callState = String(inbound.state || "").toLowerCase();
+        const media = getTelnyxCallMediaOptions();
+
+        // Only answer while ringing — re-answering an active call breaks audio.
+        if (
+          typeof inbound.answer === "function" &&
+          (!callState ||
+            callState === "ringing" ||
+            callState === "new" ||
+            callState === "requesting" ||
+            callState === "early")
+        ) {
+          await Promise.resolve(inbound.answer(media));
+        }
+
+        try {
+          inbound.unmuteAudio?.();
+        } catch {
+          /* ignore */
+        }
+        await attachTelnyxRemoteAudio(inbound);
       } else if (pendingIncomingTwilioCall) {
         twilioCall = pendingIncomingTwilioCall;
         pendingIncomingTwilioCall = null;
         await twilioCall.accept();
+      } else {
+        userAcceptedIncoming = false;
+        patchActiveSoftphoneCall({
+          status: "incoming",
+          error:
+            "השיחה עדיין לא הגיעה לסופטפון. השאירו את האפליקציה פתוחה ונסו שוב לענות.",
+        });
+        return;
       }
+
       patchActiveSoftphoneCall({
         status: "in-progress",
         startedAt: Date.now(),
         muted: false,
         speakerOn: true,
+        error: null,
       });
       if (current.logId) {
         await API.patch(`/admin/softphone/calls/${current.logId}`, {
           status: "in-progress",
         }).catch(() => {});
       }
-      setSoftphoneOpen(true);
     } catch (err: any) {
       userAcceptedIncoming = false;
       patchActiveSoftphoneCall({
@@ -1033,8 +1160,9 @@ export default function AdminSoftphone({
     void rejectIncoming();
   }, [rejectRequestId, rejectIncoming]);
 
-  // Deep link from PWA/mobile notification — ALWAYS open the incoming
-  // Answer/Decline screen only. Never auto-answer from the URL.
+  // Deep link from PWA/mobile notification.
+  // softphone=answer → WhatsApp-style: open UI and auto-connect.
+  // softphone=incoming/open → show Answer/Decline screen only.
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const softphone = params.get("softphone");
@@ -1054,6 +1182,7 @@ export default function AdminSoftphone({
     const name = params.get("name") || "שיחה נכנסת";
     const callSid = params.get("callSid") || "";
     const callId = params.get("callId") || "";
+    const shouldAnswer = softphone === "answer";
 
     const current = getAdminSoftphoneState().activeCall;
     if (!current || current.status !== "incoming") {
@@ -1069,7 +1198,9 @@ export default function AdminSoftphone({
     }
 
     setSoftphoneOpen(true);
-    // Intentionally no requestSoftphoneAnswer() — user must tap ענה in UI.
+    if (shouldAnswer) {
+      requestSoftphoneAnswer();
+    }
 
     params.delete("softphone");
     params.delete("from");
@@ -1086,7 +1217,7 @@ export default function AdminSoftphone({
     );
   }, [location.pathname, location.search, navigate, status.voipReady]);
 
-  // Custom events from SW bridge — open incoming UI only (desktop-identical).
+  // Custom events from SW bridge.
   useEffect(() => {
     const presentFromDetail = (detail: any) => {
       if (!detail?.fromNumber && !getAdminSoftphoneState().activeCall) return;
@@ -1107,10 +1238,11 @@ export default function AdminSoftphone({
       const detail = (event as CustomEvent).detail || {};
       presentFromDetail(detail);
     };
-    // Legacy SOFTPHONE_ANSWER from old SW builds: open UI only, do not answer.
+    // WhatsApp-style: notification "ענה" → present + answer.
     const onAnswer = (event: Event) => {
       const detail = (event as CustomEvent).detail || {};
       presentFromDetail(detail);
+      requestSoftphoneAnswer();
     };
     const onReject = () => requestSoftphoneReject();
 

@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when softphone notification behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-softphone-v3";
+const SW_VERSION = "bizuply-sw-softphone-v4";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -43,15 +43,37 @@ function postToClients(message) {
     });
 }
 
-function buildSoftphoneIncomingUrl(noteData) {
+function buildSoftphoneUrl(noteData, softphoneAction) {
   const params = new URLSearchParams();
-  // Always open the incoming Answer/Decline screen — never auto-answer.
-  params.set("softphone", "incoming");
+  params.set("softphone", softphoneAction);
   if (noteData.fromNumber) params.set("from", String(noteData.fromNumber));
   if (noteData.contactName) params.set("name", String(noteData.contactName));
   if (noteData.callSid) params.set("callSid", String(noteData.callSid));
   if (noteData.callId) params.set("callId", String(noteData.callId));
   return `/admin/dashboard?${params.toString()}`;
+}
+
+async function focusOrOpenSoftphone(pathUrl, message) {
+  const absoluteUrl = new URL(pathUrl, self.location.origin);
+  const clientList = await self.clients.matchAll({
+    type: "window",
+    includeUncontrolled: true,
+  });
+
+  if (clientList.length > 0) {
+    for (const client of clientList) {
+      client.postMessage(message);
+      if ("focus" in client) {
+        return client.focus();
+      }
+    }
+  }
+
+  if (self.clients.openWindow) {
+    return self.clients.openWindow(absoluteUrl.href);
+  }
+
+  return undefined;
 }
 
 // Push event sent from the server (Web Push / VAPID)
@@ -65,10 +87,8 @@ self.addEventListener("push", (event) => {
   }
 
   const title = data.title || "BizUply";
-  const targetUrl =
-    (data.data && data.data.url) || data.url || "/";
-  const leadId =
-    (data.data && data.data.leadId) || data.leadId || null;
+  const targetUrl = (data.data && data.data.url) || data.url || "/";
+  const leadId = (data.data && data.data.leadId) || data.leadId || null;
   const kind = (data.data && data.data.kind) || data.kind || "";
   const isSoftphone = kind === "softphone-incoming";
 
@@ -80,18 +100,17 @@ self.addEventListener("push", (event) => {
   const callId = (data.data && data.data.callId) || data.callId || "";
 
   const softphoneUrl = isSoftphone
-    ? buildSoftphoneIncomingUrl({
-        fromNumber,
-        contactName,
-        callSid,
-        callId,
-      })
+    ? buildSoftphoneUrl(
+        { fromNumber, contactName, callSid, callId },
+        "incoming"
+      )
     : targetUrl;
 
+  // WhatsApp-style: Answer / Decline on the lock-screen notification.
   const actions = isSoftphone
     ? [
-        { action: "open", title: "פתח" },
-        { action: "dismiss", title: "דחה" },
+        { action: "answer", title: "ענה" },
+        { action: "reject", title: "דחה" },
       ]
     : Array.isArray(data.actions)
       ? data.actions
@@ -143,7 +162,6 @@ self.addEventListener("push", (event) => {
   );
 });
 
-// Browser rotated/expired the push subscription — ask open clients to re-bind.
 self.addEventListener("pushsubscriptionchange", (event) => {
   event.waitUntil(
     (async () => {
@@ -159,8 +177,8 @@ self.addEventListener("pushsubscriptionchange", (event) => {
   );
 });
 
-// Click / action on a notification → focus app and open incoming UI.
-// Softphone NEVER auto-answers from the notification — only opens ענה/דחה screen.
+// Click / action on a notification.
+// Softphone: ענה → answer intent; דחה → reject; body click → open incoming UI.
 self.addEventListener("notificationclick", (event) => {
   const action = event.action || "";
   const noteData = (event.notification && event.notification.data) || {};
@@ -181,39 +199,32 @@ self.addEventListener("notificationclick", (event) => {
 
   event.notification.close();
 
-  if (isSoftphone) {
-    const pathUrl = buildSoftphoneIncomingUrl(noteData);
-    const absoluteUrl = new URL(pathUrl, self.location.origin);
-
+  if (isSoftphone && (action === "answer" || action === "open-answer")) {
+    const pathUrl = buildSoftphoneUrl(noteData, "answer");
     event.waitUntil(
-      self.clients
-        .matchAll({ type: "window", includeUncontrolled: true })
-        .then(async (clientList) => {
-          const softphoneMessage = {
-            type: "SOFTPHONE_OPEN_INCOMING",
-            url: pathUrl,
-            fromNumber: noteData.fromNumber || "",
-            contactName: noteData.contactName || "",
-            callSid: noteData.callSid || "",
-            callId: noteData.callId || "",
-          };
+      focusOrOpenSoftphone(pathUrl, {
+        type: "SOFTPHONE_ANSWER",
+        url: pathUrl,
+        fromNumber: noteData.fromNumber || "",
+        contactName: noteData.contactName || "",
+        callSid: noteData.callSid || "",
+        callId: noteData.callId || "",
+      })
+    );
+    return;
+  }
 
-          if (clientList.length > 0) {
-            for (const client of clientList) {
-              client.postMessage(softphoneMessage);
-              if ("focus" in client) {
-                return client.focus();
-              }
-            }
-            return undefined;
-          }
-
-          if (self.clients.openWindow) {
-            return self.clients.openWindow(absoluteUrl.href);
-          }
-
-          return undefined;
-        })
+  if (isSoftphone) {
+    const pathUrl = buildSoftphoneUrl(noteData, "incoming");
+    event.waitUntil(
+      focusOrOpenSoftphone(pathUrl, {
+        type: "SOFTPHONE_OPEN_INCOMING",
+        url: pathUrl,
+        fromNumber: noteData.fromNumber || "",
+        contactName: noteData.contactName || "",
+        callSid: noteData.callSid || "",
+        callId: noteData.callId || "",
+      })
     );
     return;
   }
