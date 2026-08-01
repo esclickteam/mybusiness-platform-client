@@ -15,6 +15,7 @@ import {
   isDashboardPathAllowed,
   normalizeEnabledModules,
 } from "../../utils/moduleAccess";
+import { isBizuplyTestUser } from "../../utils/bizuplyTestUser";
 
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
@@ -143,20 +144,6 @@ const MetaCampaignsSettingsTab = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignsSettingsTab")
 );
 
-/* Facebook / Instagram organic scheduling */
-const SocialScheduleMain = lazy(() =>
-  import("./dashboardPages/social-schedule/SocialScheduleMain")
-);
-const SocialScheduleComposeTab = lazy(() =>
-  import("./dashboardPages/social-schedule/SocialScheduleComposeTab")
-);
-const SocialScheduleQueueTab = lazy(() =>
-  import("./dashboardPages/social-schedule/SocialScheduleQueueTab")
-);
-const SocialScheduleBulkTab = lazy(() =>
-  import("./dashboardPages/social-schedule/SocialScheduleBulkTab")
-);
-
 /* Guide pages */
 const BuildBusinessGuidePage = lazy(() => import("../BuildBusinessPage"));
 const WebsiteBuildingGuidePage = lazy(() =>
@@ -258,6 +245,24 @@ function ModuleAccessGuard({ businessId, enabledModules, children }) {
     !isDashboardPathAllowed(location.pathname, limited)
   ) {
     const fallback = getDefaultDashboardPath(businessId, limited);
+    return <Navigate to={fallback} replace />;
+  }
+
+  return children;
+}
+
+/** WhatsApp + Meta Ads: test user only. Social schedule: hidden for everyone. */
+function FeatureAccessGuard({ user, businessId, feature, children }) {
+  const fallback = `/business/${businessId}/dashboard/dashboard`;
+
+  if (feature === "social-schedule") {
+    return <Navigate to={fallback} replace />;
+  }
+
+  if (
+    (feature === "whatsapp" || feature === "meta-campaigns") &&
+    !isBizuplyTestUser(user)
+  ) {
     return <Navigate to={fallback} replace />;
   }
 
@@ -469,8 +474,19 @@ const BusinessDashboardRoutes = () => {
           <Route path="affiliate" element={<AffiliatePage />} />
           <Route path="billing" element={<BillingPage />} />
 
-          {/* WhatsApp messaging */}
-          <Route path="whatsapp" element={<WhatsAppMain />}>
+          {/* WhatsApp messaging — test user only */}
+          <Route
+            path="whatsapp"
+            element={
+              <FeatureAccessGuard
+                user={user}
+                businessId={businessId}
+                feature="whatsapp"
+              >
+                <WhatsAppMain />
+              </FeatureAccessGuard>
+            }
+          >
             <Route index element={<Navigate to="compose" replace />} />
             <Route path="compose" element={<WhatsAppComposeTab />} />
             <Route path="templates" element={<WhatsAppTemplatesTab />} />
@@ -483,8 +499,19 @@ const BusinessDashboardRoutes = () => {
             <Route path="*" element={<Navigate to="compose" replace />} />
           </Route>
 
-          {/* Meta Ads campaign management */}
-          <Route path="meta-campaigns" element={<MetaCampaignsMain />}>
+          {/* Meta Ads campaign management — test user only */}
+          <Route
+            path="meta-campaigns"
+            element={
+              <FeatureAccessGuard
+                user={user}
+                businessId={businessId}
+                feature="meta-campaigns"
+              >
+                <MetaCampaignsMain />
+              </FeatureAccessGuard>
+            }
+          >
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<MetaCampaignsOverviewTab />} />
             <Route path="create" element={<MetaAdsManagerPage />} />
@@ -493,14 +520,17 @@ const BusinessDashboardRoutes = () => {
             <Route path="*" element={<Navigate to="overview" replace />} />
           </Route>
 
-          {/* Facebook / Instagram post & story scheduling */}
-          <Route path="social-schedule" element={<SocialScheduleMain />}>
-            <Route index element={<Navigate to="compose" replace />} />
-            <Route path="compose" element={<SocialScheduleComposeTab />} />
-            <Route path="queue" element={<SocialScheduleQueueTab />} />
-            <Route path="bulk" element={<SocialScheduleBulkTab />} />
-            <Route path="*" element={<Navigate to="compose" replace />} />
-          </Route>
+          {/* Post & story scheduling — hidden for everyone (incl. test user) */}
+          <Route
+            path="social-schedule/*"
+            element={
+              <FeatureAccessGuard
+                user={user}
+                businessId={businessId}
+                feature="social-schedule"
+              />
+            }
+          />
 
           {/* CRM internal pages */}
           <Route path="crm" element={<CRMMain />}>

@@ -13,10 +13,10 @@ import {
   LayoutTemplate,
   Megaphone,
   MessageCircle,
-  CalendarClock,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
+import { isBizuplyTestUser } from "../utils/bizuplyTestUser";
 import {
   isModuleEnabled,
   normalizeEnabledModules,
@@ -152,11 +152,18 @@ export default function BusinessWorkspaceNav({
   const { businessId } = useParams<{ businessId: string }>();
   const { t: tI18n, i18n } = useTranslation();
   const { user } = useAuth() as {
-    user?: { enabledModules?: string[] | null } | null;
+    user?: {
+      enabledModules?: string[] | null;
+      email?: string | null;
+      _id?: string | null;
+      id?: string | null;
+      userId?: string | null;
+    } | null;
   };
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
   const enabledModules = normalizeEnabledModules(user?.enabledModules);
+  const showWhatsappAndMeta = isBizuplyTestUser(user);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -175,27 +182,24 @@ export default function BusinessWorkspaceNav({
       icon: CircleUserRound,
       moduleKey: "crm",
     },
-    {
-      labelKey: "businessNav.whatsapp",
-      fallback: "WhatsApp Messages",
-      to: `${basePath}/dashboard/whatsapp`,
-      icon: MessageCircle,
-      moduleKey: "whatsapp",
-    },
-    {
-      labelKey: "businessNav.metaCampaigns",
-      fallback: "Meta Campaigns",
-      to: `${basePath}/dashboard/meta-campaigns`,
-      icon: Megaphone,
-      moduleKey: "meta-campaigns",
-    },
-    {
-      labelKey: "businessNav.socialSchedule",
-      fallback: "Schedule Posts & Stories",
-      to: `${basePath}/dashboard/social-schedule`,
-      icon: CalendarClock,
-      moduleKey: "social-schedule",
-    },
+    ...(showWhatsappAndMeta
+      ? ([
+          {
+            labelKey: "businessNav.whatsapp",
+            fallback: "WhatsApp Messages",
+            to: `${basePath}/dashboard/whatsapp`,
+            icon: MessageCircle,
+            moduleKey: "whatsapp",
+          },
+          {
+            labelKey: "businessNav.metaCampaigns",
+            fallback: "Meta Campaigns",
+            to: `${basePath}/dashboard/meta-campaigns`,
+            icon: Megaphone,
+            moduleKey: "meta-campaigns",
+          },
+        ] as NavItemConfig[])
+      : []),
     {
       labelKey: "businessNav.collaborations",
       fallback: "Collaborations",
