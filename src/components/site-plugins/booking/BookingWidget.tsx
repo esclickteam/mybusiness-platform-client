@@ -387,15 +387,30 @@ function BookingSplitShell({
 
 function DemoBooking({
   variant,
+  chrome = "card",
   theme,
   editorMode,
 }: {
   variant: BookingWidgetVariant;
+  chrome?: BookingWidgetChrome;
   theme?: BookingWidgetTheme;
   editorMode?: boolean;
 }) {
   const t = resolveTheme(theme);
-  const styles = useMemo(() => buildStyles(t), [t.accent, t.ink, t.muted, t.surface, t.line, t.soft, t.onAccent, t.onInk]);
+  const styles = useMemo(
+    () => buildStyles(t, chrome),
+    [
+      chrome,
+      t.accent,
+      t.ink,
+      t.muted,
+      t.surface,
+      t.line,
+      t.soft,
+      t.onAccent,
+      t.onInk,
+    ],
+  );
   const today = startOfDay(new Date());
   const [selectedServiceId, setSelectedServiceId] = useState(
     serviceIdOf(DEMO_SERVICES[0]),
@@ -742,7 +757,12 @@ export default function BookingWidget({
 
   if (!live) {
     return (
-      <DemoBooking variant={variant} theme={theme} editorMode={editorMode} />
+      <DemoBooking
+        variant={variant}
+        chrome={chrome}
+        theme={theme}
+        editorMode={editorMode}
+      />
     );
   }
 
