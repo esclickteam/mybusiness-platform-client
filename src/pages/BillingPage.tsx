@@ -315,7 +315,7 @@ export default function SubscriptionPlanCard() {
     >
       <div className="mx-auto max-w-6xl">
         <section className="overflow-hidden rounded-[2rem] border border-white/70 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
-          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-white sm:px-8 lg:px-10">
+          <div className="relative overflow-hidden bg-gradient-to-l from-[#faf7ff] via-[#f3f8ff] to-[#eefcff] border border-violet-100/80 px-6 py-8 text-slate-800 sm:px-8 lg:px-10">
             <div className="pointer-events-none absolute -left-24 -top-24 h-64 w-64 rounded-full bg-violet-500/30 blur-3xl" />
             <div className="pointer-events-none absolute -bottom-28 -right-24 h-72 w-72 rounded-full bg-blue-500/20 blur-3xl" />
 
@@ -330,14 +330,14 @@ export default function SubscriptionPlanCard() {
                   {t("billing.title")}
                 </h1>
 
-                <p className="mt-3 max-w-2xl text-sm leading-6 text-white/65">
+                <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-600">
                   {t("billing.subtitle")}
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-3 sm:min-w-[320px]">
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
+                  <p className="text-xs font-black uppercase tracking-wide text-slate-500">
                     {t("billing.currentPlan")}
                   </p>
                   <p className="mt-1 truncate text-lg font-black">
@@ -346,7 +346,7 @@ export default function SubscriptionPlanCard() {
                 </div>
 
                 <div className="rounded-2xl border border-white/10 bg-white/10 p-4 backdrop-blur">
-                  <p className="text-xs font-black uppercase tracking-wide text-white/45">
+                  <p className="text-xs font-black uppercase tracking-wide text-slate-500">
                     {t("billing.totalPaid")}
                   </p>
                   <p className="mt-1 text-lg font-black">
@@ -454,7 +454,7 @@ export default function SubscriptionPlanCard() {
                     type="button"
                     onClick={handleResume}
                     disabled={loadingResume || !userId}
-                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
+                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-black shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
                     {loadingResume
                       ? t("billing.resuming")
@@ -466,7 +466,7 @@ export default function SubscriptionPlanCard() {
                   <button
                     type="button"
                     onClick={() => navigate("/pricing")}
-                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
+                    className="flex h-13 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-black shadow-xl shadow-violet-200/20 transition hover:-translate-y-0.5 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                   >
                     {t("billing.renewUpgrade")}
                   </button>
