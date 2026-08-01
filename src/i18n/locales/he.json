@@ -4979,7 +4979,29 @@
       "subheading": "כאן מנהלים ומייעלים את קמפייני המטא של העסק.",
       "account": "חשבון מודעות",
       "spendCard": "הוצאה בתקופה",
-      "spendCardHint": "סה״כ הוצאה לפי טווח התאריכים שנבחר"
+      "spendCardHint": "סה״כ הוצאה לפי טווח התאריכים שנבחר",
+      "adAccountId": "Ad Account ID: {{id}}",
+      "accountStatusLabel": "Status: {{status}}",
+      "currencyLabel": "Currency: {{currency}}",
+      "connectedThroughMeta": "Connected through Meta",
+      "switchAccount": "בחירת חשבון מודעות",
+      "lastUpdated": "עודכן לאחרונה: {{time}}"
+    },
+    "accountStatus": {
+      "active": "Active",
+      "disabled": "Disabled",
+      "unsettled": "Unsettled",
+      "pendingRisk": "Pending risk review",
+      "pendingSettlement": "Pending settlement",
+      "inGrace": "In grace period",
+      "pendingClosure": "Pending closure",
+      "closed": "Closed",
+      "unknown": "—",
+      "other": "Other"
+    },
+    "details": {
+      "badge": "ads_read · Read only",
+      "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב."
     },
     "actions": {
       "create": "צור קמפיין חדש",
@@ -4987,7 +5009,8 @@
       "edit": "עריכה",
       "pause": "השהיה",
       "activate": "הפעלה",
-      "delete": "מחיקה"
+      "delete": "מחיקה",
+      "viewDetails": "צפייה בפרטים"
     },
     "kpis": {
       "roas": "ROAS",
@@ -5005,7 +5028,12 @@
       "last7": "7 ימים אחרונים",
       "last14": "14 ימים אחרונים",
       "last30": "30 ימים אחרונים",
-      "last90": "90 ימים אחרונים"
+      "last90": "90 ימים אחרונים",
+      "thisMonth": "החודש הנוכחי",
+      "lastMonth": "החודש הקודם",
+      "custom": "טווח מותאם אישית",
+      "since": "מתאריך",
+      "until": "עד תאריך"
     },
     "segments": {
       "all": "הכל",
@@ -5021,12 +5049,14 @@
       "leads": "לידים",
       "spend": "הוצאה",
       "clicks": "קליקים",
+      "impressions": "חשיפות",
       "empty": "אין עדיין נתוני גרף לתקופה זו"
     },
     "table": {
       "title": "קמפיינים",
       "subtitle": "{{count}} קמפיינים",
       "name": "שם הקמפיין",
+      "campaignId": "Campaign ID",
       "platform": "פלטפורמה",
       "status": "סטטוס",
       "budget": "תקציב",
@@ -5042,6 +5072,8 @@
       "costPerResultHint": "לכל ליד (טופס)",
       "impressions": "חשיפות",
       "reach": "תפוצה",
+      "clicks": "קליקים",
+      "start": "התחלה",
       "end": "סיום",
       "endOngoing": "מתמשך",
       "budgetDaily": "יומי",
@@ -5094,9 +5126,13 @@
       "cta": "יצירה / עריכת אוטומציה"
     },
     "empty": {
-      "notConnectedTitle": "חשבון Meta Ads עדיין לא מחובר",
-      "notConnectedBody": "חברו את חשבון המודעות של מטא כדי לנהל קמפיינים, תקציבים ותובנות מכאן.",
-      "connectCta": "מעבר לחיבור Meta"
+      "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",
+      "notConnectedBody": "יש לחבר חשבון Meta כדי לצפות בנתוני הקמפיינים.",
+      "connectCta": "מעבר לחיבור Meta",
+      "loadingFromMeta": "טוען נתוני קמפיינים מ-Meta...",
+      "noCampaignsInRange": "לא נמצאו קמפיינים בטווח התאריכים שנבחר.",
+      "permissionTitle": "אין הרשאה לקריאת נתוני החשבון",
+      "permissionBody": "יש לחבר מחדש את חשבון Meta."
     },
     "form": {
       "back": "חזרה לסקירה",
@@ -5566,6 +5602,7 @@
       "pageSelected": "העמוד נשמר",
       "settingsSaved": "ההגדרות נשמרו",
       "refreshed": "החשבונות רועננו",
+      "overviewRefreshed": "נתוני הקמפיינים עודכנו בהצלחה",
       "created": "הקמפיין נוצר במטא",
       "createdFull": "הקמפיין, מערך המודעות והמודעה נוצרו במטא",
       "updated": "הקמפיין עודכן",
@@ -5577,6 +5614,7 @@
     },
     "errors": {
       "loadOverview": "טעינת סקירת הקמפיינים נכשלה",
+      "permissionRead": "אין הרשאה לקריאת נתוני החשבון. יש לחבר מחדש את חשבון Meta.",
       "loadCampaign": "טעינת הקמפיין נכשלה",
       "loadSettings": "טעינת הגדרות Meta נכשלה",
       "saveCampaign": "שמירת הקמפיין נכשלה",

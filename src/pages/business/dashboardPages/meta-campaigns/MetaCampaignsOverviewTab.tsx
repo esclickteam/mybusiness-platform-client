@@ -20,11 +20,12 @@ import {
 } from "recharts";
 import {
   ArrowUpRight,
+  CheckCircle2,
+  Eye,
   Facebook,
   Instagram,
   Lightbulb,
   Loader2,
-  MoreHorizontal,
   Pause,
   Pencil,
   Play,
@@ -36,9 +37,11 @@ import {
   TrendingUp,
   Wallet,
   Workflow,
+  X,
 } from "lucide-react";
 import {
   getMetaCampaignsOverview,
+  selectMetaAdAccount,
   setMetaCampaignStatus,
   type MetaCampaign,
   type MetaCampaignInsight,
@@ -47,16 +50,36 @@ import {
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import {
-  formatAdAccountLabel,
   DATE_RANGE_OPTIONS,
+  daysAgoIso,
+  formatAdAccountLabel,
   formatCurrency,
+  formatDateHe,
+  formatDateTimeHe,
+  formatMetricOrDash,
   formatNumber,
+  formatPercent,
   formatRoas,
+  resolveAdAccountId,
+  resolveMetaAccountStatus,
+  resolveMetaDateRangeQuery,
   SEGMENT_OPTIONS,
   statusTone,
+  todayIso,
+  type MetaDateRangePreset,
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
+
+const APP_REVIEW_CAPTIONS = [
+  "The user selects a Meta ad account they own or have authorized access to.",
+  "Bizuply retrieves campaigns and performance insights from the selected Meta ad account using the ads_read permission.",
+  "The user can refresh the data and select a reporting date range.",
+  "The dashboard displays campaign spend, leads, cost per lead, reach, impressions and other performance metrics.",
+  "The user can open a campaign to review its details in read-only mode.",
+] as const;
+
+const CAPTIONS_STORAGE_KEY = "bizuply_meta_ads_review_captions_hidden";
 
 function KpiCard({
   label,
@@ -152,6 +175,34 @@ function PlatformIcons({ objective }: { objective: string }) {
   );
 }
 
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+  return (
+    <div className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)] gap-3 border-b border-slate-100 py-2.5 last:border-b-0">
+      <dt className="text-xs font-bold text-slate-500">{label}</dt>
+      <dd className="text-sm font-black text-slate-900 break-words">{value}</dd>
+    </div>
+  );
+}
+
+function isPermissionError(error: any) {
+  const status = Number(error?.response?.status || 0);
+  const message = String(
+    error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      error?.message ||
+      ""
+  ).toLowerCase();
+  return (
+    status === 401 ||
+    status === 403 ||
+    message.includes("permission") ||
+    message.includes("oauth") ||
+    message.includes("access token") ||
+    message.includes("(#190)") ||
+    message.includes("session has expired")
+  );
+}
+
 export default function MetaCampaignsOverviewTab() {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -161,27 +212,77 @@ export default function MetaCampaignsOverviewTab() {
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [days, setDays] = useState(30);
+  const [switchingAccount, setSwitchingAccount] = useState(false);
+  const [rangePreset, setRangePreset] = useState<MetaDateRangePreset>("last_30");
+  const [customSince, setCustomSince] = useState("");
+  const [customUntil, setCustomUntil] = useState("");
   const [segment, setSegment] = useState("all");
   const [data, setData] = useState<MetaCampaignsOverview | null>(null);
   const [busyId, setBusyId] = useState("");
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [loadError, setLoadError] = useState<"permission" | "generic" | null>(
+    null
+  );
+  const [detailsCampaign, setDetailsCampaign] = useState<MetaCampaign | null>(
+    null
+  );
+  const [showCaptions, setShowCaptions] = useState(() => {
+    try {
+      return sessionStorage.getItem(CAPTIONS_STORAGE_KEY) !== "1";
+    } catch {
+      return true;
+    }
+  });
+  const [captionIndex, setCaptionIndex] = useState(0);
 
-  const currency =
-    data?.connection?.selectedAdAccount?.currency || "ILS";
+  const currency = data?.connection?.selectedAdAccount?.currency || "ILS";
+  const selectedAccount = data?.connection?.selectedAdAccount || null;
+  const adAccounts = data?.connection?.adAccounts || [];
+  const selectedAccountId = selectedAccount?.id || "";
+  const accountIdDisplay = resolveAdAccountId(selectedAccount);
+  const accountMeta = adAccounts.find((a) => a.id === selectedAccountId);
+  const accountStatus = resolveMetaAccountStatus(
+    accountMeta?.accountStatus ?? selectedAccount?.accountStatus
+  );
+  const accountStatusLabel = t(
+    `metaCampaigns.accountStatus.${accountStatus.key}`,
+    { defaultValue: accountStatus.labelEn }
+  );
 
-  const load = async (silent = false) => {
+  const rangeQuery = useMemo(
+    () =>
+      resolveMetaDateRangeQuery(rangePreset, {
+        since: customSince,
+        until: customUntil,
+      }),
+    [rangePreset, customSince, customUntil]
+  );
+
+  const load = async (options?: { silent?: boolean; successToast?: boolean }) => {
     if (!businessId) return;
+    const silent = Boolean(options?.silent);
     if (silent) setRefreshing(true);
     else setLoading(true);
+    setLoadError(null);
     try {
-      const overview = await getMetaCampaignsOverview(businessId, { days });
+      const overview = await getMetaCampaignsOverview(businessId, rangeQuery);
       setData(overview);
+      setLastUpdatedAt(new Date());
+      if (options?.successToast) {
+        toast.success(t("metaCampaigns.toasts.overviewRefreshed"));
+      }
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error ||
-          error?.response?.data?.message ||
-          t("metaCampaigns.errors.loadOverview")
-      );
+      if (isPermissionError(error)) {
+        setLoadError("permission");
+        toast.error(t("metaCampaigns.errors.permissionRead"));
+      } else {
+        setLoadError("generic");
+        toast.error(
+          error?.response?.data?.error ||
+            error?.response?.data?.message ||
+            t("metaCampaigns.errors.loadOverview")
+        );
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -189,9 +290,18 @@ export default function MetaCampaignsOverviewTab() {
   };
 
   useEffect(() => {
+    if (rangePreset === "custom" && (!customSince || !customUntil)) return;
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [businessId, days]);
+  }, [businessId, rangePreset, customSince, customUntil]);
+
+  useEffect(() => {
+    if (!showCaptions) return;
+    const timer = window.setInterval(() => {
+      setCaptionIndex((prev) => (prev + 1) % APP_REVIEW_CAPTIONS.length);
+    }, 7000);
+    return () => window.clearInterval(timer);
+  }, [showCaptions]);
 
   const campaigns = useMemo(() => {
     const list = data?.campaigns || [];
@@ -214,11 +324,63 @@ export default function MetaCampaignsOverviewTab() {
     });
   }, [data?.campaigns, segment]);
 
+  const kpis = data?.kpis;
+  const hasInsightSignal = Boolean(
+    (kpis?.spend || 0) > 0 ||
+      (kpis?.leads || 0) > 0 ||
+      (kpis?.impressions || 0) > 0 ||
+      (kpis?.clicks || 0) > 0 ||
+      (kpis?.reach || 0) > 0
+  );
+
+  const chartSeries = data?.series || [];
+  const chartHasData = chartSeries.some(
+    (point) =>
+      (point.leads || 0) > 0 ||
+      (point.spend || 0) > 0 ||
+      (point.clicks || 0) > 0 ||
+      (point.impressions || 0) > 0
+  );
+
+  const showChartLeads = segment === "all" || segment === "leads";
+  const showChartSpend =
+    segment === "all" ||
+    segment === "leads" ||
+    segment === "sales" ||
+    segment === "traffic";
+  const showChartClicks =
+    segment === "all" ||
+    segment === "sales" ||
+    segment === "traffic" ||
+    segment === "engagement";
+  const showChartImpressions =
+    segment === "awareness" || segment === "engagement" || segment === "traffic";
+
   const connected = Boolean(data?.connection?.connected);
+  const tokenLinked = Boolean(
+    data?.connection?.isConnected && data?.connection?.hasAccessToken
+  );
+
+  const onAccountChange = async (nextId: string) => {
+    if (!businessId || !nextId || nextId === selectedAccountId) return;
+    try {
+      setSwitchingAccount(true);
+      await selectMetaAdAccount(businessId, nextId);
+      toast.success(t("metaCampaigns.toasts.accountSelected"));
+      await load({ silent: true });
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          t("metaCampaigns.errors.selectAccount")
+      );
+    } finally {
+      setSwitchingAccount(false);
+    }
+  };
 
   const toggleStatus = async (campaign: MetaCampaign) => {
     if (!businessId) return;
-    // Toggle uses configured campaign on/off, not Delivery (Processing/Active).
     const configured = String(
       campaign.configuredStatus || campaign.status || ""
     ).toUpperCase();
@@ -231,7 +393,7 @@ export default function MetaCampaignsOverviewTab() {
           ? t("metaCampaigns.toasts.activated")
           : t("metaCampaigns.toasts.paused")
       );
-      await load(true);
+      await load({ silent: true });
     } catch (error: any) {
       toast.error(
         error?.response?.data?.error ||
@@ -243,15 +405,45 @@ export default function MetaCampaignsOverviewTab() {
     }
   };
 
+  const hideCaptions = () => {
+    setShowCaptions(false);
+    try {
+      sessionStorage.setItem(CAPTIONS_STORAGE_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  };
+
   if (loading) {
     return (
-      <div className="flex min-h-[40vh] items-center justify-center">
+      <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
         <BizuplyLoader />
+        <p className="text-sm font-bold text-slate-500">
+          {t("metaCampaigns.empty.loadingFromMeta")}
+        </p>
       </div>
     );
   }
 
-  if (!connected) {
+  if (loadError === "permission") {
+    return (
+      <div className={`${cardBase} p-6 sm:p-8`}>
+        <div className="mx-auto max-w-xl text-center">
+          <h2 className="text-xl font-black text-slate-900">
+            {t("metaCampaigns.empty.permissionTitle")}
+          </h2>
+          <p className="mt-2 text-sm font-semibold text-slate-500">
+            {t("metaCampaigns.empty.permissionBody")}
+          </p>
+          <Link to={`${basePath}/settings`} className={`${btnPrimary} mt-5`}>
+            {t("metaCampaigns.empty.connectCta")}
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (!tokenLinked || !connected) {
     return (
       <div className={`${cardBase} p-6 sm:p-8`}>
         <div className="mx-auto max-w-xl text-center">
@@ -272,11 +464,9 @@ export default function MetaCampaignsOverviewTab() {
     );
   }
 
-  const kpis = data?.kpis;
-
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h2 className="text-lg font-black text-slate-900">
             {t("metaCampaigns.overview.heading")}
@@ -284,21 +474,20 @@ export default function MetaCampaignsOverviewTab() {
           <p className="mt-0.5 text-sm font-semibold text-slate-500">
             {t("metaCampaigns.overview.subheading")}
           </p>
+          {lastUpdatedAt ? (
+            <p className="mt-1 text-xs font-bold text-slate-400">
+              {t("metaCampaigns.overview.lastUpdated", {
+                time: formatDateTimeHe(lastUpdatedAt),
+              })}
+            </p>
+          ) : null}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700">
-            <Facebook className="h-4 w-4 shrink-0 text-[#1877F2]" />
-            <span className="max-w-[280px] truncate tabular-nums" title={formatAdAccountLabel(data?.connection?.selectedAdAccount, { fallbackName: t("metaCampaigns.overview.account") })}>
-              {formatAdAccountLabel(data?.connection?.selectedAdAccount, {
-                fallbackName: t("metaCampaigns.overview.account"),
-              })}
-            </span>
-          </div>
           <button
             type="button"
-            onClick={() => load(true)}
+            onClick={() => load({ silent: true, successToast: true })}
             className={btnSecondary}
-            disabled={refreshing}
+            disabled={refreshing || switchingAccount}
           >
             {refreshing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -314,26 +503,98 @@ export default function MetaCampaignsOverviewTab() {
         </div>
       </div>
 
+      <div className={`${cardBase} p-4`}>
+        <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+          <div className="min-w-0 space-y-1.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <Facebook className="h-4 w-4 text-[#1877F2]" />
+              <p className="text-base font-black text-slate-900">
+                {selectedAccount?.name || t("metaCampaigns.overview.account")}
+                {selectedAccount?.currency
+                  ? ` (${selectedAccount.currency})`
+                  : ""}
+              </p>
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+                <CheckCircle2 className="h-3 w-3" />
+                {t("metaCampaigns.overview.connectedThroughMeta")}
+              </span>
+            </div>
+            <p className="text-sm font-bold text-slate-600 tabular-nums">
+              {t("metaCampaigns.overview.adAccountId", {
+                id: accountIdDisplay || "—",
+              })}
+            </p>
+            <p className="text-sm font-bold text-slate-600">
+              {t("metaCampaigns.overview.accountStatusLabel", {
+                status: accountStatusLabel,
+              })}
+            </p>
+            {selectedAccount?.currency ? (
+              <p className="text-xs font-semibold text-slate-500">
+                {t("metaCampaigns.overview.currencyLabel", {
+                  currency: selectedAccount.currency,
+                })}
+              </p>
+            ) : null}
+          </div>
+
+          {adAccounts.length > 1 ? (
+            <label className="block min-w-[240px]">
+              <span className="mb-1.5 block text-xs font-black text-slate-500">
+                {t("metaCampaigns.overview.switchAccount")}
+              </span>
+              <select
+                className="h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:border-violet-200 focus:ring-2 focus:ring-violet-100"
+                value={selectedAccountId}
+                disabled={switchingAccount || refreshing}
+                onChange={(e) => onAccountChange(e.target.value)}
+              >
+                {adAccounts.map((account) => (
+                  <option key={account.id} value={account.id}>
+                    {formatAdAccountLabel(account)}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+        </div>
+        {(refreshing || switchingAccount) && (
+          <p className="mt-3 inline-flex items-center gap-2 text-xs font-bold text-violet-700">
+            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            {t("metaCampaigns.empty.loadingFromMeta")}
+          </p>
+        )}
+      </div>
+
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <KpiCard
-          label={t("metaCampaigns.kpis.roas")}
-          value={formatRoas(kpis?.roas || 0)}
-          hint={t("metaCampaigns.kpis.roasHint")}
-        />
-        <KpiCard
-          label={t("metaCampaigns.kpis.cpl")}
-          value={formatCurrency(kpis?.costPerLead || 0, currency)}
-          hint={t("metaCampaigns.kpis.cplHint")}
+          label={t("metaCampaigns.kpis.spend")}
+          value={formatMetricOrDash(kpis?.spend, (n) =>
+            formatCurrency(n, currency)
+          , { treatZeroAsEmpty: !hasInsightSignal })}
+          hint={t("metaCampaigns.kpis.spendHint")}
         />
         <KpiCard
           label={t("metaCampaigns.kpis.leads")}
-          value={formatNumber(kpis?.leads || 0)}
+          value={formatMetricOrDash(kpis?.leads, formatNumber, {
+            treatZeroAsEmpty: !hasInsightSignal,
+          })}
           hint={t("metaCampaigns.kpis.leadsHint")}
         />
         <KpiCard
-          label={t("metaCampaigns.kpis.spend")}
-          value={formatCurrency(kpis?.spend || 0, currency)}
-          hint={t("metaCampaigns.kpis.spendHint")}
+          label={t("metaCampaigns.kpis.cpl")}
+          value={formatMetricOrDash(
+            (kpis?.leads || 0) > 0 ? kpis?.costPerLead : null,
+            (n) => formatCurrency(n, currency)
+          )}
+          hint={t("metaCampaigns.kpis.cplHint")}
+        />
+        <KpiCard
+          label={t("metaCampaigns.kpis.roas")}
+          value={formatMetricOrDash(kpis?.roas, formatRoas, {
+            treatZeroAsEmpty: true,
+          })}
+          hint={t("metaCampaigns.kpis.roasHint")}
         />
       </div>
 
@@ -351,8 +612,16 @@ export default function MetaCampaignsOverviewTab() {
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <select
-                  value={days}
-                  onChange={(e) => setDays(Number(e.target.value))}
+                  value={rangePreset}
+                  onChange={(e) => {
+                    const next = e.target.value as MetaDateRangePreset;
+                    if (next === "custom") {
+                      setCustomSince((prev) => prev || daysAgoIso(29));
+                      setCustomUntil((prev) => prev || todayIso());
+                    }
+                    setRangePreset(next);
+                  }}
+                  disabled={refreshing}
                   className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:border-violet-200 focus:ring-2 focus:ring-violet-100"
                 >
                   {DATE_RANGE_OPTIONS.map((option) => (
@@ -384,10 +653,37 @@ export default function MetaCampaignsOverviewTab() {
               </div>
             </div>
 
+            {rangePreset === "custom" ? (
+              <div className="mt-3 flex flex-wrap items-end gap-2">
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-black text-slate-500">
+                    {t("metaCampaigns.ranges.since")}
+                  </span>
+                  <input
+                    type="date"
+                    value={customSince}
+                    onChange={(e) => setCustomSince(e.target.value)}
+                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700"
+                  />
+                </label>
+                <label className="block">
+                  <span className="mb-1 block text-[11px] font-black text-slate-500">
+                    {t("metaCampaigns.ranges.until")}
+                  </span>
+                  <input
+                    type="date"
+                    value={customUntil}
+                    onChange={(e) => setCustomUntil(e.target.value)}
+                    className="h-10 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700"
+                  />
+                </label>
+              </div>
+            ) : null}
+
             <div className="mt-4 h-[280px] w-full">
-              {(data?.series || []).length ? (
+              {chartHasData ? (
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data?.series || []}>
+                  <AreaChart data={chartSeries}>
                     <defs>
                       <linearGradient id="leadsFill" x1="0" y1="0" x2="0" y2="1">
                         <stop offset="5%" stopColor="#3B82F6" stopOpacity={0.25} />
@@ -423,33 +719,50 @@ export default function MetaCampaignsOverviewTab() {
                       }}
                     />
                     <Legend />
-                    <Area
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="leads"
-                      name={t("metaCampaigns.chart.leads")}
-                      stroke="#3B82F6"
-                      fill="url(#leadsFill)"
-                      strokeWidth={2.5}
-                    />
-                    <Area
-                      yAxisId="right"
-                      type="monotone"
-                      dataKey="spend"
-                      name={t("metaCampaigns.chart.spend")}
-                      stroke="#7C3AED"
-                      fill="url(#spendFill)"
-                      strokeWidth={2.5}
-                    />
-                    <Line
-                      yAxisId="left"
-                      type="monotone"
-                      dataKey="clicks"
-                      name={t("metaCampaigns.chart.clicks")}
-                      stroke="#0EA5E9"
-                      strokeWidth={1.5}
-                      dot={false}
-                    />
+                    {showChartLeads ? (
+                      <Area
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="leads"
+                        name={t("metaCampaigns.chart.leads")}
+                        stroke="#3B82F6"
+                        fill="url(#leadsFill)"
+                        strokeWidth={2.5}
+                      />
+                    ) : null}
+                    {showChartSpend ? (
+                      <Area
+                        yAxisId="right"
+                        type="monotone"
+                        dataKey="spend"
+                        name={t("metaCampaigns.chart.spend")}
+                        stroke="#7C3AED"
+                        fill="url(#spendFill)"
+                        strokeWidth={2.5}
+                      />
+                    ) : null}
+                    {showChartClicks ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="clicks"
+                        name={t("metaCampaigns.chart.clicks")}
+                        stroke="#0EA5E9"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    ) : null}
+                    {showChartImpressions ? (
+                      <Line
+                        yAxisId="left"
+                        type="monotone"
+                        dataKey="impressions"
+                        name={t("metaCampaigns.chart.impressions")}
+                        stroke="#94A3B8"
+                        strokeWidth={1.5}
+                        dot={false}
+                      />
+                    ) : null}
                   </AreaChart>
                 </ResponsiveContainer>
               ) : (
@@ -482,6 +795,9 @@ export default function MetaCampaignsOverviewTab() {
                       {t("metaCampaigns.table.name")}
                     </th>
                     <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.campaignId")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.platform")}
                     </th>
                     <th className="px-3 py-3 text-start">
@@ -506,6 +822,12 @@ export default function MetaCampaignsOverviewTab() {
                       {t("metaCampaigns.table.reach")}
                     </th>
                     <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.clicks")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
+                      {t("metaCampaigns.table.start")}
+                    </th>
+                    <th className="px-3 py-3 text-start">
                       {t("metaCampaigns.table.end")}
                     </th>
                     <th className="px-3 py-3 text-start">
@@ -525,6 +847,11 @@ export default function MetaCampaignsOverviewTab() {
                         String(
                           campaign.configuredStatus || campaign.status || ""
                         ).toUpperCase() === "ACTIVE";
+                      const results =
+                        campaign.metrics?.results ?? campaign.metrics?.leads;
+                      const costPerResult =
+                        campaign.metrics?.costPerResult ??
+                        campaign.metrics?.costPerLead;
                       return (
                         <tr
                           key={campaign.id}
@@ -533,9 +860,7 @@ export default function MetaCampaignsOverviewTab() {
                           <td className="px-4 py-3">
                             <button
                               type="button"
-                              onClick={() =>
-                                navigate(`${basePath}/edit/${campaign.id}`)
-                              }
+                              onClick={() => setDetailsCampaign(campaign)}
                               className="group text-start"
                             >
                               <p className="font-black text-slate-900 group-hover:text-violet-700">
@@ -570,6 +895,9 @@ export default function MetaCampaignsOverviewTab() {
                               </p>
                             </button>
                           </td>
+                          <td className="px-3 py-3 font-bold text-slate-600 tabular-nums">
+                            {campaign.id || "—"}
+                          </td>
                           <td className="px-3 py-3">
                             <PlatformIcons objective={campaign.objective} />
                           </td>
@@ -591,29 +919,17 @@ export default function MetaCampaignsOverviewTab() {
                             </span>
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            <div>
-                              {formatNumber(
-                                campaign.metrics?.results ??
-                                  campaign.metrics?.leads ??
-                                  0
-                              )}
-                            </div>
-                            <div className="text-[11px] font-semibold text-slate-400">
-                              {t("metaCampaigns.table.resultsHint")}
-                            </div>
+                            {formatMetricOrDash(results, formatNumber, {
+                              treatZeroAsEmpty:
+                                !(campaign.metrics?.spend || 0) &&
+                                !(campaign.metrics?.impressions || 0),
+                            })}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            <div>
-                              {formatCurrency(
-                                campaign.metrics?.costPerResult ??
-                                  campaign.metrics?.costPerLead ??
-                                  0,
-                                currency
-                              )}
-                            </div>
-                            <div className="text-[11px] font-semibold text-slate-400">
-                              {t("metaCampaigns.table.costPerResultHint")}
-                            </div>
+                            {formatMetricOrDash(
+                              (results || 0) > 0 ? costPerResult : null,
+                              (n) => formatCurrency(n, currency)
+                            )}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
                             <div>
@@ -635,23 +951,56 @@ export default function MetaCampaignsOverviewTab() {
                             </div>
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatCurrency(campaign.metrics?.spend || 0, currency)}
+                            {formatMetricOrDash(
+                              campaign.metrics?.spend,
+                              (n) => formatCurrency(n, currency),
+                              {
+                                treatZeroAsEmpty:
+                                  !(campaign.metrics?.impressions || 0) &&
+                                  !(campaign.metrics?.clicks || 0) &&
+                                  !(results || 0),
+                              }
+                            )}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatNumber(campaign.metrics?.impressions || 0)}
+                            {formatMetricOrDash(
+                              campaign.metrics?.impressions,
+                              formatNumber,
+                              { treatZeroAsEmpty: true }
+                            )}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatNumber(campaign.metrics?.reach || 0)}
+                            {formatMetricOrDash(
+                              campaign.metrics?.reach,
+                              formatNumber,
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatMetricOrDash(
+                              campaign.metrics?.clicks,
+                              formatNumber,
+                              { treatZeroAsEmpty: true }
+                            )}
+                          </td>
+                          <td className="px-3 py-3 font-bold text-slate-700">
+                            {formatDateHe(campaign.startTime)}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
                             {campaign.stopTime
-                              ? new Date(campaign.stopTime).toLocaleDateString(
-                                  "he-IL"
-                                )
+                              ? formatDateHe(campaign.stopTime)
                               : t("metaCampaigns.table.endOngoing")}
                           </td>
                           <td className="px-3 py-3">
                             <div className="flex items-center gap-1">
+                              <button
+                                type="button"
+                                title={t("metaCampaigns.actions.viewDetails")}
+                                onClick={() => setDetailsCampaign(campaign)}
+                                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700"
+                              >
+                                <Eye className="h-3.5 w-3.5" />
+                              </button>
                               <button
                                 type="button"
                                 title={t("metaCampaigns.actions.edit")}
@@ -681,13 +1030,6 @@ export default function MetaCampaignsOverviewTab() {
                                   <Play className="h-3.5 w-3.5" />
                                 )}
                               </button>
-                              <button
-                                type="button"
-                                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-400"
-                                aria-hidden
-                              >
-                                <MoreHorizontal className="h-3.5 w-3.5" />
-                              </button>
                             </div>
                           </td>
                         </tr>
@@ -696,10 +1038,10 @@ export default function MetaCampaignsOverviewTab() {
                   ) : (
                     <tr>
                       <td
-                        colSpan={9}
+                        colSpan={14}
                         className="px-4 py-10 text-center text-sm font-semibold text-slate-400"
                       >
-                        {t("metaCampaigns.table.empty")}
+                        {t("metaCampaigns.empty.noCampaignsInRange")}
                       </td>
                     </tr>
                   )}
@@ -770,7 +1112,9 @@ export default function MetaCampaignsOverviewTab() {
               </p>
             </div>
             <p className="mt-3 text-2xl font-black text-slate-900">
-              {formatCurrency(kpis?.spend || 0, currency)}
+              {formatMetricOrDash(kpis?.spend, (n) =>
+                formatCurrency(n, currency)
+              , { treatZeroAsEmpty: !hasInsightSignal })}
             </p>
             <p className="mt-1 text-xs font-semibold text-slate-500">
               {t("metaCampaigns.overview.spendCardHint")}
@@ -778,6 +1122,186 @@ export default function MetaCampaignsOverviewTab() {
           </div>
         </aside>
       </div>
+
+      {detailsCampaign ? (
+        <div
+          className="fixed inset-0 z-50 flex justify-end bg-slate-900/40 p-0 sm:p-4"
+          onClick={() => setDetailsCampaign(null)}
+        >
+          <aside
+            className="flex h-full w-full max-w-md flex-col overflow-hidden bg-white shadow-2xl sm:rounded-2xl"
+            onClick={(e) => e.stopPropagation()}
+            dir="rtl"
+          >
+            <div className="flex items-start justify-between border-b border-slate-100 px-4 py-3">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">
+                  {t("metaCampaigns.details.badge")}
+                </p>
+                <h3 className="mt-1 text-lg font-black text-slate-900">
+                  {detailsCampaign.name}
+                </h3>
+                <p className="mt-0.5 text-xs font-semibold text-slate-500">
+                  {t("metaCampaigns.details.readOnlyHint")}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setDetailsCampaign(null)}
+                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 text-slate-500"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <dl className="flex-1 overflow-y-auto px-4 py-2">
+              <DetailRow
+                label="Campaign name"
+                value={detailsCampaign.name || "—"}
+              />
+              <DetailRow
+                label="Campaign ID"
+                value={detailsCampaign.id || "—"}
+              />
+              <DetailRow
+                label="Status"
+                value={
+                  detailsCampaign.deliveryStatus ||
+                  detailsCampaign.effectiveStatus ||
+                  detailsCampaign.status ||
+                  "—"
+                }
+              />
+              <DetailRow
+                label="Objective"
+                value={detailsCampaign.objective || "—"}
+              />
+              <DetailRow
+                label="Buying type"
+                value={detailsCampaign.buyingType || "—"}
+              />
+              <DetailRow
+                label="Daily/Lifetime budget"
+                value={
+                  detailsCampaign.dailyBudget
+                    ? `${formatCurrency(detailsCampaign.dailyBudget, currency)} (daily)`
+                    : detailsCampaign.lifetimeBudget
+                      ? `${formatCurrency(detailsCampaign.lifetimeBudget, currency)} (lifetime)`
+                      : "—"
+                }
+              />
+              <DetailRow
+                label="Spend"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.spend,
+                  (n) => formatCurrency(n, currency),
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="Impressions"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.impressions,
+                  formatNumber,
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="Reach"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.reach,
+                  formatNumber,
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="Clicks"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.clicks,
+                  formatNumber,
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="CTR"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.ctr,
+                  (n) => formatPercent(n),
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="Leads"
+                value={formatMetricOrDash(
+                  detailsCampaign.metrics?.leads,
+                  formatNumber,
+                  { treatZeroAsEmpty: true }
+                )}
+              />
+              <DetailRow
+                label="Cost per lead"
+                value={formatMetricOrDash(
+                  (detailsCampaign.metrics?.leads || 0) > 0
+                    ? detailsCampaign.metrics?.costPerLead
+                    : null,
+                  (n) => formatCurrency(n, currency)
+                )}
+              />
+              <DetailRow
+                label="Start date"
+                value={formatDateHe(detailsCampaign.startTime)}
+              />
+              <DetailRow
+                label="End date"
+                value={
+                  detailsCampaign.stopTime
+                    ? formatDateHe(detailsCampaign.stopTime)
+                    : t("metaCampaigns.table.endOngoing")
+                }
+              />
+              <DetailRow
+                label="Last data update"
+                value={formatDateTimeHe(lastUpdatedAt)}
+              />
+            </dl>
+          </aside>
+        </div>
+      ) : null}
+
+      {showCaptions ? (
+        <div className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:inset-x-auto">
+          <div className="flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
+                App Review · ads_read
+              </p>
+              <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-700">
+                {APP_REVIEW_CAPTIONS[captionIndex]}
+              </p>
+              <div className="mt-2 flex flex-wrap gap-1">
+                {APP_REVIEW_CAPTIONS.map((_, index) => (
+                  <button
+                    key={APP_REVIEW_CAPTIONS[index]}
+                    type="button"
+                    onClick={() => setCaptionIndex(index)}
+                    className={[
+                      "h-1.5 w-6 rounded-full",
+                      index === captionIndex ? "bg-violet-500" : "bg-slate-200",
+                    ].join(" ")}
+                    aria-label={`Caption ${index + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={hideCaptions}
+              className="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs font-bold text-slate-500 hover:bg-slate-50"
+            >
+              Hide
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
