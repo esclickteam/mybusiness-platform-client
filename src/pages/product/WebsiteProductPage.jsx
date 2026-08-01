@@ -114,7 +114,7 @@ export default function WebsiteProductPage() {
         <meta property="og:site_name" content="BizUply" />
         <link rel="preload" as="image" href="/floriquedesk.png" />
         <link rel="preload" as="image" href="/velmoradesk.png" />
-        <link rel="preload" as="image" href="/lunelledesk.png" />
+        <link rel="preload" as="image" href="/PulseCoredesk.png" />
       </Helmet>
 
       <ScrollProgress />
