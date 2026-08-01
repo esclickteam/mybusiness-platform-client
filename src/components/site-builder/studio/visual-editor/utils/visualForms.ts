@@ -17,6 +17,28 @@ export type FormContext = {
   containerNode: HTMLElement | null;
 };
 
+/** Booking calendar widgets must never be rewritten by the contact form builder. */
+export function isBookingWidgetForm(
+  formNode: HTMLElement | null | undefined,
+): boolean {
+  if (!formNode) return false;
+
+  if (
+    formNode.getAttribute("data-bizuply-booking-live") === "true" ||
+    formNode.getAttribute("data-bizuply-widget") === "booking" ||
+    formNode.getAttribute("data-bizuply-booking-mount") === "true" ||
+    formNode.getAttribute("data-bizuply-block") === "booking"
+  ) {
+    return true;
+  }
+
+  return Boolean(
+    formNode.closest(
+      '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"], [data-bizuply-booking-host="true"], [data-bizuply-block="booking"], [data-section-kind="booking"]',
+    ),
+  );
+}
+
 export function resolveFormContext(
   node: HTMLElement | null,
   root?: HTMLElement | null,
@@ -112,18 +134,25 @@ export function findFormNodeByElementId(
 
   const safeId = safeCssSelectorValue(elementId);
 
-  return (
+  const candidates = [
     root.querySelector<HTMLFormElement>(
       `form[data-visual-edit-id="${safeId}"]`,
-    ) ||
+    ),
     root.querySelector<HTMLFormElement>(
       `[data-visual-edit-id="${safeId}"] form`,
-    ) ||
+    ),
     root.querySelector<HTMLFormElement>(
       `[data-template-section-id="${safeId}"] form`,
-    ) ||
-    null
-  );
+    ),
+  ];
+
+  for (const candidate of candidates) {
+    if (candidate && !isBookingWidgetForm(candidate)) {
+      return candidate;
+    }
+  }
+
+  return null;
 }
 
 export function collectFormConfigFromDom(
@@ -224,16 +253,32 @@ export function applyFormBuilderConfigForElement(
 ) {
   if (!root || !elementId) return;
 
+  // Never hydrate form-builder config into booking calendar mounts.
+  const safeId = safeCssSelectorValue(elementId);
+  const targetContainer = root.querySelector<HTMLElement>(
+    `[data-visual-edit-id="${safeId}"], [data-template-section-id="${safeId}"]`,
+  );
+  if (
+    targetContainer &&
+    (isBookingWidgetForm(targetContainer) ||
+      targetContainer.getAttribute("data-section-kind") === "booking" ||
+      targetContainer.querySelector(
+        '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"]',
+      ))
+  ) {
+    return;
+  }
+
   let formNode = findFormNodeByElementId(root, elementId);
 
   if (!formNode) {
-    const safeId = safeCssSelectorValue(elementId);
-    const container = root.querySelector<HTMLElement>(
-      `[data-visual-edit-id="${safeId}"], [data-template-section-id="${safeId}"]`,
-    );
+    const container = targetContainer;
 
-    if (container) {
-      formNode = container.querySelector("form");
+    if (container && !isBookingWidgetForm(container)) {
+      const nestedForms = Array.from(
+        container.querySelectorAll<HTMLFormElement>("form"),
+      ).filter((node) => !isBookingWidgetForm(node));
+      formNode = nestedForms[0] || null;
 
       if (!formNode) {
         formNode = document.createElement("form");
@@ -243,7 +288,7 @@ export function applyFormBuilderConfigForElement(
     }
   }
 
-  if (!formNode) return;
+  if (!formNode || isBookingWidgetForm(formNode)) return;
 
   if (!formNode.getAttribute("data-visual-edit-id")) {
     formNode.setAttribute("data-visual-edit-id", elementId);
@@ -668,6 +713,7 @@ export function applyFormBuilderConfigToFormNode(
   form: BizuplyFormConfig,
 ) {
   if (!formNode) return;
+  if (isBookingWidgetForm(formNode)) return;
 
   const safeForm = normalizeFormBuilderConfig(form);
 
@@ -769,10 +815,24 @@ export function applySavedFormBuildersToDom(
   const fallbackForm = data?.[FORM_BUILDER_KEY];
 
   if (fallbackForm && Object.keys(byElement).length === 0) {
-    applyFormBuilderConfigToFormNode(
-      root.querySelector<HTMLFormElement>("form"),
-      normalizeFormBuilderConfig(fallbackForm),
-    );
+    // Only hydrate real form-builder nodes — never the first <form> on the page
+    // (booking calendar widgets also render a <form> and were being overwritten).
+    const fallbackTarget =
+      root.querySelector<HTMLFormElement>(
+        'form[data-bizuply-form-builder="true"]',
+      ) ||
+      root.querySelector<HTMLFormElement>("form[data-bizuply-form-id]") ||
+      Array.from(root.querySelectorAll<HTMLFormElement>("form")).find(
+        (node) => !isBookingWidgetForm(node),
+      ) ||
+      null;
+
+    if (fallbackTarget) {
+      applyFormBuilderConfigToFormNode(
+        fallbackTarget,
+        normalizeFormBuilderConfig(fallbackForm),
+      );
+    }
   }
 }
 

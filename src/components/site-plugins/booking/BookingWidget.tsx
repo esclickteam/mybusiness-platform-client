@@ -672,8 +672,10 @@ export default function BookingWidget({
     };
   }, [live, businessId, selectedServiceId, selectedDate]);
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
+  async function handleSubmit(
+    event?: React.FormEvent | React.MouseEvent,
+  ) {
+    event?.preventDefault?.();
     if (!live || !businessId || !selectedServiceId || !selectedSlot) return;
     if (!clientName.trim() || !clientPhone.trim()) {
       setError("נא למלא שם וטלפון");
@@ -722,11 +724,12 @@ export default function BookingWidget({
   }
 
   return (
-    <form
+    <div
       style={styles.root}
       dir="rtl"
-      onSubmit={handleSubmit}
       data-bizuply-booking-live="true"
+      data-bizuply-widget="booking"
+      data-bizuply-block="booking"
     >
       <aside style={styles.servicesCol}>
         <div style={styles.header}>
@@ -923,10 +926,15 @@ export default function BookingWidget({
 
         {error ? <p style={styles.error}>{error}</p> : null}
 
-        <button type="submit" style={styles.primaryBtn} disabled={submitting}>
+        <button
+          type="button"
+          style={styles.primaryBtn}
+          disabled={submitting}
+          onClick={handleSubmit}
+        >
           {submitting ? "שומר ביומן..." : "אישור תור"}
         </button>
       </div>
-    </form>
+    </div>
   );
 }
