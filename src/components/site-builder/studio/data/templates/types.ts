@@ -24,7 +24,13 @@ export type StudioTemplateDefinition = {
   categoryLabel: string;
   badge?: string;
   description: string;
+  /** Hero / marketing still — NOT used for gallery cards. */
   previewImage?: string;
+  /**
+   * Full-page desktop screenshot of the template homepage.
+   * Prefer generated `/template-screenshots/{id}.webp` via the screenshot script.
+   */
+  fullPagePreview?: string;
   seed: ReadyWebsiteTemplateSeed;
   thumbnail?: ReactNode;
   preview?: ReactNode;

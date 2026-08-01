@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "generate-sitemap": "node generate-sitemap.js"
+    "generate-sitemap": "node generate-sitemap.js",
+    "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs"
   },
   "dependencies": {
     "@animateicons/react": "^0.3.4",
@@ -126,6 +127,7 @@
     "jsdom": "^30.0.1",
     "lighthouse": "^13.4.1",
     "playwright": "^1.62.1",
+    "sharp": "^0.35.3",
     "sitemap-generator": "^8.5.1",
     "style-loader": "^3.3.4",
     "typescript": "^6.0.3",

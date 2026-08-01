@@ -26,6 +26,7 @@ import {
 
 import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview from "../components/website/TemplateCardPreview";
+import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -66,6 +67,8 @@ type WebsiteTemplate = {
   badge?: string;
   thumbnailUrl?: string;
   previewImageUrl?: string;
+  /** Full-page desktop screenshot for gallery cards (never hero/cover). */
+  fullPagePreview?: string;
   tags?: string[];
   order?: number;
 
@@ -338,6 +341,11 @@ function mapDefinitionToGalleryTemplate(
     badge,
     thumbnailUrl: image,
     previewImageUrl: image,
+    fullPagePreview:
+      String(definition?.fullPagePreview || "").trim() ||
+      getTemplateFullPageScreenshotUrl(
+        String(definition?.id || definition?.key || ""),
+      ),
     palette: seed.palette,
     order: index + 1,
   };
@@ -378,10 +386,24 @@ function mergeWithLocalTemplates(
     const overrides: Record<string, any> = {};
     Object.entries(template).forEach(([field, value]) => {
       if (value === null || value === undefined || value === "") return;
+      // Never let Mongo hero/cover fields become the gallery full-page shot.
+      if (
+        field === "fullPagePreview" ||
+        field === "previewImageUrl" ||
+        field === "thumbnailUrl" ||
+        field === "image"
+      ) {
+        return;
+      }
       overrides[field] = value;
     });
 
-    byKey.set(key, { ...existing, ...overrides });
+    byKey.set(key, {
+      ...existing,
+      ...overrides,
+      fullPagePreview:
+        existing.fullPagePreview || getTemplateFullPageScreenshotUrl(key),
+    });
   });
 
   return Array.from(byKey.values());
@@ -1110,10 +1132,11 @@ export default function WebsiteTemplatesPage() {
                                   <TemplateCardPreview
                                     templateKey={template.key}
                                     title={template.name}
-                                    coverImage={
-                                      template.previewImageUrl ||
-                                      template.thumbnailUrl ||
-                                      template.image
+                                    fullPageScreenshot={
+                                      template.fullPagePreview ||
+                                      getTemplateFullPageScreenshotUrl(
+                                        template.key,
+                                      )
                                     }
                                     eager={index < GALLERY_EAGER_THUMBS}
                                   />
