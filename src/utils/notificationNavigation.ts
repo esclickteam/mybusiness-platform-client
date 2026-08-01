@@ -208,19 +208,25 @@ export function registerServiceWorkerNotificationBridge() {
 
     if (!data?.type) return;
 
+    // Legacy answer messages now open the incoming screen only (no auto-answer).
     if (data.type === "SOFTPHONE_ANSWER") {
       const path = data.url
         ? data.url.startsWith("http")
           ? `${new URL(data.url).pathname}${new URL(data.url).search}${new URL(data.url).hash}`
           : data.url
-        : "/admin/dashboard?softphone=answer";
+        : "/admin/dashboard?softphone=incoming";
 
-      stashPendingNotificationUrl(path);
+      const safePath = path.replace(
+        /([?&])softphone=answer\b/i,
+        "$1softphone=incoming"
+      );
+
+      stashPendingNotificationUrl(safePath);
 
       window.dispatchEvent(
-        new CustomEvent("bizuply:softphone-answer", {
+        new CustomEvent("bizuply:softphone-open-incoming", {
           detail: {
-            url: path,
+            url: safePath,
             fromNumber: data.fromNumber || "",
             contactName: data.contactName || "",
             callSid: data.callSid || "",
@@ -231,7 +237,7 @@ export function registerServiceWorkerNotificationBridge() {
 
       window.dispatchEvent(
         new CustomEvent("bizuply:notification-navigate", {
-          detail: { url: path },
+          detail: { url: safePath },
         })
       );
       return;

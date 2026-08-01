@@ -250,6 +250,8 @@ let pendingIncomingTelnyxCall: any = null;
 let telnyxIncomingBound = false;
 let telnyxReady = false;
 let mutedBeforeHold = false;
+/** True only after the user taps ענה in the softphone UI (not via notification open). */
+let userAcceptedIncoming = false;
 let remoteAudioEl: HTMLAudioElement | null = null;
 
 function ensureRemoteAudioElement() {
@@ -356,7 +358,7 @@ async function showIncomingCallNotification(opts: {
       requireInteraction: true,
       vibrate: [300, 120, 300, 120, 300],
       actions: [
-        { action: "answer", title: "ענה" },
+        { action: "open", title: "פתח" },
         { action: "dismiss", title: "דחה" },
       ],
       data: {
@@ -476,6 +478,7 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         Boolean(call.options?.remoteCallerNumber);
 
       if (isInbound && (state === "ringing" || state === "new")) {
+        userAcceptedIncoming = false;
         pendingIncomingTelnyxCall = call;
         const from =
           call.options?.remoteCallerNumber ||
@@ -502,6 +505,10 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         (telnyxCall === call || pendingIncomingTelnyxCall === call) &&
         (state === "active" || state === "answered")
       ) {
+        // Never mark answered unless the user pressed ענה in the softphone UI.
+        if (!userAcceptedIncoming) {
+          return;
+        }
         telnyxCall = call;
         void attachTelnyxRemoteAudio(call);
         const current = getAdminSoftphoneState().activeCall;
@@ -523,6 +530,7 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         if (telnyxCall === call) {
           telnyxCall = null;
         }
+        userAcceptedIncoming = false;
         const current = getAdminSoftphoneState().activeCall;
         if (
           current &&
@@ -568,6 +576,7 @@ function hangupActiveVoipCall() {
   twilioCall = null;
   pendingIncomingTelnyxCall = null;
   telnyxCall = null;
+  userAcceptedIncoming = false;
 }
 
 function setVoipMuted(muted: boolean) {
@@ -748,12 +757,15 @@ export default function AdminSoftphone({
 
   const acceptIncoming = useCallback(async () => {
     const current = getAdminSoftphoneState().activeCall;
+    // Only answer when the softphone already shows an incoming call.
+    // Never queue another answer request here (that caused mobile auto-answer).
     if (!current || current.status !== "incoming") {
-      requestSoftphoneAnswer();
+      setSoftphoneOpen(true);
       return;
     }
 
     try {
+      userAcceptedIncoming = true;
       if (pendingIncomingTelnyxCall) {
         telnyxCall = pendingIncomingTelnyxCall;
         pendingIncomingTelnyxCall = null;
@@ -761,7 +773,6 @@ export default function AdminSoftphone({
         if (typeof telnyxCall.answer === "function") {
           await Promise.resolve(telnyxCall.answer(media));
         }
-        // Keep mic unmuted after answer
         try {
           telnyxCall.unmuteAudio?.();
         } catch {
@@ -786,6 +797,7 @@ export default function AdminSoftphone({
       }
       setSoftphoneOpen(true);
     } catch (err: any) {
+      userAcceptedIncoming = false;
       patchActiveSoftphoneCall({
         status: "failed",
         error: err?.message || "לא הצלחנו לענות לשיחה",
@@ -1021,13 +1033,18 @@ export default function AdminSoftphone({
     void rejectIncoming();
   }, [rejectRequestId, rejectIncoming]);
 
-  // Deep link from PWA notification:
-  // softphone=incoming → show Answer/Decline UI only
-  // softphone=answer → answer the call
+  // Deep link from PWA/mobile notification — ALWAYS open the incoming
+  // Answer/Decline screen only. Never auto-answer from the URL.
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const softphone = params.get("softphone");
-    if (softphone !== "answer" && softphone !== "incoming") return;
+    if (
+      softphone !== "answer" &&
+      softphone !== "incoming" &&
+      softphone !== "open"
+    ) {
+      return;
+    }
 
     const key = location.search;
     if (handledQueryRef.current === key) return;
@@ -1052,11 +1069,7 @@ export default function AdminSoftphone({
     }
 
     setSoftphoneOpen(true);
-
-    // Auto-answer ONLY when the notification Answer action was used.
-    if (softphone === "answer") {
-      requestSoftphoneAnswer();
-    }
+    // Intentionally no requestSoftphoneAnswer() — user must tap ענה in UI.
 
     params.delete("softphone");
     params.delete("from");
@@ -1073,12 +1086,12 @@ export default function AdminSoftphone({
     );
   }, [location.pathname, location.search, navigate, status.voipReady]);
 
-  // Custom events from SW bridge
+  // Custom events from SW bridge — open incoming UI only (desktop-identical).
   useEffect(() => {
     const presentFromDetail = (detail: any) => {
-      if (!detail?.fromNumber) return;
+      if (!detail?.fromNumber && !getAdminSoftphoneState().activeCall) return;
       const current = getAdminSoftphoneState().activeCall;
-      if (!current || current.status !== "incoming") {
+      if (detail?.fromNumber && (!current || current.status !== "incoming")) {
         presentIncomingSoftphoneCall({
           phone: detail.fromNumber,
           contactName: detail.contactName || "שיחה נכנסת",
@@ -1090,15 +1103,14 @@ export default function AdminSoftphone({
       setSoftphoneOpen(true);
     };
 
-    const onAnswer = (event: Event) => {
-      const detail = (event as CustomEvent).detail || {};
-      presentFromDetail(detail);
-      requestSoftphoneAnswer();
-    };
     const onOpenIncoming = (event: Event) => {
       const detail = (event as CustomEvent).detail || {};
       presentFromDetail(detail);
-      // Do NOT answer — user chooses ענה/דחה in the softphone UI.
+    };
+    // Legacy SOFTPHONE_ANSWER from old SW builds: open UI only, do not answer.
+    const onAnswer = (event: Event) => {
+      const detail = (event as CustomEvent).detail || {};
+      presentFromDetail(detail);
     };
     const onReject = () => requestSoftphoneReject();
 
