@@ -43,6 +43,7 @@ function statusLabel(status) {
 
 function actionButtonClass(extra = "") {
   return [
+    "inline-flex min-h-11 items-center justify-center",
     "rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100",
     "border border-violet-200/80 px-3.5 py-2.5 text-xs font-black text-black",
     "shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5",
@@ -194,12 +195,12 @@ function AdminUsers() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
+        className="min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-3xl font-black text-purple-950 md:text-4xl">
+              <h1 className="text-2xl font-black text-purple-950 sm:text-3xl md:text-4xl">
                 משתמשים במערכת
               </h1>
               <p className="mt-2 text-sm font-bold text-purple-950/55">
@@ -262,137 +263,263 @@ function AdminUsers() {
                 לא נמצאו משתמשים
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-right">
-                  <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
-                    <tr>
-                      <th className="px-4 py-4">משתמש</th>
-                      <th className="px-4 py-4">שם משתמש</th>
-                      <th className="px-4 py-4">טלפון</th>
-                      <th className="px-4 py-4">תפקיד</th>
-                      <th className="px-4 py-4">סטטוס</th>
-                      <th className="px-4 py-4">פעולות</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filtered.map((rowUser) => {
-                      const status = rowUser.status || "active";
-                      const isBusy = busyId === rowUser._id;
-                      const initials = String(rowUser.name || "מ")
-                        .trim()
-                        .charAt(0)
-                        .toUpperCase();
+              <>
+                {/* Mobile cards */}
+                <div className="space-y-3 p-3 md:hidden">
+                  {filtered.map((rowUser) => {
+                    const status = rowUser.status || "active";
+                    const isBusy = busyId === rowUser._id;
+                    const initials = String(rowUser.name || "מ")
+                      .trim()
+                      .charAt(0)
+                      .toUpperCase();
 
-                      return (
-                        <tr
-                          key={rowUser._id}
-                          className="border-t border-purple-100 text-sm font-bold text-slate-800"
-                        >
-                          <td className="px-4 py-4">
-                            <div className="flex items-center justify-start gap-3">
-                              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-100 text-sm font-black text-purple-900">
-                                {initials}
-                              </div>
-                              <div>
-                                <div className="font-black text-purple-950">
-                                  {rowUser.name || "ללא שם"}
-                                </div>
-                                <div className="text-xs text-slate-400" dir="ltr">
-                                  {rowUser.email || "—"}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            {rowUser.username || "—"}
-                          </td>
-                          <td className="px-4 py-4">
-                            {rowUser.phone ? (
-                              <div className="flex items-center justify-start gap-2">
-                                <span dir="ltr" className="text-sm font-bold text-slate-700">
-                                  {rowUser.phone}
-                                </span>
-                                <AdminDialButton
-                                  phone={rowUser.phone}
-                                  name={rowUser.name || rowUser.username}
-                                  source="user"
-                                  refId={rowUser._id}
-                                />
-                              </div>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
-                          <td className="px-4 py-4">
-                            <span className="inline-flex rounded-full bg-purple-50 px-3 py-1 text-xs font-black text-purple-900">
-                              {roleLabel(rowUser.role)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span
-                              className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
-                                status === "blocked"
-                                  ? "bg-rose-50 text-rose-700"
-                                  : "bg-emerald-50 text-emerald-700"
-                              }`}
+                    return (
+                      <article
+                        key={`m-${rowUser._id}`}
+                        className="rounded-[24px] border border-purple-100 bg-white p-4 shadow-sm"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-purple-100 text-sm font-black text-purple-900">
+                            {initials}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-base font-black text-purple-950">
+                              {rowUser.name || "ללא שם"}
+                            </h3>
+                            <p
+                              className="truncate text-xs font-bold text-slate-400"
+                              dir="ltr"
                             >
-                              {statusLabel(status)}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex flex-wrap items-center justify-start gap-2">
-                              <button
-                                type="button"
-                                disabled={isBusy}
-                                onClick={() =>
-                                  handleStatusToggle(rowUser._id, status)
-                                }
-                                className={actionButtonClass()}
+                              {rowUser.email || "—"}
+                            </p>
+                            <p className="mt-0.5 text-xs font-bold text-slate-500">
+                              {rowUser.username || "—"}
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              <span className="inline-flex rounded-full bg-purple-50 px-2.5 py-1 text-[11px] font-black text-purple-900">
+                                {roleLabel(rowUser.role)}
+                              </span>
+                              <span
+                                className={`inline-flex rounded-full px-2.5 py-1 text-[11px] font-black ${
+                                  status === "blocked"
+                                    ? "bg-rose-50 text-rose-700"
+                                    : "bg-emerald-50 text-emerald-700"
+                                }`}
                               >
-                                {status === "active" ? "חסימה" : "הפעלה"}
-                              </button>
-
-                              <button
-                                type="button"
-                                disabled={isBusy}
-                                onClick={() => handleDelete(rowUser._id)}
-                                className={actionButtonClass(
-                                  "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
-                                )}
-                              >
-                                מחיקה
-                              </button>
-
-                              {rowUser.role !== "admin" ? (
-                                <button
-                                  type="button"
-                                  disabled={isBusy}
-                                  onClick={() => handleImpersonate(rowUser)}
-                                  className={actionButtonClass()}
-                                >
-                                  כניסה כמשתמש
-                                </button>
-                              ) : null}
-
-                              {rowUser.role === "business" &&
-                              rowUser.businessId ? (
-                                <button
-                                  type="button"
-                                  disabled={isBusy}
-                                  onClick={() => handleEnterAsAdmin(rowUser)}
-                                  className={actionButtonClass()}
-                                >
-                                  כניסה לעסק
-                                </button>
-                              ) : null}
+                                {statusLabel(status)}
+                              </span>
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                          </div>
+                          {rowUser.phone ? (
+                            <AdminDialButton
+                              phone={rowUser.phone}
+                              name={rowUser.name || rowUser.username}
+                              source="user"
+                              refId={rowUser._id}
+                            />
+                          ) : null}
+                        </div>
+
+                        {rowUser.phone ? (
+                          <p
+                            className="mt-3 text-sm font-bold text-slate-600"
+                            dir="ltr"
+                          >
+                            {rowUser.phone}
+                          </p>
+                        ) : null}
+
+                        <div className="mt-3 grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() =>
+                              handleStatusToggle(rowUser._id, status)
+                            }
+                            className={actionButtonClass()}
+                          >
+                            {status === "active" ? "חסימה" : "הפעלה"}
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => handleDelete(rowUser._id)}
+                            className={actionButtonClass(
+                              "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
+                            )}
+                          >
+                            מחיקה
+                          </button>
+
+                          {rowUser.role !== "admin" ? (
+                            <button
+                              type="button"
+                              disabled={isBusy}
+                              onClick={() => handleImpersonate(rowUser)}
+                              className={actionButtonClass("col-span-2")}
+                            >
+                              כניסה כמשתמש
+                            </button>
+                          ) : null}
+
+                          {rowUser.role === "business" &&
+                          rowUser.businessId ? (
+                            <button
+                              type="button"
+                              disabled={isBusy}
+                              onClick={() => handleEnterAsAdmin(rowUser)}
+                              className={actionButtonClass("col-span-2")}
+                            >
+                              כניסה לעסק
+                            </button>
+                          ) : null}
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop table */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="min-w-full text-right">
+                    <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
+                      <tr>
+                        <th className="px-4 py-4">משתמש</th>
+                        <th className="px-4 py-4">שם משתמש</th>
+                        <th className="px-4 py-4">טלפון</th>
+                        <th className="px-4 py-4">תפקיד</th>
+                        <th className="px-4 py-4">סטטוס</th>
+                        <th className="px-4 py-4">פעולות</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filtered.map((rowUser) => {
+                        const status = rowUser.status || "active";
+                        const isBusy = busyId === rowUser._id;
+                        const initials = String(rowUser.name || "מ")
+                          .trim()
+                          .charAt(0)
+                          .toUpperCase();
+
+                        return (
+                          <tr
+                            key={rowUser._id}
+                            className="border-t border-purple-100 text-sm font-bold text-slate-800"
+                          >
+                            <td className="px-4 py-4">
+                              <div className="flex items-center justify-start gap-3">
+                                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-purple-100 text-sm font-black text-purple-900">
+                                  {initials}
+                                </div>
+                                <div>
+                                  <div className="font-black text-purple-950">
+                                    {rowUser.name || "ללא שם"}
+                                  </div>
+                                  <div
+                                    className="text-xs text-slate-400"
+                                    dir="ltr"
+                                  >
+                                    {rowUser.email || "—"}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              {rowUser.username || "—"}
+                            </td>
+                            <td className="px-4 py-4">
+                              {rowUser.phone ? (
+                                <div className="flex items-center justify-start gap-2">
+                                  <span
+                                    dir="ltr"
+                                    className="text-sm font-bold text-slate-700"
+                                  >
+                                    {rowUser.phone}
+                                  </span>
+                                  <AdminDialButton
+                                    phone={rowUser.phone}
+                                    name={rowUser.name || rowUser.username}
+                                    source="user"
+                                    refId={rowUser._id}
+                                  />
+                                </div>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <span className="inline-flex rounded-full bg-purple-50 px-3 py-1 text-xs font-black text-purple-900">
+                                {roleLabel(rowUser.role)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span
+                                className={`inline-flex rounded-full px-3 py-1 text-xs font-black ${
+                                  status === "blocked"
+                                    ? "bg-rose-50 text-rose-700"
+                                    : "bg-emerald-50 text-emerald-700"
+                                }`}
+                              >
+                                {statusLabel(status)}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex flex-wrap items-center justify-start gap-2">
+                                <button
+                                  type="button"
+                                  disabled={isBusy}
+                                  onClick={() =>
+                                    handleStatusToggle(rowUser._id, status)
+                                  }
+                                  className={actionButtonClass()}
+                                >
+                                  {status === "active" ? "חסימה" : "הפעלה"}
+                                </button>
+
+                                <button
+                                  type="button"
+                                  disabled={isBusy}
+                                  onClick={() => handleDelete(rowUser._id)}
+                                  className={actionButtonClass(
+                                    "border-rose-200 from-rose-50 via-rose-50 to-orange-50"
+                                  )}
+                                >
+                                  מחיקה
+                                </button>
+
+                                {rowUser.role !== "admin" ? (
+                                  <button
+                                    type="button"
+                                    disabled={isBusy}
+                                    onClick={() => handleImpersonate(rowUser)}
+                                    className={actionButtonClass()}
+                                  >
+                                    כניסה כמשתמש
+                                  </button>
+                                ) : null}
+
+                                {rowUser.role === "business" &&
+                                rowUser.businessId ? (
+                                  <button
+                                    type="button"
+                                    disabled={isBusy}
+                                    onClick={() => handleEnterAsAdmin(rowUser)}
+                                    className={actionButtonClass()}
+                                  >
+                                    כניסה לעסק
+                                  </button>
+                                ) : null}
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </section>

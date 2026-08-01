@@ -425,16 +425,16 @@ function AdminEarlyAccess() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f7f2ff] px-4 py-7 text-right text-purple-950 md:px-8"
+        className="min-h-screen bg-[#f7f2ff] px-3 py-5 text-right text-purple-950 sm:px-4 sm:py-7 md:px-8"
       >
         <section className="mx-auto max-w-[1480px]">
-          <div className="rounded-[34px] border border-purple-200 bg-white p-6 shadow-xl shadow-purple-950/8 md:p-8">
+          <div className="rounded-[34px] border border-purple-200 bg-white p-5 shadow-xl shadow-purple-950/8 sm:p-6 md:p-8">
             <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <button
                   type="button"
                   onClick={() => navigate("/admin/dashboard")}
-                  className="mb-5 rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-black text-purple-800 transition hover:bg-purple-100"
+                  className="mb-5 inline-flex min-h-11 items-center rounded-full border border-purple-200 bg-purple-50 px-4 py-2 text-sm font-black text-purple-800 transition hover:bg-purple-100"
                 >
                   ← חזרה לדשבורד
                 </button>
@@ -443,7 +443,7 @@ function AdminEarlyAccess() {
                   הרשמה מוקדמת
                 </div>
 
-                <h1 className="text-4xl font-black tracking-tight text-purple-950 md:text-6xl">
+                <h1 className="text-3xl font-black tracking-tight text-purple-950 sm:text-4xl md:text-5xl">
                   רשימת הנרשמים מהטופס
                 </h1>
 
@@ -458,7 +458,7 @@ function AdminEarlyAccess() {
                   type="button"
                   onClick={loadRegistrations}
                   disabled={loading}
-                  className="rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-purple-700 px-5 py-4 text-sm font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-1 hover:bg-purple-800 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   {loading ? "טוען..." : "רענון רשימה"}
                 </button>
@@ -467,7 +467,7 @@ function AdminEarlyAccess() {
                   type="button"
                   onClick={exportCsv}
                   disabled={!filteredRegistrations.length}
-                  className="rounded-2xl border border-purple-200 bg-white px-5 py-4 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-1 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center rounded-2xl border border-purple-200 bg-white px-5 py-4 text-sm font-black text-purple-800 shadow-sm transition hover:-translate-y-1 hover:bg-purple-50 disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   ייצוא CSV
                 </button>
@@ -475,7 +475,7 @@ function AdminEarlyAccess() {
             </div>
           </div>
 
-          <div className="mt-5 grid gap-4 md:grid-cols-4">
+          <div className="mt-5 grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
             <SummaryCard
               title="סה״כ נרשמים"
               value={summary.total}
@@ -566,210 +566,344 @@ function AdminEarlyAccess() {
                 </div>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table
-                  dir="rtl"
-                  className="w-full min-w-[1420px] border-collapse text-right"
-                >
-                  <thead>
-                    <tr className="border-b border-purple-200 bg-purple-50">
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        שם מלא
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        מייל
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        טלפון
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        תחום העסק
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        תחומי עניין
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        תקציב חודשי
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        מקור
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        תאריך הרשמה
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        סטטוס
-                      </th>
-                      <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
-                        פעולות
-                      </th>
-                    </tr>
-                  </thead>
+              <>
+                {/* Mobile cards */}
+                <div className="space-y-3 p-3 md:hidden">
+                  {filteredRegistrations.map((item) => {
+                    const id = getLeadId(item);
+                    const fullName = getRegistrationValue(item, "fullName");
+                    const email = getRegistrationValue(item, "email");
+                    const phone = getRegistrationValue(item, "phone");
+                    const businessName = getRegistrationValue(
+                      item,
+                      "businessName",
+                    );
+                    const whatsappPhone = normalizeWhatsappPhone(
+                      phone !== "לא צוין" ? phone : "",
+                    );
+                    const itemStatus = item.status || "new";
+                    const isActionLoading = actionLoadingId === id;
+                    const hasPhone = phone && phone !== "לא צוין";
 
-                  <tbody>
-                    {filteredRegistrations.map((item) => {
-                      const id = getLeadId(item);
-                      const fullName = getRegistrationValue(item, "fullName");
-                      const email = getRegistrationValue(item, "email");
-                      const phone = getRegistrationValue(item, "phone");
-                      const businessName = getRegistrationValue(
-                        item,
-                        "businessName",
-                      );
-                      const interest = getRegistrationValue(item, "interest");
-                      const monthlyBudget = getRegistrationValue(item, "monthlyBudget");
-                      const whatsappPhone = normalizeWhatsappPhone(phone);
-                      const itemStatus = item.status || "new";
-                      const isActionLoading = actionLoadingId === id;
-
-                      return (
-                        <tr
-                          key={id}
-                          className="border-b border-purple-100 transition hover:bg-purple-50/60"
-                        >
-                          <td className="px-5 py-4 text-right">
-                            <strong className="block text-sm font-black text-purple-950">
+                    return (
+                      <article
+                        key={`m-${id}`}
+                        className="rounded-[24px] border border-purple-100 bg-white p-4 shadow-sm"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-base font-black text-purple-950">
                               {fullName}
-                            </strong>
-                          </td>
-
-                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {email}
-                          </td>
-
-                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {phone && phone !== "לא צוין" ? (
-                              <div className="flex items-center justify-start gap-2">
-                                <span>{phone}</span>
-                                <AdminDialButton
-                                  phone={phone}
-                                  name={fullName}
-                                  source="early-access"
-                                  refId={id}
-                                />
-                              </div>
-                            ) : (
-                              phone
-                            )}
-                          </td>
-
-                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
-                            {businessName}
-                          </td>
-
-                          <td className="px-5 py-4 text-right">
-                            <div className="flex max-w-[360px] flex-wrap gap-2">
-                              {(Array.isArray(item.interests) && item.interests.length > 0
-                                ? item.interests
-                                : interest !== "לא צוין"
-                                  ? interest.split(",").map((value) => value.trim()).filter(Boolean)
-                                  : ["לא צוין"]
-                              ).map((value) => (
-                                <span
-                                  key={value}
-                                  className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200"
-                                >
-                                  {value}
-                                </span>
-                              ))}
+                            </h3>
+                            <p
+                              className="mt-1 truncate text-xs font-bold text-slate-400"
+                              dir="ltr"
+                            >
+                              {email}
+                            </p>
+                            <p className="mt-1 truncate text-sm font-bold text-slate-600">
+                              {businessName}
+                            </p>
+                            <div className="mt-2">
+                              <StatusBadge status={itemStatus} />
                             </div>
-                          </td>
+                          </div>
+                          {hasPhone ? (
+                            <AdminDialButton
+                              phone={phone}
+                              name={fullName}
+                              source="early-access"
+                              refId={id}
+                            />
+                          ) : null}
+                        </div>
 
-                          <td className="px-5 py-4 text-right text-sm font-black text-purple-900">
-                            {monthlyBudget}
-                          </td>
+                        {hasPhone ? (
+                          <p
+                            className="mt-3 text-sm font-bold text-slate-600"
+                            dir="ltr"
+                          >
+                            {phone}
+                          </p>
+                        ) : null}
 
-                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
-                            {item.source || "לא צוין"}
-                          </td>
+                        <div className="mt-3 grid gap-2">
+                          {whatsappPhone ? (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                window.open(
+                                  `https://wa.me/${whatsappPhone}`,
+                                  "_blank",
+                                  "noopener,noreferrer",
+                                )
+                              }
+                              className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-emerald-50 px-3 text-xs font-black text-emerald-700 ring-1 ring-emerald-200"
+                            >
+                              <MessageCircle className="h-3.5 w-3.5" />
+                              וואטסאפ
+                            </button>
+                          ) : null}
 
-                          <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
-                            {formatDate(item.createdAt)}
-                          </td>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              disabled={isActionLoading}
+                              onClick={() =>
+                                handleStatusChange(id, "contacted")
+                              }
+                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-purple-50 px-3 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
+                            >
+                              סמן כטופל
+                            </button>
+                            <button
+                              type="button"
+                              disabled={isActionLoading}
+                              onClick={() =>
+                                handleStatusChange(id, "joined_group")
+                              }
+                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-fuchsia-50 px-3 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
+                            >
+                              צורף לקבוצה
+                            </button>
+                            <button
+                              type="button"
+                              disabled={isActionLoading}
+                              onClick={() =>
+                                handleStatusChange(id, "not_relevant")
+                              }
+                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-slate-50 px-3 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
+                            >
+                              לא רלוונטי
+                            </button>
+                            <button
+                              type="button"
+                              disabled={isActionLoading}
+                              onClick={() => handleDelete(id)}
+                              className="inline-flex min-h-11 items-center justify-center rounded-2xl bg-rose-50 px-3 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
+                            >
+                              מחיקה
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
 
-                          <td className="px-5 py-4 text-right">
-                            <StatusBadge status={itemStatus} />
-                          </td>
+                {/* Desktop table */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table
+                    dir="rtl"
+                    className="w-full min-w-[1420px] border-collapse text-right"
+                  >
+                    <thead>
+                      <tr className="border-b border-purple-200 bg-purple-50">
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          שם מלא
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          מייל
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          טלפון
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          תחום העסק
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          תחומי עניין
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          תקציב חודשי
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          מקור
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          תאריך הרשמה
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          סטטוס
+                        </th>
+                        <th className="px-5 py-4 text-right text-sm font-black text-purple-950">
+                          פעולות
+                        </th>
+                      </tr>
+                    </thead>
 
-                          <td className="px-5 py-4 text-right">
-                            <div className="flex flex-wrap justify-start gap-2">
+                    <tbody>
+                      {filteredRegistrations.map((item) => {
+                        const id = getLeadId(item);
+                        const fullName = getRegistrationValue(item, "fullName");
+                        const email = getRegistrationValue(item, "email");
+                        const phone = getRegistrationValue(item, "phone");
+                        const businessName = getRegistrationValue(
+                          item,
+                          "businessName",
+                        );
+                        const interest = getRegistrationValue(item, "interest");
+                        const monthlyBudget = getRegistrationValue(
+                          item,
+                          "monthlyBudget",
+                        );
+                        const whatsappPhone = normalizeWhatsappPhone(phone);
+                        const itemStatus = item.status || "new";
+                        const isActionLoading = actionLoadingId === id;
+
+                        return (
+                          <tr
+                            key={id}
+                            className="border-b border-purple-100 transition hover:bg-purple-50/60"
+                          >
+                            <td className="px-5 py-4 text-right">
+                              <strong className="block text-sm font-black text-purple-950">
+                                {fullName}
+                              </strong>
+                            </td>
+
+                            <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
+                              {email}
+                            </td>
+
+                            <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
                               {phone && phone !== "לא צוין" ? (
-                                <AdminDialButton
-                                  phone={phone}
-                                  name={fullName}
-                                  source="early-access"
-                                  refId={id}
-                                  size="md"
-                                  label="חייג"
-                                />
-                              ) : null}
+                                <div className="flex items-center justify-start gap-2">
+                                  <span>{phone}</span>
+                                  <AdminDialButton
+                                    phone={phone}
+                                    name={fullName}
+                                    source="early-access"
+                                    refId={id}
+                                  />
+                                </div>
+                              ) : (
+                                phone
+                              )}
+                            </td>
 
-                              {whatsappPhone ? (
+                            <td className="px-5 py-4 text-right text-sm font-bold text-slate-700">
+                              {businessName}
+                            </td>
+
+                            <td className="px-5 py-4 text-right">
+                              <div className="flex max-w-[360px] flex-wrap gap-2">
+                                {(Array.isArray(item.interests) &&
+                                item.interests.length > 0
+                                  ? item.interests
+                                  : interest !== "לא צוין"
+                                    ? interest
+                                        .split(",")
+                                        .map((value) => value.trim())
+                                        .filter(Boolean)
+                                    : ["לא צוין"]
+                                ).map((value) => (
+                                  <span
+                                    key={value}
+                                    className="inline-flex rounded-full bg-fuchsia-50 px-3 py-1.5 text-xs font-black text-fuchsia-800 ring-1 ring-fuchsia-200"
+                                  >
+                                    {value}
+                                  </span>
+                                ))}
+                              </div>
+                            </td>
+
+                            <td className="px-5 py-4 text-right text-sm font-black text-purple-900">
+                              {monthlyBudget}
+                            </td>
+
+                            <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
+                              {item.source || "לא צוין"}
+                            </td>
+
+                            <td className="px-5 py-4 text-right text-sm font-bold text-slate-500">
+                              {formatDate(item.createdAt)}
+                            </td>
+
+                            <td className="px-5 py-4 text-right">
+                              <StatusBadge status={itemStatus} />
+                            </td>
+
+                            <td className="px-5 py-4 text-right">
+                              <div className="flex flex-wrap justify-start gap-2">
+                                {phone && phone !== "לא צוין" ? (
+                                  <AdminDialButton
+                                    phone={phone}
+                                    name={fullName}
+                                    source="early-access"
+                                    refId={id}
+                                    size="md"
+                                    label="חייג"
+                                  />
+                                ) : null}
+
+                                {whatsappPhone ? (
+                                  <button
+                                    type="button"
+                                    onClick={() =>
+                                      window.open(
+                                        `https://wa.me/${whatsappPhone}`,
+                                        "_blank",
+                                        "noopener,noreferrer",
+                                      )
+                                    }
+                                    className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200 transition hover:-translate-y-0.5"
+                                  >
+                                    <MessageCircle className="h-3.5 w-3.5" />
+                                    וואטסאפ
+                                  </button>
+                                ) : null}
+
                                 <button
                                   type="button"
+                                  disabled={isActionLoading}
                                   onClick={() =>
-                                    window.open(
-                                      `https://wa.me/${whatsappPhone}`,
-                                      "_blank",
-                                      "noopener,noreferrer",
-                                    )
+                                    handleStatusChange(id, "contacted")
                                   }
-                                  className="inline-flex items-center gap-1.5 rounded-2xl bg-emerald-50 px-3 py-2 text-xs font-black text-emerald-700 ring-1 ring-emerald-200 transition hover:-translate-y-0.5"
+                                  className="rounded-full bg-purple-50 px-3 py-2 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
                                 >
-                                  <MessageCircle className="h-3.5 w-3.5" />
-                                  וואטסאפ
+                                  סמן כטופל
                                 </button>
-                              ) : null}
 
-                              <button
-                                type="button"
-                                disabled={isActionLoading}
-                                onClick={() =>
-                                  handleStatusChange(id, "contacted")
-                                }
-                                className="rounded-full bg-purple-50 px-3 py-2 text-xs font-black text-purple-700 ring-1 ring-purple-200 disabled:opacity-50"
-                              >
-                                סמן כטופל
-                              </button>
+                                <button
+                                  type="button"
+                                  disabled={isActionLoading}
+                                  onClick={() =>
+                                    handleStatusChange(id, "joined_group")
+                                  }
+                                  className="rounded-full bg-fuchsia-50 px-3 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
+                                >
+                                  צורף לקבוצה
+                                </button>
 
-                              <button
-                                type="button"
-                                disabled={isActionLoading}
-                                onClick={() =>
-                                  handleStatusChange(id, "joined_group")
-                                }
-                                className="rounded-full bg-fuchsia-50 px-3 py-2 text-xs font-black text-fuchsia-700 ring-1 ring-fuchsia-200 disabled:opacity-50"
-                              >
-                                צורף לקבוצה
-                              </button>
+                                <button
+                                  type="button"
+                                  disabled={isActionLoading}
+                                  onClick={() =>
+                                    handleStatusChange(id, "not_relevant")
+                                  }
+                                  className="rounded-full bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
+                                >
+                                  לא רלוונטי
+                                </button>
 
-                              <button
-                                type="button"
-                                disabled={isActionLoading}
-                                onClick={() =>
-                                  handleStatusChange(id, "not_relevant")
-                                }
-                                className="rounded-full bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 ring-1 ring-slate-200 disabled:opacity-50"
-                              >
-                                לא רלוונטי
-                              </button>
-
-                              <button
-                                type="button"
-                                disabled={isActionLoading}
-                                onClick={() => handleDelete(id)}
-                                className="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
-                              >
-                                מחיקה
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                <button
+                                  type="button"
+                                  disabled={isActionLoading}
+                                  onClick={() => handleDelete(id)}
+                                  className="rounded-full bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-200 disabled:opacity-50"
+                                >
+                                  מחיקה
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </section>
