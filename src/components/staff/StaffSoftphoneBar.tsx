@@ -234,30 +234,19 @@ export default function StaffSoftphoneBar() {
           setActiveCall((prev) =>
             prev ? { ...prev, status: "ringing" } : prev
           );
-        } catch {
-          const a = document.createElement("a");
-          a.href = `tel:${phone}`;
-          a.rel = "noopener";
-          a.click();
-          setActiveCall((prev) =>
-            prev
-              ? { ...prev, mode: "device", status: "in-progress" }
-              : prev
+        } catch (err: any) {
+          setError(
+            err?.response?.data?.message ||
+              err?.message ||
+              "לא הצלחנו לחייג מהקו העסקי בדפדפן"
           );
+          void endCall("failed");
         }
       } else {
-        const a = document.createElement("a");
-        a.href = `tel:${phone}`;
-        a.rel = "noopener";
-        a.click();
-        setActiveCall((prev) =>
-          prev ? { ...prev, status: "in-progress" } : prev
+        setError(
+          "הסופטפון לא מחובר לקו העסקי. הגדירו Telnyx WebRTC בשרת."
         );
-        if (logId) {
-          void API.patch(`/staff/softphone/calls/${logId}`, {
-            status: "in-progress",
-          });
-        }
+        void endCall("failed");
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || "לא הצלחנו להתחיל שיחה");
