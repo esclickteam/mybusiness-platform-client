@@ -208,6 +208,21 @@ export function registerServiceWorkerNotificationBridge() {
 
     if (!data?.type) return;
 
+    // Incoming push while app is open/backgrounded — register WebRTC only (no answer).
+    if (data.type === "SOFTPHONE_PREPARE") {
+      window.dispatchEvent(
+        new CustomEvent("bizuply:softphone-prepare", {
+          detail: {
+            fromNumber: data.fromNumber || "",
+            contactName: data.contactName || "",
+            callSid: data.callSid || "",
+            callId: data.callId || "",
+          },
+        })
+      );
+      return;
+    }
+
     // WhatsApp-style: notification Answer → open app and connect the call.
     if (data.type === "SOFTPHONE_ANSWER") {
       const path = data.url

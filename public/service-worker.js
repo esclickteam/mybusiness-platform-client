@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when softphone notification behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-softphone-v5";
+const SW_VERSION = "bizuply-sw-softphone-v6";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -156,10 +156,29 @@ self.addEventListener("push", (event) => {
     options.actions = actions;
   }
 
+  // Softphone: wake open clients so WebRTC can register before the ring transfer INVITE.
+  // Do not answer — only prepare. Answer happens when the user taps ענה.
   event.waitUntil(
-    self.registration.showNotification(title, options).catch((err) => {
-      console.error("[sw] showNotification failed", err);
-    })
+    (async () => {
+      if (isSoftphone) {
+        try {
+          await postToClients({
+            type: "SOFTPHONE_PREPARE",
+            fromNumber,
+            contactName,
+            callSid,
+            callId,
+          });
+        } catch (err) {
+          console.error("[sw] softphone prepare failed", err);
+        }
+      }
+      try {
+        await self.registration.showNotification(title, options);
+      } catch (err) {
+        console.error("[sw] showNotification failed", err);
+      }
+    })()
   );
 });
 
