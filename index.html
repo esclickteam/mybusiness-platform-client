@@ -50,43 +50,93 @@
       })();
     </script>
 
+    <!-- Detect published customer hosts early (custom domains + sites.*) -->
+    <script>
+      (function () {
+        try {
+          var host = String(location.hostname || "").toLowerCase();
+          var publicDomain = "sites.bizuply.com";
+          var marketing = {
+            "bizuply.com": 1,
+            "www.bizuply.com": 1,
+            localhost: 1,
+            "127.0.0.1": 1,
+          };
+          var isCustomer =
+            (host.endsWith("." + publicDomain) && host !== publicDomain) ||
+            (host.endsWith(".bizuply.com") &&
+              host !== "bizuply.com" &&
+              host !== "www.bizuply.com") ||
+            (!marketing[host] &&
+              !/\.vercel\.app$/.test(host) &&
+              host.indexOf(".") !== -1);
+          if (isCustomer) {
+            document.documentElement.setAttribute("data-public-site", "true");
+            window.__BIZUPLY_PUBLIC_SITE__ = true;
+          }
+        } catch (e) {}
+      })();
+    </script>
+
     <!-- ✅ Meta / Facebook Domain Verification -->
     <meta
       name="facebook-domain-verification"
       content="azd93f5jgru1b53xrjj0dqaco20viu"
     />
 
-    <!-- ✅ Meta Pixel (Facebook Pixel) -->
+    <!-- ✅ Meta Pixel — platform marketing only (never on published customer sites) -->
     <script>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = "2.0";
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(window, document, "script", "https://connect.facebook.net/en_US/fbevents.js");
+      (function () {
+        if (window.__BIZUPLY_PUBLIC_SITE__) return;
+        !(function (f, b, e, v, n, t, s) {
+          if (f.fbq) return;
+          n = f.fbq = function () {
+            n.callMethod
+              ? n.callMethod.apply(n, arguments)
+              : n.queue.push(arguments);
+          };
+          if (!f._fbq) f._fbq = n;
+          n.push = n;
+          n.loaded = !0;
+          n.version = "2.0";
+          n.queue = [];
+          t = b.createElement(e);
+          t.async = !0;
+          t.src = v;
+          s = b.getElementsByTagName(e)[0];
+          s.parentNode.insertBefore(t, s);
+        })(
+          window,
+          document,
+          "script",
+          "https://connect.facebook.net/en_US/fbevents.js"
+        );
 
-      fbq("init", "1427327632368128");
-      fbq("track", "PageView");
+        fbq("init", "1427327632368128");
+        fbq("track", "PageView");
+      })();
     </script>
 
-   
-
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Platform fonts — skipped on published sites (templates load their own) -->
+    <script>
+      (function () {
+        if (window.__BIZUPLY_PUBLIC_SITE__) return;
+        var pre1 = document.createElement("link");
+        pre1.rel = "preconnect";
+        pre1.href = "https://fonts.googleapis.com";
+        document.head.appendChild(pre1);
+        var pre2 = document.createElement("link");
+        pre2.rel = "preconnect";
+        pre2.href = "https://fonts.gstatic.com";
+        pre2.crossOrigin = "anonymous";
+        document.head.appendChild(pre2);
+        var css = document.createElement("link");
+        css.rel = "stylesheet";
+        css.href =
+          "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
+        document.head.appendChild(css);
+      })();
+    </script>
 
     <!-- 🧠 SEO -->
     <title>BizUply — Business Platform</title>
@@ -101,12 +151,18 @@
     <meta name="author" content="BizUply" />
     <meta http-equiv="Content-Language" content="en" />
 
-    <!-- ⚡ Prevent white flash before React mounts -->
+    <!-- ⚡ Neutral first paint on published customer sites (no Bizuply splash) -->
     <script>
       (function () {
+        if (window.__BIZUPLY_PUBLIC_SITE__) {
+          document.documentElement.style.background = "#ffffff";
+          if (document.body) document.body.style.backgroundColor = "#ffffff";
+          document.title = "";
+          return;
+        }
         document.documentElement.style.background =
           "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
-        document.body && (document.body.style.backgroundColor = "#f6f7fb");
+        if (document.body) document.body.style.backgroundColor = "#f6f7fb";
       })();
     </script>
 
@@ -142,12 +198,27 @@
         overflow-x: hidden;
       }
 
+      html[data-public-site="true"],
+      html[data-public-site="true"] body {
+        background: #ffffff !important;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+          sans-serif;
+      }
+
+      html[data-public-site="true"] #root {
+        background: #ffffff;
+      }
+
       #initial-bg {
         position: fixed;
         inset: 0;
         background: linear-gradient(to bottom, #f6f7fb, #e8ebf8);
         z-index: -1;
         pointer-events: none;
+      }
+
+      html[data-public-site="true"] #initial-bg {
+        background: #ffffff;
       }
 
       #root {
@@ -200,13 +271,7 @@
 
   <body>
   <noscript>
-    <img
-      height="1"
-      width="1"
-      style="display: none"
-      alt=""
-      src="https://www.facebook.com/tr?id=1427327632368128&ev=PageView&noscript=1"
-    />
+    <!-- Meta Pixel noscript is platform-only; omitted on published customer hosts via JS gate above. -->
   </noscript>
 
   <div id="initial-bg"></div>

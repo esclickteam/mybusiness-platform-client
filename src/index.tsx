@@ -17,6 +17,8 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import "./styles/index.css";
 import { registerServiceWorkerNotificationBridge } from "./utils/notificationNavigation";
 import BizuplyLoader from "./components/ui/BizuplyLoader";
+import PublicSiteLoader from "./components/ui/PublicSiteLoader";
+import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
 
 /* ==========================================================
    Types
@@ -51,17 +53,29 @@ if (import.meta.env.PROD) {
    Theme bootstrap before app render
 ========================================================== */
 
-const savedTheme = localStorage.getItem("theme");
-const defaultTheme = savedTheme || "light";
+const onPublicCustomerSite = isPublicCustomerSiteHost();
 
-const isBusinessTheme = defaultTheme === "business" || defaultTheme === "dark";
+if (onPublicCustomerSite) {
+  // Neutral first paint — no Bizuply platform theme on published sites.
+  document.body.style.background = "#ffffff";
+  document.documentElement.style.background = "#ffffff";
+  document.body.setAttribute("data-theme", "light");
+  if (document.title && /bizuply/i.test(document.title)) {
+    document.title = "";
+  }
+} else {
+  const savedTheme = localStorage.getItem("theme");
+  const defaultTheme = savedTheme || "light";
 
-document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
-document.documentElement.style.background = isBusinessTheme
-  ? "#f6f7fb"
-  : "#ffffff";
+  const isBusinessTheme = defaultTheme === "business" || defaultTheme === "dark";
 
-document.body.setAttribute("data-theme", defaultTheme);
+  document.body.style.background = isBusinessTheme ? "#f6f7fb" : "#ffffff";
+  document.documentElement.style.background = isBusinessTheme
+    ? "#f6f7fb"
+    : "#ffffff";
+
+  document.body.setAttribute("data-theme", defaultTheme);
+}
 
 /* ==========================================================
    React Query
@@ -88,6 +102,9 @@ const App = lazy(() => import("./App.jsx"));
 ========================================================== */
 
 function AppLoader() {
+  if (isPublicCustomerSiteHost()) {
+    return <PublicSiteLoader fullScreen label="Loading" />;
+  }
   return <BizuplyLoader fullScreen label="Loading Bizuply..." />;
 }
 
