@@ -28,6 +28,7 @@
     "@tabler/icons-react": "^3.44.0",
     "@tailwindcss/vite": "^4.3.0",
     "@tanstack/react-query": "^5.81.5",
+    "@telnyx/webrtc": "^2.27.8",
     "@twilio/voice-sdk": "^2.18.3",
     "ajv": "^8.11.0",
     "ajv-keywords": "^5.1.0",

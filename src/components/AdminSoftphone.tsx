@@ -80,11 +80,27 @@ type SoftphoneCallLog = {
   createdAt?: string;
 };
 
+type SoftphoneProvider = "telnyx" | "twilio" | "none";
+
 type SoftphoneStatus = {
   mode: SoftphoneMode;
   voipReady: boolean;
+  provider?: SoftphoneProvider;
   callerId?: string | null;
   message?: string;
+};
+
+type SoftphoneAuthPayload = {
+  provider?: SoftphoneProvider;
+  authType?: string;
+  token?: string;
+  login?: string;
+  username?: string;
+  password?: string;
+  connectionId?: string;
+  callerNumber?: string;
+  fromNumber?: string;
+  callerId?: string;
 };
 
 const KEYPAD: Array<{ digit: string; letters: string }> = [
@@ -204,11 +220,58 @@ function ActionButton({
   );
 }
 
+let voipProvider: SoftphoneProvider = "none";
 let twilioDevice: any = null;
 let twilioCall: any = null;
 let pendingIncomingTwilioCall: any = null;
 let twilioIncomingBound = false;
+let telnyxClient: any = null;
+let telnyxCall: any = null;
+let pendingIncomingTelnyxCall: any = null;
+let telnyxIncomingBound = false;
+let telnyxReady = false;
 let mutedBeforeHold = false;
+let remoteAudioEl: HTMLAudioElement | null = null;
+
+function ensureRemoteAudioElement() {
+  if (typeof document === "undefined") return null;
+  if (remoteAudioEl) return remoteAudioEl;
+  const existing = document.getElementById(
+    "bizuply-softphone-remote-audio"
+  ) as HTMLAudioElement | null;
+  if (existing) {
+    remoteAudioEl = existing;
+    return remoteAudioEl;
+  }
+  const audio = document.createElement("audio");
+  audio.id = "bizuply-softphone-remote-audio";
+  audio.autoplay = true;
+  audio.setAttribute("playsinline", "true");
+  audio.style.display = "none";
+  document.body.appendChild(audio);
+  remoteAudioEl = audio;
+  return audio;
+}
+
+async function attachTelnyxRemoteAudio(call: any) {
+  const audio = ensureRemoteAudioElement();
+  if (!audio || !call) return;
+  try {
+    if (call.remoteStream instanceof MediaStream) {
+      audio.srcObject = call.remoteStream;
+    }
+    audio.muted = false;
+    audio.volume = 1;
+    await audio.play().catch(() => {});
+  } catch {
+    /* ignore */
+  }
+}
+
+async function fetchSoftphoneAuth(): Promise<SoftphoneAuthPayload> {
+  const res = await API.get("/admin/softphone/token");
+  return (res.data || {}) as SoftphoneAuthPayload;
+}
 
 async function ensureTwilioDevice(token: string) {
   const mod = await import("@twilio/voice-sdk");
@@ -225,7 +288,109 @@ async function ensureTwilioDevice(token: string) {
   return twilioDevice;
 }
 
-function hangupTwilioCall() {
+async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
+  if (telnyxClient && telnyxReady) return telnyxClient;
+
+  const telnyxModule = await import("@telnyx/webrtc");
+  const TelnyxRTC =
+    (telnyxModule as any).TelnyxRTC || (telnyxModule as any).default;
+  if (!TelnyxRTC) {
+    throw new Error("TelnyxRTC SDK not found");
+  }
+
+  if (telnyxClient) {
+    try {
+      telnyxClient.disconnect?.();
+    } catch {
+      /* ignore */
+    }
+    telnyxClient = null;
+    telnyxReady = false;
+    telnyxIncomingBound = false;
+  }
+
+  const login = auth.login || auth.username;
+  const password = auth.password;
+  if (!login || !password) {
+    throw new Error("Telnyx WebRTC credentials missing");
+  }
+
+  const client = new TelnyxRTC({ login, password });
+
+  await new Promise<void>((resolve, reject) => {
+    const timeout = window.setTimeout(() => {
+      reject(new Error("Telnyx WebRTC connection timeout"));
+    }, 15000);
+
+    client.on?.("telnyx.ready", () => {
+      window.clearTimeout(timeout);
+      telnyxReady = true;
+      resolve();
+    });
+
+    client.on?.("telnyx.error", (...args: any[]) => {
+      window.clearTimeout(timeout);
+      telnyxReady = false;
+      reject(args?.[0] || new Error("Telnyx WebRTC error"));
+    });
+
+    client.on?.("telnyx.socket.close", () => {
+      telnyxReady = false;
+    });
+
+    client.on?.("telnyx.notification", (notification: any) => {
+      const call = notification?.call || null;
+      if (!call) return;
+
+      const state = String(call.state || notification?.state || "").toLowerCase();
+      const direction = String(
+        call.direction ||
+          notification?.direction ||
+          notification?.call?.direction ||
+          ""
+      ).toLowerCase();
+
+      const isInbound =
+        direction === "inbound" ||
+        direction === "incoming" ||
+        Boolean(call.options?.remoteCallerNumber);
+
+      if (isInbound && (state === "ringing" || state === "new")) {
+        pendingIncomingTelnyxCall = call;
+        const from =
+          call.options?.remoteCallerNumber ||
+          call.options?.callerNumber ||
+          notification?.callerNumber ||
+          "שיחה נכנסת";
+        presentIncomingSoftphoneCall({
+          phone: from,
+          contactName: "שיחה נכנסת",
+          callSid: call.id || call.options?.callID || null,
+          mode: "voip",
+        });
+      }
+
+      if (
+        ["hangup", "destroy", "purge", "done"].includes(state) &&
+        pendingIncomingTelnyxCall === call
+      ) {
+        pendingIncomingTelnyxCall = null;
+        const current = getAdminSoftphoneState().activeCall;
+        if (current?.status === "incoming") {
+          clearActiveSoftphoneCall();
+        }
+      }
+    });
+    telnyxIncomingBound = true;
+
+    telnyxClient = client;
+    client.connect?.();
+  });
+
+  return telnyxClient;
+}
+
+function hangupActiveVoipCall() {
   try {
     pendingIncomingTwilioCall?.reject?.();
   } catch {
@@ -236,8 +401,33 @@ function hangupTwilioCall() {
   } catch {
     /* ignore */
   }
+  try {
+    pendingIncomingTelnyxCall?.hangup?.();
+  } catch {
+    /* ignore */
+  }
+  try {
+    telnyxCall?.hangup?.();
+  } catch {
+    /* ignore */
+  }
   pendingIncomingTwilioCall = null;
   twilioCall = null;
+  pendingIncomingTelnyxCall = null;
+  telnyxCall = null;
+}
+
+function setVoipMuted(muted: boolean) {
+  try {
+    if (voipProvider === "telnyx" && telnyxCall) {
+      if (muted) telnyxCall.muteAudio?.();
+      else telnyxCall.unmuteAudio?.();
+      return;
+    }
+    if (twilioCall) twilioCall.mute(muted);
+  } catch {
+    /* ignore */
+  }
 }
 
 type SoftphoneLauncher = "hidden" | "fab" | "inline";
@@ -263,6 +453,7 @@ export default function AdminSoftphone({
   const [status, setStatus] = useState<SoftphoneStatus>({
     mode: "device",
     voipReady: false,
+    provider: "none",
   });
   const [contacts, setContacts] = useState<SoftphoneContact[]>([]);
   const [calls, setCalls] = useState<SoftphoneCallLog[]>([]);
@@ -309,17 +500,25 @@ export default function AdminSoftphone({
   const loadStatus = useCallback(async () => {
     try {
       const res = await API.get("/admin/softphone/status");
+      const provider =
+        res.data?.provider === "telnyx" || res.data?.provider === "twilio"
+          ? res.data.provider
+          : "none";
+      voipProvider = provider;
       setStatus({
         mode: res.data?.mode === "voip" ? "voip" : "device",
         voipReady: Boolean(res.data?.voipReady),
+        provider,
         callerId: res.data?.callerId || null,
         message: res.data?.message || "",
       });
       return Boolean(res.data?.voipReady);
     } catch {
+      voipProvider = "none";
       setStatus({
         mode: "device",
         voipReady: false,
+        provider: "none",
         message: "מצב חיוג ממכשיר",
       });
       return false;
@@ -359,7 +558,7 @@ export default function AdminSoftphone({
       const current = getAdminSoftphoneState().activeCall;
       stopHoldMusic();
       mutedBeforeHold = false;
-      hangupTwilioCall();
+      hangupActiveVoipCall();
 
       if (current?.logId) {
         const durationSec = Math.max(
@@ -402,7 +601,12 @@ export default function AdminSoftphone({
     }
 
     try {
-      if (pendingIncomingTwilioCall) {
+      if (pendingIncomingTelnyxCall) {
+        telnyxCall = pendingIncomingTelnyxCall;
+        pendingIncomingTelnyxCall = null;
+        await telnyxCall.answer?.();
+        void attachTelnyxRemoteAudio(telnyxCall);
+      } else if (pendingIncomingTwilioCall) {
         twilioCall = pendingIncomingTwilioCall;
         pendingIncomingTwilioCall = null;
         await twilioCall.accept();
@@ -425,10 +629,16 @@ export default function AdminSoftphone({
   const rejectIncoming = useCallback(async () => {
     const current = getAdminSoftphoneState().activeCall;
     try {
+      pendingIncomingTelnyxCall?.hangup?.();
+    } catch {
+      /* ignore */
+    }
+    try {
       pendingIncomingTwilioCall?.reject?.();
     } catch {
       /* ignore */
     }
+    pendingIncomingTelnyxCall = null;
     pendingIncomingTwilioCall = null;
     await endCall("canceled");
     if (!current) requestSoftphoneReject();
@@ -495,50 +705,106 @@ export default function AdminSoftphone({
 
         if (mode === "voip") {
           try {
-            const tokenRes = await API.get("/admin/softphone/token");
-            const device = await ensureTwilioDevice(tokenRes.data.token);
-            const call = await device.connect({
-              params: { To: phone },
-            });
-            twilioCall = call;
+            const auth = await fetchSoftphoneAuth();
+            const provider =
+              auth.provider === "telnyx" || auth.provider === "twilio"
+                ? auth.provider
+                : "twilio";
+            voipProvider = provider;
 
-            call.on("ringing", () => {
-              patchActiveSoftphoneCall({ status: "ringing" });
-              if (logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: "ringing",
-                  twilioCallSid: call.parameters?.CallSid || "",
-                });
-              }
-            });
+            if (provider === "telnyx") {
+              const client = await ensureTelnyxClient(auth);
+              const callerNumber =
+                auth.callerNumber ||
+                auth.fromNumber ||
+                auth.callerId ||
+                statusRes.data?.callerId ||
+                "+972555172750";
 
-            call.on("accept", () => {
-              patchActiveSoftphoneCall({ status: "in-progress" });
-              if (logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: "in-progress",
-                  twilioCallSid: call.parameters?.CallSid || "",
-                });
-              }
-            });
-
-            call.on("disconnect", () => {
-              void endCall("completed");
-            });
-
-            call.on("error", (err: any) => {
-              patchActiveSoftphoneCall({
-                status: "failed",
-                error: err?.message || "שגיאת שיחה",
+              const call = client.newCall({
+                destinationNumber: phone,
+                callerNumber,
+                audio: true,
+                video: false,
+                remoteElement: ensureRemoteAudioElement() || undefined,
               });
-              if (logId) {
-                void API.patch(`/admin/softphone/calls/${logId}`, {
-                  status: "failed",
-                });
-              }
-            });
+              telnyxCall = call;
+              void attachTelnyxRemoteAudio(call);
 
-            patchActiveSoftphoneCall({ status: "ringing" });
+              call.on?.("state", (nextState: string) => {
+                const state = String(nextState || "").toLowerCase();
+                if (state === "ringing" || state === "trying") {
+                  patchActiveSoftphoneCall({ status: "ringing" });
+                  if (logId) {
+                    void API.patch(`/admin/softphone/calls/${logId}`, {
+                      status: "ringing",
+                      twilioCallSid: call.id || "",
+                    });
+                  }
+                }
+                if (state === "active" || state === "answered") {
+                  patchActiveSoftphoneCall({ status: "in-progress" });
+                  void attachTelnyxRemoteAudio(call);
+                  if (logId) {
+                    void API.patch(`/admin/softphone/calls/${logId}`, {
+                      status: "in-progress",
+                      twilioCallSid: call.id || "",
+                    });
+                  }
+                }
+                if (
+                  ["hangup", "destroy", "purge", "done"].includes(state)
+                ) {
+                  void endCall("completed");
+                }
+              });
+
+              patchActiveSoftphoneCall({ status: "ringing" });
+            } else {
+              const device = await ensureTwilioDevice(String(auth.token || ""));
+              const call = await device.connect({
+                params: { To: phone },
+              });
+              twilioCall = call;
+
+              call.on("ringing", () => {
+                patchActiveSoftphoneCall({ status: "ringing" });
+                if (logId) {
+                  void API.patch(`/admin/softphone/calls/${logId}`, {
+                    status: "ringing",
+                    twilioCallSid: call.parameters?.CallSid || "",
+                  });
+                }
+              });
+
+              call.on("accept", () => {
+                patchActiveSoftphoneCall({ status: "in-progress" });
+                if (logId) {
+                  void API.patch(`/admin/softphone/calls/${logId}`, {
+                    status: "in-progress",
+                    twilioCallSid: call.parameters?.CallSid || "",
+                  });
+                }
+              });
+
+              call.on("disconnect", () => {
+                void endCall("completed");
+              });
+
+              call.on("error", (err: any) => {
+                patchActiveSoftphoneCall({
+                  status: "failed",
+                  error: err?.message || "שגיאת שיחה",
+                });
+                if (logId) {
+                  void API.patch(`/admin/softphone/calls/${logId}`, {
+                    status: "failed",
+                  });
+                }
+              });
+
+              patchActiveSoftphoneCall({ status: "ringing" });
+            }
           } catch (err: any) {
             const fallbackLink = document.createElement("a");
             fallbackLink.href = `tel:${phone}`;
@@ -708,7 +974,7 @@ export default function AdminSoftphone({
     };
   }, [socket]);
 
-  // Keep Twilio device registered for inbound when VoIP ready.
+  // Keep VoIP client registered for inbound when ready (Telnyx preferred).
   // Intentionally does NOT hang up on unmount — calls survive navigation.
   useEffect(() => {
     let cancelled = false;
@@ -717,10 +983,21 @@ export default function AdminSoftphone({
       const voip = await loadStatus();
       if (!voip || cancelled) return;
       try {
-        const tokenRes = await API.get("/admin/softphone/token");
+        const auth = await fetchSoftphoneAuth();
         if (cancelled) return;
-        const device = await ensureTwilioDevice(tokenRes.data.token);
 
+        const provider =
+          auth.provider === "telnyx" || auth.provider === "twilio"
+            ? auth.provider
+            : "twilio";
+        voipProvider = provider;
+
+        if (provider === "telnyx") {
+          await ensureTelnyxClient(auth);
+          return;
+        }
+
+        const device = await ensureTwilioDevice(String(auth.token || ""));
         if (!twilioIncomingBound) {
           twilioIncomingBound = true;
           device.on("incoming", (call: any) => {
@@ -781,11 +1058,7 @@ export default function AdminSoftphone({
     const current = getAdminSoftphoneState().activeCall;
     if (!current || current.held) return;
     const next = !current.muted;
-    try {
-      if (current.mode === "voip" && twilioCall) twilioCall.mute(next);
-    } catch {
-      /* ignore */
-    }
+    if (current.mode === "voip") setVoipMuted(next);
     patchActiveSoftphoneCall({ muted: next });
   }, []);
 
@@ -796,11 +1069,7 @@ export default function AdminSoftphone({
     const nextHeld = !current.held;
     if (nextHeld) {
       mutedBeforeHold = Boolean(current.muted);
-      try {
-        if (current.mode === "voip" && twilioCall) twilioCall.mute(true);
-      } catch {
-        /* ignore */
-      }
+      if (current.mode === "voip") setVoipMuted(true);
       startHoldMusic();
       patchActiveSoftphoneCall({ held: true, muted: true });
       return;
@@ -809,11 +1078,7 @@ export default function AdminSoftphone({
     stopHoldMusic();
     const restoreMuted = mutedBeforeHold;
     mutedBeforeHold = false;
-    try {
-      if (current.mode === "voip" && twilioCall) twilioCall.mute(restoreMuted);
-    } catch {
-      /* ignore */
-    }
+    if (current.mode === "voip") setVoipMuted(restoreMuted);
     patchActiveSoftphoneCall({ held: false, muted: restoreMuted });
   }, []);
 
@@ -964,7 +1229,9 @@ export default function AdminSoftphone({
                     </p>
                     <p className="truncate text-[11px] font-bold text-white/80">
                       {status.voipReady
-                        ? `VoIP פעיל · ${status.callerId || "מספר יוצא"}`
+                        ? `${
+                            status.provider === "telnyx" ? "Telnyx" : "VoIP"
+                          } פעיל · ${status.callerId || "+972555172750"}`
                         : "חיוג · אנשי קשר · שיחות נכנסות"}
                     </p>
                   </div>
