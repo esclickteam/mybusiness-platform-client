@@ -165,6 +165,10 @@ function buildStyles(
     calendarCol: {
       flex: "2 1 280px",
       minWidth: 240,
+      // Cap width so public full-bleed mounts do not smear the month grid
+      // into wide flat day cells (editor canvas is narrower, so it looked fine).
+      maxWidth: 520,
+      width: "100%",
       display: "flex",
       flexDirection: "column",
       gap: 12,
@@ -229,6 +233,8 @@ function buildStyles(
       display: "grid",
       gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
       gap: 6,
+      width: "100%",
+      maxWidth: 420,
     },
     weekPill: {
       border: `1px solid ${t.line}`,
@@ -274,6 +280,8 @@ function buildStyles(
       display: "grid",
       gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
       gap: 4,
+      width: "100%",
+      maxWidth: 420,
     },
     monthDowCell: {
       textAlign: "center" as const,
@@ -285,10 +293,18 @@ function buildStyles(
       display: "grid",
       gridTemplateColumns: "repeat(7, minmax(0, 1fr))",
       gap: 4,
+      width: "100%",
+      maxWidth: 420,
     },
-    monthEmpty: { minHeight: 36 },
-    monthDay: {
+    monthEmpty: {
+      aspectRatio: "1 / 1",
       minHeight: 36,
+      width: "100%",
+    },
+    monthDay: {
+      aspectRatio: "1 / 1",
+      minHeight: 36,
+      width: "100%",
       borderRadius: 10,
       border: `1px solid ${t.line}`,
       background: fill,
@@ -296,6 +312,10 @@ function buildStyles(
       fontWeight: 700,
       cursor: "pointer",
       color: t.ink,
+      display: "inline-flex",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: 0,
     },
     monthDayActive: {
       background: t.ink,

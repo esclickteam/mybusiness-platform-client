@@ -138,7 +138,10 @@ function ensureTemplateBookingMounts(root: ParentNode) {
   });
 }
 
-function hideBookingDemoChrome(mount: HTMLElement) {
+function hideBookingDemoChrome(
+  mount: HTMLElement,
+  chrome: BookingWidgetChrome = "card",
+) {
   const section =
     mount.closest(
       "section, [data-visual-inserted-section='true'], [data-section-kind]",
@@ -149,7 +152,14 @@ function hideBookingDemoChrome(mount: HTMLElement) {
     .querySelectorAll('[data-bizuply-booking-demo="true"]')
     .forEach((node) => {
       if (!(node instanceof HTMLElement)) return;
-      node.style.visibility = "hidden";
+      // Embedded mounts are in normal document flow. Keep visibility:hidden and
+      // the static demo still occupies height → published calendar looks
+      // vertically stretched under an invisible twin. Collapse it instead.
+      if (chrome === "embedded") {
+        node.style.display = "none";
+      } else {
+        node.style.visibility = "hidden";
+      }
       node.style.pointerEvents = "none";
       node.setAttribute("aria-hidden", "true");
       node.setAttribute("data-bizuply-booking-demo-hidden", "true");
@@ -191,13 +201,23 @@ function ensureHost(mount: HTMLElement, chrome: BookingWidgetChrome) {
         child.getAttribute("data-visual-inserted") === "true" ||
         child.getAttribute("data-visual-edit-id")
       ) {
-        child.style.visibility = "hidden";
+        if (chrome === "embedded") {
+          child.style.display = "none";
+        } else {
+          child.style.visibility = "hidden";
+        }
         child.style.pointerEvents = "none";
         return;
       }
-      // Keep geometry: mark static template calendar UI as demo chrome.
+      // Mark static template calendar UI as demo chrome.
+      // Card chrome: keep visibility:hidden so mount geometry remains for the
+      // absolute host. Embedded chrome: collapse so demo does not stack height.
       child.setAttribute("data-bizuply-booking-demo", "true");
-      child.style.visibility = "hidden";
+      if (chrome === "embedded") {
+        child.style.display = "none";
+      } else {
+        child.style.visibility = "hidden";
+      }
       child.style.pointerEvents = "none";
       child.setAttribute("aria-hidden", "true");
     });
@@ -437,13 +457,13 @@ export function mountBookingWidgets(
       return;
     }
 
-    hideBookingDemoChrome(node);
     const chrome = readChrome(node);
     // Persist inferred chrome so remounts (e.g. after adding a gallery section)
     // do not flip template calendars to card/modal styling.
     if (!node.getAttribute("data-bizuply-booking-chrome")) {
       node.setAttribute("data-bizuply-booking-chrome", chrome);
     }
+    hideBookingDemoChrome(node, chrome);
     const host = ensureHost(node, chrome);
     const variant = readVariant(node);
     const theme = readTheme(node, chrome);
