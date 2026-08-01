@@ -45,13 +45,68 @@ export type BizuplyFormField = {
   width?: "half" | "full";
 };
 
+export type BizuplyFormColors = {
+  formBg: string;
+  formBorder: string;
+  titleColor: string;
+  subtitleColor: string;
+  labelColor: string;
+  fieldBg: string;
+  fieldBorder: string;
+  fieldText: string;
+  buttonBg: string;
+  buttonText: string;
+  buttonBorder: string;
+  accent: string;
+};
+
 export type BizuplyFormConfig = {
   id: string;
   title: string;
   submitText: string;
   successMessage: string;
   fields: BizuplyFormField[];
+  colors?: BizuplyFormColors;
 };
+
+export const DEFAULT_FORM_COLORS: BizuplyFormColors = {
+  formBg: "#fffffff2",
+  formBorder: "#ffffffcc",
+  titleColor: "#1e293b",
+  subtitleColor: "#64748b",
+  labelColor: "#334155",
+  fieldBg: "#ffffff",
+  fieldBorder: "#e2e8f0",
+  fieldText: "#0f172a",
+  buttonBg: "#0f172a",
+  buttonText: "#ffffff",
+  buttonBorder: "#0f172a",
+  accent: "#0f766e",
+};
+
+export function normalizeFormColors(
+  value: Partial<BizuplyFormColors> | null | undefined,
+): BizuplyFormColors {
+  const source = value && typeof value === "object" ? value : {};
+  return {
+    formBg: String(source.formBg || DEFAULT_FORM_COLORS.formBg),
+    formBorder: String(source.formBorder || DEFAULT_FORM_COLORS.formBorder),
+    titleColor: String(source.titleColor || DEFAULT_FORM_COLORS.titleColor),
+    subtitleColor: String(
+      source.subtitleColor || DEFAULT_FORM_COLORS.subtitleColor,
+    ),
+    labelColor: String(source.labelColor || DEFAULT_FORM_COLORS.labelColor),
+    fieldBg: String(source.fieldBg || DEFAULT_FORM_COLORS.fieldBg),
+    fieldBorder: String(source.fieldBorder || DEFAULT_FORM_COLORS.fieldBorder),
+    fieldText: String(source.fieldText || DEFAULT_FORM_COLORS.fieldText),
+    buttonBg: String(source.buttonBg || DEFAULT_FORM_COLORS.buttonBg),
+    buttonText: String(source.buttonText || DEFAULT_FORM_COLORS.buttonText),
+    buttonBorder: String(
+      source.buttonBorder || DEFAULT_FORM_COLORS.buttonBorder,
+    ),
+    accent: String(source.accent || DEFAULT_FORM_COLORS.accent),
+  };
+}
 
 type FormBuilderModalProps = {
   form: BizuplyFormConfig;
@@ -172,6 +227,7 @@ function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
     title: String(form?.title || "טופס יצירת קשר"),
     submitText: String(form?.submitText || "שליחת הודעה"),
     successMessage: String(form?.successMessage || "ההודעה נשלחה בהצלחה"),
+    colors: normalizeFormColors(form?.colors),
     fields: Array.isArray(form?.fields)
       ? form.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
@@ -829,6 +885,70 @@ export default function FormBuilderModal({
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </label>
+
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
+                  <div className="mb-3 text-xs font-black text-slate-700">
+                    צבעים פנימיים של הטופס
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {(
+                      [
+                        ["formBg", "רקע טופס"],
+                        ["formBorder", "מסגרת טופס"],
+                        ["titleColor", "כותרת"],
+                        ["subtitleColor", "תיאור"],
+                        ["labelColor", "תוויות"],
+                        ["fieldBg", "רקע שדות"],
+                        ["fieldBorder", "מסגרת שדות"],
+                        ["fieldText", "טקסט שדות"],
+                        ["buttonBg", "רקע כפתור"],
+                        ["buttonText", "טקסט כפתור"],
+                        ["buttonBorder", "מסגרת כפתור"],
+                        ["accent", "צבע הדגשה"],
+                      ] as Array<[keyof BizuplyFormColors, string]>
+                    ).map(([key, label]) => (
+                      <label key={key} className="block">
+                        <span className="mb-1.5 block text-[11px] font-black text-slate-600">
+                          {label}
+                        </span>
+                        <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
+                          <input
+                            type="color"
+                            value={
+                              /^#[0-9a-fA-F]{6}$/.test(
+                                String(safeForm.colors?.[key] || ""),
+                              )
+                                ? String(safeForm.colors?.[key])
+                                : String(DEFAULT_FORM_COLORS[key]).slice(0, 7)
+                            }
+                            onChange={(event) =>
+                              updateWholeForm({
+                                colors: {
+                                  ...normalizeFormColors(safeForm.colors),
+                                  [key]: event.target.value,
+                                },
+                              })
+                            }
+                            className="h-9 w-10 shrink-0 cursor-pointer rounded-lg border border-slate-200 bg-white p-0.5"
+                          />
+                          <input
+                            value={String(safeForm.colors?.[key] || "")}
+                            onChange={(event) =>
+                              updateWholeForm({
+                                colors: {
+                                  ...normalizeFormColors(safeForm.colors),
+                                  [key]: event.target.value,
+                                },
+                              })
+                            }
+                            className="min-w-0 flex-1 rounded-lg border border-transparent bg-transparent px-1 text-left text-xs font-bold text-slate-700 outline-none"
+                            dir="ltr"
+                          />
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -1063,26 +1183,65 @@ export default function FormBuilderModal({
             }}
             onDrop={handleDropOnEmpty}
           >
-            <div className="mx-auto w-full max-w-[1120px] rounded-[36px] border border-white/80 bg-white/95 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur">
+            <div
+              className="mx-auto w-full max-w-[1120px] rounded-[36px] border p-8 shadow-[0_30px_90px_rgba(15,23,42,0.14)] backdrop-blur"
+              style={{
+                background: safeForm.colors?.formBg || DEFAULT_FORM_COLORS.formBg,
+                borderColor:
+                  safeForm.colors?.formBorder || DEFAULT_FORM_COLORS.formBorder,
+                ["--biz-form-accent" as any]:
+                  safeForm.colors?.accent || DEFAULT_FORM_COLORS.accent,
+                ["--biz-form-field-bg" as any]:
+                  safeForm.colors?.fieldBg || DEFAULT_FORM_COLORS.fieldBg,
+                ["--biz-form-field-border" as any]:
+                  safeForm.colors?.fieldBorder || DEFAULT_FORM_COLORS.fieldBorder,
+                ["--biz-form-field-text" as any]:
+                  safeForm.colors?.fieldText || DEFAULT_FORM_COLORS.fieldText,
+                ["--biz-form-label" as any]:
+                  safeForm.colors?.labelColor || DEFAULT_FORM_COLORS.labelColor,
+                ["--biz-form-button-bg" as any]:
+                  safeForm.colors?.buttonBg || DEFAULT_FORM_COLORS.buttonBg,
+                ["--biz-form-button-text" as any]:
+                  safeForm.colors?.buttonText || DEFAULT_FORM_COLORS.buttonText,
+              }}
+            >
               <div className="mb-7 grid gap-5 md:grid-cols-3">
                 <input
                   value={safeForm.successMessage}
                   onChange={(event) =>
                     updateWholeForm({ successMessage: event.target.value })
                   }
-                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                  className="h-14 rounded-[20px] border px-6 text-center text-base font-black outline-none transition"
+                  style={{
+                    background: "var(--biz-form-field-bg)",
+                    borderColor: "var(--biz-form-field-border)",
+                    color: "var(--biz-form-field-text)",
+                  }}
                 />
 
                 <input
                   value={safeForm.submitText}
                   onChange={(event) => updateWholeForm({ submitText: event.target.value })}
-                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                  className="h-14 rounded-[20px] border px-6 text-center text-base font-black outline-none transition"
+                  style={{
+                    background: "var(--biz-form-button-bg)",
+                    borderColor:
+                      safeForm.colors?.buttonBorder ||
+                      DEFAULT_FORM_COLORS.buttonBorder,
+                    color: "var(--biz-form-button-text)",
+                  }}
                 />
 
                 <input
                   value={safeForm.title}
                   onChange={(event) => updateWholeForm({ title: event.target.value })}
-                  className="h-14 rounded-[20px] border border-slate-200 bg-white px-6 text-center text-base font-black text-slate-900 outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-violet-400 focus:ring-4 focus:ring-violet-100"
+                  className="h-14 rounded-[20px] border px-6 text-center text-base font-black outline-none transition"
+                  style={{
+                    background: "var(--biz-form-field-bg)",
+                    borderColor: "var(--biz-form-field-border)",
+                    color:
+                      safeForm.colors?.titleColor || DEFAULT_FORM_COLORS.titleColor,
+                  }}
                 />
               </div>
 

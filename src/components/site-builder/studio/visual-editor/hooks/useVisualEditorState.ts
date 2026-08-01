@@ -3017,6 +3017,24 @@ export function useVisualEditorState({
 
       window.requestAnimationFrame(() => {
         applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        // Persist the live DOM section order so publish reconstructs the same
+        // sibling sequence (including library inserts lifted out of the host).
+        const pageId = resolveVisualSectionPageId(
+          canvasRef.current,
+          activePageId || "home",
+        );
+        const order = readSectionOrderKeysFromDom(canvasRef.current);
+        if (order.length) {
+          setData((current) => {
+            const next = writeVisualSectionOrder(
+              current || {},
+              pageId,
+              order,
+            );
+            dataRef.current = next;
+            return next;
+          });
+        }
         window.requestAnimationFrame(() => {
           selection.selectByElementId(sectionId, {
             keepPreviousOnMissing: true,
@@ -3026,7 +3044,7 @@ export function useVisualEditorState({
 
       return sectionId;
     },
-    [canvasRef, renderer.key, selection, setData],
+    [activePageId, canvasRef, renderer.key, selection, setData],
   );
 
   const replaceSelectedSectionWithLibrary = useCallback(
