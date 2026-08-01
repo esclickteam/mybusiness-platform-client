@@ -622,7 +622,7 @@ export default function CollabMessagesTab({
               />
 
               <FilterButton
-                active={filter === "chat"}
+                active={false}
                 onClick={() => {
                   setFilter("chat");
                   setActiveConversationId(null);

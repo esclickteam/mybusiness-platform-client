@@ -920,31 +920,35 @@ function buildAboutMega(): VisualLibrarySectionTemplate[] {
 
     const builders = [
       () =>
-        aboutSplit({
-          id: `section-about-${n}-split-right`,
-          title: `אודות ${i + 1} – פיצול ימין · ${title}`,
-          eyebrow: title,
-          headline,
-          copy,
-          cta: "גלו עוד",
-          image: imageKey,
-          imageRight: true,
-          bg,
-          previewLayout: `about-split-image-right-${n}`,
-        }),
+        withPreviewLayout(
+          aboutSplit({
+            id: `section-about-${n}-split-right`,
+            title: `אודות ${i + 1} – פיצול ימין · ${title}`,
+            eyebrow: title,
+            headline,
+            copy,
+            cta: "גלו עוד",
+            image: imageKey,
+            imageRight: true,
+            bg,
+          }),
+          `about-split-image-right-${n}`,
+        ),
       () =>
-        aboutSplit({
-          id: `section-about-${n}-split-left`,
-          title: `אודות ${i + 1} – פיצול שמאל · ${title}`,
-          eyebrow: title,
-          headline,
-          copy,
-          cta: "גלו עוד",
-          image: imageKey,
-          imageRight: false,
-          bg,
-          previewLayout: `about-split-image-left-${n}`,
-        }),
+        withPreviewLayout(
+          aboutSplit({
+            id: `section-about-${n}-split-left`,
+            title: `אודות ${i + 1} – פיצול שמאל · ${title}`,
+            eyebrow: title,
+            headline,
+            copy,
+            cta: "גלו עוד",
+            image: imageKey,
+            imageRight: false,
+            bg,
+          }),
+          `about-split-image-left-${n}`,
+        ),
       () =>
         aboutStory({
           id: `section-about-${n}-story`,
@@ -1093,18 +1097,20 @@ function buildAboutMega(): VisualLibrarySectionTemplate[] {
           bg: "#fafaf9",
         }),
       () =>
-        aboutSplit({
-          id: `section-about-${n}-split-modern`,
-          title: `אודות ${i + 1} – פיצול מודרני · ${title}`,
-          eyebrow: "עסק חי",
-          headline: "אנשים, מקום ותוצאה",
-          copy: "סיפור קצר לצד תמונה חמה – בדיוק מה שמבקרים צריכים כדי להבין מי אתם.",
-          cta: "תיאום שיחה",
-          image: IMG_KEYS[(i + 6) % IMG_KEYS.length],
-          imageRight: i % 2 === 0,
-          bg: "#f0fdf4",
-          previewLayout: `about-split-modern-${n}`,
-        }),
+        withPreviewLayout(
+          aboutSplit({
+            id: `section-about-${n}-split-modern`,
+            title: `אודות ${i + 1} – פיצול מודרני · ${title}`,
+            eyebrow: "עסק חי",
+            headline: "אנשים, מקום ותוצאה",
+            copy: "סיפור קצר לצד תמונה חמה – בדיוק מה שמבקרים צריכים כדי להבין מי אתם.",
+            cta: "תיאום שיחה",
+            image: IMG_KEYS[(i + 6) % IMG_KEYS.length],
+            imageRight: i % 2 === 0,
+            bg: "#f0fdf4",
+          }),
+          `about-split-modern-${n}`,
+        ),
     ];
 
     return builders[i % builders.length]();
@@ -1141,10 +1147,7 @@ function buildPortfolioMega(): VisualLibrarySectionTemplate[] {
       portfolioGrid({
         id: `section-portfolio-${n}-grid-${count}`,
         title: `פורטפוליו ${i + 1} – ${count} פריטים`,
-        eyebrow: "תיק עבודות",
         headline: portfolioHeadlines[i],
-        copy: "שם, קטגוריה, תיאור וקישור לכל פרויקט.",
-        cta: "לכל הפרויקטים",
         count,
         bg: BGS[(i + 4) % BGS.length] === "#0f172a" ? "#ffffff" : BGS[(i + 4) % BGS.length],
         imageRadius: radiusStyle,
@@ -1283,7 +1286,6 @@ function buildCommerceMega(): VisualLibrarySectionTemplate[] {
         headline: "המוצרים שלנו",
         items,
         bg,
-        imageRadius: shapeSet(i),
       }),
       `commerce-grid-${n}`,
     );
@@ -1442,7 +1444,6 @@ function buildTestimonialsMega(): VisualLibrarySectionTemplate[] {
         headline: "מה אומרים עלינו",
         items: testimonials,
         bg,
-        cardRadius: shapeSet(i),
       }),
       `testimonials-grid-${n}`,
     );
@@ -1598,10 +1599,7 @@ function buildTeamMega(): VisualLibrarySectionTemplate[] {
       teamBlock({
         id: `section-team-${n}-four`,
         title: `צוות ${i + 1} – ארבעה`,
-        eyebrow: "הצוות",
         headline: "האנשים מאחורי המותג",
-        copy: "שמות, תפקידים ומשפט קצר על כל אחד.",
-        cta: "הכירו את כולם",
         members: teamMembers,
         bg,
       }),
@@ -1630,10 +1628,7 @@ function buildFaqMega(): VisualLibrarySectionTemplate[] {
       faqBlock({
         id: `section-faq-${n}-list`,
         title: `שאלות ${i + 1} – רשימה`,
-        eyebrow: "שאלות נפוצות",
         headline: "שאלות שחשוב לשאול",
-        copy: "ריכזנו את התשובות החשובות במקום אחד.",
-        cta: "שאלה נוספת",
         items: faqItems,
         bg: BGS[(i + 14) % BGS.length],
       }),
@@ -1665,10 +1660,6 @@ function buildStatsMega(): VisualLibrarySectionTemplate[] {
       statsBlock({
         id: `section-stats-${n}-strip`,
         title: `מספרים ${i + 1} – פס`,
-        eyebrow: "המספרים מדברים",
-        headline: "תוצאות שמרגישים בשטח",
-        copy: "מאחורי כל מספר יש סיפור של לקוחות, אמון ותוצאות מדידות.",
-        cta: "ספרו לנו על היעד שלכם",
         items: statsItems,
         bg: i % 4 === 0 ? "#0f172a" : i % 4 === 2 ? "#1e1b4b" : BGS[i % BGS.length],
       }),

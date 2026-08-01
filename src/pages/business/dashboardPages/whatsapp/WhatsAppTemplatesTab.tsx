@@ -626,8 +626,7 @@ export default function WhatsAppTemplatesTab() {
                     setForm((prev) => ({
                       ...prev,
                       headerType: value,
-                      headerText:
-                        value === "text" ? prev.headerText : prev.headerText,
+                      headerText: prev.headerText,
                     }))
                   }
                   className={[

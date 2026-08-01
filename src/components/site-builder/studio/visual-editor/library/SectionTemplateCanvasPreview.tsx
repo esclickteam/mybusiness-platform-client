@@ -21,6 +21,14 @@ import BookingWidget from "../../../../site-plugins/booking/BookingWidget";
 
 const CANVAS_WIDTH = 1100;
 
+function attrToThemeString(
+  value: string | number | boolean | null | undefined,
+): string | undefined {
+  if (typeof value === "string") return value;
+  if (typeof value === "number") return String(value);
+  return undefined;
+}
+
 function numericHeight(value: string | number | undefined) {
   if (typeof value === "number") return value;
   const parsed = Number.parseFloat(String(value || ""));
@@ -105,31 +113,31 @@ function NodePreview({
     const theme = {
       accent:
         nodeStyle["--biz-booking-accent"] ||
-        attrs["data-bizuply-booking-accent"] ||
+        attrToThemeString(attrs["data-bizuply-booking-accent"]) ||
         nodeStyle.color ||
         undefined,
       ink:
         nodeStyle["--biz-booking-ink"] ||
-        attrs["data-bizuply-booking-ink"] ||
+        attrToThemeString(attrs["data-bizuply-booking-ink"]) ||
         nodeStyle.color ||
         undefined,
       muted:
         nodeStyle["--biz-booking-muted"] ||
-        attrs["data-bizuply-booking-muted"] ||
+        attrToThemeString(attrs["data-bizuply-booking-muted"]) ||
         undefined,
       surface:
         nodeStyle["--biz-booking-surface"] ||
-        attrs["data-bizuply-booking-surface"] ||
+        attrToThemeString(attrs["data-bizuply-booking-surface"]) ||
         nodeStyle.backgroundColor ||
         undefined,
       line:
         nodeStyle["--biz-booking-line"] ||
-        attrs["data-bizuply-booking-line"] ||
+        attrToThemeString(attrs["data-bizuply-booking-line"]) ||
         nodeStyle.borderColor ||
         undefined,
       soft:
         nodeStyle["--biz-booking-soft"] ||
-        attrs["data-bizuply-booking-soft"] ||
+        attrToThemeString(attrs["data-bizuply-booking-soft"]) ||
         undefined,
     };
     return (

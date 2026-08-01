@@ -197,7 +197,7 @@ function Stats({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="stats" className="px-5 py-20 lg:px-8">
       <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-8">
         {[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l],i) => (
-          <Reveal key={l} delayMs={i*100} variant="scale" className="t-float t-hover grid h-40 w-40 place-items-center rounded-full border border-[var(--p)] bg-[var(--surface)] text-center" style={{animationDelay:`${i*0.4}s`}}>
+          <Reveal key={l} delayMs={i*100} variant="scale" className="t-float t-hover grid h-40 w-40 place-items-center rounded-full border border-[var(--p)] bg-[var(--surface)] text-center">
             <div><div className="t-display text-3xl font-bold text-[var(--a)]">{n}</div><div className="mt-1 text-xs text-[var(--muted)]">{l}</div></div>
           </Reveal>
         ))}

@@ -134,7 +134,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
       <Reveal><h2 className="t-display text-2xl sm:text-4xl font-bold">{getValue(data,"sectionTwoTitle")}</h2></Reveal>
       <div className="mx-auto mt-10 max-w-5xl space-y-6">
         {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title,text],i) => (
-          <Reveal key={title} delayMs={i*100} className="t-hover flex flex-col gap-2 border-b border-[var(--p)]/30 pb-6 md:flex-row md:items-end md:justify-between" style={{paddingInlineStart:`${i*2}rem`}}>
+          <Reveal key={title} delayMs={i*100} className="t-hover flex flex-col gap-2 border-b border-[var(--p)]/30 pb-6 md:flex-row md:items-end md:justify-between">
             <div><p className="text-xs text-[var(--p)]">מסלול 0{i+1}</p><h3 className="t-display text-3xl font-bold">{title}</h3><p className="mt-2 max-w-lg text-sm text-[var(--muted)]">{text}</p></div>
             <span className="text-xl font-bold text-[var(--p)]">₪{[2400,3600,4800][i]}/חודש</span>
           </Reveal>
@@ -152,7 +152,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
         <div className="t-pulse absolute h-64 w-64 rounded-full border border-[var(--p)]/40" />
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           {["אבחון","מיפוי","ליווי","מדידה"].map((s,i) => (
-            <Reveal key={s} delayMs={i*90} variant="scale" className="t-float grid h-28 w-28 place-items-center rounded-full border border-[var(--p)] bg-[var(--bg)] text-center text-sm font-bold" style={{animationDelay:`${i*0.3}s`}}>{s}</Reveal>
+            <Reveal key={s} delayMs={i*90} variant="scale" className="t-float grid h-28 w-28 place-items-center rounded-full border border-[var(--p)] bg-[var(--bg)] text-center text-sm font-bold">{s}</Reveal>
           ))}
         </div>
       </div>

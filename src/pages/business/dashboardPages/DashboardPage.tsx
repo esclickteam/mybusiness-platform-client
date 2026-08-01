@@ -66,7 +66,7 @@ type AuthContextValue = {
   user: AuthUser | null;
   initialized: boolean;
   logout: () => void;
-  refreshAccessToken: () => Promise<string | null>;
+  refreshAccessToken: (options?: { force?: boolean }) => Promise<string | null>;
   refreshUser: () => Promise<AuthUser | null>;
   setUser: (user: AuthUser | null) => void;
 };

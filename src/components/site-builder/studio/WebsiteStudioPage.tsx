@@ -128,10 +128,16 @@ type StudioSitePageWithPortal = StudioSitePage & {
 
   /*
     Visual React pages keep the complete visual snapshot here as well.
-    This field already exists in the server payload; it is declared locally
-    so TypeScript also allows reading and updating it in WebsiteStudioPage.
+    These fields already exist in the server payload; they are declared
+    locally so TypeScript also allows reading and updating them in
+    WebsiteStudioPage.
   */
   visualEditorPayload?: Record<string, any>;
+  data?: Record<string, any>;
+  templateData?: Record<string, any>;
+  htmlSnapshot?: string;
+  snapshotPageId?: string;
+  visualSnapshotVersion?: number;
 };
 
 const BIZUPLY_PUBLIC_SITE_DOMAIN =

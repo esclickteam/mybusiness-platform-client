@@ -344,7 +344,7 @@ export default function MetaCampaignEditorPage() {
           value: item.value,
           label: t(item.labelKey),
         }));
-    const order = OBJECTIVE_OPTIONS.map((item) => item.value);
+    const order: string[] = OBJECTIVE_OPTIONS.map((item) => item.value);
     const descriptionByValue = Object.fromEntries(
       OBJECTIVE_OPTIONS.map((item) => [item.value, t(item.descriptionKey)])
     );
@@ -910,7 +910,7 @@ export default function MetaCampaignEditorPage() {
       const activeOk = rows.find((row) => row.adFormat === activePreview)?.body;
       const firstOk = rows.find((row) => row.body)?.adFormat;
       if (!activeOk && firstOk) {
-        setActivePreview(firstOk);
+        setActivePreview(firstOk as MetaPreviewFormat);
       }
       if (!rows.some((row) => row.body)) {
         toast.info(t("metaCampaigns.preview.metaUnavailable"));

@@ -1128,12 +1128,14 @@ export default function VisualSitePagesPanel({
                   const parentTitle = parentId
                     ? pageById.get(parentId)?.title || "עמוד"
                     : undefined;
-                  const sections = expanded ? getSectionsForPage(page) : [];
+                  const sections = expanded
+                    ? getSectionsForPage(page as VisualSitePageItem)
+                    : [];
 
                   return (
                     <SortablePageRow
                       key={page.id}
-                      page={page}
+                      page={page as VisualSitePageItem}
                       depth={depth}
                       parentTitle={parentTitle}
                       isActive={isActive}

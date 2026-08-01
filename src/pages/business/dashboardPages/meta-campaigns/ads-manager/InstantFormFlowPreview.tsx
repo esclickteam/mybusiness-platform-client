@@ -183,7 +183,7 @@ export default function InstantFormFlowPreview({
                     const label = leadFormContactLabel(
                       String(field.type || "").toUpperCase(),
                       locale,
-                      LEAD_FORM_CONTACT_FIELDS as Array<{
+                      LEAD_FORM_CONTACT_FIELDS as unknown as Array<{
                         type: string;
                         labelHe: string;
                         labelEn: string;

@@ -2122,7 +2122,7 @@ function CustomHtmlSlot({ html, slot }) {
 export default function PublicVisualSiteRenderer({
   site,
   pathname,
-  templateData,
+  templateData = undefined,
   className = "",
   disableAnalytics = false,
 }) {

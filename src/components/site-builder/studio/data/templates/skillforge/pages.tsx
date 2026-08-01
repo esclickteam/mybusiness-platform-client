@@ -129,7 +129,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
       <Reveal><h2 className="t-display text-2xl sm:text-4xl font-bold uppercase text-[var(--p)]">{getValue(data,"sectionTwoTitle")}</h2></Reveal>
       <div className="mx-auto mt-10 max-w-5xl space-y-4">
         {[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]].map(([title,text],i) => (
-          <Reveal key={title} delayMs={i*80} className="t-hover flex items-center gap-6 border-2 border-[var(--muted)]/30 bg-[var(--surface)] p-5" style={{clipPath:"polygon(0 0, 100% 0, 100% 85%, 96% 100%, 0 100%)"}}>
+          <Reveal key={title} delayMs={i*80} className="t-hover flex items-center gap-6 border-2 border-[var(--muted)]/30 bg-[var(--surface)] p-5">
             <span className="t-display text-2xl sm:text-4xl text-[var(--p)]">0{i+1}</span>
             <div><h3 className="text-xl font-bold uppercase">{title}</h3><p className="text-sm text-[var(--muted)]">{text}</p></div>
           </Reveal>

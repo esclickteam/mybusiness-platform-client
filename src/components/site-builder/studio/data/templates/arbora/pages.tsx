@@ -133,7 +133,7 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
 }
 
 function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: string) => void; onCta: () => void }) {
-  const layout = "editorial";
+  const layout: string = "editorial";
 
   if (layout === "type") {
     return (

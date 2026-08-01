@@ -692,9 +692,12 @@ export default function WebsiteTemplatesPage() {
 
     const schedule = () => {
       if (cancelled) return;
-      if (typeof window !== "undefined" && "requestIdleCallback" in window) {
+      const win: (Window & typeof globalThis) | null =
+        typeof window !== "undefined" ? window : null;
+      if (!win) return;
+      if ("requestIdleCallback" in win) {
         idleId = (
-          window as Window & {
+          win as Window & {
             requestIdleCallback: (
               cb: IdleRequestCallback,
               opts?: IdleRequestOptions,
@@ -703,12 +706,12 @@ export default function WebsiteTemplatesPage() {
         ).requestIdleCallback(
           () => {
             expand();
-            if (!cancelled) timeoutId = window.setTimeout(schedule, 200);
+            if (!cancelled) timeoutId = win.setTimeout(schedule, 200);
           },
           { timeout: 800 },
         );
       } else {
-        timeoutId = window.setTimeout(() => {
+        timeoutId = (win as Window).setTimeout(() => {
           expand();
           schedule();
         }, 240);

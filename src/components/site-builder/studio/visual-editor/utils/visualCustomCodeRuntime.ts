@@ -197,8 +197,10 @@ export function mergeCustomCodeLayers(
       pageOn ? page.javascript || "" : "",
     ),
     updatedAt:
-      [site.updatedAt, page.updatedAt].filter(Boolean).sort().at(-1) ||
-      undefined,
+      (() => {
+        const sorted = [site.updatedAt, page.updatedAt].filter(Boolean).sort();
+        return sorted[sorted.length - 1] || undefined;
+      })(),
   };
 }
 

@@ -627,7 +627,7 @@ export default function PageSettingsModal({
         </header>
 
         <div className="relative shrink-0 border-b border-slate-100/80 bg-slate-50/40">
-          <SeoTabBar tabs={TABS} active={tab} onChange={setTab} />
+          <SeoTabBar<PageSettingsModalTab> tabs={TABS} active={tab} onChange={setTab} />
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-contain bg-gradient-to-b from-slate-50/30 to-white px-5 py-5 text-right sm:px-7 sm:py-6">

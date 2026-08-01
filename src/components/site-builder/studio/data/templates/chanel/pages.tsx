@@ -975,7 +975,7 @@ function CartPage({
 }) {
   const cart = data.cartPage;
   const liveMode = cartItems.length > 0 || mode !== "edit";
-  const items = liveMode
+  const items: ChanelCartLine[] = liveMode
     ? cartItems
     : safeArray(cart.items).map((item, index) => ({
         id: `demo-${index}`,

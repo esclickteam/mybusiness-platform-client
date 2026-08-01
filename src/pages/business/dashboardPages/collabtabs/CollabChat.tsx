@@ -111,7 +111,7 @@ type MessagesAction =
   | { type: "remove"; payload: string };
 
 type AuthValue = {
-  refreshAccessToken: () => Promise<string | null>;
+  refreshAccessToken: (options?: { force?: boolean }) => Promise<string | null>;
   logout: () => void;
 };
 
@@ -408,7 +408,7 @@ export default function CollabChat({
   const [connected, setConnected] = useState(false);
   const [loadingConversations, setLoadingConversations] = useState(true);
 
-  const refreshAccessToken = useCallback(async (options) => {
+  const refreshAccessToken = useCallback(async (options?: { force?: boolean }) => {
     chatLog("refreshAccessToken:start", { force: Boolean(options?.force) });
 
     const newToken = await refreshAccessTokenOriginal(options);

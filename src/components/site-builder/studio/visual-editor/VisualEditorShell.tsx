@@ -242,9 +242,7 @@ export default function VisualEditorShell({
   const hasSelectedElement = Boolean(editor.selectedElement);
 
   const selectedElementId = String(
-    editor.selectedElement?.id ||
-      editor.selectedElement?.elementId ||
-      "",
+    editor.selectedElement?.id || "",
   ).trim();
 
   const selectedText = String(

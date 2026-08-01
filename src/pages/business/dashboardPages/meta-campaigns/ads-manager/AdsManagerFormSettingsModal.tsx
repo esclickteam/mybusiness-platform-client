@@ -92,7 +92,7 @@ export default function AdsManagerFormSettingsModal({
         const label = leadFormContactLabel(
           type,
           locale,
-          LEAD_FORM_CONTACT_FIELDS as Array<{
+          LEAD_FORM_CONTACT_FIELDS as unknown as Array<{
             type: string;
             labelHe: string;
             labelEn: string;
@@ -140,7 +140,7 @@ export default function AdsManagerFormSettingsModal({
       const label = leadFormContactLabel(
         type,
         draftLocale,
-        LEAD_FORM_CONTACT_FIELDS as Array<{
+        LEAD_FORM_CONTACT_FIELDS as unknown as Array<{
           type: string;
           labelHe: string;
           labelEn: string;

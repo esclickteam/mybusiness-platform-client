@@ -11,6 +11,7 @@ import {
   Users,
   CircleDot,
   Search,
+  type LucideIcon,
 } from "lucide-react";
 
 import type { SitePanelSection } from "../../../../data/sitePluginNav";
@@ -34,7 +35,7 @@ import { btnSecondary, inputBase } from "../siteManagementUi";
 
 function makePanel(
   pluginKey: string,
-  icon: React.ComponentType<{ size?: number }>,
+  icon: LucideIcon,
   accent: string,
   title: string,
   description: string,

@@ -170,8 +170,8 @@ function Instructors({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="instructors" className="px-5 py-12 md:py-24 lg:px-8">
       <Reveal><h2 className="t-display text-2xl sm:text-4xl font-bold text-[var(--dark)]">{getValue(data,"sectionFourTitle")}</h2></Reveal>
       <div className="relative mx-auto mt-16 h-[420px] max-w-4xl">
-        {[["נועה",0],["איתי",1],["מיכל",2]].map(([n,i]) => (
-          <Reveal key={n} delayMs={i*120} className="t-hover absolute w-48 overflow-hidden border-4 border-white shadow-lg" style={{top: i*40+"px", right: i*120+"px", zIndex: 3-i}}>
+        {([["נועה",0],["איתי",1],["מיכל",2]] as Array<[string, number]>).map(([n,i]) => (
+          <Reveal key={n} delayMs={i*120} className="t-hover absolute w-48 overflow-hidden border-4 border-white shadow-lg">
             <SafeImg src={getValue(data,"sectionImage")} alt="" className="h-56 w-full object-cover" />
             <p className="bg-white p-3 font-bold text-[var(--dark)]">{n}</p>
           </Reveal>

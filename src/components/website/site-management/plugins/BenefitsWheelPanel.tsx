@@ -199,7 +199,7 @@ export default function SiteBenefitsWheelPanel(props: PluginPanelProps) {
       description="גלגל מסתובב במודאל — נפתח בכניסה ראשונה לאתר. גררו את הכפתור הצף בעורך."
       loading={loading}
       saving={saving}
-      message={message || removeMessage}
+      message={message || (removeMessage ? { type: "error", text: removeMessage } : null)}
       onSave={() => save({ ...settings, segmentCount, segments })}
     >
       <SectionCard icon={Power} title="הפעלה" subtitle="מתי התוסף יופיע באתר" accent="#8B5CF6">

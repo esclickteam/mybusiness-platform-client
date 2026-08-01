@@ -152,7 +152,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
       <Reveal className="text-center"><h2 className="t-display text-2xl sm:text-4xl font-bold text-[var(--dark)]">{getValue(data,"sectionThreeTitle")}</h2></Reveal>
       <div className="mx-auto mt-12 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {[["מגלים","סקרנות"],["מנסים","ידיים"],["יוצרים","גאווה"],["משתפים","חברים"]].map(([t,d],i) => (
-          <Reveal key={t} delayMs={i*80} variant="up" className="t-hover rounded-3xl border-4 border-dashed p-6 text-center" style={{borderColor:["#10B981","#FBBF24","#34D399","#F59E0B"][i]}}>
+          <Reveal key={t} delayMs={i*80} variant="up" className="t-hover rounded-3xl border-4 border-dashed p-6 text-center">
             <div className="t-float mx-auto h-3 w-3 rounded-full" style={{background:["#10B981","#FBBF24","#34D399","#F59E0B"][i]}} />
             <h3 className="mt-3 text-lg font-bold text-[var(--dark)]">{t}</h3>
             <p className="text-sm text-[var(--muted)]">{d}</p>
@@ -187,7 +187,7 @@ function Stats({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="stats" className="px-5 py-16 lg:px-8">
       <div className="mx-auto flex max-w-4xl flex-wrap justify-center gap-6">
         {[[getValue(data,"heroStatOne"),getValue(data,"heroStatOneLabel")],[getValue(data,"heroStatTwo"),getValue(data,"heroStatTwoLabel")],[getValue(data,"heroStatThree"),getValue(data,"heroStatThreeLabel")]].map(([n,l],i) => (
-          <Reveal key={l} delayMs={i*80} className="t-float rounded-3xl bg-[var(--p)] px-8 py-6 text-center text-white" style={{animationDelay:i*0.35+"s"}}>
+          <Reveal key={l} delayMs={i*80} className="t-float rounded-3xl bg-[var(--p)] px-8 py-6 text-center text-white">
             <div className="t-display text-2xl sm:text-4xl font-bold">{n}</div>
             <div className="text-sm text-white/90">{l}</div>
           </Reveal>

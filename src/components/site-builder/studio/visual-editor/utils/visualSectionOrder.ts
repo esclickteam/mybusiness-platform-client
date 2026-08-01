@@ -619,7 +619,7 @@ export function resolveVisualSectionNode(
     }
 
     return (
-      direct.closest<HTMLElement>(
+      (direct as HTMLElement).closest<HTMLElement>(
         "[data-visual-section-key], [data-template-section-id], [data-visual-inserted-section='true'], section",
       ) || direct
     );
