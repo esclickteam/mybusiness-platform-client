@@ -379,10 +379,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="mb-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
         <h2 className="tpl-display text-center text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-center text-sm" style={{ color: "#9a958c" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3" onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="שם" />
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="טלפון" />
-          <button type="button" onClick={onCta} className="px-6 py-3 text-sm font-bold tracking-wider" style={{ background: "#d4af37", color: "#0b0b0b" }}>{v(data, "cta")}</button>
+        <form className="mt-8 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="sushisen-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <button type="submit" className="px-6 py-3 text-sm font-bold tracking-wider" style={{ background: "#d4af37", color: "#0b0b0b" }}>{v(data, "cta")}</button>
         </form>
         <div className="mt-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
       </div>

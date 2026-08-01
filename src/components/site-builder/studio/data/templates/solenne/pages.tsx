@@ -120,12 +120,12 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
   const field =
     "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
-      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="שם מלא" />
-      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="טלפון" />
-      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="אימייל" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="ספרו בקצרה" />
-      <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#8b6f5c", color: "#0a0908" }}>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="solenne-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="ספרו בקצרה"  name="message" data-bizuply-form-field-id="message"></textarea>
+      <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#8b6f5c", color: "#0a0908" }}>
         {v(data, "cta")}
       </button>
     </form>

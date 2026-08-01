@@ -85,7 +85,7 @@ export default function CrmProductHero() {
             <ArrowLeft size={17} aria-hidden="true" />
           </Link>
 
-          <Link to="/register" className="pm-cta pm-cta--ghost">
+          <Link to="/pricing" className="pm-cta pm-cta--ghost">
             התחילו בחינם
           </Link>
         </motion.div>

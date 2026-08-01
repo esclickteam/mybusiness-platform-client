@@ -376,24 +376,24 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0">
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="mediavault-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Requester name
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Callback
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="טלפון" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Channel / budget
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="חברה / תחום" />
+                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Ticket brief
-                <textarea className="min-h-32 bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="במה נוכל לעזור?" />
+                <textarea className="min-h-32 bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
               </label>
-              <button type="button" className="bg-[var(--p)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
+              <button type="submit" className="bg-[var(--p)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
             </form>
           </Reveal>
         </div>

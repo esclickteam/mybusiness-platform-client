@@ -353,12 +353,12 @@ function Contact({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-bold uppercase tracking-[0.34em] text-[var(--p)]">brief intake</p>
           <h2 className="ar-display mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 text-base leading-8 text-white/72">{getValue(data, "contactText")}</p>
-          <form className="mt-8 grid gap-4">
-            <input className="ar-field px-4 py-4" placeholder="שם מלא" />
-            <input className="ar-field px-4 py-4" placeholder="טלפון" />
-            <input className="ar-field px-4 py-4" placeholder="סוג הנכס / מיקום" />
-            <textarea className="ar-field min-h-[132px] px-4 py-4" placeholder="ספרו לנו מה חייב לקרות בחלל" />
-            <button type="button" className="bg-[var(--p)] px-7 py-4 text-sm font-black text-[#111] transition hover:bg-white">
+          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="archora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className="ar-field px-4 py-4" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="ar-field px-4 py-4" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="ar-field px-4 py-4" placeholder="סוג הנכס / מיקום"  name="other" data-bizuply-form-field-id="other" />
+            <textarea className="ar-field min-h-[132px] px-4 py-4" placeholder="ספרו לנו מה חייב לקרות בחלל"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-black text-[#111] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>
           </form>

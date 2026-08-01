@@ -711,7 +711,7 @@ export default function BusinessProfileView() {
                 {!isOwner && (
                   <button
                     type="button"
-                    className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                    className="rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 py-3 text-sm font-black !text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     onClick={() => setShowReviewModal(true)}
                   >
                     {t("businessProfile.view.addReview")}
@@ -793,7 +793,7 @@ export default function BusinessProfileView() {
                     <button
                       type="button"
                       onClick={() => setShowReviewModal(true)}
-                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black !text-white shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
+                      className="mt-5 inline-flex items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 py-3 text-sm font-black !text-black shadow-lg shadow-violet-500/20 transition hover:-translate-y-0.5"
                     >
                       {t("businessProfile.view.writeFirstReview")}
                     </button>
@@ -836,7 +836,7 @@ export default function BusinessProfileView() {
                   target="_blank"
                   rel="noreferrer"
                   dir="ltr"
-                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-white shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
+                  className="mx-auto mt-6 flex h-[52px] max-w-sm items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black !text-black shadow-xl shadow-violet-500/20 transition hover:-translate-y-0.5"
                 >
                   {t("businessProfile.contact.websiteCta")}
                 </a>

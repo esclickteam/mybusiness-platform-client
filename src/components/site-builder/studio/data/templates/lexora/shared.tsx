@@ -412,28 +412,30 @@ export function ConsultationSection({ data }: { data: LexoraSeed }) {
 
             <form
               className="lex-form"
-              onSubmit={(event) => {
-                event.preventDefault();
-              }}
+              data-bizuply-block="lead-form"
+              data-bizuply-crm-lead="true"
+              data-bizuply-form-builder="true"
+              data-bizuply-form-id="lexora-contact"
+              data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
             >
               <label>
                 <span>שם מלא</span>
-                <input type="text" placeholder="השם שלך" />
+                <input type="text" name="name" data-bizuply-form-field-id="name" autoComplete="name" placeholder="השם שלך" />
               </label>
 
               <label>
                 <span>טלפון</span>
-                <input type="tel" placeholder="050-0000000" />
+                <input type="tel" name="phone" data-bizuply-form-field-id="phone" autoComplete="tel" placeholder="050-0000000" />
               </label>
 
               <label>
                 <span>אימייל</span>
-                <input type="email" placeholder="name@email.com" />
+                <input type="email" name="email" data-bizuply-form-field-id="email" autoComplete="email" placeholder="name@email.com" />
               </label>
 
               <label>
                 <span>סיבת הפנייה</span>
-                <textarea placeholder="ספרו בקצרה במה צריך עזרה" />
+                <textarea name="message" data-bizuply-form-field-id="message" placeholder="ספרו בקצרה במה צריך עזרה" />
               </label>
 
               <button type="submit">{data.consultation.button}</button>

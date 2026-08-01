@@ -125,7 +125,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
 
               <div className="product-enter product-enter-delay-3 mt-8 flex flex-wrap gap-3">
                 <Link
-                  to="/register"
+                  to="/pricing"
                   className="inline-flex h-11 items-center justify-center rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
                 >
                   {t("productPages.ctaPrimary")}
@@ -310,7 +310,7 @@ export default function ProductExplainer({ pageKey, hideHero = false }) {
             </div>
             <div className="flex flex-wrap gap-3">
               <Link
-                to="/register"
+                to="/pricing"
                 className="inline-flex h-11 items-center justify-center rounded-xl bg-white px-5 text-sm font-black text-[#6D28D9] transition hover:bg-violet-50"
               >
                 {t("productPages.ctaPrimary")}

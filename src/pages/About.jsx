@@ -374,7 +374,7 @@ function About() {
             </div>
             <h2>{t("about.ctaTitle")}</h2>
             <p className="about-cta-text about-bidi">{t("about.ctaText")}</p>
-            <Link to="/register" className="about-cta-pill">
+            <Link to="/pricing" className="about-cta-pill">
               {t("about.ctaPrimary")}
             </Link>
           </div>

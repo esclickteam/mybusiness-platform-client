@@ -932,8 +932,7 @@ export default function AdminSoftphone({
         return;
       }
 
-      // If INVITE already ringing → answer now. If app was closed and missed it,
-      // retry classic ring transfer so the SIP invite can land.
+      // Parked PSTN is playing hold music — bridge to WebRTC only after ענה.
       const callSid = String(current.callSid || "").trim();
       if (
         callSid &&
@@ -946,8 +945,15 @@ export default function AdminSoftphone({
             callSid,
             callControlId: callSid,
           });
-        } catch {
-          // Transfer may already be ringing from the webhook — keep waiting for INVITE.
+        } catch (err: any) {
+          userAcceptedIncoming = false;
+          patchActiveSoftphoneCall({
+            status: "incoming",
+            error:
+              err?.response?.data?.message ||
+              "לא הצלחנו לחבר את השיחה. נסו שוב.",
+          });
+          return;
         }
       }
 

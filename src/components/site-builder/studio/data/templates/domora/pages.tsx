@@ -691,8 +691,7 @@ function ContactPage({ data }: { data: DomoraData }) {
 
         <form
           dir="rtl"
-          className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]"
-        >
+          className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="domora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             ["שם", "השם שלך"],
             ["טלפון", "050-0000000"],
@@ -713,11 +712,11 @@ function ContactPage({ data }: { data: DomoraData }) {
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
               className="w-full resize-none rounded-2xl border border-black/5 bg-[#f5f5f2] px-5 py-4 outline-none transition placeholder:text-[#9a9fa3] focus:border-[#151d20]"
-            />
+             name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
 
           <button
-            type="button"
+            type="submit"
             className="mt-6 w-full rounded-full bg-[#151d20] px-6 py-4 text-sm font-semibold text-white transition hover:bg-[#2a3336]"
           >
             {data.contact.button}

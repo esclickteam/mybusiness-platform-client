@@ -884,10 +884,10 @@ export default function ChatBot({
           setUnreadCount(0);
           setChatOpen(true);
         }}
-        className="fixed bottom-6 right-6 z-[10000] flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800 shadow-xl shadow-violet-500/40 transition hover:scale-105 hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 relative"
+        className="fixed bottom-6 right-6 z-[10000] relative flex h-14 w-14 items-center justify-center rounded-full border border-violet-400/40 bg-gradient-to-br from-violet-600 via-violet-500 to-indigo-600 text-white shadow-[0_14px_36px_rgba(109,40,217,0.45)] transition hover:scale-105 hover:from-violet-500 hover:via-violet-500 hover:to-indigo-500 hover:shadow-[0_18px_44px_rgba(109,40,217,0.55)]"
         aria-label={t("chatbot.openAria")}
       >
-        <Bot size={24} />
+        <Bot size={24} className="text-white" />
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white shadow">
             {unreadCount > 99 ? "99+" : unreadCount}

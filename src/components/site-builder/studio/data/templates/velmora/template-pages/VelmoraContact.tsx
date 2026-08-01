@@ -326,7 +326,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
           </Reveal>
 
           <Reveal delay={160}>
-            <form className="rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.09)]">
+            <form className="rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.09)]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="velmora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2">
                   <span className="text-sm font-bold text-black/60">
@@ -336,7 +336,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                   <input
                     placeholder="שם מלא"
                     className="h-12 rounded-[4px] border border-black/10 bg-[#f6f2ea] px-4 text-sm outline-none transition focus:border-black"
-                  />
+                   name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
                 </label>
 
                 <label className="grid gap-2">
@@ -347,7 +347,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                   <input
                     placeholder="05-0000000"
                     className="h-12 rounded-[4px] border border-black/10 bg-[#f6f2ea] px-4 text-sm outline-none transition focus:border-black"
-                  />
+                   name="other" data-bizuply-form-field-id="other" />
                 </label>
               </div>
 
@@ -360,7 +360,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                   <input
                     placeholder="name@email.com"
                     className="h-12 rounded-[4px] border border-black/10 bg-[#f6f2ea] px-4 text-sm outline-none transition focus:border-black"
-                  />
+                   name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
                 </label>
 
                 <label className="grid gap-2">
@@ -387,7 +387,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                   rows={7}
                   placeholder="אפשר לכתוב כאן את פרטי הפנייה..."
                   className="resize-none rounded-[4px] border border-black/10 bg-[#f6f2ea] p-4 text-sm outline-none transition focus:border-black"
-                />
+                 name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               </label>
 
               <div className="mt-5 flex flex-wrap gap-2">
@@ -402,7 +402,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
               </div>
 
               <button
-                type="button"
+                type="submit"
                 className="mt-7 inline-flex h-12 items-center gap-3 rounded-[4px] bg-[#292318] px-8 text-sm font-bold text-white transition hover:-translate-y-1 hover:bg-black"
               >
                 שליחת פנייה

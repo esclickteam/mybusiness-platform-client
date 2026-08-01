@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { clearskinDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
+import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { clearskinEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
 
@@ -27,6 +28,7 @@ type ClearskinPagesProps = {
   initialPageId?: string;
   activePageId?: string;
   currentPageId?: string;
+  businessId?: string;
 };
 
 function getValue(data: Record<string, any>, key: string) {
@@ -34,18 +36,19 @@ function getValue(data: Record<string, any>, key: string) {
 }
 
 function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; compact?: boolean; bold?: boolean; neon?: boolean }) {
-  // Live CRM mount — services + working hours sync from the business calendar.
+  // Live CRM mount — syncs services/hours only; embedded chrome keeps template design.
   return (
     <div
-      className="mt-6 min-h-[420px] w-full overflow-hidden rounded-2xl"
+      className="mt-6 min-h-[420px] w-full"
       dir="rtl"
       data-bizuply-widget="booking"
       data-bizuply-booking-mount="true"
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
+      data-bizuply-booking-chrome="embedded"
       data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
-      style={{ position: "relative", minHeight: 420 }}
+      style={{ position: "relative", minHeight: 420, background: "transparent" }}
       aria-label="יומן פגישות מה-CRM"
     />
   );
@@ -303,7 +306,7 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
       </section>
       <section data-template-section-type="confirmationForm" data-section-kind="confirmationForm" className="beauty-acneClinic-confirmationForm-frame-3 px-5 py-12 md:py-24 lg:px-8">
         <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[1.15fr_0.85fr]">
-          <div className="order-2 md:order-1"><Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" onSubmit={(e)=>e.preventDefault()}><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" /><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" /><textarea className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" /><button type="button" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal></div>
+          <div className="order-2 md:order-1"><Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="beauty-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."><input name="name" data-bizuply-form-field-id="name" autoComplete="name" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" /><input name="phone" type="tel" data-bizuply-form-field-id="phone" autoComplete="tel" className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" /><textarea name="message" data-bizuply-form-field-id="message" className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" /><button type="submit" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal></div>
           <div className="order-1 flex items-start justify-between border-r-4 border-[var(--p)] pr-5 md:order-2"><div><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">CLEAR / confirmationForm</p></div><span className="text-xs text-[var(--muted)]">מעקב עור</span></div>
         </div>
       </section>
@@ -326,8 +329,9 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
 }
 
 export default function ClearskinPages(props: ClearskinPagesProps) {
-  const { initialPage = "home", mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode, page, pageId, initialPageId, activePageId, currentPageId } = props;
-  const mergedData = useMemo(() => ({ ...clearskinDefaultData, ...(data ?? {}) }), [data]);
+  const {  initialPage = "home", mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode, page, pageId, initialPageId, activePageId, currentPageId, businessId } = props;
+  const baseData = useMemo(() => ({ ...clearskinDefaultData, ...(data ?? {}) }), [data]);
+  const mergedData = useCrmBookingServiceData(baseData, businessId);
   const { currentPage, goTo } = useTemplatePageNavigation(
     { page, pageId, initialPage, initialPageId, activePageId, currentPageId, onPageChange, isPublic, viewMode, runtimeMode },
     { allowedPages, fallbackPage: "home" },

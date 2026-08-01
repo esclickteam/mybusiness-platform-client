@@ -353,17 +353,17 @@ function BookingForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pawhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון" />
+              <input aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם החיה" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם החיה" />
-              <input aria-label="סוג וגיל" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="כלב / חתול וגיל" />
+              <input aria-label="שם החיה" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם החיה"  name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
+              <input aria-label="סוג וגיל" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="כלב / חתול וגיל"  name="other" data-bizuply-form-field-id="other" />
             </div>
-            <textarea aria-label="מה חשוב לדעת" className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="מה חשוב לנו לדעת לפני ההגעה?" />
-            <button type="button" className="bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
+            <textarea aria-label="מה חשוב לדעת" className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="מה חשוב לנו לדעת לפני ההגעה?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+            <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
               {getValue(data, "contactButton")}
             </button>
           </form>

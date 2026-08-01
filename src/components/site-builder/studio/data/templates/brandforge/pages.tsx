@@ -332,12 +332,12 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0">
-              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="שם מלא" />
-              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="טלפון" />
-              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="חברה / תחום" />
-              <textarea className="min-h-36 border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="במה נוכל לעזור?" />
-              <button type="button" className="bg-[var(--dark)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="brandforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
+              <textarea className="min-h-36 border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+              <button type="submit" className="bg-[var(--dark)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
             </form>
           </Reveal>
         </div>

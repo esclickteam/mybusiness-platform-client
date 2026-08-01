@@ -167,12 +167,12 @@ function UrbanixLimeContact({ data, onCta }: { data: Record<string, any>; onCta:
               <p>{v(data, "address")}</p>
             </div>
           </div>
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שכונה" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="תקציב" />
-            <textarea className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="מה הדדליין לכניסה?" />
+          <form className="grid gap-4 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="urbanix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שכונה" name="other" data-bizuply-form-field-id="other" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="תקציב" name="other_2" data-bizuply-form-field-id="other_2" />
+            <textarea className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="מה הדדליין לכניסה?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
           </form>
         </div>
       </div>

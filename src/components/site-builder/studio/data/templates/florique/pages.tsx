@@ -364,15 +364,15 @@ function OrderForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="florique-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="טלפון" />
+              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
-            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="אירוע או סיבה למשלוח" />
-            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="תקציב וגוונים מועדפים" />
-            <textarea className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="ברכה, כתובת ושעה רצויה" />
-            <button type="button" className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:-translate-y-1">
+            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="אירוע או סיבה למשלוח"  name="other" data-bizuply-form-field-id="other" />
+            <input className="border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="תקציב וגוונים מועדפים"  name="other_2" data-bizuply-form-field-id="other_2" />
+            <textarea className="min-h-32 border border-[var(--line)] bg-white px-5 py-4 text-right outline-none placeholder:text-[#9D6B85]/60 focus:border-[var(--p)]" placeholder="ברכה, כתובת ושעה רצויה"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+            <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>
           </form>

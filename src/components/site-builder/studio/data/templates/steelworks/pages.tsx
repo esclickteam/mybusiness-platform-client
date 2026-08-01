@@ -746,23 +746,23 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10">
+        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="שם מלא"
-          />
+           name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="טלפון"
-          />
+           name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="אימייל"
-          />
+           name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <textarea
             className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="ספרו לנו על הפרויקט"
-          />
+           name="message" data-bizuply-form-field-id="message"></textarea>
           <SteelButton className="w-full justify-center">
             <TemplateText as="span" editId="contactButton" editLabel="contactButton">
               {getValue(data, "contactButton")}

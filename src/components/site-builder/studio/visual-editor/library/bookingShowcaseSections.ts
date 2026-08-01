@@ -89,6 +89,7 @@ function bookingMount(
       "data-bizuply-widget": "booking",
       "data-bizuply-booking-mount": "true",
       "data-bizuply-booking-variant": variant,
+      "data-bizuply-booking-chrome": "card",
       "data-bizuply-crm-calendar": "true",
       "data-bizuply-booking-accent": accent,
       "data-bizuply-booking-ink": inkColor,

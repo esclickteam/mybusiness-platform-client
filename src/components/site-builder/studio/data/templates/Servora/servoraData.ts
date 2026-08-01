@@ -295,7 +295,7 @@ function createServiceRequestCardHtml(
     <span class="servora-request-icon" aria-hidden="true">⚡</span>
   </div>
 
-  <form class="servora-request-form">
+  <form class="servora-request-form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="servora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
     <input
       type="text"
       name="name"
@@ -304,7 +304,7 @@ function createServiceRequestCardHtml(
       dir="rtl"
       ${visualAttrs(`${scope}.nameInput`, "box", "שדה שם")}
       data-editable="input"
-    />
+     data-bizuply-form-field-id="name" autoComplete="name" />
     <input
       type="tel"
       name="phone"
@@ -313,7 +313,7 @@ function createServiceRequestCardHtml(
       dir="rtl"
       ${visualAttrs(`${scope}.phoneInput`, "box", "שדה טלפון")}
       data-editable="input"
-    />
+     data-bizuply-form-field-id="phone" autoComplete="tel" />
     <select
       name="service"
       aria-label="בחירת שירות"

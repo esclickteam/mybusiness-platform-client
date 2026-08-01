@@ -19,7 +19,7 @@ export default function FinalCta({
   title,
   text,
   primaryLabel = "הירשמו עכשיו",
-  primaryTo = "/register",
+  primaryTo = "/pricing",
   secondaryLabel,
   secondaryTo = "/contact",
 }: Props) {

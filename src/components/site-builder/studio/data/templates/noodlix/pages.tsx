@@ -390,10 +390,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
       <div className="mx-auto flex max-w-xl flex-col items-center text-center">
         <h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 text-lg" style={{ color: "#8aa89a" }}>{v(data, "contactText")}</p>
-        <form className="tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8" style={{ borderColor: "#3dd6c6" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="שם" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="טלפון" />
-          <button type="button" onClick={onCta} className="rounded-full px-6 py-3 text-sm font-bold" style={{ background: "#3dd6c6", color: "#0a1210" }}>{v(data, "cta")}</button>
+        <form className="tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8" style={{ borderColor: "#3dd6c6" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="noodlix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <button type="submit" className="rounded-full px-6 py-3 text-sm font-bold" style={{ background: "#3dd6c6", color: "#0a1210" }}>{v(data, "cta")}</button>
         </form>
         <p className="mt-6 text-sm" style={{ color: "#8aa89a" }}>{v(data, "phone")} · {v(data, "email")}</p>
       </div>

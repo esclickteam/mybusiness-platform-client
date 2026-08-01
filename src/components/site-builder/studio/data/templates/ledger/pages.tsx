@@ -495,18 +495,18 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12">
+        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="ledger-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל" />
-            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו מה תרצו למדוד, לייעל או לייצב." />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו מה תרצו למדוד, לייעל או לייצב."  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 grid gap-4 border-t border-[#102018]/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">
               שיחת ההתנעה מיועדת למנהלים, בעלי עסקים וגורמי כספים שמבקשים תהליך מסודר ולא רק ייעוץ חד-פעמי.
             </TemplateText>
-            <button type="button" className="border border-[#0d5c45] bg-[#0d5c45] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#f6f3ea]">
+            <button type="submit" className="border border-[#0d5c45] bg-[#0d5c45] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#f6f3ea]">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>
           </div>

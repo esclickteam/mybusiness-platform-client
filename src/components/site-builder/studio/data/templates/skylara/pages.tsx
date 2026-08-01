@@ -177,12 +177,12 @@ function CyanContact({ data }: { data: Record<string, any> }) {
           <p className="mt-5 text-lg leading-8" style={{ color: "#7f97b0" }}>{v(data, "contactText")}</p>
           <p className="mt-8 text-sm font-bold tracking-[0.2em]" style={{ color: "#39d0ff" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="שם מלא" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="קומה רצויה" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="אזור / מגדל" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="נוף, מרפסת, שירותי בניין" />
-          <button type="button" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#39d0ff", color: "#041018" }}>{v(data, "cta")}</button>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="skylara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="קומה רצויה" name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="אזור / מגדל" name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="נוף, מרפסת, שירותי בניין"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+          <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#39d0ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>
     </section>
