@@ -295,9 +295,11 @@ function About() {
               transition={{ type: "spring", stiffness: 180, damping: 16 }}
             >
               <img
-                src="/images/about-team.jpg"
+                src="/images/about-team.webp"
                 alt={t("about.whoImageAlt")}
                 className="about-who-photo"
+                loading="lazy"
+                decoding="async"
               />
             </motion.div>
           </div>

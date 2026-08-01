@@ -35,7 +35,7 @@ type LeadForm = {
 
 type IconType = React.ComponentType<React.SVGProps<SVGSVGElement>>;
 
-const LOGO_SRC = "/bizuply%20logo.png";
+const LOGO_SRC = "/bizuply%20logo.webp";
 const LAUNCH_TARGET = new Date("2026-08-10T00:00:00+03:00").getTime();
 
 const INTEREST_KEYS = [
