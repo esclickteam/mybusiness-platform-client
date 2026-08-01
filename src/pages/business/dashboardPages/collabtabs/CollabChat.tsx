@@ -24,7 +24,6 @@ import { useLocation, useSearchParams } from "react-router-dom";
 import API from "../../../../api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
-import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 

@@ -160,6 +160,21 @@ export default function VisualContextMenu({
     };
   }, [editor, menu?.open]);
 
+  // Hooks must run unconditionally on every render, so this is declared
+  // before the "menu closed" early return below.
+  const canEditForm = useMemo(() => {
+    const node =
+      editor?.selectedElement?.node ||
+      editor?.selectedElement?.domNode ||
+      editor?.selectedElement?.element ||
+      null;
+
+    if (!(node instanceof HTMLElement)) return false;
+
+    const root = editor?.canvasRef?.current || null;
+    return Boolean(resolveFormContext(node, root));
+  }, [editor?.canvasRef, editor?.selectedElement]);
+
   if (!menu?.open || !elementId) return null;
 
   const close = () => {
@@ -175,19 +190,6 @@ export default function VisualContextMenu({
     elementType === "text" ||
     elementType === "button" ||
     elementType === "link";
-
-  const canEditForm = useMemo(() => {
-    const node =
-      editor?.selectedElement?.node ||
-      editor?.selectedElement?.domNode ||
-      editor?.selectedElement?.element ||
-      null;
-
-    if (!(node instanceof HTMLElement)) return false;
-
-    const root = editor?.canvasRef?.current || null;
-    return Boolean(resolveFormContext(node, root));
-  }, [editor?.canvasRef, editor?.selectedElement]);
 
   return (
     <div

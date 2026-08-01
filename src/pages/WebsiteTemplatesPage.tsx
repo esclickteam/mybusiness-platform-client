@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -453,13 +454,13 @@ function normalizeTemplateForMongo(template: any, index: number) {
       seed?.heroTitle ||
       template.heroTitle ||
       template.name ||
-      t("websiteTemplates.defaultHeroTitle"),
+      i18n.t("websiteTemplates.defaultHeroTitle"),
 
     heroSubtitle:
       seed?.heroSubtitle ||
       template.description ||
       seed?.description ||
-      t("websiteTemplates.defaultHeroSubtitle"),
+      i18n.t("websiteTemplates.defaultHeroSubtitle"),
 
     palette: seed?.palette || {
       primary: "#111827",

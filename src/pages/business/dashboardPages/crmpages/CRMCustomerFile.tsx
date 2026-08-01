@@ -13,6 +13,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
 
 import API from "@api";
 import ClientTasksAndNotes from "../../../../components/CRM/ClientTasksAndNotes";

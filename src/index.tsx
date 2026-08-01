@@ -37,6 +37,17 @@ if (!window.Buffer) {
 }
 
 /* ==========================================================
+   Silence dev-only console noise in production.
+   console.error / console.warn stay intact for real error handling.
+========================================================== */
+if (import.meta.env.PROD) {
+  // eslint-disable-next-line no-console
+  console.log = () => {};
+  // eslint-disable-next-line no-console
+  console.debug = () => {};
+}
+
+/* ==========================================================
    Theme bootstrap before app render
 ========================================================== */
 

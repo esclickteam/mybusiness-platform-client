@@ -12,13 +12,19 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import BusinessDashboardRoutes from "./pages/business/BusinessDashboardRoutes";
-import BusinessChatPage from "./components/BusinessChatPage";
-import PublicVisualSiteRenderer from "./components/site-builder/public/PublicVisualSiteRenderer";
+const BusinessDashboardRoutes = lazy(() =>
+  import("./pages/business/BusinessDashboardRoutes")
+);
+const BusinessChatPage = lazy(() => import("./components/BusinessChatPage"));
+const PublicVisualSiteRenderer = lazy(() =>
+  import("./components/site-builder/public/PublicVisualSiteRenderer")
+);
 
 import { useAuth } from "./context/AuthContext";
 import { LoginSkeleton } from "./components/LoginSkeleton";
-import AdminWithdrawalsPage from "./pages/admin/AdminWithdrawalsPage";
+const AdminWithdrawalsPage = lazy(() =>
+  import("./pages/admin/AdminWithdrawalsPage")
+);
 
 import { AiProvider } from "./context/AiContext";
 import AiModal from "./components/AiModal";
@@ -26,7 +32,9 @@ import { NotificationsProvider } from "./context/NotificationsContext";
 import { preloadDashboardComponents } from "./pages/business/dashboardPages/DashboardPage";
 
 import AffiliateAutoLogin from "./components/AffiliateAutoLogin";
-import AffiliateDashboardPage from "./pages/business/dashboardPages/AffiliateDashboardPage";
+const AffiliateDashboardPage = lazy(() =>
+  import("./pages/business/dashboardPages/AffiliateDashboardPage")
+);
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
@@ -595,7 +603,11 @@ function PublicMiniSiteContent({ site, location }) {
       ? window.location.pathname
       : location.pathname;
 
-  return <PublicVisualSiteRenderer site={site} pathname={pathname} />;
+  return (
+    <Suspense fallback={<BizuplyLoader fullScreen />}>
+      <PublicVisualSiteRenderer site={site} pathname={pathname} />
+    </Suspense>
+  );
 }
 
 function ScrollToTop() {
@@ -716,16 +728,18 @@ export default function App() {
         <main className="app-main">
           {isBusinessChatRoute ? (
             <div className="business-chat-fullscreen">
-              <Routes location={location} key={location.pathname}>
-                <Route
-                  path="/business/:businessId/chat/*"
-                  element={
-                    <ProtectedRoute roles={["business", "admin"]}>
-                      <BusinessChatPage />
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+              <Suspense fallback={<BizuplyLoader fullScreen />}>
+                <Routes location={location} key={location.pathname}>
+                  <Route
+                    path="/business/:businessId/chat/*"
+                    element={
+                      <ProtectedRoute roles={["business", "admin"]}>
+                        <BusinessChatPage />
+                      </ProtectedRoute>
+                    }
+                  />
+                </Routes>
+              </Suspense>
             </div>
           ) : (
             <div

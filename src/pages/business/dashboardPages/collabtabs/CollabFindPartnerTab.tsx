@@ -22,7 +22,9 @@ import {
 } from "lucide-react";
 
 import API from "../../../../api";
-import { BizuplyLoadingState } from "../../../../components/ui/BizuplyLoader";
+import BizuplyLoader, {
+  BizuplyLoadingState,
+} from "../../../../components/ui/BizuplyLoader";
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";

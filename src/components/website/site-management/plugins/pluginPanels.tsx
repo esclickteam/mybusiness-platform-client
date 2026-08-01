@@ -13,7 +13,7 @@ import {
   Search,
 } from "lucide-react";
 
-import type { SitePanelSection } from "../../../data/sitePluginNav";
+import type { SitePanelSection } from "../../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";

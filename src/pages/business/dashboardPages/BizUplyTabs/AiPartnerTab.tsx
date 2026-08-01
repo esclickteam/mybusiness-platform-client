@@ -11,7 +11,7 @@ import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 
 const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL || "http://localhost:3001";
+  import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
 type Nullable<T> = T | null;
 

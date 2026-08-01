@@ -86,7 +86,11 @@ export default function BusinessesList() {
 
   /* ================= Helpers ================= */
   const updateParam = (key, value) => {
-    value ? searchParams.set(key, value) : searchParams.delete(key);
+    if (value) {
+      searchParams.set(key, value);
+    } else {
+      searchParams.delete(key);
+    }
     setSearchParams(searchParams, { replace: true });
   };
 

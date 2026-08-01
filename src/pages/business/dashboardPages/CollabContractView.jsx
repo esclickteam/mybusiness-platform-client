@@ -4,6 +4,21 @@ import API from "../../../api"; // Make sure this is the correct path based on f
 import "./CollabContractView.css";
 
 const CollabContractView = ({ contract, onApprove, currentUser }) => {
+  // Hooks must run unconditionally on every render, so they are declared
+  // before the "no contract" early return below.
+  const receiverSigRef = useRef();
+  const [localReceiverSig, setLocalReceiverSig] = useState(
+    contract?.receiverSignature || ""
+  );
+  const [hasSigned, setHasSigned] = useState(!!contract?.receiverSignature);
+  const [isApproving, setIsApproving] = useState(false);
+
+  useEffect(() => {
+    if (contract?.receiverSignature) {
+      setLocalReceiverSig(contract.receiverSignature);
+    }
+  }, [contract?.receiverSignature]);
+
   if (!contract) return <p>No contract to display</p>;
 
   const {
@@ -30,15 +45,6 @@ const CollabContractView = ({ contract, onApprove, currentUser }) => {
   // Check who the current user is — sender or receiver
   const isSender = currentUser.businessName === sender?.businessName;
   const isReceiver = currentUser.businessName === receiver?.businessName;
-
-  const receiverSigRef = useRef();
-  const [localReceiverSig, setLocalReceiverSig] = useState(receiverSignature || "");
-  const [hasSigned, setHasSigned] = useState(!!receiverSignature);
-  const [isApproving, setIsApproving] = useState(false);
-
-  useEffect(() => {
-    if (receiverSignature) setLocalReceiverSig(receiverSignature);
-  }, [receiverSignature]);
 
   const handleReceiverSign = () => {
     if (receiverSigRef.current) {
