@@ -40,8 +40,8 @@ export default function AdminDialButton({
       className={[
         "inline-flex items-center justify-center gap-1.5 font-black transition hover:-translate-y-0.5 active:scale-95",
         compact
-          ? "h-9 w-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/25 hover:shadow-lg"
-          : "h-10 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-3.5 text-xs text-white shadow-md shadow-emerald-500/25 hover:shadow-lg",
+          ? "h-11 w-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/25 hover:shadow-lg"
+          : "min-h-11 rounded-2xl bg-gradient-to-l from-emerald-500 to-teal-500 px-4 text-xs text-white shadow-md shadow-emerald-500/25 hover:shadow-lg",
         className,
       ].join(" ")}
     >

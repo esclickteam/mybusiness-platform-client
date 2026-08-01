@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import API from "../../api";
+import AdminHeader from "./AdminsHeader";
 import "./AdminAffiliates.css";
 
 function AdminAffiliates() {
@@ -72,8 +73,10 @@ function AdminAffiliates() {
   };
 
   return (
-    <div className="admin-affiliates-container">
-      <h2 className="title">Create New Marketer</h2>
+    <>
+      <AdminHeader />
+      <div className="admin-affiliates-container px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
+      <h2 className="title text-2xl font-black text-purple-950 sm:text-3xl">יצירת משווק חדש</h2>
 
       {message && <div className="message success">{message}</div>}
       {error && <div className="message error">{error}</div>}

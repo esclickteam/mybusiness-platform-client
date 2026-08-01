@@ -380,13 +380,13 @@ function AdminCustomers() {
 
       <main
         dir="rtl"
-        className="min-h-screen bg-[#f6f2fb] px-4 py-7 text-right text-slate-800 md:px-8"
+        className="min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8"
         style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
       >
         <section className="mx-auto max-w-[1480px]">
           <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
             <div>
-              <h1 className="text-3xl font-black text-purple-950 md:text-4xl">
+              <h1 className="text-2xl font-black text-purple-950 sm:text-3xl md:text-4xl">
                 ניהול לקוחות
               </h1>
               <p className="mt-2 max-w-2xl text-sm font-bold text-purple-950/55">
@@ -502,184 +502,340 @@ function AdminCustomers() {
                 </button>
               </div>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full text-right">
-                  <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
-                    <tr>
-                      <th className="px-4 py-4">עסק / לקוח</th>
-                      <th className="px-4 py-4">בעלים</th>
-                      <th className="px-4 py-4">טלפון</th>
-                      <th className="px-4 py-4">חבילה</th>
-                      <th className="px-4 py-4">סטטוס</th>
-                      <th className="px-4 py-4">תוקף</th>
-                      <th className="px-4 py-4">תשלום</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {customers.map((customer) => {
-                      const ownerId = customer.owner?._id || "";
-                      const selectedPlan =
-                        payPlanByUser[ownerId] ||
-                        (customer.owner?.subscriptionPlan === "yearly"
-                          ? "yearly"
-                          : "monthly");
+              <>
+                {/* Mobile cards */}
+                <div className="space-y-3 p-3 md:hidden">
+                  {customers.map((customer) => {
+                    const ownerId = customer.owner?._id || "";
+                    const selectedPlan =
+                      payPlanByUser[ownerId] ||
+                      (customer.owner?.subscriptionPlan === "yearly"
+                        ? "yearly"
+                        : "monthly");
 
-                      return (
-                        <tr
-                          key={customer._id}
-                          className="border-t border-purple-100 text-sm font-bold text-slate-800"
-                        >
-                          <td className="px-4 py-4">
-                            <div className="flex items-center justify-start gap-3">
-                              <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-purple-100 text-lg">
-                                {customer.logo ? (
-                                  <img
-                                    src={customer.logo}
-                                    alt=""
-                                    className="h-full w-full object-cover"
-                                  />
-                                ) : (
-                                  "🏢"
-                                )}
-                              </div>
-                              <div>
-                                <div className="font-black text-purple-950">
-                                  {customer.businessName || "ללא שם"}
-                                </div>
-                                <div className="text-xs text-slate-400">
-                                  {customer.email || "—"}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            <div>{customer.owner?.name || "—"}</div>
-                            <div className="text-xs font-bold text-slate-400">
-                              {customer.owner?.email || ""}
-                            </div>
-                          </td>
-                          <td className="px-4 py-4">
-                            {customer.phone ? (
-                              <div className="flex items-center justify-start gap-2">
-                                <span dir="ltr" className="text-sm font-bold text-slate-700">
-                                  {customer.phone}
-                                </span>
-                                <AdminDialButton
-                                  phone={customer.phone}
-                                  name={customer.businessName || customer.owner?.name}
-                                  source="customer"
-                                  refId={customer._id}
-                                />
-                              </div>
+                    return (
+                      <article
+                        key={`m-${customer._id}`}
+                        className="rounded-[24px] border border-purple-100 bg-white p-4 shadow-sm"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="grid h-12 w-12 shrink-0 place-items-center overflow-hidden rounded-2xl bg-purple-100 text-lg">
+                            {customer.logo ? (
+                              <img
+                                src={customer.logo}
+                                alt=""
+                                className="h-full w-full object-cover"
+                              />
                             ) : (
-                              "—"
+                              "🏢"
                             )}
-                          </td>
-                          <td className="px-4 py-4">
-                            <span
-                              className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${planTone(
-                                customer.owner?.subscriptionPlan
-                              )}`}
-                            >
-                              {customer.owner?.planLabel ||
-                                customer.owner?.subscriptionPlan ||
-                                "—"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4">
-                            <span
-                              className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusTone(
-                                customer.owner?.subscriptionStatus,
-                                customer.owner?.hasPaid
-                              )}`}
-                            >
-                              {customer.owner?.statusLabel ||
-                                customer.owner?.subscriptionStatus ||
-                                "—"}
-                            </span>
-                          </td>
-                          <td className="px-4 py-4 text-xs text-slate-500">
-                            {formatDate(
-                              customer.owner?.subscriptionEnd ||
-                                customer.owner?.trialEndsAt
-                            )}
-                          </td>
-                          <td className="px-4 py-4">
-                            <div className="flex min-w-[240px] flex-col gap-2">
-                              <select
-                                value={selectedPlan}
-                                disabled={
-                                  !ownerId ||
-                                  checkoutUserId === ownerId ||
-                                  markingUserId === ownerId
-                                }
-                                onChange={(e) =>
-                                  setPayPlanByUser((prev) => ({
-                                    ...prev,
-                                    [ownerId]: e.target.value as
-                                      | "monthly"
-                                      | "yearly",
-                                  }))
-                                }
-                                className="rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-300"
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="truncate text-base font-black text-purple-950">
+                              {customer.businessName || "ללא שם"}
+                            </h3>
+                            <p className="truncate text-xs font-bold text-slate-400">
+                              {customer.owner?.name || "—"} · {customer.email || "—"}
+                            </p>
+                            <div className="mt-2 flex flex-wrap gap-1.5">
+                              <span
+                                className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${planTone(
+                                  customer.owner?.subscriptionPlan
+                                )}`}
                               >
-                                <option value="monthly">חודשי</option>
-                                <option value="yearly">שנתי</option>
-                              </select>
-                              <label className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-600">
-                                <input
-                                  type="checkbox"
-                                  checked={Boolean(addonByUser[ownerId])}
-                                  disabled={!ownerId}
+                                {customer.owner?.planLabel ||
+                                  customer.owner?.subscriptionPlan ||
+                                  "—"}
+                              </span>
+                              <span
+                                className={`inline-flex rounded-full border px-2.5 py-1 text-[11px] font-black ${statusTone(
+                                  customer.owner?.subscriptionStatus,
+                                  customer.owner?.hasPaid
+                                )}`}
+                              >
+                                {customer.owner?.statusLabel ||
+                                  customer.owner?.subscriptionStatus ||
+                                  "—"}
+                              </span>
+                            </div>
+                          </div>
+                          {customer.phone ? (
+                            <AdminDialButton
+                              phone={customer.phone}
+                              name={customer.businessName || customer.owner?.name}
+                              source="customer"
+                              refId={customer._id}
+                            />
+                          ) : null}
+                        </div>
+
+                        {customer.phone ? (
+                          <p className="mt-3 text-sm font-bold text-slate-600" dir="ltr">
+                            {customer.phone}
+                          </p>
+                        ) : null}
+
+                        <div className="mt-3 grid gap-2">
+                          <select
+                            value={selectedPlan}
+                            disabled={
+                              !ownerId ||
+                              checkoutUserId === ownerId ||
+                              markingUserId === ownerId
+                            }
+                            onChange={(e) =>
+                              setPayPlanByUser((prev) => ({
+                                ...prev,
+                                [ownerId]: e.target.value as "monthly" | "yearly",
+                              }))
+                            }
+                            className="min-h-11 rounded-2xl border border-purple-200 bg-white px-3 text-sm font-bold outline-none focus:ring-2 focus:ring-purple-300"
+                          >
+                            <option value="monthly">חודשי</option>
+                            <option value="yearly">שנתי</option>
+                          </select>
+                          <label className="inline-flex min-h-11 items-center gap-2 text-xs font-bold text-slate-600">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(addonByUser[ownerId])}
+                              disabled={!ownerId}
+                              onChange={(e) =>
+                                setAddonByUser((prev) => ({
+                                  ...prev,
+                                  [ownerId]: e.target.checked,
+                                }))
+                              }
+                            />
+                            + תוספת אתר
+                          </label>
+                          <button
+                            type="button"
+                            disabled={!ownerId || checkoutUserId === ownerId}
+                            onClick={() => handleCheckout(customer)}
+                            className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 text-xs font-black text-black"
+                          >
+                            <CreditCard className="h-3.5 w-3.5" />
+                            {checkoutUserId === ownerId
+                              ? "פותח Stripe..."
+                              : customer.owner?.hasPaid
+                                ? "שדרוג / חידוש"
+                                : "תשלום ב־Stripe"}
+                          </button>
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              disabled={!ownerId || markingUserId === ownerId}
+                              onClick={() => handleMarkPaid(customer)}
+                              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-black text-emerald-800 disabled:opacity-60"
+                            >
+                              <CheckCircle2 className="h-3.5 w-3.5" />
+                              {markingUserId === ownerId ? "מסמן..." : "שולם ידני"}
+                            </button>
+                            <button
+                              type="button"
+                              disabled={!ownerId}
+                              onClick={() => openPurchases(customer)}
+                              className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
+                            >
+                              רכישות
+                            </button>
+                          </div>
+                        </div>
+                      </article>
+                    );
+                  })}
+                </div>
+
+                {/* Desktop table */}
+                <div className="hidden overflow-x-auto md:block">
+                  <table className="min-w-full text-right">
+                    <thead className="bg-purple-50 text-xs font-black text-purple-900/70">
+                      <tr>
+                        <th className="px-4 py-4">עסק / לקוח</th>
+                        <th className="px-4 py-4">בעלים</th>
+                        <th className="px-4 py-4">טלפון</th>
+                        <th className="px-4 py-4">חבילה</th>
+                        <th className="px-4 py-4">סטטוס</th>
+                        <th className="px-4 py-4">תוקף</th>
+                        <th className="px-4 py-4">תשלום</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {customers.map((customer) => {
+                        const ownerId = customer.owner?._id || "";
+                        const selectedPlan =
+                          payPlanByUser[ownerId] ||
+                          (customer.owner?.subscriptionPlan === "yearly"
+                            ? "yearly"
+                            : "monthly");
+
+                        return (
+                          <tr
+                            key={customer._id}
+                            className="border-t border-purple-100 text-sm font-bold text-slate-800"
+                          >
+                            <td className="px-4 py-4">
+                              <div className="flex items-center justify-start gap-3">
+                                <div className="grid h-11 w-11 shrink-0 place-items-center overflow-hidden rounded-2xl bg-purple-100 text-lg">
+                                  {customer.logo ? (
+                                    <img
+                                      src={customer.logo}
+                                      alt=""
+                                      className="h-full w-full object-cover"
+                                    />
+                                  ) : (
+                                    "🏢"
+                                  )}
+                                </div>
+                                <div>
+                                  <div className="font-black text-purple-950">
+                                    {customer.businessName || "ללא שם"}
+                                  </div>
+                                  <div className="text-xs text-slate-400">
+                                    {customer.email || "—"}
+                                  </div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              <div>{customer.owner?.name || "—"}</div>
+                              <div className="text-xs font-bold text-slate-400">
+                                {customer.owner?.email || ""}
+                              </div>
+                            </td>
+                            <td className="px-4 py-4">
+                              {customer.phone ? (
+                                <div className="flex items-center justify-start gap-2">
+                                  <span
+                                    dir="ltr"
+                                    className="text-sm font-bold text-slate-700"
+                                  >
+                                    {customer.phone}
+                                  </span>
+                                  <AdminDialButton
+                                    phone={customer.phone}
+                                    name={
+                                      customer.businessName ||
+                                      customer.owner?.name
+                                    }
+                                    source="customer"
+                                    refId={customer._id}
+                                  />
+                                </div>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <span
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${planTone(
+                                  customer.owner?.subscriptionPlan
+                                )}`}
+                              >
+                                {customer.owner?.planLabel ||
+                                  customer.owner?.subscriptionPlan ||
+                                  "—"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4">
+                              <span
+                                className={`inline-flex rounded-full border px-3 py-1 text-xs font-black ${statusTone(
+                                  customer.owner?.subscriptionStatus,
+                                  customer.owner?.hasPaid
+                                )}`}
+                              >
+                                {customer.owner?.statusLabel ||
+                                  customer.owner?.subscriptionStatus ||
+                                  "—"}
+                              </span>
+                            </td>
+                            <td className="px-4 py-4 text-xs text-slate-500">
+                              {formatDate(
+                                customer.owner?.subscriptionEnd ||
+                                  customer.owner?.trialEndsAt
+                              )}
+                            </td>
+                            <td className="px-4 py-4">
+                              <div className="flex min-w-[240px] flex-col gap-2">
+                                <select
+                                  value={selectedPlan}
+                                  disabled={
+                                    !ownerId ||
+                                    checkoutUserId === ownerId ||
+                                    markingUserId === ownerId
+                                  }
                                   onChange={(e) =>
-                                    setAddonByUser((prev) => ({
+                                    setPayPlanByUser((prev) => ({
                                       ...prev,
-                                      [ownerId]: e.target.checked,
+                                      [ownerId]: e.target.value as
+                                        | "monthly"
+                                        | "yearly",
                                     }))
                                   }
-                                />
-                                + תוספת אתר
-                              </label>
-                              <button
-                                type="button"
-                                disabled={!ownerId || checkoutUserId === ownerId}
-                                onClick={() => handleCheckout(customer)}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
-                              >
-                                <CreditCard className="h-3.5 w-3.5" />
-                                {checkoutUserId === ownerId
-                                  ? "פותח Stripe..."
-                                  : customer.owner?.hasPaid
-                                    ? "שדרוג / חידוש"
-                                    : "תשלום ב־Stripe"}
-                              </button>
-                              <button
-                                type="button"
-                                disabled={!ownerId || markingUserId === ownerId}
-                                onClick={() => handleMarkPaid(customer)}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-black text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60"
-                              >
-                                <CheckCircle2 className="h-3.5 w-3.5" />
-                                {markingUserId === ownerId
-                                  ? "מסמן..."
-                                  : "סמן שולם ידני"}
-                              </button>
-                              <button
-                                type="button"
-                                disabled={!ownerId}
-                                onClick={() => openPurchases(customer)}
-                                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
-                              >
-                                פירוט רכישות
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                                  className="rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-300"
+                                >
+                                  <option value="monthly">חודשי</option>
+                                  <option value="yearly">שנתי</option>
+                                </select>
+                                <label className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-600">
+                                  <input
+                                    type="checkbox"
+                                    checked={Boolean(addonByUser[ownerId])}
+                                    disabled={!ownerId}
+                                    onChange={(e) =>
+                                      setAddonByUser((prev) => ({
+                                        ...prev,
+                                        [ownerId]: e.target.checked,
+                                      }))
+                                    }
+                                  />
+                                  + תוספת אתר
+                                </label>
+                                <button
+                                  type="button"
+                                  disabled={
+                                    !ownerId || checkoutUserId === ownerId
+                                  }
+                                  onClick={() => handleCheckout(customer)}
+                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                                >
+                                  <CreditCard className="h-3.5 w-3.5" />
+                                  {checkoutUserId === ownerId
+                                    ? "פותח Stripe..."
+                                    : customer.owner?.hasPaid
+                                      ? "שדרוג / חידוש"
+                                      : "תשלום ב־Stripe"}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={
+                                    !ownerId || markingUserId === ownerId
+                                  }
+                                  onClick={() => handleMarkPaid(customer)}
+                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-black text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60"
+                                >
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  {markingUserId === ownerId
+                                    ? "מסמן..."
+                                    : "סמן שולם ידני"}
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={!ownerId}
+                                  onClick={() => openPurchases(customer)}
+                                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                                >
+                                  פירוט רכישות
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </>
             )}
           </div>
         </section>
