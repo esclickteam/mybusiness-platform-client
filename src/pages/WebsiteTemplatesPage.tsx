@@ -354,6 +354,9 @@ function mapDefinitionToGalleryTemplate(
  * definitions, so every locally-registered template shows up in the gallery
  * even if it hasn't been synced to Mongo yet. Server data (edited names,
  * uploaded images, etc.) takes precedence when it exists and is not empty.
+ *
+ * Server-only orphans (e.g. a removed template still active in Mongo) are
+ * ignored — the gallery only lists templates that exist in the client registry.
  */
 function mergeWithLocalTemplates(
   serverTemplates: WebsiteTemplate[]
@@ -375,10 +378,8 @@ function mergeWithLocalTemplates(
 
     const existing = byKey.get(key);
 
-    if (!existing) {
-      byKey.set(key, template);
-      return;
-    }
+    // Do not surface Mongo records for templates that were removed from code.
+    if (!existing) return;
 
     const overrides: Record<string, any> = {};
     Object.entries(template).forEach(([field, value]) => {
