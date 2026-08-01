@@ -176,6 +176,7 @@ function AdminAffiliates() {
         </div>
       )}
     </div>
+    </>
   );
 }
 
