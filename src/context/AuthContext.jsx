@@ -17,6 +17,7 @@ import {
 } from "../utils/dashboardRoutePersistence";
 import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 
 /* ===========================
    🧩 Normalize User
@@ -554,6 +555,13 @@ export function AuthProvider({ children }) {
       setInitialized(true);
     };
 
+    // Published customer sites (custom domains / sites.*) never need auth.
+    // Skip token refresh + /auth/me so the site can paint without Bizuply boot.
+    if (isPublicCustomerSiteHost()) {
+      finishLoggedOut();
+      return;
+    }
+
     (async () => {
       setLoading(true);
 
@@ -830,7 +838,8 @@ export function AuthProvider({ children }) {
   /* ===========================
      Loader while initializing
   =========================== */
-  if (loading && !initialized) {
+  // Never block published customer sites behind the Bizuply splash.
+  if (loading && !initialized && !isPublicCustomerSiteHost()) {
     return <BizuplyLoader fullScreen label="Loading..." />;
   }
 

@@ -16,7 +16,7 @@ const BusinessDashboardRoutes = lazy(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
 const BusinessChatPage = lazy(() => import("./components/BusinessChatPage"));
-const PublicVisualSiteRenderer = lazy(() =>
+const PublicVisualSiteRenderer = lazyWithPreload(() =>
   import("./components/site-builder/public/PublicVisualSiteRenderer")
 );
 
@@ -39,7 +39,13 @@ const AffiliateDashboardPage = lazy(() =>
 import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
+import { lazyWithPreload } from "./utils/lazyWithPreload";
+import {
+  getPublicSiteDomain,
+  isPublicCustomerSiteHost,
+} from "./utils/publicSiteHost";
 import BizuplyLoader from "./components/ui/BizuplyLoader";
+import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 
 const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
@@ -155,8 +161,7 @@ const MetaCallbackPage = lazy(() =>
 
 const noopResetSearchFilters = () => {};
 
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
 
 const RAW_API_BASE_URL = String(
   import.meta.env.VITE_API_URL ||
@@ -178,12 +183,8 @@ function getCurrentHostname() {
 }
 
 function isPublicMiniSiteHost() {
-  const hostname = getCurrentHostname();
-
-  return (
-    hostname.endsWith(`.${PUBLIC_SITE_DOMAIN}`) &&
-    hostname !== PUBLIC_SITE_DOMAIN
-  );
+  // Include custom/external domains — not only *.sites.bizuply.com.
+  return isPublicCustomerSiteHost(getCurrentHostname());
 }
 
 function getMiniSiteSlugFromHost() {
@@ -221,6 +222,11 @@ function PublicMiniSitePage() {
     controller: null,
   });
   const foregroundRequestRef = React.useRef(false);
+
+  // Start downloading the renderer chunk while the site JSON loads.
+  useEffect(() => {
+    PublicVisualSiteRenderer.preload?.().catch(() => {});
+  }, []);
 
   const loadSite = React.useCallback(async (pathnameOverride, options = {}) => {
     const silent = options?.silent === true;
@@ -262,12 +268,12 @@ function PublicMiniSitePage() {
             : "public/by-host/robots.txt";
         const seoUrl = `${API_SITE_BUILDER_BASE_URL}/${seoPath}?host=${encodeURIComponent(
           host
-        )}&_fresh=${Date.now()}`;
+        )}`;
 
         const seoRes = await fetch(seoUrl, {
           method: "GET",
-          credentials: "include",
-          cache: "no-store",
+          credentials: "omit",
+          cache: "default",
           signal: controller.signal,
         });
 
@@ -290,12 +296,12 @@ function PublicMiniSitePage() {
         const file = `${googleHtmlMatch[1].toLowerCase()}.html`;
         const seoUrl = `${API_SITE_BUILDER_BASE_URL}/public/by-host/google-html?host=${encodeURIComponent(
           host
-        )}&file=${encodeURIComponent(file)}&_fresh=${Date.now()}`;
+        )}&file=${encodeURIComponent(file)}`;
 
         const seoRes = await fetch(seoUrl, {
           method: "GET",
-          credentials: "include",
-          cache: "no-store",
+          credentials: "omit",
+          cache: "default",
           signal: controller.signal,
         });
         const seoContent = await seoRes.text();
@@ -316,7 +322,7 @@ function PublicMiniSitePage() {
 
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
         host
-      )}&path=${encodeURIComponent(pathname)}&_fresh=${Date.now()}`;
+      )}&path=${encodeURIComponent(pathname)}`;
 
       console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
         host,
@@ -325,8 +331,8 @@ function PublicMiniSitePage() {
 
       const res = await fetch(url, {
         method: "GET",
-        credentials: "include",
-        cache: "no-store",
+        credentials: "omit",
+        cache: "default",
         signal: controller.signal,
       });
 
@@ -556,7 +562,7 @@ function PublicMiniSitePage() {
   }
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="Loading site..." />;
+    return <PublicSiteLoader fullScreen label="Loading" />;
   }
 
   if (error || !site) {
@@ -565,19 +571,15 @@ function PublicMiniSitePage() {
     return (
       <div
         dir="rtl"
-        className="flex min-h-screen items-center justify-center bg-[#f8fafc] p-6"
+        className="flex min-h-screen items-center justify-center bg-white p-6"
       >
         <div className="w-full max-w-xl rounded-[32px] border border-slate-200 bg-white p-8 text-center shadow-sm">
-          <p className="text-sm font-black text-violet-700">
-            Bizuply Website
-          </p>
-
-          <h1 className="mt-3 text-3xl font-black text-slate-800">
+          <h1 className="text-3xl font-black text-slate-800">
             האתר עדיין לא זמין
           </h1>
 
           <p className="mt-3 text-sm font-bold leading-7 text-slate-500">
-            לא מצאנו אתר מפורסם עבור הסאב־דומיין:
+            לא מצאנו אתר מפורסם עבור הדומיין:
           </p>
 
           <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-black text-slate-700">
@@ -605,7 +607,7 @@ function PublicMiniSiteContent({ site, location }) {
       : location.pathname;
 
   return (
-    <Suspense fallback={<BizuplyLoader fullScreen />}>
+    <Suspense fallback={<PublicSiteLoader fullScreen label="Loading" />}>
       <PublicVisualSiteRenderer site={site} pathname={pathname} />
     </Suspense>
   );
@@ -685,8 +687,9 @@ export default function App() {
   );
 
   useEffect(() => {
+    if (isMiniSiteHost) return;
     preloadDashboardComponents();
-  }, []);
+  }, [isMiniSiteHost]);
 
   if (isMiniSiteHost) {
     return <PublicMiniSitePage />;
