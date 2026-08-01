@@ -589,10 +589,10 @@ export default function AdminSupportChat() {
     >
       <AdminHeader />
 
-      <main className="mx-auto max-w-[1480px] px-4 py-6 md:px-8">
+      <main className="mx-auto max-w-[1480px] px-3 py-5 sm:px-4 sm:py-6 md:px-8">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 md:text-3xl">
+            <h1 className="flex items-center gap-3 text-2xl font-black text-slate-900 sm:text-3xl">
               <span className="grid h-11 w-11 place-items-center rounded-2xl bg-[#7C4DFF] text-white shadow-lg shadow-[#7C4DFF]/25">
                 <Headphones size={20} />
               </span>
@@ -757,7 +757,7 @@ export default function AdminSupportChat() {
                     <button
                       type="button"
                       onClick={goBackToList}
-                      className="inline-flex shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF] lg:hidden"
+                      className="inline-flex min-h-11 shrink-0 items-center gap-1 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 shadow-sm transition hover:border-violet-200 hover:text-[#7C4DFF] lg:hidden"
                     >
                       <ArrowRight size={14} />
                       חזרה לרשימה
@@ -1043,7 +1043,7 @@ export default function AdminSupportChat() {
                 </div>
 
                 {!historyPreviewId && (
-                  <footer className="border-t border-slate-100 bg-white px-4 py-4">
+                  <footer className="border-t border-slate-100 bg-white px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
                     <div className="flex items-center gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
                       <input
                         type="text"
@@ -1056,7 +1056,7 @@ export default function AdminSupportChat() {
                             ? "השיחה סגורה"
                             : "כתבו תשובה ללקוח..."
                         }
-                        className="h-11 flex-1 rounded-2xl bg-transparent px-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
+                        className="h-11 min-h-11 flex-1 rounded-2xl bg-transparent px-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
                       />
                       <button
                         type="button"
@@ -1066,7 +1066,7 @@ export default function AdminSupportChat() {
                           selected.status === "closed" ||
                           sending
                         }
-                        className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-40"
+                        className="flex h-11 min-h-11 w-11 items-center justify-center rounded-2xl bg-[#7C4DFF] text-white shadow-md shadow-[#7C4DFF]/25 transition hover:bg-[#6B3FE0] disabled:opacity-40"
                         aria-label="שליחה"
                       >
                         <Send size={16} className="-scale-x-100" />

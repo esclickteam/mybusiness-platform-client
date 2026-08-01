@@ -217,10 +217,10 @@ export default function AdminPlans() {
   return (
     <>
       <AdminHeader />
-      <div className="p-6" dir="rtl">
+      <div className="px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">
+            <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">
               תמחור חבילות ואפסיילים
             </h1>
             <p className="mt-1 text-sm text-slate-600">

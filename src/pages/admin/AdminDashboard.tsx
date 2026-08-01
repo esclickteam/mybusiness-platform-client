@@ -85,7 +85,7 @@ function MetricCard({
       <div className="flex flex-row items-start justify-between gap-4">
         <div className="min-w-0 flex-1 text-right">
           <p className="text-right text-sm font-bold text-slate-500">{title}</p>
-          <strong className="mt-3 block text-right text-4xl font-black tracking-tight text-slate-900">
+          <strong className="mt-3 block text-right text-3xl font-black tracking-tight text-slate-900 sm:text-4xl">
             {value}
           </strong>
           <p className="mt-2 text-right text-xs font-semibold text-slate-400">
@@ -257,9 +257,12 @@ function AdminDashboard() {
     >
       <AdminHeader />
 
-      <main dir="rtl" className="px-4 py-7 text-right text-slate-800 md:px-8">
+      <main
+        dir="rtl"
+        className="px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8"
+      >
         <section dir="rtl" className="mx-auto max-w-[1480px] text-right">
-          <div className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-l from-[#f3e9ff] via-[#faf7ff] to-white p-6 shadow-[0_18px_50px_rgba(124,77,255,0.08)] md:p-8">
+          <div className="relative overflow-hidden rounded-[32px] border border-violet-100 bg-gradient-to-l from-[#f3e9ff] via-[#faf7ff] to-white p-5 shadow-[0_18px_50px_rgba(124,77,255,0.08)] sm:p-6 md:p-8">
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.35]"
               style={{
@@ -303,7 +306,7 @@ function AdminDashboard() {
 
             <div className="relative z-10 flex flex-col justify-between gap-7 xl:flex-row xl:items-end">
               <div className="max-w-3xl text-right">
-                <h1 className="text-right text-4xl font-black tracking-tight text-slate-900 md:text-5xl">
+                <h1 className="text-right text-3xl font-black tracking-tight text-slate-900 sm:text-4xl md:text-5xl">
                   שלום, {displayName}
                 </h1>
 
@@ -351,7 +354,7 @@ function AdminDashboard() {
               </p>
             </div>
 
-            <div className="grid gap-4 text-right md:grid-cols-2 xl:grid-cols-4">
+            <div className="grid grid-cols-1 gap-4 text-right sm:grid-cols-2 xl:grid-cols-4">
               <MetricCard
                 title="משתמשים במערכת"
                 value={loadingStats ? "…" : formatNumber(stats.totalUsers)}

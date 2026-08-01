@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import API from "../../api";
+import AdminHeader from "./AdminsHeader";
 import "./AdminPayoutPage.css";
 
 const AdminWithdrawalsPage = () => {
@@ -66,8 +67,10 @@ const AdminWithdrawalsPage = () => {
   };
 
   return (
-    <div className="admin-payout-page">
-      <h1>Manage Pending Affiliate Withdrawals</h1>
+    <>
+      <AdminHeader />
+      <div className="admin-payout-page px-3 py-5 sm:px-4 sm:py-7 md:px-8" dir="rtl">
+      <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">משיכות ממתינות</h1>
 
       {loading && <p>Loading withdrawals...</p>}
       {error && <p className="error">{error}</p>}
@@ -76,7 +79,8 @@ const AdminWithdrawalsPage = () => {
 
       {!loading && withdrawals.length > 0 && (
         <>
-          <table>
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-purple-100 bg-white">
+          <table className="min-w-[900px] w-full">
             <thead>
               <tr>
                 <th>Business Name</th>
@@ -197,9 +201,11 @@ const AdminWithdrawalsPage = () => {
               </div>
             </div>
           )}
+          </div>
         </>
       )}
     </div>
+    </>
   );
 };
 

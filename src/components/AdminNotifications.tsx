@@ -18,6 +18,10 @@ import {
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import {
+  ADMIN_FLOATING_PANEL_COMPACT_CLASS,
+  ADMIN_MOBILE_BACKDROP_CLASS,
+} from "../utils/adminResponsive";
+import {
   loadStoredAlerts,
   notifyAdminSupportEvent,
   persistAlerts,
@@ -552,7 +556,7 @@ export default function AdminNotifications() {
         }}
         aria-label="התראות תמיכה"
         className={[
-          "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
           displayBadge > 0
             ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
             : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
@@ -601,14 +605,30 @@ export default function AdminNotifications() {
 
       <AnimatePresence>
         {open && (
+          <motion.button
+            key="admin-notifications-backdrop"
+            type="button"
+            aria-label="סגור התראות"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={ADMIN_MOBILE_BACKDROP_CLASS}
+            onClick={closePanel}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.98 }}
-            transition={{ duration: 0.16 }}
-            className="fixed left-4 top-20 z-[9999] flex h-[min(560px,calc(100vh-6.5rem))] w-[min(380px,calc(100vw-24px))] flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white text-slate-900 shadow-2xl sm:left-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.18 }}
+            className={ADMIN_FLOATING_PANEL_COMPACT_CLASS}
             dir="rtl"
           >
+            <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
             {panelView === "settings" ? (
               <AdminPushSettings
                 active={panelView === "settings"}

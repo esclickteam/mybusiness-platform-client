@@ -31,6 +31,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import {
+  ADMIN_FLOATING_PANEL_CLASS,
+  ADMIN_MOBILE_BACKDROP_CLASS,
+} from "../utils/adminResponsive";
+import {
   clearActiveSoftphoneCall,
   consumePendingSoftphoneDial,
   consumeSoftphoneAnswerRequest,
@@ -802,7 +806,7 @@ export default function AdminSoftphone() {
         onClick={() => toggleSoftphoneOpen()}
         aria-label="סופטפון"
         className={[
-          "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
           isIncoming
             ? "border-emerald-300 bg-gradient-to-br from-emerald-50 to-white text-emerald-600"
             : inCall
@@ -832,15 +836,31 @@ export default function AdminSoftphone() {
 
       <AnimatePresence>
         {open && (
+          <motion.button
+            key="softphone-backdrop"
+            type="button"
+            aria-label="סגור סופטפון"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className={ADMIN_MOBILE_BACKDROP_CLASS}
+            onClick={() => setSoftphoneOpen(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {open && (
           <motion.div
-            initial={{ opacity: 0, y: -10, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -10, scale: 0.98 }}
-            transition={{ duration: 0.18 }}
-            className="fixed left-4 top-20 z-[9999] flex h-[min(680px,calc(100vh-6.5rem))] w-[min(400px,calc(100vw-24px))] flex-col overflow-hidden rounded-[30px] border border-slate-200/90 bg-white text-slate-900 shadow-[0_24px_80px_rgba(15,23,42,0.18)] sm:left-6"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 40 }}
+            transition={{ duration: 0.2 }}
+            className={ADMIN_FLOATING_PANEL_CLASS}
             dir="rtl"
             style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
           >
+            <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
             <div className="relative shrink-0 overflow-hidden border-b border-white/10 px-4 pb-4 pt-4 text-white">
               <div
                 className={[
@@ -1083,13 +1103,13 @@ export default function AdminSoftphone() {
                     </p>
                   )}
 
-                  <div className="grid flex-1 grid-cols-3 content-center gap-2.5 px-1">
+                  <div className="grid flex-1 grid-cols-3 content-center gap-2 px-1 sm:gap-2.5">
                     {KEYPAD.map((key) => (
                       <button
                         key={key.digit}
                         type="button"
                         onClick={() => appendDigit(key.digit)}
-                        className="group flex h-[62px] flex-col items-center justify-center rounded-[22px] border border-slate-100 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_24px_rgba(124,77,255,0.12)] active:scale-[0.98]"
+                        className="group flex h-[56px] flex-col items-center justify-center rounded-[20px] border border-slate-100 bg-white shadow-[0_8px_20px_rgba(15,23,42,0.04)] transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-[0_12px_24px_rgba(124,77,255,0.12)] active:scale-[0.98] sm:h-[62px] sm:rounded-[22px]"
                       >
                         <span className="text-2xl font-black text-slate-900">
                           {key.digit}
@@ -1300,7 +1320,7 @@ export default function AdminSoftphone() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
-            className="fixed bottom-5 left-1/2 z-[9998] w-[min(440px,calc(100vw-24px))] -translate-x-1/2"
+            className="fixed bottom-[max(1rem,env(safe-area-inset-bottom))] left-1/2 z-[9998] w-[min(440px,calc(100vw-24px))] -translate-x-1/2 px-2"
             dir="rtl"
           >
             <div
