@@ -216,12 +216,12 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-black uppercase text-white">בואו נבנה משהו גדול.</h3>
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4">
-            <input
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="studiora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="שם / חברה"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="אימייל"
             />
@@ -232,7 +232,7 @@ function BookingModal({
               <option>בניית אתר</option>
               <option>קמפיין / מושן</option>
             </select>
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="ספרו לנו על הרעיון"
             />
@@ -577,13 +577,13 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8">
+        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="studiora-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="שם / חברה"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="אימייל"
             />
@@ -591,7 +591,7 @@ function ContactSection({
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="תקציב משוער"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="ספרו לנו על הפרויקט"
             />

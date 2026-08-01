@@ -378,10 +378,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <p className="text-center text-xs tracking-[0.3em]" style={{ color: "#f4a261" }}>POSTCARD</p>
         <h2 className="tpl-display mt-3 text-center text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-center text-sm" style={{ color: "#9a7b62" }}>{v(data, "contactText")}</p>
-        <form className="mt-6 grid gap-3" onSubmit={(e) => e.preventDefault()}>
-          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="שם" />
-          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="טלפון" />
-          <textarea className="min-h-20 border bg-transparent px-3 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="הודעה קצרה" />
+        <form className="mt-6 grid gap-3"  data-bizuply-block="lead-form" data-bizuply-form-id="brunchhaus-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="שם" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="טלפון" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-20 border bg-transparent px-3 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="הודעה קצרה" />
           <button type="button" onClick={onCta} className="rounded-full px-6 py-3 text-sm font-bold" style={{ background: "#f4a261", color: "#3a2a1e" }}>{v(data, "cta")}</button>
         </form>
       </div>

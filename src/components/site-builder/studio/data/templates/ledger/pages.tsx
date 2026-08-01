@@ -495,12 +495,12 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12">
+        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-form-id="ledger-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון" />
-            <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל" />
-            <textarea className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו מה תרצו למדוד, לייעל או לייצב." />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון" />
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-40 border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו מה תרצו למדוד, לייעל או לייצב." />
           </div>
           <div className="mt-6 grid gap-4 border-t border-[#102018]/10 pt-6 md:grid-cols-[1fr_auto] md:items-center">
             <TemplateText as="p" className="text-sm leading-7 text-[#5a6b62]">

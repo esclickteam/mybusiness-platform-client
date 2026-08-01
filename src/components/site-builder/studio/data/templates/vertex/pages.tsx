@@ -283,7 +283,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#9a9a9a]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border border-[#00ff8833]">
+        <form className="mt-8 grid gap-0 border border-[#00ff8833]" data-bizuply-block="lead-form" data-bizuply-form-id="vertex-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             "שם מלא / חברה",
             "אימייל עבודה",
@@ -296,7 +296,7 @@ function InquiryModal({
               placeholder={placeholder}
             />
           ))}
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
             placeholder="תיאור קצר של האתגר"
           />
@@ -728,7 +728,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-[#0b0b0b]">
+        <form className="grid gap-0 bg-[#0b0b0b]" data-bizuply-block="lead-form" data-bizuply-form-id="vertex-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -741,7 +741,7 @@ function ContactSection({
               placeholder={placeholder}
             />
           ))}
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-40 border-b border-[#00ff8833] bg-transparent px-5 py-4 text-right text-sm text-[#f5f5f5] outline-none placeholder:text-[#666]"
             placeholder="ספרו לנו מה צריך להיבנות, להשתפר או להשתלב."
           />

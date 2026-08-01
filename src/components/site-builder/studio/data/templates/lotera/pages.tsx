@@ -168,12 +168,12 @@ function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta
             <span>{v(data, "address")}</span>
           </div>
         </div>
-        <form className="grid gap-5 md:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" />
-          <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" />
+        <form className="grid gap-5 md:grid-cols-2"  data-bizuply-block="lead-form" data-bizuply-form-id="lotera-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" />
           <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="אזור מבוקש" />
           <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="תקציב" />
-          <textarea className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="מה חשוב לכם לראות מהחלון?" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-24 md:col-span-2`} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="מה חשוב לכם לראות מהחלון?" />
           <button type="button" onClick={onCta} className="tpl-sweep px-7 py-4 text-sm font-bold md:col-span-2" style={{ background: "#5eb4ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>

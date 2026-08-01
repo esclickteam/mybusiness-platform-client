@@ -743,20 +743,20 @@ function PrismContactBand({ data }: { data: Record<string, any> }) {
           </div>
         </div>
 
-        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0">
-          <input
+        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0" data-bizuply-block="lead-form" data-bizuply-form-id="prism-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
             placeholder="שם מלא"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
             placeholder="טלפון"
           />
-          <input
+          <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
             placeholder="אימייל"
           />
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-36 border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
             placeholder="ספרו על המותג או הפרויקט"
           />

@@ -1344,7 +1344,7 @@ function ContactPage() {
           </p>
         </div>
 
-        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8">
+        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="adion-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             ["שם", "השם שלכם"],
             ["אימייל", "hello@email.com"],
@@ -1365,7 +1365,7 @@ function ContactPage() {
             <span className="mb-2 block text-xs font-black uppercase tracking-[0.22em] text-white/45">
               הודעה
             </span>
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               rows={6}
               placeholder="ספרו לנו על הפרויקט..."
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#10100e] px-5 py-4 text-white outline-none transition placeholder:text-white/25 focus:border-[#f7c873]"

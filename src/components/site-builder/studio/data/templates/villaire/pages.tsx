@@ -139,10 +139,10 @@ function NarrowInquiry({ data }: { data: Record<string, any> }) {
         <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>PRIVATE REQUEST</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-5 max-w-md text-base leading-7" style={{ color: "#a89a86" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-3" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="שם" />
-          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="טלפון" />
-          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="איזו וילה אתם מדמיינים?" />
+        <form className="mt-10 grid gap-3"  data-bizuply-block="lead-form" data-bizuply-form-id="villaire-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="שם" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="טלפון" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="איזו וילה אתם מדמיינים?" />
           <button type="button" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "cta")}</button>
         </form>
       </div>

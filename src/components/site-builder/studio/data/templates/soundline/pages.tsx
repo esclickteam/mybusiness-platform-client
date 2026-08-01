@@ -310,9 +310,9 @@ function EnrollForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal delayMs={130} variant="left">
-          <form className="grid gap-4">
-            <input aria-label="שם מלא" placeholder="שם מלא" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
-            <input aria-label="טלפון" placeholder="טלפון" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="soundline-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  aria-label="שם מלא" placeholder="שם מלא" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  aria-label="טלפון" placeholder="טלפון" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
             <select aria-label="מסלול" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" defaultValue="">
               <option value="" disabled>בחרו מסלול</option>
               <option>גיטרה / בס</option>
@@ -320,7 +320,7 @@ function EnrollForm({ data }: { data: Record<string, any> }) {
               <option>פיתוח קול</option>
               <option>הפקה אלקטרונית</option>
             </select>
-            <textarea aria-label="ספרו על המטרה שלכם" placeholder="ספרו על המטרה שלכם" rows={4} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
+            <textarea name="message" data-bizuply-form-field-id="message"  aria-label="ספרו על המטרה שלכם" placeholder="ספרו על המטרה שלכם" rows={4} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" />
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-black hover:bg-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>

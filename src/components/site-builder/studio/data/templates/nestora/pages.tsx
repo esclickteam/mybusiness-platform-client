@@ -149,10 +149,10 @@ function PersonalContact({ data }: { data: Record<string, any> }) {
             <p>{v(data, "email")}</p>
           </div>
         </div>
-        <form className="grid gap-3 self-start" onSubmit={(e) => e.preventDefault()}>
-          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="שם" />
-          <input className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="טלפון" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="מה יהיה בית מדויק עבורכם?" />
+        <form className="grid gap-3 self-start"  data-bizuply-block="lead-form" data-bizuply-form-id="nestora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="שם" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="טלפון" />
+          <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-32`} style={{ borderColor: "rgba(61,90,128,0.2)", color: "#1e2836" }} placeholder="מה יהיה בית מדויק עבורכם?" />
           <button type="button" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#3d5a80", color: "#eef1f5" }}>{v(data, "cta")}</button>
         </form>
       </div>

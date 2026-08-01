@@ -96,8 +96,11 @@ export async function createMySite(payload: {
   businessId: string;
   name?: string;
   templateKey?: string;
+  templateId?: string;
   templateName?: string;
+  templateCategory?: string;
   folderId?: string | null;
+  enabledPlugins?: string[];
 }) {
   const { data } = await API.post(`/site-builder/sites`, payload);
   return data?.site as MySiteSummary;

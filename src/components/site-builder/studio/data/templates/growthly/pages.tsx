@@ -344,14 +344,14 @@ function Contact({ data }: { data: Record<string, any> }) {
       </Reveal>
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <Reveal variant="scale" delayMs={100} className="-mt-10 border border-white/15 bg-[var(--surface)] p-5 md:p-8">
-          <form className="grid gap-3">
-            <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="growthly-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
             <div className="grid gap-3 md:grid-cols-2">
-              <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
               <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="חברה / תחום" />
             </div>
-            <textarea className="min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?" />
-            <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?" />
+            <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>

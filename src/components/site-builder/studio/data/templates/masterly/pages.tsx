@@ -462,10 +462,10 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <h2 className="t-display mt-3 text-3xl text-[var(--p)]">{getValue(data,"contactTitle")}</h2>
           <p className="mt-3 text-sm text-[var(--muted)]">{getValue(data,"contactText")}</p>
         </Reveal>
-        <form className="mt-8 grid gap-3 text-right">
-          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 text-sm outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 text-sm outline-none" placeholder="אימייל" />
-          <button type="button" onClick={openModal} className="bg-[var(--p)] py-4 text-xs font-bold uppercase tracking-[0.25em] text-black">{getValue(data,"contactButton")}</button>
+        <form className="mt-8 grid gap-3 text-right" data-bizuply-block="lead-form" data-bizuply-form-id="masterly-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/30 bg-transparent px-5 py-4 text-sm outline-none" placeholder="שם מלא" />
+          <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-[var(--p)]/30 bg-transparent px-5 py-4 text-sm outline-none" placeholder="אימייל" />
+          <button type="submit" onClick={openModal} className="bg-[var(--p)] py-4 text-xs font-bold uppercase tracking-[0.25em] text-black">{getValue(data,"contactButton")}</button>
         </form>
       </div>
     </section>
@@ -489,10 +489,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="masterly-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

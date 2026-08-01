@@ -353,16 +353,16 @@ function BookingForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="pawhaus-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון" />
             </div>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם החיה" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם החיה" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  aria-label="שם החיה" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם החיה" />
               <input aria-label="סוג וגיל" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="כלב / חתול וגיל" />
             </div>
-            <textarea aria-label="מה חשוב לדעת" className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="מה חשוב לנו לדעת לפני ההגעה?" />
+            <textarea name="message" data-bizuply-form-field-id="message"  aria-label="מה חשוב לדעת" className="min-h-36 border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="מה חשוב לנו לדעת לפני ההגעה?" />
             <button type="button" className="bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
               {getValue(data, "contactButton")}
             </button>

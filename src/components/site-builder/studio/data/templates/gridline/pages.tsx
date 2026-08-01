@@ -998,8 +998,8 @@ function ContactSection({
             data-visual-edit-type="box"
             data-visual-edit-label="טופס יצירת קשר"
             className="grid gap-0 border border-black bg-white"
-          >
-            <input
+           data-bizuply-block="lead-form" data-bizuply-form-id="gridline-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:border-l"
               placeholder="שם מלא"
               data-visual-editable="true"
@@ -1007,7 +1007,7 @@ function ContactSection({
               data-visual-edit-type="control"
               data-visual-edit-label="שדה שם"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" 
               className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35"
               placeholder="טלפון"
               data-visual-editable="true"
@@ -1015,7 +1015,7 @@ function ContactSection({
               data-visual-edit-type="control"
               data-visual-edit-label="שדה טלפון"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" 
               className="border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:border-l"
               placeholder="אימייל"
               data-visual-editable="true"
@@ -1031,7 +1031,7 @@ function ContactSection({
               data-visual-edit-type="control"
               data-visual-edit-label="שדה סוג פרויקט"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-40 border-b border-black bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-black/35 md:col-span-2"
               placeholder="ספרו לנו על השטח, היעד, הלו״ז והאתגר"
               data-visual-editable="true"

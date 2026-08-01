@@ -382,13 +382,13 @@ function DemoForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="neuralis-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא" />
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא" />
+              <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email"  className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה" />
             </div>
             <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="חברה ותפקיד" />
-            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?" />
             <button type="button" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>

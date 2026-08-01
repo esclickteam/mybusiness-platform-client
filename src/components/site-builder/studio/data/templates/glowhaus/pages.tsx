@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { glowhausDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -34,58 +34,22 @@ function getValue(data: Record<string, any>, key: string) {
 }
 
 function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; compact?: boolean; bold?: boolean; neon?: boolean }) {
-  const [selectedDay, setSelectedDay] = useState(12);
-  const [selectedTime, setSelectedTime] = useState("10:30");
-  const weekDays = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
-  const times = ["09:00", "10:00", "10:30", "11:30", "13:00", "14:30", "16:00", "17:30", "19:00"];
-  const cells = Array.from({ length: 35 }, (_, i) => (i < 31 ? i + 1 : null));
-  const dayPills = [10, 11, 12, 13, 14, 15, 16];
-  const cellCls = bold ? "border-2 border-[var(--dark)]" : neon ? "border border-[var(--p)]/50" : "border border-[var(--p)]/20";
-  const activeCls = "bg-[var(--p)] text-[var(--dark)]";
+  // Demo chrome props kept for call-site compatibility; live CRM widget hydrates this mount.
+  void pill; void compact; void bold; void neon;
   return (
-    <div className="mt-6" dir="rtl">
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm font-bold">יולי 2026</p>
-        <div className="flex gap-2 overflow-x-auto">
-          {dayPills.map((d) => (
-            <button key={d} type="button" onClick={() => setSelectedDay(d)}
-              className={"shrink-0 px-3 py-1.5 text-sm font-bold transition " + (pill ? "rounded-full " : "") + (selectedDay === d ? activeCls : cellCls)}>
-              {d}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={"grid grid-cols-7 gap-1 text-center text-xs " + (compact ? "mx-auto max-w-sm" : "")}>
-        {weekDays.map((w) => (
-          <div key={w} className="py-2 font-bold text-[var(--muted)]">{w}</div>
-        ))}
-        {cells.map((d, i) => (
-          <button
-            key={i}
-            type="button"
-            disabled={d == null}
-            onClick={() => d != null && setSelectedDay(d)}
-            className={"aspect-square text-sm transition " + (d == null ? "opacity-0" : cellCls) + " " + (d === selectedDay ? activeCls + " t-pulse" : "hover:border-[var(--p)]")}
-          >
-            {d}
-          </button>
-        ))}
-      </div>
-      <div className="mt-6">
-        <p className="mb-3 text-sm font-bold">שעות פנויות · יום {selectedDay}</p>
-        <div className="flex flex-wrap gap-2">
-          {times.map((tm) => (
-            <button key={tm} type="button" onClick={() => setSelectedTime(tm)}
-              className={"px-3 py-2 text-sm font-semibold transition " + (pill ? "rounded-full " : "") + (selectedTime === tm ? activeCls + " t-glow" : cellCls)}>
-              {tm}
-            </button>
-          ))}
-        </div>
-        <p className="mt-4 text-xs text-[var(--muted)]">נבחר: {selectedDay}/7 · {selectedTime}</p>
-      </div>
-    </div>
+    <div
+      className="mt-6 min-h-[480px] w-full"
+      dir="rtl"
+      aria-label="יומן פגישות — שירותים ויומן מה-CRM"
+      data-bizuply-block="booking"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="month"
+    />
   );
 }
+
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   return (
@@ -343,7 +307,7 @@ function BookingPage({ data, goTo }: { data: Record<string, any>; goTo: (id: str
         <div className="mx-auto max-w-7xl">
           <div className="grid gap-6 lg:grid-cols-[120px_1fr]">
             <div className="font-mono text-sm text-[var(--p)]">NEON<div className="mt-3 h-24 w-px bg-[var(--p)]/50" /></div>
-            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" onSubmit={(e)=>e.preventDefault()}><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" /><input className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" /><textarea className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" /><button type="button" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal></div>
+            <div className="border-l border-[var(--p)]/30 pl-0 lg:pl-8"><Reveal className="grid gap-8 lg:grid-cols-[0.9fr_1.1fr]"><div><h2 className="t-display text-2xl sm:text-4xl text-[var(--p)]">{getValue(data,"confirmTitle")}</h2><p className="mt-4 text-[var(--muted)]">{getValue(data,"contactText")}</p></div><form className="grid gap-3 bg-[var(--surface)]/70 p-6" data-bizuply-block="lead-form" data-bizuply-form-id="glowhaus-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."><input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="שם מלא" /><input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="טלפון" /><textarea name="message" data-bizuply-form-field-id="message"  className="min-h-28 border border-[var(--p)]/25 bg-transparent px-4 py-3 text-right outline-none" placeholder="הערות" /><button type="submit" className="bg-[var(--p)] py-3.5 text-sm font-bold text-[var(--dark)]">{getValue(data,"contactButton")}</button></form></Reveal></div>
           </div>
         </div>
       </section>

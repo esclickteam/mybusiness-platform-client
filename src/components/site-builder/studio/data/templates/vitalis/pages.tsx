@@ -214,12 +214,12 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">נשמח לקבל אתכם.</h3>
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4">
-            <input
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="vitalis-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="טלפון"
             />
@@ -603,21 +603,21 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8">
+        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="vitalis-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="טלפון"
             />
-            <input
+            <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="אימייל"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
               placeholder="במה נוכל לעזור?"
             />

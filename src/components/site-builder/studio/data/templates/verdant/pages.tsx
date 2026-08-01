@@ -276,9 +276,9 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
             <p><span className="text-[var(--v-moss)]">כתובת</span> · {getValue(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--v-surface)] p-8">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="שם מלא" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="טלפון" />
+        <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-form-id="verdant-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="טלפון" />
           <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="תקציב משוער" />
           <button type="button" onClick={openModal} className="bg-[var(--v-moss)] px-7 py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
@@ -313,9 +313,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md bg-[var(--v-surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
         <h3 className="v-display text-3xl font-semibold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="verdant-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון" />
           <button type="button" className="bg-[var(--v-moss)] py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>

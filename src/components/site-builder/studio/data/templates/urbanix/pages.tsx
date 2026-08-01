@@ -167,12 +167,12 @@ function UrbanixLimeContact({ data, onCta }: { data: Record<string, any>; onCta:
               <p>{v(data, "address")}</p>
             </div>
           </div>
-          <form className="grid gap-4 md:grid-cols-2" onSubmit={(e) => e.preventDefault()}>
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" />
+          <form className="grid gap-4 md:grid-cols-2"  data-bizuply-block="lead-form" data-bizuply-form-id="urbanix-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" />
             <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שכונה" />
             <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="תקציב" />
-            <textarea className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="מה הדדליין לכניסה?" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="מה הדדליין לכניסה?" />
           </form>
         </div>
       </div>

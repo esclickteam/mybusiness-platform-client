@@ -435,9 +435,9 @@ function SmashReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <p className="mt-4 leading-8" style={{ color: "#a3a3a3" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#a3a3a3" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="שם מלא" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="טלפון" />
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }}  data-bizuply-block="lead-form" data-bizuply-form-id="burgerhaus-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="תאריך" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="מספר סועדים" />
           <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#f59e0b", color: "#f59e0bText" }}>{v(data, "cta")}</button>

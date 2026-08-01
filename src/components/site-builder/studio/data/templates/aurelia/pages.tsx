@@ -244,13 +244,13 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-form-id="aurelia-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4">
-              <input
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="שם מלא"
               />
-              <input
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="טלפון"
               />
@@ -271,7 +271,7 @@ function BookingModal({
                 <option>5-6 סועדים</option>
                 <option>7+ / אירוע</option>
               </select>
-              <textarea
+              <textarea name="message" data-bizuply-form-field-id="message" 
                 className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
                 placeholder="בקשות מיוחדות"
               />
@@ -640,13 +640,13 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7">
+        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-form-id="aurelia-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4">
-            <input
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="שם מלא"
             />
-            <input
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="טלפון"
             />
@@ -654,7 +654,7 @@ function ContactSection({
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="מספר סועדים"
             />
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
               placeholder="בקשות מיוחדות"
             />

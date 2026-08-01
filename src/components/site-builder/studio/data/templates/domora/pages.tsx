@@ -692,7 +692,7 @@ function ContactPage({ data }: { data: DomoraData }) {
         <form
           dir="rtl"
           className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]"
-        >
+         data-bizuply-block="lead-form" data-bizuply-form-id="domora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           {[
             ["שם", "השם שלך"],
             ["טלפון", "050-0000000"],
@@ -709,7 +709,7 @@ function ContactPage({ data }: { data: DomoraData }) {
 
           <label className="block">
             <span className="mb-2 block text-sm text-[#85898d]">הודעה</span>
-            <textarea
+            <textarea name="message" data-bizuply-form-field-id="message" 
               rows={5}
               placeholder="ספרו בקצרה מה אתם מחפשים..."
               className="w-full resize-none rounded-2xl border border-black/5 bg-[#f5f5f2] px-5 py-4 outline-none transition placeholder:text-[#9a9fa3] focus:border-[#151d20]"

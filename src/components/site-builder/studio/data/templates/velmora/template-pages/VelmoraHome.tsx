@@ -1089,25 +1089,25 @@ export default function VelmoraHome({
           </Reveal>
 
           <Reveal delay={180}>
-            <form className="grid gap-3">
+            <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="template-pages-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
               <div className="grid gap-3 md:grid-cols-2">
-                <input
+                <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                   placeholder="שם מלא"
                   className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
                 />
 
-                <input
+                <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
                   placeholder="טלפון"
                   className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
                 />
               </div>
 
-              <input
+              <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
                 placeholder="אימייל"
                 className="h-11 border border-black/10 bg-white px-4 text-sm outline-none transition focus:border-black"
               />
 
-              <textarea
+              <textarea name="message" data-bizuply-form-field-id="message" 
                 placeholder="הודעה"
                 rows={5}
                 className="resize-none border border-black/10 bg-white p-4 text-sm outline-none transition focus:border-black"

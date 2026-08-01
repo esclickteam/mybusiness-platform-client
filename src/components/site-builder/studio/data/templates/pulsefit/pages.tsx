@@ -304,14 +304,14 @@ function StartForm({ data, openModal }: { data: Record<string, any>; openModal: 
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-form-id="pulsefit-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
-              <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון" />
+              <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא" />
+              <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון" />
             </div>
             <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מטרה: חיטוב / כוח / כושר" />
-            <textarea className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מה חייב להשתנות ב-90 הימים הקרובים?" />
-            <button type="button" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black">{getValue(data, "contactButton")}</button>
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 border border-white/15 bg-[var(--surface)] px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="מה חייב להשתנות ב-90 הימים הקרובים?" />
+            <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-black">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>
@@ -346,10 +346,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border-2 border-[var(--p)] bg-black p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--p)]">×</button>
         <h3 className="t-display text-2xl sm:text-4xl font-bold uppercase">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3">
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא" />
-          <input className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון" />
-          <button type="button" className="bg-[var(--p)] py-4 text-sm font-black uppercase text-black">{getValue(data, "contactButton")}</button>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="pulsefit-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/15 bg-[var(--surface)] px-5 py-4 text-right outline-none" placeholder="טלפון" />
+          <button type="submit" className="bg-[var(--p)] py-4 text-sm font-black uppercase text-black">{getValue(data, "contactButton")}</button>
         </form>
       </div>
     </div>

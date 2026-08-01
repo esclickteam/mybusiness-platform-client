@@ -931,7 +931,7 @@ function ServiceRequestCard({
 
       <form
         className="servora-request-form"
-        onSubmit={(event) => event.preventDefault()}
+         data-bizuply-block="lead-form" data-bizuply-form-id="Servora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." 
       >
         <input
           name="name"

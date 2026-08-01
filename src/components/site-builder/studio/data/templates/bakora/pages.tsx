@@ -440,9 +440,9 @@ function LamReserveForm({ data, onCta }: { data: Record<string, any>; onCta: () 
           <p className="mt-4 leading-8" style={{ color: "#8a6f5c" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#8a6f5c" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#c4784a" }} onSubmit={(e) => e.preventDefault()}>
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="שם מלא" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="טלפון" />
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#c4784a" }}  data-bizuply-block="lead-form" data-bizuply-form-id="bakora-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="טלפון" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="תאריך" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(42,31,24,0.12)", color: "#2a1f18" }} placeholder="מספר סועדים" />
           <button type="button" onClick={onCta} className="px-6 py-4 text-sm font-bold" style={{ background: "#c4784a", color: "#c4784aText" }}>{v(data, "cta")}</button>

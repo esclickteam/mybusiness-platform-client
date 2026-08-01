@@ -376,14 +376,14 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0">
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-form-id="mediavault-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Requester name
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא" />
+                <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Callback
-                <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="טלפון" />
+                <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="טלפון" />
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Channel / budget
@@ -391,9 +391,9 @@ function Contact({ data }: { data: Record<string, any> }) {
               </label>
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Ticket brief
-                <textarea className="min-h-32 bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="במה נוכל לעזור?" />
+                <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="במה נוכל לעזור?" />
               </label>
-              <button type="button" className="bg-[var(--p)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
+              <button type="submit" className="bg-[var(--p)] px-6 py-5 text-sm font-black uppercase tracking-[0.18em] text-white">{getValue(data, "contactButton")}</button>
             </form>
           </Reveal>
         </div>

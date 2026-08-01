@@ -390,27 +390,22 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
             </p>
           </div>
         </div>
-        <form
-          className="grid gap-4 border border-white/12 bg-[#211c25] p-6 md:grid-cols-2 md:p-8"
-          onSubmit={(event) => {
-            event.preventDefault();
-            openModal();
-          }}
-        >
-          <input className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]" placeholder={getValue(data, "bookingNameLabel")} />
-          <input className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)]" placeholder={getValue(data, "bookingPhoneLabel")} />
-          <input
-            className="l-input !border-white/14 !bg-transparent !text-[var(--l-surface)] md:col-span-2"
-            placeholder={getValue(data, "bookingServiceLabel")}
-          />
-          <textarea
-            className="l-input min-h-[150px] resize-none !border-white/14 !bg-transparent !text-[var(--l-surface)] md:col-span-2"
-            placeholder={getValue(data, "bookingMessageLabel")}
-          />
-          <button type="submit" className="l-button md:col-span-2">
-            {getValue(data, "bookingSubmitLabel")}
-          </button>
-        </form>
+        <div
+          className="min-h-[520px] w-full border border-white/12 bg-[#211c25] p-4 md:p-6"
+          dir="rtl"
+          aria-label="יומן פגישות — שירותים ויומן מה-CRM"
+          data-bizuply-block="booking"
+          data-bizuply-widget="booking"
+          data-bizuply-booking-mount="true"
+          data-bizuply-crm-calendar="true"
+          data-bizuply-booking-variant="week"
+          data-bizuply-booking-accent="#9bb59a"
+          data-bizuply-booking-ink="#f5f1ea"
+          data-bizuply-booking-surface="#211c25"
+          data-bizuply-booking-muted="#d8d2cb"
+          data-bizuply-booking-line="rgba(255,255,255,0.14)"
+          data-bizuply-booking-soft="#2a2430"
+        />
       </div>
     </section>
   );
@@ -452,10 +447,10 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <p className="l-kicker">{getValue(data, "heroEyebrow")}</p>
         <h3 className="l-display mt-4 text-3xl font-bold leading-tight">{getValue(data, "contactTitle")}</h3>
         <p className="mt-4 text-sm leading-7 text-[var(--l-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3">
-          <input className="l-input" placeholder={getValue(data, "bookingNameLabel")} />
-          <input className="l-input" placeholder={getValue(data, "bookingPhoneLabel")} />
-          <button type="button" className="l-button mt-2 w-full">
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="luminelle-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="l-input" placeholder={getValue(data, "bookingNameLabel")} />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="l-input" placeholder={getValue(data, "bookingPhoneLabel")} />
+          <button type="submit" className="l-button mt-2 w-full">
             {getValue(data, "contactButton")}
           </button>
         </form>

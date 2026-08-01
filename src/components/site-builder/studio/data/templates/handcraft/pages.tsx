@@ -526,9 +526,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         </p>
         <h3 className="mt-4 text-3xl font-extrabold leading-tight">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3">
-          <input className="h-input px-5 py-4 text-right" placeholder="שם מלא" />
-          <input className="h-input px-5 py-4 text-right" placeholder="טלפון" />
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="handcraft-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="h-input px-5 py-4 text-right" placeholder="שם מלא" />
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="h-input px-5 py-4 text-right" placeholder="טלפון" />
           <input className="h-input px-5 py-4 text-right" placeholder="מה התקלה?" />
           <button
             type="button"

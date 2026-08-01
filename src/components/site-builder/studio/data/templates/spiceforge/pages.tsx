@@ -385,9 +385,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="relative flex h-80 w-80 flex-col items-center justify-center rounded-full border-4 p-8 text-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
           <h2 className="tpl-display text-2xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-xs" style={{ color: "#c4a08a" }}>{v(data, "contactText")}</p>
-          <form className="mt-4 grid w-full gap-2" onSubmit={(e) => e.preventDefault()}>
-            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="שם" />
-            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="טלפון" />
+          <form className="mt-4 grid w-full gap-2"  data-bizuply-block="lead-form" data-bizuply-form-id="spiceforge-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם." >
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="שם" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="טלפון" />
             <button type="button" onClick={onCta} className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "cta")}</button>
           </form>
         </div>

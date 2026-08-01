@@ -316,12 +316,12 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="up" delayMs={100} className="mx-auto mt-10 max-w-2xl">
-          <form className="grid gap-3">
-            <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
-            <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
-            <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם האירוע" />
-            <textarea className="min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="כמה אורחים ומה הקצב?" />
-            <button type="button" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-form-id="eventide-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא" />
+            <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון" />
+            <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם האירוע" />
+            <textarea name="message" data-bizuply-form-field-id="message"  className="min-h-32 border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="כמה אורחים ומה הקצב?" />
+            <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
       </div>

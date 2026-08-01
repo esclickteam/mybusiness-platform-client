@@ -1554,8 +1554,8 @@ function FaqNewsletter({
             {data.newsletterText}
           </p>
 
-          <form className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <input
+          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-form-id="novastra-newsletter-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+            <input name="email" data-bizuply-form-field-id="email" 
               type="email"
               placeholder={data.newsletterPlaceholder}
               className="min-h-[52px] flex-1 rounded-full border border-zinc-300 bg-[#fbf7ef] px-5 text-sm font-semibold outline-none transition focus:border-zinc-950"
@@ -1801,29 +1801,40 @@ function ContactPage({ data }: { data: NovastraData }) {
           </div>
         </div>
 
-        <form className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-2xl shadow-zinc-950/10 sm:p-8">
+        <form className="rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-2xl shadow-zinc-950/10 sm:p-8" data-bizuply-block="lead-form" data-bizuply-form-id="novastra-contact-2" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
           <div className="grid gap-4 sm:grid-cols-2">
             <input
+              name="name"
+              data-bizuply-form-field-id="name"
+              autoComplete="name"
               className="rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
               placeholder={data.contactNamePlaceholder}
             />
             <input
+              name="email"
+              data-bizuply-form-field-id="email"
+              type="email"
+              autoComplete="email"
               className="rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
               placeholder={data.contactEmailPlaceholder}
             />
           </div>
 
           <input
+            name="subject"
+            data-bizuply-form-field-id="subject"
             className="mt-4 w-full rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
             placeholder={data.contactSubjectPlaceholder}
           />
 
           <textarea
+            name="message"
+            data-bizuply-form-field-id="message"
             className="mt-4 min-h-[180px] w-full rounded-2xl border border-zinc-200 bg-[#fbf7ef] px-5 py-4 text-sm font-semibold outline-none focus:border-zinc-950"
             placeholder={data.contactMessagePlaceholder}
           />
 
-          <Button dark className="mt-4">
+          <Button dark className="mt-4" type="submit">
             {data.contactButton}
           </Button>
         </form>

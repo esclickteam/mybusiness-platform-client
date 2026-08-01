@@ -326,14 +326,14 @@ export default function VelmoraContact({ onPageChange }: Props) {
           </Reveal>
 
           <Reveal delay={160}>
-            <form className="rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.09)]">
+            <form className="rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.09)]" data-bizuply-block="lead-form" data-bizuply-form-id="template-pages-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="grid gap-2">
                   <span className="text-sm font-bold text-black/60">
                     שם מלא
                   </span>
 
-                  <input
+                  <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
                     placeholder="שם מלא"
                     className="h-12 rounded-[4px] border border-black/10 bg-[#f6f2ea] px-4 text-sm outline-none transition focus:border-black"
                   />
@@ -357,7 +357,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                     אימייל
                   </span>
 
-                  <input
+                  <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
                     placeholder="name@email.com"
                     className="h-12 rounded-[4px] border border-black/10 bg-[#f6f2ea] px-4 text-sm outline-none transition focus:border-black"
                   />
@@ -383,7 +383,7 @@ export default function VelmoraContact({ onPageChange }: Props) {
                   הודעה
                 </span>
 
-                <textarea
+                <textarea name="message" data-bizuply-form-field-id="message" 
                   rows={7}
                   placeholder="אפשר לכתוב כאן את פרטי הפנייה..."
                   className="resize-none rounded-[4px] border border-black/10 bg-[#f6f2ea] p-4 text-sm outline-none transition focus:border-black"

@@ -746,20 +746,20 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10">
-          <input
+        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-form-id="steelworks-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
+          <input name="name" data-bizuply-form-field-id="name" autoComplete="name" 
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="שם מלא"
           />
-          <input
+          <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" 
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="טלפון"
           />
-          <input
+          <input name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" 
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="אימייל"
           />
-          <textarea
+          <textarea name="message" data-bizuply-form-field-id="message" 
             className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="ספרו לנו על הפרויקט"
           />

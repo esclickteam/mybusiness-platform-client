@@ -367,14 +367,14 @@ function Appointment({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={140}>
-          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10">
+          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-form-id="dentelle-contact-1" data-bizuply-crm-lead="true" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.">
             <div>
               <h3 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{getValue(data, "contactText")}</h3>
               <div className="mt-8 grid gap-4">
-                <input className="de-field px-4 py-4" placeholder="שם מלא" />
-                <input className="de-field px-4 py-4" placeholder="טלפון" />
+                <input name="name" data-bizuply-form-field-id="name" autoComplete="name"  className="de-field px-4 py-4" placeholder="שם מלא" />
+                <input name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel"  className="de-field px-4 py-4" placeholder="טלפון" />
                 <input className="de-field px-4 py-4" placeholder="טיפול שמעניין אתכם" />
-                <textarea className="de-field min-h-[130px] px-4 py-4" placeholder="מה חשוב לנו לדעת לפני השיחה?" />
+                <textarea name="message" data-bizuply-form-field-id="message"  className="de-field min-h-[130px] px-4 py-4" placeholder="מה חשוב לנו לדעת לפני השיחה?" />
               </div>
             </div>
             <button type="button" className="mt-6 bg-[var(--p)] px-8 py-4 text-sm font-black text-white transition hover:bg-[var(--dark)]">
