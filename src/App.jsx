@@ -111,6 +111,7 @@ const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
 const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
+const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
@@ -1061,6 +1062,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminUsers />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/create-user"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminCreateUser />
                             </ProtectedRoute>
                           }
                         />
