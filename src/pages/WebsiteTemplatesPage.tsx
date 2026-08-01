@@ -25,10 +25,7 @@ import {
 } from "../components/site-builder/studio/data/templates";
 
 import { createMySite } from "../api/mySitesApi";
-import TemplateCardPreview, {
-  canRenderTemplatePreview,
-} from "../components/website/TemplateCardPreview";
-import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
+import TemplateCardPreview from "../components/website/TemplateCardPreview";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -125,13 +122,10 @@ const API_BASE = RAW_API_BASE.replace(/\/api\/?$/, "").replace(/\/$/, "");
 const GALLERY_INITIAL_SIZE = 48;
 /** Extra cards appended while idle / near the bottom. */
 const GALLERY_PAGE_SIZE = 36;
-/**
- * Idle pre-expansion toward the full list. Covers are cheap; live mounts are
- * capped separately by the preview scheduler so this can go to all 213.
- */
+/** Idle pre-expansion toward the full list (static thumbnails are cheap). */
 const GALLERY_IDLE_CAP = 213;
-/** Live previews warmed immediately for the first viewport rows. */
-const GALLERY_PRELOAD_LIVE = 16;
+/** Eager-load thumbnails for the first viewport rows only. */
+const GALLERY_EAGER_THUMBS = 8;
 
 const templateCategoryDefs: TemplateCategory[] = [
   { id: "all", icon: Paintbrush },
@@ -663,15 +657,6 @@ export default function WebsiteTemplatesPage() {
 
   const hasMoreTemplates = visibleCount < filteredTemplates.length;
 
-  // Warm live previews for the first viewport rows as soon as the list is ready.
-  useEffect(() => {
-    if (!visibleTemplates.length) return;
-    prefetchGalleryPreviewKeys(
-      visibleTemplates.slice(0, GALLERY_PRELOAD_LIVE).map((item) => item.key),
-      { limit: GALLERY_PRELOAD_LIVE, priority: true },
-    );
-  }, [visibleTemplates]);
-
   // Prefetch the next chunk of card shells in idle time (before user scrolls).
   useEffect(() => {
     if (visibleCount >= Math.min(GALLERY_IDLE_CAP, filteredTemplates.length)) {
@@ -1122,17 +1107,16 @@ export default function WebsiteTemplatesPage() {
                                 aria-label={t("websiteTemplates.previewAria", { name: template.name })}
                               >
                                 <div className="aspect-[3/4] overflow-hidden bg-[#f3f4f6] sm:aspect-[4/5]">
-                                  {canRenderTemplatePreview(template.key) ? (
-                                    <TemplateCardPreview
-                                      templateKey={template.key}
-                                      title={template.name}
-                                      eager={index < GALLERY_PRELOAD_LIVE}
-                                    />
-                                  ) : (
-                                    <div className="flex h-full w-full items-center justify-center bg-[#eef1f4]">
-                                      <LayoutTemplate className="h-10 w-10 text-[#9ca3af]" />
-                                    </div>
-                                  )}
+                                  <TemplateCardPreview
+                                    templateKey={template.key}
+                                    title={template.name}
+                                    coverImage={
+                                      template.previewImageUrl ||
+                                      template.thumbnailUrl ||
+                                      template.image
+                                    }
+                                    eager={index < GALLERY_EAGER_THUMBS}
+                                  />
                                 </div>
                               </div>
 
