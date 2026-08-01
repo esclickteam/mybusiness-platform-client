@@ -125,6 +125,7 @@ function navHtml() {
     <nav class="hidden items-center gap-8 text-sm font-bold text-[#2a171c]/60 lg:flex">
       <a data-editable-link="true" href="#home">בית</a>
       <a data-editable-link="true" href="#services">שירותים</a>
+      <a data-editable-link="true" href="#shop">חנות</a>
       <a data-editable-link="true" href="#gallery">גלריה</a>
       <a data-editable-link="true" href="#prices">מחירים</a>
       <a data-editable-link="true" href="#booking">קביעת תור</a>
@@ -154,9 +155,11 @@ function footerHtml() {
       <p data-gjs-type="text" class="font-black">ניווט</p>
       <div class="mt-4 grid gap-3 text-sm text-white/60">
         <a data-editable-link="true" href="#services">שירותים</a>
+        <a data-editable-link="true" href="#shop">חנות</a>
         <a data-editable-link="true" href="#gallery">גלריה</a>
         <a data-editable-link="true" href="#prices">מחירים</a>
         <a data-editable-link="true" href="#booking">קביעת תור</a>
+        <a data-editable-link="true" href="#contact">צור קשר</a>
       </div>
     </div>
 
@@ -195,6 +198,32 @@ function servicesCardsHtml() {
     </div>
     <p data-gjs-type="text" class="mt-2 text-xs font-black tracking-[0.16em] text-[#2a171c]/40">${service.time}</p>
     <p data-gjs-type="text" class="mt-4 text-sm leading-7 text-[#2a171c]/60">${service.text}</p>
+  </div>
+</article>`,
+    )
+    .join("\n");
+}
+
+/** Demo products for static HTML / until CRM catalog hydrates. */
+function storeProductsHtml() {
+  return lunelleDemoStoreProducts
+    .map(
+      (product, index) => `
+<article data-visual-edit-id="products.${index}.card" class="lunelle-card lunelle-shine overflow-hidden rounded-[34px] border border-[#2a171c]/10 bg-white shadow-[0_22px_70px_rgba(42,23,28,.08)]">
+  <div class="overflow-hidden bg-[#f1d7dc]">
+    <img data-gjs-type="image" ${visualImageAttrs(`products.${index}.image`, product.name)} src="${product.image}" alt="${product.name}" class="lunelle-image-hover h-[260px] w-full object-cover" />
+  </div>
+  <div class="p-6">
+    <div class="flex items-start justify-between gap-3">
+      <h3 data-gjs-type="text" data-visual-edit-id="products.${index}.name" class="text-xl font-black tracking-[-0.04em] text-[#2a171c]">${product.name}</h3>
+      <div data-visual-edit-id="products.${index}.price" class="shrink-0 rounded-full bg-[#2a171c] px-4 py-2 text-sm font-black text-white">₪${product.price}</div>
+    </div>
+    ${
+      product.badge
+        ? `<p data-gjs-type="text" data-visual-edit-id="products.${index}.tag" class="mt-2 text-xs font-black tracking-[0.16em] text-[#8a4f5f]">${product.badge}</p>`
+        : ""
+    }
+    <p data-gjs-type="text" data-visual-edit-id="products.${index}.description" class="mt-3 text-sm leading-7 text-[#2a171c]/60">${product.shortDescription}</p>
   </div>
 </article>`,
     )
@@ -363,11 +392,15 @@ ${marqueeHtml()}
         </h2>
       </div>
       <p data-gjs-type="text" class="max-w-2xl text-lg leading-8 text-[#2a171c]/60">
-        טיפולי מניקור, פדיקור, לק ג׳ל ונייל ארט בעבודה עדינה, נקייה ומותאמת אישית.
+        השירותים מסונכרנים אוטומטית מיומן ה-CRM כשיש שירותים בעסק — אחרת מוצגים טיפולי הדמו של התבנית.
       </p>
     </div>
 
-    <div class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <div
+      class="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3"
+      data-lunelle-crm-services="true"
+      data-bizuply-crm-services="true"
+    >
       ${servicesCardsHtml()}
     </div>
   </div>
@@ -485,49 +518,62 @@ ${marqueeHtml()}
   </div>
 </section>
 
-<section id="booking" data-section-kind="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-24 text-white">
+<section id="shop" data-section-kind="shop" data-template-section-type="shop" data-bizuply-block="store" data-section-title="Shop" class="bg-[#fff7f1] px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <div class="max-w-2xl">
+      <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">החנות</p>
+      <h2 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">מוצרים מהקטלוג.</h2>
+      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">המוצרים נמשכים אוטומטית מחנות ה-CRM של העסק.</p>
+    </div>
+    <div
+      class="mt-12 min-h-[280px]"
+      data-lunelle-store-mount="true"
+      data-bizuply-store-mount="true"
+      data-bizuply-block="store"
+    ><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${storeProductsHtml()}</div></div>
+  </div>
+</section>
+
+<section id="booking" data-section-kind="booking" data-bizuply-block="booking" data-template-section-type="booking" data-section-title="Booking" class="bg-[#2a171c] px-5 py-24 text-white">
   <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.9fr_1.1fr]">
     <div>
       <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#d6a24a]">
         קביעת תור
       </p>
       <h2 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">
-        בחרי טיפול ושלחי בקשה לתור הבא שלך.
+        בחרי טיפול ושעה פנויה מהיומן.
       </h2>
       <p data-gjs-type="text" class="mt-7 text-lg leading-9 text-white/60">
-        אפשר להחליף את הטופס הזה אחר כך ליומן האמיתי של ביזאפלי עם שעות פנויות.
+        השירותים והשעות מסונכרנים אוטומטית מיומן ה-CRM של העסק.
       </p>
     </div>
 
-    <form class="lunelle-card rounded-[38px] border border-white/10 bg-white p-7 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]">
-      <div class="grid gap-4 md:grid-cols-2">
-        <input placeholder="שם מלא" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="טלפון" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="תאריך מועדף" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="שעה מועדפת" class="rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-      </div>
-
-      <select class="mt-4 w-full rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none">
-        <option>בחירת טיפול</option>
-        <option>מניקור קלאסי</option>
-        <option>לק ג׳ל</option>
-        <option>מבנה אנטומי</option>
-        <option>פדיקור עדין</option>
-        <option>עיצובי נייל ארט</option>
-      </select>
-
-      <textarea placeholder="הודעה / השראה / בקשה מיוחדת" class="mt-4 min-h-[150px] w-full rounded-2xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
-
-      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
-        שליחת בקשה
-      </button>
-    </form>
+    <div
+      class="lunelle-card min-h-[420px] rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c] shadow-[0_25px_80px_rgba(0,0,0,.22)]"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="month"
+      data-bizuply-booking-chrome="embedded"
+      data-bizuply-block="booking"
+      data-bizuply-booking-frame="true"
+      style="min-height:420px;position:relative;background:transparent"
+      title="יומן פגישות מה-CRM"
+      aria-label="יומן פגישות מה-CRM"
+    ></div>
   </div>
 </section>
 
 <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-[#fff7f1] px-5 py-24">
   <div class="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[1fr_.8fr]">
-    <form class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]">
+    <form
+      class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
+      data-bizuply-block="lead-form"
+      data-bizuply-form-id="lunelle-contact"
+      data-bizuply-crm-lead="true"
+      data-bizuply-form-builder="true"
+      data-bizuply-success-message="תודה! קיבלנו את ההודעה ונחזור אלייך בהקדם."
+    >
       <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">
         צור קשר
       </p>
@@ -537,19 +583,19 @@ ${marqueeHtml()}
       </h2>
 
       <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">
-        אפשר לשלוח הודעה לגבי טיפול, עיצוב, זמינות או התאמת צבעים.
+        אפשר לשלוח הודעה לגבי טיפול, עיצוב, זמינות או התאמת צבעים. הפנייה נכנסת ל-CRM עם התראה לבעל העסק.
       </p>
 
       <div class="mt-8 grid gap-4 md:grid-cols-2">
-        <input placeholder="שם מלא" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
-        <input placeholder="טלפון" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+        <input name="name" data-bizuply-form-field-id="name" autocomplete="name" placeholder="שם מלא" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+        <input name="phone" type="tel" data-bizuply-form-field-id="phone" autocomplete="tel" placeholder="טלפון" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
       </div>
 
-      <input placeholder="אימייל" class="mt-4 w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+      <input name="email" type="email" data-bizuply-form-field-id="email" autocomplete="email" placeholder="אימייל" class="mt-4 w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
 
-      <textarea placeholder="כתבי כאן את ההודעה שלך" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
+      <textarea name="message" data-bizuply-form-field-id="message" placeholder="כתבי כאן את ההודעה שלך" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
 
-      <button type="button" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
+      <button type="submit" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white shadow-[0_18px_45px_rgba(42,23,28,.18)]">
         שליחת הודעה
       </button>
 
@@ -577,6 +623,11 @@ export function createLunelleSimplePageHtml(
   text: string,
   section: string,
 ) {
+  const servicesMount =
+    section === "services"
+      ? ` data-lunelle-crm-services="true" data-bizuply-crm-services="true"`
+      : "";
+
   return pageShell(`
 <section data-section-kind="${section}" data-section-title="${title}" class="px-5 py-24">
   <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.75fr_1fr]">
@@ -591,7 +642,7 @@ export function createLunelleSimplePageHtml(
     </aside>
 
     <main class="rounded-[38px] border border-[#2a171c]/10 bg-white p-8 shadow-[0_25px_70px_rgba(42,23,28,.08)]">
-      <div class="grid gap-6 md:grid-cols-2">
+      <div class="grid gap-6 md:grid-cols-2"${servicesMount}>
         ${servicesCardsHtml()}
       </div>
     </main>
@@ -599,6 +650,107 @@ export function createLunelleSimplePageHtml(
 </section>
 `);
 }
+
+export function createLunelleBookingPageHtml() {
+  return pageShell(`
+<section data-section-kind="booking" data-bizuply-block="booking" data-template-section-type="booking" data-section-title="קביעת תור" class="bg-[#2a171c] px-5 py-24 text-white">
+  <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[.75fr_1.25fr]">
+    <aside>
+      <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#d6a24a]">קביעת תור</p>
+      <h1 data-gjs-type="text" class="lunelle-serif mt-5 text-5xl font-black leading-[.95] tracking-[-0.06em] md:text-7xl">יומן מחובר ל-CRM.</h1>
+      <p data-gjs-type="text" class="mt-6 text-lg leading-8 text-white/60">בחירת שירות, תאריך ושעה פנויה — הכל מסונכרן ליומן העסק.</p>
+    </aside>
+    <div
+      class="lunelle-card min-h-[480px] rounded-[38px] border border-white/10 bg-white p-3 text-[#2a171c]"
+      data-bizuply-widget="booking"
+      data-bizuply-booking-mount="true"
+      data-bizuply-crm-calendar="true"
+      data-bizuply-booking-variant="month"
+      data-bizuply-booking-chrome="embedded"
+      data-bizuply-block="booking"
+      data-bizuply-booking-frame="true"
+      style="min-height:480px;position:relative;background:transparent"
+      title="יומן פגישות מה-CRM"
+    ></div>
+  </div>
+</section>
+`);
+}
+
+export function createLunelleContactPageHtml() {
+  return pageShell(`
+<section data-section-kind="contact" data-section-title="צור קשר" class="px-5 py-24">
+  <div class="mx-auto grid max-w-3xl">
+    <form
+      class="lunelle-card rounded-[40px] bg-white p-10 shadow-[0_25px_80px_rgba(42,23,28,.08)]"
+      data-bizuply-block="lead-form"
+      data-bizuply-form-id="lunelle-contact-page"
+      data-bizuply-crm-lead="true"
+      data-bizuply-form-builder="true"
+      data-bizuply-success-message="תודה! קיבלנו את ההודעה ונחזור אלייך בהקדם."
+    >
+      <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">צור קשר</p>
+      <h1 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c]">דברי איתנו.</h1>
+      <p data-gjs-type="text" class="mt-5 text-lg leading-8 text-[#2a171c]/60">הטופס שולח התראה אוטומטית לבעל העסק עם כל הפרטים ל-CRM.</p>
+      <div class="mt-8 grid gap-4 md:grid-cols-2">
+        <input name="name" data-bizuply-form-field-id="name" autocomplete="name" placeholder="שם מלא" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+        <input name="phone" type="tel" data-bizuply-form-field-id="phone" autocomplete="tel" placeholder="טלפון" class="rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+      </div>
+      <input name="email" type="email" data-bizuply-form-field-id="email" autocomplete="email" placeholder="אימייל" class="mt-4 w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none" />
+      <textarea name="message" data-bizuply-form-field-id="message" placeholder="הודעה" class="mt-4 min-h-[170px] w-full rounded-3xl border border-[#2a171c]/10 bg-[#fff7f1] px-5 py-4 text-sm font-bold outline-none"></textarea>
+      <button type="submit" class="lunelle-btn-primary mt-5 w-full rounded-full bg-[#2a171c] px-8 py-4 text-sm font-black text-white">שליחת הודעה</button>
+    </form>
+  </div>
+</section>
+`);
+}
+
+export function createLunelleShopPageHtml() {
+  return pageShell(`
+<section data-section-kind="shop" data-template-section-type="shop" data-bizuply-block="store" data-section-title="חנות" class="px-5 py-24">
+  <div class="mx-auto max-w-7xl">
+    <p data-gjs-type="text" class="text-xs font-black tracking-[0.32em] text-[#8a4f5f]">החנות</p>
+    <h1 data-gjs-type="text" class="lunelle-serif mt-4 text-5xl font-black tracking-[-0.06em] text-[#2a171c] md:text-7xl">מוצרים מהקטלוג.</h1>
+    <p data-gjs-type="text" class="mt-5 max-w-2xl text-lg leading-8 text-[#2a171c]/60">המוצרים נטענים אוטומטית מחנות Bizuply של העסק.</p>
+    <div class="mt-12 min-h-[320px]" data-lunelle-store-mount="true" data-bizuply-store-mount="true" data-bizuply-block="store"><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${storeProductsHtml()}</div></div>
+  </div>
+</section>
+`);
+}
+
+export const lunelleDemoStoreProducts = [
+  {
+    name: "שמן הזנה לציפורניים",
+    price: 89,
+    image: lunelleImages.tools,
+    shortDescription: "שמן עדין לטיפוח יומיומי אחרי ג׳ל.",
+    category: "טיפוח",
+    badge: "מומלץ",
+    featured: true,
+  },
+  {
+    name: "ערכת טיפול ביתי",
+    price: 149,
+    image: lunelleImages.polish,
+    shortDescription: "פצירה, שמן ומסכת הזנה לשמירה על הברק.",
+    category: "ערכות",
+    badge: "חדש",
+  },
+  {
+    name: "לק קלאסי רך",
+    price: 69,
+    image: lunelleImages.hands,
+    shortDescription: "גוונים עדינים לסטודיו ולשימוש ביתי.",
+    category: "צבעים",
+  },
+  {
+    name: "כפפות טיפול חד-פעמיות",
+    price: 45,
+    image: lunelleImages.studio,
+    shortDescription: "סט איכותי לטיפולי מניקור ופדיקור.",
+    category: "מקצועי",
+  },
+];
 
 export const lunelleEditorPages = [
   {
@@ -663,16 +815,19 @@ export const lunelleEditorPages = [
     css: lunelleEditorCss,
   },
   {
+    id: "shop",
+    slug: "/shop",
+    title: "חנות",
+    type: "shop",
+    html: createLunelleShopPageHtml(),
+    css: lunelleEditorCss,
+  },
+  {
     id: "booking",
     slug: "/booking",
     title: "קביעת תור",
     type: "booking",
-    html: createLunelleSimplePageHtml(
-      "קביעת תור",
-      "קביעת תור",
-      "בחירת טיפול, תאריך ושעה מועדפים ושליחת בקשה לתור.",
-      "booking",
-    ),
+    html: createLunelleBookingPageHtml(),
     css: lunelleEditorCss,
   },
   {
@@ -680,12 +835,7 @@ export const lunelleEditorPages = [
     slug: "/contact",
     title: "צור קשר",
     type: "contact",
-    html: createLunelleSimplePageHtml(
-      "צור קשר",
-      "צור קשר",
-      "שאלות, זמינות, השראות לעיצובים ותיאום טיפולים.",
-      "contact",
-    ),
+    html: createLunelleContactPageHtml(),
     css: lunelleEditorCss,
   },
 ];
@@ -700,7 +850,7 @@ export const lunelleSeed = {
   name: "Lunelle",
   category: "beauty",
   description:
-    "תבנית מקורית מלאה לבונת ציפורניים, מניקור, פדיקור, לק ג׳ל, מחירון, גלריה וקביעת תורים.",
+    "תבנית מקורית לבונת ציפורניים: יומן CRM, שירותים מסונכרנים, חנות מהקטלוג וטופסי לידים עם התראה לבעל העסק.",
   image: lunelleImages.hero,
   thumbnail: lunelleImages.hero,
 
