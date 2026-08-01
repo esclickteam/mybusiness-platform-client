@@ -37,7 +37,7 @@ import {
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
-import { prefetchGalleryPreviewKeys } from "../utils/templatePreviewScheduler";
+import { ensureSiteCardScreenshots } from "../utils/captureSiteScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 
@@ -185,11 +185,44 @@ export default function MySitesPage() {
     return () => window.clearTimeout(timer);
   }, [loadAll, query]);
 
-  // Batch-load live saved-site previews
+  const screenshotCaptureKey = useMemo(
+    () =>
+      sites
+        .map(
+          (site) =>
+            `${site._id}:${site.updatedAt || ""}:${site.screenshotUrl ? "1" : "0"}`,
+        )
+        .join("|"),
+    [sites],
+  );
+
+  // Capture missing/stale full-page screenshots in the background (static cards).
   useEffect(() => {
     if (!sites.length) return;
-    prefetchGalleryPreviewKeys(sites.map((site) => `site:${site._id}`));
-  }, [sites]);
+
+    let cancelled = false;
+
+    ensureSiteCardScreenshots(sites, (siteId, screenshotUrl) => {
+      if (cancelled) return;
+      setSites((current) =>
+        current.map((site) =>
+          site._id === siteId
+            ? {
+                ...site,
+                screenshotUrl,
+                screenshotUpdatedAt: new Date().toISOString(),
+              }
+            : site,
+        ),
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+    // screenshotCaptureKey tracks ids/updatedAt/hasScreenshot without looping on object identity.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [screenshotCaptureKey]);
 
   useEffect(() => {
     function onDocClick(e: MouseEvent) {
@@ -560,7 +593,7 @@ export default function MySitesPage() {
           </div>
         ) : (
           <div className="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            {sites.map((site) => {
+            {sites.map((site, index) => {
               const published =
                 site.published || site.status === "published";
               const folderLabel = site.folderId
@@ -580,7 +613,7 @@ export default function MySitesPage() {
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
                       <div className="h-full w-full transition duration-500 group-hover:scale-[1.02]">
-                        <MySiteCardPreview site={site} />
+                        <MySiteCardPreview site={site} eager={index < 6} />
                       </div>
 
                       <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition duration-300 group-hover:bg-black/35 group-hover:opacity-100">

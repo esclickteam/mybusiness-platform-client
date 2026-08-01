@@ -52,8 +52,27 @@ export default function EmbedSitePreviewPage() {
     return <div style={{ minHeight: "100vh", background: "#fff" }} />;
   }
 
+  const isScreenshotCapture =
+    typeof window !== "undefined" &&
+    new URLSearchParams(window.location.search).get("shot") === "1";
+
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#fff" }}>
+      {isScreenshotCapture ? (
+        <style>{`
+          [data-reveal], [data-animate], [data-motion], .bizuply-reveal-up,
+          [class*="opacity-0"] {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: none !important;
+            filter: none !important;
+          }
+          *, *::before, *::after {
+            animation: none !important;
+            transition: none !important;
+          }
+        `}</style>
+      ) : null}
       <PublicVisualSiteRenderer site={site} pathname={pathname} disableAnalytics />
     </div>
   );

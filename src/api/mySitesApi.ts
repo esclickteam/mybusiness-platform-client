@@ -10,6 +10,9 @@ export type MySiteSummary = {
   templateKey?: string;
   templateName?: string;
   thumbnailUrl?: string;
+  /** Full-page desktop screenshot for My Sites cards. */
+  screenshotUrl?: string;
+  screenshotUpdatedAt?: string;
   html?: string;
   css?: string;
   folderId?: string | null;
@@ -105,6 +108,16 @@ export async function createMySite(payload: {
 
 export async function renameMySite(siteId: string, name: string) {
   const { data } = await API.patch(`/site-builder/sites/${siteId}`, { name });
+  return data?.site as MySiteSummary;
+}
+
+export async function updateMySiteScreenshot(
+  siteId: string,
+  screenshotUrl: string,
+) {
+  const { data } = await API.patch(`/site-builder/sites/${siteId}`, {
+    screenshotUrl,
+  });
   return data?.site as MySiteSummary;
 }
 
