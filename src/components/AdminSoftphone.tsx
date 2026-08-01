@@ -20,6 +20,7 @@ import {
   PhoneIncoming,
   PhoneMissed,
   PhoneOff,
+  PhoneForwarded,
   Play,
   Search,
   Volume2,
@@ -27,6 +28,7 @@ import {
   UserRound,
   X,
   BellRing,
+  Check,
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -61,7 +63,7 @@ import {
   markMicrophoneGranted,
 } from "../utils/softphoneMicrophone";
 
-type SoftphoneTab = "dial" | "contacts" | "history";
+type SoftphoneTab = "dial" | "contacts" | "callbacks" | "history";
 
 type SoftphoneContact = {
   id: string;
@@ -83,6 +85,18 @@ type SoftphoneCallLog = {
   mode?: SoftphoneMode;
   durationSec?: number;
   createdAt?: string;
+};
+
+type SoftphoneCallbackRequest = {
+  _id: string;
+  fromNumber: string;
+  toNumber?: string;
+  contactName?: string;
+  status: "new" | "assigned" | "in_progress" | "completed" | "cancelled";
+  attemptCount?: number;
+  requestedAt?: string;
+  notes?: string;
+  provider?: string;
 };
 
 type SoftphoneProvider = "telnyx" | "twilio" | "none";
@@ -756,9 +770,12 @@ export default function AdminSoftphone({
   });
   const [contacts, setContacts] = useState<SoftphoneContact[]>([]);
   const [calls, setCalls] = useState<SoftphoneCallLog[]>([]);
+  const [callbacks, setCallbacks] = useState<SoftphoneCallbackRequest[]>([]);
+  const [openCallbackCount, setOpenCallbackCount] = useState(0);
   const [query, setQuery] = useState("");
   const [loadingContacts, setLoadingContacts] = useState(false);
   const [loadingCalls, setLoadingCalls] = useState(false);
+  const [loadingCallbacks, setLoadingCallbacks] = useState(false);
   const [busy, setBusy] = useState(false);
   const [simulating, setSimulating] = useState(false);
   const [now, setNow] = useState(Date.now());
@@ -849,6 +866,33 @@ export default function AdminSoftphone({
       setCalls([]);
     } finally {
       setLoadingCalls(false);
+    }
+  }, []);
+
+  const loadCallbacks = useCallback(async () => {
+    setLoadingCallbacks(true);
+    try {
+      const [openRes, allRes] = await Promise.all([
+        API.get("/admin/softphone/callbacks", {
+          params: { status: "open", limit: 100 },
+        }),
+        API.get("/admin/softphone/callbacks", {
+          params: { limit: 40 },
+        }),
+      ]);
+      setOpenCallbackCount(
+        Array.isArray(openRes.data?.callbacks)
+          ? openRes.data.callbacks.length
+          : Number(openRes.data?.count) || 0
+      );
+      setCallbacks(
+        Array.isArray(allRes.data?.callbacks) ? allRes.data.callbacks : []
+      );
+    } catch {
+      setCallbacks([]);
+      setOpenCallbackCount(0);
+    } finally {
+      setLoadingCallbacks(false);
     }
   }, []);
 
@@ -1244,6 +1288,40 @@ export default function AdminSoftphone({
     [busy, contactName, digits, endCall]
   );
 
+  const markCallbackAttempt = useCallback(
+    async (callback: SoftphoneCallbackRequest) => {
+      try {
+        await API.patch(`/admin/softphone/callbacks/${callback._id}`, {
+          incrementAttempt: true,
+          status: "in_progress",
+        });
+      } catch {
+        /* keep dialing even if status update fails */
+      }
+      void loadCallbacks();
+      void startCall({
+        phone: callback.fromNumber,
+        name: callback.contactName || "שיחה חוזרת",
+        source: "manual",
+      });
+    },
+    [loadCallbacks, startCall]
+  );
+
+  const completeCallback = useCallback(
+    async (callbackId: string) => {
+      try {
+        await API.patch(`/admin/softphone/callbacks/${callbackId}`, {
+          status: "completed",
+        });
+        void loadCallbacks();
+      } catch {
+        setError("לא הצלחנו לסמן את השיחה החוזרת כטופלה");
+      }
+    },
+    [loadCallbacks]
+  );
+
   // Pending dial from customer tables
   useEffect(() => {
     if (!pendingDial) return;
@@ -1410,12 +1488,20 @@ export default function AdminSoftphone({
       void prepareSoftphoneIncoming().catch(() => {});
     };
 
+    const onCallback = () => {
+      void loadCallbacks();
+      setSoftphoneOpen(true);
+      setTab("callbacks");
+    };
+
     socket.emit("joinRoom", "admin-support");
     socket.on("softphone:incoming", onIncoming);
+    socket.on("softphone:callback", onCallback);
     return () => {
       socket.off("softphone:incoming", onIncoming);
+      socket.off("softphone:callback", onCallback);
     };
-  }, [socket]);
+  }, [socket, loadCallbacks]);
 
   // Keep VoIP client registered for inbound when ready (Telnyx preferred).
   // Intentionally does NOT hang up on unmount — calls survive navigation.
@@ -1486,9 +1572,10 @@ export default function AdminSoftphone({
   useEffect(() => {
     if (!open) return;
     void loadStatus();
+    void loadCallbacks();
     if (tab === "contacts") void loadContacts(query);
     if (tab === "history") void loadCalls();
-  }, [open, tab, loadStatus, loadContacts, loadCalls, query]);
+  }, [open, tab, loadStatus, loadContacts, loadCalls, loadCallbacks, query]);
 
   useEffect(() => {
     if (!open || tab !== "contacts") return;
@@ -1753,11 +1840,12 @@ export default function AdminSoftphone({
               </div>
 
               {!inCall && (
-                <div className="relative mt-4 grid grid-cols-3 gap-1 rounded-2xl bg-black/15 p-1">
+                <div className="relative mt-4 grid grid-cols-4 gap-1 rounded-2xl bg-black/15 p-1">
                   {(
                     [
                       ["dial", "חיוג", Grid3X3],
                       ["contacts", "אנשי קשר", UserRound],
+                      ["callbacks", "חוזרות", PhoneForwarded],
                       ["history", "היסטוריה", History],
                     ] as const
                   ).map(([key, label, Icon]) => (
@@ -1766,7 +1854,7 @@ export default function AdminSoftphone({
                       type="button"
                       onClick={() => setTab(key)}
                       className={[
-                        "inline-flex h-10 items-center justify-center gap-1.5 rounded-xl text-xs font-black transition",
+                        "relative inline-flex h-10 items-center justify-center gap-1 rounded-xl text-[11px] font-black transition",
                         tab === key
                           ? "bg-white text-slate-900 shadow-sm"
                           : "text-white/80 hover:bg-white/10 hover:text-white",
@@ -1774,6 +1862,11 @@ export default function AdminSoftphone({
                     >
                       <Icon className="h-3.5 w-3.5" />
                       {label}
+                      {key === "callbacks" && openCallbackCount > 0 ? (
+                        <span className="absolute -top-1 -left-1 grid h-4 min-w-4 place-items-center rounded-full bg-amber-400 px-1 text-[9px] font-black text-slate-900">
+                          {openCallbackCount > 9 ? "9+" : openCallbackCount}
+                        </span>
+                      ) : null}
                     </button>
                   ))}
                 </div>
@@ -2109,6 +2202,110 @@ export default function AdminSoftphone({
                       </div>
                     )}
                   </div>
+                </div>
+              ) : tab === "callbacks" ? (
+                <div className="h-full overflow-y-auto p-3">
+                  {loadingCallbacks ? (
+                    <div className="flex min-h-[220px] items-center justify-center">
+                      <Loader2 className="h-6 w-6 animate-spin text-[#7C4DFF]" />
+                    </div>
+                  ) : callbacks.length === 0 ? (
+                    <div className="flex min-h-[220px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 text-center">
+                      <PhoneForwarded className="mb-3 h-8 w-8 text-slate-300" />
+                      <p className="text-sm font-black text-slate-700">
+                        אין בקשות שיחה חוזרת
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-slate-400">
+                        כשלקוח מקיש 1 בשיחה נכנסת, הבקשה תופיע כאן
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      {callbacks.map((callback) => {
+                        const open =
+                          callback.status === "new" ||
+                          callback.status === "assigned" ||
+                          callback.status === "in_progress";
+                        return (
+                          <div
+                            key={callback._id}
+                            className="flex w-full items-center gap-3 rounded-3xl border border-slate-100 bg-white p-3 text-right shadow-sm"
+                          >
+                            <span
+                              className={[
+                                "grid h-11 w-11 place-items-center rounded-2xl",
+                                open
+                                  ? "bg-amber-50 text-amber-600"
+                                  : "bg-slate-50 text-slate-400",
+                              ].join(" ")}
+                            >
+                              <PhoneForwarded className="h-5 w-5" />
+                            </span>
+                            <span className="min-w-0 flex-1">
+                              <span className="block truncate text-sm font-black text-slate-900">
+                                {callback.contactName ||
+                                  formatDisplayPhone(callback.fromNumber)}
+                              </span>
+                              <span
+                                className="mt-0.5 block truncate text-xs font-bold text-slate-500"
+                                dir="ltr"
+                              >
+                                {formatDisplayPhone(callback.fromNumber)}
+                              </span>
+                              <span className="mt-1 flex flex-wrap items-center gap-1.5">
+                                <span
+                                  className={[
+                                    "inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ring-1",
+                                    open
+                                      ? "bg-amber-50 text-amber-700 ring-amber-100"
+                                      : "bg-slate-50 text-slate-500 ring-slate-100",
+                                  ].join(" ")}
+                                >
+                                  {callback.status === "new"
+                                    ? "חדש"
+                                    : callback.status === "in_progress"
+                                      ? "בטיפול"
+                                      : callback.status === "completed"
+                                        ? "טופל"
+                                        : callback.status === "cancelled"
+                                          ? "בוטל"
+                                          : "הוקצה"}
+                                </span>
+                                {callback.attemptCount ? (
+                                  <span className="text-[10px] font-bold text-slate-400">
+                                    {callback.attemptCount} ניסיונות
+                                  </span>
+                                ) : null}
+                              </span>
+                            </span>
+                            <div className="flex items-center gap-1.5">
+                              {open ? (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    void completeCallback(callback._id)
+                                  }
+                                  className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-600 transition hover:bg-emerald-50 hover:text-emerald-600"
+                                  aria-label="סמן כטופל"
+                                  title="סמן כטופל"
+                                >
+                                  <Check className="h-4 w-4" />
+                                </button>
+                              ) : null}
+                              <button
+                                type="button"
+                                onClick={() => void markCallbackAttempt(callback)}
+                                className="inline-flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md shadow-emerald-500/25 transition hover:-translate-y-0.5"
+                                aria-label={`חייג חזרה אל ${callback.fromNumber}`}
+                              >
+                                <Phone className="h-4 w-4" />
+                              </button>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="h-full overflow-y-auto p-3">
