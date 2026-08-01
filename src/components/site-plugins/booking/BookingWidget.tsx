@@ -9,6 +9,9 @@ import {
 
 export type BookingWidgetVariant = "week" | "month";
 
+/** card = gallery/library section chrome; embedded = blend into template page design */
+export type BookingWidgetChrome = "card" | "embedded";
+
 export type BookingWidgetTheme = {
   accent?: string;
   ink?: string;
@@ -26,6 +29,7 @@ type BookingWidgetProps = {
   preview?: boolean;
   editorMode?: boolean;
   variant?: BookingWidgetVariant;
+  chrome?: BookingWidgetChrome;
   theme?: BookingWidgetTheme;
 };
 
@@ -108,17 +112,37 @@ function resolveTheme(theme?: BookingWidgetTheme) {
   return { accent, ink, muted, surface, line, soft, onAccent, onInk };
 }
 
-function buildStyles(t: ReturnType<typeof resolveTheme>) {
+function isTransparentSurface(value: string) {
+  const clean = String(value || "").trim().toLowerCase();
+  return (
+    !clean ||
+    clean === "transparent" ||
+    clean === "rgba(0, 0, 0, 0)" ||
+    clean === "rgba(0,0,0,0)"
+  );
+}
+
+function buildStyles(
+  t: ReturnType<typeof resolveTheme>,
+  chrome: BookingWidgetChrome = "card",
+) {
+  const embedded = chrome === "embedded";
+  // Interactive fills need a real color even when the root is transparent.
+  const fill = isTransparentSurface(t.surface) ? t.soft : t.surface;
+
   const styles: Record<string, React.CSSProperties> = {
     root: {
       boxSizing: "border-box",
       width: "100%",
-      height: "100%",
-      minHeight: 280,
-      padding: 16,
-      borderRadius: 20,
-      background: t.surface,
-      border: `1px solid ${t.line}`,
+      height: embedded ? "auto" : "100%",
+      minHeight: embedded ? 320 : 280,
+      padding: embedded ? 0 : 16,
+      borderRadius: embedded ? 0 : 20,
+      background: embedded ? "transparent" : t.surface,
+      border: embedded ? "none" : `1px solid ${t.line}`,
+      boxShadow: "none",
+      maxHeight: embedded ? "none" : "100%",
+      overflow: embedded ? "visible" : "auto",
       fontFamily:
         "Heebo, Assistant, system-ui, -apple-system, Segoe UI, sans-serif",
       display: "flex",
@@ -174,14 +198,14 @@ function buildStyles(t: ReturnType<typeof resolveTheme>) {
     serviceList: {
       display: "grid",
       gap: 8,
-      overflow: "auto",
-      maxHeight: "100%",
+      overflow: embedded ? "visible" : "auto",
+      maxHeight: embedded ? "none" : "100%",
       flex: 1,
     },
     serviceBtn: {
       textAlign: "right" as const,
       border: `1px solid ${t.line}`,
-      background: t.surface,
+      background: fill,
       borderRadius: 12,
       padding: "10px 12px",
       display: "flex",
@@ -208,7 +232,7 @@ function buildStyles(t: ReturnType<typeof resolveTheme>) {
     },
     weekPill: {
       border: `1px solid ${t.line}`,
-      background: t.surface,
+      background: fill,
       borderRadius: 12,
       padding: "8px 2px",
       display: "flex",
@@ -267,7 +291,7 @@ function buildStyles(t: ReturnType<typeof resolveTheme>) {
       minHeight: 36,
       borderRadius: 10,
       border: `1px solid ${t.line}`,
-      background: t.surface,
+      background: fill,
       fontSize: 13,
       fontWeight: 700,
       cursor: "pointer",
@@ -312,7 +336,7 @@ function buildStyles(t: ReturnType<typeof resolveTheme>) {
       fontSize: 14,
       fontWeight: 600,
       outline: "none",
-      background: t.surface,
+      background: fill,
       color: t.ink,
     },
     primaryBtn: {
@@ -363,15 +387,30 @@ function BookingSplitShell({
 
 function DemoBooking({
   variant,
+  chrome = "card",
   theme,
   editorMode,
 }: {
   variant: BookingWidgetVariant;
+  chrome?: BookingWidgetChrome;
   theme?: BookingWidgetTheme;
   editorMode?: boolean;
 }) {
   const t = resolveTheme(theme);
-  const styles = useMemo(() => buildStyles(t), [t.accent, t.ink, t.muted, t.surface, t.line, t.soft, t.onAccent, t.onInk]);
+  const styles = useMemo(
+    () => buildStyles(t, chrome),
+    [
+      chrome,
+      t.accent,
+      t.ink,
+      t.muted,
+      t.surface,
+      t.line,
+      t.soft,
+      t.onAccent,
+      t.onInk,
+    ],
+  );
   const today = startOfDay(new Date());
   const [selectedServiceId, setSelectedServiceId] = useState(
     serviceIdOf(DEMO_SERVICES[0]),
@@ -582,13 +621,24 @@ export default function BookingWidget({
   preview = false,
   editorMode = false,
   variant = "week",
+  chrome = "card",
   theme,
 }: BookingWidgetProps) {
   const live = Boolean(pluginEnabled && businessId && !preview);
   const t = resolveTheme(theme);
   const styles = useMemo(
-    () => buildStyles(t),
-    [t.accent, t.ink, t.muted, t.surface, t.line, t.soft, t.onAccent, t.onInk],
+    () => buildStyles(t, chrome),
+    [
+      chrome,
+      t.accent,
+      t.ink,
+      t.muted,
+      t.surface,
+      t.line,
+      t.soft,
+      t.onAccent,
+      t.onInk,
+    ],
   );
 
   const [services, setServices] = useState<PublicBookingService[]>([]);
@@ -707,7 +757,12 @@ export default function BookingWidget({
 
   if (!live) {
     return (
-      <DemoBooking variant={variant} theme={theme} editorMode={editorMode} />
+      <DemoBooking
+        variant={variant}
+        chrome={chrome}
+        theme={theme}
+        editorMode={editorMode}
+      />
     );
   }
 
