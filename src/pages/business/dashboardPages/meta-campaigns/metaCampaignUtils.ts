@@ -27,6 +27,62 @@ export function formatRoas(value: number) {
   return `${(Number(value) || 0).toFixed(1)}x`;
 }
 
+/** Show em dash when a metric is missing — avoid fake-looking zeros. */
+export function formatMetricOrDash(
+  value: number | null | undefined,
+  formatter: (n: number) => string,
+  options?: { treatZeroAsEmpty?: boolean }
+) {
+  if (value == null || Number.isNaN(Number(value))) return "—";
+  const n = Number(value);
+  if (options?.treatZeroAsEmpty && n === 0) return "—";
+  return formatter(n);
+}
+
+export function toLocalIsoDate(date = new Date()) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+export function formatDateTimeHe(value?: string | Date | null) {
+  if (!value) return "—";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleString("he-IL", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export function formatDateHe(value?: string | Date | null) {
+  if (!value) return "—";
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) return "—";
+  return date.toLocaleDateString("he-IL");
+}
+
+/** Meta Marketing API account_status codes. */
+export function resolveMetaAccountStatus(status?: number | null) {
+  const code = Number(status);
+  if (code === 1) return { key: "active", labelEn: "Active" };
+  if (code === 2) return { key: "disabled", labelEn: "Disabled" };
+  if (code === 3) return { key: "unsettled", labelEn: "Unsettled" };
+  if (code === 7) return { key: "pendingRisk", labelEn: "Pending risk review" };
+  if (code === 8) return { key: "pendingSettlement", labelEn: "Pending settlement" };
+  if (code === 9) return { key: "inGrace", labelEn: "In grace period" };
+  if (code === 100) return { key: "pendingClosure", labelEn: "Pending closure" };
+  if (code === 101) return { key: "closed", labelEn: "Closed" };
+  if (!Number.isFinite(code) || code <= 0) {
+    return { key: "unknown", labelEn: "—" };
+  }
+  return { key: "other", labelEn: String(code) };
+}
+
 export function statusTone(status: string) {
   const value = String(status || "").toUpperCase();
   if (value === "ACTIVE") {
@@ -80,19 +136,61 @@ export function statusTone(status: string) {
 export function daysAgoIso(days: number) {
   const d = new Date();
   d.setDate(d.getDate() - days);
-  return d.toISOString().slice(0, 10);
+  return toLocalIsoDate(d);
 }
 
 export function todayIso() {
-  return new Date().toISOString().slice(0, 10);
+  return toLocalIsoDate();
 }
 
+export type MetaDateRangePreset =
+  | "last_7"
+  | "last_14"
+  | "last_30"
+  | "this_month"
+  | "last_month"
+  | "custom";
+
 export const DATE_RANGE_OPTIONS = [
-  { value: 7, labelKey: "metaCampaigns.ranges.last7" },
-  { value: 14, labelKey: "metaCampaigns.ranges.last14" },
-  { value: 30, labelKey: "metaCampaigns.ranges.last30" },
-  { value: 90, labelKey: "metaCampaigns.ranges.last90" },
-] as const;
+  { value: "last_7" as const, labelKey: "metaCampaigns.ranges.last7" },
+  { value: "last_14" as const, labelKey: "metaCampaigns.ranges.last14" },
+  { value: "last_30" as const, labelKey: "metaCampaigns.ranges.last30" },
+  { value: "this_month" as const, labelKey: "metaCampaigns.ranges.thisMonth" },
+  { value: "last_month" as const, labelKey: "metaCampaigns.ranges.lastMonth" },
+  { value: "custom" as const, labelKey: "metaCampaigns.ranges.custom" },
+];
+
+/** Build overview query params for real Meta insights fetches. */
+export function resolveMetaDateRangeQuery(
+  preset: MetaDateRangePreset,
+  custom?: { since?: string; until?: string }
+): { days?: number; since?: string; until?: string } {
+  const until = todayIso();
+  if (preset === "last_7") return { days: 7 };
+  if (preset === "last_14") return { days: 14 };
+  if (preset === "last_30") return { days: 30 };
+
+  if (preset === "this_month") {
+    const now = new Date();
+    const since = toLocalIsoDate(new Date(now.getFullYear(), now.getMonth(), 1));
+    return { since, until };
+  }
+
+  if (preset === "last_month") {
+    const now = new Date();
+    const firstThisMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const lastPrev = new Date(firstThisMonth.getTime() - 24 * 60 * 60 * 1000);
+    const firstPrev = new Date(lastPrev.getFullYear(), lastPrev.getMonth(), 1);
+    return {
+      since: toLocalIsoDate(firstPrev),
+      until: toLocalIsoDate(lastPrev),
+    };
+  }
+
+  const since = String(custom?.since || "").trim() || daysAgoIso(29);
+  const customUntil = String(custom?.until || "").trim() || until;
+  return { since, until: customUntil };
+}
 
 export const SEGMENT_OPTIONS = [
   { value: "all", labelKey: "metaCampaigns.segments.all" },

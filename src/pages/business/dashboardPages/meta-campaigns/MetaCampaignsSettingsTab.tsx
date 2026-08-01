@@ -39,6 +39,7 @@ import {
 import {
   formatAdAccountLabel,
   resolveAdAccountId,
+  resolveMetaAccountStatus,
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
@@ -220,6 +221,15 @@ export default function MetaCampaignsSettingsTab() {
 
   const isLinked = Boolean(status?.isConnected && status?.hasAccessToken);
   const hasAccount = Boolean(status?.selectedAdAccount?.id);
+  const selectedAccountStatus = resolveMetaAccountStatus(
+    (status?.adAccounts || []).find(
+      (account) => account.id === status?.selectedAdAccount?.id
+    )?.accountStatus ?? status?.selectedAdAccount?.accountStatus
+  );
+  const selectedAccountStatusLabel = t(
+    `metaCampaigns.accountStatus.${selectedAccountStatus.key}`,
+    { defaultValue: selectedAccountStatus.labelEn }
+  );
 
   return (
     <div className="mx-auto max-w-3xl space-y-4">
@@ -349,19 +359,26 @@ export default function MetaCampaignsSettingsTab() {
               {t("metaCampaigns.settings.saveAccount")}
             </button>
             {hasAccount ? (
-              <div className="mt-3 space-y-1">
-                <p className="text-xs font-bold text-emerald-700">
-                  {t("metaCampaigns.settings.activeAccount", {
-                    name: status?.selectedAdAccount?.name,
+              <div className="mt-4 space-y-1.5 rounded-xl border border-emerald-100 bg-emerald-50/60 p-3">
+                <p className="text-sm font-black text-slate-900">
+                  {status?.selectedAdAccount?.name || "—"}
+                  {status?.selectedAdAccount?.currency
+                    ? ` (${status.selectedAdAccount.currency})`
+                    : ""}
+                </p>
+                <p className="text-xs font-bold text-slate-600 tabular-nums">
+                  {t("metaCampaigns.settings.accountId", {
+                    id: resolveAdAccountId(status?.selectedAdAccount) || "—",
                   })}
                 </p>
-                {resolveAdAccountId(status?.selectedAdAccount) ? (
-                  <p className="text-xs font-semibold text-slate-500 tabular-nums">
-                    {t("metaCampaigns.settings.accountId", {
-                      id: resolveAdAccountId(status?.selectedAdAccount),
-                    })}
-                  </p>
-                ) : null}
+                <p className="text-xs font-bold text-slate-600">
+                  {t("metaCampaigns.overview.accountStatusLabel", {
+                    status: selectedAccountStatusLabel,
+                  })}
+                </p>
+                <p className="text-xs font-black text-emerald-700">
+                  {t("metaCampaigns.overview.connectedThroughMeta")}
+                </p>
               </div>
             ) : null}
           </div>

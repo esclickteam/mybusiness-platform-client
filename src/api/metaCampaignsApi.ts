@@ -19,6 +19,7 @@ export type MetaSelectedAdAccount = {
   accountId: string;
   name: string;
   currency?: string;
+  accountStatus?: number;
   selectedAt?: string | null;
 };
 
