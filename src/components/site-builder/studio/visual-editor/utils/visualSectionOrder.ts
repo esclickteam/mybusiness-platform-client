@@ -15,17 +15,18 @@ export type VisualSectionItem = {
   elementId: string;
 };
 
-const SECTION_CHILD_SELECTOR = [
-  ":scope > section",
-  ":scope > header",
-  ":scope > footer",
-  ":scope > nav",
-  ':scope > [data-template-section-id]',
-  ':scope > [data-section-kind]',
-  ':scope > [data-visual-inserted-section="true"]',
-  ':scope > [data-bizuply-block="section"]',
-  ':scope > [data-visual-edit-type="section"]',
-  ':scope > [data-studio-section-id]',
+const SECTION_NODE_SELECTOR = [
+  "section",
+  "header",
+  "footer",
+  "nav",
+  "[data-template-section-id]",
+  "[data-section-kind]",
+  '[data-visual-inserted-section="true"]',
+  '[data-bizuply-block="section"]',
+  '[data-visual-edit-type="section"]',
+  "[data-studio-section-id]",
+  "[data-visual-section-key]",
 ].join(", ");
 
 const PARENT_CANDIDATE_SELECTOR = [
@@ -39,6 +40,19 @@ const PARENT_CANDIDATE_SELECTOR = [
 
 function normalizeKey(value: unknown) {
   return String(value || "").trim();
+}
+
+function isVisualInsertHost(node: HTMLElement | null | undefined) {
+  if (!node) return false;
+  return (
+    node.getAttribute("data-visual-insert-host") === "true" ||
+    node.getAttribute("data-visual-runtime-host") === "true"
+  );
+}
+
+function isSectionNode(node: HTMLElement | null | undefined) {
+  if (!node) return false;
+  return node.matches(SECTION_NODE_SELECTOR);
 }
 
 function isEditorOnlyNode(node: HTMLElement | null) {
@@ -90,15 +104,32 @@ export function isPinnedVisualSection(node: HTMLElement) {
   );
 }
 
+/**
+ * Collects ordered section nodes under a parent.
+ * Children of [data-visual-insert-host] are treated as siblings of the host
+ * so published section order can place library inserts (e.g. booking) anywhere
+ * in the page flow — not trapped at the insert-host slot.
+ */
 function getDirectSectionChildren(parent: HTMLElement) {
-  return Array.from(
-    parent.querySelectorAll<HTMLElement>(SECTION_CHILD_SELECTOR),
-  ).filter((node) => {
-    if (!(node instanceof HTMLElement)) return false;
-    if (node.parentElement !== parent) return false;
-    if (isEditorOnlyNode(node)) return false;
-    return true;
+  const sections: HTMLElement[] = [];
+
+  Array.from(parent.children).forEach((child) => {
+    if (!(child instanceof HTMLElement)) return;
+    if (isEditorOnlyNode(child)) return;
+
+    if (isVisualInsertHost(child)) {
+      Array.from(child.children).forEach((grand) => {
+        if (!(grand instanceof HTMLElement)) return;
+        if (isEditorOnlyNode(grand)) return;
+        if (isSectionNode(grand)) sections.push(grand);
+      });
+      return;
+    }
+
+    if (isSectionNode(child)) sections.push(child);
   });
+
+  return sections;
 }
 
 export function resolveVisualSectionPageId(
@@ -219,6 +250,8 @@ export function collectVisualSectionGroups(root: HTMLElement | null) {
 
   Array.from(parents).forEach((parent) => {
     if (claimed.has(parent)) return;
+    // Insert host is a transparent wrapper — never its own reorder group.
+    if (isVisualInsertHost(parent)) return;
 
     const sections = getDirectSectionChildren(parent);
     if (sections.length < 2) return;
@@ -391,14 +424,30 @@ function reorderGroup(
   const unchanged = nextOrder.every(
     (node, index) => sections[index] === node,
   );
-  if (unchanged) return desiredMovable;
+  // Even when order matches, lift host-trapped sections into the page parent
+  // so publish reconstructs the same sibling order as the editor.
+  const needsLift = nextOrder.some((node) => node.parentElement !== parent);
+  if (unchanged && !needsLift) return desiredMovable;
 
   const sectionSet = new Set(nextOrder);
   const originalChildren = Array.from(parent.children);
   let beforeCount = 0;
 
   for (const child of originalChildren) {
-    if (sectionSet.has(child as HTMLElement)) break;
+    if (!(child instanceof HTMLElement)) {
+      beforeCount += 1;
+      continue;
+    }
+    if (sectionSet.has(child)) break;
+    // Treat insert-host as a section slot when it currently holds any of our sections.
+    if (
+      isVisualInsertHost(child) &&
+      Array.from(child.children).some((grand) =>
+        sectionSet.has(grand as HTMLElement),
+      )
+    ) {
+      break;
+    }
     beforeCount += 1;
   }
 
@@ -511,22 +560,26 @@ export function swapSectionWithNeighbor(
   sectionNode: HTMLElement,
   direction: "up" | "down",
 ) {
-  const parent = sectionNode.parentElement;
-  if (!parent || isPinnedVisualSection(sectionNode)) return null;
+  if (isPinnedVisualSection(sectionNode)) return null;
 
-  let sibling: Element | null =
-    direction === "up"
-      ? sectionNode.previousElementSibling
-      : sectionNode.nextElementSibling;
+  let parent = sectionNode.parentElement;
+  if (!parent) return null;
 
-  while (sibling && !isMovableSectionNode(sibling)) {
-    sibling =
-      direction === "up"
-        ? sibling.previousElementSibling
-        : sibling.nextElementSibling;
+  // Lift out of the insert-host so swaps participate in the real page flow.
+  if (isVisualInsertHost(parent) && parent.parentElement) {
+    const host = parent;
+    const flowParent = host.parentElement;
+    flowParent.insertBefore(sectionNode, host);
+    parent = flowParent;
   }
 
-  if (!isMovableSectionNode(sibling)) return null;
+  const flowSections = getDirectSectionChildren(parent);
+  const index = flowSections.indexOf(sectionNode);
+  if (index < 0) return null;
+
+  const targetIndex = direction === "up" ? index - 1 : index + 1;
+  const sibling = flowSections[targetIndex];
+  if (!sibling || !isMovableSectionNode(sibling)) return null;
 
   if (direction === "up") {
     parent.insertBefore(sectionNode, sibling);
@@ -535,8 +588,8 @@ export function swapSectionWithNeighbor(
   }
 
   const siblings = getDirectSectionChildren(parent);
-  siblings.forEach((node, index) => {
-    ensureVisualSectionKey(node, index);
+  siblings.forEach((node, i) => {
+    ensureVisualSectionKey(node, i);
   });
 
   return ensureVisualSectionKey(
