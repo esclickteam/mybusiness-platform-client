@@ -60,6 +60,7 @@ import {
   formatNumber,
   formatPercent,
   formatRoas,
+  metaDeliveryStatusKey,
   resolveAdAccountId,
   resolveMetaAccountStatus,
   resolveMetaDateRangeQuery,
@@ -909,9 +910,9 @@ export default function MetaCampaignsOverviewTab() {
                                 className={`h-1.5 w-1.5 rounded-full ${tone.dot}`}
                               />
                               {t(
-                                `metaCampaigns.status.${String(deliveryStatus)
-                                  .toLowerCase()
-                                  .replace(/[^a-z_]/g, "")}`,
+                                `metaCampaigns.status.${metaDeliveryStatusKey(
+                                  deliveryStatus
+                                )}`,
                                 {
                                   defaultValue: deliveryStatus,
                                 }
@@ -1164,12 +1165,21 @@ export default function MetaCampaignsOverviewTab() {
               />
               <DetailRow
                 label="Status"
-                value={
-                  detailsCampaign.deliveryStatus ||
-                  detailsCampaign.effectiveStatus ||
-                  detailsCampaign.status ||
-                  "—"
-                }
+                value={t(
+                  `metaCampaigns.status.${metaDeliveryStatusKey(
+                    detailsCampaign.deliveryStatus ||
+                      detailsCampaign.effectiveStatus ||
+                      detailsCampaign.status ||
+                      ""
+                  )}`,
+                  {
+                    defaultValue:
+                      detailsCampaign.deliveryStatus ||
+                      detailsCampaign.effectiveStatus ||
+                      detailsCampaign.status ||
+                      "—",
+                  }
+                )}
               />
               <DetailRow
                 label="Objective"

@@ -5085,16 +5085,16 @@
     },
     "status": {
       "active": "פעיל",
-      "paused": "מושהה",
+      "paused": "כבוי",
       "archived": "בארכיון",
       "deleted": "נמחק",
       "draft": "טיוטה",
-      "pending_review": "ממתין לבדיקה",
-      "in_process": "בתהליך",
-      "with_issues": "עם בעיות",
-      "campaign_paused": "קמפיין מושהה",
-      "adset_paused": "מערך מודעות מושהה",
-      "disapproved": "נדחה",
+      "pending_review": "In review",
+      "in_process": "Processing",
+      "with_issues": "With issues",
+      "campaign_paused": "Campaign off",
+      "adset_paused": "Ad set off",
+      "disapproved": "Disapproved",
       "rejected": "נדחה"
     },
     "objectives": {

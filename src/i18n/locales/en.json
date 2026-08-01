@@ -5096,17 +5096,17 @@
     },
     "status": {
       "active": "Active",
-      "paused": "Paused",
+      "paused": "Off",
       "archived": "Archived",
       "deleted": "Deleted",
       "draft": "Draft",
-      "pending_review": "Pending review",
+      "pending_review": "In review",
       "in_process": "Processing",
-      "adset_paused": "Ad set paused",
+      "adset_paused": "Ad set off",
       "disapproved": "Disapproved",
       "rejected": "Rejected",
       "with_issues": "With issues",
-      "campaign_paused": "Campaign paused"
+      "campaign_paused": "Campaign off"
     },
     "objectives": {
       "leads": "Leads",

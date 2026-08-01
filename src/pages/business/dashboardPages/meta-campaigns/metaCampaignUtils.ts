@@ -83,6 +83,38 @@ export function resolveMetaAccountStatus(status?: number | null) {
   return { key: "other", labelEn: String(code) };
 }
 
+/** Normalize Meta effective_status / deliveryStatus for i18n keys. */
+export function metaDeliveryStatusKey(status: string) {
+  const value = String(status || "")
+    .toUpperCase()
+    .replace(/[^A-Z_]/g, "");
+  if (
+    value === "PENDING_REVIEW" ||
+    value === "PENDING_BILLING_INFO" ||
+    value === "PREAPPROVED"
+  ) {
+    return "pending_review";
+  }
+  if (value === "IN_PROCESS") return "in_process";
+  if (value === "ACTIVE") return "active";
+  if (value === "PAUSED") return "paused";
+  if (value === "CAMPAIGN_PAUSED") return "campaign_paused";
+  if (value === "ADSET_PAUSED") return "adset_paused";
+  if (value === "WITH_ISSUES") return "with_issues";
+  if (value === "DISAPPROVED" || value === "PENDING_REVIEW_FAILED") {
+    return "disapproved";
+  }
+  if (value === "REJECTED") return "rejected";
+  if (value === "ARCHIVED") return "archived";
+  if (value === "DELETED") return "deleted";
+  if (value === "DRAFT") return "draft";
+  return value.toLowerCase();
+}
+
+/**
+ * Meta Ads Manager Delivery badge colors.
+ * In review / Processing use hollow-green style like Meta.
+ */
 export function statusTone(status: string) {
   const value = String(status || "").toUpperCase();
   if (value === "ACTIVE") {
@@ -93,23 +125,33 @@ export function statusTone(status: string) {
       dot: "bg-emerald-500",
     };
   }
-  if (value === "PAUSED") {
+  if (
+    value === "PENDING_REVIEW" ||
+    value === "PENDING_BILLING_INFO" ||
+    value === "PREAPPROVED" ||
+    value === "IN_PROCESS"
+  ) {
     return {
-      bg: "bg-amber-50",
-      text: "text-amber-700",
-      border: "border-amber-100",
-      dot: "bg-amber-500",
+      bg: "bg-emerald-50/70",
+      text: "text-emerald-800",
+      border: "border-emerald-200",
+      // Hollow-style ring to mirror Meta "In review"
+      dot: "bg-transparent ring-2 ring-emerald-500",
     };
   }
-  if (value === "IN_PROCESS") {
+  if (
+    value === "PAUSED" ||
+    value === "CAMPAIGN_PAUSED" ||
+    value === "ADSET_PAUSED"
+  ) {
     return {
-      bg: "bg-emerald-50",
-      text: "text-emerald-700",
-      border: "border-emerald-100",
-      dot: "bg-emerald-300",
+      bg: "bg-slate-100",
+      text: "text-slate-600",
+      border: "border-slate-200",
+      dot: "bg-slate-400",
     };
   }
-  if (value === "DRAFT" || value === "PENDING_REVIEW") {
+  if (value === "DRAFT") {
     return {
       bg: "bg-slate-100",
       text: "text-slate-600",
