@@ -1212,7 +1212,8 @@ export default function App() {
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
         !isBusinessChatRoute &&
-        !location.pathname.startsWith("/admin") &&
+        !isAdminRoute &&
+        !isStaffRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
