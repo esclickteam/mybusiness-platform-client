@@ -31,14 +31,6 @@ export const websiteHeroTemplates: WebsiteHeroTemplate[] = [
     accentSoft: "#E7C9A0",
   },
   {
-    id: "lunelle",
-    title: "Lunelle",
-    category: "אתר שירותים",
-    desktopImage: "/lunelledesk.webp",
-    accent: "#2A171C",
-    accentSoft: "#E8B8C1",
-  },
-  {
     id: "adion",
     title: "Adion",
     category: "אתר עסקי מודרני",

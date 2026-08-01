@@ -6,7 +6,6 @@ import { spalcioTemplate } from "./spalcio/meta";
 import { velmoraTemplate } from "./velmora/meta";
 import { aelineTemplate } from "./aeline/meta";
 import { pulsecoreTemplate } from "./pulsecore/meta";
-import { lunelleTemplate } from "./lunelle/meta";
 import { wantravelTemplate } from "./wantravel/meta";
 import { lexoraTemplate } from "./lexora/meta";
 import { elevoraTemplate } from "./elevora/meta";
@@ -222,7 +221,6 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   velmoraTemplate,
   aelineTemplate,
   pulsecoreTemplate,
-  lunelleTemplate,
   wantravelTemplate,
   lexoraTemplate,
   elevoraTemplate,

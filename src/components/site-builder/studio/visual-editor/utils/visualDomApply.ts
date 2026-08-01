@@ -78,7 +78,6 @@ const INNER_EDITABLE_SELECTOR = [
   "[data-visual-editable='true']",
   "[data-gjs-type='text']",
   "[data-editable='text']",
-  ".lunelle-inline-edit-text",
   TEXT_SELECTOR,
   MEDIA_SELECTOR,
 ].join(",");
@@ -1247,12 +1246,9 @@ function isSectionLikeNode(node: HTMLElement) {
 function getTextPaintTarget(node: HTMLElement) {
   if (!isTextLikeNode(node)) return node;
 
-  if (node.matches(".lunelle-inline-edit-text")) return node;
-
   const directInnerText = Array.from(
     node.querySelectorAll<HTMLElement>(
       [
-        ".lunelle-inline-edit-text",
         "[data-visual-edit-type='text']",
         "[data-visual-type='text']",
         "[data-gjs-type='text']",
@@ -1319,10 +1315,6 @@ function scoreVisualNodeForSelection(root: HTMLElement, node: HTMLElement) {
 
   if (text) {
     score += Math.min(text.length, 80);
-  }
-
-  if (node.matches(".lunelle-inline-edit-text")) {
-    score += 500;
   }
 
   if (node.matches("[data-gjs-type='text'], [data-editable='text']")) {
