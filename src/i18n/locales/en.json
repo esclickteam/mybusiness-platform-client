@@ -426,8 +426,8 @@
     "shell": {
       "badge": "Automations",
       "title": "Automations",
-      "subtitle": "Reminders, follow-ups and WhatsApp workflows that run in the background and connect to CRM.",
-      "channel": "CRM + WhatsApp"
+      "subtitle": "A visual Make / n8n-style builder — drag modules, connect them, and go live.",
+      "channel": "Drag & Drop Builder"
     }
   },
   "layout": {
