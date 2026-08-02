@@ -405,6 +405,7 @@ export default function VisualEditorShell({
         {!isPreviewMode ? (
           <VisualEditorIconRail
             sidePanelMode={sidePanelMode}
+            preferredAddTab={preferredAddTab}
             deviceMode={(editor.deviceMode || "desktop") as any}
             storePluginEnabled={storePluginEnabled}
             canUndo={Boolean(editor.canUndo)}
@@ -418,10 +419,20 @@ export default function VisualEditorShell({
             onDeviceChange={(mode) => editor.setDeviceMode?.(mode)}
             onOpenDomain={() => setConnectDomainOpen(true)}
             onOpenAdd={() => {
+              if (sidePanelMode === "add" && preferredAddTab !== "plugins") {
+                setSidePanelMode(null);
+                return;
+              }
               setPreferredAddTab("sections");
-              setSidePanelMode((current) =>
-                current === "add" ? null : "add",
-              );
+              setSidePanelMode("add");
+            }}
+            onOpenPlugins={() => {
+              if (sidePanelMode === "add" && preferredAddTab === "plugins") {
+                setSidePanelMode(null);
+                return;
+              }
+              setPreferredAddTab("plugins");
+              setSidePanelMode("add");
             }}
             onTogglePanel={(mode) =>
               setSidePanelMode((current) =>

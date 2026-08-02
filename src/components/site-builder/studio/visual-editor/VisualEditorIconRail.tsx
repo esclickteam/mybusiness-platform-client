@@ -7,6 +7,7 @@ import {
   Layers3,
   Monitor,
   Plus,
+  Puzzle,
   Redo2,
   ShoppingBag,
   Smartphone,
@@ -23,8 +24,11 @@ export type VisualEditorSidePanelMode =
   | "store"
   | null;
 
+export type VisualEditorAddTab = "sections" | "pages" | "plugins";
+
 type VisualEditorIconRailProps = {
   sidePanelMode: VisualEditorSidePanelMode;
+  preferredAddTab?: VisualEditorAddTab;
   deviceMode: VisualDeviceMode;
   storePluginEnabled: boolean;
   canUndo: boolean;
@@ -39,6 +43,7 @@ type VisualEditorIconRailProps = {
   onOpenDomain: () => void;
   onTogglePanel: (mode: Exclude<VisualEditorSidePanelMode, null>) => void;
   onOpenAdd: () => void;
+  onOpenPlugins: () => void;
 };
 
 const DEVICE_OPTIONS: Array<{
@@ -88,6 +93,7 @@ export const VISUAL_EDITOR_ICON_RAIL_WIDTH_PX = 72;
 
 export default function VisualEditorIconRail({
   sidePanelMode,
+  preferredAddTab = "sections",
   deviceMode,
   storePluginEnabled,
   canUndo,
@@ -102,7 +108,11 @@ export default function VisualEditorIconRail({
   onOpenDomain,
   onTogglePanel,
   onOpenAdd,
+  onOpenPlugins,
 }: VisualEditorIconRailProps) {
+  const addActive = sidePanelMode === "add" && preferredAddTab !== "plugins";
+  const pluginsActive = sidePanelMode === "add" && preferredAddTab === "plugins";
+
   return (
     <aside
       data-visual-editor-icon-rail="true"
@@ -116,12 +126,16 @@ export default function VisualEditorIconRail({
       </div>
 
       <div className="mt-2 flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1">
-        <RailButton
-          title="הוספה"
-          active={sidePanelMode === "add"}
-          onClick={onOpenAdd}
-        >
+        <RailButton title="הוספה" active={addActive} onClick={onOpenAdd}>
           <Plus className="h-4 w-4" />
+        </RailButton>
+
+        <RailButton
+          title="חנות תוספים"
+          active={pluginsActive}
+          onClick={onOpenPlugins}
+        >
+          <Puzzle className="h-4 w-4" />
         </RailButton>
 
         <RailButton
