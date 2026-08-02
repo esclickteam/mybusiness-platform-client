@@ -354,7 +354,11 @@ export const SiteAccessibilityPanel = makePanel(
         <Field label="מיקום כפתור הצף">
           <select
             value={str(settings.widgetPosition, "bottom-left")}
-            onChange={(e) => updateField("widgetPosition", e.target.value)}
+            onChange={(e) => {
+              updateField("widgetPosition", e.target.value);
+              // Clear free-drag coords so the corner pin (CSS) takes effect.
+              updateField("triggerPosition", undefined);
+            }}
             className={inputBase}
           >
             <option value="bottom-left">שמאל למטה</option>

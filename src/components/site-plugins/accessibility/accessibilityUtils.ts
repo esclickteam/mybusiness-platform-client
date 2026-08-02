@@ -190,7 +190,6 @@ const DEFAULT_VISITOR_STATE: AccessibilityVisitorState = {
 export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
   isActive: true,
   widgetPosition: "bottom-left",
-  triggerPosition: { x: 88, y: 88 },
   accentColor: "#7C3AED",
   defaultFontScale: 100,
   features: { ...DEFAULT_FEATURES },
@@ -229,21 +228,25 @@ export function mergeAccessibilitySettings(
     }
   }
 
+  const storedTrigger = stored?.triggerPosition;
+  const hasCustomTrigger =
+    storedTrigger != null &&
+    Number.isFinite(Number(storedTrigger.x)) &&
+    Number.isFinite(Number(storedTrigger.y));
+
   return {
     isActive: stored?.isActive !== false,
     // Menu always opens on the left; trigger can still be left/right.
     widgetPosition:
       stored?.widgetPosition === "bottom-right" ? "bottom-right" : "bottom-left",
-    triggerPosition: {
-      x: Number.isFinite(Number(stored?.triggerPosition?.x))
-        ? Math.min(98.8, Math.max(1.2, Number(stored?.triggerPosition?.x)))
-        : stored?.widgetPosition === "bottom-right"
-          ? 8
-          : 88,
-      y: Number.isFinite(Number(stored?.triggerPosition?.y))
-        ? Math.min(98.8, Math.max(1.2, Number(stored?.triggerPosition?.y)))
-        : 88,
-    },
+    // Only keep a free-drag position when one was explicitly saved.
+    // Otherwise the widget pins to the corner via CSS (mirrors the support bot).
+    triggerPosition: hasCustomTrigger
+      ? {
+          x: Math.min(98.8, Math.max(1.2, Number(storedTrigger.x))),
+          y: Math.min(98.8, Math.max(1.2, Number(storedTrigger.y))),
+        }
+      : undefined,
     accentColor: String(stored?.accentColor || DEFAULT_ACCESSIBILITY_SETTINGS.accentColor),
     defaultFontScale: Math.min(
       200,

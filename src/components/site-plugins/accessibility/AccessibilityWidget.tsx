@@ -92,8 +92,8 @@ export default function AccessibilityWidget({
   );
   const isEditor = mode === "editor";
   const position = settings.triggerPosition || {
-    x: settings.widgetPosition === "bottom-right" ? 8 : 88,
-    y: 88,
+    x: settings.widgetPosition === "bottom-right" ? 8 : 92,
+    y: 92,
   };
   const [dragPos, setDragPos] = useState(position);
   const dragRef = useRef<{
