@@ -12,6 +12,7 @@ import {
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import UpsellPicker from "../../components/pricing/UpsellPicker";
 
 const PAYMENT_MODES = [
   {
@@ -36,7 +37,7 @@ const EMPTY = {
   affiliateId: "",
   marketerId: "",
   packageSku: "monthly",
-  includeWebsiteAddon: false,
+  upsellSkus: [],
   paymentMode: "manual_paid",
   fullAccess: true,
   notes: "",
@@ -48,7 +49,7 @@ export default function StaffCreateUser() {
 
   const [form, setForm] = useState(EMPTY);
   const [packages, setPackages] = useState([]);
-  const [websiteAddon, setWebsiteAddon] = useState(null);
+  const [upsells, setUpsells] = useState([]);
   const [affiliates, setAffiliates] = useState([]);
   const [marketers, setMarketers] = useState([]);
   const [loadingMeta, setLoadingMeta] = useState(true);
@@ -67,7 +68,7 @@ export default function StaffCreateUser() {
     try {
       const { data } = await API.get("/staff/create-meta");
       setPackages(Array.isArray(data?.packages) ? data.packages : []);
-      setWebsiteAddon(data?.websiteAddon || null);
+      setUpsells(Array.isArray(data?.upsells) ? data.upsells : []);
       setAffiliates(Array.isArray(data?.affiliates) ? data.affiliates : []);
       setMarketers(Array.isArray(data?.marketers) ? data.marketers : []);
     } catch (err) {
@@ -82,15 +83,21 @@ export default function StaffCreateUser() {
     loadMeta();
   }, [loadMeta]);
 
-  const canAddWebsiteAddon =
-    form.packageSku !== "website_only" && Boolean(websiteAddon);
-
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
     }));
+  };
+
+  const toggleUpsell = (sku) => {
+    setForm((prev) => {
+      const set = new Set(prev.upsellSkus || []);
+      if (set.has(sku)) set.delete(sku);
+      else set.add(sku);
+      return { ...prev, upsellSkus: Array.from(set) };
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -109,7 +116,8 @@ export default function StaffCreateUser() {
         businessName: form.businessName.trim(),
         category: form.category.trim() || "general",
         packageSku: form.packageSku,
-        includeWebsiteAddon: Boolean(form.includeWebsiteAddon),
+        upsellSkus: form.upsellSkus || [],
+        includeWebsiteAddon: (form.upsellSkus || []).includes("website_addon"),
         paymentMode: form.paymentMode,
         notes: form.notes.trim() || undefined,
         fullAccess: Boolean(form.fullAccess),
@@ -342,21 +350,16 @@ export default function StaffCreateUser() {
               </div>
             )}
 
-            {canAddWebsiteAddon ? (
-              <label className="mt-3 flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-bold">
-                <input
-                  type="checkbox"
-                  name="includeWebsiteAddon"
-                  checked={form.includeWebsiteAddon}
-                  onChange={onChange}
-                  className="mt-1"
-                />
-                <span>
-                  אפסייל: {websiteAddon.nameHe || "תוספת אתר"} — ₪
-                  {websiteAddon.amountIls}
-                </span>
-              </label>
-            ) : null}
+            <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+              <UpsellPicker
+                upsells={upsells}
+                selectedSkus={form.upsellSkus}
+                onToggle={toggleUpsell}
+                allowCustomPrice={false}
+                packageSku={form.packageSku}
+                hint="סמנו אפסיילים להוספה לרכישה לפי מחיר הקטלוג"
+              />
+            </div>
           </section>
 
           <section>
